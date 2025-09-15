@@ -1,5 +1,273 @@
+fw_config
+	field AUDIO 0 1
+		option AUDIO_NONE		0
+		option AUDIO_CS42L43_SNDW	1
+		option AUDIO_ALC256_HDA		2
+	end
+	field WIFI 2 3
+		option WIFI_NONE		0
+		option WIFI_CNVI_6		1
+		option WIFI_CNVI_7		2
+	end
+	field TOUCHPAD 4 5
+		option TOUCHPAD_NONE		0
+		option TOUCHPAD_LPSS_I2C	1
+	end
+	field STORAGE 6 7
+		option STORAGE_UNKNOWN		0
+		option STORAGE_NVME_GEN4	1
+		option STORAGE_UFS		2
+	end
+	field FP 8
+		option FP_ABSENT		0
+		option FP_PRESENT		1
+	end
+	field DISPLAY 9
+		option DISPLAY_ABSENT		0
+		option DISPLAY_PRESENT		1
+	end
+	field ISH 10
+		option ISH_DISABLE		0
+		option ISH_ENABLE		1
+	end
+	field KB 11
+		option KB_ABSENT		0
+		option KB_PRESENT		1
+	end
+end
+
 chip soc/intel/pantherlake
 
-        device domain 0 on
-        end
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP0
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP1
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)" # USB3.2 Gen2x1 Type-A Port
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC0)" # USB3.2 Gen2x1 Type-A Port
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)" # 2x5 USB2 HDR
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)" # 2x5 USB2 HDR
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC0)"
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)"
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # USB 3.2 Gen2 x1 Type-A Con - # 1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)" # USB 3.2 Gen2 x1 Type-A Con - # 2
+
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC0)"
+	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+
+	register "tcss_cap_policy[0]" = "TCSS_TYPE_C_PORT_FULL_FUN"
+	register "tcss_cap_policy[1]" = "TCSS_TYPE_C_PORT_FULL_FUN"
+
+	# Enable EDP in PortA & HDMI in Port B
+	register "ddi_port_A_config" = "1"
+	register "ddi_port_B_config" = "1"
+	register "ddi_ports_config" = "{
+		[DDI_PORT_A] = DDI_ENABLE_HPD,
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+	}"
+
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+	}"
+
+	register "serial_io_gspi_mode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI0A] = PchSerialIoDisabled,
+	}"
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | Touchpad                   |
+	#| I2C1              | TPM(cr50)                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		/* Render OEM footer logo 100px above from the edge */
+		.logo_bottom_margin = 100,
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.early_init = 1,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
+	device domain 0 on
+		device ref igpu on
+			probe DISPLAY DISPLAY_PRESENT
+			chip drivers/gfx/generic
+				register "device_count" = "5"
+				# DDIA for eDP
+				register "device[0].name" = ""LCD0""
+				register "device[0].type" = "panel"
+				# DDIB for HDMI
+				# If HDMI is not enumerated in the kernel, then no GFX device should be added for DDIB
+				register "device[1].name" = ""DD01""
+				# TCP0 (DP-1) for port C0
+				register "device[2].name" = ""DD02""
+				register "device[2].use_pld" = "true"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+				# TCP1 (DP-2) for port C1
+				register "device[3].name" = ""DD03""
+				register "device[3].use_pld" = "true"
+				register "device[3].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+				device generic 0 on end
+			end
+		end
+
+		device ref iaa off end
+
+		device ref tbt_pcie_rp0 on end
+		device ref tbt_pcie_rp1 on end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(4, 2)"
+						device ref tcss_usb3_port0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(3, 2)"
+						device ref tcss_usb3_port1 on end
+					end
+				end
+			end
+		end
+
+		device ref tcss_dma0 on
+			chip drivers/intel/usb4/retimer
+				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
+				use tcss_usb3_port0 as dfp[0].typec_port
+				device generic 0 on end
+			end
+			chip drivers/intel/usb4/retimer
+				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
+				use tcss_usb3_port1 as dfp[1].typec_port
+				device generic 0 on end
+			end
+		end
+
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 1""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(3, 1)"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 2""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(4, 1)"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 3""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(5, 1)"
+						device ref usb2_port5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 4""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(6, 1)"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 5""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(7, 1)"
+						device ref usb2_port7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port 1""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port 2""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device ref usb3_port2 on end
+					end
+				end
+			end
+		end
+
+		device ref ufs on
+			probe STORAGE STORAGE_UFS
+			probe STORAGE STORAGE_UNKNOWN
+		end
+
+		device ref pcie_rp1 on
+			probe STORAGE STORAGE_NVME_GEN4
+			probe STORAGE STORAGE_UNKNOWN
+			register "pcie_rp[PCIE_RP(1)]" = "{
+			.clk_src = 3,
+			.clk_req = 3,
+			.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "is_storage" = "true"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H18)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A08)"
+				register "srcclk_pin" = "3"
+				device generic 0 on end
+			end
+		end # Gen4 M.2 SSD
+
+		device ref cnvi_wifi on
+			probe WIFI WIFI_CNVI_6
+			probe WIFI WIFI_CNVI_7
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "add_acpi_dma_property" = "true"
+				register "enable_cnvi_ddr_rfim" = "true"
+				use cnvi_bluetooth as bluetooth_companion
+				device generic 0 on end
+			end
+		end # CNVi
+
+		device ref cnvi_bluetooth on
+			probe WIFI WIFI_CNVI_6
+			probe WIFI WIFI_CNVI_7
+		end
+
+		device ref i2c0 on end
+
+		device ref i2c1 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_B17_IRQ)"
+				device i2c 50 on end
+			end
+		end
+
+		device ref smbus on end
+	end
 end

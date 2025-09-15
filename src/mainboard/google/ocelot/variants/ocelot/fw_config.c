@@ -86,6 +86,10 @@ static const struct pad_config sndw_alc721_enable_pads[] = {
 	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF5),
 	/* GPP_S07:     DMIC1_DATA (HDR) */
 	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF5),
+	/* GPP_D16:	DMIC_CLK */
+	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF3),
+	/* GPP_D17:	DMIC_DATA */
+	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF3),
 };
 
 static const struct pad_config audio_disable_pads[] = {

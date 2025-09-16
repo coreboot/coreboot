@@ -164,7 +164,7 @@ chip soc/intel/cannonlake
 		end # I2C #1
 		device ref i2c2		on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""WCOM50C1""
+				register "generic.hid" = ""WCOM006C""
 				register "generic.desc" = ""WCOM Digitizer""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C15)"

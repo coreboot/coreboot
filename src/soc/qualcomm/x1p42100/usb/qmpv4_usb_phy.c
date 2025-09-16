@@ -463,7 +463,7 @@ static bool ss_qmp_phy_init_common(const struct ss_usb_phy_reg *ss_phy_reg)
 	udelay(100);
 	/*
 	 * Wait for PHY initialization to be done
-	 * PCS_STATUS: wait for 1ms for PHY STATUS;
+	 * PCS_STATUS: wait for 10ms for PHY STATUS;
 	 * SW can continuously check for PHYSTATUS = 1.b0.
 	 */
 	long lock_us = wait_us(10000,
@@ -471,7 +471,8 @@ static bool ss_qmp_phy_init_common(const struct ss_usb_phy_reg *ss_phy_reg)
 			USB3_PCS_PHYSTATUS));
 	if (!lock_us) {
 		ret = false;
-		printk(BIOS_ERR, "QMP PHY %s PLL LOCK fails:\n", ss_phy_reg->name);
+		printk(BIOS_ERR, "QMP PHY %s PLL LOCK failed after %ldus\n",
+				ss_phy_reg->name, lock_us);
 	} else {
 		printk(BIOS_DEBUG, "QMP PHY %s initialized and locked in %ldus\n",
 				ss_phy_reg->name, lock_us);
@@ -479,8 +480,10 @@ static bool ss_qmp_phy_init_common(const struct ss_usb_phy_reg *ss_phy_reg)
 	return ret;
 }
 
-/* Unified ss_qmp_phy_init function to initialize a specific PHY instance
-Pass 0 for MP0, or 1 for MP1. */
+/*
+ * Unified ss_qmp_phy_init function to initialize a specific PHY
+ * instance. Pass 0 for MP0 and 1 for MP1.
+ */
 bool ss_qmp_phy_init(u32 phy_idx)
 {
 	bool ret = true;

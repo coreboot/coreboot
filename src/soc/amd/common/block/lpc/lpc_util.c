@@ -220,6 +220,8 @@ void lpc_tpm_decode(void)
 	pci_write_config32(_LPCB_DEV, LPC_TRUSTED_PLATFORM_MODULE, value);
 }
 
+void __weak soc_lpc_tpm_decode_spi(void) { }
+
 /*
  * Enable FCH to decode TPM associated Memory and IO regions to SPI
  *
@@ -236,6 +238,8 @@ void lpc_tpm_decode_spi(void)
 					SPI_BASE_ADDRESS_REGISTER);
 	pci_write_config32(_LPCB_DEV, SPI_BASE_ADDRESS_REGISTER, spibase
 					| ROUTE_TPM_2_SPI);
+
+	soc_lpc_tpm_decode_spi();
 }
 
 /*

@@ -140,6 +140,7 @@ void lpc_enable_sio_decode(const bool addr);
 uintptr_t lpc_spibase(void);
 void lpc_tpm_decode(void);
 void lpc_tpm_decode_spi(void);
+void soc_lpc_tpm_decode_spi(void);
 void lpc_enable_rom(void);
 void lpc_enable_spi_prefetch(void);
 uint32_t lpc_get_rom2_region(size_t *bios_size);

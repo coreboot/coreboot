@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config DRIVERS_SOUNDWIRE_CS42L43
+	bool
+	depends on HAVE_ACPI_TABLES
+	default n
+	help
+	  SoundWire CS42L43 CODEC SSDT generator.

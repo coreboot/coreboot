@@ -21,5 +21,5 @@ const char *get_wifi_sar_cbfs_filename(void)
 
 const char *variant_get_auxfw_version_file(void)
 {
-	return NULL;
+	return "rts5453vb_GOOG0L01.hash";
 }

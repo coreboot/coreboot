@@ -598,6 +598,25 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 	}
 }
 
+static bool is_tom2_wb_active(void)
+{
+	msr_t syscfg = rdmsr(SYSCFG_MSR);
+	syscfg.lo &= (SYSCFG_MSR_TOM2WB | SYSCFG_MSR_TOM2En);
+	return (syscfg.lo == (SYSCFG_MSR_TOM2WB | SYSCFG_MSR_TOM2En));
+}
+
+static bool is_range_in_tom2_wb(struct range_entry *r)
+{
+	const msr_t tom2_msr = rdmsr(TOP_MEM2_MSR);
+	const uint64_t tom2 = tom2_msr.lo | ((uint64_t)tom2_msr.hi << 32);
+	const int mtrr_type = range_entry_mtrr_type(r);
+
+	if ((r->begin >= (4ULL * GiB)) && (r->end < tom2))
+		return (mtrr_type == MTRR_TYPE_WRBACK);
+
+	return false;
+}
+
 static void __calc_var_mtrrs(struct memranges *addr_space,
 			     bool above4gb, int address_bits,
 			     int *num_def_wb_mtrrs, int *num_def_uc_mtrrs)
@@ -632,6 +651,15 @@ static void __calc_var_mtrrs(struct memranges *addr_space,
 		int mtrr_type;
 
 		mtrr_type = range_entry_mtrr_type(r);
+
+		/*
+		 * WB MTRRs inside [4G - TOM2] range can be skipped on AMD, if
+		 * TOM2 WB is active.
+		 */
+		if (CONFIG(X86_AMD_FIXED_MTRRS) && above4gb) {
+			if (is_tom2_wb_active() && is_range_in_tom2_wb(r))
+				continue;
+		}
 
 		if (mtrr_type != MTRR_TYPE_UNCACHEABLE) {
 			var_state.mtrr_index = 0;
@@ -704,6 +732,16 @@ static void prepare_var_mtrrs(struct memranges *addr_space, int def_type,
 	memranges_each_entry(r, var_state.addr_space) {
 		if (range_entry_mtrr_type(r) == def_type)
 			continue;
+
+		/*
+		 * WB MTRRs inside [4G - TOM2] range can be skipped on AMD, if
+		 * TOM2 WB is active.
+		 */
+		if (CONFIG(X86_AMD_FIXED_MTRRS) && above4gb) {
+			if (is_tom2_wb_active() && is_range_in_tom2_wb(r))
+				continue;
+		}
+
 		calc_var_mtrrs_with_hole(&var_state, r);
 	}
 

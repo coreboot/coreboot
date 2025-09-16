@@ -17,11 +17,7 @@
 /* AP MTRRs will be synced to the BSP in the SIPI vector so set them up before MP init. */
 static void pre_mp_init(void)
 {
-	const msr_t syscfg = rdmsr(SYSCFG_MSR);
-	if (syscfg.lo & SYSCFG_MSR_TOM2WB)
-		x86_setup_mtrrs_with_detect_no_above_4gb();
-	else
-		x86_setup_mtrrs_with_detect();
+	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_UCODE))
 		amd_load_microcode_from_cbfs();

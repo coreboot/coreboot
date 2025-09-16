@@ -595,7 +595,8 @@ typedef struct acpi_ivrs_ivhd_11 {
 	struct ivhd11_iommu_attr iommu_attributes;
 	uint32_t efr_reg_image_low;
 	uint32_t efr_reg_image_high;
-	uint32_t reserved[2];
+	uint32_t efr_reg_image2_low;
+	uint32_t efr_reg_image2_high;
 	uint8_t entry[];
 } __packed acpi_ivrs_ivhd11_t;
 

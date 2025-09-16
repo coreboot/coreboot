@@ -200,7 +200,8 @@ typedef struct acpi_ivrs_ivhd_40 {
 	uint32_t iommu_attributes;
 	uint32_t efr_reg_image_low;
 	uint32_t efr_reg_image_high;
-	uint32_t reserved[2];
+	uint32_t efr_reg_image2_low;
+	uint32_t efr_reg_image2_high;
 	uint8_t entry[];
 } __packed acpi_ivrs_ivhd40_t;
 

@@ -223,6 +223,8 @@ static unsigned long acpi_fill_ivrs40(unsigned long current, acpi_ivrs_ivhd_t *i
 	if (pci_read_config32(iommu_dev, ivhd_40->capability_offset) & EFR_FEATURE_SUP) {
 		ivhd_40->efr_reg_image_low  = read32p(ivhd_40->iommu_base_low + 0x30);
 		ivhd_40->efr_reg_image_high = read32p(ivhd_40->iommu_base_low + 0x34);
+		ivhd_40->efr_reg_image2_low  = read32p(ivhd_40->iommu_base_low + 0x1a0);
+		ivhd_40->efr_reg_image2_high = read32p(ivhd_40->iommu_base_low + 0x1a4);
 	}
 
 	current += sizeof(acpi_ivrs_ivhd40_t);
@@ -282,6 +284,8 @@ static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_ivhd_t *i
 	if (pci_read_config32(iommu_dev, ivhd_11->capability_offset) & EFR_FEATURE_SUP) {
 		ivhd_11->efr_reg_image_low  = read32p(ivhd_11->iommu_base_low + 0x30);
 		ivhd_11->efr_reg_image_high = read32p(ivhd_11->iommu_base_low + 0x34);
+		ivhd_11->efr_reg_image2_low  = read32p(ivhd_11->iommu_base_low + 0x1a0);
+		ivhd_11->efr_reg_image2_high = read32p(ivhd_11->iommu_base_low + 0x1a4);
 	}
 
 	current += sizeof(acpi_ivrs_ivhd11_t);

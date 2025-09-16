@@ -6,7 +6,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0236,	// Codec Vendor / Device ID: Realtek ALC236
 	0x103C8C60,	// Subsystem ID
-	0x00000015,	// Number of jacks (NID entries)
+	0x00000016,	// Number of jacks (NID entries)
 
 	AZALIA_RESET(0x1),
 	/* NID 0x01, HDA Codec Subsystem ID Verb table */
@@ -87,19 +87,24 @@ const u32 cim_verb_data[] = {
 	/* enable EQ */
 	0x05350000,
 	0x0534E01A,
-	/* 1.8W/4ohm */
+	/* 2.2W/4ohm */
 	0x02050038,
-	0x02047901,
-	/* AGC Enable */
-	0x0205004C,
-	0x0204465C,
+	0x02046901,
+	/* Disable AGC and set AGC limit to 0dB */
+	0x02050016,
+	0x02044C50,
+	0x02050012,
+	0x0204EBC0,
+	/* Set AGC Front and Post gain 0dB then Enable AGC */
+	0x02050013,
+	0x0204401F,
 	0x02050016,
 	0x02044E50,
-	0x02050020,
-	0x020451FF,
 	/* Headphone Pop */
 	0x05750007,
 	0x057412B2,
+	0x05750007,	/* Padding */
+	0x057412B2,	/* Padding */
 };
 
 const u32 pc_beep_verbs[] = {

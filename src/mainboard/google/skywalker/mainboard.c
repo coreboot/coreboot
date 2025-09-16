@@ -17,6 +17,7 @@
 #include <soc/usb.h>
 
 #include "gpio.h"
+#include "panel.h"
 #include "storage.h"
 
 #define AFE_SE_SECURE_CON1	(AUDIO_BASE + 0x5634)
@@ -88,6 +89,8 @@ enum mtk_storage_type mainboard_get_storage_type(void)
 
 static void mainboard_init(struct device *dev)
 {
+	mt6359p_init_pmif_arb();
+
 	if (mainboard_get_storage_type() == STORAGE_EMMC) {
 		mtk_msdc_configure_emmc(true);
 		mtcmos_ufs_power_off();

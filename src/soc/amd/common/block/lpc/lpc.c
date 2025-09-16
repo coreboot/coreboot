@@ -164,7 +164,7 @@ static void configure_child_lpc_windows(struct device *dev, struct device *child
 		base = res->base;
 		end = resource_end(res);
 		printk(BIOS_DEBUG,
-			"Southbridge LPC decode:%s, base=0x%08x, end=0x%08x\n",
+			"FCH LPC decode:%s, base=0x%08x, end=0x%08x\n",
 			dev_path(child), base, end);
 		/* find a resource size */
 		switch (base) {
@@ -273,10 +273,26 @@ static void configure_child_espi_windows(struct device *child)
 	struct resource *res;
 
 	for (res = child->resource_list; res; res = res->next) {
-		if (res->flags & IORESOURCE_IO)
+		if (res->flags & IORESOURCE_IO) {
+			printk(BIOS_DEBUG,
+				"FCH eSPI IO decode:%s, base=0x%08llx, end=0x%08llx\n",
+				dev_path(child), res->base, res->base + res->size - 1);
 			espi_open_io_window(res->base, res->size);
-		else if (res->flags & IORESOURCE_MEM)
+		} else if (res->flags & IORESOURCE_MEM) {
+			/*
+			 * TPM range is decoded in a different register. It might be too late
+			 * to enable TPM decoding here, but better late than never.
+			 */
+			if (res->base == 0xfed40000) {
+				lpc_tpm_decode_spi();
+				continue;
+			}
+
+			printk(BIOS_DEBUG,
+				"FCH eSPI MMIO decode:%s, base=0x%08llx, end=0x%08llx\n",
+				dev_path(child), res->base, res->base + res->size - 1);
 			espi_open_mmio_window(res->base, res->size);
+		}
 	}
 }
 

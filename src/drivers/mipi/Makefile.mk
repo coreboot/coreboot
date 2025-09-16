@@ -36,6 +36,8 @@ panel-params-$(CONFIG_MIPI_PANEL_STA_ER88577) += panel-STA_ER88577
 panel-params-$(CONFIG_MIPI_PANEL_STA_HIMAX83102_J02) += panel-STA_HIMAX83102_J02
 panel-params-$(CONFIG_MIPI_PANEL_STA_ILI9882T) += panel-STA_ILI9882T
 
+panel-params-$(CONFIG_MIPI_PANEL_TM_TL121BVMS07_00C) += panel-TM_TL121BVMS07_00C
+
 panel-params-$(CONFIG_MIPI_PANEL_VIS_RM69299) += panel-VIS_RM69299
 
 $(foreach params,$(panel-params-y), \

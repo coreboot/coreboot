@@ -7,6 +7,8 @@
 #include <device/soundwire.h>
 #include <mipi/ids.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 #include "chip.h"
 
@@ -129,6 +131,65 @@ static void soundwire_cs42l43_fill_ssdt(const struct device *dev)
 	acpigen_write_STA(acpi_device_status(dev));
 
 	dsd = acpi_dp_new_table("_DSD");
+
+	if (config->bias_low)
+		acpi_dp_add_integer(dsd, "cirrus,bias-low", 1);
+
+	if (config->bias_sense_microamp) {
+		if (config->bias_sense_microamp == BIAS_SENSE_OFF)
+			config->bias_sense_microamp = 0;
+		acpi_dp_add_integer(dsd, "cirrus,bias-sense-microamp", config->bias_sense_microamp);
+	}
+
+	if (config->bias_ramp_ms)
+		acpi_dp_add_integer(dsd, "cirrus,bias-ramp-ms", config->bias_ramp_ms);
+
+	if (config->detect_us)
+		acpi_dp_add_integer(dsd, "cirrus,detect-us", config->detect_us);
+
+	if (config->button_automute)
+		acpi_dp_add_integer(dsd, "cirrus,button-automute", 1);
+
+	if (config->buttons_ohms_count > 0)
+		acpi_dp_add_integer_array(dsd, "cirrus,buttons-ohms", config->buttons_ohms,
+					  config->buttons_ohms_count);
+
+	if (config->tip_debounce_ms)
+		acpi_dp_add_integer(dsd, "cirrus,tip-debounce-ms", config->tip_debounce_ms);
+
+	if (config->tip_invert)
+		acpi_dp_add_integer(dsd, "cirrus,tip-invert", 1);
+	if (config->tip_disable_pullup)
+		acpi_dp_add_integer(dsd, "cirrus,tip-disable-pullup", 1);
+
+	if (config->tip_fall_db_ms) {
+		if (config->tip_fall_db_ms == DB_0_MS)
+			config->tip_fall_db_ms = 0;
+		acpi_dp_add_integer(dsd, "cirrus,tip-fall-db-ms", config->tip_fall_db_ms);
+	}
+	if (config->tip_rise_db_ms) {
+		if (config->tip_rise_db_ms == DB_0_MS)
+			config->tip_rise_db_ms = 0;
+		acpi_dp_add_integer(dsd, "cirrus,tip-rise-db-ms", config->tip_rise_db_ms);
+	}
+
+	if (config->use_ring_sense)
+		acpi_dp_add_integer(dsd, "cirrus,use-ring-sense", 1);
+	if (config->ring_invert)
+		acpi_dp_add_integer(dsd, "cirrus,ring-invert", 1);
+	if (config->ring_disable_pullup)
+		acpi_dp_add_integer(dsd, "cirrus,ring-disable-pullup", 1);
+
+	if (config->ring_fall_db_ms) {
+		if (config->ring_fall_db_ms == DB_0_MS)
+			config->ring_fall_db_ms = 0;
+		acpi_dp_add_integer(dsd, "cirrus,ring-fall-db-ms", config->ring_fall_db_ms);
+	}
+	if (config->ring_rise_db_ms) {
+		if (config->ring_rise_db_ms == DB_0_MS)
+			config->ring_rise_db_ms = 0;
+		acpi_dp_add_integer(dsd, "cirrus,ring-rise-db-ms", config->ring_rise_db_ms);
+	}
 
 	soundwire_gen_codec(dsd, &cs42l43_codec, NULL);
 

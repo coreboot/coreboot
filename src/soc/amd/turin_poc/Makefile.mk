@@ -8,6 +8,9 @@ all-y		+= i2c.c
 all-y		+= i3c.c
 all-y		+= uart.c
 
+all-y		+= lpc.c
+smm-y		+= lpc.c
+
 bootblock-y	+= early_fch.c
 bootblock-y	+= aoac.c
 

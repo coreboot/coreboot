@@ -128,6 +128,13 @@ chip soc/amd/turin_poc
 		device ref gpp_bridge_2_a on
 			device ref xhci_0 on end
 		end
+		# M.2 NVMe slot on G2 port 0 x4
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "112"
+			register "end_lane" = "115"
+			device ref gpp_bridge_2_0_a on end
+		end
 		device ref gpp_bridge_2_b on
 			device ref sata_2_0 on end
 			device ref sata_2_1 on end
@@ -146,6 +153,28 @@ chip soc/amd/turin_poc
 		subsystemid 0x1458 0x1000 inherit
 
 		device ref iommu_5 on end
+		# Dual Broadcom Ethernet on P4/P5 port 0 x4
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "128"
+			register "end_lane" = "131"
+			device ref gpp_bridge_5_0_b on end
+		end
+		# BMC on P4/P5 port 2 x1
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "134"
+			register "end_lane" = "134"
+			register "bmc" = "1"
+			device ref gpp_bridge_5_2_b on end
+		end
+		# ABL configures this on P4/P5 port 3 x1
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "135"
+			register "end_lane" = "135"
+			device ref gpp_bridge_5_3_b on end
+		end
 		device ref gpp_bridge_3_a on
 			device ref asp on end
 		end

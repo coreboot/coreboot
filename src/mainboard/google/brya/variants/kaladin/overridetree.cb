@@ -12,8 +12,10 @@ fw_config
 		option MB_USB_2C_1A 1
 	end
 	field TOUCH_PANEL 4 5
-		option TOUCH_ELAN_TOP   0
-		option TOUCH_ELAN_DBTS  1
+		option TOUCH_ELAN_TOP   	0
+		option TOUCH_ELAN_DBTS  	1
+		option TOUCH_GTH1563_TOP	2
+		option TOUCH_GTH7503_TOP	3
 	end
 	field WIFI_SAR 13 15
 		option WIFI_SAR_ID_0 0
@@ -492,6 +494,44 @@ chip soc/intel/alderlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on
 					probe TOUCH_PANEL TOUCH_ELAN_TOP
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GTH1563""
+				register "generic.desc" = ""G2TOUCH Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E11_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "70"
+				register "generic.reset_off_delay_ms" = "2"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C4)"
+				register "generic.stop_delay_ms" = "280"
+				register "generic.stop_off_delay_ms" = "2"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on
+					probe TOUCH_PANEL TOUCH_GTH1563_TOP
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GTH7503""
+				register "generic.desc" = ""G2TOUCH Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E11_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "70"
+				register "generic.reset_off_delay_ms" = "2"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C4)"
+				register "generic.stop_delay_ms" = "280"
+				register "generic.stop_off_delay_ms" = "2"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on
+					probe TOUCH_PANEL TOUCH_GTH7503_TOP
 				end
 			end
 			chip drivers/i2c/hid

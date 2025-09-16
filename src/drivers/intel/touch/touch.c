@@ -237,7 +237,7 @@ static void touch_generate_acpi_i2cdev_dsd(const struct device *dev)
 	acpigen_write_name("ICRS");
 	acpigen_emit_byte(BUFFER_OP);
 	acpigen_write_len_f();
-	acpigen_write_integer(12); /* total size of ICRS + 1 */
+	acpigen_write_integer(2 + 8 + 1 + 1); /* total size of ICRS + 1 */
 	acpigen_pop_len(); /* Name */
 	acpigen_write_create_buffer_word_field("ICRS", 0x00, "DADR");
 	acpigen_write_create_buffer_qword_field("ICRS", 0x02, "DSPD");
@@ -246,7 +246,7 @@ static void touch_generate_acpi_i2cdev_dsd(const struct device *dev)
 	acpigen_write_name("ISUB");
 	acpigen_emit_byte(BUFFER_OP);
 	acpigen_write_len_f();
-	acpigen_write_integer(145); /* total size of ISUB + 1 */
+	acpigen_write_integer(22 * 8 + 1); /* total size of ISUB + 1 */
 	acpigen_pop_len();
 	acpigen_write_create_buffer_qword_field("ISUB", 0x00, "SMHX");
 	acpigen_write_create_buffer_qword_field("ISUB", 0x08, "SMLX");
@@ -266,6 +266,10 @@ static void touch_generate_acpi_i2cdev_dsd(const struct device *dev)
 	acpigen_write_create_buffer_qword_field("ISUB", 0x78, "HMTD");
 	acpigen_write_create_buffer_qword_field("ISUB", 0x80, "HMRD");
 	acpigen_write_create_buffer_qword_field("ISUB", 0x88, "HMSL");
+	acpigen_write_create_buffer_qword_field("ISUB", 0x90, "FSEN");
+	acpigen_write_create_buffer_qword_field("ISUB", 0x98, "FSVL");
+	acpigen_write_create_buffer_qword_field("ISUB", 0xa0, "INDE");
+	acpigen_write_create_buffer_qword_field("ISUB", 0xa8, "INDV");
 
 	acpigen_write_store_int_to_namestr(touch_get(dev, dev_hidi2c.intf.hidi2c.addr), "DADR");
 
@@ -304,6 +308,21 @@ static void touch_generate_acpi_i2cdev_dsd(const struct device *dev)
 	acpigen_write_store_int_to_namestr(touch_soc_get(dev, hidi2c, hm_sda_hold_tx_period), "HMTD");
 	acpigen_write_store_int_to_namestr(touch_soc_get(dev, hidi2c, hm_sda_hold_rx_period), "HMRD");
 	acpigen_write_store_int_to_namestr(touch_soc_get(dev, hidi2c, suppressed_spikes_h_fp), "HMSL");
+
+	if (get_driver_config(dev)->dev_hidi2c.intf.hidi2c.max_frame_size_value) {
+		acpigen_write_store_int_to_namestr(1, "FSEN");
+		acpigen_write_store_int_to_namestr(touch_get(dev, dev_hidi2c.intf.hidi2c.max_frame_size_value), "FSVL");
+	} else {
+		acpigen_write_store_int_to_namestr(0, "FSEN");
+		acpigen_write_store_int_to_namestr(0, "FSVL");
+	}
+	if (get_driver_config(dev)->dev_hidi2c.intf.hidi2c.interrupt_delay_value) {
+		acpigen_write_store_int_to_namestr(1, "INDE");
+		acpigen_write_store_int_to_namestr(touch_get(dev, dev_hidi2c.intf.hidi2c.interrupt_delay_value), "INDV");
+	} else {
+		acpigen_write_store_int_to_namestr(0, "INDE");
+		acpigen_write_store_int_to_namestr(0, "INDV");
+	}
 
 	dsd_pkg_cnt = 4;
 	if (touch_get(dev, add_acpi_dma_property))

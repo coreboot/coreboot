@@ -13,6 +13,8 @@ static const struct drivers_intel_touch_config hynitron_touch_config = {
 		.intf.hidi2c.addr			= 0x2c,
 		.intf.hidi2c.descriptor_address		= 0x20,
 		.intf.hidi2c.connection_speed		= I2C_SPEED_FAST, /* fast mode */
+		.intf.hidi2c.interrupt_delay_value	= 4,	/* unit: 10 usec */
+		.intf.hidi2c.max_frame_size_value	= 50,	/* bytes */
 	},
 };
 

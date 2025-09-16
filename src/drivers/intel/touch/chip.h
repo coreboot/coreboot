@@ -20,6 +20,10 @@ struct intel_thc_hidi2c_dev_info {
 	 * Otherwise, if not specified, use the speed setting from the platform.
 	 */
 	enum i2c_speed connection_speed;
+	/* Maximum Frame Size Value: FSVL; FSEN will be set if FSVL has non-zero value */
+	uint64_t max_frame_size_value;
+	/* Interrupt delay value: INDV; INDE will be set if INDV has non-zero value */
+	uint64_t interrupt_delay_value;
 };
 
 struct intel_thc_hidspi_dev_info {

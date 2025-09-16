@@ -14,6 +14,8 @@
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
+	const struct soc_amd_common_config *cfg = soc_get_common_config();
+
 	/* Fill in pm1_evt, pm1_cnt, pm_tmr, gpe0_blk from openSIL input structure */
 	amd_opensil_fill_fadt_io_ports(fadt);
 
@@ -24,18 +26,31 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fill_fadt_extended_pm_io(fadt);
 
-	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_FREE; /* legacy free default */
+	fadt->iapc_boot_arch = cfg->fadt_boot_arch;
+	fadt->flags |= cfg->fadt_flags; /* additional board-specific flags */
+
+	/* Below values as per doc #58088 */
 	fadt->flags |=	ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */
 			ACPI_FADT_C1_SUPPORTED |
-			ACPI_FADT_S4_RTC_WAKE |
+			ACPI_FADT_C2_MP_SUPPORTED |
+			ACPI_FADT_SLEEP_BUTTON |
 			ACPI_FADT_32BIT_TIMER |
-			ACPI_FADT_PCI_EXPRESS_WAKE |
-			ACPI_FADT_PLATFORM_CLOCK |
-			ACPI_FADT_S4_RTC_VALID |
+			ACPI_FADT_RESET_REGISTER |
 			ACPI_FADT_REMOTE_POWER_ON;
+
 
 	fadt->x_firmware_ctl_l = 0;	/* set to 0 if firmware_ctrl is used */
 	fadt->x_firmware_ctl_h = 0;
+
+	fadt->p_lvl2_lat = 0x64;
+
+	fadt->duty_offset = 1;
+	fadt->duty_width = 3;
+
+	fadt->flush_size = 0x400;
+	fadt->flush_stride = 0x10;
+
+	fadt->preferred_pm_profile = PM_ENTERPRISE_SERVER;
 }
 
 unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,

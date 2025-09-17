@@ -630,7 +630,7 @@ enum boot_mode_t {
 
 /*
  * Boot Mode: Pass the platform boot mode information to payload about
- * booting in low-battery mode or off-mode charging. These information
+ * booting in low-battery mode or off-mode charging. This information
  * is useful for payload to implement charger driver.
  */
 struct lb_boot_mode {

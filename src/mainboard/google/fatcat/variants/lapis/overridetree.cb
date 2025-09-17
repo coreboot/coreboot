@@ -443,6 +443,32 @@ chip soc/intel/pantherlake
 			end
 		end #Touchpenal
 
+		device ref hda on
+			chip drivers/intel/soundwire
+				device generic 0 on
+					chip drivers/soundwire/cs42l43
+						# SoundWire Link 3 ID 0
+						register "desc" = ""Headset Codec""
+						register "sub" = ""1337""
+						device generic 3.0 on end
+					end
+					chip drivers/soundwire/cs35l56
+						# SoundWire Link 2 ID 0
+						register "desc" = ""Left Speaker Amp""
+						register "part_id" = "MIPI_DEV_ID_CIRRUS_CS35L56"
+						register "sub" = ""12345678""
+						device generic 2.0 on end
+					end
+					chip drivers/soundwire/cs35l56
+						# SoundWire Link 2 ID 1
+						register "desc" = ""Right Speaker Amp""
+						register "part_id" = "MIPI_DEV_ID_CIRRUS_CS35L56"
+						register "sub" = ""12345678""
+						device generic 2.1 on end
+					end
+				end
+			end
+		end # SNDW
 		device ref i2c0 on end
 		device ref i2c3 on
 			chip drivers/i2c/tpm

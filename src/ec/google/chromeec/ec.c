@@ -659,6 +659,13 @@ int google_chromeec_reboot(enum ec_reboot_cmd type, uint8_t flags)
 	return ec_cmd_reboot_ec(PLAT_EC, &params);
 }
 
+void google_chromeec_ap_poweroff(void)
+{
+	if (ec_cmd_ap_shutdown(PLAT_EC))
+		printk(BIOS_ERR, "Failed to power off the AP.\n");
+	halt();
+}
+
 static int cbi_get_uint32(uint32_t *id, uint32_t tag)
 {
 	struct ec_params_get_cbi params = {

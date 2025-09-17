@@ -692,7 +692,7 @@ static void clear_lane_error_status(struct device *dev)
 	u32 reg32;
 	u16 pos;
 
-	pos = pciexp_find_extended_cap(dev, PCI_EXP_SEC_CAP_ID, 0);
+	pos = pciexp_find_extended_cap(dev, PCI_CAP_ID_SEC_PCIE, 0);
 	if (pos == 0)
 		return;
 

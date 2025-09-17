@@ -204,6 +204,7 @@
 #define  PCI_CAP_ID_SSVID	0x0D	/* Bridge subsystem vendor/device ID */
 #define  PCI_CAP_ID_PCIE	0x10	/* PCI Express */
 #define  PCI_CAP_ID_MSIX	0x11	/* MSI-X */
+#define  PCI_CAP_ID_SEC_PCIE	0x19	/* Secondary PCI Express Extended Capability */
 #define PCI_CAP_LIST_NEXT	1	/* Next capability in the list */
 #define PCI_CAP_FLAGS		2	/* Capability defined flags (16 bits) */
 
@@ -481,7 +482,6 @@
 #define  PCIE_EXT_CAP_SRIOV_ID	0x0010
 
 /* Secondary PCI Express Extended Capability Structure */
-#define PCI_EXP_SEC_CAP_ID	0x19
 #define PCI_EXP_SEC_LNK_CTL3	4	/* Link Control 3 */
 #define PCI_EXP_SEC_LANE_ERR_STATUS	8	/* Lane Error Status */
 

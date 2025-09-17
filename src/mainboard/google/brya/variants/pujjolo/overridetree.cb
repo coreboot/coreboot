@@ -4,6 +4,10 @@ fw_config
 		option LTE_PRESENT		1
 		option 5G_PRESENT		2
 	end
+	field TABLET_MODE 15
+		option TABLET_MODE_DISABLE		0
+		option TABLET_MODE_ENABLE		1
+	end
 	field WIFI_SAR_ID 17 20
 		option WIFI_SAR_TABLE_PUJJOLO_AX211		0
 		option WIFI_SAR_TABLE_PUJJOLO_BE200		1
@@ -25,10 +29,6 @@ fw_config
 	field WFC 26 27
 		option WFC_ABSENT               0
 		option WFC_MIPI_OVTI8856        1
-	end
-	field ISH 29
-		option ISH_ABSENT	0
-		option ISH_PRESENT	1
 	end
 end
 chip soc/intel/alderlake
@@ -516,17 +516,17 @@ chip soc/intel/alderlake
 		end
 		device ref ish on
 			chip drivers/intel/ish
-				register "add_acpi_dma_property" = "true"
 				register "firmware_name" = ""pujjolo_ish.bin""
+				register "add_acpi_dma_property" = "true"
 				device generic 1 on
-					probe ISH ISH_PRESENT
+					probe TABLET_MODE TABLET_MODE_ENABLE
 				end
 			end
 			chip drivers/intel/ish
-				register "add_acpi_dma_property" = "true"
 				register "firmware_name" = ""lite_ish.bin""
+				register "add_acpi_dma_property" = "true"
 				device generic 0 on
-					probe ISH ISH_ABSENT
+					probe TABLET_MODE TABLET_MODE_DISABLE
 				end
 			end
 		end

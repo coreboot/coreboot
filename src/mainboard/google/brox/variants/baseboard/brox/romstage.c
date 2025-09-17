@@ -36,7 +36,7 @@ static bool check_auxfw_ver_mismatch(void)
 
 	/* find bundled fw hash */
 	new_ver = cbfs_map(fwver_fname, &new_ver_size);
-	if (new_ver == NULL || new_ver_size != FWVER_SIZE)
+	if (new_ver == NULL || new_ver_size < FWVER_SIZE)
 		return mismatch;
 
 	/*

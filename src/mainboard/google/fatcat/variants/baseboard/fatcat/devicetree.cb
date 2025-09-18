@@ -85,17 +85,17 @@ chip soc/intel/pantherlake
 	register "cep_enable[VR_DOMAIN_GT]" = "true"
 	register "enable_fast_vmode[VR_DOMAIN_SA]" = "true"
 	register "cep_enable[VR_DOMAIN_SA]" = "true"
-	register "fast_vmode_i_trip[PTL_U_1_CORE]" = "{
+	register "fast_vmode_i_trip[PTL_CORE_1]" = "{
 		[VR_DOMAIN_IA] = 63 * 4,
 		[VR_DOMAIN_GT] = 38 * 4,
 		[VR_DOMAIN_SA] = 38 * 4
 	}"
-	register "fast_vmode_i_trip[PTL_U_2_CORE]" = "{
+	register "fast_vmode_i_trip[PTL_CORE_2]" = "{
 		[VR_DOMAIN_IA] = 63 * 4,
 		[VR_DOMAIN_GT] = 38 * 4,
 		[VR_DOMAIN_SA] = 38 * 4
 	}"
-	register "fast_vmode_i_trip[PTL_H_1_CORE]" = "{
+	register "fast_vmode_i_trip[PTL_CORE_3]" = "{
 		[VR_DOMAIN_IA] = 75 * 4,
 		[VR_DOMAIN_GT] = 75 * 4,
 		[VR_DOMAIN_SA] = 38 * 4

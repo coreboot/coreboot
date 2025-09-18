@@ -2,48 +2,44 @@ chip soc/intel/pantherlake
 
 	device cpu_cluster 0 on end
 
-	# H404
-	register "power_limits_config[PTL_U_1_CORE]" = "{
+	register "power_limits_config[PTL_CORE_1]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 163,
 		.tdp_pl4_fastvmode = 150,
 	}"
-	register "thermal_design_current[PTL_H404_SKU]" = "{
+	register "thermal_design_current[PTL_SKU_1]" = "{
 		[VR_DOMAIN_IA] = 34 * 8,
 		[VR_DOMAIN_GT] = 23 * 8
 	}"
 
-	# H204
-	register "power_limits_config[PTL_U_2_CORE]" = "{
+	register "power_limits_config[PTL_CORE_2]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 45,
 		.tdp_pl4 = 105,
 		.tdp_pl4_fastvmode = 95,
 	}"
-	register "thermal_design_current[PTL_H204_SKU]" = "{
+	register "thermal_design_current[PTL_SKU_5]" = "{
 		[VR_DOMAIN_IA] = 23 * 8,
 		[VR_DOMAIN_GT] = 23 * 8
 	}"
 
-	# H12Xe and H484
-	register "power_limits_config[PTL_H_1_CORE]" = "{
+	register "power_limits_config[PTL_CORE_3]" = "{
 		.tdp_pl1_override = 25,
 		.tdp_pl2_override = 64,
 		.tdp_pl4 = 175,
 		.tdp_pl4_fastvmode = 160,
 	}"
-	register "thermal_design_current[PTL_H12XE_SKU]" = "{
+	register "thermal_design_current[PTL_SKU_2]" = "{
 		[VR_DOMAIN_IA] = 39 * 8,
 		[VR_DOMAIN_GT] = 44 * 8
 	}"
-	register "thermal_design_current[PTL_H484_SKU]" = "{
+	register "thermal_design_current[PTL_SKU_3]" = "{
 		[VR_DOMAIN_IA] = 39 * 8,
 		[VR_DOMAIN_GT] = 23 * 8
 	}"
 
-	# H4XE
-	register "power_limits_config[PTL_H_2_CORE]" = "{
+	register "power_limits_config[PTL_CORE_4]" = "{
 		.tdp_pl1_override = 25,
 		.tdp_pl2_override = 64,
 		.tdp_pl4 = 154,

@@ -23,13 +23,13 @@ chip soc/intel/pantherlake
 	# The initial version temporarily uses the PTL-H,
 	# but the thermal design is based on the PTL-U.
 	# Apply PTL-U's thermal settings here to avoid thermal issues.
-	register "power_limits_config[PTL_H_1_CORE]" = "{
+	register "power_limits_config[PTL_CORE_3]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 152,
 	}"
 
-	register "power_limits_config[PTL_H_2_CORE]" = "{
+	register "power_limits_config[PTL_CORE_4]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 152,

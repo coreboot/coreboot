@@ -25,67 +25,67 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_1,
 		.cpu_tdp = TDP_25W,
-		.power_limits_index = PTL_H_1_CORE,
+		.power_limits_index = PTL_CORE_3,
 		COMMON_PTL_H_POWER_LIMITS
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_2,
 		.cpu_tdp = TDP_25W,
-		.power_limits_index = PTL_H_1_CORE,
+		.power_limits_index = PTL_CORE_3,
 		COMMON_PTL_H_POWER_LIMITS
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_3,
 		.cpu_tdp = TDP_25W,
-		.power_limits_index = PTL_H_2_CORE,
+		.power_limits_index = PTL_CORE_4,
 		COMMON_PTL_H_POWER_LIMITS
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_4,
 		.cpu_tdp = TDP_25W,
-		.power_limits_index = PTL_H_2_CORE,
+		.power_limits_index = PTL_CORE_4,
 		COMMON_PTL_H_POWER_LIMITS
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_5,
 		.cpu_tdp = TDP_25W,
-		.power_limits_index = PTL_H_2_CORE,
+		.power_limits_index = PTL_CORE_4,
 		COMMON_PTL_H_POWER_LIMITS
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_6,
 		.cpu_tdp = TDP_25W,
-		.power_limits_index = PTL_H_2_CORE,
+		.power_limits_index = PTL_CORE_4,
 		COMMON_PTL_H_POWER_LIMITS
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_7,
 		.cpu_tdp = TDP_25W,
-		.power_limits_index = PTL_H_2_CORE,
+		.power_limits_index = PTL_CORE_4,
 		COMMON_PTL_H_POWER_LIMITS
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_8,
 		.cpu_tdp = TDP_25W,
-		.power_limits_index = PTL_H_2_CORE,
+		.power_limits_index = PTL_CORE_4,
 		COMMON_PTL_H_POWER_LIMITS
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_U_ID_1,
 		.cpu_tdp = TDP_15W,
-		.power_limits_index = PTL_U_1_CORE,
+		.power_limits_index = PTL_CORE_1,
 		COMMON_PTL_U_POWER_LIMITS
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_U_ID_2,
 		.cpu_tdp = TDP_15W,
-		.power_limits_index = PTL_U_2_CORE,
+		.power_limits_index = PTL_CORE_2,
 		COMMON_PTL_U_POWER_LIMITS
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_U_ID_3,
 		.cpu_tdp = TDP_15W,
-		.power_limits_index = PTL_U_2_CORE,
+		.power_limits_index = PTL_CORE_2,
 		COMMON_PTL_U_POWER_LIMITS
 	},
 };

@@ -81,6 +81,11 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "alc5645_spk_en"},
 		};
 		lb_add_gpios(gpios, alc5645_gpios, ARRAY_SIZE(alc5645_gpios));
+	} else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_CS35L51))) {
+		struct lb_gpio cs35l51_gpios[] = {
+			{GPIO_RST_SPKR_L.id, ACTIVE_LOW, -1, "speaker reset"},
+		};
+		lb_add_gpios(gpios, cs35l51_gpios, ARRAY_SIZE(cs35l51_gpios));
 	}
 
 	struct lb_gpio edp_pwm_backlight_gpios[] = {

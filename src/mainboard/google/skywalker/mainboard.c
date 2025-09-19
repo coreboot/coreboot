@@ -22,12 +22,30 @@
 
 #define AFE_SE_SECURE_CON1	(AUDIO_BASE + 0x5634)
 
-static void configure_rt9123_rt1019(void)
+static void setup_i2s_speaker(void)
 {
-	/* SoC I2S */
 	gpio_set_mode(GPIO_I2S_SPKR_BCK, GPIO_FUNC(DMIC0_DAT0, I2SOUT1_BCK));
 	gpio_set_mode(GPIO_I2S_SPKR_LRCK, GPIO_FUNC(DMIC1_CLK, I2SOUT1_LRCK));
 	gpio_set_mode(GPIO_I2S_SPKR_DO, GPIO_FUNC(DMIC1_DAT0, I2SOUT1_DO));
+
+	printk(BIOS_INFO, "%s: I2S configuration done\n", __func__);
+}
+
+static void configure_rt9123_rt1019(void)
+{
+	/* Set the SOC corresponding pin to I2S related function */
+	setup_i2s_speaker();
+
+	printk(BIOS_INFO, "%s: AMP configuration done\n", __func__);
+}
+
+static void configure_cs35l51(void)
+{
+	/* Set the SOC corresponding pin to I2S related function */
+	setup_i2s_speaker();
+
+	/* Init I2C bus timing register for audio codecs */
+	mtk_i2c_bus_init(I2C7, I2C_SPEED_STANDARD);
 
 	printk(BIOS_INFO, "%s: AMP configuration done\n", __func__);
 }
@@ -59,6 +77,8 @@ static void configure_audio(void)
 		configure_rt9123_rt1019();
 	else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC5645)))
 		configure_alc5645();
+	else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_CS35L51)))
+		configure_cs35l51();
 	else
 		printk(BIOS_WARNING, "Unknown amp\n");
 }

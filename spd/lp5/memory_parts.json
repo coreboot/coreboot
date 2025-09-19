@@ -339,9 +339,9 @@
                 "speedMbps": 8533,
                 "lp5x": true
             }
-	},
-	{
-	    "name": "MT62F1G32D2DS-031 WT:C",
+    },
+    {
+        "name": "MT62F1G32D2DS-031 WT:C",
             "attribs": {
                   "densityPerDieGb": 16,
                   "diesPerPackage": 2,
@@ -349,9 +349,9 @@
                   "ranksPerChannel": 1,
                   "speedMbps": 6400
              }
-	},
-	{
-	    "name": "MT62F2G32D4DS-031 WT:C",
+    },
+    {
+        "name": "MT62F2G32D4DS-031 WT:C",
             "attribs": {
                   "densityPerDieGb": 16,
                   "diesPerPackage": 4,
@@ -359,6 +359,17 @@
                   "ranksPerChannel": 2,
                   "speedMbps": 6400
              }
-	}
+    },
+    {
+        "name":  "H58GE6AK8BX104",
+        "attribs": {
+            "densityPerDieGb": 12,
+            "diesPerPackage": 4,
+            "bitWidthPerChannel": 16,
+            "ranksPerChannel": 2,
+            "speedMbps": 8533,
+            "lp5x": true
+        }
+    }
     ]
 }

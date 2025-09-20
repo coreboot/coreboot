@@ -23,13 +23,14 @@ __weak void variant_update_soc_memory_init_params(FSPM_UPD *memupd)
 	/* Nothing to do */
 }
 
-static void update_ddr5_sagv_points(FSP_M_CONFIG *m_cfg)
+static void update_ddr5_memory_params(FSP_M_CONFIG *m_cfg)
 {
 	int board_id = get_rvp_board_id();
 
 	if (board_id != PTLP_DDR5_RVP)
 		return;
 
+	/* Override FSP-M SaGv frequency and gear for DDR5 boards */
 	m_cfg->SaGvFreq[0] = 3200;
 	m_cfg->SaGvGear[0] = GEAR_4;
 
@@ -41,6 +42,22 @@ static void update_ddr5_sagv_points(FSP_M_CONFIG *m_cfg)
 
 	m_cfg->SaGvFreq[3] = 6400;
 	m_cfg->SaGvGear[3] = GEAR_4;
+
+	/*
+	 * Override FSP-M ChannelToCkdQckMapping to map memory channels
+	 * to Clock Driver (CKD) and Query Clock (QCK) signals.
+	 */
+	const uint8_t channel_to_ckd_qck[] = { 0, 0, 1, 0, 0, 0, 1, 0 };
+	memcpy(m_cfg->ChannelToCkdQckMapping,
+		   channel_to_ckd_qck, sizeof(channel_to_ckd_qck));
+
+	/*
+	 * Override FSP-M PhyClockToCkdDimm to map PHY clocks
+	 * to Clock Driver DIMM connections.
+	 */
+	const uint8_t phy_clock_to_ckd_dimm[] = { 0, 0, 0, 0, 0x8, 0, 0x8, 0 };
+	memcpy(m_cfg->PhyClockToCkdDimm,
+		   phy_clock_to_ckd_dimm, sizeof(phy_clock_to_ckd_dimm));
 }
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
@@ -61,8 +78,8 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	memcfg_init(memupd, mem_config, &spd_info, half_populated);
 
-	/* Override FSP-M SaGv frequency and gear for DDR5 boards */
-	update_ddr5_sagv_points(&memupd->FspmConfig);
+	/* Override FSP-M parameters for DDR5 boards */
+	update_ddr5_memory_params(&memupd->FspmConfig);
 
 	/* Override FSP-M UPD per board if required. */
 	variant_update_soc_memory_init_params(memupd);

@@ -171,6 +171,8 @@ chip soc/intel/alderlake
 	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
 	register "pch_hda_idisp_codec_enable" = "1"
 
+	register "vccin_aux_imon_iccmax" = "PD_TIER_VOLUME" # 27A
+
 	# Enable CNVi BT Audio offload
 	register "cnvi_bt_audio_offload" = "1"
 

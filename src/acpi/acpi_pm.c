@@ -21,6 +21,9 @@ void __weak mainboard_suspend_resume(void)
 /* Default mapping to ACPI FADT preferred_pm_profile field. */
 uint8_t acpi_get_preferred_pm_profile(void)
 {
+	if (!CONFIG(GENERATE_SMBIOS_TABLES))
+		return PM_UNSPECIFIED;
+
 	switch (smbios_mainboard_enclosure_type()) {
 	case SMBIOS_ENCLOSURE_LAPTOP:
 	case SMBIOS_ENCLOSURE_CONVERTIBLE:

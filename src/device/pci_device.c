@@ -1156,13 +1156,13 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 	} else {
 		/*
 		 * Enable/disable the device. Once we have found the device-
-		 * specific operations this operations we will disable the
-		 * device with those as well.
+		 * specific operations, we will disable the device
+		 * with those as well.
 		 *
 		 * This is geared toward devices that have subfunctions
 		 * that do not show up by default.
 		 *
-		 * If a device is a stuff option on the motherboard
+		 * If a device is a stuff option on the motherboard,
 		 * it may be absent and enable_dev() must cope.
 		 */
 		/* Run the magic enable sequence for the device. */

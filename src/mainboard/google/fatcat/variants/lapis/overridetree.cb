@@ -1,3 +1,41 @@
+fw_config
+	field WIFI 2 3
+		option WIFI_CNVI_7		0
+		option WIFI_CNVI_7E		1
+	end
+	field TOUCHSCREEN 4 5
+		option NONE_TOUCH	0
+		option 14_TOUCH		1
+	end
+	field TOUCHPAD 6 7
+		option TOUCHPAD_UNKNOWN		0
+		option TOUCHPAD_LPSS_I2C	1
+		option TOUCHPAD_THC_I2C		2
+	end
+	field STORAGE 8 9
+		option STORAGE_UNKNOWN		0
+		option STORAGE_NVME_GEN4	1
+		option STORAGE_NVME_GEN5	2
+		option STORAGE_UFS		3
+	end
+	field KB 10 11
+		option KB_UNKNOWN	0
+		option KB_BL		1
+	end
+	field UFC 12 13
+		option UFC_UNKNOWN	0
+		option UFC_1080P	1
+	end
+	field FP 14 15
+		option FP_ABSENT	0
+		option FP_PRESENT	1
+	end
+	field STYLUS 16 16
+		option STYLUS_ABSENT	0
+		option STYLUS_PRESENT	1
+	end
+end
+
 chip soc/intel/pantherlake
 
 	register "power_limits_config[PTL_CORE_1]" = "{
@@ -331,6 +369,8 @@ chip soc/intel/pantherlake
 		end
 
 		device ref pcie_rp9 on
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_NVME_GEN4
 			register "pcie_rp[PCIE_RP(9)]" = "{
 			.clk_src = 0,
 			.clk_req = 0,
@@ -344,6 +384,8 @@ chip soc/intel/pantherlake
 		end # Gen4 SSD
 
 		device ref cnvi_wifi on
+			probe WIFI WIFI_CNVI_7
+			probe WIFI WIFI_CNVI_7E
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
 				register "add_acpi_dma_property" = "true"
@@ -353,7 +395,10 @@ chip soc/intel/pantherlake
 			end
 		end # CNVi
 
-		device ref cnvi_bluetooth on end
+		device ref cnvi_bluetooth on
+			probe WIFI WIFI_CNVI_7
+			probe WIFI WIFI_CNVI_7E
+		end
 
 		device ref thc0 on
 			register "thc_wake_on_touch[0]" = "true"

@@ -274,7 +274,8 @@ extern "C" {
  * EC_MEMMAP_BATT_LFCC if the actual value is unknown.
  *
  * This corresponds with the unknown value specified by ACPI release 6.5
- * 10.2.2 (and earlier versions), to match expectations of ACPI firmware.
+ * Section 10.2.2 (and earlier versions), to match expectations of ACPI
+ * firmware.
  */
 #define EC_MEMMAP_BATT_UNKNOWN_VALUE (-1)
 
@@ -6218,6 +6219,24 @@ struct ec_params_usb_pd_dps_control {
 	uint8_t enable;
 } __ec_align1;
 
+/*
+ * This command return the status of dynamic PDO selection.
+ */
+#define EC_CMD_USB_PD_DPS_STATUS 0x0107
+
+struct ec_response_usb_pd_dps_status {
+	int32_t is_enabled;
+	int32_t port;
+	int32_t requested_voltage;
+	int32_t requested_current;
+	int32_t input_power;
+	int32_t input_voltage;
+	int32_t input_current;
+	int32_t efficient_voltage;
+	int32_t battery_voltage;
+	int32_t max_voltage;
+} __ec_align4;
+
 /* Write USB-PD device FW */
 #define EC_CMD_USB_PD_FW_UPDATE 0x0110
 
@@ -8321,6 +8340,8 @@ struct ec_params_fp_passthru {
 	 FP_MODE_MATCH | FP_MODE_RESET_SENSOR | FP_MODE_SENSOR_MAINTENANCE | \
 	 FP_MODE_DONT_CHANGE)
 
+#define FP_MODES_WITH_AUTHENTICATION (FP_MODE_ENROLL_SESSION | FP_MODE_MATCH)
+
 /* Capture types defined in bits [30..26] */
 #define FP_MODE_CAPTURE_TYPE_SHIFT 26
 #define FP_MODE_CAPTURE_TYPE_MASK (0x1F << FP_MODE_CAPTURE_TYPE_SHIFT)
@@ -8364,8 +8385,15 @@ enum fp_capture_type {
 	(enum fp_capture_type)(((mode) & FP_MODE_CAPTURE_TYPE_MASK) >> \
 			       FP_MODE_CAPTURE_TYPE_SHIFT)
 
+#define FP_MAC_LENGTH 32
+
 struct ec_params_fp_mode {
 	uint32_t mode; /* as defined by FP_MODE_ constants */
+} __ec_align4;
+
+struct ec_params_fp_mode_v1 {
+	uint32_t mode; /* as defined by FP_MODE_ constants */
+	uint8_t mac[FP_MAC_LENGTH];
 } __ec_align4;
 
 struct ec_response_fp_mode {
@@ -8595,6 +8623,8 @@ struct ec_params_fp_seed {
 #define FP_CONTEXT_SESSION_NONCE_SET BIT(2)
 /* FP user_id had been set or not*/
 #define FP_CONTEXT_USER_ID_SET BIT(3)
+/* The operation authentication challenge was generated */
+#define FP_AUTH_CHALLENGE_SET BIT(4)
 
 struct ec_response_fp_encryption_status {
 	/* Used bits in encryption engine status */
@@ -8689,6 +8719,27 @@ struct ec_params_fp_establish_session {
 	uint8_t enc_tpm_seed[FP_CONTEXT_TPM_BYTES];
 	uint8_t nonce[FP_AES_KEY_NONCE_BYTES];
 	uint8_t tag[FP_AES_KEY_TAG_BYTES];
+} __ec_align4;
+
+#define FP_CHALLENGE_SIZE 32
+
+#define EC_CMD_FP_GENERATE_CHALLENGE 0x0415
+struct ec_response_fp_generate_challenge {
+	uint8_t challenge[FP_CHALLENGE_SIZE];
+} __ec_align4;
+
+#define EC_CMD_FP_CONFIRM_TEMPLATE 0x0416
+struct ec_params_fp_confirm_template {
+	uint8_t mac[FP_MAC_LENGTH];
+} __ec_align4;
+
+#define EC_CMD_FP_SIGN_MATCH 0x0417
+struct ec_params_fp_sign_match {
+	uint8_t challenge[FP_CHALLENGE_SIZE];
+} __ec_align4;
+
+struct ec_response_fp_sign_match {
+	uint8_t signature[FP_MAC_LENGTH];
 } __ec_align4;
 
 /*****************************************************************************/

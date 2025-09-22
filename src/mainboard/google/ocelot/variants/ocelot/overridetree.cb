@@ -379,7 +379,6 @@ chip soc/intel/pantherlake
 
 		device ref ish on
 			probe ISH ISH_ENABLE
-			probe FP FP_PRESENT
 			chip drivers/intel/ish
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end

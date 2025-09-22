@@ -84,7 +84,7 @@ const u32 cim_verb_data[] = {
 	0x0535001e,
 	0x05340800,
 	0x05350003,
-	0x05341EC4,
+	0x05341F7B,
 	0x05350004,
 	0x05340000,
 	/* Right Channel */
@@ -95,7 +95,7 @@ const u32 cim_verb_data[] = {
 	0x0545001e,
 	0x05440800,
 	0x05450003,
-	0x05441EC4,
+	0x05441F7B,
 	0x05450004,
 	0x05440000,
 	/* enable EQ */
@@ -104,7 +104,7 @@ const u32 cim_verb_data[] = {
 	/* 2.2W/4ohm */
 	0x02050038,
 	0x02046901,
-	/* Disable AGC and set AGC limit to 0dB  */
+	/* Disable AGC and set AGC limit to 0dB */
 	0x02050016,
 	0x02044C50,
 	0x02050012,

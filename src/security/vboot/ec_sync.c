@@ -20,8 +20,8 @@
 
 /* Wait 10 ms between attempts to check if EC's hash is ready */
 #define CROS_EC_HASH_CHECK_DELAY_MS 10
-/* Give the EC 2 seconds to finish calculating its hash */
-#define CROS_EC_HASH_TIMEOUT_MS 2000
+/* Give the EC 12 seconds to finish calculating its hash */
+#define CROS_EC_HASH_TIMEOUT_MS 12000
 
 /* Wait 3 seconds after software sync for EC to clear the limit power flag. */
 #define LIMIT_POWER_WAIT_TIMEOUT_MS 3000

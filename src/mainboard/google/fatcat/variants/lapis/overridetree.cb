@@ -65,10 +65,11 @@ chip soc/intel/pantherlake
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information
-				register "options.tsr[0].desc" = ""DDR_SOC""
-				register "options.tsr[1].desc" = ""Ambient""
-				register "options.tsr[2].desc" = ""Charger""
-				register "options.tsr[3].desc" = ""wwan""
+				register "options.tsr[0].desc" = ""VR""
+				register "options.tsr[1].desc" = ""DDR""
+				register "options.tsr[2].desc" = ""Top""
+				register "options.tsr[3].desc" = ""SSD""
+				register "options.tsr[4].desc" = ""Charger""
 
 				## Active Policy
 				# FIXME: below values are initial reference values only
@@ -117,6 +118,18 @@ chip soc/intel/pantherlake
 									TEMP_PCT(50, 40),
 									TEMP_PCT(45, 30),
 								}
+							},
+						[4] = {
+							.target = DPTF_TEMP_SENSOR_4,
+							.thresholds = {
+									TEMP_PCT(75, 90),
+									TEMP_PCT(70, 80),
+									TEMP_PCT(65, 70),
+									TEMP_PCT(60, 60),
+									TEMP_PCT(55, 50),
+									TEMP_PCT(50, 40),
+									TEMP_PCT(45, 30),
+								}
 							}
 				}"
 
@@ -128,16 +141,18 @@ chip soc/intel/pantherlake
 						[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 80, 5000),
 						[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 75, 5000),
 						[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 80, 5000),
+						[5] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_4, 80, 5000),
 				}"
 
 				## Critical Policy
 				# TODO: below values are initial reference values only
 				register "policies.critical" = "{
 						[0] = DPTF_CRITICAL(CPU,          105, SHUTDOWN),
-						[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 85, SHUTDOWN),
-						[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 85, SHUTDOWN),
-						[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 85, SHUTDOWN),
-						[4] = DPTF_CRITICAL(TEMP_SENSOR_3, 85, SHUTDOWN),
+						[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 91, SHUTDOWN),
+						[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 91, SHUTDOWN),
+						[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 91, SHUTDOWN),
+						[4] = DPTF_CRITICAL(TEMP_SENSOR_3, 91, SHUTDOWN),
+						[5] = DPTF_CRITICAL(TEMP_SENSOR_4, 91, SHUTDOWN),
 				}"
 
 				## Power Limits Control

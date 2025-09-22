@@ -442,8 +442,7 @@ $(2)-compression := $$(BMP_LOGO_COMPRESS_FLAG)
 endef
 
 ifneq ($(CONFIG_HAVE_CUSTOM_BMP_LOGO),y)
-$(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_BMP_LOGO, logo.bmp,\
-	      CONFIG_BMP_LOGO_FILE_NAME))
+$(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_BMP_LOGO,logo.bmp,CONFIG_BMP_LOGO_FILE_NAME))
 endif
 
 $(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_PLATFORM_HAS_LOW_BATTERY_INDICATOR, \

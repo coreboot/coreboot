@@ -57,6 +57,7 @@ chip soc/intel/pantherlake
 	register "common_soc_config" = "{
 		.logo_valignment = FW_SPLASH_VALIGNMENT_MIDDLE,
 		.i2c[3] = {
+			.early_init=1,
 			.speed = I2C_SPEED_FAST,
 		},
 	}"

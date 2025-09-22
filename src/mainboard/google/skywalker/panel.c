@@ -8,7 +8,7 @@
 /* Set up backlight control pins as output pins, and set them to power off by default */
 static void configure_backlight(void)
 {
-	gpio_output(GPIO_AP_EDP_BKLTEN, 0);
+	gpio_output(GPIO_EDP_BL_EN_1V8, 0);
 	gpio_output(GPIO_BL_PWM_1V8, 0);
 }
 

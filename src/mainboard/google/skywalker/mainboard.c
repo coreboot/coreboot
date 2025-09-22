@@ -24,9 +24,9 @@
 static void configure_rt9123_rt1019(void)
 {
 	/* SoC I2S */
-	gpio_set_mode(GPIO_I2SOUT1_BCK, GPIO_FUNC(DMIC0_DAT0, I2SOUT1_BCK));
-	gpio_set_mode(GPIO_I2SOUT1_LRCK, GPIO_FUNC(DMIC1_CLK, I2SOUT1_LRCK));
-	gpio_set_mode(GPIO_I2SOUT1_DOUT, GPIO_FUNC(DMIC1_DAT0, I2SOUT1_DO));
+	gpio_set_mode(GPIO_I2S_SPKR_BCK, GPIO_FUNC(DMIC0_DAT0, I2SOUT1_BCK));
+	gpio_set_mode(GPIO_I2S_SPKR_LRCK, GPIO_FUNC(DMIC1_CLK, I2SOUT1_LRCK));
+	gpio_set_mode(GPIO_I2S_SPKR_DO, GPIO_FUNC(DMIC1_DAT0, I2SOUT1_DO));
 
 	printk(BIOS_INFO, "%s: AMP configuration done\n", __func__);
 }
@@ -34,10 +34,10 @@ static void configure_rt9123_rt1019(void)
 static void configure_alc5645(void)
 {
 	/* SoC I2S */
-	gpio_set_mode(GPIO_I2SOUT0_MCK, GPIO_FUNC(I2SOUT0_MCK, I2SOUT0_MCK));
-	gpio_set_mode(GPIO_I2SOUT0_BCK, GPIO_FUNC(I2SOUT0_BCK, I2SOUT0_BCK));
-	gpio_set_mode(GPIO_I2SOUT0_LRCK, GPIO_FUNC(I2SOUT0_LRCK, I2SOUT0_LRCK));
-	gpio_set_mode(GPIO_I2SOUT0_DOUT, GPIO_FUNC(I2SOUT0_DO, I2SOUT0_DO));
+	gpio_set_mode(GPIO_I2S_HP_MCK, GPIO_FUNC(I2SOUT0_MCK, I2SOUT0_MCK));
+	gpio_set_mode(GPIO_I2S_HP_BCK, GPIO_FUNC(I2SOUT0_BCK, I2SOUT0_BCK));
+	gpio_set_mode(GPIO_I2S_HP_LRCK, GPIO_FUNC(I2SOUT0_LRCK, I2SOUT0_LRCK));
+	gpio_set_mode(GPIO_I2S_HP_DO, GPIO_FUNC(I2SOUT0_DO, I2SOUT0_DO));
 
 	/* Init I2C bus timing register for audio codecs */
 	mtk_i2c_bus_init(I2C2, I2C_SPEED_STANDARD);

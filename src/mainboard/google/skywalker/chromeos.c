@@ -26,20 +26,20 @@ void setup_chromeos_gpios(void)
 	gpio_input(GPIO_HDMI_HPD_1V8_ODL);
 
 	gpio_output(GPIO_AP_EC_WARM_RST_REQ, 0);
-	gpio_output(GPIO_XHCI_INIT_DONE, 0);
+	gpio_output(GPIO_AP_XHCI_INIT_DONE, 0);
 	gpio_output(GPIO_AP_SUSPEND_L, 1);
 	gpio_output(GPIO_AP_HDMI_RST_ODL, 0);
 	gpio_output(GPIO_AP_FP_FW_UP_STRAP, 0);
 	gpio_output(GPIO_EN_PWR_FP, 0);
 	gpio_output(GPIO_FP_RST_1V8_S3_L, 0);
 	gpio_output(GPIO_EN_SPKR, 0);
-	gpio_output(GPIO_AP_EDP_BKLTEN, 0);
+	gpio_output(GPIO_EDP_BL_EN_1V8, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		{GPIO_XHCI_INIT_DONE.id, ACTIVE_HIGH, -1, "XHCI init done"},
+		{GPIO_AP_XHCI_INIT_DONE.id, ACTIVE_HIGH, -1, "XHCI init done"},
 		{GPIO_EC_AP_INT_ODL.id, ACTIVE_LOW, -1, "EC interrupt"},
 		{GPIO_GSC_AP_INT_ODL.id, ACTIVE_HIGH, -1, "TPM interrupt"},
 	};
@@ -71,7 +71,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 	struct lb_gpio edp_pwm_backlight_gpios[] = {
 		{GPIO_BL_PWM_1V8.id, ACTIVE_HIGH, -1, "PWM control"},
-		{GPIO_AP_EDP_BKLTEN.id, ACTIVE_HIGH, -1, "backlight enable"},
+		{GPIO_EDP_BL_EN_1V8.id, ACTIVE_HIGH, -1, "backlight enable"},
 	};
 	lb_add_gpios(gpios, edp_pwm_backlight_gpios, ARRAY_SIZE(edp_pwm_backlight_gpios));
 }

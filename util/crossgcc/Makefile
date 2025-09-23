@@ -10,7 +10,7 @@ DEST ?= $(CURDIR)/xgcc
 
 all:
 	$(MAKE) build-i386 build-x64 build-arm \
-		build-riscv build-aarch64 build-ppc64 build-nds32le \
+		build-riscv build-aarch64 build-ppc64 \
 		build_clang build_iasl build_nasm
 
 ###########################################################

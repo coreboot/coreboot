@@ -370,6 +370,17 @@
             "speedMbps": 8533,
             "lp5x": true
         }
+    },
+    {
+        "name":  "K3KLALA0EM-MGCU",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 8,
+                "bitWidthPerChannel": 8,
+                "ranksPerChannel": 2,
+                "speedMbps": 8533,
+                "lp5x": true
+            }
     }
     ]
 }

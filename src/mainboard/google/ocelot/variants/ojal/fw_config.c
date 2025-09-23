@@ -71,6 +71,28 @@ static const struct pad_config cnvi_disable_pads[] = {
 	PAD_NC(GPP_F05, NONE),
 };
 
+static const struct pad_config touchpad_lpss_i2c_enable_pads[] = {
+	/* GPP_H20:     SOC_I2C_0_SCL */
+	PAD_CFG_NF(GPP_H20, NONE, DEEP, NF1),
+	/* GPP_H19:     SOC_I2C_0_SDA */
+	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
+	/* GPP_A13:     TCH_PAD_INT_N */
+	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	/* GPP_VGPIO3_THC1: THC1_WOT */
+	PAD_NC(GPP_VGPIO3_THC1, NONE),
+};
+
+static const struct pad_config touchpad_i2c_disable_pads[] = {
+	/* GPP_H20:     SOC_I2C_0_SCL */
+	PAD_NC(GPP_H20, NONE),
+	/* GPP_H19:     SOC_I2C_0_SDA */
+	PAD_NC(GPP_H19, NONE),
+	/* GPP_A13:     TCH_PAD_INT_N */
+	PAD_NC(GPP_A13, NONE),
+	/* GPP_VGPIO3_THC1: THC1_WOT */
+	PAD_NC(GPP_VGPIO3_THC1, NONE),
+};
+
 void fw_config_configure_pre_mem_gpio(void)
 {
 	if (!fw_config_is_provisioned()) {
@@ -108,5 +130,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, cnvi_enable_pads);
 	} else if (fw_config_probe(FW_CONFIG(WIFI, WIFI_NONE)))  {
 		GPIO_PADBASED_OVERRIDE(padbased_table, cnvi_disable_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_LPSS_I2C))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_lpss_i2c_enable_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_i2c_disable_pads);
 	}
 }

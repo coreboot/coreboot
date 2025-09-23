@@ -56,6 +56,11 @@ chip soc/intel/pantherlake
 	register "tcss_cap_policy[0]" = "TCSS_TYPE_C_PORT_FULL_FUN"
 	register "tcss_cap_policy[1]" = "TCSS_TYPE_C_PORT_FULL_FUN"
 
+	#gpe configuration
+	register "pmc_gpe0_dw0" = "GPP_A"
+	register "pmc_gpe0_dw1" = "GPP_B"
+	register "pmc_gpe0_dw2" = "GPP_E"
+
 	# Enable EDP in PortA & HDMI in Port B
 	register "ddi_port_A_config" = "1"
 	register "ddi_port_B_config" = "1"
@@ -70,7 +75,7 @@ chip soc/intel/pantherlake
 		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
 	}"
 
 	register "serial_io_gspi_mode" = "{
@@ -90,13 +95,13 @@ chip soc/intel/pantherlake
 		/* Render OEM footer logo 100px above from the edge */
 		.logo_bottom_margin = 100,
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
 		.i2c[1] = {
-			.speed = I2C_SPEED_FAST,
-			.early_init = 1,
-		},
-		.i2c[5] = {
-			.speed = I2C_SPEED_FAST,
-		},
+                        .speed = I2C_SPEED_FAST,
+                        .early_init = 1,
+                },
 	}"
 
 	device domain 0 on
@@ -258,7 +263,18 @@ chip soc/intel/pantherlake
 			probe WIFI WIFI_CNVI_7
 		end
 
-		device ref i2c0 on end
+		device ref i2c0 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_A13_IRQ)"
+				register "wake" = "GPE0_DW0_13"
+				register "detect" = "1"
+				device i2c 15 on
+					probe TOUCHPAD TOUCHPAD_LPSS_I2C
+				end
+			end
+		end
 
 		device ref i2c1 on
 			chip drivers/i2c/tpm

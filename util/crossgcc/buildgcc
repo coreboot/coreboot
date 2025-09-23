@@ -46,7 +46,7 @@ LIBSTDCXX_VERSION="${GCC_VERSION}"	# GCC-specific C++ library
 
 # Low-level Tools (built after GCC)
 NASM_VERSION=2.16.03	# x86 assembly
-IASL_VERSION=20250404	# ACPI compiler
+IASL_VERSION=20250807	# ACPI compiler
 
 # Clang/LLVM Toolchain (alternative to GCC, built separately)
 CLANG_VERSION=18.1.8
@@ -86,7 +86,7 @@ MPC_BASE_URL="https://ftpmirror.gnu.org/mpc"
 GCC_BASE_URL="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}"
 LIBSTDCXX_BASE_URL="${GCC_BASE_URL}"
 BINUTILS_BASE_URL="https://ftpmirror.gnu.org/binutils"
-IASL_BASE_URL="https://downloadmirror.intel.com/852044"
+IASL_BASE_URL="https://downloadmirror.intel.com/864114"
 # CLANG toolchain archive locations
 LLVM_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
 CLANG_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"

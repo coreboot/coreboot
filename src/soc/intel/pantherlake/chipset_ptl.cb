@@ -9,40 +9,93 @@ chip soc/intel/pantherlake
 		.tdp_pl4_fastvmode = 150,
 	}"
 	register "thermal_design_current[PTL_SKU_1]" = "{
-		[VR_DOMAIN_IA] = 34 * 8,
-		[VR_DOMAIN_GT] = 23 * 8
+		[VR_DOMAIN_IA] = 23 * 8,
+		[VR_DOMAIN_GT] = 15 * 8
+	}"
+	register "icc_max[PTL_SKU_1]" = "{
+		[VR_DOMAIN_IA] = 80 * 4,
+		[VR_DOMAIN_GT] = 56 * 4,
+		[VR_DOMAIN_SA] = 56 * 4,
+		[VR_DOMAIN_ATOM] = 30 * 4
 	}"
 
 	register "power_limits_config[PTL_CORE_2]" = "{
 		.tdp_pl1_override = 15,
-		.tdp_pl2_override = 45,
-		.tdp_pl4 = 105,
-		.tdp_pl4_fastvmode = 95,
+		.tdp_pl2_override = 55,
+		.tdp_pl4 = 163,
+		.tdp_pl4_fastvmode = 150,
 	}"
 	register "thermal_design_current[PTL_SKU_5]" = "{
 		[VR_DOMAIN_IA] = 23 * 8,
-		[VR_DOMAIN_GT] = 23 * 8
+		[VR_DOMAIN_GT] = 15 * 8
+	}"
+	register "icc_max[PTL_SKU_5]" = "{
+		[VR_DOMAIN_IA] = 80 * 4,
+		[VR_DOMAIN_GT] = 56 * 4,
+		[VR_DOMAIN_SA] = 56 * 4,
+		[VR_DOMAIN_ATOM] = 30 * 4
 	}"
 
 	register "power_limits_config[PTL_CORE_3]" = "{
 		.tdp_pl1_override = 25,
-		.tdp_pl2_override = 64,
+		.tdp_pl2_override = 65,
 		.tdp_pl4 = 175,
 		.tdp_pl4_fastvmode = 160,
 	}"
 	register "thermal_design_current[PTL_SKU_2]" = "{
-		[VR_DOMAIN_IA] = 39 * 8,
-		[VR_DOMAIN_GT] = 44 * 8
+		[VR_DOMAIN_IA] = 31 * 8,
+		[VR_DOMAIN_GT] = 25 * 8
+	}"
+	register "icc_max[PTL_SKU_2]" = "{
+		[VR_DOMAIN_IA] = 107 * 4,
+		[VR_DOMAIN_GT] = 124 * 4,
+		[VR_DOMAIN_SA] = 56 * 4,
+		[VR_DOMAIN_ATOM] = 30 * 4
 	}"
 	register "thermal_design_current[PTL_SKU_3]" = "{
-		[VR_DOMAIN_IA] = 39 * 8,
+		[VR_DOMAIN_IA] = 31 * 8,
 		[VR_DOMAIN_GT] = 23 * 8
 	}"
 
 	register "power_limits_config[PTL_CORE_4]" = "{
 		.tdp_pl1_override = 25,
-		.tdp_pl2_override = 64,
-		.tdp_pl4 = 154,
+		.tdp_pl2_override = 65,
+		.tdp_pl4 = 160,
+		.tdp_pl4_fastvmode = 140
+	}"
+
+
+	register "thermal_design_current[PTL_SKU_6]" = "{
+		[VR_DOMAIN_IA] = 31 * 8,
+		[VR_DOMAIN_GT] = 25 * 8
+	}"
+	register "icc_max[PTL_SKU_6]" = "{
+		[VR_DOMAIN_IA] = 90 * 4,
+		[VR_DOMAIN_GT] = 124 * 4,
+		[VR_DOMAIN_SA] = 56 * 4,
+		[VR_DOMAIN_ATOM] = 30 * 4
+	}"
+
+	register "tdc_mode[VR_DOMAIN_IA]" = "TDC_IRMS"
+	register "tdc_mode[VR_DOMAIN_GT]" = "TDC_IRMS"
+	register "tdc_time_window_ms[VR_DOMAIN_IA]" = "28000"
+
+	# Set the power state thresholds according to document 813278
+	# Panther Lake H Platform - Design Guide - Rev 2.0
+	register "ps1_threshold" = "{
+		[VR_DOMAIN_IA] = 20 * 4,
+		[VR_DOMAIN_GT] = 20 * 4,
+		[VR_DOMAIN_SA] = 20 * 4
+	}"
+	register "ps2_threshold" = "{
+		[VR_DOMAIN_IA] = 5 * 4,
+		[VR_DOMAIN_GT] = 5 * 4,
+		[VR_DOMAIN_SA] = 5 * 4
+	}"
+	register "ps3_threshold" = "{
+		[VR_DOMAIN_IA] = 1 * 4,
+		[VR_DOMAIN_GT] = 1 * 4,
+		[VR_DOMAIN_SA] = 1 * 4
 	}"
 
 	# Reduce the size of BasicMemoryTests to speed up the boot time.

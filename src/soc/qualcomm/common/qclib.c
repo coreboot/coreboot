@@ -259,7 +259,8 @@ void qclib_load_and_run(void)
 	data_size = mrc_cache_load_current(MRC_TRAINING_DATA, QCLIB_VERSION,
 					   _ddr_training, REGION_SIZE(ddr_training));
 	if (data_size < 0) {
-		printk(BIOS_ERR, "Unable to load previous training data.\n");
+		printk(BIOS_WARNING, "qclib: Invalid MRC data in flash (size: %#zx, expected: %#zx)\n",
+		       data_size, REGION_SIZE(ddr_training));
 		memset(_ddr_training, 0, REGION_SIZE(ddr_training));
 		data_size = REGION_SIZE(ddr_training);
 	}

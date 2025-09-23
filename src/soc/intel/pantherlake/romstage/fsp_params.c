@@ -352,6 +352,11 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 			continue;
 		m_cfg->IccMax[i] = config->icc_max[map->sku][i];
 	}
+
+	for (size_t i = 0; i < ARRAY_SIZE(config->tdc_mode); i++) {
+		m_cfg->TdcMode[i] = config->tdc_mode[i];
+		m_cfg->TdcTimeWindow[i] = config->tdc_time_window_ms[i];
+	}
 }
 
 #if CONFIG(PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR)

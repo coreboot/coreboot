@@ -210,6 +210,11 @@ enum slew_rate {
 	SLEW_IGNORE = 0xff,
 };
 
+enum tdc_mode {
+	TDC_IPL2,
+	TDC_IRMS,
+};
+
 struct soc_intel_pantherlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -416,6 +421,30 @@ struct soc_intel_pantherlake_config {
 	 * The TDC unit is defined 1/8A increments.
 	 */
 	uint16_t thermal_design_current[MAX_PTL_SKUS][NUM_VR_DOMAINS];
+
+	/*
+	 * Thermal Design Current (TDC) mode for each Voltage Regulator (VR) domain.
+	 *
+	 * The mode indicates the method used for managing thermal constraints and power
+	 * consumption based on current measurement techniques.
+	 *
+	 * Possible values:
+	 * - 0: iPL2
+	 * - 1: Irms
+	 */
+	uint8_t tdc_mode[NUM_VR_DOMAINS];
+
+	/*
+	 * Time Window for Thermal Design Current (TDC) for each Voltage Regulator (VR)
+	 * domain.
+	 *
+	 * This array specifies the time window for TDC measurement for each VR
+	 * domain. The TDC time window determines the duration over which the current is
+	 * averaged.
+	 *
+	 * Units are milliseconds.
+	 */
+	uint32_t tdc_time_window_ms[NUM_VR_DOMAINS];
 
 	/*
 	 * Maximum Integrated Current Capability (ICC) settings for various SKUs.

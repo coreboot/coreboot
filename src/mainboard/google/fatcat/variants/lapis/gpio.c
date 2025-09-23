@@ -130,6 +130,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C13, NONE),
 	/* GPP_C14:     Not used */
 	PAD_NC(GPP_C14, NONE),
+	/* GPP_C15:     FP_RST_N */
+	PAD_CFG_GPO(GPP_C15, 1, DEEP),
 	/* GPP_C16:     USB_C0_LSX_TX  ==> TBT_LSX0_TXD */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* GPP_C17:     USB_C0_LSX_RX  ==> TBT_LSX0_RXD */
@@ -232,8 +234,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_E17, NONE, PLTRST, LEVEL, NONE),
 	/* GPP_E18:     TCHPAD_INT_ODL_LS ==> Not used */
 	PAD_NC(GPP_E18, NONE),
-	/* GPP_E19:     Not used ==> PANEL_ID0 */
-	PAD_NC(GPP_E19, NONE),
 	/* GPP_E20:     Not used ==> PANEL_ID1 */
 	PAD_NC(GPP_E20, NONE),
 	/* GPP_E21:     PMC_I2C_PD_INT_ODL ==> PD_SMB1_INT# */
@@ -392,6 +392,12 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* GPP_C15:     FP_RST_N */
+	PAD_CFG_GPO(GPP_C15, 0, DEEP),
+
+	/* GPP_E19:     FP_PWR_EN */
+	PAD_CFG_GPO(GPP_E19, 1, PLTRST),
+
 	/* GPP_H08:     UART0_BUF_RXD */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
 	/* GPP_H09:     UART0_BUF_TXD */

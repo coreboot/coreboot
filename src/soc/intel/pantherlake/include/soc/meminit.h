@@ -102,9 +102,6 @@ struct mb_cfg {
 
 	/* Command Mirror */
 	uint8_t cmd_mirror;
-
-	/* Enable/Disable TxDqDqs Retraining for LP5 */
-	uint8_t lp_ddr_dq_dqs_re_training;
 };
 
 void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,

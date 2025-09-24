@@ -39,8 +39,6 @@ static const struct mb_cfg lp5_mem_config = {
 
 	.ect = true, /* Early Command Training */
 
-	.lp_ddr_dq_dqs_re_training = 1,
-
 	.user_bd = BOARD_TYPE_ULT_ULX,
 
 	.lp5x_config = {
@@ -54,8 +52,6 @@ static const struct mb_cfg ddr5_mem_config = {
 	.ect = true, /* Early Command Training */
 
 	.user_bd = BOARD_TYPE_ULT_ULX,
-
-	.lp_ddr_dq_dqs_re_training = 1,
 
 	.ddr_config = {
 		.dq_pins_interleaved = false,

@@ -651,6 +651,10 @@ struct soc_intel_pantherlake_config {
 	 * as per `enum slew_rate` data type.
 	 */
 	uint8_t slow_slew_rate_config[NUM_VR_DOMAINS];
+	/* P-cores Hysteresis time window ranges from 1 to 50 ms. */
+	uint8_t pcore_hysteresis_window_ms;
+	/* E-cores Hysteresis time window ranges from 1 to 50 ms. */
+	uint8_t ecore_hysteresis_window_ms;
 
 	uint16_t max_dram_speed_mts;
 

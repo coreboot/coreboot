@@ -363,6 +363,8 @@ static void fill_fspm_acoustic_params(FSP_M_CONFIG *m_cfg,
 		return;
 
 	m_cfg->AcousticNoiseMitigation = config->enable_acoustic_noise_mitigation;
+	m_cfg->PcoreHysteresisWindow = config->pcore_hysteresis_window_ms;
+	m_cfg->EcoreHysteresisWindow = config->ecore_hysteresis_window_ms;
 
 	for (size_t i = 0; i < ARRAY_SIZE(config->disable_fast_pkgc_ramp); i++) {
 		m_cfg->FastPkgCRampDisable[i] = config->disable_fast_pkgc_ramp[i];

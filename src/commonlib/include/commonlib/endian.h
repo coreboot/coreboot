@@ -7,6 +7,11 @@
 #include <stdint.h>
 #include <string.h>
 
+/* GCC >= 12 triggers false positives (-Warray-bounds) on
+ * deliberate low-level memory accesses here. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+
 /* Endian agnostic functions working on single byte. */
 
 static inline uint8_t read_ble8(const void *src)
@@ -247,4 +252,4 @@ static inline void zero_n(void *dest, size_t n)
 	memset(dest, 0, n);
 }
 
-#endif
+#endif /* _COMMONLIB_ENDIAN_H_ */

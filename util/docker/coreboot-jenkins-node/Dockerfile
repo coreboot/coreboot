@@ -54,7 +54,7 @@ RUN mkdir /cb-build && \
 	echo "tmpfs /home/coreboot/.ccache tmpfs rw,mode=1777 0 0" >> /etc/fstab
 
 # Build encapsulate tool
-ADD https://raw.githubusercontent.com/coreboot/encapsulate/master/encapsulate.c /tmp/encapsulate.c
+ADD https://raw.githubusercontent.com/coreboot/encapsulate/main/encapsulate.c /tmp/encapsulate.c
 RUN gcc -o /usr/sbin/encapsulate /tmp/encapsulate.c && \
 	chown root /usr/sbin/encapsulate && \
 	chmod +s /usr/sbin/encapsulate

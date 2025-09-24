@@ -43,3 +43,6 @@ config BOARD_GOOGLE_LAPIS
 
 config BOARD_GOOGLE_MOONSTONE
 	bool "-> Moonstone"
+
+config BOARD_GOOGLE_RUBY
+	bool "-> Ruby"

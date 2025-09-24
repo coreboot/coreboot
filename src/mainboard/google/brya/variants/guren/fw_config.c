@@ -44,10 +44,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 						ARRAY_SIZE(hdmi_disable_pads));
 	}
 
-	/* Set to Disable LTE-related GPIO pins when field DB_USB is not DB_1C_LTE and DB_HDMI_LTE. */
+	/* Set to Disable LTE-related GPIO pins when field DB_USB is not DB_1C_LTE, DB_HDMI_LTE and DB_1C_5G. */
 	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_1C_LTE))
-		&& !fw_config_probe(FW_CONFIG(DB_USB, DB_HDMI_LTE))) {
-		printk(BIOS_INFO, "Disable LTE GPIO pins.\n");
+		&& !fw_config_probe(FW_CONFIG(DB_USB, DB_HDMI_LTE))
+		&& !fw_config_probe(FW_CONFIG(DB_USB, DB_1C_5G))) {
+		printk(BIOS_INFO, "Disable LTE/5G GPIO pins.\n");
 		gpio_padbased_override(padbased_table, lte_disable_pads,
 						ARRAY_SIZE(lte_disable_pads));
 	}

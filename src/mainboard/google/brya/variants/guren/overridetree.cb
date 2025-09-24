@@ -12,6 +12,7 @@ fw_config
 		option DB_HDMI_LTE		5
 		option DB_HDMI			6
 		option DB_HDMI_1A		7
+		option DB_1C_5G			8
 	end
 	field SD_CARD 9
 		option SD_ABSENT		 0
@@ -479,6 +480,7 @@ chip soc/intel/alderlake
 				device i2c 28 on
 					probe DB_USB DB_1C_LTE
 					probe DB_USB DB_HDMI_LTE
+					probe DB_USB DB_1C_5G
 				end
 			end
 		end #I2C2
@@ -651,6 +653,7 @@ chip soc/intel/alderlake
 						device ref usb2_port4 on
 							probe DB_USB DB_1C_LTE
 							probe DB_USB DB_HDMI_LTE
+							probe DB_USB DB_1C_5G
 						end
 					end
 					chip drivers/usb/acpi
@@ -696,6 +699,7 @@ chip soc/intel/alderlake
 						device ref usb3_port2 on
 							probe DB_USB DB_1C_LTE
 							probe DB_USB DB_HDMI_LTE
+							probe DB_USB DB_1C_5G
 						end
 					end
 				end

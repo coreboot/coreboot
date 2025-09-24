@@ -24,15 +24,26 @@ static void soc_read_resources(struct device *dev)
 	for (int i = 0; i < count; i++)
 		ram_range(dev, index++, (uintptr_t)config[i].offset, config[i].size);
 
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_ncc, REGION_SIZE(dram_ncc));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_cpucp, REGION_SIZE(dram_cpucp));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_xbl_log, REGION_SIZE(dram_xbl_log));
 
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_ramdump, REGION_SIZE(dram_ramdump));
 
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz, REGION_SIZE(dram_tz));
-	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz_rem, REGION_SIZE(dram_tz_rem));
 
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_aop, REGION_SIZE(dram_aop));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_tme_crashdump, REGION_SIZE(dram_tme_crashdump));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_tme_log, REGION_SIZE(dram_tme_log));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_dc_log, REGION_SIZE(dram_dc_log));
 
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_pdp, REGION_SIZE(dram_pdp));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz_static, REGION_SIZE(dram_tz_static));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_adsp_rpc_heap, REGION_SIZE(dram_adsp_rpc_heap));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_wlan, REGION_SIZE(dram_wlan));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_pil, REGION_SIZE(dram_pil));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_ta, REGION_SIZE(dram_ta));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_llcc_lpi, REGION_SIZE(dram_llcc_lpi));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_smem, REGION_SIZE(dram_smem));
 }
 

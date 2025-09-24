@@ -196,6 +196,7 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 
 	switch (mb_cfg->type) {
 	case MEM_TYPE_DDR5:
+		printk(BIOS_DEBUG, "%s: module type is DDR5\n", __func__);
 		meminit_ddr(mem_cfg, &mb_cfg->ddr_config);
 		dq_dqs_auto_detect = true;
 		/*

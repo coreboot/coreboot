@@ -394,7 +394,7 @@ static void fill_fspm_ibecc_params(FSP_M_CONFIG *m_cfg,
 	}
 }
 
-static void fill_fsps_acoustic_params(FSP_M_CONFIG *m_cfg,
+static void fill_fspm_acoustic_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
 	if (!config->enable_acoustic_noise_mitigation)
@@ -431,7 +431,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		fill_fspm_trace_params,
 		fill_fspm_vr_config_params,
 		fill_fspm_ibecc_params,
-		fill_fsps_acoustic_params,
+		fill_fspm_acoustic_params,
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(fill_fspm_params); i++)

@@ -2,3 +2,6 @@
 
 config BOARD_TOPTON_X2F_N100
 	bool "X2F_N100"
+
+config BOARD_TOPTON_X2E_N150
+	bool "X2E_N150"

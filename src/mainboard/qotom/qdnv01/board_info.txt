@@ -1,0 +1,6 @@
+Vendor name: Qotom
+Board name: QDNV01
+Category: eval
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

@@ -1,0 +1,23 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_QOTOM_QDNV01
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_DENVERTON_NS
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_TABLES
+	select DRIVERS_ASPEED_AST2050
+	select MAINBOARD_USES_IFD_10GBE_0_REGION
+	select MAINBOARD_USES_IFD_10GBE_1_REGION
+
+config MAINBOARD_DIR
+	default "qotom/qdnv01"
+
+config MAINBOARD_PART_NUMBER
+	default "QDNV01"
+
+config CBFS_SIZE
+	default 0x800000
+
+endif # BOARD_QOTOM_QDNV01

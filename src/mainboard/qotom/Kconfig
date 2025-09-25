@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_QOTOM
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/qotom/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/qotom/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Qotom"
+
+endif # VENDOR_QOTOM

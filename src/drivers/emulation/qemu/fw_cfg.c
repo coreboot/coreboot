@@ -11,10 +11,17 @@
 #include <device/fw_cfg.h>
 #include <device/fw_cfg_if.h>
 
+#if CONFIG(ARCH_ARM) || CONFIG(ARCH_RISCV)
+#define FW_CFG_PORT_CTL       0x08
+#define FW_CFG_PORT_DATA      0x00
+#define FW_CFG_DMA_ADDR_HIGH  0x10
+#define FW_CFG_DMA_ADDR_LOW   0x14
+#else
 #define FW_CFG_PORT_CTL       0x0510
 #define FW_CFG_PORT_DATA      0x0511
 #define FW_CFG_DMA_ADDR_HIGH  0x0514
 #define FW_CFG_DMA_ADDR_LOW   0x0518
+#endif
 
 static int fw_cfg_detected;
 static uint8_t fw_ver;
@@ -43,10 +50,14 @@ static int fw_cfg_present(void)
 
 static void fw_cfg_select(uint16_t entry)
 {
-	if (fw_ver & FW_CFG_VERSION_DMA)
+	if (fw_ver & FW_CFG_VERSION_DMA) {
 		fw_cfg_dma(FW_CFG_DMA_CTL_SELECT | entry << 16, NULL, 0);
-	else
-		outw(entry, FW_CFG_PORT_CTL);
+	} else {
+#ifdef __ARCH_GENERIC_IO_H__
+		entry = cpu_to_be16 (entry); // Big endian if MMIO
+#endif
+		outw(entry, FW_CFG_PORT_CTL); // Little endian if IO-port
+	}
 }
 
 static void fw_cfg_read(void *dst, int dstlen)

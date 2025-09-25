@@ -5,6 +5,7 @@ bootblock-y += uart.c
 bootblock-y += rom_media.c
 bootblock-y += clint.c
 bootblock-y += smp.c
+bootblock-y += mmio.c
 
 romstage-y += cbmem.c
 romstage-y += romstage.c
@@ -12,6 +13,7 @@ romstage-y += uart.c
 romstage-y += rom_media.c
 romstage-y += clint.c
 romstage-y += smp.c
+romstage-y += mmio.c
 
 ramstage-y += mainboard.c
 ramstage-y += uart.c
@@ -20,5 +22,6 @@ ramstage-y += clint.c
 ramstage-y += cbmem.c
 ramstage-y += chip.c
 ramstage-y += smp.c
+ramstage-y += mmio.c
 
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include

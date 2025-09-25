@@ -626,9 +626,6 @@ static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 		} else {
 			fw_type = AMD_BIOS_SKIP;
 		}
-	} else if (strcmp(fw_name, "PSP_MP2CFG_FILE") == 0) {
-		fw_type = AMD_BIOS_MP2_CFG;
-		subprog = 0;
 	} else {
 		fw_type = AMD_BIOS_INVALID;
 	}

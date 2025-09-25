@@ -239,9 +239,11 @@ static u32 *usb_gdsc[MAX_USB_GDSC] = {
 	[USB30_MP_GDSC] = &gcc->gcc_usb30_mp_gdscr,
 	[USB3_SS0_PHY_GDSC] = &gcc->gcc_usb3_mp_ss0_phy_gdscr,
 	[USB3_SS1_PHY_GDSC] = &gcc->gcc_usb3_mp_ss1_phy_gdscr,
+	[USB30_PRIM_GDSC] = &gcc->gcc_usb30_prim_gdscr,
+	[USB30_SEC_GDSC] = &gcc->gcc_usb30_sec_gdscr,
 };
 
-static u32 *usb_cbcr[USB_CLK_COUNT] = {
+static u32 *usb_mp_cbcr[USB_CLK_COUNT] = {
 	[USB30_MP_MASTER_CBCR] = &gcc->gcc_usb30_mp_master_cbcr,
 	[USB30_MP_SLEEP_CBCR] = &gcc->gcc_usb30_mp_sleep_cbcr,
 	[USB30_MP_MOCK_UTMI_CBCR] = &gcc->gcc_usb30_mp_mock_utmi_cbcr,
@@ -257,6 +259,39 @@ static u32 *usb_cbcr[USB_CLK_COUNT] = {
 	[AGGRE_USB_NOC_AXI_CBCR] = &gcc->gcc_aggre_usb_noc_axi_cbcr,
 	[AGGRE_NOC_USB_SOUTH_AXI_CBCR] = &gcc->gcc_aggre_noc_usb_south_axi_cbcr,
 	[AGGRE_NOC_USB_NORTH_AXI_CBCR] = &gcc->gcc_aggre_noc_usb_north_axi_cbcr,
+};
+
+static u32 *usb_prim_cbcr[USB_PRIM_CLK_COUNT] = {
+	[USB_PRIM_SYS_NOC_USB_AXI_CBCR] = &gcc->gcc_sys_noc_usb_axi_cbcr,
+	[USB_PRIM_CFG_NOC_USB_ANOC_AHB_CBCR] = &gcc->gcc_cfg_noc_usb_anoc_ahb_cbcr,
+	[USB_PRIM_CFG_NOC_USB_ANOC_NORTH_AHB_CBCR] = &gcc->gcc_cfg_noc_usb_anoc_north_ahb_cbcr,
+	[USB_PRIM_CFG_NOC_USB_ANOC_SOUTH_AHB_CBCR] = &gcc->gcc_cfg_noc_usb_anoc_south_ahb_cbcr,
+	[USB_PRIM_AGGRE_USB_NOC_AXI_CBCR] = &gcc->gcc_aggre_usb_noc_axi_cbcr,
+	[USB_PRIM_AGGRE_NOC_USB_SOUTH_AXI_CBCR] = &gcc->gcc_aggre_noc_usb_south_axi_cbcr,
+	[USB_PRIM_AGGRE_NOC_USB_NORTH_AXI_CBCR] = &gcc->gcc_aggre_noc_usb_north_axi_cbcr,
+	[USB_PRIM_USB30_PRIM_MASTER_CBCR] = &gcc->gcc_usb30_prim_master_cbcr,
+	[USB_PRIM_USB30_PRIM_SLEEP_CBCR] = &gcc->gcc_usb30_prim_sleep_cbcr,
+	[USB_PRIM_USB30_PRIM_MOCK_UTMI_CBCR] = &gcc->gcc_usb30_prim_mock_utmi_cbcr,
+	[USB_PRIM_USB3_PRIM_PHY_AUX_CBCR] = &gcc->gcc_usb3_prim_phy_aux_cbcr,
+	[USB_PRIM_USB3_PRIM_PHY_COM_AUX_CBCR] = &gcc->gcc_usb3_prim_phy_com_aux_cbcr,
+	[USB_PRIM_USB3_PRIM_PHY_PIPE_CBCR] = &gcc->gcc_usb3_prim_phy_pipe_cbcr,
+	[USB_PRIM_CFG_NOC_USB3_PRIM_AXI_CBCR] = &gcc->gcc_cfg_noc_usb3_prim_axi_cbcr,
+	[USB_PRIM_AGGRE_USB3_PRIM_AXI_CBCR] = &gcc->gcc_aggre_usb3_prim_axi_cbcr,
+};
+
+static u32 *usb_sec_cbcr[USB_SEC_CLK_COUNT] = {
+	[USB_SEC_CFG_NOC_USB3_SEC_AXI_CBCR] = &gcc->gcc_cfg_noc_usb3_sec_axi_cbcr,
+	[USB_SEC_AGGRE_USB3_SEC_AXI_CBCR] = &gcc->gcc_aggre_usb3_sec_axi_cbcr,
+	[USB_SEC_USB30_SEC_MASTER_CBCR] = &gcc->gcc_usb30_sec_master_cbcr,
+	[USB_SEC_USB30_SEC_SLEEP_CBCR] = &gcc->gcc_usb30_sec_sleep_cbcr,
+	[USB_SEC_USB30_SEC_MOCK_UTMI_CBCR] = &gcc->gcc_usb30_sec_mock_utmi_cbcr,
+	[USB_SEC_USB3_SEC_PHY_AUX_CBCR] = &gcc->gcc_usb3_sec_phy_aux_cbcr,
+	[USB_SEC_USB3_SEC_PHY_COM_AUX_CBCR] = &gcc->gcc_usb3_sec_phy_com_aux_cbcr,
+	[USB_SEC_USB3_SEC_PHY_PIPE_CBCR] = &gcc->gcc_usb3_sec_phy_pipe_cbcr,
+	[USB_SEC_AGGRE_USB_NOC_AXI_CBCR] = &gcc->gcc_aggre_usb_noc_axi_cbcr,
+	[USB_SEC_AGGRE_NOC_USB_NORTH_AXI_CBCR] = &gcc->gcc_aggre_noc_usb_north_axi_cbcr,
+	[USB_SEC_AGGRE_NOC_USB_SOUTH_AXI_CBCR] = &gcc->gcc_aggre_noc_usb_south_axi_cbcr,
+	[USB_SEC_SYS_NOC_USB_AXI_CBCR] = &gcc->gcc_sys_noc_usb_axi_cbcr,
 };
 
 static struct clock_freq_config pcie_core_cfg[] = {
@@ -385,17 +420,53 @@ enum cb_err usb_clock_enable(enum clk_usb clk_type)
 	if (clk_type >= USB_CLK_COUNT)
 		return CB_ERR;
 
-	return clock_enable(usb_cbcr[clk_type]);
+	return clock_enable(usb_mp_cbcr[clk_type]);
 }
 
 void usb_clock_reset(enum clk_usb clk_type, bool assert)
 {
-	clock_reset(usb_cbcr[clk_type], assert);
+	clock_reset(usb_mp_cbcr[clk_type], assert);
+}
+
+enum cb_err usb_prim_clock_enable(enum clk_usb_prim clk_type)
+{
+	if (clk_type >= USB_PRIM_CLK_COUNT) {
+		printk(BIOS_ERR, "USB C0 clock enable failed: "
+			"clock type %d out of range\n", clk_type);
+		return CB_ERR;
+	}
+
+	return clock_enable(usb_prim_cbcr[clk_type]);
+}
+
+void usb_prim_clock_reset(enum clk_usb_prim clk_type, bool assert)
+{
+	clock_reset(usb_prim_cbcr[clk_type], assert);
+}
+
+enum cb_err usb_sec_clock_enable(enum clk_usb_sec clk_type)
+{
+	if (clk_type >= USB_SEC_CLK_COUNT) {
+		printk(BIOS_ERR, "USB C1 clock enable failed: "
+			"clock type %d out of range\n", clk_type);
+		return CB_ERR;
+	}
+
+	return clock_enable(usb_sec_cbcr[clk_type]);
+}
+
+void usb_sec_clock_reset(enum clk_usb_sec clk_type, bool assert)
+{
+	clock_reset(usb_sec_cbcr[clk_type], assert);
 }
 
 void clock_configure_usb(void)
 {
 	clock_configure(&gcc->usb30_mp_master_rcg,
+		usb_core_cfg, USB3_MASTER_CLK_MIN_FREQ_HZ, ARRAY_SIZE(usb_core_cfg));
+	clock_configure(&gcc->usb30_prim_master_rcg,
+		usb_core_cfg, USB3_MASTER_CLK_MIN_FREQ_HZ, ARRAY_SIZE(usb_core_cfg));
+	clock_configure(&gcc->usb30_sec_master_rcg,
 		usb_core_cfg, USB3_MASTER_CLK_MIN_FREQ_HZ, ARRAY_SIZE(usb_core_cfg));
 }
 
@@ -408,6 +479,13 @@ enum cb_err usb_clock_configure_mux(enum clk_pipe_usb clk_type, u32 src_type)
 	case USB3_PHY_PIPE_1:
 		write32(&gcc->gcc_usb3_mp_phy_pipe_1_muxr, src_type);
 		break;
+	case USB3_PRIM_PHY_PIPE:
+		write32(&gcc->gcc_usb3_prim_phy_pipe_muxr, src_type);
+		break;
+	case USB3_SEC_PHY_PIPE:
+		write32(&gcc->gcc_usb3_sec_phy_pipe_muxr, src_type);
+		break;
+
 	default:
 		printk(BIOS_ERR, "Unhandled clk_type: %d, src_type: %u\n", clk_type, src_type);
 		return CB_ERR;

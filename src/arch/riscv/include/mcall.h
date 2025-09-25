@@ -62,7 +62,8 @@ register uintptr_t current_stack_pointer asm("sp");
 
 // hart-local storage, at top of stack
 #define HLS() ((struct hls *)(MACHINE_STACK_TOP() - HLS_SIZE))
-#define OTHER_HLS(id) ((struct hls *)((void *)HLS() + RISCV_PGSIZE * ((id) - HLS()->hart_id)))
+#define OTHER_HLS(id) \
+	((struct hls *)((void *)HLS() + RISCV_PGSIZE * (((int)id) - HLS()->hart_id)))
 
 #define MACHINE_STACK_SIZE RISCV_PGSIZE
 

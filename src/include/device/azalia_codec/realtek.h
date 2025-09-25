@@ -29,4 +29,21 @@ enum alc269_pin_widget {
 	ALC269_VB_HP_OUT	= 0x21,	// Port-I, ALC269-VBx only
 };
 
+enum alc887_pin_widget {
+	ALC887_SPDIF_OUT2	= 0x11,
+	ALC887_DMIC_LR		= 0x12,
+	ALC887_FRONT		= 0x14, // Port-D
+	ALC887_SURROUND		= 0x15, // Port-A
+	ALC887_CENTER_LFE	= 0x16, // Port-G
+	ALC887_SIDE_SURROUND	= 0x17, // Port-H
+	ALC887_MIC1		= 0x18, // Port-B
+	ALC887_MIC2		= 0x19, // Port-F
+	ALC887_LINE1		= 0x1a, // Port-C
+	ALC887_LINE2		= 0x1b, // Port-E
+	ALC887_CD		= 0x1c,
+	ALC887_PC_BEEP		= 0x1d,
+	ALC887_SPDIF_OUT1	= 0x1e,
+	ALC887_SPDIF_IN		= 0x1f,
+};
+
 #endif /* DEVICE_AZALIA_CODEC_REALTEK_H */

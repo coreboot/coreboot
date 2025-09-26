@@ -68,7 +68,7 @@ static void test_imd_handle_init(void **state)
 		assert_ptr_equal(imd.lg.r, NULL);
 
 		/* Small allocations not initialized */
-		assert_ptr_equal(imd.sm.limit, NULL);
+		assert_ptr_equal(imd.sm.limit, 0);
 		assert_ptr_equal(imd.sm.r, NULL);
 	}
 }

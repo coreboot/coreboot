@@ -39,10 +39,14 @@
 - Zako (HP Chromebox G1)
 - Bluey
 - Quenbi
+- BlueyH
+- QuenbiH
+- Quartz
 - Brox
 - Brox RTK EC
 - Brox EC ISH
 - Brox TI PDC
+- Caboc
 - Greenbayupoc
 - Jubilant
 - Lotso
@@ -71,6 +75,7 @@
 - Guren
 - Hades
 - Kano
+- Kaladin
 - Kinox
 - Kuldax
 - Joxer
@@ -157,12 +162,19 @@
 - Drallion
 - Eve (Google Pixelbook)
 - Fatcat
+- Fatcat4ES
 - Fatcat_ish
 - Fatcatite
+- Fatcatite4ES
 - Fatcatnuvo
+- Fatcatnuvo4ES
 - Felino
+- Felino4ES
 - Francka
+- Kinmen4ES
 - Kinmen
+- Lapis
+- Moonstone
 - Fizz
 - Karma
 - Endeavour
@@ -245,7 +257,14 @@
 - Oak
 - Elm (Acer Chromebook R13)
 - Hana (Lenovo N23 Yoga Chromebook)
+- Matsu
 - Ocelot
+- Ocelotite
+- Ocelotmchp
+- Ojal
+- Ocelot4ES
+- Ocelotite4ES
+- Ocelotmchp4ES
 - Parrot (Acer C7/C710 Chromebook)
 - Atlas (Google Pixelbook Go)
 - Poppy
@@ -297,8 +316,11 @@
 - Skyrim
 - Winterhold (Dell Latitude 3445 Chromebook)
 - Anakin
+- Baze
 - Obiwan
+- Padme
 - Skywalker
+- Tarkin
 - Yoda
 - Falco (HP Chromebook 14)
 - Leon (Toshiba Chromebook)
@@ -358,6 +380,7 @@
 - Woomax (ASUS Chromebook Flip CM5)
 
 ## HP
+- Compaq Pro 6300 SFF/MT
 - Compaq 8200 Elite SFF
 - Compaq 8200 Elite USDT
 - Compaq 8300 Elite SFF
@@ -393,7 +416,9 @@
 - Meteorlake-P RVP with Chrome EC for non-Prod Silicon
 - Meteorlake-P RVP with Microchip EC
 - Ptlrvp
+- Ptlrvp4es
 - Google Chrome EC
+- Google Chrome EC for Early Silicon
 - shadowmountain
 - Strago
 - Tigerlake UP3 RVP

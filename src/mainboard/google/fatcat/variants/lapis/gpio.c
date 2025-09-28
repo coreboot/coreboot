@@ -211,7 +211,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E06:     Not used */
 	PAD_NC(GPP_E06, NONE),
 	/* GPP_E07:     EC_SOC_INT_ODL */
-	PAD_CFG_GPI_SCI_LOW(GPP_E07, NONE, DEEP, LEVEL),
+	PAD_CFG_GPI_APIC_LOCK(GPP_E07, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_E08:     Not used */
 	PAD_NC(GPP_E08, NONE),
 	/* GPP_E09:     USBA0_OC_ODL ==> USB_OC0# */

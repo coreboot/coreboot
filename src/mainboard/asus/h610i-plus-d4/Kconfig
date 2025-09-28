@@ -1,6 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 config BOARD_ASUS_H610I_PLUS_D4
+	select AZALIA_USE_LEGACY_VERB_TABLE
 	select BOARD_ROMSIZE_KB_16384
 	select DRIVERS_UART_8250IO
 	select HAVE_ACPI_RESUME

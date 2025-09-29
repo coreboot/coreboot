@@ -20,11 +20,8 @@ static struct {
 	u32 cpuid;
 	const char *name;
 } cpu_table[] = {
-	{ CPUID_PANTHERLAKE_A0, "Pantherlake A0" },
-	{ CPUID_PANTHERLAKE_B0_1, "Pantherlake B0" },
-	{ CPUID_PANTHERLAKE_B0_2, "Pantherlake B0" },
-	{ CPUID_PANTHERLAKE_B0_3, "Pantherlake B0" },
-	{ CPUID_WILDCATLAKE_A0, "Wildcatlake A0" },
+	{ CPUID_PANTHERLAKE, "Pantherlake" },
+	{ CPUID_WILDCATLAKE, "Wildcatlake" },
 };
 
 static struct {
@@ -187,7 +184,7 @@ static void report_cpu_info(void)
 
 	/* Look for string to match the name */
 	for (i = 0; i < ARRAY_SIZE(cpu_table); i++) {
-		if (cpu_table[i].cpuid == cpu_id) {
+		if (cpuid_match(cpu_table[i].cpuid, cpu_id, CPUID_ALL_STEPPINGS_MASK)) {
 			cpu_type = cpu_table[i].name;
 			break;
 		}

@@ -46,6 +46,7 @@ ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ramstage-y += usb/usb.c
 ramstage-y += usb/snps_usb_phy.c
 ramstage-y += usb/qmpv4_usb_phy.c
+ramstage-y += usb/qmpv4_usb4_dp_phy.c
 ramstage-$(CONFIG_PCI) += ../common/pcie_common.c
 ramstage-y += ../common/spmi.c
 ramstage-$(CONFIG_PCI) += pcie.c

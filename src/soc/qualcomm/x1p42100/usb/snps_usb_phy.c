@@ -95,10 +95,26 @@
 struct hs_usb_phy_reg *hs_phy_reg = NULL;
 void hs_usb_phy_init(int index)
 {
-	if (index == 0)
+	switch (index) {
+	case 0:
 		hs_phy_reg = (void *)HS_USB_MP0_PHY_BASE;
-	else
+		break;
+	case 1:
 		hs_phy_reg = (void *)HS_USB_MP1_PHY_BASE;
+		break;
+	case 2:
+		hs_phy_reg = (void *)HS_USB_SS0_PHY_BASE;
+		break;
+	case 3:
+		hs_phy_reg = (void *)HS_USB_SS1_PHY_BASE;
+		break;
+	case 4:
+		hs_phy_reg = (void *)HS_USB_SS2_PHY_BASE;
+		break;
+	default:
+		printk(BIOS_ERR, "Invalid USB PHY index: %d\n", index);
+		return;
+	}
 
 	/*
 	 * This sequence initializes the USB HS PHY.

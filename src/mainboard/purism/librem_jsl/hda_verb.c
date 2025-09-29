@@ -67,6 +67,7 @@ struct azalia_codec mainboard_azalia_codecs[] = {
 		.verbs        = intel_display_audio_verbs,
 		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
 	},
+	{ /* terminator */ }
 };
 
 AZALIA_ARRAY_SIZES;

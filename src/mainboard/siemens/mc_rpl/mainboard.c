@@ -2,18 +2,18 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <cpu/x86/msr.h>
 #include <device/device.h>
-#include <soc/gpio.h>
-#include <stdint.h>
-#include <stdio.h>
+#include <device/pci_def.h>
+#include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <hwilib.h>
 #include <i210.h>
-#include <soc/ramstage.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
-#include <device/pci_ids.h>
-#include <cpu/x86/msr.h>
+#include <soc/gpio.h>
 #include <soc/msr.h>
+#include <soc/ramstage.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10

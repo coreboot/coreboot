@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <baseboard/variants.h>
 #include <console/console.h>
 #include <fsp/api.h>
-#include <baseboard/variants.h>
 
 void variant_configure_fspm(FSPM_UPD *memupd)
 {

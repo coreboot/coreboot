@@ -46,4 +46,6 @@ DefinitionBlock(
 #if CONFIG(INCLUDE_NVIDIA_GPU_ASL)
 	#include "acpi/gpu_top.asl"
 #endif
+
+	#include "acpi/cnvi_bt_reset.asl"
 }

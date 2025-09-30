@@ -27,6 +27,9 @@ enum bootdev_prot_type {
  * most likely not to work so don't rely on such semantics.
  */
 
+/* Return the chip select index used for probing the SPI flash. */
+int boot_device_spi_cs(void);
+
 /* Return the region_device for the read-only boot device. This is the root
    device for all CBFS boot devices. */
 const struct region_device *boot_device_ro(void);

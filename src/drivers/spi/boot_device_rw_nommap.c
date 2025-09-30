@@ -8,6 +8,11 @@
 static struct spi_flash sfg;
 static bool sfg_init_done;
 
+__weak int boot_device_spi_cs(void)
+{
+	return 0;	/* Default to chip select 0 */
+}
+
 static ssize_t spi_readat(const struct region_device *rd, void *b,
 				size_t offset, size_t size)
 {
@@ -47,7 +52,7 @@ static const struct region_device spi_rw =
 static void boot_device_rw_init(void)
 {
 	const int bus = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS;
-	const int cs = 0;
+	const int cs = boot_device_spi_cs();
 
 	if (sfg_init_done == true)
 		return;

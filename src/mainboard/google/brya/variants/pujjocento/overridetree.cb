@@ -215,8 +215,10 @@ chip soc/intel/alderlake
 				register "controls.charger_perf" = "{
 					[0] = { 255, 4700 },
 					[1] = {  40, 2500 },
-					[2] = {  16, 1000 },
-					[3] = {   8,  500 }
+					[2] = {  32, 2000 },
+					[3] = {  24, 1500 },
+					[4] = {  16, 1000 },
+					[5] = {   8,  500 }
 				}"
 
 				device generic 0 on

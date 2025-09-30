@@ -406,11 +406,8 @@ chip soc/intel/pantherlake
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC0_NAME"
 				register "mode" = "THC_HID_I2C_MODE"
-				register "dev_hidi2c.hid" = ""RAYD0001""
-				register "dev_hidi2c.cid" = ""PNP0C50""
-				register "dev_hidi2c.intf.hidi2c.addr" = "0x39"
-				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0x1"
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E11)"
+				register "dev_hidi2c.intf.hidi2c.addr" = "0x15"
+				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0x01"
 				register "wake_on_touch" = "true"
 				# NOTE: Use GpioInt() in _CRS and does not use GPE.
 				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC0)"
@@ -420,12 +417,17 @@ chip soc/intel/pantherlake
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
-		end #Touchpenal
+		end #Touchpad
 		device ref thc1 on
 			register "thc_wake_on_touch[1]" = "true"
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC1_NAME"
 				register "mode" = "THC_HID_I2C_MODE"
+				register "dev_hidi2c.hid" = ""RAYD0001""
+				register "dev_hidi2c.cid" = ""PNP0C50""
+				register "dev_hidi2c.intf.hidi2c.addr" = "0x39"
+				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F08)"
 				register "wake_on_touch" = "true"
 				# NOTE: Use GpioInt() in _CRS and does not use GPE.
 				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC1)"
@@ -435,7 +437,7 @@ chip soc/intel/pantherlake
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
-		end #Touchpad
+		end #Touchpenal
 
 		device ref i2c0 on end
 		device ref i2c3 on

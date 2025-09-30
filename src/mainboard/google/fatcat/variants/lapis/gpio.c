@@ -220,9 +220,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E10, NONE),
 	/* GPP_E11:     EN_TCHSCR_PWR ==> TOUCH_ENABLE */
 	PAD_CFG_GPO(GPP_E11, 1, PLTRST),
-	/* GPP_E12:     SOC_I2C_TCHPAD_SCL ==> THC_I2C0_SCL_TOUCH_EDP */
+	/* GPP_E12:     SOC_I2C_TCHPAD_SCL ==> THC_I2C1_SCL_TOUCH_EDP */
 	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF1),
-	/* GPP_E13:     SOC_I2C_TCHPAD_SDA ==> THC_I2C0_SDA_TOUCH_EDP*/
+	/* GPP_E13:     SOC_I2C_TCHPAD_SDA ==> THC_I2C1_SDA_TOUCH_EDP*/
 	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1),
 	/* GPP_E14:     Not used */
 	PAD_NC(GPP_E14, NONE),
@@ -230,10 +230,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E15, NONE),
 	/* GPP_E16:     Not used */
 	PAD_NC(GPP_E16, NONE),
-	/* GPP_E17:     Not used ==> TOUCHPAD_INTR */
-	PAD_CFG_GPI_APIC(GPP_E17, NONE, PLTRST, LEVEL, NONE),
-	/* GPP_E18:     TCHPAD_INT_ODL_LS ==> Not used */
-	PAD_NC(GPP_E18, NONE),
+	/* GPP_E17:     Not used  */
+	PAD_NC(GPP_E17, NONE),
+	/* GPP_E18:     TCHPAD_INT_ODL_LS */
+	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF3),
 	/* GPP_E20:     Not used ==> PANEL_ID1 */
 	PAD_NC(GPP_E20, NONE),
 	/* GPP_E21:     PMC_I2C_PD_INT_ODL ==> PD_SMB1_INT# */
@@ -263,18 +263,18 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F06, NONE),
 	/* GPP_F07:     Not used */
 	PAD_NC(GPP_F07, NONE),
-	/* GPP_F08:     Not used */
-	PAD_NC(GPP_F08, NONE),
+	/* GPP_F08:     TCHSCR_PWR_EN */
+	PAD_CFG_GPO(GPP_F08, 1, DEEP),
 	/* GPP_F09:     NC */
 	PAD_NC(GPP_F09, NONE),
 	/* GPP_F10:     NC */
 	PAD_NC(GPP_F10, NONE),
 	/* GPP_F11:     NC */
 	PAD_NC(GPP_F11, NONE),
-	/* GPP_F12:     THC_I2C1_SCL_TCH_PAD */
-	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF8),
-	/* GPP_F13:     THC_I2C1_SDA_TCH_PAD */
-	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF8),
+	/* GPP_F12:     THC_I2C0_SCL_TCH_PAD */
+	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF1),
+	/* GPP_F13:     THC_I2C0_SDA_TCH_PAD */
+	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF1),
 	/* GPP_F14:     NC */
 	PAD_NC(GPP_F14, NONE),
 	/* GPP_F15:     NC */
@@ -285,7 +285,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F17:     CODEC_INT_N ==> NC */
 	PAD_NC(GPP_F17, NONE),
 	/* GPP_F18:     SOC_TCHSCR_INT */
-	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),
+	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF3),
 	/* GPP_F19:     NC */
 	PAD_NC(GPP_F19, NONE),
 	/* GPP_F20:     NC */

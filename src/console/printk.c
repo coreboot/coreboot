@@ -143,7 +143,7 @@ int vprintk(int msg_level, const char *fmt, va_list args)
 	console_time_run();
 
 	i = vtxprintf(wrap_putchar, fmt, args, state.as_ptr);
-	if (LOG_FAST(state))
+	if (!LOG_FAST(state))
 		console_tx_flush();
 
 	console_time_stop();

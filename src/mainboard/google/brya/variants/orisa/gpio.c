@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <soc/gpio.h>
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <variant/gpio.h>
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {

@@ -32,6 +32,9 @@ config BOARD_SIEMENS_MC_EHL6
 config BOARD_SIEMENS_MC_EHL7
 	select BOARD_SIEMENS_BASEBOARD_MC_EHL
 
+config BOARD_SIEMENS_MC_EHL8
+	select BOARD_SIEMENS_BASEBOARD_MC_EHL
+
 source "src/mainboard/siemens/mc_ehl/variants/*/Kconfig"
 
 if BOARD_SIEMENS_BASEBOARD_MC_EHL
@@ -47,6 +50,7 @@ config VARIANT_DIR
 	default "mc_ehl5" if BOARD_SIEMENS_MC_EHL5
 	default "mc_ehl6" if BOARD_SIEMENS_MC_EHL6
 	default "mc_ehl7" if BOARD_SIEMENS_MC_EHL7
+	default "mc_ehl8" if BOARD_SIEMENS_MC_EHL8
 
 config MAINBOARD_PART_NUMBER
 	default "MC EHL1" if BOARD_SIEMENS_MC_EHL1
@@ -56,6 +60,7 @@ config MAINBOARD_PART_NUMBER
 	default "MC EHL5" if BOARD_SIEMENS_MC_EHL5
 	default "MC EHL6" if BOARD_SIEMENS_MC_EHL6
 	default "MC EHL7" if BOARD_SIEMENS_MC_EHL7
+	default "MC EHL8" if BOARD_SIEMENS_MC_EHL8
 
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"

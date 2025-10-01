@@ -1,4 +1,4 @@
-Upcoming release - coreboot 25.09
+coreboot 25.09 release
 ========================================================================
 
 The coreboot project is pleased to announce the release of coreboot
@@ -223,15 +223,15 @@ Platform Updates
 Statistics from the 25.06 to 25.09 release
 --------------------------------------------
 
-* Total Commits: 684
+* Total Commits: 687
 * Average Commits per day: 7.55
-* Total lines added: 62999
-* Average lines added per commit: 92.10
-* Number of patches adding more than 100 lines: 73
+* Total lines added: 63366
+* Average lines added per commit: 92.24
+* Number of patches adding more than 100 lines: 75
 * Average lines added per small commit: 38.99
-* Total lines removed: 10251
-* Average lines removed per commit: 14.99
-* Total difference between added and removed: 52748
+* Total lines removed: 10294
+* Average lines removed per commit: 14.98
+* Total difference between added and removed: 53072
 * Total authors: 112
 * New authors: 21
 

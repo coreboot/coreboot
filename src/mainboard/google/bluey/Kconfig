@@ -123,7 +123,8 @@ config VBOOT
 
 config MAINBOARD_PART_NUMBER
 	default "Bluey" if BOARD_GOOGLE_MODEL_BLUEY
-	default "Quenbi" if BOARD_GOOGLE_MODEL_QUENBI
+	default "Quenbi" if BOARD_GOOGLE_QUENBI
+	default "QuenbiH" if BOARD_GOOGLE_QUENBIH
 	default "Quartz" if BOARD_GOOGLE_MODEL_QUARTZ
 
 config DRIVER_TPM_I2C_BUS

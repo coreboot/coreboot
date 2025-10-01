@@ -27,7 +27,8 @@ void setup_chromeos_gpios(void)
 
 	gpio_output(GPIO_EN_SPKR, 0);
 	gpio_output(GPIO_RST_SPKR_L, 0);
-	gpio_output(GPIO_USB3_HUB_RST_L, 0);
+	/* Reset USB3 hub. */
+	gpio_output(GPIO_USB3_HUB_RST_L, 1);
 	gpio_output(GPIO_WWAN_RESET_L, 0);
 	gpio_output(GPIO_EN_PWR_FP, 0);
 	gpio_output(GPIO_EDP_BL_EN_1V8, 0);

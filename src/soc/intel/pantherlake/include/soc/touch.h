@@ -3,6 +3,8 @@
 #ifndef _SOC_PANTHERLAKE_TOUCH_H_
 #define _SOC_PANTHERLAKE_TOUCH_H_
 
+#include <commonlib/bsd/helpers.h>
+
 /* For THC-I2C: */
 
 /*
@@ -54,8 +56,8 @@
 /* unit: ms */
 #define SOC_PTL_THC_RST_SEQ_DLY                   300
 
-/* The initial default speed is 17000000 Hz. */
-#define SOC_PTL_THC_CONNECTION_SPEED         17000000
+/* The initial default speed is 17 MHz. */
+#define SOC_PTL_THC_SPI_CONNECTION_SPEED         (17 * MHz)
 
 /* 0 = no limit */
 #define SOC_PTL_THC_HIDSPI_LIMIT_PKT_SZ             0

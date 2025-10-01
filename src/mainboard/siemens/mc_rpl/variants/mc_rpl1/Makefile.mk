@@ -3,3 +3,5 @@
 bootblock-y += early_gpio.c
 ramstage-y += gpio.c
 romstage-y += variant.c
+
+all-$(CONFIG_NC_FPGA_POST_CODE) += post.c

@@ -10,9 +10,25 @@ config BOARD_SPECIFIC_OPTIONS
 	select TPM_MEASURED_BOOT
 	select TPM_MEASURED_BOOT_INIT_BOOTBLOCK
 	select DRIVER_INTEL_I210
+	select NC_FPGA_POST_CODE
 
 config UART_FOR_CONSOLE
 	int
 	default 2
+
+config EARLY_PCI_BRIDGE_DEVICE
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0x1c
+
+config EARLY_PCI_BRIDGE_FUNCTION
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0x0
+
+config EARLY_PCI_MMIO_BASE
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0xfe400000
 
 endif # BOARD_SIEMENS_MC_RPL1

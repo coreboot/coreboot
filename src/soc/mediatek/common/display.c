@@ -81,8 +81,9 @@ int mtk_display_init(void)
 	mtcmos_display_power_on();
 	mtcmos_protect_display_bus();
 
+	/* Set up backlight control pins as output pin and turn-off the backlight */
 	if (panel->configure_backlight)
-		panel->configure_backlight();
+		panel->configure_backlight(false);
 	if (panel->power_on)
 		panel->power_on();
 

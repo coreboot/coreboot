@@ -28,11 +28,10 @@ bool is_pmic_aw37503(unsigned int bus)
 				0x04, &vendor_id, 0x0F, 0) && vendor_id == 0x01);
 }
 
-void backlight_control(void)
+void backlight_control(bool enable)
 {
-	/* Set up backlight control pins as output pin and power-off by default */
-	gpio_output(GPIO_AP_EDP_BKLTEN, 0);
-	gpio_output(GPIO_BL_PWM_1V8, 0);
+	gpio_output(GPIO_AP_EDP_BKLTEN, enable);
+	gpio_output(GPIO_BL_PWM_1V8, enable);
 }
 
 struct panel_description *get_active_panel(void)

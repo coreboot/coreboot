@@ -5,6 +5,7 @@
 
 #include <commonlib/coreboot_tables.h>
 #include <mipi/panel.h>
+#include <stdbool.h>
 
 enum disp_path_sel {
 	DISP_PATH_NONE = 0,
@@ -16,7 +17,7 @@ enum disp_path_sel {
 
 struct panel_description {
 	const char *name;
-	void (*configure_backlight)(void);
+	void (*configure_backlight)(bool enable);
 	void (*power_on)(void);
 	int (*get_edid)(struct edid *edid);
 	int (*post_power_on)(const struct edid *edid);

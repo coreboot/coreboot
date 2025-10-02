@@ -15,7 +15,7 @@
 
 #if ENV_X86_32
 /* Standard macro to see if a specific flag is changeable */
-static inline int flag_is_changeable_p(uint32_t flag)
+static inline bool flag_is_changeable_p(uint32_t flag)
 {
 	uint32_t f1, f2;
 

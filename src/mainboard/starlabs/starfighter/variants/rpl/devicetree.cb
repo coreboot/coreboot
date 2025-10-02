@@ -121,11 +121,11 @@ chip soc/intel/alderlake
 		device ref gna		on  end
 		device ref xhci		on
 			# Motherboard USB TBT Type-C #0
-			register "usb2_ports[0]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
 			register "tcss_ports[0]"		= "TCSS_PORT_DEFAULT(OC_SKIP)"
 
 			# Motherboard USB TBT Type-C #1
-			register "usb2_ports[1]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb2_ports[1]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
 			register "tcss_ports[1]"		= "TCSS_PORT_DEFAULT(OC_SKIP)"
 
 			# Motherboard USB 3.0 Type-A

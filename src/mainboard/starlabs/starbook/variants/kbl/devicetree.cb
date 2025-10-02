@@ -49,7 +49,7 @@ chip soc/intel/skylake
 		end
 		device ref south_xhci	on
 			# Motherboard USB Type C
-			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
+			register "usb2_ports[0]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Motherboard USB 3.0

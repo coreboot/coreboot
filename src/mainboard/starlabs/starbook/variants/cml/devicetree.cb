@@ -53,7 +53,7 @@ chip soc/intel/cannonlake
 		end
 		device ref xhci on
 			# Motherboard USB 3.0 Type-C
-			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
+			register "usb2_ports[0]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Motherboard USB 3.0 Type-A

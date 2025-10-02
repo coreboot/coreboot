@@ -1,4 +1,4 @@
-Upcoming release - coreboot 4.21
+coreboot 4.21 release
 ========================================================================
 
 The 4.21 release is scheduled for August 21st, 2023

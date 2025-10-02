@@ -65,14 +65,14 @@ chip soc/intel/alderlake
 			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Daughterboard USB 3.0 Type-A
-			register "usb2_ports[6]"		= "USB2_PORT_MID(OC0)"
+			register "usb2_ports[6]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Internal Webcam
 			register "usb2_ports[CONFIG_CCD_PORT]"	= "USB2_PORT_MID(OC_SKIP)"
 
 			# Fingerprint Reader
-			register "usb2_ports[5]"		= "USB2_PORT_MID(OC0)"
+			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
 
 			# Daughterboard USB 2.0 Type-A + SD Card Reader
 			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"

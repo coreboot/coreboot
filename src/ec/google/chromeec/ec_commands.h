@@ -5014,6 +5014,14 @@ enum charge_state_params {
 	/* step value of charger input current limit (READ ONLY) */
 	CS_PARAM_CHG_INPUT_CURRENT_STEP,
 
+	/* Minimum required voltage for hybrid boost chargers (READ ONLY) */
+	CS_PARAM_CHG_MIN_REQUIRED_MV,
+
+	/* For hybrid boost chargers returns !=0 when attached charger is
+	 * capable of charging the battery
+	 */
+	CS_PARAM_CHG_IS_ADAPTER_SUFFICIENT,
+
 	/* How many so far? */
 	CS_NUM_BASE_PARAMS,
 
@@ -6644,8 +6652,20 @@ enum cbi_data_tag {
 	 */
 	CBI_TAG_PROVISION_MATRIX_VERSION = 28, /* uint32_t bit field */
 
+	/* Unified Firmware and Second-source Config:
+	 * A fixed-size array of 5 uint32_t values.
+	 */
+	CBI_TAG_UFSC = 29,
+
 	/* Last entry */
 	CBI_TAG_COUNT,
+};
+
+#define CBI_UFSC_DATA_COUNT 5
+
+/* Unified Firmware and Second-source Config (UFSC) data structure */
+struct cbi_ufsc {
+	uint32_t data[CBI_UFSC_DATA_COUNT];
 };
 
 /*

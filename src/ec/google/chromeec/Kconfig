@@ -185,8 +185,16 @@ config EC_GOOGLE_CHROMEEC_SWITCHES
 	  Enable support for ChromeOS mode switches provided by the ChromeOS
 	  EC.
 
+config EC_GOOGLE_CHROMEEC_FW_CONFIG_FROM_UFSC
+	depends on FW_CONFIG_SOURCE_CHROMEEC_CBI
+	bool
+	help
+	  Get firmware configuration from Unified Firmware and Second-source
+	  Config (UFSC) in CBI.
+
 config EC_GOOGLE_CHROMEEC_INCLUDE_SSFC_IN_FW_CONFIG
 	depends on FW_CONFIG_SOURCE_CHROMEEC_CBI
+	depends on !EC_GOOGLE_CHROMEEC_FW_CONFIG_FROM_UFSC
 	bool
 	help
 	  Fetch Second Source Factory Cache from CBI EEPROM and add it in the most significant

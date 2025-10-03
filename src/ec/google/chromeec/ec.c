@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
@@ -666,29 +667,36 @@ void google_chromeec_ap_poweroff(void)
 	halt();
 }
 
-static int cbi_get_uint32(uint32_t *id, uint32_t tag)
+static int cbi_read(void *buf, size_t bufsize, uint32_t tag, bool check_size)
 {
 	struct ec_params_get_cbi params = {
 		.tag = tag,
 	};
-	uint32_t r = 0;
 	struct chromeec_command cmd = {
 		.cmd_code = EC_CMD_GET_CROS_BOARD_INFO,
 		.cmd_version = 0,
 		.cmd_data_in = &params,
-		.cmd_data_out = &r,
+		.cmd_data_out = buf,
 		.cmd_size_in = sizeof(params),
-		.cmd_size_out = sizeof(r),
-		.cmd_dev_index = 0,
+		.cmd_size_out = bufsize,
 	};
-	int rv;
 
-	rv = google_chromeec_command(&cmd);
-	if (rv != 0)
+	int rv = google_chromeec_command(&cmd);
+	if (rv)
 		return rv;
 
-	*id = r;
+	if (check_size && cmd.cmd_size_out != bufsize) {
+		printk(BIOS_ERR, "Wrong out size for CBI tag %d: expected %zu, got %u\n",
+		       tag, bufsize, cmd.cmd_size_out);
+		return -1;
+	}
+
 	return 0;
+}
+
+static int cbi_get_uint32(uint32_t *id, uint32_t tag)
+{
+	return cbi_read(id, sizeof(*id), tag, true);
 }
 
 int google_chromeec_cbi_get_sku_id(uint32_t *id)
@@ -711,7 +719,24 @@ uint32_t google_chromeec_get_board_sku(void)
 
 int google_chromeec_cbi_get_fw_config(uint64_t *fw_config)
 {
+	int rv;
 	uint32_t config;
+
+	_Static_assert(!CONFIG(EC_GOOGLE_CHROMEEC_FW_CONFIG_FROM_UFSC) ||
+		       !CONFIG(EC_GOOGLE_CHROMEEC_INCLUDE_SSFC_IN_FW_CONFIG),
+		       "EC_GOOGLE_CHROMEEC_FW_CONFIG_FROM_UFSC and "
+		       "EC_GOOGLE_CHROMEEC_INCLUDE_SSFC_IN_FW_CONFIG are conflicting");
+
+	if (CONFIG(EC_GOOGLE_CHROMEEC_FW_CONFIG_FROM_UFSC)) {
+		struct cbi_ufsc ufsc;
+		rv = cbi_read(&ufsc, sizeof(ufsc), CBI_TAG_UFSC, true);
+		if (rv)
+			return rv;
+		_Static_assert(sizeof(*fw_config) == sizeof(ufsc.data[0]) * 2,
+			       "Wrong UFSC size");
+		*fw_config = ufsc.data[0] | ((uint64_t)ufsc.data[1] << 32);
+		return 0;
+	}
 
 	if (cbi_get_uint32(&config, CBI_TAG_FW_CONFIG))
 		return -1;
@@ -760,27 +785,14 @@ bool google_chromeec_get_ucsi_enabled(void)
 
 static int cbi_get_string(char *buf, size_t bufsize, uint32_t tag)
 {
-	struct ec_params_get_cbi params = {
-		.tag = tag,
-	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_CROS_BOARD_INFO,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_data_out = buf,
-		.cmd_size_in = sizeof(params),
-		.cmd_size_out = bufsize,
-	};
 	int rv;
 
-	rv = google_chromeec_command(&cmd);
-	if (rv != 0)
-		return rv;
+	rv = cbi_read(buf, bufsize, tag, false);
 
 	/* Ensure NUL termination. */
 	buf[bufsize - 1] = '\0';
 
-	return 0;
+	return rv;
 }
 
 int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize)

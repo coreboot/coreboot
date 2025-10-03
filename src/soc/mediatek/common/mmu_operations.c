@@ -49,6 +49,8 @@ void mtk_mmu_after_dram(void)
 	/* Map DRAM as cached now that it's up and running */
 	mmu_config_range(_dram, (uintptr_t)sdram_size(), NONSECURE_CACHED_MEM);
 
+	mmu_config_range(_dram_dma, REGION_SIZE(dram_dma), NONSECURE_UNCACHED_MEM);
+
 	mtk_soc_after_dram();
 }
 

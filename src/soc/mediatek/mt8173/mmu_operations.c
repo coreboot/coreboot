@@ -1,17 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/mmio.h>
-#include <arch/mmu.h>
-#include <symbols.h>
-#include <soc/symbols.h>
 #include <soc/infracfg.h>
 #include <soc/mcucfg.h>
 #include <soc/mmu_operations.h>
 
 void mtk_soc_after_dram(void)
 {
-	mmu_config_range(_dram_dma, REGION_SIZE(dram_dma),
-			 NONSECURE_UNCACHED_MEM);
 	mtk_mmu_disable_l2c_sram();
 }
 

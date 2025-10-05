@@ -23,7 +23,8 @@ Device (CREC)
 	#define EC_SYNC_SHARE_TYPE Exclusive
 #endif
 
-#if defined(EC_ENABLE_SYNC_IRQ) || defined(EC_ENABLE_SYNC_IRQ_GPIO)
+#if defined(EC_ENABLE_SYNC_IRQ) || defined(EC_ENABLE_SYNC_IRQ_GPIO) || \
+CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE)
 	Method (_CRS, 0x0, NotSerialized)
 	{
 		Name (RBUF, ResourceTemplate()

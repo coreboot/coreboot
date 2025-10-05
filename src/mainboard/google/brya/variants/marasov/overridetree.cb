@@ -474,5 +474,13 @@ chip soc/intel/alderlake
 				end
 			end
 		end
+		device ref hda on
+			chip drivers/sof
+				register "spkr_tplg" = "rt1019"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm1"
+				device generic 0 on end
+			end
+		end
 	end
 end

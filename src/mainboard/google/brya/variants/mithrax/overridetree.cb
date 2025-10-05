@@ -304,6 +304,12 @@ chip soc/intel/alderlake
 				register "sdmode_delay" = "5"
 				device generic 0 on end
 			end
+			chip drivers/sof
+				register "spkr_tplg" = "rt1019"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm1"
+				device generic 0 on end
+			end
 		end
 		device ref pch_espi on
 			chip ec/google/chromeec

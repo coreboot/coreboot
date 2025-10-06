@@ -53,7 +53,7 @@ PYTHON?=python
 
 OPENSIL_CONFIG=opensil_config
 
-bios_base=$(shell printf "%x" $(call int-subtract, $(CONFIG_ROMSTAGE_ADDR) $(CONFIG_C_ENV_BOOTBLOCK_SIZE)))
+bios_base=$(shell printf "0x%x" $(call int-subtract, $(CONFIG_ROMSTAGE_ADDR) $(CONFIG_C_ENV_BOOTBLOCK_SIZE)))
 bios_size=$(CONFIG_C_ENV_BOOTBLOCK_SIZE)
 
 $(OBJPATH)/$(OPENSIL_CONFIG): $(opensil_dir)/../opensil_config.template

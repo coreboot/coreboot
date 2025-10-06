@@ -28,6 +28,8 @@ Scope(\_SB) {
 		#include "resources.asl"
 		#include <soc/amd/common/acpi/lpc.asl>
 	} /* End S0B0 scope */
+
+	#include "ioapic_routing.asl"
 } /* End \_SB scope */
 
 #include <soc/amd/common/acpi/alib.asl>

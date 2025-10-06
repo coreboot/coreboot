@@ -72,6 +72,27 @@ struct dimm_info {
 	 */
 	uint8_t mod_type;
 	/*
+	 * SMBIOS Type 17 Type Detail field:
+	 *
+	 * Bit 0 Reserved, set to 0
+	 * Bit 1 Other
+	 * Bit 2 Unknown
+	 * Bit 3 Fast-paged
+	 * Bit 4 Static column
+	 * Bit 5 Pseudo-static
+	 * Bit 6 RAMBUS
+	 * Bit 7 Synchronous
+	 * Bit 8 CMOS
+	 * Bit 9 EDO
+	 * Bit 10 Window DRAM
+	 * Bit 11 Cache DRAM
+	 * Bit 12 Non-volatile
+	 * Bit 13 Registered (Buffered)
+	 * Bit 14 Unbuffered (Unregistered)
+	 * Bit 15 LRDIMM
+	 */
+	uint16_t type_detail;
+	/*
 	 * SPD bus width.
 	 *
 	 * Bits 0 - 2 encode the primary bus width:
@@ -95,6 +116,8 @@ struct dimm_info {
 	 * Voltage Level
 	 */
 	uint16_t vdd_voltage;
+	uint16_t vdd_min_voltage;
+	uint16_t vdd_max_voltage;
 	/*
 	 * Max speed in MT/s
 	 * If the value is 0, ddr_frequency should be used instead.

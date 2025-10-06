@@ -272,14 +272,18 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 
 	/* Voltage Levels */
 	t->configured_voltage = dimm->vdd_voltage;
-	t->minimum_voltage = dimm->vdd_voltage;
-	t->maximum_voltage = dimm->vdd_voltage;
+	t->minimum_voltage = dimm->vdd_min_voltage ? dimm->vdd_min_voltage : dimm->vdd_voltage;
+	t->maximum_voltage = dimm->vdd_max_voltage ? dimm->vdd_max_voltage : dimm->vdd_voltage;
 
 	/* Fill in type detail */
-	t->type_detail = info.type_detail;
+	if (dimm->type_detail != 0) {
+		t->type_detail = dimm->type_detail;
+	} else {
+		t->type_detail = info.type_detail;
+		/* Synchronous = 1 */
+		t->type_detail |= MEMORY_TYPE_DETAIL_SYNCHRONOUS;
+	}
 
-	/* Synchronous = 1 */
-	t->type_detail |= MEMORY_TYPE_DETAIL_SYNCHRONOUS;
 	/* no handle for error information */
 	t->memory_error_information_handle = 0xFFFE;
 	t->attributes = dimm->rank_per_dimm;

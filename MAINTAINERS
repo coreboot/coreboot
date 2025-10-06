@@ -273,9 +273,9 @@ F:	src/mainboard/dell/
 DELL LATITUDE MAINBOARDS
 M:	Nicholas Chin <nic.c3.14@gmail.com>
 S:	Maintained
-F:	src/mainboard/dell/e6400/
+F:	src/mainboard/dell/gm45_latitude/
 F:	src/mainboard/dell/snb_ivb_latitude/
-F:	src/mainboard/dell/e7240/
+F:	src/mainboard/dell/haswell_latitude/
 
 
 EMULATION MAINBOARDS

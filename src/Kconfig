@@ -919,6 +919,13 @@ config IOAPIC
 	default y if SMP
 	default n
 
+config IOAPIC_8BIT_ID
+	bool
+	default n
+	depends on IOAPIC
+	help
+	  Select this option if the hardware support 8bit long IOAPIC IDs.
+
 config USE_WATCHDOG_ON_BOOT
 	bool
 	default n

@@ -45,6 +45,13 @@ uint8_t smbios_bus_width_to_spd_width(uint8_t ddr_type, uint16_t total_width,
 		else
 			out |= SPD_ECC_8BIT;
 		break;
+	case 16:
+		if (ddr_type == MEMORY_TYPE_DDR5 || ddr_type == MEMORY_TYPE_LPDDR5)
+			out |= SPD_ECC_8BIT_LP5_DDR5;
+		else
+			printk(BIOS_NOTICE, "Unknown number of extension bits %hu\n",
+			       extension_bits);
+		break;
 	case 0:
 		/* No extension bits */
 		break;

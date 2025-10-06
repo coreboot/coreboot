@@ -478,4 +478,12 @@ config IOAPIC_8BIT_ID
 	help
 	  Select this option if the hardware support 8bit long IOAPIC IDs.
 
+config IOAPIC_USE_PRESET_ID
+	bool
+	default n
+	depends on IOAPIC
+	help
+	  Select this option if coreboot should keep IOAPIC IDs programmed
+	  by silicon vendor initialization code.
+
 endif

@@ -230,13 +230,15 @@ void setup_ioapic(uintptr_t ioapic_base, u8 ioapic_id)
 
 void register_new_ioapic_gsi0(uintptr_t ioapic_base)
 {
-	setup_ioapic(ioapic_base, 0);
+	setup_ioapic(ioapic_base, CONFIG(IOAPIC_USE_PRESET_ID) ?
+				  get_ioapic_id(ioapic_base) : 0);
 }
 
 void register_new_ioapic(uintptr_t ioapic_base)
 {
 	static u8 ioapic_id;
 	ioapic_id++;
-	set_ioapic_id(ioapic_base, ioapic_id);
+	set_ioapic_id(ioapic_base, CONFIG(IOAPIC_USE_PRESET_ID) ?
+				   get_ioapic_id(ioapic_base) : ioapic_id);
 	clear_vectors(ioapic_base, 0, ioapic_get_max_vectors(ioapic_base) - 1);
 }

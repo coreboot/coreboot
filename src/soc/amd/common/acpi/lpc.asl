@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <soc/iomap.h>
+
 #if MAINBOARD_HAS_SPEAKER
 #define IO61_HID "PNP0800" /* AT style speaker */
 #else
@@ -14,10 +16,6 @@ Device(LPCB) {
 	*	DBGO("\\_SB\\PCI0\\LpcIsaBr\\_INI\n")
 	} */ /* End Method(_SB.SBRDG._INI) */
 
-	OperationRegion(CFG,PCI_Config,0x0,0x100) // Map PCI Configuration Space
-	Field(CFG,DWordAcc,NoLock,Preserve){
-		Offset(0xA0),
-		BAR,32}		// SPI Controller Base Address Register (Index 0xA0)
 
 	Device(LDRC)	// LPC device: Resource consumption
 	{
@@ -42,10 +40,8 @@ Device(LPCB) {
 		{
 			CreateDwordField(^CRS,^BAR0._BAS,SPIB)	// Field to hold SPI base address
 			CreateDwordField(^CRS,^BAR1._BAS,ESPB)	// Field to hold eSPI base address
-			Local0 = BAR & 0xffffff00
-			SPIB = Local0	// SPI base address mapped
-			Local1 = Local0 + 0x10000
-			ESPB = Local1	// eSPI base address mapped
+			SPIB = SPI_BASE_ADDRESS	// SPI base address mapped
+			ESPB = SPIB + 0x10000	// eSPI base address mapped
 			Return(CRS)
 		}
 	}

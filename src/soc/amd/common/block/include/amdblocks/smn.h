@@ -9,4 +9,12 @@ uint32_t smn_read32(uint32_t reg);
 uint64_t smn_read64(uint32_t reg);
 void smn_write32(uint32_t reg, uint32_t val);
 
+#if defined(__SIMPLE_DEVICE__)
+
+uint32_t smn_io_read32(uint32_t reg);
+uint64_t smn_io_read64(uint32_t reg);
+void smn_io_write32(uint32_t reg, uint32_t val);
+
+#endif
+
 #endif /* AMD_BLOCK_SMN_H */

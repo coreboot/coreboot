@@ -25,3 +25,25 @@ void smn_write32(uint32_t reg, uint32_t val)
 	pci_write_config32(SOC_GNB_DEV, SMN_INDEX_ADDR, reg);
 	pci_write_config32(SOC_GNB_DEV, SMN_DATA_ADDR, val);
 }
+
+
+#if defined(__SIMPLE_DEVICE__)
+
+uint32_t smn_io_read32(uint32_t reg)
+{
+	pci_io_write_config32(SOC_GNB_DEV, SMN_INDEX_ADDR, reg);
+	return pci_io_read_config32(SOC_GNB_DEV, SMN_DATA_ADDR);
+}
+
+uint64_t smn_io_read64(uint32_t reg)
+{
+	return smn_io_read32(reg) | (uint64_t)smn_io_read32(reg + 4) << 32;
+}
+
+void smn_io_write32(uint32_t reg, uint32_t val)
+{
+	pci_io_write_config32(SOC_GNB_DEV, SMN_INDEX_ADDR, reg);
+	pci_io_write_config32(SOC_GNB_DEV, SMN_DATA_ADDR, val);
+}
+
+#endif

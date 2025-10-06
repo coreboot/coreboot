@@ -7,6 +7,7 @@ subdirs-y += mpio
 romstage-y += romstage.c
 
 ramstage-y += acpi.c
+ramstage-y += dmi.c
 ramstage-y += ramstage.c
 ramstage-y += memmap.c
 

@@ -6,6 +6,7 @@
 #include <arch/smp/mpspec.h>
 #include <commonlib/sort.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/lapic.h>
 #include <device/device.h>
 
 static int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
@@ -33,12 +34,12 @@ static int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 api
 
 unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 index, u32 lapic_id)
 {
-	if (lapic_id <= ACPI_MADT_MAX_LAPIC_ID)
-		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, index,
-						  lapic_id);
-	else
+	if (is_x2apic_mode())
 		current += acpi_create_madt_lx2apic((acpi_madt_lx2apic_t *)current, index,
 						    lapic_id);
+	else
+		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, index,
+						  lapic_id);
 
 	return current;
 }
@@ -181,12 +182,13 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current)
 
 	/* 1: LINT1 connect to NMI */
 	/* create all subtables for processors */
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current,
-			ACPI_MADT_LAPIC_NMI_ALL_PROCESSORS, flags, 1);
-
-	if (!CONFIG(XAPIC_ONLY))
+	if (is_x2apic_mode())
 		current += acpi_create_madt_lx2apic_nmi((acpi_madt_lx2apic_nmi_t *)current,
 			ACPI_MADT_LX2APIC_NMI_ALL_PROCESSORS, flags, 1);
+	else
+		current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current,
+			ACPI_MADT_LAPIC_NMI_ALL_PROCESSORS, flags, 1);
+
 
 	return current;
 }

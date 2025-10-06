@@ -90,6 +90,7 @@ enum {
 	LB_TAG_EFI_FW_INFO		= 0x0045,
 	LB_TAG_CAPSULE			= 0x0046,
 	LB_TAG_CFR_ROOT			= 0x0047,
+	LB_TAG_ROOT_BRIDGE_INFO		= 0x0048,
 	/* The following options are CMOS-related */
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,

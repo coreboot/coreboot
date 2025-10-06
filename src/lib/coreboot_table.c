@@ -274,6 +274,7 @@ static void add_cbmem_pointers(struct lb_header *header)
 		{CBMEM_ID_FMAP, LB_TAG_FMAP},
 		{CBMEM_ID_VBOOT_WORKBUF, LB_TAG_VBOOT_WORKBUF},
 		{CBMEM_ID_TYPE_C_INFO, LB_TAG_TYPE_C_INFO},
+		{CBMEM_ID_RB_INFO, LB_TAG_ROOT_BRIDGE_INFO},
 	};
 	int i;
 

@@ -53,6 +53,32 @@ chip soc/amd/turin_poc
 		device ref iommu_0 on end
 		device ref rcec_0 on end
 
+		# PCIE_6 slot on P2 port (default 4x4)
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "60"
+			register "end_lane" = "63"
+			device ref gpp_bridge_0_0_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "56"
+			register "end_lane" = "59"
+			device ref gpp_bridge_0_1_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "52"
+			register "end_lane" = "55"
+			device ref gpp_bridge_0_2_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "48"
+			register "end_lane" = "51"
+			device ref gpp_bridge_0_3_a on end
+		end
+
 		device ref lpc_bridge on
 
 			chip drivers/ipmi
@@ -105,19 +131,31 @@ chip soc/amd/turin_poc
 		subsystemid 0x1458 0x1000 inherit
 
 		device ref rcec_1 on end
-		# U2_P0_G3A as SATA. Can also be PCIe
+
+		# PCIE_7 slot on P3 port (default 4x4)
 		chip drivers/amd/opensil/mpio
-			register "type" = "IFTYPE_SATA"
-			register "start_lane" = "80"
-			register "end_lane" = "87"
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "28"
+			register "end_lane" = "31"
 			device ref gpp_bridge_1_0_a on end
 		end
-		# U2_P0_G3B as SATA. Can also be PCIe
 		chip drivers/amd/opensil/mpio
-			register "type" = "IFTYPE_SATA"
-			register "start_lane" = "88"
-			register "end_lane" = "95"
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "24"
+			register "end_lane" = "27"
 			device ref gpp_bridge_1_1_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "20"
+			register "end_lane" = "23"
+			device ref gpp_bridge_1_2_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "16"
+			register "end_lane" = "19"
+			device ref gpp_bridge_1_3_a on end
 		end
 	end
 
@@ -125,9 +163,7 @@ chip soc/amd/turin_poc
 		subsystemid 0x1458 0x1000 inherit
 
 		device ref iommu_2 on end
-		device ref gpp_bridge_2_a on
-			device ref xhci_0 on end
-		end
+
 		# M.2 NVMe slot on G2 port 0 x4
 		chip drivers/amd/opensil/mpio
 			register "type" = "IFTYPE_PCIE"
@@ -135,6 +171,25 @@ chip soc/amd/turin_poc
 			register "end_lane" = "115"
 			device ref gpp_bridge_2_0_a on end
 		end
+
+		# MCIO U2_P0_G2A on G2 port 2x4
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "120"
+			register "end_lane" = "123"
+			device ref gpp_bridge_2_2_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "124"
+			register "end_lane" = "127"
+			device ref gpp_bridge_2_3_a on end
+		end
+
+		device ref gpp_bridge_2_a on
+			device ref xhci_0 on end
+		end
+
 		device ref gpp_bridge_2_b on
 			device ref sata_2_0 on end
 			device ref sata_2_1 on end
@@ -143,16 +198,87 @@ chip soc/amd/turin_poc
 
 	device domain 3 on
 		subsystemid 0x1458 0x1000 inherit
+
+		# U2_P0_G3A as SATA. Can also be PCIe
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_SATA"
+			register "start_lane" = "80"
+			register "end_lane" = "87"
+			device ref gpp_bridge_3_0_a on end
+		end
+		# U2_P0_G3B as SATA. Can also be PCIe
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_SATA"
+			register "start_lane" = "88"
+			register "end_lane" = "95"
+			device ref gpp_bridge_3_1_a on end
+		end
 	end
 
 	device domain 4 on
 		subsystemid 0x1458 0x1000 inherit
+
+		# Dummy allocations to make U2_P0_G1B work
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "76"
+			register "end_lane" = "79"
+			device ref gpp_bridge_4_0_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "72"
+			register "end_lane" = "75"
+			device ref gpp_bridge_4_1_a on end
+		end
+		# MCIO U2_P0_G1B on G1 port 2x4
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "68"
+			register "end_lane" = "71"
+			device ref gpp_bridge_4_2_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "64"
+			register "end_lane" = "67"
+			device ref gpp_bridge_4_3_a on end
+		end
 	end
 
 	device domain 5 on
 		subsystemid 0x1458 0x1000 inherit
 
 		device ref iommu_5 on end
+
+		# MCIO U2_P0_G0A on G0 port 2x4
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "108"
+			register "end_lane" = "111"
+			device ref gpp_bridge_5_0_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "104"
+			register "end_lane" = "107"
+			device ref gpp_bridge_5_1_a on end
+		end
+
+		# MCIO U2_P0_G0B on G0 port 2x4
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "100"
+			register "end_lane" = "103"
+			device ref gpp_bridge_5_2_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "96"
+			register "end_lane" = "99"
+			device ref gpp_bridge_5_3_a on end
+		end
+
 		# Dual Broadcom Ethernet on P4/P5 port 0 x4
 		chip drivers/amd/opensil/mpio
 			register "type" = "IFTYPE_PCIE"
@@ -184,6 +310,32 @@ chip soc/amd/turin_poc
 		subsystemid 0x1458 0x1000 inherit
 
 		device ref rcec_6 on end
+
+		# PCIE_4 slot on P1 port (default 4x4)
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "32"
+			register "end_lane" = "35"
+			device ref gpp_bridge_6_0_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "36"
+			register "end_lane" = "39"
+			device ref gpp_bridge_6_1_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "40"
+			register "end_lane" = "43"
+			device ref gpp_bridge_6_2_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "44"
+			register "end_lane" = "47"
+			device ref gpp_bridge_6_3_a on end
+		end
 	end
 
 	device domain 7 on
@@ -191,6 +343,32 @@ chip soc/amd/turin_poc
 
 		device ref iommu_7 on end
 		device ref rcec_7 on end
+
+		# PCIE_3 slot on P0 port (default 4x4)
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "0"
+			register "end_lane" = "3"
+			device ref gpp_bridge_7_0_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "4"
+			register "end_lane" = "7"
+			device ref gpp_bridge_7_1_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "8"
+			register "end_lane" = "11"
+			device ref gpp_bridge_7_2_a on end
+		end
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "12"
+			register "end_lane" = "15"
+			device ref gpp_bridge_7_3_a on end
+		end
 
 		device ref gpp_bridge_7_a on
 			device ref xhci_1 on end

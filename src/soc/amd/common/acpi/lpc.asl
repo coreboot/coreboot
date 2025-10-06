@@ -34,6 +34,13 @@ Device(LPCB) {
 			0x00001000,			// Address Length
 			BAR1				// Descriptor Name
 			)
+#if CONFIG(SOC_AMD_COMMON_BLOCK_HAS_ESPI1)
+			Memory32Fixed(ReadWrite,	// Setup for fixed resource location for eSPI1 base address
+			0x00000000,			// Address Base
+			0x00001000,			// Address Length
+			BAR2
+			)
+#endif
 		})
 
 		Method(_CRS,0,Serialized)
@@ -42,6 +49,10 @@ Device(LPCB) {
 			CreateDwordField(^CRS,^BAR1._BAS,ESPB)	// Field to hold eSPI base address
 			SPIB = SPI_BASE_ADDRESS	// SPI base address mapped
 			ESPB = SPIB + 0x10000	// eSPI base address mapped
+#if CONFIG(SOC_AMD_COMMON_BLOCK_HAS_ESPI1)
+			CreateDwordField(^CRS,^BAR2._BAS,ESP1)	// Field to hold eSPI base address
+			ESP1 = ESPB + 0x10000	// eSPI base address mapped
+#endif
 			Return(CRS)
 		}
 	}

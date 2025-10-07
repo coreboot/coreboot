@@ -659,6 +659,9 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	/* Enable the energy efficient turbo mode */
 	s_cfg->EnergyEfficientTurbo = 1;
 	s_cfg->PmcLpmS0ixSubStateEnableMask = get_supported_lpm_mask();
+#if CONFIG(PLATFORM_USES_FSP2_X86_32)
+	s_cfg->PmcPchLpmS0ixSubStateEnableMask = get_supported_lpm_mask();
+#endif
 
 	/* Apply minimum assertion width settings if non-zero */
 	if (config->pch_slp_s3_min_assertion_width)

@@ -357,6 +357,15 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->TdcMode[i] = config->tdc_mode[i];
 		m_cfg->TdcTimeWindow[i] = config->tdc_time_window_ms[i];
 	}
+
+	for (size_t i = 0; i < ARRAY_SIZE(config->ps1_threshold); i++) {
+		if (config->ps1_threshold[i])
+			m_cfg->Ps1Threshold[i] = config->ps1_threshold[i];
+		if (config->ps2_threshold[i])
+			m_cfg->Ps2Threshold[i] = config->ps2_threshold[i];
+		if (config->ps3_threshold[i])
+			m_cfg->Ps3Threshold[i] = config->ps3_threshold[i];
+	}
 }
 
 #if CONFIG(PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR)

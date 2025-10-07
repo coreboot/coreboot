@@ -458,6 +458,20 @@ struct soc_intel_pantherlake_config {
 	uint16_t icc_max[MAX_PTL_SKUS][NUM_VR_DOMAINS];
 
 	/*
+	 * Power State Current Thresholds for VR Domains.
+	 *
+	 * These arrays define the current thresholds for different power states (PS1,
+	 * PS2, PS3) for each Voltage Regulator (VR) domain.
+	 *
+	 * Each value is defined in 1/4 A increments.  For example, a value of 400
+	 * corresponds to 100A. The valid range is 0-512 (0-128A).  A value of 0
+	 * indicates AUTO (use default).
+	 */
+	uint16_t ps1_threshold[NUM_VR_DOMAINS];
+	uint16_t ps2_threshold[NUM_VR_DOMAINS];
+	uint16_t ps3_threshold[NUM_VR_DOMAINS];
+
+	/*
 	 * SerialIO device mode selection:
 	 * PchSerialIoDisabled,
 	 * PchSerialIoPci,

@@ -5,6 +5,7 @@
 #include <soc/usb/usb.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
+#include <soc/qcom_spmi.h>
 #include <delay.h>
 #include <gpio.h>
 
@@ -49,20 +50,29 @@ check_member(usb_dwc3, usb3pipectl_mp1, 0x1c4);
 
 struct usb_dwc3_cfg {
 	struct usb_dwc3 *usb_host_dwc3;
+	struct usb_dwc3 *usb_host_dwc3_prim;
+	struct usb_dwc3 *usb_host_dwc3_sec;
 	u32 *usb3_bcr;
 	u32 *qusb2phy_bcr;
 	u32 *qusb2phy1_bcr;
+	u32 *gcc_qusb2phy_prim_bcr;
+	u32 *gcc_qusb2phy_sec_bcr;
 	u32 *gcc_usb3phy_bcr_reg;
 	u32 *gcc_qmpphy_bcr_reg;
 	u32 *gcc_usb3phy1_bcr_reg;
 	u32 *gcc_qmpphy1_bcr_reg;
-	u32 *qusb2secphy_bcr;
-	u32 *gcc_usb3secphy_bcr_reg;
-	u32 *gcc_qmpsecphy_bcr_reg;
+	u32 *gcc_usb4_0_dp0_phy_prim_bcr;
+	u32 *gcc_usb4_1_dp0_phy_sec_bcr;
+	u32 *gcc_usb3_phy_prim_bcr;
+	u32 *gcc_usb3_phy_sec_bcr;
+	u32 *gcc_usb3phy_phy_prim_bcr;
+	u32 *gcc_usb3phy_phy_sec_bcr;
 };
 
-static struct usb_dwc3_cfg usb_port0 = {
-	.usb_host_dwc3 =	(void *)USB_HOST_DWC3_BASE,
+static struct usb_dwc3_cfg usb_ports = {
+	.usb_host_dwc3 =	(void *)USB_HOST_DWC3_MP_BASE,
+	.usb_host_dwc3_prim =	(void *)USB_HOST_DWC3_PRIM_BASE,
+	.usb_host_dwc3_sec =	(void *)USB_HOST_DWC3_SEC_BASE,
 	.usb3_bcr =		&gcc->gcc_usb30_mp_bcr,
 	.qusb2phy_bcr =		&gcc->qusb2phy_hs0_mp_bcr,
 	.gcc_usb3phy_bcr_reg =	&gcc->usb3uniphy_phy_mp0_bcr,
@@ -70,10 +80,18 @@ static struct usb_dwc3_cfg usb_port0 = {
 	.qusb2phy1_bcr =		&gcc->qusb2phy_hs1_mp_bcr,
 	.gcc_usb3phy1_bcr_reg =	&gcc->usb3uniphy_phy_mp1_bcr,
 	.gcc_qmpphy1_bcr_reg =	&gcc->usb3_uniphy_mp1_bcr,
+	.gcc_qusb2phy_prim_bcr =	&gcc->gcc_qusb2phy_prim_bcr,
+	.gcc_qusb2phy_sec_bcr =		&gcc->gcc_qusb2phy_sec_bcr,
+	.gcc_usb4_0_dp0_phy_prim_bcr =	&gcc->gcc_usb4_0_dp0_phy_prim_bcr,
+	.gcc_usb4_1_dp0_phy_sec_bcr =	&gcc->gcc_usb4_1_dp0_phy_sec_bcr,
+	.gcc_usb3_phy_prim_bcr =	&gcc->gcc_usb3_phy_prim_bcr,
+	.gcc_usb3_phy_sec_bcr =		&gcc->gcc_usb3_phy_sec_bcr,
+	.gcc_usb3phy_phy_prim_bcr =	&gcc->gcc_usb3phy_phy_prim_bcr,
+	.gcc_usb3phy_phy_sec_bcr =	&gcc->gcc_usb3phy_phy_sec_bcr,
 };
 
-bool hs_speed_only = false;
-u32 *usb3_general_cfg_addr = (void *)USB_HOST_DWC3_GENERAL_CFG_ADDR;
+static bool hs_speed_only;
+static u32 *usb3_general_cfg_addr = (void *)USB_HOST_DWC3_MP_GENERAL_CFG_ADDR;
 
 /* Enables Repeaters /Refgen blocks for USB */
 void enable_clock_tcsr(void)
@@ -107,7 +125,7 @@ int32_t qcom_enable_usb_clk(void)
 	}
 
 	clock_configure_usb();
-	/* Set USB3 PHY PIPE 0 clock source to X0  */
+
 	if (usb_clock_configure_mux(USB3_PHY_PIPE_0, USB_PHY_XO_SRC_SEL)) {
 		printk(BIOS_ERR, "%s(): USB3 PHY PIPE 0 clock enable failed\n", __func__);
 		return -1;
@@ -125,8 +143,7 @@ int32_t qcom_enable_usb_clk(void)
 		}
 	}
 
-	write32(TCSR_GCC_USB3_MP0_CLKREF_EN_ADDR, USB3_CLKREF_ENABLE_VALUE);
-	write32(TCSR_GCC_USB3_MP1_CLKREF_EN_ADDR, USB3_CLKREF_ENABLE_VALUE);
+	usb_update_refclk_for_core(3, true);
 	/* Set USB3 PHY PIPE 1 clock source to USB PHY */
 
 	if (usb_clock_configure_mux(USB3_PHY_PIPE_0, USB_PHY_PIPE_SRC_SEL)) {
@@ -138,6 +155,48 @@ int32_t qcom_enable_usb_clk(void)
 		printk(BIOS_ERR, "%s(): USB3 PHY PIPE 1 clock enable failed\n", __func__);
 		return -1;
 	}
+
+	if (usb_clock_configure_mux(USB3_PRIM_PHY_PIPE, USB_PHY_XO_SRC_SEL)) {
+		printk(BIOS_ERR, "%s(): USB3 PRIM PHY PIPE clock XO config failed\n", __func__);
+		return -1;
+	}
+
+	/* Enable USB0 PRIM clocks */
+	for (clk = USB_PRIM_SYS_NOC_USB_AXI_CBCR; clk < USB_PRIM_CLK_COUNT; clk++) {
+		ret = usb_prim_clock_enable(clk);
+		if (ret) {
+			printk(BIOS_ERR, "Failed to enable USB0 clock %d\n", clk);
+			return ret;
+		}
+	}
+
+	if (usb_clock_configure_mux(USB3_PRIM_PHY_PIPE, USB_PHY_PIPE_SRC_SEL)) {
+		printk(BIOS_ERR, "%s(): USB3 PRIM PHY PIPE clock PHY config failed\n", __func__);
+		return -1;
+	}
+
+	usb_update_refclk_for_core(0, true);
+
+	if (usb_clock_configure_mux(USB3_SEC_PHY_PIPE, USB_PHY_XO_SRC_SEL)) {
+		printk(BIOS_ERR, "%s(): USB3 SEC PHY PIPE clock XO config failed\n", __func__);
+		return -1;
+	}
+
+	/* Enable USB SEC clocks */
+	for (clk = USB_SEC_CFG_NOC_USB3_SEC_AXI_CBCR; clk < USB_SEC_CLK_COUNT; clk++) {
+		ret = usb_sec_clock_enable(clk);
+		if (ret) {
+			printk(BIOS_ERR, "Failed to enable USB SEC clock %d\n", clk);
+			return ret;
+		}
+	}
+
+	if (usb_clock_configure_mux(USB3_SEC_PHY_PIPE, USB_PHY_PIPE_SRC_SEL)) {
+		printk(BIOS_ERR, "%s(): USB3 SEC PHY PIPE clock PHY config failed\n", __func__);
+		return -1;
+	}
+
+	usb_update_refclk_for_core(1, true);
 
 	return ret;
 }
@@ -201,7 +260,7 @@ static void setup_dwc3(struct usb_dwc3 *dwc3)
 	To save power, enable the hardware-based clock gating (not relevant for PBL):
 	a. usb30_reg_cgctl[DBM_FSM_EN] = 0x1
 	*/
-	setbits32(USB3_MP_CGCTL_REG_ADDR, USB3_MP_DBM_FSM_EN_BIT);
+	setbits32(USB3_MP_CGCTL_REG_ADDR, USB3_CGCTL_DBM_FSM_EN_BIT);
 	//Disable clock gating: DWC_USB3_GCTL.DSBLCLKGTNG = 1
 	clrsetbits32(&dwc3->ctl, (DWC3_GCTL_SCALEDOWN_MASK |
 			DWC3_GCTL_DISSCRAMBLE),
@@ -246,9 +305,151 @@ static void setup_dwc3(struct usb_dwc3 *dwc3)
 
 }
 
+/*
+ * setup_dwc3 - Configures the DWC3 USB controller.
+ * @dwc3: Pointer to the USB DWC3 configuration structure.
+ * Handles high-speed operation, power management, and sets to host mode.
+ */
+
+/* DWC3 Controller Configuration Structure */
+struct dwc3_controller_config {
+	const char *name;
+	u32 *general_cfg_addr;
+	u32 *cgctl_reg_addr;
+	u32 *link_regs_lu3lfpsrxtim_addr;
+	u32 *gusb2phycfg_regs_addr;
+	u32 *portsc_20_regs_addr;
+	u32 *portsc_30_regs_addr;
+	u8 smb_slave_addr;
+};
+
+/*
+ * setup_dwc3_controller - Configure DWC3 USB controller
+ * @dwc3: Pointer to the USB DWC3 structure
+ * @config: Controller-specific configuration
+ * @hs_only: true for high-speed only mode, false for super-speed mode
+ *
+ * Handles both high-speed and super-speed operation, power management,
+ * and sets controller to host mode.
+ */
+static void setup_dwc3_controller(struct usb_dwc3 *dwc3,
+				  const struct dwc3_controller_config *config,
+				  bool hs_only)
+{
+	u32 *reg = config->general_cfg_addr;
+
+	/* Configure speed mode */
+	if (hs_only) {
+		/* High-speed only mode configuration */
+		setbits32(reg, UTMI_CLK_DIS_0);
+		udelay(10);
+		setbits32(reg, UTMI_CLK_SEL_0);
+		setbits32(reg, PIPE3_PHYSTATUS_SW_0);
+		clrbits32(reg, PIPE3_SET_PHYSTATUS_SW_0);
+		udelay(10);
+		clrbits32(reg, UTMI_CLK_DIS_0);
+	} else {
+		/* Super-speed mode: core exits U1/U2/U3 only in PHY power state P1/P2/P3 */
+		clrsetbits32(&dwc3->usb3pipectl,
+			DWC3_GUSB3PIPECTL_DELAYP1TRANS,
+			DWC3_GUSB3PIPECTL_UX_EXIT_IN_PX);
+	}
+
+	/* Configure USB2 PHY interface: Select UTMI+ PHY with 8-bit interface */
+	clrsetbits32(&dwc3->usb2phycfg,
+		(DWC3_GUSB2PHYCFG_USB2TRDTIM_MASK |
+		 DWC3_GUSB2PHYCFG_PHYIF_MASK |
+		 DWC3_GUSB2PHYCFG_ENBLSLPM_MASK),
+		(DWC3_GUSB2PHYCFG_PHYIF(UTMI_PHYIF_8_BIT) |
+		 DWC3_GUSB2PHYCFG_USBTRDTIM(USBTRDTIM_UTMI_8_BIT)));
+
+	/* Enable hardware-based clock gating */
+	setbits32(config->cgctl_reg_addr, USB3_CGCTL_DBM_FSM_EN_BIT);
+
+	/* Disable clock gating: DWC_USB3_GCTL.DSBLCLKGTNG = 1 */
+	clrsetbits32(&dwc3->ctl,
+		(DWC3_GCTL_SCALEDOWN_MASK | DWC3_GCTL_DISSCRAMBLE),
+		DWC3_GCTL_U2EXIT_LFPS | DWC3_GCTL_DSBLCLKGTNG);
+
+	/* Allow PHY to transition to P2 from suspend (P3) state */
+	setbits32(&dwc3->usb3pipectl,
+		(DWC3_GUSB3PIPECTL_P3EXSIGP2 |
+		 DWC3_GUSB3PIPECTL_UX_EXIT_IN_PX));
+
+	/* Reduce U3 exit handshake timer to 300ns */
+	clrsetbits32(config->link_regs_lu3lfpsrxtim_addr,
+		LFPS_RSP_RX_CLK_CLR_MASK, LFPS_RSP_RX_CLK_SET_MASK);
+
+	/* Configure L1 exit and IP gap settings */
+	clrsetbits32(&dwc3->uctl1,
+		DWC3_GUCTL1_CLR_MASK,
+		DWC3_GUCTL1_SET_MASK);
+
+	/* Set GRXTHRCFG based on case 8000615753 values */
+	setbits32(&dwc3->rxthrcfg,
+		DWC3_GRXTHRCFG_USBMAXRXBURSTSIZE(3) |
+		DWC3_GRXTHRCFG_USBRXPKTCNT(3) |
+		DWC3_GRXTHRCFG_USBRXPKTCNTSEL);
+
+	/* Set the bus configuration 1K page pipe limit */
+	setbits32(&dwc3->sbuscfg1,
+		DWC3_GSBUSCFG1_PIPETRANSLIMIT(0xE) |
+		DWC3_GSBUSCFG1_EN1KPAGE);
+
+	/* Set Sparse Control Transaction Enable */
+	setbits32(&dwc3->uctl, DWC3_GUCTL_SPRSCTRLTRANSEN);
+
+	/* Disable sleep mode */
+	clrbits32(config->gusb2phycfg_regs_addr, GUSB2PHYCFG_ENBLSLPM_BIT);
+
+	/* Configure controller in Host mode */
+	clrsetbits32(&dwc3->ctl,
+		DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_OTG),
+		DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_HOST));
+
+	printk(BIOS_SPEW, "Configure USB %s in Host mode\n", config->name);
+
+	/* Enable wake on connect/disconnect/overcurrent */
+	setbits32(config->portsc_20_regs_addr, USB3_PORTSC_WCE_BIT);
+	setbits32(config->portsc_30_regs_addr, USB3_PORTSC_WCE_BIT);
+}
+
+static const struct dwc3_controller_config prim_config = {
+	.name = "Primary",
+	.general_cfg_addr = (u32 *)USB4_SS_USB3_DRD_SP_0_USB31_PRIMGENERAL_CFG,
+	.cgctl_reg_addr = USB4_SS_USB3_DRD_SP_0_USB31_PRIMCGCTL_REG,
+	.link_regs_lu3lfpsrxtim_addr =
+		USB4_SS_USB3_DRD_SP_0_USB31_PRIMLINK_REGS_0_LU3LFPSRXTIM_ADDR,
+	.gusb2phycfg_regs_addr =
+		USB4_SS_USB3_DRD_SP_0_USB31_PRIMGUSB2PHYCFG_REGS_0_GUSB2PHYCFG_ADDR,
+	.portsc_20_regs_addr =
+		USB4_SS_USB3_DRD_SP_0_USB31_PRIMPORTSC_20_REGS_0_PORTSC_20_ADDR,
+	.portsc_30_regs_addr =
+		USB4_SS_USB3_DRD_SP_0_USB31_PRIMPORTSC_30_REGS_0_PORTSC_30_ADDR,
+	.smb_slave_addr = SMB1_SLAVE_ID,
+};
+
+static const struct dwc3_controller_config sec_config = {
+	.name = "Secondary",
+	.general_cfg_addr = (u32 *)USB4_SS_USB3_DRD_SP_1_USB31_SECGENERAL_CFG,
+	.cgctl_reg_addr = USB4_SS_USB3_DRD_SP_1_USB31_SECCGCTL_REG,
+	.link_regs_lu3lfpsrxtim_addr =
+		USB4_SS_USB3_DRD_SP_1_USB31_SECLINK_REGS_0_LU3LFPSRXTIM_ADDR,
+	.gusb2phycfg_regs_addr =
+		USB4_SS_USB3_DRD_SP_1_USB31_SECGUSB2PHYCFG_REGS_0_GUSB2PHYCFG_ADDR,
+	.portsc_20_regs_addr =
+		USB4_SS_USB3_DRD_SP_1_USB31_SECPORTSC_20_REGS_0_PORTSC_20_ADDR,
+	.portsc_30_regs_addr =
+		USB4_SS_USB3_DRD_SP_1_USB31_SECPORTSC_30_REGS_0_PORTSC_30_ADDR,
+	.smb_slave_addr = SMB2_SLAVE_ID,
+};
+
 /* Initialization of DWC3 Core and PHY */
 static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 {
+	bool high_speed_only_primary = false;
+	bool high_speed_only_secondary = false;
+
 	/* Call Clock Enable */
 	qcom_enable_usb_clk();
 
@@ -311,7 +512,69 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 	if (!ret0 || !ret1)
 		hs_speed_only = true;
 
+	/* Type C port 0 - C0 */
+	clock_reset_bcr(dwc3->gcc_qusb2phy_prim_bcr, 1);
+	udelay(10);
+	clock_reset_bcr(dwc3->gcc_qusb2phy_prim_bcr, 0);
+	/* TBD:usb_shared_repeater_reset,usb_shared_repeater_init */
+	/* Initialize secondary HS PHY */
+	hs_usb_phy_init(2);
+
+	/* Reset USB4.0 DP0 PHY, USB3 PHY, and USB3PHY PHY PRIM BCRs */
+	clock_reset_bcr(dwc3->gcc_usb4_0_dp0_phy_prim_bcr, 1);
+	clock_reset_bcr(dwc3->gcc_usb3_phy_prim_bcr, 1);
+	clock_reset_bcr(dwc3->gcc_usb3phy_phy_prim_bcr, 1);
+	udelay(10);
+	clock_reset_bcr(dwc3->gcc_usb3phy_phy_prim_bcr, 0);
+	clock_reset_bcr(dwc3->gcc_usb3_phy_prim_bcr, 0);
+	clock_reset_bcr(dwc3->gcc_usb4_0_dp0_phy_prim_bcr, 0);
+	udelay(10);
+	/* Initialize USB4/USB3 EDP_DP_Con PHY Configuration */
+	int ss0_ret = qmp_usb4_dp_phy_ss_init(0);
+	if (ss0_ret != CB_SUCCESS) {
+		printk(BIOS_ERR, "SS0 QMP PHY initialization failed\n");
+		high_speed_only_primary = true;
+	}
+	/* Enable VBUS for C0 */
+	enable_vbus_ss(&prim_config);
+	udelay(50);
+	usb_typec_status_check(&prim_config);
+
+	/* Type C port 1 - C1 */
+	/* Reset USB secondary[C1] PHY BCRs */
+	clock_reset_bcr(dwc3->gcc_qusb2phy_sec_bcr, 1);
+	udelay(10);
+	clock_reset_bcr(dwc3->gcc_qusb2phy_sec_bcr, 0);
+	/* TBD:usb_shared_repeater_reset,usb_shared_repeater_init for secondary */
+	/* Initialize secondary HS PHY */
+	hs_usb_phy_init(3);
+
+	/* Reset USB4.1 DP0 PHY, USB3 PHY, and USB3PHY PHY SEC BCRs */
+	clock_reset_bcr(dwc3->gcc_usb4_1_dp0_phy_sec_bcr, 1);
+	clock_reset_bcr(dwc3->gcc_usb3_phy_sec_bcr, 1);
+	clock_reset_bcr(dwc3->gcc_usb3phy_phy_sec_bcr, 1);
+	udelay(10);
+	clock_reset_bcr(dwc3->gcc_usb3phy_phy_sec_bcr, 0);
+	clock_reset_bcr(dwc3->gcc_usb3_phy_sec_bcr, 0);
+	clock_reset_bcr(dwc3->gcc_usb4_1_dp0_phy_sec_bcr, 0);
+	udelay(10);
+	/* Initialize USB4/USB3 EDP_DP_Con PHY Configuration (secondary) */
+	int ss1_ret = qmp_usb4_dp_phy_ss_init(1);
+	if (ss1_ret != CB_SUCCESS) {
+		printk(BIOS_ERR, "SS1 QMP PHY initialization failed\n");
+		high_speed_only_secondary = true;
+	}
+	/* Enable VBUS for C1 */
+	enable_vbus_ss(&sec_config);
+	udelay(50);
+	usb_typec_status_check(&sec_config);
+
+	/* Initialize USB Controller for Type A */
 	setup_dwc3(dwc3->usb_host_dwc3);
+	/* Initialize USB Controller for Type C port 0(C0) */
+	setup_dwc3_controller(dwc3->usb_host_dwc3_prim, &prim_config, high_speed_only_primary);
+	/* Initialize USB Controller for Type C port 1(C1) */
+	setup_dwc3_controller(dwc3->usb_host_dwc3_sec, &sec_config, high_speed_only_secondary);
 
 	printk(BIOS_INFO, "DWC3 and PHY setup finished\n");
 }
@@ -322,6 +585,119 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 */
 void setup_usb_host0(void)
 {
-	printk(BIOS_INFO, "Setting up USB HOST0 controller.\n");
-	setup_usb_host(&usb_port0);
+	printk(BIOS_INFO, "Setting up USB HOST controller.\n");
+	setup_usb_host(&usb_ports);
+}
+
+/*
+ * usb_update_refclk_for_core - Updates USB reference clock for specified core
+ * @core_num: USB core number (0-4)
+ * @enable: true to enable, false to disable reference clock
+ */
+void usb_update_refclk_for_core(u32 core_num, bool enable)
+{
+	u32 value = enable ? USB_CLKREF_ENABLE_VALUE : 0;
+
+	switch (core_num) {
+	case 1:
+		clrsetbits32(TCSR_GCC_USB4_1_CLKREF_EN_ADDR, 0x1, value);
+		clrsetbits32(TCSR_GCC_USB2_1_CLKREF_EN_ADDR, 0x1, value);
+		break;
+	case 2:
+		clrsetbits32(TCSR_GCC_USB4_2_CLKREF_EN_ADDR, 0x1, value);
+		clrsetbits32(TCSR_GCC_USB2_2_CLKREF_EN_ADDR, 0x1, value);
+		break;
+	case 3:
+		clrsetbits32(TCSR_GCC_USB3_MP0_CLKREF_EN_ADDR, 0x1, value);
+		clrsetbits32(TCSR_GCC_USB3_MP1_CLKREF_EN_ADDR, 0x1, value);
+		break;
+	default:
+		/* No clkref */
+		break;
+	}
+}
+
+/*
+ * wait_for_otg_enabled - Waits for OTG block to reach enabled state
+ * @status_reg_addr: SPMI address of the OTG status register
+ * @core_name: Name of the core for logging (e.g., "SMB1", "SMB2")
+ * @return: true if OTG enabled successfully, false if timeout or error
+ */
+static bool wait_for_otg_enabled(u32 status_reg_addr, const char *core_name)
+{
+	u32 timeout_ms = 0;
+	u8 otg_status;
+	u8 otg_state;
+
+	while (timeout_ms < OTG_STATUS_TIMEOUT_MS) {
+		otg_status = spmi_read8(status_reg_addr);
+		otg_state = otg_status & OTG_STATE_MASK;
+
+		printk(BIOS_DEBUG, "%s OTG Status: 0x%02x, State: 0x%02x\n",
+		       core_name, otg_status, otg_state);
+
+		switch (otg_state) {
+		case OTG_STATE_ENABLED:
+			printk(BIOS_INFO, "%s OTG block enabled successfully\n", core_name);
+			return true;
+		case OTG_STATE_ERROR:
+			printk(BIOS_ERR, "%s OTG block in ERROR state (0x%02x)\n",
+			       core_name, otg_status);
+			return false;
+		case OTG_STATE_DISABLED:
+		case OTG_STATE_ENABLING:
+		case OTG_STATE_DISABLING:
+			/* Continue polling */
+			break;
+		default:
+			printk(BIOS_WARNING, "%s OTG block in unknown state: 0x%02x\n",
+			       core_name, otg_state);
+			break;
+		}
+
+		mdelay(OTG_STATUS_POLL_INTERVAL_MS);
+		timeout_ms += OTG_STATUS_POLL_INTERVAL_MS;
+	}
+
+	printk(BIOS_ERR, "%s OTG enable timeout after %d ms, final state: 0x%02x\n",
+	       core_name, timeout_ms, otg_state);
+	return false;
+}
+
+/*
+ * enable_vbus_ss - Enables VBUS SuperSpeed for specified USB core
+ * @config: Controller configuration containing SMB slave address
+ */
+void enable_vbus_ss(const struct dwc3_controller_config *config)
+{
+	u8 slave = config->smb_slave_addr;
+
+	printk(BIOS_INFO, "Enabling %s VBUS SuperSpeed\n", config->name);
+
+	spmi_write8(SPMI_ADDR(slave, SCHG_DCDC_OTG_CFG), 0x20);
+	spmi_write8(SPMI_ADDR(slave, SCHG_DCDC_CMD_OTG), 0x1);
+
+	/* Wait for OTG block to reach enabled state */
+	if (!wait_for_otg_enabled(SPMI_ADDR(slave, SCHG_DCDC_OTG_STATUS), config->name))
+		printk(BIOS_ERR, "%s OTG enable failed\n", config->name);
+}
+
+/*
+ * usb_typec_status_check - Reads comprehensive Type-C status from PMIC
+ * @config: Controller configuration containing SMB slave address
+ */
+void usb_typec_status_check(const struct dwc3_controller_config *config)
+{
+	u8 slave = config->smb_slave_addr;
+	u8 misc_status, src_status, mode_cfg;
+
+	misc_status = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_MISC_STATUS));
+	src_status = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_SRC_STATUS));
+	mode_cfg = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_MODE_CFG));
+
+	printk(BIOS_INFO, "%s Type-C Status:\n", config->name);
+	printk(BIOS_INFO, "  Misc Status (0x2B0B): 0x%02x, VBUS Status (bit 5): %d\n",
+	       misc_status, (misc_status & TYPEC_VBUS_STATUS_MASK) ? 1 : 0);
+	printk(BIOS_INFO, "  Src Status (0x2B08): 0x%02x\n", src_status);
+	printk(BIOS_INFO, "  Mode Config (0x2B44): 0x%02x\n", mode_cfg);
 }

@@ -15,7 +15,6 @@
 
 @par Specification Reference:
 **/
-
 #ifndef _MEM_INFO_HOB_H_
 #define _MEM_INFO_HOB_H_
 
@@ -35,6 +34,9 @@ extern EFI_GUID gSiMemoryPlatformDataGuid;
 // Must be same or higher than the corresponding definitions in MrcGlobalDefinitions.h
 #define _MAX_RANK_IN_CHANNEL       (4)       ///< The maximum number of ranks per channel.
 #define _MAX_SDRAM_IN_DIMM         (5)       ///< The maximum number of SDRAMs per DIMM.
+
+// Must match the corresponding definition in CMrcExtTypes.h
+#define PPR_REQUEST_MAX           (2)
 
 // Must match definitions in
 // Intel\OneSiliconPkg\IpBlock\MemoryInit\Mtl\Include\MrcInterface.h
@@ -360,6 +362,7 @@ typedef struct {
   BOOLEAN           MixedEccDimms;                     ///< TRUE if both ECC and nonECC Dimms were detected in the system
   UINT8             MaxRankCapacity;                   ///< Maximum possible rank capacity in [GB]
   UINT16            PprFailingChannelBitMask;          ///< PPR failing channel mask
+  BOOLEAN           PprTargetedStatus[PPR_REQUEST_MAX]; ///< PPR status of each Targeted PPR request (0 = Targeted PPR was successful, 1 = PPR failed)
 } MEMORY_INFO_DATA_HOB;
 
 /**

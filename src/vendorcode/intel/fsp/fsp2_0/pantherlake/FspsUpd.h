@@ -2337,9 +2337,17 @@ typedef struct {
 **/
   UINT8                       PchHdaLinkFrequency;
 
-/** Offset 0x149B - Reserved
+/** Offset 0x149B - HD Audio Microphone Privacy Mode
+  HD Audio Microphone Privacy Mode: 0: No Microphone Privacy Support; 1: HW Managed
+  Microphone Privacy; 2: FW Managed Microphone Privacy; 3: Force Microphone Mute
+  0: No Microphone Privacy Support, 1: HW Managed Microphone Privacy, 2: FW Managed
+  Microphone Privacy, 3: Force Microphone Mute
 **/
-  UINT8                       Reserved59[2];
+  UINT8                       PchHdaMicPrivacyMode;
+
+/** Offset 0x149C - Reserved
+**/
+  UINT8                       Reserved59;
 
 /** Offset 0x149D - HD Audio Microphone Privacy applied for SoundWire Link number 0 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 0 in HW Mode: 0: Disable, 1: Enable

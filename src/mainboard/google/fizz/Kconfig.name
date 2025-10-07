@@ -3,10 +3,17 @@
 comment "Fizz"
 
 config BOARD_GOOGLE_FIZZ
-	bool "->  Fizz"
+	bool "->  Fizz (Multiple devices - See help text)"
+	help
+	  The Fizz board supports the following devices:
+	  - AOpen Chromebox Commercial 2 (Jax)
+	  - HP Chromebox G2 (Kench)
+	  - Acer Chromebox CXI3 (SION)
+	  - ASUS Chromebox 3 (CN65) (TEEMO)
+	  - CTL Chromebox CBx1 (WUKONG)
 
 config BOARD_GOOGLE_KARMA
-	bool "->  Karma"
+	bool "->  Karma (Acer Chromebase 24I2)"
 
 config BOARD_GOOGLE_ENDEAVOUR
-	bool "->  Endeavour"
+	bool "->  Endeavour (Google Meet Series One (Lenovo))"

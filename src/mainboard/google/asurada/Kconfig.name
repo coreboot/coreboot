@@ -9,4 +9,4 @@ config BOARD_GOOGLE_HAYATO
 	bool "->  Hayato"
 
 config BOARD_GOOGLE_SPHERION
-	bool "->  Spherion"
+	bool "->  Spherion (Acer Chromebook 514 (CB514-2H, CB514-2HT))"

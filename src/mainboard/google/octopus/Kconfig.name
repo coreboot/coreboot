@@ -15,16 +15,16 @@ config BOARD_GOOGLE_CASTA
 	bool "->  Bluebird/Casta (Samsung Chromebook 4, 4+)"
 
 config BOARD_GOOGLE_DOOD
-	bool "->  Dood"
+	bool "->  Dood (NEC Chromebook Y2)"
 
 config BOARD_GOOGLE_FLEEX
 	bool "->  Fleex (Dell Chromebook 3100)"
 
 config BOARD_GOOGLE_FOOB
-	bool "->  Foob"
+	bool "->  Foob (CTL Chromebook VX11/VT11T)"
 
 config BOARD_GOOGLE_GARG
-	bool "->  Garg"
+	bool "->  Garg (CTL Chromebook NL71/CT/LTE)"
 
 config BOARD_GOOGLE_LICK
 	bool "->  Lick (Ideapad 3 Chromebook)"

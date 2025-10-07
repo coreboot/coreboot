@@ -39,4 +39,10 @@ config BOARD_GOOGLE_SCOUT
 	bool "->  Scout (Series One Desk 27)"
 
 config BOARD_GOOGLE_WYVERN
-	bool "->  Wyvern (CTL Chromebox CBx2)"
+	bool "->  Wyvern (Multiple devices - See help text)"
+	help
+	  The Wyvern board supports the following devices:
+	  - CTL Chromebox CBx2/Enterprise CBx2
+	  - Promethean Chromebox 2
+	  - ViewSonic NMP760 Chromebox
+	  - Wyvern MobLab

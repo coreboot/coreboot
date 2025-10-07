@@ -6,19 +6,19 @@ config BOARD_GOOGLE_AGAH
 	bool "->  Agah"
 
 config BOARD_GOOGLE_ANAHERA
-	bool "->  Anahera"
+	bool "->  Anahera (HP Elite c640 14 inch G3 Chromebook)"
 
 config BOARD_GOOGLE_ANAHERA4ES
 	bool "->  Anahera4ES"
 
 config BOARD_GOOGLE_ANRAGGAR
-	bool "->  Anraggar"
+	bool "->  Anraggar (ASUS Chromebook CR12 CR1204C)"
 
 config BOARD_GOOGLE_AURASH
-	bool "->  Aurash"
+	bool "->  Aurash (AOpen Chromebox Commercial 3)"
 
 config BOARD_GOOGLE_BANSHEE
-	bool "->  Banshee"
+	bool "->  Banshee (Framework Laptop Chromebook Edition)"
 
 config BOARD_GOOGLE_BRASK
 	bool "->  Brask"
@@ -27,82 +27,96 @@ config BOARD_GOOGLE_BRYA0
 	bool "->  Brya 0"
 
 config BOARD_GOOGLE_CRAASK
-	bool "->  Craask"
+	bool "->  Craask (Acer Chromebook Spin 512)"
 
 config BOARD_GOOGLE_CRAASKOV
-	bool "->  Craaskov"
+	bool "->  Craaskov (Acer Chromebook Spin 312)"
 
 config BOARD_GOOGLE_CONSTITUTION
-	bool "->  Constitution"
+	bool "->  Constitution (Google Meet Series Two)"
 
 config BOARD_GOOGLE_CROTA
-	bool "->  Crota"
+	bool "->  Crota (Multiple devices - See help text)"
+	help
+	  The Crota board supports the following devices:
+	  - Dell Latitude 5430 Chromebook
+	  - Dell Latitude 5430 2-in-1 Chromebook
 
 config BOARD_GOOGLE_DIRKS
-	bool "->  Dirks"
+	bool "->  Dirks (Acer Chromebox Mini CXM2 (TWL))"
 
 config BOARD_GOOGLE_DOCHI
-	bool "->  Dochi"
+	bool "->  Dochi (Acer Chromebook Plus Spin 514)"
 
 config BOARD_GOOGLE_DOMIKA
-	bool "->  Domika"
+	bool "->  Domika (Multiple devices - See help text)"
+	help
+	  The Domika board supports the following devices:
+	  - HP Fortis G1i 11 Chromebook
+	  - HP Fortis Flip G1i 11 Chromebook
+	  - HP Fortis G1i 14 Chromebook
 
 config BOARD_GOOGLE_FELWINTER
-	bool "->  Felwinter"
+	bool "->  Felwinter (ASUS Chromebook Flip CX5(CX5601))"
 
 config BOARD_GOOGLE_GAELIN
 	bool "->  Gaelin"
 
 config BOARD_GOOGLE_GIMBLE
-	bool "->  Gimble"
+	bool "->  Gimble (HP Chromebook x360 14c-cd0)"
 
 config BOARD_GOOGLE_GIMBLE4ES
 	bool "->  Gimble4ES"
 
 config BOARD_GOOGLE_GLADIOS
-	bool "->  Gladios"
+	bool "->  Gladios (HP Chromebox Enterprise G4)"
 
 config BOARD_GOOGLE_GLASSWAY
-	bool "->  Glassway"
+	bool "->  Glassway (CTL Chromebook Plus PX141GX)"
 
 config BOARD_GOOGLE_GOTHRAX
-	bool "->  Gothrax"
+	bool "->  Gothrax (Multiple OEM Chromebooks)"
 
 config BOARD_GOOGLE_GUREN
-	bool "->  Guren"
+	bool "->  Guren (CTL Chromebook PX121E)"
 
 config BOARD_GOOGLE_HADES
 	bool "->  Hades"
 
 config BOARD_GOOGLE_KANO
-	bool "->  Kano"
+	bool "->  Kano (Acer Chromebook Spin 714)"
 
 config BOARD_GOOGLE_KALADIN
 	bool "->  Kaladin"
 
 config BOARD_GOOGLE_KINOX
-	bool "->  Kinox"
+	bool "->  Kinox (Lenovo ThinkCentre M60q Chromebox)"
 
 config BOARD_GOOGLE_KULDAX
-	bool "->  Kuldax"
+	bool "->  Kuldax (ASUS Chromebox 5/5a (CN67))"
 
 config BOARD_GOOGLE_JOXER
-	bool "->  Joxer"
+	bool "->  Joxer (HP Chromebook x360 14b)"
 
 config BOARD_GOOGLE_LISBON
-	bool "->  Lisbon"
+	bool "->  Lisbon (Multiple devices - See help text)"
+	help
+	  The Lisbon board supports the following devices:
+	  - CTL Chromebox CBx3 / CTL Chromebox Enterprise CBx3
+	  - Centerm Chromebox D661 / Centerm Chromebox Enterprise D661
+	  - Promethean Chromebox 3
 
 config BOARD_GOOGLE_MARASOV
-	bool "->  Marasov"
+	bool "->  Marasov (ASUS Chromebook Plus CX34 CX3402)"
 
 config BOARD_GOOGLE_MITHRAX
-	bool "->  Mithrax"
+	bool "->  Mithrax (ASUS Chromebook CX34 Flip (CX3401))"
 
 config BOARD_GOOGLE_MOLI
-	bool "->  Moli"
+	bool "->  Moli (Acer Chromebox CXI5)"
 
 config BOARD_GOOGLE_MOXIE
-	bool "->  Moxie"
+	bool "->  Moxie (Acer Chromebox CXI6)"
 
 config BOARD_GOOGLE_NIVVIKS
 	bool "->  Nivviks"
@@ -114,40 +128,44 @@ config BOARD_GOOGLE_NOKRIS
 	bool "->  Nokris"
 
 config BOARD_GOOGLE_OMNIGUL
-	bool "->  Omnigul"
+	bool "->  Omnigul (Multiple devices - See help text)"
+	help
+	  The Omnigul board supports the following devices:
+	  - Acer Chromebook Plus 515 (CB515-2H/2HT)
+	  - Acer Chromebook Plus Enterprise 515 (CBE595-2/2T)
 
 config BOARD_GOOGLE_OSIRIS
-	bool "->  Osiris"
+	bool "->  Osiris (Acer Chromebook 516 GE)"
 
 config BOARD_GOOGLE_PIRRHA
 	bool "->  Pirrha"
 
 config BOARD_GOOGLE_PRIMUS
-	bool "->  Primus"
+	bool "->  Primus (Lenovo ThinkPad C14 Gen 1 Chromebook)"
 
 config BOARD_GOOGLE_PUJJO
-	bool "->  Pujjo"
+	bool "->  Pujjo (Lenovo 500e Yoga/Flex 3i Chromebook)"
 
 config BOARD_GOOGLE_PUJJONIRU
-	bool "->  Pujjoniru"
+	bool "->  Pujjoniru (Lenovo Chromebook Plus 2-in-1 14ITN10)"
 
 config BOARD_GOOGLE_QUANDISO
-	bool "->  Quandiso"
+	bool "->  Quandiso (CTL Chromebook NL73)"
 
 config BOARD_GOOGLE_QUANDISO2
-	bool "->  Quandiso2"
+	bool "->  Quandiso2 (CTL Chromebook NL73 Gen 2)"
 
 config BOARD_GOOGLE_REDRIX
-	bool "->  Redrix"
+	bool "->  Redrix (HP Elite Dragonfly Chromebook)"
 
 config BOARD_GOOGLE_REDRIX4ES
 	bool "->  Redrix4ES"
 
 config BOARD_GOOGLE_RIVEN
-	bool "->  Riven"
+	bool "->  Riven (Acer Chromebook Spin 511)"
 
 config BOARD_GOOGLE_RULL
-	bool "->  Rull"
+	bool "->  Rull (Acer Chromebook 514 C937)"
 
 config BOARD_GOOGLE_SKOLAS
 	bool "->  Skolas"
@@ -156,16 +174,16 @@ config BOARD_GOOGLE_SKOLAS4ES
 	bool "->  Skolas4ES"
 
 config BOARD_GOOGLE_TAEKO
-	bool "->  Taeko"
+	bool "->  Taeko (Lenovo IdeaPad/Flex 5i Chromebook 14)"
 
 config BOARD_GOOGLE_TAEKO4ES
 	bool "->  Taeko4ES"
 
 config BOARD_GOOGLE_TANIKS
-	bool "->  Taniks"
+	bool "->  Taniks (Lenovo IdeaPad Gaming Chromebook 16)"
 
 config BOARD_GOOGLE_TELIKS
-	bool "->  Teliks"
+	bool "->  Teliks (ASUS Chromebook CR11 (CR1104CTA))"
 
 config BOARD_GOOGLE_TEREID
 	bool "->  Tereid"
@@ -177,49 +195,55 @@ config BOARD_GOOGLE_TRULO
 	bool "->  Trulo"
 
 config BOARD_GOOGLE_ULDREN
-	bool "->  Uldren"
+	bool "->  Uldren (Dell Chromebook 3120)"
 
 config BOARD_GOOGLE_ULDRENITE
 	bool "->  Uldrenite"
 
 config BOARD_GOOGLE_VELL
-	bool "->  Vell"
+	bool "->  Vell (HP Dragonfly Pro Chromebook)"
 
 config BOARD_GOOGLE_VOLMAR
-	bool "->  Volmar"
+	bool "->  Volmar (Acer Chromebook Vero 514)"
 
 config BOARD_GOOGLE_XIVU
-	bool "->  Xivu"
+	bool "->  Xivu (Asus Chromebook CR11 [CR1102C])"
 
 config BOARD_GOOGLE_YAVIKS
-	bool "->  Yaviks"
+	bool "->  Yaviks (HP Chromebook 15.6)"
 
 config BOARD_GOOGLE_YAVILLA
-	bool "->  Yavilla"
+	bool "->  Yavilla (HP Fortis 11 G10 Chromebook)"
 
 config BOARD_GOOGLE_ZYDRON
 	bool "->  Zydron"
 
 config BOARD_GOOGLE_XOL
-	bool "->  Xol"
+	bool "->  Xol (Galaxy Chromebook Plus)"
 
 config BOARD_GOOGLE_NOVA
 	bool "->  Nova"
 
 config BOARD_GOOGLE_BUJIA
-	bool "->  Bujia"
+	bool "->  Bujia (Multiple devices - See help text)"
+	help
+	  The Bujia board supports the following devices:
+	  - AOPEN Chromebox OPS / AOPEN Chromebox Enterprise OPS
+	  - IMAGO Chromebox OPS
+	  - Satsuki Chromebox OPS / Satsuki Chromebox Enterprise OPS
+	  - ViewSonic Bujia
 
 config BOARD_GOOGLE_YAVISTA
 	bool "->  Yavista"
 
 config BOARD_GOOGLE_SUNDANCE
-	bool "->  Sundance"
+	bool "->  Sundance (NEC Chromebook Y4)"
 
 config BOARD_GOOGLE_PUJJOGA
-	bool "->  Pujjoga"
+	bool "->  Pujjoga (Lenovo 500e Chromebook Gen 4s)"
 
 config BOARD_GOOGLE_PUJJOGATWIN
-	bool "->  Pujjogatwin"
+	bool "->  Pujjogatwin (Lenovo 500e Chromebook Gen 4s)"
 
 config BOARD_GOOGLE_PUJJOLO
 	bool "->  Pujjolo"
@@ -228,7 +252,7 @@ config BOARD_GOOGLE_ORISA
 	bool "->  Orisa"
 
 config BOARD_GOOGLE_TELITH
-	bool "->  Telith"
+	bool "->  Telith (ASUS Chromebook CX15 (CX1505CTA))"
 
 config BOARD_GOOGLE_MELIKS
 	bool "->  Meliks"

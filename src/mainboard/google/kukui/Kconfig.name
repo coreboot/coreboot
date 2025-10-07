@@ -18,7 +18,7 @@ config BOARD_GOOGLE_FLAPJACK
 	bool "->  Flapjack"
 
 config BOARD_GOOGLE_KATSU
-	bool "->  Katsu"
+	bool "->  Katsu (ASUS Chromebook Detachable CZ1)"
 
 comment "Jacuzzi"
 
@@ -53,7 +53,7 @@ config BOARD_GOOGLE_FENNEL
 	bool "->  Fennel"
 
 config BOARD_GOOGLE_COZMO
-	bool "->  Cozmo"
+	bool "->  Cozmo (Acer Chromebook 314 (CB314-2H/CB314-2HT))"
 
 config BOARD_GOOGLE_MAKOMO
 	bool "->  Makomo"

@@ -21,7 +21,16 @@ config BOARD_GOOGLE_REKS
 	bool "->  Reks (Lenovo N22/N42 Chromebook)"
 
 config BOARD_GOOGLE_RELM
-	bool "->  Relm"
+	bool "->  Relm (Multiple devices - See help text)"
+	help
+	  The Relm board supports the following devices:
+	  - Acer Chromebook 11 N7 (C731, C731T)
+	  - CTL NL61 Chromebook
+	  - EduGear Chromebook R
+	  - Edxis Education Chromebook (NL6D)
+	  - HP Chromebook 11 G5 EE
+	  - Mecer V2 Chromebook
+	  - Positivo Chromebook C216B
 
 config BOARD_GOOGLE_SETZER
 	bool "->  Setzer (HP Chromebook 11 G5)"
@@ -33,4 +42,13 @@ config BOARD_GOOGLE_ULTIMA
 	bool "->  Ultima (Lenovo Yoga 11e G3)"
 
 config BOARD_GOOGLE_WIZPIG
-	bool "->  Wizpig"
+	bool "->  Wizpig (Multiple devices - See help text)"
+	help
+	  The Wizpig board supports the following devices:
+	  - CTL J5 Chromebook
+	  - Edugear CMT Chromebook
+	  - Haier Chromebook 11 C
+	  - Multilaser Chromebook M11C
+	  - PCMerge Chromebook PCM-116T-432B
+	  - Prowise Chromebook Proline
+	  - Viglen Chromebook 360

@@ -3,7 +3,7 @@
 comment "Skyrim"
 
 config BOARD_GOOGLE_CRYSTALDRIFT
-	bool "->  Crystaldrift"
+	bool "->  Crystaldrift (SPC Chromebook V1)"
 
 config BOARD_GOOGLE_FROSTFLOW
 	bool "->  Frostflow (ASUS Chromebook CM34 Flip)"

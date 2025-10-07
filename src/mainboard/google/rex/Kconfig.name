@@ -9,7 +9,7 @@ config BOARD_GOOGLE_DEKU4ES
 	bool "-> Deku4ES"
 
 config BOARD_GOOGLE_KARIS
-	bool "->  Karis"
+	bool "->  Karis (Acer Chromebook Plus Spin 714)"
 
 config BOARD_GOOGLE_KARIS4ES
 	bool "->  Karis4ES"
@@ -36,10 +36,10 @@ config BOARD_GOOGLE_REX64
 	bool "-> Rex 64"
 
 config BOARD_GOOGLE_SCREEBO
-	bool "->  Screebo"
+	bool "->  Screebo (ASUS ExpertBook CX54 Chromebook Plus (CX5403))"
 
 config BOARD_GOOGLE_SCREEBO4ES
 	bool "->  Screebo4ES"
 
 config BOARD_GOOGLE_KANIX
-	bool "->  Kanix"
+	bool "->  Kanix (Acer Chromebook Plus 714)"

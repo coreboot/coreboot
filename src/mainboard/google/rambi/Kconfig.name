@@ -12,10 +12,31 @@ config BOARD_GOOGLE_CLAPPER
 	bool "->  Clapper (Lenovo N20 Chromebook)"
 
 config BOARD_GOOGLE_ENGUARDE
-	bool "->  Enguarde"
+	bool "->  Enguarde (Multiple devices - See help text)"
+	help
+	  The Enguarde board supports the following devices:
+	  - ASI Chromebook
+	  - CTL N6 Education Chromebook
+	  - Crambo Chromebook
+	  - Education Chromebook
+	  - Edxis Education Chromebook (NL6)
+	  - JP Sa Couto Chromebook
+	  - Lenovo N21 Chromebook
+	  - M&A Chromebook
+	  - RGS Education Chromebook
+	  - Senkatel C1101 Chromebook
+	  - True IDC Chromebook
+	  - Videonet Chromebook
+	  - eduGear Chromebook R
 
 config BOARD_GOOGLE_EXPRESSO
-	bool "->  Expresso"
+	bool "->  Expresso (Multiple devices - See help text)"
+	help
+	  The Expresso board supports the following devices:
+	  - Bobicus Chromebook 11
+	  - Consumer Chromebook
+	  - Edxis Chromebook
+	  - HEXA Chromebook Pi
 
 config BOARD_GOOGLE_GLIMMER
 	bool "->  Glimmer (Lenovo ThinkPad 11e Chromebook)"

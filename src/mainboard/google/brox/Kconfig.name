@@ -21,7 +21,11 @@ config BOARD_GOOGLE_GREENBAYUPOC
 	bool "->  Greenbayupoc"
 
 config BOARD_GOOGLE_JUBILANT
-	bool "->  Jubilant"
+	bool "->  Jubilant (Multiple devices - See help text)"
+	help
+	  The Jubilant board supports the following devices:
+	  - Acer Chromebook Plus 514
+	  - Acer Chromebook Plus 516 (CB516-1H,CB516-1HT)
 
 config BOARD_GOOGLE_LOTSO
-	bool "->  Lotso"
+	bool "->  Lotso (Lenovo Chromebook Plus 2-in-1)"

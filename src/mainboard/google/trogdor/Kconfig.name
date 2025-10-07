@@ -6,7 +6,7 @@ config BOARD_GOOGLE_BUBS
 	bool "->  Bubs"
 
 config BOARD_GOOGLE_COACHZ
-	bool "->  Coachz"
+	bool "->  Coachz (HP Chromebook x2 11-da0)"
 
 config BOARD_GOOGLE_GELARSHIE
 	bool "->  Gelarshie"
@@ -18,7 +18,7 @@ config BOARD_GOOGLE_KINGOFTOWN
 	bool "->  Kingoftown"
 
 config BOARD_GOOGLE_LAZOR
-	bool "->  Lazor"
+	bool "->  Lazor (Acer Chromebook Spin 513, CP513-1H/1HL, R841T/LT)"
 
 config BOARD_GOOGLE_MARZIPAN
 	bool "->  Marzipan"
@@ -33,7 +33,7 @@ config BOARD_GOOGLE_POMPOM
 	bool "->  Pompom"
 
 config BOARD_GOOGLE_QUACKINGSTICK
-	bool "->  Quackingstick"
+	bool "->  Quackingstick (Acer Chromebook Tab 510 / Enterprise Tab 510)"
 
 config BOARD_GOOGLE_WORMDINGLER
 	bool "->  Wormdingler"

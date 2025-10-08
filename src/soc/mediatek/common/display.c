@@ -11,6 +11,7 @@
 #include <soc/dsi.h>
 #include <soc/mtcmos.h>
 #include <stdio.h>
+#include <symbols.h>
 
 static struct panel_serializable_data *get_mipi_cmd_from_cbfs(struct panel_description *desc)
 {
@@ -70,6 +71,7 @@ int mtk_display_init(void)
 	struct fb_info *info;
 	const char *name;
 	struct panel_description *panel = get_active_panel();
+	uintptr_t fb_addr;
 
 	if (!panel || panel->disp_path == DISP_PATH_NONE) {
 		printk(BIOS_ERR, "%s: Failed to get the active panel\n", __func__);
@@ -143,7 +145,10 @@ int mtk_display_init(void)
 		}
 	}
 
-	info = fb_new_framebuffer_info_from_edid(&edid, (uintptr_t)0);
+	fb_addr = (REGION_SIZE(framebuffer)) ? (uintptr_t)_framebuffer : 0;
+
+	info = fb_new_framebuffer_info_from_edid(&edid, fb_addr);
+
 	if (info)
 		fb_set_orientation(info, panel->orientation);
 

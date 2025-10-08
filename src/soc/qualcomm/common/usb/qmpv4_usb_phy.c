@@ -398,7 +398,7 @@ void ss_qmp_phy_init(void)
 
 	/*
 	 * Wait for PHY initialization to be done
-	 * PCS_STATUS: wait for 1ms for PHY STATUS;
+	 * PCS_STATUS: wait for 10ms for PHY STATUS;
 	 * SW can continuously check for PHYSTATUS = 1.b0.
 	 */
 	long lock_us = wait_us(10000,

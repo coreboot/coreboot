@@ -56,5 +56,5 @@ execution of the IA32 reset vector happens.
 
 ## References
 
-* [Intel TXT LAB handout](https://downloadmirror.intel.com/18931/eng/Intel%20TXT%20LAB%20Handout.pdf)
+* [Intel TXT LAB handout](https://web.archive.org/web/20170830010916/http://downloadmirror.intel.com/18931/eng/Intel%20TXT%20LAB%20Handout.pdf)
 * [FIT BIOS specification](https://www.intel.com/content/dam/www/public/us/en/documents/guides/fit-bios-specification.pdf)

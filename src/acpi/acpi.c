@@ -287,17 +287,14 @@ static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 	tpm2->platform_class = 0;
 
 	if (CONFIG(AMD_CRB_FTPM) && crb_tpm_is_active()) {
-		/* Must be set to 2 for AMD fTPM Support */
 		tpm2->control_area = crb_tpm_base_address() + 0x40;
-		tpm2->start_method = 2;
+		tpm2->start_method = ACPI_TPM2_SM_ACPI_START;
 	} else if (CONFIG(CRB_TPM) && crb_tpm_is_active()) {
-		/* Must be set to 7 for CRB Support */
 		tpm2->control_area = crb_tpm_base_address() + 0x40;
-		tpm2->start_method = 7;
+		tpm2->start_method = ACPI_TPM2_SM_CRB;
 	} else {
-		/* Must be set to 0 for FIFO interface support */
 		tpm2->control_area = 0;
-		tpm2->start_method = 6;
+		tpm2->start_method = ACPI_TPM2_SM_MMIO_TIS;
 	}
 	memset(tpm2->msp, 0, sizeof(tpm2->msp));
 

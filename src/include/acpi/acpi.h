@@ -243,6 +243,20 @@ typedef struct acpi_tcpa {
 	u64 lasa;
 } __packed acpi_tcpa_t;
 
+/* TCG ACPI Specification "Table 8: Start Method values for ACPI table for TPM 2.0" */
+enum acpi_tpm2_start_methods {
+	ACPI_TPM2_SM_NOT_ALLOWED = 0,
+	ACPI_TPM2_SM_LEGACY,
+	ACPI_TPM2_SM_ACPI_START,
+	ACPI_TPM2_SM_MMIO_TIS = 6,
+	ACPI_TPM2_SM_CRB,
+	ACPI_TPM2_SM_CRB_AND_ACPI_START,
+	ACPI_TPM2_SM_CRB_AND_ARM_SECURE_MONITOR = 11,
+	ACPI_TPM2_SM_FIFO_I2C,
+	ACPI_TPM2_SM_RESERVED_MMIO0,
+	ACPI_TPM2_SM_RESERVED_MMIO1,
+};
+
 typedef struct acpi_tpm2 {
 	acpi_header_t header;
 	u16 platform_class;

@@ -40,6 +40,14 @@ efi_return_status_t mp_get_number_of_processors(efi_uintn_t *number_of_processor
 efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 	efi_processor_information *processor_info_buffer)
 {
+#if CONFIG_UDK_VERSION >= CONFIG_UDK_202005_VERSION
+	bool location2_requested = false;
+	if (processor_number & CPU_V2_EXTENDED_TOPOLOGY) {
+		processor_number &= ~CPU_V2_EXTENDED_TOPOLOGY;
+		location2_requested = true;
+	}
+#endif
+
 	if (processor_number >= MIN(get_cpu_count(), CONFIG_MAX_CPUS))
 		return FSP_NOT_FOUND;
 
@@ -63,6 +71,19 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 	processor_info_buffer->Location.Package = dev->path.apic.package_id;
 	processor_info_buffer->Location.Core = dev->path.apic.core_id_within_package;
 	processor_info_buffer->Location.Thread = dev->path.apic.thread_id;
+
+#if CONFIG_UDK_VERSION >= CONFIG_UDK_202005_VERSION
+	if (location2_requested) {
+		EFI_CPU_PHYSICAL_LOCATION2 *location2 =
+			&processor_info_buffer->ExtendedInformation.Location2;
+		location2->Package = dev->path.apic.package_id;
+		location2->Die = dev->path.apic.die_id;
+		location2->Tile = dev->path.apic.tile_id;
+		location2->Module = dev->path.apic.module_id;
+		location2->Core = dev->path.apic.core_id_within_package;
+		location2->Thread = dev->path.apic.thread_id;
+	}
+#endif
 
 	return FSP_SUCCESS;
 }

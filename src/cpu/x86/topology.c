@@ -118,6 +118,8 @@ void set_cpu_topology(struct device *cpu)
 		{ LEVEL_TYPE_SMT, &cpu->path.apic.thread_id },
 		{ LEVEL_TYPE_CORE, &cpu->path.apic.core_id },
 		{ LEVEL_TYPE_MODULE, &cpu->path.apic.module_id },
+		{ LEVEL_TYPE_TILE, &cpu->path.apic.tile_id },
+		{ LEVEL_TYPE_DIE, &cpu->path.apic.die_id },
 		{ LEVEL_TYPE_PACKAGE, &cpu->path.apic.package_id },
 		{ LEVEL_TYPE_PACKAGE, &cpu->path.apic.node_id }
 	};

@@ -136,7 +136,7 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	}
 
 	/* b/415605630: Support different ISH UART mappings according the board id */
-	if (board_version < 2) {
+	if (fw_config_probe(FW_CONFIG(SERIES, SERIES_ULDRENITE)) && board_version < 2) {
 		/* Override ISH UART0 to ISH UART1 */
 		gpio_padbased_override(padbased_table, switch_ish_uart1_pads,
 			ARRAY_SIZE(switch_ish_uart1_pads));
@@ -184,7 +184,7 @@ void variant_update_descriptor(void)
 	uint32_t board_version = board_id();
 
 	/* b/404126972: Only this phase has M/B with both FIVR and MBVR. */
-	if (board_version != 1)
+	if (fw_config_probe(FW_CONFIG(SERIES, SERIES_ULDRENITE)) && board_version != 1)
 		return;
 
 	/* VccanaVrLocation = "VCCANA is CPU FIVR" */

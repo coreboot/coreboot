@@ -200,16 +200,6 @@ F:	src/mainboard/asrock/z97_extreme6/
 
 
 
-ASUS A88XM-E MAINBOARD
-M:	Mike Banon <mikebdp2@gmail.com>
-S:	Maintained
-F:	src/mainboard/asus/a88xm-e/
-
-ASUS AM1I-A MAINBOARD
-M:	Mike Banon <mikebdp2@gmail.com>
-S:	Maintained
-F:	src/mainboard/asus/am1i-a/
-
 ASUS H61 SERIES MAINBOARDS
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
@@ -474,11 +464,6 @@ LENOVO MAINBOARDS
 M:	Alexander Couzens <lynxis@fe80.eu>
 S:	Maintained
 F:	src/mainboard/lenovo/
-
-LENOVO G505S MAINBOARD
-M:	Mike Banon <mikebdp2@gmail.com>
-S:	Maintained
-F:	src/mainboard/lenovo/g505s/
 
 LENOVO X200 MAINBOARD
 R:	Stefan Ott <coreboot@desire.ch>

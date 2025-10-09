@@ -312,6 +312,14 @@ chip soc/intel/pantherlake
 			end
 		end # I2C3
 		device ref i2c4 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_E18_IRQ)"
+				register "wake" = "GPE0_DW2_18"
+				register "detect" = "1"
+				device i2c 15 on end
+			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""PIXA2305""
 				register "generic.desc" = ""PIXA Touchpad""

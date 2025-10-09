@@ -319,7 +319,8 @@ static void merlin_init(struct device *dev)
 	 *
 	 */
 	const uint8_t lid_switch[] = {
-		SWITCH_ENABLED,
+		SWITCH_NORMAL,
+		SWITCH_SLEEP_ONLY,
 		SWITCH_DISABLED
 	};
 

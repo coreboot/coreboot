@@ -105,8 +105,9 @@
 #define SPEED_0_2C		0x02
 
 /* Lid Switch */
-#define SWITCH_ENABLED		0x00
-#define SWITCH_DISABLED		0x01
+#define SWITCH_NORMAL		0x00
+#define SWITCH_SLEEP_ONLY	0x01
+#define SWITCH_DISABLED		0x02
 
 /* Power LED Brightness */
 #define LED_NORMAL		0x00

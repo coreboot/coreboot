@@ -981,7 +981,7 @@ F:	src/cpu/armltd/
 F:	src/soc/ti/
 F:	src/soc/samsung/
 F:	util/exynos/
-F:	util/ipqheader/
+F:	util/qualcomm/
 
 ################################################################################
 # Payloads

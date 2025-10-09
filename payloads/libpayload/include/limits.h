@@ -41,10 +41,6 @@
 
 #define CHAR_BIT	8
 
-#define UCHAR_MAX	((unsigned char)~0U)
-#define CHAR_MIN	((char)(UCHAR_MAX & ~(UCHAR_MAX >> 1)))
-#define CHAR_MAX	((char)(UCHAR_MAX >> 1))
-
 #define USHRT_MAX	((unsigned short int)~0U)
 #define SHRT_MIN	((short int)(USHRT_MAX & ~(USHRT_MAX >> 1)))
 #define SHRT_MAX	((short int)(USHRT_MAX >> 1))

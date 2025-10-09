@@ -310,3 +310,11 @@ void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path)
 	main_disp_path_setup(width, height, vrefresh, path);
 	ovlsys_layer_config(fmt, bpp, width, height);
 }
+
+void mtk_ddp_ovlsys_start(uintptr_t fb_addr)
+{
+	write32(&exdma2_reg->ovl_addr, fb_addr);
+	setbits32(&exdma2_reg->ovl_en, BIT(0));
+	setbits32(&exdma2_reg->ovl_l_en, BIT(0));
+	setbits32(&blenders[0]->bld_l_en, BIT(0));
+}

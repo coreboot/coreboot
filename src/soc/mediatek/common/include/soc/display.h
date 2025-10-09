@@ -33,5 +33,6 @@ int mtk_display_init(void);
 
 void mtk_ddp_init(void);
 void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path);
+void mtk_ddp_ovlsys_start(uintptr_t fb_addr);
 
 #endif

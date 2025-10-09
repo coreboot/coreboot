@@ -444,6 +444,20 @@ static const struct dwc3_controller_config sec_config = {
 	.smb_slave_addr = SMB2_SLAVE_ID,
 };
 
+/*
+ * get_usb_typec_polarity - Reads Type-C polarity from PMIC
+ * @config: Controller configuration containing SMB slave address
+ *
+ * @return TRUE if polarify is inverse
+ * @return FALSE if polarify is normal
+ */
+static bool get_usb_typec_polarity(const struct dwc3_controller_config *config)
+{
+	u8 slave = config->smb_slave_addr;
+	u8 misc_status = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_MISC_STATUS));
+	return (misc_status & CCOUT_INVERT_POLARITY) == CCOUT_INVERT_POLARITY;
+}
+
 /* Initialization of DWC3 Core and PHY */
 static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 {
@@ -530,7 +544,7 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 	clock_reset_bcr(dwc3->gcc_usb4_0_dp0_phy_prim_bcr, 0);
 	udelay(10);
 	/* Initialize USB4/USB3 EDP_DP_Con PHY Configuration */
-	int ss0_ret = qmp_usb4_dp_phy_ss_init(0);
+	int ss0_ret = qmp_usb4_dp_phy_ss_init(0, get_usb_typec_polarity(&prim_config));
 	if (ss0_ret != CB_SUCCESS) {
 		printk(BIOS_ERR, "SS0 QMP PHY initialization failed\n");
 		high_speed_only_primary = true;
@@ -559,7 +573,7 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 	clock_reset_bcr(dwc3->gcc_usb4_1_dp0_phy_sec_bcr, 0);
 	udelay(10);
 	/* Initialize USB4/USB3 EDP_DP_Con PHY Configuration (secondary) */
-	int ss1_ret = qmp_usb4_dp_phy_ss_init(1);
+	int ss1_ret = qmp_usb4_dp_phy_ss_init(1, get_usb_typec_polarity(&sec_config));
 	if (ss1_ret != CB_SUCCESS) {
 		printk(BIOS_ERR, "SS1 QMP PHY initialization failed\n");
 		high_speed_only_secondary = true;

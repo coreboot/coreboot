@@ -538,8 +538,9 @@ static void qcom_qmp_phy_configure(void *base_addr, const qmp_phy_init_tbl_t tbl
 }
 
 /* SS QMP PHY initialization function - supports both SS0 and SS1 */
-enum cb_err qmp_usb4_dp_phy_ss_init(int phy_instance)
+enum cb_err qmp_usb4_dp_phy_ss_init(int phy_instance, bool polarity_inverse)
 {
+	unsigned int lane_num = 0;
 	if (phy_instance < 0 || phy_instance >= ARRAY_SIZE(qmp_phy_ss_instance)) {
 		printk(BIOS_ERR, "Invalid PHY instance %d\n", phy_instance);
 		return CB_ERR;
@@ -553,10 +554,13 @@ enum cb_err qmp_usb4_dp_phy_ss_init(int phy_instance)
 	/* Configure TYPEC_CTRL register for lane selection */
 	struct usb43dp_com_reg_layout *current_com_reg = (struct usb43dp_com_reg_layout *)ss_phy_reg->com_base;
 
+	/* Swap lanes based on polarity */
+	if (polarity_inverse)
+		lane_num = 1;
 	/* Configure SW_PORTSELECT and SW_PORTSELECT_MUX using coreboot style */
 	clrsetbits32(&current_com_reg->typec_ctrl,
 				SW_PORTSELECT_MASK | SW_PORTSELECT_MUX_MASK,
-				(0 << SW_PORTSELECT_SHIFT) | SW_PORTSELECT_MUX_MASK);
+				(lane_num << SW_PORTSELECT_SHIFT) | SW_PORTSELECT_MUX_MASK);
 
 	/* Step 1: COM registers */
 	qcom_qmp_phy_configure(ss_phy_reg->com_base,

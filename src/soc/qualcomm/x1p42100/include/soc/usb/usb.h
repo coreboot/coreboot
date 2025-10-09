@@ -124,6 +124,7 @@
 #define SCHG_TYPE_C_TYPE_C_SRC_STATUS 0x2B08
 #define SCHG_TYPE_C_TYPE_C_MODE_CFG 0x2B44
 #define TYPEC_VBUS_STATUS_MASK BIT(5)
+#define CCOUT_INVERT_POLARITY 0x03
 
 /* Forward declaration */
 struct dwc3_controller_config;

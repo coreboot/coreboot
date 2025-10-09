@@ -50,6 +50,21 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd);
 /* Callbacks for SoC/Mainboard specific overrides */
 void platform_fsp_memory_multi_phase_init_cb(uint32_t phase_index);
 void platform_fsp_silicon_multi_phase_init_cb(uint32_t phase_index);
+
+#if CONFIG(FSP_DIMM_INFO)
+struct dimm_fill_args {
+	uint16_t data_width;
+	uint16_t mfg_id_arg;
+};
+
+/* Retrieve DIMM Information by relying on the FSP */
+void fsp_save_dimm_info(void);
+/* Callbacks for SoC/Mainboard specific overrides */
+void platform_fill_dimm_info_args(const DIMM_INFO *src_dimm,
+	    const MEMORY_INFO_DATA_HOB *meminfo_hob,
+	    struct dimm_fill_args *args);
+#endif
+
 /*
  * Displays an early shutdown notification to the user.
  *

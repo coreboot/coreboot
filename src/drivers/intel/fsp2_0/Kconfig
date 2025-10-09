@@ -493,4 +493,11 @@ config USE_COREBOOT_FOR_BMP_RENDERING
 	  Platforms can choose to override this Kconfig option based on their
 	  specific graphics requirements and FSP capabilities.
 
+config FSP_DIMM_INFO
+	bool
+	default n
+	help
+	  Select this option to retrieve DIMM (Memory) related information by relying on
+	  the Intel FSP. coreboot relies on this information to prepare SMBIOS table 17.
+
 endif

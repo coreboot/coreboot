@@ -17,6 +17,7 @@ romstage-$(CONFIG_MMA) += mma_core.c
 romstage-y += cbmem.c
 romstage-$(CONFIG_ENABLE_FSP_ERROR_INFO) += fsp_error_info_hob.c
 romstage-$(CONFIG_CACHE_MRC_SETTINGS) += save_mrc_data.c
+romstage-$(CONFIG_FSP_DIMM_INFO) += fsp_dimm_info.c
 
 ramstage-y += debug.c
 ramstage-$(CONFIG_FSP_USES_CB_DEBUG_EVENT_HANDLER) += fsp_debug_event.c

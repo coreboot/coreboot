@@ -23,7 +23,19 @@ config INTEL_TOP_SWAP_BOOTBLOCK_SIZE
 	default 0x10000
 	help
 	  Set this config to a supported topswap size.
-	  Valid sizes: 0x10000 0x20000 0x40000 0x80000 0x100000
+	  Valid sizes: 0x10000/0x20000/0x40000/0x80000/0x100000/
+	  0x200000/0x400000/0x800000. The maximum size
+	  varies depending on the platform.
+
+config INTEL_IFD_SET_TOP_SWAP_BOOTBLOCK_SIZE
+	bool "Replace the TSBS value with INTEL_TOP_SWAP_BOOTBLOCK_SIZE"
+	default n
+	depends on HAVE_IFD_BIN
+	help
+	  Set to use ifdtool to replace the Top Swap Block Size
+	  PCH strap value in the Intel Firmware Descriptor
+	  with INTEL_TOP_SWAP_BOOTBLOCK_SIZE
+
 
 config INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG
 	string

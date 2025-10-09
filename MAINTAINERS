@@ -889,8 +889,8 @@ M:	Piotr Król <piotr.krol@3mdeb.com>
 M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 M:	Frans Hendriks <fhendriks@eltan.com>
 S:	Maintained
-F:	/src/soc/intel/braswell/
-F:	/src/vendorcode/intel/fsp/fsp1_1/braswell/
+F:	src/soc/intel/braswell/
+F:	src/vendorcode/intel/fsp/fsp1_1/braswell/
 
 INTEL CANNONLAKE SOC
 S:	Orphan
@@ -1058,7 +1058,7 @@ F:	util/docker/
 
 GIT
 F:	.git*
-F:	/util/gitconfig
+F:	util/gitconfig/
 
 HDA DECODER
 M:	Nicholas Sudsgaard <devel+coreboot@nsudsgaard.com>

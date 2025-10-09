@@ -1,0 +1,63 @@
+.TH AMDTOOL 8
+.SH NAME
+amdtool \- a tool for dumping AMD CPU / chipset configuration parameters
+.SH SYNOPSIS
+.B amdtool \fR[\fB\-vh?gGlcMApsa\fR]
+.SH DESCRIPTION
+.B amdtool
+is a handy little tool for dumping the configuration space of AMD
+CPUs, northbridges and southbridges.
+.sp
+This tool has been developed for the coreboot project (see
+.B https://coreboot.org
+for details on coreboot).
+.SH OPTIONS
+.TP
+.B "\-h, \-\-help"
+Show a help text and exit.
+.TP
+.B "\-v, \-\-version"
+Show version information and exit.
+.TP
+.B "\-a, \-\-all"
+Dump all known information listed below.
+.TP
+.B "\-c, \-\-cpu"
+Dump CPU information and features.
+.TP
+.B "\-g, \-\-gpio"
+Dump Fusion Controller Hub (FCH) southbridge GPIO registers.
+.TP
+.B "\-G, \-\-gpio-diffs"
+Show only GPIO register differences from hardware defaults.
+.TP
+.B "\-i, \-\-irq-routing"
+Dump Fusion Controller Hub (FCH) southbridge IRQ routing registers.
+.TP
+.B "\-s, \-\-spi"
+Dump Fusion Controller Hub (FCH) southbridge SPI registers.
+.TP
+.B "\-l, \-\-lpc"
+Dump Fusion Controller Hub (FCH) southbridge LPC registers.
+.TP
+.B "\-M, \-\-msrs"
+Dump AMD CPU MSRs.
+.TP
+.B "\-A, \-\-acpimmio"
+Dump Fusion Controller Hub (FCH) southbridge ACPI MMIO registers.
+.TP
+.B "\-p, \-\-psb"
+Dump Platform Secure Boot State.
+.SH BUGS
+Please report any bugs on the coreboot mailing list
+.RB "(" https://coreboot.org/Mailinglist ")."
+.SH LICENCE
+.B amdtool
+is covered by the GNU General Public License (GPL), version 2.
+.SH COPYRIGHT
+Copyright (C) 2024 3mdeb
+.SH AUTHORS
+Michał Żygowski <michal.zygowski@3mdeb.com>
+.PP
+This manual page was written by Michał Żygowski <michal.zygowski@3mdeb.com>.
+It is licensed under the terms of the GNU GPL (version 2).

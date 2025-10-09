@@ -968,7 +968,7 @@ M:	Lean Sheng Tan <sheng.tan@9elements.com>
 S:	Supported
 F:	src/soc/intel/xeon_sp/
 F:	src/vendorcode/intel/fsp/fsp2_0/skylake_sp/
-F:	src/vendorcode/intel/fsp/fsp2_0/copperlake_sp/
+F:	src/vendorcode/intel/fsp/fsp2_0/cooperlake_sp/
 F:	src/vendorcode/intel/fsp/fsp2_0/sapphirerapids_sp/
 F:	src/vendorcode/intel/fsp/fsp2_0/graniterapids/
 

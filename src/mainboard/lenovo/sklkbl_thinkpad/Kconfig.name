@@ -5,3 +5,6 @@ config BOARD_LENOVO_T480
 
 config BOARD_LENOVO_T480S
 	bool "ThinkPad T480s"
+
+config BOARD_LENOVO_T580
+	bool "ThinkPad T580"

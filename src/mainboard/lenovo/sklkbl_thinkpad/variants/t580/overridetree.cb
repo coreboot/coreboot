@@ -1,0 +1,96 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC1),		// USB-A
+				[1] = USB2_PORT_MID(OC0),		// USB-A (always on)
+				[2] = USB2_PORT_MID(OC_SKIP),		// JSC-1 (smartcard slot)
+				[3] = USB2_PORT_MID(OC_SKIP),		// USB-C (charging port)
+				[4] = USB2_PORT_MID(OC_SKIP),		// JCAM1 (IR camera)
+				[5] = USB2_PORT_MID(OC_SKIP),		// JWWAN1 (M.2 WWAN USB)
+				[6] = USB2_PORT_MID(OC_SKIP),		// JWLAN1 (M.2 WLAN USB)
+				[7] = USB2_PORT_MID(OC_SKIP),		// JCAM1 (webcam)
+				[8] = USB2_PORT_MID(OC_SKIP),		// JFPR1 (fingerprint reader)
+				[9] = USB2_PORT_MID(OC_SKIP),		// JLCD1 (touch panel)
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC1),		// USB-A
+				[1] = USB3_PORT_DEFAULT(OC0),		// USB-A (always on)
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	// RTS5344S (SD card reader)
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	// USB-C (charging port)
+			}"
+		end
+
+		# PCIe controller 1 - 1x4
+		#   PCIE 1-4   - RP1  - dGPU - CLKOUT0 - CLKREQ0
+		#
+		# PCIe controller 2 - 2x1+1x2 (lane reversal)
+		#   PCIE 5     - GBE  - GBE  - CLKOUT1 - CLKREQ1 (clobbers RP8)
+		#   PCIE 6     - RP7  - WLAN - CLKOUT2 - CLKREQ2
+		#   PCIE 7-8   - RP5  - WWAN - CLKOUT3 - CLKREQ3
+		#
+		# PCIe controller 3 - 2x2
+		#   PCIE 9-10  - RP9  - TB3  - CLKOUT4 - CLKREQ4
+		#   PCIE 11-12 - RP11 - SSD  - CLKOUT5 - CLKREQ5
+
+		# dGPU - x4
+		device ref pcie_rp1 on
+			register "PcieRpClkReqSupport[0]"		= "true"
+			register "PcieRpClkReqNumber[0]"		= "0"
+			register "PcieRpClkSrcNumber[0]"		= "0"
+			register "PcieRpAdvancedErrorReporting[0]"	= "true"
+			register "PcieRpLtrEnable[0]"			= "true"
+			device generic 0 alias dgpu on end
+		end
+
+		# Ethernet (clobbers RP8)
+		device ref gbe on
+			register "LanClkReqSupported"			= "true"
+			register "LanClkReqNumber"			= "1"
+			register "EnableLanLtr"				= "true"
+			register "EnableLanK1Off"			= "true"
+		end
+
+		# M.2 WLAN - x1
+		device ref pcie_rp7 on
+			register "PcieRpClkReqSupport[6]"		= "true"
+			register "PcieRpClkReqNumber[6]"		= "2"
+			register "PcieRpClkSrcNumber[6]"		= "2"
+			register "PcieRpAdvancedErrorReporting[6]"	= "true"
+			register "PcieRpLtrEnable[6]"			= "true"
+			smbios_slot_desc "SlotTypeM2Socket1_DP" "SlotLengthOther" "M.2/A 2230" "SlotDataBusWidth1X"
+		end
+
+		# M.2 WWAN - x2
+		device ref pcie_rp5 on
+			register "PcieRpClkReqSupport[4]"		= "true"
+			register "PcieRpClkReqNumber[4]"		= "5"
+			register "PcieRpClkSrcNumber[4]"		= "5"
+			register "PcieRpAdvancedErrorReporting[4]"	= "true"
+			register "PcieRpLtrEnable[4]"			= "true"
+			smbios_slot_desc "SlotTypeM2Socket2" "SlotLengthOther" "M.2/B 3042/2242" "SlotDataBusWidth2X"
+		end
+
+		# TB3 (Alpine Ridge LP) - x2
+		device ref pcie_rp9 on
+			register "PcieRpClkReqSupport[8]"		= "true"
+			register "PcieRpClkReqNumber[8]"		= "4"
+			register "PcieRpClkSrcNumber[8]"		= "4"
+			register "PcieRpAdvancedErrorReporting[8]"	= "true"
+			register "PcieRpLtrEnable[8]"			= "true"
+			register "PcieRpHotPlug[8]"			= "true"
+		end
+
+		# M.2 2280 caddy - x2
+		device ref pcie_rp11 on
+			register "PcieRpClkReqSupport[10]"		= "true"
+			register "PcieRpClkReqNumber[10]"		= "3"
+			register "PcieRpClkSrcNumber[10]"		= "3"
+			register "PcieRpAdvancedErrorReporting[10]"	= "true"
+			register "PcieRpLtrEnable[10]"			= "true"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 Sub Card" "SlotDataBusWidth2X"
+		end
+	end
+end

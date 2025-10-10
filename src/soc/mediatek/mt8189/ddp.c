@@ -14,7 +14,8 @@ static void disp_config_main_path_connection(enum disp_path_sel path)
 	write32(&mmsys_cfg->disp_rdma0_sel_in, 0x1);
 	write32(&mmsys_cfg->disp_rdma0_rsz0_sout_sel, 0x0);
 	write32(&mmsys_cfg->ovl_pq_out_cross1_mout_en, 0x10);
-	write32(&mmsys_cfg->comp_out_cross4_mout_en, 0x02);
+	write32(&mmsys_cfg->comp_out_cross4_mout_en,
+		path == DISP_PATH_EDP ? 0x02 : 0x01);
 	printk(BIOS_DEBUG,
 	       "%s: bgclr_mout_en: %#x ovl0_mout_en: %#x sel_in: %#x sout_sel: %#x"
 	       "cross1_mout_en: %#x cross4_mout_en: %#x\n",
@@ -28,11 +29,16 @@ static void disp_config_main_path_connection(enum disp_path_sel path)
 
 static void disp_config_main_path_mutex(enum disp_path_sel path)
 {
-	write32(&disp_mutex->mutex[0].mod, MUTEX_MOD_MAIN_PATH);
+	u32 val;
+
+	val = path == DISP_PATH_EDP ? MUTEX_MOD_MAIN_PATH : MUTEX_MOD_MAIN_DSI_PATH;
+	write32(&disp_mutex->mutex[0].mod, val);
 
 	/* Clock source from DVO0 */
-	write32(&disp_mutex->mutex[0].ctl,
-		MUTEX_SOF_DVO | (MUTEX_SOF_DVO << 7));
+	val = path == DISP_PATH_EDP ? (MUTEX_SOF_DVO | (MUTEX_SOF_DVO << 7)) :
+		(MUTEX_SOF_DSI0 | (MUTEX_SOF_DSI0 << 7));
+	write32(&disp_mutex->mutex[0].ctl, val);
+
 	write32(&disp_mutex->mutex[0].en, BIT(0));
 	printk(BIOS_DEBUG, "%s: mutex_mod: %#x ctl %#x\n",
 	       __func__, read32(&disp_mutex->mutex[0].mod), read32(&disp_mutex->mutex[0].ctl));

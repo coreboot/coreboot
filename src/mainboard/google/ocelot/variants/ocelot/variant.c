@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <baseboard/variants.h>
+#include <boardid.h>
 #include <ec/google/chromeec/ec.h>
 #include <fsp/api.h>
 #include <fw_config.h>
@@ -56,12 +57,47 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 void variant_update_soc_memory_init_params(FSPM_UPD *memupd)
 {
 	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
+	uint32_t id = board_id() & BOARD_ID_MASK;
 
 	/* HDA Audio */
 	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC256_HDA))) {
 		printk(BIOS_INFO, "Overriding HDA SDI lanes.\n");
 		m_cfg->PchHdaSdiEnable[0] = true;
 		m_cfg->PchHdaSdiEnable[1] = false;
+	}
+
+	if (id == BOARD_ID_DDR5) {
+		/* Override FSP-M SaGv frequency and gear for DDR5 boards */
+		m_cfg->SaGvFreq[0] = 3200;
+		m_cfg->SaGvGear[0] = GEAR_4;
+
+		m_cfg->SaGvFreq[1] = 4800;
+		m_cfg->SaGvGear[1] = GEAR_4;
+
+		m_cfg->SaGvFreq[2] = 5600;
+		m_cfg->SaGvGear[2] = GEAR_4;
+
+		m_cfg->SaGvFreq[3] = 6400;
+		m_cfg->SaGvGear[3] = GEAR_4;
+
+		/*
+		 * Override FSP-M ChannelToCkdQckMapping to map memory channels
+		 * to Clock Driver (CKD) and Query Clock (QCK) signals.
+		 */
+
+		const uint8_t channel_to_ckd_qck[] = { 1, 0, 0, 0,
+			0, 0, 0, 0 };
+		memcpy(m_cfg->ChannelToCkdQckMapping, channel_to_ckd_qck
+			, sizeof(channel_to_ckd_qck));
+
+		/*
+		 * Override FSP-M PhyClockToCkdDimm to map PHY clocks
+		 * to Clock Driver DIMM connections.
+		 */
+		const uint8_t phy_clock_to_ckd_dimm[] = { 4, 0, 4, 0,
+			0, 0, 0, 0 };
+		memcpy(m_cfg->PhyClockToCkdDimm, phy_clock_to_ckd_dimm,
+			sizeof(phy_clock_to_ckd_dimm));
 	}
 }
 

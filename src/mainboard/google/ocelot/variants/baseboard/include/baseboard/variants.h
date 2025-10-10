@@ -10,6 +10,8 @@
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
+#define BOARD_ID_MASK   0x3f
+
 /* The next set of functions return the gpio table and fill in the number of entries for
  * each table.
  */

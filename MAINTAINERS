@@ -1132,8 +1132,6 @@ M:	Yu-Ping Wu <yupingso@google.com>
 S:	Supported
 F:	3rdparty/vboot/
 F:	src/security/vboot/
-F:	src/include/tpm.h
-F:	src/include/tpm_lite/
 
 RESOURCE ALLOCATOR
 F:	src/device/*

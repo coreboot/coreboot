@@ -1155,7 +1155,7 @@ F:	util/cbfstool/
 
 CBMEM
 F:	src/include/cbmem.h
-F:	src/include/cbmem_id.h
+F:	src/commonlib/bsd/include/commonlib/bsd/cbmem_id.h
 F:	util/cbmem/
 
 CONSOLE

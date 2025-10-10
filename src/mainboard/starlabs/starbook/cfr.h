@@ -73,7 +73,7 @@ static const struct sm_object vpu = SM_DECLARE_BOOL({
 	.opt_name	= "vpu",
 	.ui_name	= "VPU",
 	.ui_helptext	= "Enable or disable VPU",
-	.default_value	= true,
+	.default_value	= false,
 });
 
 static const struct sm_object webcam = SM_DECLARE_BOOL({

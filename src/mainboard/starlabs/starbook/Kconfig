@@ -146,9 +146,6 @@ config DEVICETREE
 config DIMM_SPD_SIZE
 	default 512
 
-config DRIVER_TPM_SPI_CHIP
-	default 2
-
 config EC_GPE_SCI
 	default 0x50 if BOARD_STARLABS_LABTOP_KBL || BOARD_STARLABS_LABTOP_CML
 	default 0x6e

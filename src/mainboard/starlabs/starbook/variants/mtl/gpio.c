@@ -29,7 +29,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_V05, NONE, DEEP, NF1),				/* Sleep S4 */
 	PAD_CFG_NF(GPP_V08, NONE, DEEP, NF1),				/* Bluetooth Suspend */
 
-	/* eSPI */
+	/* eSPI - Configure automatically on reset */
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A00, UP_20K, DEEP, NF1),	/* eSPI IO 0 */
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A01, UP_20K, DEEP, NF1),	/* eSPI IO 1 */
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A02, UP_20K, DEEP, NF1),	/* eSPI IO 2 */

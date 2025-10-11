@@ -1,6 +1,7 @@
 chip soc/intel/meteorlake
 	# FSP UPDs
 	register "eist_enable"				= "true"
+	register "pch_pm_energy_report_enable"		= "true"
 	register "sagv"					= "SAGV_ENABLED"
 
 	# Serial I/O

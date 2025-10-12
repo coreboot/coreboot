@@ -35,8 +35,9 @@ COREBOOT_EXPORTS += KERNELVERSION
 # Basic component discovery
 MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
+MB_COMMON_DIR := $(call strip_quotes,$(CONFIG_MB_COMMON_DIR))
 CARRIER_DIR:=$(call strip_quotes,$(CONFIG_CARRIER_DIR))
-COREBOOT_EXPORTS += MAINBOARDDIR VARIANT_DIR CARRIER_DIR
+COREBOOT_EXPORTS += MAINBOARDDIR VARIANT_DIR MB_COMMON_DIR CARRIER_DIR
 
 ## Final build results, which CBFSTOOL uses to create the final
 ## rom image file, are placed under $(objcbfs).
@@ -119,6 +120,9 @@ subdirs-y += util/futility util/marvell util/bincfg util/supermicro util/qemu
 subdirs-y += util/ifdtool
 subdirs-y += $(wildcard src/arch/*)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
+ifneq ($(MB_COMMON_DIR),)
+subdirs-y += src/mainboard/$(MB_COMMON_DIR)
+endif
 subdirs-y += src/security
 subdirs-y += payloads payloads/external
 subdirs-$(CONFIG_SBOM) += src/sbom

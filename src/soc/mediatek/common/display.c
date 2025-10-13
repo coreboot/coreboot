@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
+#include <bootsplash.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
@@ -64,6 +66,35 @@ static void process_panel_quirks(struct mtk_dp *mtk_dp,
 		mtk_dp->force_max_swing = true;
 }
 
+static void panel_configure_backlight(struct panel_description *panel,
+				      bool enable)
+{
+	assert(panel);
+
+	if (!panel->configure_backlight)
+		return;
+	panel->configure_backlight(enable);
+}
+
+static void display_logo(struct panel_description *panel,
+			 uintptr_t fb_addr,
+			 const struct edid *edid)
+{
+	memset((void *)fb_addr, 0, edid->bytes_per_line * edid->y_resolution);
+
+	struct logo_config config = {
+		.panel_orientation = panel->orientation,
+		.halignment = FW_SPLASH_HALIGNMENT_CENTER,
+		.valignment = FW_SPLASH_VALIGNMENT_CENTER,
+		.logo_bottom_margin = 100,
+	};
+	render_logo_to_framebuffer(&config);
+
+	mtk_ddp_ovlsys_start(fb_addr);
+
+	panel_configure_backlight(panel, true);
+}
+
 int mtk_display_init(void)
 {
 	struct edid edid = {0};
@@ -84,8 +115,8 @@ int mtk_display_init(void)
 	mtcmos_protect_display_bus();
 
 	/* Set up backlight control pins as output pin and turn-off the backlight */
-	if (panel->configure_backlight)
-		panel->configure_backlight(false);
+	panel_configure_backlight(panel, false);
+
 	if (panel->power_on)
 		panel->power_on();
 
@@ -151,6 +182,9 @@ int mtk_display_init(void)
 
 	if (info)
 		fb_set_orientation(info, panel->orientation);
+
+	if (CONFIG(BMP_LOGO))
+		display_logo(panel, fb_addr, &edid);
 
 	return 0;
 }

@@ -14,6 +14,11 @@ static struct device_operations pci_domain_ops = {
 	.enable = &qcom_setup_pcie_host,
 };
 
+static uint64_t calc_acdb_carveout_size(void)
+{
+	return ((((region_sz(ddr_region) / GiB) * 11) / 2 + 36) * MiB);
+}
+
 static void soc_read_resources(struct device *dev)
 {
 	int index = 0;
@@ -43,6 +48,10 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_wlan, REGION_SIZE(dram_wlan));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_pil, REGION_SIZE(dram_pil));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_ta, REGION_SIZE(dram_ta));
+
+	/* ACDB carveout region located at 0xFF800000 - (n*5.5 +1+32+3) where n is size of DDR */
+	reserved_ram_range(dev, index++, (uintptr_t)(_dram_llcc_lpi - calc_acdb_carveout_size()),
+			calc_acdb_carveout_size());
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_llcc_lpi, REGION_SIZE(dram_llcc_lpi));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_smem, REGION_SIZE(dram_smem));
 }

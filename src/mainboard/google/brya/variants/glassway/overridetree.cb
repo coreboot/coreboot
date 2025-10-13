@@ -623,7 +623,6 @@ chip soc/intel/alderlake
 						use tcss_usb3_port2 as usb3_port
 						device generic 1 alias conn1 on
 							probe DB_USB DB_1C
-							probe DB_USB DB_1A
 							probe DB_USB DB_1C_1A
 							probe DB_USB DB_1C_LTE
 						end

@@ -22,21 +22,21 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 /* Pad configuration in ramstage. */
 const struct pad_config gpio_table[] = {
 	/* General Purpose I/O Deep */
-	PAD_CFG_NF(GPP_V00, NONE, DEEP, NF1),				/* Battery Low */
-	PAD_CFG_NF(GPP_V01, NONE, DEEP, NF1),				/* Charger Connected */
-	PAD_CFG_NF(GPP_V03, UP_20K, DEEP, NF1),				/* Power Button */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_V00, NONE, DEEP, NF1),		/* Battery Low */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_V01, NONE, DEEP, NF1),		/* Charger Connected */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_V03, UP_20K, DEEP, NF1),	/* Power Button */
 	PAD_CFG_NF(GPP_V04, NONE, DEEP, NF1),				/* Sleep S3 */
 	PAD_CFG_NF(GPP_V05, NONE, DEEP, NF1),				/* Sleep S4 */
 	PAD_CFG_NF(GPP_V08, NONE, DEEP, NF1),				/* Bluetooth Suspend */
 
-	/* eSPI - Configure automatically on reset */
-	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A00, UP_20K, DEEP, NF1),	/* eSPI IO 0 */
-	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A01, UP_20K, DEEP, NF1),	/* eSPI IO 1 */
-	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A02, UP_20K, DEEP, NF1),	/* eSPI IO 2 */
-	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A03, UP_20K, DEEP, NF1),	/* eSPI IO 3 */
-	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A04, UP_20K, DEEP, NF1),	/* eSPI CS 0 */
-	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A05, UP_20K, DEEP, NF1),	/* eSPI Clk */
-	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A06, NONE, DEEP, NF1),	/* eSPI Reset */
+	/* eSPI */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A00, UP_20K, DEEP, NF1),	/* eSPI IO 0 */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A01, UP_20K, DEEP, NF1),	/* eSPI IO 1 */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A02, UP_20K, DEEP, NF1),	/* eSPI IO 2 */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A03, UP_20K, DEEP, NF1),	/* eSPI IO 3 */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A04, UP_20K, DEEP, NF1),	/* eSPI CS 0 */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A05, UP_20K, DEEP, NF1),	/* eSPI Clk */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A06, NONE, DEEP, NF1),		/* eSPI Reset */
 
 	/* Touchpad */
 	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),				/* Data */
@@ -44,12 +44,12 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_B00, NONE, DEEP, LEVEL, INVERT),		/* Interrupt */
 
 	/* SSD */
-	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),				/* Clock Request 8 */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D20, NONE, PLTRST, NF1),	/* Clock Request 8 */
 	PAD_CFG_GPO(GPP_A20, 1, PLTRST),				/* Reset */
 	PAD_CFG_GPO(GPP_H07, 1, DEEP),					/* Enable */
 
 	/* Wireless */
-	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF2),				/* Clock Request 5 */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D21, NONE, PLTRST, NF2),	/* Clock Request 5 */
 	PAD_CFG_GPO(GPP_H02, 1, PLTRST),				/* Reset */
 	PAD_CFG_GPO(GPP_B19, 1, DEEP),					/* WiFi RF Kill */
 	PAD_CFG_GPO(GPP_B18, 1, DEEP),					/* Bluetooth RF Kill */
@@ -59,9 +59,9 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),				/* HDMI Hot Plug */
 	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),				/* HDMI Clock */
 	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),				/* HDMI Data */
-	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF1),				/* PMC Interrupt */
-	PAD_CFG_NF(GPP_C06, NONE, DEEP, NF1),				/* SML Clock */
-	PAD_CFG_NF(GPP_C07, NONE, DEEP, NF1),				/* SML Data */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A21, NONE, DEEP, NF1),		/* PMC Interrupt */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_C06, NONE, DEEP, NF1),		/* SML Clock */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_C07, NONE, DEEP, NF1),		/* SML Data */
 
 	/* High-Definition Audio */
 	PAD_CFG_NF(GPP_D10, NATIVE, DEEP, NF1),				/* Clock */

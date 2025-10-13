@@ -68,6 +68,14 @@ config ARM64_USE_SECURE_OS
 	default n
 	depends on ARM64_USE_ARM_TRUSTED_FIRMWARE
 
+config ARM64_USE_SECURE_OS_PAYLOAD
+	bool
+	default n
+	depends on ARM64_USE_SECURE_OS
+	help
+	  This option adds support for packing the SECURE_OS image as a CBFS
+	  payload type when it spans non-contiguous memory regions.
+
 config ARM64_SECURE_OS_FILE
 	string "Secure OS binary file"
 	depends on ARM64_USE_SECURE_OS

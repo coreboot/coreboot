@@ -84,8 +84,13 @@ void run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 		struct prog bl32 = PROG_INIT(PROG_BL32,
 					     CONFIG_CBFS_PREFIX"/secure_os");
 
-		if (cbfs_prog_stage_load(&bl32))
-			die("BL32 load failed");
+		if (CONFIG(ARM64_USE_SECURE_OS_PAYLOAD)) {
+			if (!selfload(&bl32))
+				die("BL32 load failed");
+		} else {
+			if (cbfs_prog_stage_load(&bl32))
+				die("BL32 load failed");
+		}
 
 		bl32_ep_info.pc = (uintptr_t)prog_entry(&bl32);
 		bl32_ep_info.spsr = SPSR_EXCEPTION_MASK |

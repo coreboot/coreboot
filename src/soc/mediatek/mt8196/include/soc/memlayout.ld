@@ -73,4 +73,5 @@ SECTIONS
 	RESV_MEMORY_GPUEB(0xA0000000, 2M)
 	/* Reserved memory for the dedicated secured memory allocator of GPU Mali firmware */
 	GPU_SEC_BUF(0xA2000000, 16M)
+	FRAMEBUFFER(0xBEC00000, 24M)
 }

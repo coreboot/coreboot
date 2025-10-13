@@ -262,6 +262,38 @@ $(GSI_FW_CBFS)-type := raw
 $(GSI_FW_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(GSI_FW_CBFS)
 
+################################################################################
+DEVCFG_TZ_FILE := $(X1P42100_BLOB)/qtee/tz_oem_config.mbn
+DEVCFG_TZ_FILE_CBFS := $(CONFIG_CBFS_PREFIX)/tzoem_cfg
+$(DEVCFG_TZ_FILE_CBFS)-file := $(DEVCFG_TZ_FILE)
+$(DEVCFG_TZ_FILE_CBFS)-type := payload
+$(DEVCFG_TZ_FILE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(DEVCFG_TZ_FILE_CBFS)
+
+################################################################################
+TZQTI_CFG_FILE := $(X1P42100_BLOB)/qtee/tz_qti_config.mbn
+TZQTI_CFG_FILE_CBFS := $(CONFIG_CBFS_PREFIX)/tzqti_cfg
+$(TZQTI_CFG_FILE_CBFS)-file := $(TZQTI_CFG_FILE)
+$(TZQTI_CFG_FILE_CBFS)-type := payload
+$(TZQTI_CFG_FILE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(TZQTI_CFG_FILE_CBFS)
+
+################################################################################
+TZAC_CFG_FILE := $(X1P42100_BLOB)/ac_policy/tz_ac_config.elf
+TZAC_CFG_FILE_CBFS := $(CONFIG_CBFS_PREFIX)/tzac_cfg
+$(TZAC_CFG_FILE_CBFS)-file := $(TZAC_CFG_FILE)
+$(TZAC_CFG_FILE_CBFS)-type := payload
+$(TZAC_CFG_FILE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(TZAC_CFG_FILE_CBFS)
+
+################################################################################
+HYPAC_CFG_FILE := $(X1P42100_BLOB)/ac_policy/hyp_ac_config.elf
+HYPAC_CFG_FILE_CBFS := $(CONFIG_CBFS_PREFIX)/hypac_cfg
+$(HYPAC_CFG_FILE_CBFS)-file := $(HYPAC_CFG_FILE)
+$(HYPAC_CFG_FILE_CBFS)-type := payload
+$(HYPAC_CFG_FILE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(HYPAC_CFG_FILE_CBFS)
+
 endif # ifeq ($(CONFIG_USE_QC_BLOBS),y)
 
 endif # ifeq ($(CONFIG_QC_BLOBS_UPSTREAM),y)

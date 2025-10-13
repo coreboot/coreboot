@@ -6,6 +6,7 @@
 #include <soc/symbols_common.h>
 #include <soc/pcie.h>
 #include <soc/cpucp.h>
+#include <program_loading.h>
 
 static struct device_operations pci_domain_ops = {
 	.read_resources = &qcom_pci_domain_read_resources,
@@ -56,9 +57,36 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_smem, REGION_SIZE(dram_smem));
 }
 
+static void qtee_fw_config_load(void)
+{
+	if (!CONFIG(ARM64_USE_SECURE_OS))
+		return;
+
+	struct prog devcfg_tz = PROG_INIT(PROG_PAYLOAD,
+					CONFIG_CBFS_PREFIX"/tzoem_cfg");
+	if (!selfload(&devcfg_tz))
+		die("devcfg_tz load failed");
+
+	struct prog tzqti_cfg = PROG_INIT(PROG_PAYLOAD,
+					CONFIG_CBFS_PREFIX"/tzqti_cfg");
+	if (!selfload(&tzqti_cfg))
+		die("tzqti_cfg load failed");
+
+	struct prog tzac_cfg = PROG_INIT(PROG_PAYLOAD,
+					CONFIG_CBFS_PREFIX"/tzac_cfg");
+	if (!selfload(&tzac_cfg))
+		die("tzac_cfg load failed");
+
+	struct prog hypac_cfg = PROG_INIT(PROG_PAYLOAD,
+					CONFIG_CBFS_PREFIX"/hypac_cfg");
+	if (!selfload(&hypac_cfg))
+		die("hypac_cfg load failed");
+}
+
 static void soc_init(struct device *dev)
 {
 	cpucp_fw_load_reset();
+	qtee_fw_config_load();
 }
 
 static struct device_operations soc_ops = {

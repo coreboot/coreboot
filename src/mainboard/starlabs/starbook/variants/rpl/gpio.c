@@ -81,10 +81,19 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),				/* Data */
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),					/* DRAM Sleep */
 
+	/* Config Straps 									[ Low      / High     ] */
+	PAD_CFG_GPO(GPP_B14, 0, PLTRST),				/* Top Swap		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_B18, 0, PLTRST),				/* Reboot Support	[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_C2, 1, PLTRST),					/* TLS Confidentiality	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_C5, 0, PLTRST),					/* eSPI			[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_E6, 0, PLTRST),					/* JTAG ODT		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_H1, 0, PLTRST),					/* BFX Strap 2 Bit 3	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_F2, 0, PLTRST),					/* M.2 CNVi		[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_F7, 0, PLTRST),					/* MCRO LDO		[ Disabled / Bypass   ] */
+	PAD_CFG_GPO(GPD7, 0, PLTRST),					/* RTC Clock Delay	[ Disabled / 95ms     ] */
+
 	PAD_NC(GPD2, NONE),
 	PAD_NC(GPD6, NONE),
-	/* GPD7:	Power Adapter Disable				*/
-	PAD_CFG_GPO(GPD7, 0, PWROK),
 	/* GPD9:	Wireless LAN Sleep				*/
 	PAD_CFG_NF(GPD9, NONE, DEEP, NF1),
 
@@ -116,17 +125,9 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B9, NONE),
 	PAD_NC(GPP_B10, NONE),
 	PAD_NC(GPP_B12, NONE),
-	/* B14:		Top Swap Override	Weak Internal PD 20K
-				High:	Enabled
-				Low:	Disabled			*/
-	PAD_NC(GPP_B14, NONE),
 	PAD_NC(GPP_B15, NONE),
 	PAD_NC(GPP_B16, NONE),
 	PAD_NC(GPP_B17, NONE),
-	/* B18:		Reboot Support		Weak Internal PD 20K
-				High:	Disabled
-				Low:	Enabled				*/
-	PAD_NC(GPP_B18, NONE),
 	PAD_NC(GPP_B19, NONE),
 	PAD_NC(GPP_B20, NONE),
 	PAD_NC(GPP_B21, NONE),
@@ -135,18 +136,10 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B24, NONE),
 	PAD_NC(GPP_B25, NONE),
 
-	/* C2:		TLS Confidentiality	Weak Internal PD 20K
-				Low:	Disabled
-				High:	Enabled				*/
-	PAD_CFG_GPO(GPP_C2, 1, PLTRST),
 	/* C3:		SML 0 Clock					*/
 	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),
 	/* C4:		SML 0 Data					*/
 	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),
-	/* C5:		Boot Strap		Weak Internal PD 20K
-				Low:	ESPI
-				High:	Disabled			*/
-	PAD_CFG_GPO(GPP_C5, 0, DEEP),
 	PAD_NC(GPP_C8, NONE),
 	PAD_NC(GPP_C9, NONE),
 	PAD_NC(GPP_C10, NONE),
@@ -189,10 +182,6 @@ const struct pad_config gpio_table[] = {
 	/* E4:		Retimer Force Power				*/
 	PAD_CFG_GPO(GPP_E4, 0, DEEP),
 	PAD_NC(GPP_E5, NONE),
-	/* E6:		JTAG ODT		No internal PD
-				Low:	Disabled
-				High:	Enabled				*/
-	PAD_CFG_GPO(GPP_E6, 0, DEEP),
 	PAD_NC(GPP_E7, NONE),
 	PAD_NC(GPP_E9, NONE),
 	PAD_NC(GPP_E10, NONE),
@@ -209,15 +198,10 @@ const struct pad_config gpio_table[] = {
 
 	PAD_NC(GPP_F0, NONE),
 	PAD_NC(GPP_F1, NONE),
-	PAD_NC(GPP_F2, NONE),
 	PAD_NC(GPP_F3, NONE),
 	PAD_NC(GPP_F4, NONE),
 	PAD_NC(GPP_F5, NONE),
 	PAD_NC(GPP_F6, NONE),
-	/* F7:		TBT LSX VCCIO		Weak Internal PD 20K
-				Low:	1.8V
-				High:	3.3V				*/
-	PAD_CFG_GPO(GPP_F7, 0, DEEP),
 	PAD_NC(GPP_F8, NONE),
 	PAD_NC(GPP_F9, NONE),
 	/* F10:		Weak Internal PD 20K				*/
@@ -236,8 +220,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F23, NONE),
 
 	PAD_NC(GPP_H0, NONE),
-	/* H1:		BFX Strap 2 Bit 3	Weak Internal PD 20K	*/
-	PAD_CFG_GPO(GPP_H1, 0, DEEP),
 	PAD_NC(GPP_H3, NONE),
 	PAD_NC(GPP_H6, NONE),
 	PAD_NC(GPP_H7, NONE),

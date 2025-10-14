@@ -41,8 +41,8 @@ const struct pad_config gpio_table[] = {
 
 	/* SSD */
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),				/* Clock Request 1 */
-	PAD_CFG_GPO(GPP_D16, 1, DEEP),					/* Enable */
 	PAD_CFG_GPO(GPP_H0, 1, PLTRST),					/* Reset */
+	PAD_CFG_GPO(GPP_D16, 1, DEEP),					/* Enable */
 
 	/* Wireless */
 	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),				/* Clock Request 2 */

@@ -45,7 +45,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_H0, 1, PLTRST),					/* Reset */
 
 	/* Wireless */
-	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),				/* Clock Request 1 */
+	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),				/* Clock Request 2 */
 	PAD_CFG_GPO(GPP_H2, 1, PLTRST),					/* Reset */
 	PAD_CFG_GPO(GPP_E3, 1, DEEP),					/* WiFi RF Kill */
 	PAD_CFG_GPO(GPP_A13, 1, DEEP),					/* Bluetooth RF Kill */

@@ -93,6 +93,13 @@ config SOC_AMD_CEZANNE
 
 if SOC_AMD_CEZANNE
 
+config KEEP_ACP_RUNNING_IN_S3
+	bool
+	default n
+	help
+	  Enables AMD Audio Co-Processor (ACP) to remain operational in ACPI
+	  S3 (sleep) state for continued audio processing support.
+
 config CHIPSET_DEVICETREE
 	string
 	default "soc/amd/cezanne/chipset.cb"

@@ -135,15 +135,10 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B24, NONE),
 	PAD_NC(GPP_B25, NONE),
 
-	/* C3:		SML 0 Clock					*/
-	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),
-	/* C4:		SML 0 Data					*/
-	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),
-
-	/* C6:		SML 1 Clock					*/
-	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),
-	/* C7:		SML 1 Data					*/
-	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),
+	PAD_NC(GPP_C3, NONE),
+	PAD_NC(GPP_C4, NONE),
+	PAD_NC(GPP_C6, NONE),
+	PAD_NC(GPP_C7, NONE),
 	PAD_NC(GPP_C8, NONE),
 	PAD_NC(GPP_C9, NONE),
 	PAD_NC(GPP_C10, NONE),
@@ -206,8 +201,7 @@ const struct pad_config gpio_table[] = {
 
 	PAD_NC(GPP_F8, NONE),
 	PAD_NC(GPP_F9, NONE),
-	/* F10:		Weak Internal PD 20K				*/
-	PAD_CFG_GPO(GPP_F10, 0, DEEP),
+	PAD_NC(GPP_F10, NONE),
 	PAD_NC(GPP_F11, NONE),
 	PAD_NC(GPP_F12, NONE),
 	PAD_NC(GPP_F13, NONE),

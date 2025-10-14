@@ -9,7 +9,7 @@ struct panel_serializable_data TM_TL121BVMS07_00C = {
 		.panel_bits_per_color = 8,
 		.panel_bits_per_pixel = 24,
 		.mode = {
-			.pixel_clock = 4400560,
+			.pixel_clock = 264355,
 			.lvds_dual_channel = 0,
 			.refresh = 60,
 			.ha = 1600, .hbl = 44, .hso = 20, .hspw = 4,
@@ -35,4 +35,5 @@ struct panel_serializable_data TM_TL121BVMS07_00C = {
 		PANEL_DELAY(20),
 		PANEL_END,
 	},
+	.flags = PANEL_FLAG_CPHY,
 };

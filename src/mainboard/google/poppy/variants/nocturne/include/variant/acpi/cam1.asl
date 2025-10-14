@@ -42,10 +42,11 @@ Scope (\_SB.PCI0.I2C5)
 		Name (_HID, "SONY355A")
 		Name (_UID, 0)
 		Name (_DDN, "SONY IMX355A Camera") /* _DDN: DOS Device Name */
+		External (CSTA, IntObj)
 
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (0x0F)
+			Return (CSTA)
 		}
 
 		Name (_CRS, ResourceTemplate ()
@@ -108,10 +109,11 @@ Scope (\_SB.PCI0.I2C5)
 		Name (_HID, "PRP0001")
 		Name (_UID, 3)
 		Name (_DDN, "AKM AF DAC") /* _DDN: DOS Device Name */
+		External (CSTA, IntObj)
 
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (0x0F)
+			Return (CSTA)
 		}
 
 		Name (_CRS, ResourceTemplate ()
@@ -140,10 +142,11 @@ Scope (\_SB.PCI0.I2C5)
 		Name (_HID, "INT3499")
 		Name (_UID, 1)
 		Name (_DDN, "M24C64S")  /* _DDN: DOS Device Name */
+		External (CSTA, IntObj)
 
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (0x0F)
+			Return (CSTA)
 		}
 
 		Name (_CRS, ResourceTemplate ()

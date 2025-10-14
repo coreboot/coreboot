@@ -8,10 +8,11 @@ Scope (\_SB.PCI0.I2C4)
 		Name (_UID, 0)
 		Name (_DDN, "OV 5670 Camera")  /* _DDN: DOS Device Name */
 		Name (CAMD, 0x02)
+		External (CSTA, IntObj)
 
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (0x0F)
+			Return (CSTA)
 		}
 
 		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })

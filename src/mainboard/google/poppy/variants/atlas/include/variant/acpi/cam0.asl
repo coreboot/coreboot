@@ -49,10 +49,11 @@ Scope (\_SB.PCI0.I2C3)
 		Name (_HID, "INT3478")
 		Name (_UID, 0)
 		Name (_DDN, "SONY IMX208 Camera")  /* _DDN: DOS Device Name */
+		External (CSTA, IntObj)
 
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (0x0F)
+			Return (CSTA)
 		}
 
 		Name (_CRS, ResourceTemplate ()
@@ -111,10 +112,11 @@ Scope (\_SB.PCI0.I2C3)
 		Name (_HID, "INT3499")
 		Name (_UID, 0)
 		Name (_DDN, "GT24C16S")  /* _DDN: DOS Device Name */
+		External (CSTA, IntObj)
 
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (0x0F)
+			Return (CSTA)
 		}
 
 		Name (_CRS, ResourceTemplate ()

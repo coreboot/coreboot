@@ -7,10 +7,11 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_HID, "SONY258A")
 		Name (_UID, 0)
 		Name (_DDN, "SONY IMX258 Camera") /* _DDN: DOS Device Name */
+		External (CSTA, IntObj)
 
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (0x0F)
+			Return (CSTA)
 		}
 
 		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
@@ -75,10 +76,11 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_HID, "PRP0001")
 		Name (_UID, 0)
 		Name (_DDN, "Dongwoon AF DAC") /* _DDN: DOS Device Name */
+		External (CSTA, IntObj)
 
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (0x0F)
+			Return (CSTA)
 		}
 
 		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })
@@ -106,10 +108,11 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_HID, "INT3499")
 		Name (_UID, 0)
 		Name (_DDN, "Dongwoon NVM")  /* _DDN: DOS Device Name */
+		External (CSTA, IntObj)
 
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (0x0F)
+			Return (CSTA)
 		}
 
 		Name (_DEP, Package() { \_SB.PCI0.I2C2.PMIC })

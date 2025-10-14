@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <ec/ec.h>
+#include <option.h>
 #include <soc/pci_devs.h>
 #include <soc/nhlt.h>
 
@@ -12,6 +14,16 @@
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
+}
+
+static void mainboard_fill_ssdt(const struct device *dev)
+{
+	/* Get camera enable option from CFR */
+	unsigned int camera_enabled = get_uint_option("ipu_camera", 1);
+
+	acpigen_write_scope("\\_SB.PCI0");
+	acpigen_write_name_integer("CSTA", camera_enabled ? 0xF : 0x0);
+	acpigen_pop_len(); /* Scope */
 }
 
 static unsigned long mainboard_write_acpi_tables(const struct device *device,
@@ -47,6 +59,7 @@ static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
+	dev->ops->acpi_fill_ssdt = mainboard_fill_ssdt;
 }
 
 static void mainboard_chip_init(void *chip_info)

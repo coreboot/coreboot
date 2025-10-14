@@ -137,11 +137,17 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x20000000, 0x201FFFFF, 0x00000000,
 				0x00200000,,, LMEM)
 
-		/* PCI Memory Region (Top of memory-CONFIG_ECAM_MMCONF_BASE_ADDRESS) */
+		/* PCI Memory Region (TOLM - CONFIG_ECAM_MMCONF_BASE_ADDRESS) */
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,
 				0x00000000, 0x00000000, 0x00000000, 0x00000000,
 				0x00000000,,, PMEM)
+
+		/* PCI Memory Region above MMCONF (0xf0000000 - 0xfdffffff) */
+		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+				Cacheable, ReadWrite,
+				0x00000000, 0xf0000000, 0xfdffffff, 0x00000000,
+				0x0e000000,,, PM02)
 
 		/* TPM Area (0xfed40000-0xfed44fff) */
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,

@@ -33,8 +33,6 @@ static struct device_operations smbus_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x1c22,
-	0x1e22,
 	PCI_DID_INTEL_IBEXPEAK_SMBUS,
 	0
 };

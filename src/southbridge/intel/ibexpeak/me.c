@@ -515,7 +515,6 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x1c3a,
 	PCI_DID_INTEL_IBEXPEAK_HECI1,
 	0
 };

@@ -117,8 +117,6 @@ static struct device_operations azalia_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x1c20,
-	0x1e20,
 	PCI_DID_INTEL_IBEXPEAK_AUDIO,
 	0
 };

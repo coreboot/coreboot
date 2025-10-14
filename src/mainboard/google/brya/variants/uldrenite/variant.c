@@ -33,6 +33,8 @@ static const struct pad_config touchscreen_disable_pads[] = {
 static const struct pad_config lte_disable_pads[] = {
 	/* A8  : WWAN_RF_DISABLE_ODL */
 	PAD_NC(GPP_A8, NONE),
+	/* E16 : WWAN_PCIE_WAKE_ODL */
+	PAD_NC(GPP_E16, NONE),
 	/* F12 : WWAN_RST_L */
 	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
 	/* F13 : PLTRST_WWAN# */

@@ -62,7 +62,7 @@ static const struct slot_irq_constraints irq_constraints[] = {
 		.slot = PCI_DEV_SLOT_IGD,
 		.fns = {
 			/* INTERRUPT_PIN is RO/0x01 */
-			FIXED_INT_ANY_PIRQ(PCI_DEV_SLOT_IGD, PCI_INT_A),
+			FIXED_INT_ANY_PIRQ(PCI_DEVFN_IGD, PCI_INT_A),
 		},
 	},
 	{

@@ -64,6 +64,9 @@ static struct sm_obj_form devices = {
 		#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
 		&thunderbolt,
 		#endif
+		#if CONFIG(SOC_INTEL_METEORLAKE)
+		&vpu,
+		#endif
 		NULL
 	},
 };

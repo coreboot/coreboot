@@ -5,6 +5,8 @@
 
 #include <soc/gpio.h>
 
+uint8_t get_memory_config_straps(void);
+
 /*
  * The next set of functions return the gpio table and fill in the number of
  * entries for each table.

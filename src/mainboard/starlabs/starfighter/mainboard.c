@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
-#include <drivers/intel/gma/opregion.h>
 #include <soc/ramstage.h>
 #include <option.h>
 #include <variants.h>
@@ -20,11 +19,3 @@ static void init_mainboard(void *chip_info)
 struct chip_operations mainboard_ops = {
 	.init = init_mainboard,
 };
-
-const char *mainboard_vbt_filename(void)
-{
-	if (get_uint_option("display_native_res", 0) == 1)
-		return "vbt_native_res.bin";
-
-	return "vbt.bin";
-}

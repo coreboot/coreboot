@@ -19,6 +19,7 @@ struct spd_info {
 void mb_get_spd_map(struct spd_info *spdi);
 
 void get_spd_info(struct spd_info *spdi, const struct northbridge_intel_haswell_config *cfg);
+void report_memory_config(void);
 void setup_sdram_meminfo(const uint8_t *spd_data[NUM_CHANNELS][NUM_SLOTS]);
 
 void perform_raminit(const bool s3resume);

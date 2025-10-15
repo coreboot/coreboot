@@ -40,56 +40,6 @@ static void save_mrc_data(struct pei_data *pei_data)
 					pei_data->data_to_save_size);
 }
 
-static const char *const ecc_decoder[] = {
-	"inactive",
-	"active on IO",
-	"disabled on IO",
-	"active",
-};
-
-/*
- * Dump in the log memory controller configuration as read from the memory
- * controller registers.
- */
-static void report_memory_config(void)
-{
-	int i;
-
-	const u32 addr_decoder_common = mchbar_read32(MAD_CHNL);
-
-	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       (mchbar_read32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
-
-	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
-	       (addr_decoder_common >> 0) & 3,
-	       (addr_decoder_common >> 2) & 3,
-	       (addr_decoder_common >> 4) & 3);
-
-	for (i = 0; i < NUM_CHANNELS; i++) {
-		const u32 ch_conf = mchbar_read32(MAD_DIMM(i));
-
-		printk(BIOS_DEBUG, "memcfg channel[%d] config (%8.8x):\n", i, ch_conf);
-		printk(BIOS_DEBUG, "   ECC %s\n", ecc_decoder[(ch_conf >> 24) & 3]);
-		printk(BIOS_DEBUG, "   enhanced interleave mode %s\n",
-		       ((ch_conf >> 22) & 1) ? "on" : "off");
-
-		printk(BIOS_DEBUG, "   rank interleave %s\n",
-		       ((ch_conf >> 21) & 1) ? "on" : "off");
-
-		printk(BIOS_DEBUG, "   DIMMA %d MB width %s %s rank%s\n",
-		       ((ch_conf >> 0) & 0xff) * 256,
-		       ((ch_conf >> 19) & 1) ? "x16" : "x8 or x32",
-		       ((ch_conf >> 17) & 1) ? "dual" : "single",
-		       ((ch_conf >> 16) & 1) ? "" : ", selected");
-
-		printk(BIOS_DEBUG, "   DIMMB %d MB width %s %s rank%s\n",
-		       ((ch_conf >> 8) & 0xff) * 256,
-		       ((ch_conf >> 20) & 1) ? "x16" : "x8 or x32",
-		       ((ch_conf >> 18) & 1) ? "dual" : "single",
-		       ((ch_conf >> 16) & 1) ? ", selected" : "");
-	}
-}
-
 typedef int ABI_X86(*pei_wrapper_entry_t)(struct pei_data *pei_data);
 
 static void ABI_X86 send_to_console(unsigned char b)

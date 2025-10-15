@@ -179,6 +179,16 @@ size_t reg_frame_size(void)
 	return sizeof(struct register_save_frame);
 }
 
+void reg_frame_get_spd_data(const uint8_t *out_spd_data[NUM_CHANNELS][NUM_SLOTS])
+{
+	const struct save_params *params = &reg_frame_ptr()->params;
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		for (uint8_t slot = 0; slot < NUM_SLOTS; slot++) {
+			out_spd_data[channel][slot] = params->dimms[channel][slot].raw_spd;
+		}
+	}
+}
+
 typedef void (*reg_func_t)(const uint16_t offset, uint32_t *const value);
 
 static void save_value(const uint16_t offset, uint32_t *const value)

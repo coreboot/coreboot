@@ -504,6 +504,7 @@ void configure_refresh(struct sysinfo *ctrl);
 struct register_save_frame *reg_frame_ptr(void);
 size_t reg_frame_size(void);
 uint32_t reg_frame_rev(void);
+void reg_frame_get_spd_data(const uint8_t *out_spd_data[NUM_CHANNELS][NUM_SLOTS]);
 
 uint32_t get_tCKE(uint32_t mem_clock_mhz, bool lpddr);
 uint32_t get_tXPDLL(uint32_t mem_clock_mhz);

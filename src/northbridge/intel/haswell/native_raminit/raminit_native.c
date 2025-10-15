@@ -179,7 +179,7 @@ void perform_raminit(const bool s3resume)
 	const enum raminit_boot_mode bootmode =
 			do_actual_raminit(s3resume, cpu_replaced, orig_bootmode);
 
-	/** TODO: report_memory_config **/
+	report_memory_config();
 
 	if (intel_early_me_uma_size() > 0) {
 		/*
@@ -208,5 +208,13 @@ void perform_raminit(const bool s3resume)
 	if (!s3resume)
 		save_mrc_data();
 
-	/** TODO: setup_sdram_meminfo **/
+	/*
+	 * To avoid passing pointers around too much, get the SPD data
+	 * from the saved data. It will always be present: a cold boot
+	 * populates saved data from training results, and a fast boot
+	 * or a S3 resume reads the saved data from the MRC cache.
+	 */
+	const uint8_t *spd_data[NUM_CHANNELS][NUM_SLOTS] = { 0 };
+	reg_frame_get_spd_data(spd_data);
+	setup_sdram_meminfo(spd_data);
 }

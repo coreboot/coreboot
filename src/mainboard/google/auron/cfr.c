@@ -5,6 +5,20 @@
 #include <ec/google/chromeec/cfr.h>
 #include <soc/cfr.h>
 
+static const struct sm_object touchscreen = SM_DECLARE_ENUM({
+	.opt_name	= "touchscreen",
+	.ui_name	= "Touchscreen",
+	.ui_helptext	= "Enable or disable the integrated touchscreen device",
+	.default_value	= 1,
+	.values		= (const struct sm_enum_value[]) {
+		{ "Disabled",		0		},
+		{ "Enabled",		1		},
+		SM_ENUM_VALUE_END			},
+#if !CONFIG(BOARD_GOOGLE_LULU)
+	.flags		= CFR_OPTFLAG_SUPPRESS,
+#endif
+});
+
 static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]) {
@@ -21,8 +35,18 @@ static struct sm_obj_form ec = {
 		NULL
 	},
 };
+
+static struct sm_obj_form devices = {
+	.ui_name = "Devices",
+	.obj_list = (const struct sm_object *[]) {
+		&touchscreen,
+		NULL
+	},
+};
+
 static struct sm_obj_form *sm_root[] = {
 	&system,
+	&devices,
 	&ec,
 	NULL
 };

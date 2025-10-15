@@ -23,7 +23,7 @@ void devtree_update(void)
 		&cfg->power_limits_config[RPL_P_682_642_482_45W_CORE];
 
 	struct device *tbt_pci_dev_0 = pcidev_on_root(0x07, 0);
-	struct device *tbt_pci_dev_1 = pcidev_on_root(0x07, 0);
+	struct device *tbt_pci_dev_1 = pcidev_on_root(0x07, 1);
 	struct device *tbt_dma_dev = pcidev_on_root(0x0d, 2);
 	struct device *gna_dev = pcidev_on_root(0x08, 0);
 

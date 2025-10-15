@@ -16,6 +16,10 @@ fw_config
 		option FPMCU_ABSENT			0
 		option FPMCU_NUVOTON			1
 	end
+	field PANEL_PWR 19
+		option DISABLE				0
+		option ENABLE				1
+	end
 end
 
 chip soc/intel/alderlake
@@ -402,6 +406,7 @@ chip soc/intel/alderlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on end
 			end
+			probe PANEL_PWR ENABLE
 		end
 		device ref i2c2 on
 			chip drivers/i2c/generic

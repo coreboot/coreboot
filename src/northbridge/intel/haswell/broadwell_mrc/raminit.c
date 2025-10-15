@@ -155,96 +155,6 @@ static void sdram_initialize(struct pei_data *pei_data)
 	report_memory_config();
 }
 
-static uint8_t nb_get_ecc_type(const uint32_t capid0_a)
-{
-	return capid0_a & CAPID_ECCDIS ? MEMORY_ARRAY_ECC_NONE : MEMORY_ARRAY_ECC_SINGLE_BIT;
-}
-
-static uint16_t nb_slots_per_channel(const uint32_t capid0_a)
-{
-	return !(capid0_a & CAPID_DDPCD) + 1;
-}
-
-static uint16_t nb_number_of_channels(const uint32_t capid0_a)
-{
-	return !(capid0_a & CAPID_PDCD) + 1;
-}
-
-static uint32_t nb_max_chan_capacity_mib(const uint32_t capid0_a)
-{
-	uint32_t ddrsz;
-
-	/* Values from documentation, which assume two DIMMs per channel */
-	switch (CAPID_DDRSZ(capid0_a)) {
-	case 1:
-		ddrsz = 8192;
-		break;
-	case 2:
-		ddrsz = 2048;
-		break;
-	case 3:
-		ddrsz = 512;
-		break;
-	default:
-		ddrsz = 16384;
-		break;
-	}
-
-	/* Account for the maximum number of DIMMs per channel */
-	return (ddrsz / 2) * nb_slots_per_channel(capid0_a);
-}
-
-static void setup_sdram_meminfo(struct pei_data *pei_data)
-{
-	unsigned int dimm_cnt = 0;
-
-	struct memory_info *mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
-	if (!mem_info)
-		die("Failed to add memory info to CBMEM.\n");
-
-	memset(mem_info, 0, sizeof(struct memory_info));
-
-	const u32 ddr_frequency = (mchbar_read32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100;
-
-	for (unsigned int ch = 0; ch < NUM_CHANNELS; ch++) {
-		const u32 ch_conf = mchbar_read32(MAD_DIMM(ch));
-		for (unsigned int slot = 0; slot < NUM_SLOTS; slot++) {
-			const u32 dimm_size = ((ch_conf >> (slot * 8)) & 0xff) * 256;
-			if (dimm_size) {
-				struct dimm_info *dimm = &mem_info->dimm[dimm_cnt];
-				dimm->dimm_size = dimm_size;
-				dimm->ddr_type = MEMORY_TYPE_DDR3;
-				dimm->ddr_frequency = ddr_frequency;
-				dimm->rank_per_dimm = 1 + ((ch_conf >> (17 + slot)) & 1);
-				dimm->channel_num = ch;
-				dimm->dimm_num = slot;
-				dimm->bank_locator = ch * 2;
-				memcpy(dimm->serial,
-					&pei_data->spd_data[ch][slot][SPD_DDR3_SERIAL_NUM],
-					SPD_DDR3_SERIAL_LEN);
-				memcpy(dimm->module_part_number,
-					&pei_data->spd_data[ch][slot][SPD_DDR3_PART_NUM],
-					SPD_DDR3_PART_LEN);
-				dimm->mod_id =
-					(pei_data->spd_data[ch][slot][SPD_DDR3_MOD_ID2] << 8) |
-					(pei_data->spd_data[ch][slot][SPD_DDR3_MOD_ID1] & 0xff);
-				dimm->mod_type = SPD_DDR3_DIMM_TYPE_SO_DIMM;
-				dimm->bus_width = MEMORY_BUS_WIDTH_64;
-				dimm_cnt++;
-			}
-		}
-	}
-	mem_info->dimm_cnt = dimm_cnt;
-
-	const uint32_t capid0_a = pci_read_config32(HOST_BRIDGE, CAPID0_A);
-
-	const uint16_t channels = nb_number_of_channels(capid0_a);
-
-	mem_info->ecc_type = nb_get_ecc_type(capid0_a);
-	mem_info->max_capacity_mib = channels * nb_max_chan_capacity_mib(capid0_a);
-	mem_info->number_of_devices = channels * nb_slots_per_channel(capid0_a);
-}
-
 #include <device/smbus_host.h>
 
 /* Copy SPD data for on-board memory */
@@ -433,5 +343,15 @@ void perform_raminit(const bool s3resume)
 	if (!s3resume)
 		save_mrc_data(&pei_data);
 
-	setup_sdram_meminfo(&pei_data);
+	const uint8_t *spd_data[NUM_CHANNELS][NUM_SLOTS] = {
+		[0] = {
+			[0] = pei_data.spd_data[0][0],
+			[1] = pei_data.spd_data[0][1],
+		},
+		[1] = {
+			[0] = pei_data.spd_data[1][0],
+			[1] = pei_data.spd_data[1][1],
+		},
+	};
+	setup_sdram_meminfo(spd_data);
 }

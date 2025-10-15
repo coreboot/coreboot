@@ -5,6 +5,21 @@
 #include <ec/google/chromeec/cfr.h>
 #include <southbridge/intel/lynxpoint/cfr.h>
 
+static const struct sm_object touchpad_type = SM_DECLARE_ENUM({
+	.opt_name	= "touchpad_type",
+	.ui_name	= "Touchpad Type",
+	.ui_helptext	= "Select the installed touchpad type",
+	.default_value	= 0,
+	.values		= (const struct sm_enum_value[]) {
+		{ "Auto-detect",	0	},
+		{ "Elan",		1	},
+		{ "Cypress",		2	},
+		SM_ENUM_VALUE_END		},
+#if !CONFIG(BOARD_GOOGLE_PEPPY)
+	.flags		= CFR_OPTFLAG_SUPPRESS,
+#endif
+});
+
 static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]) {
@@ -21,8 +36,18 @@ static struct sm_obj_form ec = {
 		NULL
 	},
 };
+
+static struct sm_obj_form devices = {
+	.ui_name = "Devices",
+	.obj_list = (const struct sm_object *[]) {
+		&touchpad_type,
+		NULL
+	},
+};
+
 static struct sm_obj_form *sm_root[] = {
 	&system,
+	&devices,
 	&ec,
 	NULL
 };

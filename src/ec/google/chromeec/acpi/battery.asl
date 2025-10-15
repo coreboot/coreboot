@@ -152,13 +152,19 @@ Method(BRSX, 1, Serialized)
 		// Read to end of string, or up to a reasonable maximum length. Reads of
 		// BSRF consume bytes from the FIFO, so take care to read it only once
 		// per byte of data.
-		Local0 = ""
-		Local1 = BSRF
-		While (Local1 != 0 && SizeOf (Local0) < 32)
+		Local0 = Buffer (33){}
+		For (Local2 = 0, Local2 < SizeOf(Local0) - 1, Local2++)
 		{
-			Local0 = Concatenate (Local0, ToString (Local1))
 			Local1 = BSRF
+			If (Local1 == 0)
+			{
+				Break
+			}
+			Local0[Local2] = Local1
 		}
+
+		Local0[Local2] = 0
+		Local0 = ToString(Local0)
 	}
 
 	// Store the result in the cache

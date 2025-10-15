@@ -14,6 +14,12 @@ Device (MCHC)
 	OperationRegion (MCHP, PCI_Config, 0x00, 0x100)
 	Field (MCHP, DWordAcc, NoLock, Preserve)
 	{
+		Offset (0x60),	// PCIEXBAR
+		PXEN,	 1,	// Enable
+		PXSZ,	 2,	// PCIEXBAR size
+		,	23,
+		PXBR,	10,	// PCIEXBAR base
+
 		Offset (0x70),	// ME Base Address
 		MEBA,	 64,
 		Offset (0xa0),	// Top of Used Memory
@@ -125,12 +131,18 @@ Name (MCRS, ResourceTemplate()
 			0x00000000, 0x000f0000, 0x000fffff, 0x00000000,
 			0x00010000,,, FSEG)
 
-	// PCI Memory Region (Top of memory-CONFIG_ECAM_MMCONF_BASE_ADDRESS)
+	// PCI Memory Region below MMCONF (TOLUD)
 	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 			Cacheable, ReadWrite,
 			0x00000000, 0x00000000, 0x00000000, 0x00000000,
 			0x00000000,,, PM01)
-
+#if CONFIG(SOC_INTEL_BROADWELL)
+	// PCI Memory Region above MMCONF (dynamic, based on ECAM size)
+	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+			Cacheable, ReadWrite,
+			0x00000000, 0x00000000, 0x00000000, 0x00000000,
+			0x00000000,,, PM02)
+#endif
 	// TPM Area (0xfed40000-0xfed44fff)
 	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 			Cacheable, ReadWrite,
@@ -164,6 +176,36 @@ Method (_CRS, 0, Serialized)
 	PMAX = CONFIG_ECAM_MMCONF_BASE_ADDRESS - 1
 	PLEN = (PMAX - PMIN) + 1
 
+#if CONFIG(SOC_INTEL_BROADWELL)
+	// Set up PM02 region (MMCONF end to 0xFEBFFFFF)
+	CreateDwordField (MCRS, ^PM02._MIN, PM2B)
+	CreateDwordField (MCRS, ^PM02._MAX, PM2M)
+	CreateDwordField (MCRS, ^PM02._LEN, PM2L)
+
+	// Calculate ECAM/MMCONF end address based on size bits in PCIEXBAR
+	// Bits [2:1] encode size: 00=256MB, 01=128MB, 10=64MB, 11=reserved
+	Local2 = ^MCHC.PXSZ
+
+	// Populate based on ECAM size
+	If (Local2 == 0) {
+		// 256MB ECAM - no space for PM02 (would extend to 4GB boundary)
+		PM2L = 0
+	} Else {
+		// 128MB or 64MB ECAM - there's space for PM02
+		Local3 = CONFIG_ECAM_MMCONF_BASE_ADDRESS
+		If (Local2 == 1) {
+			// 128MB ECAM - ends at base + 0x08000000
+			Local3 += 0x08000000
+		} Else {
+			// 64MB ECAM (or reserved=3) - ends at base + 0x04000000
+			Local3 += 0x04000000
+		}
+
+		PM2B = Local3
+		PM2M = 0xFEBFFFFF  // Just before chipset reserved (IOAPIC at 0xFEC00000)
+		PM2L = PM2M - PM2B + 1
+	}
+#endif
 	Return (MCRS)
 }
 

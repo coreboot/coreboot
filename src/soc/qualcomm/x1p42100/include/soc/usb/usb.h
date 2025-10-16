@@ -126,6 +126,21 @@
 #define TYPEC_VBUS_STATUS_MASK BIT(5)
 #define CCOUT_INVERT_POLARITY 0x03
 
+/* USB Repeater SPMI Tune register offsets */
+#define EUSB2_TUNE_IUSB2 0xFD51
+#define EUSB2_TUNE_USB2_SLEW 0xFD55
+#define EUSB2_TUNE_USB2_PREEM 0xFD57
+
+/* USB 2.0 tuning parameter values */
+#define EUSB2_TUNE_IUSB2_DEFAULT	0x06	/* +11.1% HS transmit amplitude (default) */
+#define EUSB2_TUNE_USB2_SLEW_FAST	0x02	/* +14.9% faster slew rate */
+#define EUSB2_TUNE_USB2_PREEM_25PCT	0x02	/* +25% pre-emphasis current */
+
+/* USB Shared SPMI Init register offsets */
+#define EUSB2_EN_CTL1 0xFD46
+#define EUSB2_EN_CTL1_ENABLE BIT(7)
+#define EUSB2_EN_CTL1_DISABLE 0x00
+
 /* Forward declaration */
 struct dwc3_controller_config;
 

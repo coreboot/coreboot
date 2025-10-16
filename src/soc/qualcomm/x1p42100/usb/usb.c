@@ -445,6 +445,42 @@ static const struct dwc3_controller_config sec_config = {
 };
 
 /*
+ * usb_repeater_spmi_tune - Configures USB repeater SPMI tuning parameters
+ * @config: Controller configuration containing SMB slave address
+ */
+static void usb_repeater_spmi_tune(const struct dwc3_controller_config *config)
+{
+	u8 slave = config->smb_slave_addr;
+
+	/* Configure USB 2.0 output current tuning - default +11.1% amplitude */
+	spmi_write8(SPMI_ADDR(slave, EUSB2_TUNE_IUSB2), EUSB2_TUNE_IUSB2_DEFAULT);
+
+	/* Configure USB 2.0 HS TX slew rate - +14.9% faster than default */
+	spmi_write8(SPMI_ADDR(slave, EUSB2_TUNE_USB2_SLEW), EUSB2_TUNE_USB2_SLEW_FAST);
+
+	/* Configure USB 2.0 HS TX pre-emphasis - +25% current boost */
+	spmi_write8(SPMI_ADDR(slave, EUSB2_TUNE_USB2_PREEM), EUSB2_TUNE_USB2_PREEM_25PCT);
+}
+
+/*
+ * usb_repeater_spmi_init - Initializes USB repeater SPMI with enable-delay-disable sequence
+ * @config: Controller configuration containing SMB slave address
+ */
+static void usb_repeater_spmi_init(const struct dwc3_controller_config *config)
+{
+	u8 slave = config->smb_slave_addr;
+
+	spmi_write8(SPMI_ADDR(slave, EUSB2_EN_CTL1), EUSB2_EN_CTL1_DISABLE);
+	udelay(50);
+	spmi_write8(SPMI_ADDR(slave, EUSB2_EN_CTL1), EUSB2_EN_CTL1_ENABLE);
+
+	printk(BIOS_INFO, "Enabling %s EUSB2_EN_CTL1\n", config->name);
+
+	/* Call tune API after initialization */
+	usb_repeater_spmi_tune(config);
+}
+
+/*
  * get_usb_typec_polarity - Reads Type-C polarity from PMIC
  * @config: Controller configuration containing SMB slave address
  *
@@ -530,7 +566,7 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 	clock_reset_bcr(dwc3->gcc_qusb2phy_prim_bcr, 1);
 	udelay(10);
 	clock_reset_bcr(dwc3->gcc_qusb2phy_prim_bcr, 0);
-	/* TBD:usb_shared_repeater_reset,usb_shared_repeater_init */
+	usb_repeater_spmi_init(&prim_config);
 	/* Initialize secondary HS PHY */
 	hs_usb_phy_init(2);
 
@@ -559,7 +595,7 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 	clock_reset_bcr(dwc3->gcc_qusb2phy_sec_bcr, 1);
 	udelay(10);
 	clock_reset_bcr(dwc3->gcc_qusb2phy_sec_bcr, 0);
-	/* TBD:usb_shared_repeater_reset,usb_shared_repeater_init for secondary */
+	usb_repeater_spmi_init(&sec_config);
 	/* Initialize secondary HS PHY */
 	hs_usb_phy_init(3);
 

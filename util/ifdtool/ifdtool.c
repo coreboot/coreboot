@@ -1035,7 +1035,7 @@ static void dump_fd(char *image, int size)
 
 	if (!is_platform_with_100x_series_pch()) {
 		printf("FLMAP2:    0x%08x\n", fdb->flmap2);
-		printf("  PSL:     0x%04x\n", (fdb->flmap2 >> 8) & 0xffff);
+		printf("  MSL:     0x%04x\n", (fdb->flmap2 >> 8) & 0xffff);
 		printf("  FMSBA:   0x%x\n", ((fdb->flmap2) & 0xff) << 4);
 	}
 

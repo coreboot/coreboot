@@ -162,7 +162,7 @@ config BMP_LOGO
 	bool "Enable logo"
 	default n
 	help
-	  Uses the FSP to display the boot logo. This method supports a
+	  Displays a BMP logo during boot. This method supports a
 	  BMP file only. The uncompressed size can be up to 1 MB. The logo can
 	  be compressed based on either `BMP_LOGO_COMPRESS_*` configs (default LZMA).
 

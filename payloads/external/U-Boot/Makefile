@@ -26,17 +26,8 @@ $(project_dir):
 	git clone $(project_git_repo) -b $(TAG-y) $(project_dir)
 
 fetch: $(project_dir)
-ifeq ($(CONFIG_UBOOT_MASTER),y)
 	echo "    Fetching new commits from the $(project_name) git repo"
-	git fetch
-
-	#master doesn't get a file, so it's continuously updated
-	rm -f $(STABLE_COMMIT_ID)
-else
-	cd $(project_dir); git show $(TAG-y) >/dev/null 2>&1 ;	if [ $$? -ne 0 ]; \
-	then echo "    Fetching new commits from the $(project_name) git repo"; git fetch; fi
-	touch $(STABLE_COMMIT_ID)
-endif
+	cd $(project_dir) && git fetch
 
 checkout: fetch
 	echo "    Checking out $(project_name) revision $(TAG-y)"

@@ -7,25 +7,19 @@ config PAYLOAD_SPECIFIC_OPTIONS
 	select PAYLOAD_IS_FLAT_BINARY
 	select WANT_LINEAR_FRAMEBUFFER
 
-config UBOOT_STABLE_COMMIT_ID
-	string
-	default "v2025.07"
-
-choice
-	prompt "U-Boot version"
-	default UBOOT_STABLE
-
 config UBOOT_STABLE
 	bool "v2025.07"
 	help
 	  Stable U-Boot version
 
-config UBOOT_MASTER
-	bool "master"
-	help
-	  Newest U-Boot version
+config UBOOT_BRANCH_OR_TAG
+	string "branch/tag to use for u-boot payload"
+	default "v2025.07" if UBOOT_STABLE
+	default "master"
 
-endchoice
+config UBOOT_REPO_URL
+	string "URL to uboot repository"
+	default "http://github.com/u-boot/u-boot/"
 
 config PAYLOAD_CONFIGFILE
 	string "U-Boot config file"

@@ -1,11 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-TAG-$(CONFIG_UBOOT_MASTER)=master
-TAG-$(CONFIG_UBOOT_STABLE)=$(STABLE_COMMIT_ID)
-
 project_name=U-Boot
 project_dir=u-boot
-project_git_repo=http://github.com/u-boot/u-boot/
 project_build_dir=build
 project_config_file=$(project_build_dir)/.config
 
@@ -23,15 +19,15 @@ all: build
 
 $(project_dir):
 	echo "    Cloning $(project_name) from Git"
-	git clone $(project_git_repo) -b $(TAG-y) $(project_dir)
+	git clone $(CONFIG_UBOOT_REPO_URL) -b $(CONFIG_UBOOT_BRANCH_OR_TAG) $(project_dir)
 
 fetch: $(project_dir)
 	echo "    Fetching new commits from the $(project_name) git repo"
 	cd $(project_dir) && git fetch
 
 checkout: fetch
-	echo "    Checking out $(project_name) revision $(TAG-y)"
-	cd $(project_dir); git checkout master; git branch -D coreboot 2>/dev/null; git checkout -b coreboot $(TAG-y)
+	echo "    Checking out $(project_name) revision $(CONFIG_UBOOT_BRANCH_OR_TAG)"
+	cd $(project_dir); git checkout $(CONFIG_UBOOT_BRANCH_OR_TAG); git branch -D coreboot 2>/dev/null; git checkout -b coreboot $(CONFIG_UBOOT_BRANCH_OR_TAG)
 
 config: checkout
 	mkdir -p $(project_build_dir)
@@ -49,7 +45,7 @@ else
 endif
 
 build: config
-	echo "    MAKE       $(project_name) $(TAG-y)"
+	echo "    MAKE       $(project_name) $(CONFIG_UBOOT_BRANCH_OR_TAG)"
 	$(MAKE) $(make_args)
 
 clean:
@@ -59,6 +55,6 @@ distclean:
 	rm -rf $(project_dir)
 
 print-repo-info:
-	echo "$(project_git_repo) $(project_dir)"
+	echo "$(CONFIG_UBOOT_REPO_URL) $(project_dir)"
 
 .PHONY: checkout config build clean distclean fetch print-repo-info

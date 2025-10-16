@@ -54,7 +54,7 @@ int fit_delete_entry(struct fit_table *fit,
 		     const size_t idx);
 
 int fit_add_microcode_file(struct fit_table *fit,
-			   struct cbfs_image *image,
+			   struct cbfs_image *file_source_image,
 			   const char *blob_name,
 			   fit_offset_converter_t offset_helper,
 			   const size_t max_fit_entries);

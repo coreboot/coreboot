@@ -15,10 +15,11 @@
 /* Global variables */
 partitioned_file_t *image_file;
 
-static const char *optstring  = "H:j:f:r:d:t:n:s:cAaDvhF?";
+static const char *optstring  = "H:j:f:r:R:d:t:n:s:cAaDvhF?";
 static struct option long_options[] = {
 	{"file",            required_argument, 0, 'f' },
 	{"region",          required_argument, 0, 'r' },
+	{"file-region",     required_argument, 0, 'R' },
 	{"add-cbfs-entry",  no_argument,       0, 'a' },
 	{"add-region",      no_argument,       0, 'A' },
 	{"del-entry",       required_argument, 0, 'd' },
@@ -54,10 +55,12 @@ static void usage(const char *name)
 		"\t\t-D|--dump             :   Dump FIT table (at end of operation)\n"
 		"\t\t-c|--clear-table      :   Remove all existing entries (do not update)\n"
 		"\t\t-j|--topswap-size     :   Use second FIT table if non zero\n"
+		"\t\t-R|--file-region      :   The FMAP region of the added file,\n"
+		"\t\t                      :   defaults to the value of -r\n"
 		"\tREQUIRED ARGUMENTS:\n"
 		"\t\t-f|--file name        :   The file containing the CBFS\n"
 		"\t\t-s|--max-table-size   :   The number of possible FIT entries in table\n"
-		"\t\t-r|--region           :   The FMAP region to operate on\n"
+		"\t\t-r|--region           :   The FMAP region of the FIT table\n"
 	, name);
 }
 
@@ -139,6 +142,7 @@ int main(int argc, char *argv[])
 	const char *input_file = NULL;
 	const char *name = NULL;
 	const char *region_name = NULL;
+	const char *file_region_name = NULL;
 	enum fit_operation op = NO_OP;
 	bool dump = false, clear_table = false;
 	size_t max_table_size = 0;
@@ -228,6 +232,9 @@ int main(int argc, char *argv[])
 		case 'r':
 			region_name = optarg;
 			break;
+		case 'R':
+			file_region_name = optarg;
+			break;
 		case 's':
 			max_table_size = atoi(optarg);
 			break;
@@ -282,7 +289,9 @@ int main(int argc, char *argv[])
 					     op != NO_OP || clear_table);
 
 	struct buffer image_region;
+	struct buffer file_image_region;
 
+	// Open the FIT table's region
 	if (!partitioned_file_read_region(&image_region, image_file,
 					  region_name)) {
 		partitioned_file_close(image_file);
@@ -290,12 +299,33 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	// If the added file region is not specified, default to the FIT table's one.
+	if (!file_region_name) {
+		file_image_region = image_region;
+	} else {
+		// Open the -n file-to-add region
+		if (!partitioned_file_read_region(&file_image_region, image_file,
+						  file_region_name)) {
+			partitioned_file_close(image_file);
+			ERROR("The image will be left unmodified.\n");
+			return 1;
+		}
+	}
+
 	struct buffer bootblock;
 	// The bootblock is part of the CBFS on x86
 	buffer_clone(&bootblock, &image_region);
 
+	// Open the FIT table's CBFS
 	struct cbfs_image image;
 	if (cbfs_image_from_buffer(&image, &image_region, headeroffset)) {
+		partitioned_file_close(image_file);
+		return 1;
+	}
+
+	// Open the -n file-to-add CBFS
+	struct cbfs_image file_source_image;
+	if (cbfs_image_from_buffer(&file_source_image, &file_image_region, HEADER_OFFSET_UNKNOWN)) {
 		partitioned_file_close(image_file);
 		return 1;
 	}
@@ -339,8 +369,8 @@ int main(int argc, char *argv[])
 	case ADD_CBFS_OP:
 	{
 		if (fit_type == FIT_TYPE_MICROCODE) {
-			if (fit_add_microcode_file(fit, &image, name,
-						   convert_to_from_top_aligned,
+			if (fit_add_microcode_file(fit, &file_source_image, name,
+						   convert_to_from_absolute_top_aligned,
 						   max_table_size)) {
 				return 1;
 			}
@@ -348,7 +378,7 @@ int main(int argc, char *argv[])
 			uint32_t offset, len;
 			struct cbfs_file *cbfs_file;
 
-			cbfs_file = cbfs_get_entry(&image, name);
+			cbfs_file = cbfs_get_entry(&file_source_image, name);
 			if (!cbfs_file) {
 				partitioned_file_close(image_file);
 				ERROR("%s not found in CBFS.\n", name);
@@ -356,9 +386,9 @@ int main(int argc, char *argv[])
 			}
 
 			len = be32toh(cbfs_file->len);
-			offset = offset_to_ptr(convert_to_from_top_aligned,
-					&image.buffer,
-					cbfs_get_entry_addr(&image, cbfs_file) +
+			offset = offset_to_ptr(convert_to_from_absolute_top_aligned,
+					&file_source_image.buffer,
+					cbfs_get_entry_addr(&file_source_image, cbfs_file) +
 					be32toh(cbfs_file->offset));
 
 

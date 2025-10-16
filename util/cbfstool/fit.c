@@ -492,7 +492,7 @@ static void update_fit_key_manifest_entry(struct fit_table *fit,
 
 /* Special case for ucode CBFS file, as it might contain more than one ucode */
 int fit_add_microcode_file(struct fit_table *fit,
-			   struct cbfs_image *image,
+			   struct cbfs_image *file_source_image,
 			   const char *blob_name,
 			   fit_offset_converter_t offset_helper,
 			   const size_t max_fit_entries)
@@ -508,7 +508,7 @@ int fit_add_microcode_file(struct fit_table *fit,
 		return 1;
 	}
 
-	if (parse_microcode_blob(image, blob_name, &mcus_found, mcus,
+	if (parse_microcode_blob(file_source_image, blob_name, &mcus_found, mcus,
 				 max_fit_entries)) {
 		free(mcus);
 		return 1;
@@ -516,7 +516,7 @@ int fit_add_microcode_file(struct fit_table *fit,
 
 	for (i = 0; i < mcus_found; i++) {
 		if (fit_add_entry(fit,
-				  offset_to_ptr(offset_helper, &image->buffer,
+				  offset_to_ptr(offset_helper, &file_source_image->buffer,
 						mcus[i].offset),
 				  0,
 				  FIT_TYPE_MICROCODE,

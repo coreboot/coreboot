@@ -61,11 +61,3 @@ void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes)
 
 	setbits32(&mipi_tx->ck_ckmode_en, DSI_CK_CKMODE_EN);
 }
-
-void mtk_dsi_reset(void)
-{
-	write32(&dsi0->dsi_force_commit,
-		DSI_FORCE_COMMIT_USE_MMSYS | DSI_FORCE_COMMIT_ALWAYS);
-	write32(&dsi0->dsi_con_ctrl, 1);
-	write32(&dsi0->dsi_con_ctrl, 0);
-}

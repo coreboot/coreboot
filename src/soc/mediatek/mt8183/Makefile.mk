@@ -55,6 +55,7 @@ ramstage-y += ../common/i2c.c i2c.c
 ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
+ramstage-y += ../common/mtk_dsi_common.c
 ramstage-y += ../common/pmic_wrap.c
 ramstage-y += ../common/rtc.c ../common/rtc_pwrap_ops.c ../common/rtc_osc_init.c rtc.c
 ramstage-y += soc.c

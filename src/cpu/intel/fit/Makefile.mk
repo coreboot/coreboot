@@ -13,9 +13,14 @@ intel_fit-file := fit_table.c:struct
 intel_fit-type := intel_fit
 intel_fit-align := 16
 
+ifeq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
+regions-for-file-intel_fit = BOOTBLOCK
+regions-for-file-intel_fit_ts = TOPSWAP
+endif
+
 $(call add_intermediate, set_fit_ptr, $(IFITTOOL))
 	@printf "    UPDATE-FIT set FIT pointer to table\n"
-	$(IFITTOOL) -f $< -F -n intel_fit -r COREBOOT -c
+	$(IFITTOOL) -f $< -F -n intel_fit -r $(BB_FIT_REGION) -c
 
 FIT_ENTRY=$(call strip_quotes, $(CONFIG_INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG))
 
@@ -24,22 +29,23 @@ ifneq ($(CONFIG_UPDATE_IMAGE),y) # never update the bootblock
 ifneq ($(CONFIG_CPU_MICROCODE_CBFS_NONE)$(CONFIG_CPU_INTEL_MICROCODE_CBFS_SPLIT_BINS),y)
 
 $(call add_intermediate, add_mcu_fit, set_fit_ptr $(IFITTOOL))
+	@printf "$(call regions-for-file,$(cpu_microcode_blob.bin))"
 	@printf "    UPDATE-FIT Microcode\n"
-	$(IFITTOOL) -f $< -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -r COREBOOT
+	$(IFITTOOL) -f $< -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -r $(BB_FIT_REGION) -R COREBOOT
 
 # Second FIT in TOP_SWAP bootblock
 ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
 
 $(call add_intermediate, set_ts_fit_ptr, $(IFITTOOL))
 	@printf "    UPDATE-FIT Top Swap: set FIT pointer to table\n"
-	$(IFITTOOL) -f $< -F -n intel_fit_ts -r COREBOOT $(TS_OPTIONS)
+	$(IFITTOOL) -f $< -F -n intel_fit_ts -r $(TS_FIT_REGION) $(TS_OPTIONS)
 
 $(call add_intermediate, add_ts_mcu_fit, set_ts_fit_ptr $(IFITTOOL))
 	@printf "    UPDATE-FIT Top Swap: Microcode\n"
 ifneq ($(FIT_ENTRY),)
-	$(IFITTOOL) -f $< -A -n $(FIT_ENTRY) -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) $(TS_OPTIONS) -r COREBOOT
+	$(IFITTOOL) -f $< -A -n $(FIT_ENTRY) -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) $(TS_OPTIONS) -r $(TS_FIT_REGION)
 endif # FIT_ENTRY
-	$(IFITTOOL) -f $< -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) $(TS_OPTIONS) -r COREBOOT
+	$(IFITTOOL) -f $< -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) $(TS_OPTIONS) -r $(TS_FIT_REGION) -R COREBOOT
 
 cbfs-files-y += intel_fit_ts
 intel_fit_ts-file := fit_table.c:struct

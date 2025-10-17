@@ -1261,7 +1261,21 @@ $(obj)/fmap.fmap: $(obj)/fmap.fmd $(FMAPTOOL)
 	$(FMAPTOOL) -h $(obj)/fmap_config.h -R $(obj)/fmap.desc $< $@
 
 ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
+ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
 TS_OPTIONS := -j $(CONFIG_INTEL_TOP_SWAP_BOOTBLOCK_SIZE)
+endif
+endif
+
+ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
+BB_FIT_REGION = COREBOOT
+TS_FIT_REGION = COREBOOT
+else
+BB_FIT_REGION = BOOTBLOCK
+TS_FIT_REGION = TOPSWAP
+bootblock_add_params = -f $(objcbfs)/bootblock.bin \
+	  -n bootblock -t bootblock \
+	  -b -$(call file-size,$(objcbfs)/bootblock.bin) \
+	  $(TXTIBB) $(cbfs-autogen-attributes) $(TS_OPTIONS) $(CBFSTOOL_ADD_CMD_OPTIONS)
 endif
 
 ifneq ($(CONFIG_ARCH_X86),y)
@@ -1276,7 +1290,9 @@ ifneq ($(CONFIG_UPDATE_IMAGE),y)
 $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL) $(obj)/fmap.fmap $(obj)/fmap.desc $(objcbfs)/bootblock.bin
 	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap -r $(shell cat $(obj)/fmap.desc)
 	printf "    BOOTBLOCK\n"
+ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
 	$(call add_bootblock,$@.tmp,$(objcbfs)/bootblock.bin)
+endif # ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
 	$(prebuild-files) true
 	mv $@.tmp $@
 else # ifneq ($(CONFIG_UPDATE_IMAGE),y)
@@ -1306,6 +1322,15 @@ add_intermediate = \
 	$(1): $(obj)/coreboot.pre $(2) | $(INTERMEDIATE) \
 	$(eval INTERMEDIATE+=$(1)) $(eval PHONY+=$(1))
 
+ifeq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
+$(call add_intermediate, prep_bb_regions, $(CBFSTOOL))
+	@printf "    PREP       place bootblocks in BOOTBLOCK and TOPSWAP\n"
+	@printf "    BOOTBLOCK\n"
+	$(CBFSTOOL) $< add -r $(BB_FIT_REGION) $(bootblock_add_params)
+	@printf "    TOPSWAP\n"
+	$(CBFSTOOL) $< add -r $(TS_FIT_REGION) $(bootblock_add_params)
+endif
+
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(CBFSTOOL) $(IFITTOOL) $$(INTERMEDIATE)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 # The full ROM may be larger than the CBFS part, so create an empty
@@ -1314,11 +1339,11 @@ $(obj)/coreboot.rom: $(obj)/coreboot.pre $(CBFSTOOL) $(IFITTOOL) $$(INTERMEDIATE
 	dd if=$(obj)/coreboot.pre of=$@.tmp bs=8192 conv=notrunc 2> /dev/null
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 # Print final FIT table
-	$(IFITTOOL) -f $@.tmp -D -r COREBOOT
+	$(IFITTOOL) -f $@.tmp -D -r $(BB_FIT_REGION)
 # Print final TS BOOTBLOCK FIT table
 ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
 	@printf "    TOP SWAP FIT table\n"
-	$(IFITTOOL) -f $@.tmp -D $(TS_OPTIONS) -r COREBOOT
+	$(IFITTOOL) -f $@.tmp -D $(TS_OPTIONS) -r $(TS_FIT_REGION)
 endif # CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK
 endif # CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	mv $@.tmp $@

@@ -48,6 +48,15 @@ config INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG
 	  onto ifittool (-A -n option). ifittool will not parse the region for MCU
 	  entries, and only locate the region and insert its address into FIT.
 
+config INTEL_TOP_SWAP_SEPARATE_REGIONS
+	bool "Place the regular and Top Swap bootblocks in separate fmap regions"
+	depends on INTEL_ADD_TOP_SWAP_BOOTBLOCK && BOOTBLOCK_IN_CBFS
+	default n
+	help
+	  Place the bootblocks in BOOTBLOCK and TOPSWAP regions for easy access, to
+	  facilitate firmware updates using the Top Swap as Slot A/Slot B redundancy.
+	  Requires a custom .fmd with the regions added at the end.
+
 endif
 
 config SOC_INTEL_COMMON

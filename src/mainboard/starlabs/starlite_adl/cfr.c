@@ -5,6 +5,9 @@
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <intelblocks/cfr.h>
+#include <device/i2c_bus.h>
+#include <device/i2c_simple.h>
+#include <static.h>
 #include <variants.h>
 
 static const struct sm_object accelerometer = SM_DECLARE_BOOL({
@@ -13,6 +16,21 @@ static const struct sm_object accelerometer = SM_DECLARE_BOOL({
 	.ui_helptext	= "Enable or disable the built-in accelerometer",
 	.default_value	= true,
 });
+
+static void update_card_reader(const struct sm_object *obj, struct sm_object *new)
+{
+	struct device *mxc_accel = DEV_PTR(mxc6655);
+
+	if (!i2c_dev_detect(i2c_busdev(mxc_accel), mxc_accel->path.i2c.device))
+		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+}
+
+static const struct sm_object card_reader = SM_DECLARE_BOOL({
+	.opt_name	= "card_reader",
+	.ui_name	= "Card Reader",
+	.ui_helptext	= "Enable or disable the built-in card reader",
+	.default_value	= true,
+}, WITH_CALLBACK(update_card_reader));
 
 #if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
 static const struct sm_object gna = SM_DECLARE_BOOL({
@@ -147,6 +165,7 @@ static struct sm_obj_form devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
 		&accelerometer,
+		&card_reader,
 		&display_native_res,
 		#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
 		&gna,

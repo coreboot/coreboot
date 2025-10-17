@@ -85,6 +85,8 @@ chip soc/intel/alderlake
 			# Internal Bluetooth			1874 mil
 			register "usb2_ports[9]"		= "USB2_PORT_SHORT(OC_SKIP)"
 
+			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"
+
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
@@ -167,7 +169,7 @@ chip soc/intel/alderlake
 				register "has_rotation_matrix"		= "1"
 				register "rotation_matrix"		= "{1, 0, 0, 0, -1, 0, 0, 0, 1}"
 				register "detect"			= "1"
-				device i2c 15 on end
+				device i2c 15 alias mxc6655 on end
 			end
 		end
 		device ref i2c2		on				# Touchscreen

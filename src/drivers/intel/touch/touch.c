@@ -268,8 +268,13 @@ static void touch_generate_acpi_i2cdev_dsd(const struct device *dev)
 	acpigen_write_create_buffer_qword_field("ISUB", 0x88, "HMSL");
 
 	acpigen_write_store_int_to_namestr(touch_get(dev, dev_hidi2c.intf.hidi2c.addr), "DADR");
-	connection_speed_val = _soc_hidi2c_info->get_soc_i2c_bus_speed_val_func(
-		touch_dev_soc_get(dev, hidi2c, connection_speed));
+
+	if (_soc_hidi2c_info->get_soc_i2c_bus_speed_val_func) {
+		connection_speed_val = _soc_hidi2c_info->get_soc_i2c_bus_speed_val_func(
+			touch_dev_soc_get(dev, hidi2c, connection_speed));
+	} else {
+		die("Missing SoC function to map I2C speed to its register value!\n");
+	}
 	acpigen_write_store_int_to_namestr(connection_speed_val, "DSPD");
 	acpigen_write_store_int_to_namestr(touch_soc_get(dev, hidi2c, addr_mode), "DADM");
 	acpigen_write_store_int_to_namestr(touch_soc_get(dev, hidi2c, sm_scl_high_period), "SMHX");

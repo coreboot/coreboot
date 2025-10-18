@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC0),		// JUSB1 (USB-A always on)
+				[1] = USB2_PORT_MID(OC1),		// JUSB2 (USB-A)
+				[2] = USB2_PORT_MID(OC_SKIP),		// N/C
+				[3] = USB2_PORT_MID(OC_SKIP),		// JUSBC (USB docking station)
+				[4] = USB2_PORT_MID(OC_SKIP),		// JFPR (smartcard slot)
+				[5] = USB2_PORT_MID(OC_SKIP),		// JWWAN (M.2 WWAN USB)
+				[6] = USB2_PORT_MID(OC_SKIP),		// JWLAN (M.2 WLAN USB)
+				[7] = USB2_PORT_MID(OC_SKIP),		// JCAM (webcam)
+				[8] = USB2_PORT_MID(OC_SKIP),		// JFPR (fingerprint reader)
+				[9] = USB2_PORT_MID(OC_SKIP),		// JLCD (touch panel)
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),		// JUSB1 (USB-A always on)
+				[1] = USB3_PORT_DEFAULT(OC1),		// JUSB2 (USB-A)
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	// JSD (SD card reader)
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	// JUSB3 (USB docking station)
+			}"
+		end
+
+		# PCIe
+		#   PCIe Controller 1 - 1x2 + 2x1
+		#   PCIE 1-2   - RP1  - TB - CLKOUT0 - CLKREQ0
+		#   PCIE 3     - RP3  - WLAN#1 - CLKOUT1 - CLKREQ1
+		#   PCIE 4     - GBE  - GBE  - CLKOUT2 - CLKREQ2
+		#   PCIe Controller 2 - 4x1
+		#   PCIE 5     - RP5  - WLAN#2 - CLKOUT3 - CLKREQ3
+		#   PCIE 6-8   - n/c
+		#   PCIe Controller 3 - 1x4 (lane reversal)
+		#   PCIE 9-12  - RP9  - SSD  - CLKOUT5 - CLKREQ5
+
+		# TB - x2
+		device ref pcie_rp1 on
+			register "PcieRpClkReqSupport[0]"		= "true"
+			register "PcieRpClkReqNumber[0]"		= "0"
+			register "PcieRpClkSrcNumber[0]"		= "0"
+			register "PcieRpAdvancedErrorReporting[0]"	= "true"
+			register "PcieRpHotPlug[0]"			= "true"
+		end
+
+		# M.2 WLAN#1 - x1
+		device ref pcie_rp3 on
+			register "PcieRpClkReqSupport[2]"		= "true"
+			register "PcieRpClkReqNumber[2]"		= "1"
+			register "PcieRpClkSrcNumber[2]"		= "1"
+			register "PcieRpAdvancedErrorReporting[2]"	= "true"
+			register "PcieRpLtrEnable[2]"			= "true"
+			smbios_slot_desc "SlotTypeM2Socket1_DP" "SlotLengthOther" "M.2/A 2230" "SlotDataBusWidth1X"
+		end
+
+		# Ethernet (clobbers RP4)
+                device ref gbe on
+                        register "LanClkReqSupported"                   = "true"
+                        register "LanClkReqNumber"                      = "2"
+			register "PcieRpClkReqNumber[3]"		= "2"
+			register "PcieRpClkSrcNumber[3]"		= "2"
+                        register "EnableLanLtr"                         = "true"
+                        register "EnableLanK1Off"                       = "true"
+                end
+
+		# M.2 WLAN#2 - x1
+		device ref pcie_rp5 on
+			register "PcieRpClkReqSupport[4]"		= "true"
+			register "PcieRpClkReqNumber[4]"		= "3"
+			register "PcieRpClkSrcNumber[4]"		= "3"
+			register "PcieRpAdvancedErrorReporting[4]"	= "true"
+			register "PcieRpLtrEnable[4]"			= "true"
+			smbios_slot_desc "SlotTypeM2Socket1_DP" "SlotLengthOther" "M.2/A 2230" "SlotDataBusWidth1X"
+		end
+
+		# M.2 2280 SSD - x4 (RP9)
+		device ref pcie_rp9 on
+			register "PcieRpClkReqSupport[8]"		= "true"
+			register "PcieRpClkReqNumber[8]"		= "5"
+			register "PcieRpClkSrcNumber[8]"		= "5"
+			register "PcieRpAdvancedErrorReporting[8]"	= "true"
+			register "PcieRpLtrEnable[8]"			= "true"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
+		end
+	end
+end

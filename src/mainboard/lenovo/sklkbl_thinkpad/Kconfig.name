@@ -1,5 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+config BOARD_LENOVO_T470S
+	bool "ThinkPad T470s"
+
 config BOARD_LENOVO_T480
 	bool "ThinkPad T480"
 

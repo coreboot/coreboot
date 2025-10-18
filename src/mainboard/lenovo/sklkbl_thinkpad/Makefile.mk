@@ -13,4 +13,6 @@ ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += variants/$(VARIANT_DIR)/gma-mainb
 
 subdirs-y += variants/$(VARIANT_DIR)
 
+ifeq ($(CONFIG_VARIANT_HAS_DGPU),y)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
+endif

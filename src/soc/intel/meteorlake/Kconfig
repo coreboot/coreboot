@@ -367,14 +367,14 @@ config FSP_TYPE_IOT
 
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
-	default "3rdparty/fsp/MeteorLakeFspBinPkg/IoT/MeteorLake/Include" if FSP_USE_REPO && FSP_TYPE_IOT
+	default "3rdparty/fsp/ArrowLakeFspBinPkg/IoT/ArrowLakeUH/Include" if FSP_USE_REPO && FSP_TYPE_IOT
 	default "src/vendorcode/intel/fsp/fsp2_0/meteorlake/x86_64/" if HAVE_X86_64_SUPPORT
 	default "src/vendorcode/intel/fsp/fsp2_0/meteorlake/x86_32/"
 
 config FSP_FD_PATH
 	string
 	depends on FSP_USE_REPO
-	default "3rdparty/fsp/MeteorLakeFspBinPkg/IoT/MeteorLake/Fsp.fd" if FSP_TYPE_IOT
+	default "3rdparty/fsp/ArrowLakeFspBinPkg/IoT/ArrowLakeUH/Fsp.fd" if FSP_TYPE_IOT
 	default "3rdparty/fsp/MeteorLakeFspBinPkg/Fsp.fd"
 
 # Override platform debug consent value:

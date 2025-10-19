@@ -80,6 +80,7 @@ int google_chromeec_set_sku_id(uint32_t skuid);
 uint64_t  google_chromeec_get_events_b(void);
 int google_chromeec_clear_events_b(uint64_t mask);
 int google_chromeec_kbbacklight(int percent);
+bool google_chromeec_has_kbbacklight(void);
 void google_chromeec_post(uint8_t postcode);
 uint8_t google_chromeec_get_switches(void);
 bool google_chromeec_get_ap_watchdog_flag(void);

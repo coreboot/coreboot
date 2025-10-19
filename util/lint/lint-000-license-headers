@@ -69,7 +69,8 @@ _shipped$|\
 config|\
 cmos\.layout|\
 cmos\.default|\
-\.apcb$\
+\.apcb$|\
+\.gitkeep$\
 "
 
 #space separated list of directories to test

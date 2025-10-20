@@ -169,7 +169,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* E6  : THC0_SPI1_RST# ==> GPP_E6_STRAP */
 	PAD_NC_LOCK(GPP_E6, NONE, LOCK_CONFIG),
 	/* E7  : NC ==> FP_RST_ODL */
-	PAD_CFG_GPO_LOCK(GPP_E7, 1, LOCK_CONFIG),
+	PAD_CFG_GPO_LOCK(GPP_E7, 0, LOCK_CONFIG),
 	/* E8  : GPP_E8 ==> WLAN_DISABLE_L */
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),
 	/* E9  : NC ==> DIMM_CHANNEL_SELECT */
@@ -428,17 +428,10 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D6, 0, DEEP),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E12, NONE, DEEP),
-	/*
-	 * E7 ==> FP_RST_ODL
-	 * FP_RST_ODL comes out of reset as hi-z and does not have an external pull-down.
-	 * To ensure proper power sequencing for the FPMCU device, reset signal is driven low
-	 * early on in bootblock, followed by enabling of power. Reset signal is deasserted
-	 * later on in ramstage. Since reset signal is asserted in bootblock, it results in
-	 * FPMCU not working after a S3 resume. This is a known issue.
-	 */
+	/* E7 ==> FP_RST_ODL */
 	PAD_CFG_GPO(GPP_E7, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
-	PAD_CFG_GPO(GPP_D2, 1, DEEP),
+	PAD_CFG_GPO(GPP_D2, 0, DEEP),
 	/* E9  : DIMM_CHANNEL_SELECT */
 	PAD_CFG_GPI_LOCK(GPP_E9, DN_20K, LOCK_CONFIG),
 	/* E17 : WWAN_RST_L */
@@ -466,17 +459,10 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
 	/* C1  : SMBDATA ==> USI_RST_L */
 	PAD_CFG_TERM_GPO(GPP_C1, 0, UP_20K, DEEP),
-	/*
-	 * E7 ==> FP_RST_ODL
-	 * FP_RST_ODL comes out of reset as hi-z and does not have an external pull-down.
-	 * To ensure proper power sequencing for the FPMCU device, reset signal is driven low
-	 * early on in bootblock, followed by enabling of power. Reset signal is deasserted
-	 * later on in ramstage. Since reset signal is asserted in bootblock, it results in
-	 * FPMCU not working after a S3 resume. This is a known issue.
-	 */
-	 PAD_CFG_GPO(GPP_E7, 0, DEEP),
-	 /* D2  : ISH_GP2 ==> EN_FP_PWR */
-	 PAD_CFG_GPO(GPP_D2, 0, DEEP),
+	/* E7 ==> FP_RST_ODL */
+	PAD_CFG_GPO(GPP_E7, 0, DEEP),
+	/* D2  : ISH_GP2 ==> EN_FP_PWR */
+	PAD_CFG_GPO(GPP_D2, 0, DEEP),
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H12, 1, DEEP),
 };

@@ -9,7 +9,6 @@ config BOARD_STARLABS_BYTE_SERIES
 	select DRIVERS_OPTION_CFR_ENABLED
 	select EC_STARLABS_ITE
 	select EC_STARLABS_MERLIN
-	select EC_STARLABS_NEED_ITE_BIN
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select HAVE_INTEL_PTT
@@ -57,7 +56,6 @@ config EC_GPE_SCI
 
 config EC_STARLABS_ITE_BIN_PATH
 	string
-	depends on EC_STARLABS_NEED_ITE_BIN
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"
 
 config EC_VARIANT_DIR

@@ -1,0 +1,65 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+OUTPUT_ARCH(riscv)
+
+ENTRY(_entry)
+
+SECTIONS
+{
+	. = CONFIG_LP_BASE_ADDRESS;
+
+	. = ALIGN(16);
+	_start = .;
+
+	.text : {
+		_text = .;
+		*(.text._entry)
+		*(.text)
+		*(.text.*)
+		_etext = .;
+	}
+
+	.rodata : {
+		_rodata = .;
+		*(.rodata)
+		*(.rodata.*)
+		_erodata = .;
+	}
+
+	.data : {
+		_data = .;
+		*(.data)
+		*(.data.*)
+		_edata = .;
+	}
+
+	.bss : {
+		_bss = .;
+		*(.sbss)
+		*(.sbss.*)
+		*(.bss)
+		*(.bss.*)
+		*(COMMON)
+		_ebss = .;
+
+		/* Stack and heap */
+
+		. = ALIGN(16);
+		_heap = .;
+		. += CONFIG_LP_HEAP_SIZE;
+		. = ALIGN(16);
+		_eheap = .;
+
+		_estack = .;
+		. += CONFIG_LP_STACK_SIZE;
+		. = ALIGN(16);
+		_stack = .;
+	}
+
+	_end = .;
+
+	/DISCARD/ : {
+		*(.comment)
+		*(.note*)
+	}
+}

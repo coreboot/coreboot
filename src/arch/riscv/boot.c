@@ -8,11 +8,57 @@
 #include <mcall.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <commonlib/device_tree.h>
+#include <cbmem.h>
 
 struct arch_prog_run_args {
 	struct prog *prog;
 	struct prog *opensbi;
 };
+
+/*
+ * At the moment devicetree is the default handoff format to the payload instead of
+ * coreboot tables (on RISC-V only). That may change in the future, but for now we will put a
+ * reference to the coreboot tables inside the FDT (similar to what we do in ACPI).
+ */
+static void *add_coreboot_table_to_fdt(void *fdt)
+{
+	if (!fdt || !fdt_is_valid(fdt)) {
+		printk(BIOS_ERR, "Invalid FDT provided\n");
+		return fdt;
+	}
+
+	void *coreboot_table = cbmem_find(CBMEM_ID_CBTABLE);
+	if (!coreboot_table) {
+		printk(BIOS_ERR, "coreboot table not found in CBMEM\n");
+		return fdt;
+	}
+
+	struct device_tree *tree = fdt_unflatten(fdt);
+	if (!tree) {
+		printk(BIOS_ERR, "Failed to unflatten FDT\n");
+		return fdt;
+	}
+
+	struct device_tree_node *chosen_node = dt_find_node_by_path(tree, "/chosen", NULL, NULL, 1);
+	if (!chosen_node) {
+		printk(BIOS_ERR, "Failed to find or create /chosen node\n");
+		return fdt;
+	}
+
+	printk(BIOS_INFO, "Adding cbtable@%p to fdt\n", coreboot_table);
+	dt_add_u64_prop(chosen_node, "coreboot-table", (uint64_t)(uintptr_t)coreboot_table);
+
+	size_t next_size = dt_flat_size(tree);
+	void *next_fdt = malloc(next_size);
+	if (!next_fdt) {
+		printk(BIOS_ERR, "Failed to allocate memory for next-stage FDT\n");
+		return fdt;
+	}
+
+	dt_flatten(tree, next_fdt);
+	return next_fdt;
+}
 
 /*
  * A pointer to the Flattened Device Tree passed to coreboot by the boot ROM.
@@ -51,14 +97,29 @@ void arch_prog_run(struct prog *prog)
 
 	args.prog = prog;
 
-	/* In case of OpenSBI we have to load it before resuming all HARTs */
-	if (ENV_RAMSTAGE && CONFIG(RISCV_OPENSBI)) {
-		struct prog sbi = PROG_INIT(PROG_OPENSBI, CONFIG_CBFS_PREFIX"/opensbi");
+	if (ENV_RAMSTAGE) {
+		int hart_count = CONFIG_MAX_CPUS;
+		if (CONFIG(RISCV_GET_HART_COUNT_AT_RUNTIME))
+			hart_count = smp_get_hart_count();
 
-		if (!selfload_check(&sbi, BM_MEM_OPENSBI))
-			die("OpenSBI load failed");
+		/* Embed coreboot table pointer into fdt, so that payload can find it. */
+		void *fdt = HLS()->fdt;
+		void *next_fdt = add_coreboot_table_to_fdt(fdt);
 
-		args.opensbi = &sbi;
+		/* Update per hart's fdt with "coreboot-table" node embedded */
+		for (int i = 0; i < hart_count; i++) {
+			OTHER_HLS(i)->fdt = next_fdt;
+		}
+
+		/* In case of OpenSBI we have to load it before resuming all HARTs */
+		if (CONFIG(RISCV_OPENSBI)) {
+			struct prog sbi = PROG_INIT(PROG_OPENSBI, CONFIG_CBFS_PREFIX"/opensbi");
+
+			if (!selfload_check(&sbi, BM_MEM_OPENSBI))
+				die("OpenSBI load failed");
+
+			args.opensbi = &sbi;
+		}
 	}
 
 	smp_resume((void (*)(void *))do_arch_prog_run, &args);

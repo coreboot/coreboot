@@ -36,6 +36,12 @@ config TIMER_ARM64_ARCH
 	help
 	  The cntfrq register needs to have been pre-initialized.
 
+config TIMER_RISCV64_ARCH
+	bool "Architecture Timer for RISCV64 platforms"
+	depends on ARCH_RISCV_RV64
+	help
+	  Payloads usually run in S-Mode, which has a time CSR for timer implementation.
+
 config TIMER_RK3288
 	bool "Timer for Rockchip RK3288"
 

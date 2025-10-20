@@ -127,6 +127,15 @@ config ARCH_ARM64
         help
           Support the ARM64 architecture
 
+config ARCH_RISCV_RV64
+        bool "RISCV64"
+        depends on GPL
+        depends on EXPERIMENTAL
+        help
+          Support the RISC-V 64-bit architecture
+          Please note that support for riscv64 payload is experimental at this time, may have
+          fundamental change in the future.
+
 config ARCH_MOCK
         bool "Mock architecture (for unit tests)"
         help
@@ -523,3 +532,4 @@ source "arch/arm/Kconfig"
 source "arch/arm64/Kconfig"
 source "arch/x86/Kconfig"
 source "arch/mock/Kconfig"
+source "arch/riscv/Kconfig"

@@ -41,6 +41,7 @@ ARCHDIR-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCHDIR-$(CONFIG_LP_ARCH_ARM64)   := arm64
 ARCHDIR-$(CONFIG_LP_ARCH_X86)     := x86
 ARCHDIR-$(CONFIG_LP_ARCH_MOCK)    := mock
+ARCHDIR-$(CONFIG_LP_ARCH_RISCV_RV64)    := riscv
 DESTDIR ?= install
 
 real-target: lib

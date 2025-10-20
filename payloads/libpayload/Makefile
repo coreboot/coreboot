@@ -111,6 +111,7 @@ ARCHDIR-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCHDIR-$(CONFIG_LP_ARCH_ARM64)   := arm64
 ARCHDIR-$(CONFIG_LP_ARCH_X86)     := x86
 ARCHDIR-$(CONFIG_LP_ARCH_MOCK)    := mock
+ARCHDIR-$(CONFIG_LP_ARCH_RISCV_RV64)    := riscv
 
 ARCH-y := $(ARCHDIR-y)
 
@@ -121,6 +122,7 @@ ARCH-$(CONFIG_LP_ARCH_ARM64)   := arm64
 ARCH-$(CONFIG_LP_ARCH_X86_32)  := x86_32
 ARCH-$(CONFIG_LP_ARCH_X86_64)  := x86_64
 ARCH-$(CONFIG_LP_ARCH_MOCK)    := mock
+ARCH-$(CONFIG_LP_ARCH_RISCV_RV64)    := riscv
 
 # Five cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists

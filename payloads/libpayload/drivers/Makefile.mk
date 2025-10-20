@@ -64,6 +64,7 @@ libc-y += timer/generic.c
 endif
 libc-$(CONFIG_LP_TIMER_RDTSC) += timer/rdtsc.c
 libc-$(CONFIG_LP_TIMER_ARM64_ARCH) += timer/arm64_arch_timer.c
+libc-$(CONFIG_LP_TIMER_RISCV64_ARCH) += timer/riscv64_arch_timer.c
 
 # Video console drivers
 libc-$(CONFIG_LP_VIDEO_CONSOLE) += video/video.c

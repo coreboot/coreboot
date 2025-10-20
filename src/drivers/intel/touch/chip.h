@@ -62,10 +62,10 @@ struct intel_thc_hidi2c_info {
 	/* Device connection speed in Hz */
 	enum i2c_speed connection_speed;
 	/*
-	 * This maps SoC specific function for converting speed in Hz to the actual
+	 * This maps SoC specific function for converting speed enum to the actual
 	 * value for the configuration register.
 	 */
-	uint64_t (*get_soc_i2c_bus_speed_val_func)(uint32_t speed);
+	uint64_t (*get_soc_i2c_bus_speed_val_func)(enum i2c_speed speed);
 	/* Device address mode */
 	uint64_t addr_mode;
 	/* Standard Mode (100 kbit/s) Serial Clock Line HIGH Period */

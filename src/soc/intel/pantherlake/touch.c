@@ -4,7 +4,7 @@
 #include <soc/touch.h>
 
 /* Convert I2C speed into value for the register in SoC */
-static uint64_t get_soc_thc_i2c_bus_freq_val(uint32_t speed)
+static uint64_t get_soc_thc_i2c_bus_freq_val(enum i2c_speed speed)
 {
 	switch (speed) {
 	case I2C_SPEED_FAST_PLUS:
@@ -12,8 +12,6 @@ static uint64_t get_soc_thc_i2c_bus_freq_val(uint32_t speed)
 	case I2C_SPEED_FAST:
 		return SOC_PTL_THC_I2C_CONNECTION_SPEED_FM;
 	case I2C_SPEED_STANDARD:
-		return SOC_PTL_THC_I2C_CONNECTION_SPEED_SM;
-	case 0: /* If not specified in the device tree, SoC, and device, standard speed is used */
 		return SOC_PTL_THC_I2C_CONNECTION_SPEED_SM;
 	default:
 		die("Fail to map %d Hz to proper I2C speed.\n", speed);

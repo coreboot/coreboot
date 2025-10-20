@@ -270,8 +270,17 @@ static void touch_generate_acpi_i2cdev_dsd(const struct device *dev)
 	acpigen_write_store_int_to_namestr(touch_get(dev, dev_hidi2c.intf.hidi2c.addr), "DADR");
 
 	if (_soc_hidi2c_info->get_soc_i2c_bus_speed_val_func) {
+		enum i2c_speed connection_speed;
+
+		connection_speed = touch_dev_soc_get(dev, hidi2c, connection_speed);
+		/*
+		 * If the recommended speed is not specified in the device tree, SoC, and device,
+		 * standard speed is used.
+		 */
+		if (!connection_speed)
+			connection_speed = I2C_SPEED_STANDARD;
 		connection_speed_val = _soc_hidi2c_info->get_soc_i2c_bus_speed_val_func(
-			touch_dev_soc_get(dev, hidi2c, connection_speed));
+			connection_speed);
 	} else {
 		die("Missing SoC function to map I2C speed to its register value!\n");
 	}

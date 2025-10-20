@@ -5,8 +5,8 @@
 
 #include <baseboard/gpio.h>
 
-#define T1_OFF_MS	16
-#define T2_OFF_MS	2
+#define T1_OFF_MS	20
+#define T2_OFF_MS	10
 #define WWAN_FCPO	GPP_F21
 #define WWAN_RST	GPP_D19
 #define WWAN_PERST	GPP_A21

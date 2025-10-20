@@ -46,5 +46,4 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	}
 
 	mupd->FspmConfig.DmiMaxLinkSpeed = 4;
-	mupd->FspmConfig.GpioOverride = 0;
 };

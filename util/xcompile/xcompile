@@ -155,8 +155,8 @@ testas() {
 		2>/dev/null || return 1
 
 	# Check output content type.
-	local obj_type="$(LANG=C LC_ALL='' "${gccprefix}"objdump -p "$obj_file" 2>/dev/null)"
-	local obj_arch="$(expr "$obj_type" : '.*format \(.[a-z0-9-]*\)')"
+	local obj_type="$(LANG=C LC_ALL='' "${gccprefix}"objdump -f "$obj_file" 2>/dev/null)"
+	local obj_arch="$(printf '%s\n' "$obj_type" | sed -n 's/.*file format \([a-z0-9-]*\).*/\1/p')"
 	[ "$obj_arch" = "$full_arch" ] || return 1
 
 	unset ASFLAGS LDFLAGS

@@ -458,6 +458,25 @@ chip soc/intel/pantherlake
 					probe TOUCHSCREEN THC_RAYDIMU
 				end
 			end
+			chip drivers/intel/touch
+				register "name" = "INTEL_THC1_NAME"
+				register "mode" = "THC_HID_I2C_MODE"
+				register "dev_hidi2c.hid" = ""ILIT2901""
+				register "dev_hidi2c.cid" = ""PNP0C50""
+				register "dev_hidi2c.intf.hidi2c.addr" = "0x41"
+				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0x0001"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F08)"
+				register "wake_on_touch" = "true"
+				# NOTE: Use GpioInt() in _CRS and does not use GPE.
+				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC1)"
+				register "active_ltr" = "1"
+				register "idle_ltr" = "0"
+				register "connected_device" = "TH_SENSOR_GENERIC"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on
+					probe TOUCHSCREEN THC_ILITEK
+				end
+			end
 		end #Touchpenal
 
 		device ref hda on

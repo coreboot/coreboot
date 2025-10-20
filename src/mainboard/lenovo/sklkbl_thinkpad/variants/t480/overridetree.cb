@@ -40,17 +40,17 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[0]"		= "true"
 			register "PcieRpClkReqNumber[0]"		= "0"
 			register "PcieRpClkSrcNumber[0]"		= "0"
-			register "PcieRpAdvancedErrorReporting[0]"	= "1"
+			register "PcieRpAdvancedErrorReporting[0]"	= "true"
 			register "PcieRpLtrEnable[0]"			= "true"
 			device generic 0 alias dgpu on end
 		end
 
 		# Ethernet (clobbers RP8)
 		device ref gbe on
-			register "LanClkReqSupported"			= "1"
+			register "LanClkReqSupported"			= "true"
 			register "LanClkReqNumber"			= "1"
-			register "EnableLanLtr"				= "1"
-			register "EnableLanK1Off"			= "1"
+			register "EnableLanLtr"				= "true"
+			register "EnableLanK1Off"			= "true"
 		end
 
 		# M.2 WLAN - x1
@@ -58,8 +58,9 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[6]"		= "true"
 			register "PcieRpClkReqNumber[6]"		= "2"
 			register "PcieRpClkSrcNumber[6]"		= "2"
-			register "PcieRpAdvancedErrorReporting[6]"	= "1"
+			register "PcieRpAdvancedErrorReporting[6]"	= "true"
 			register "PcieRpLtrEnable[6]"			= "true"
+                        smbios_slot_desc "SlotTypeM2Socket1_DP" "SlotLengthOther" "M.2/A 2230" "SlotDataBusWidth1X"
 		end
 
 		# M.2 WWAN - x2
@@ -67,8 +68,9 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[4]"		= "true"
 			register "PcieRpClkReqNumber[4]"		= "3"
 			register "PcieRpClkSrcNumber[4]"		= "3"
-			register "PcieRpAdvancedErrorReporting[4]"	= "1"
+			register "PcieRpAdvancedErrorReporting[4]"	= "true"
 			register "PcieRpLtrEnable[4]"			= "true"
+                        smbios_slot_desc "SlotTypeM2Socket1_DP" "SlotLengthOther" "M.2/A 2230" "SlotDataBusWidth1X"
 		end
 
 		# TB3 (Alpine Ridge LP) - x2
@@ -76,9 +78,9 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[8]"		= "true"
 			register "PcieRpClkReqNumber[8]"		= "4"
 			register "PcieRpClkSrcNumber[8]"		= "4"
-			register "PcieRpAdvancedErrorReporting[8]"	= "1"
+			register "PcieRpAdvancedErrorReporting[8]"	= "true"
 			register "PcieRpLtrEnable[8]"			= "true"
-			register "PcieRpHotPlug[8]"			= "1"
+			register "PcieRpHotPlug[8]"			= "true"
 		end
 
 		# M.2 2280 caddy - x2
@@ -86,8 +88,9 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[10]"		= "true"
 			register "PcieRpClkReqNumber[10]"		= "5"
 			register "PcieRpClkSrcNumber[10]"		= "5"
-			register "PcieRpAdvancedErrorReporting[10]"	= "1"
+			register "PcieRpAdvancedErrorReporting[10]"	= "true"
 			register "PcieRpLtrEnable[10]"			= "true"
+                        smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 Sub Card" "SlotDataBusWidth2X"
 		end
 	end
 end

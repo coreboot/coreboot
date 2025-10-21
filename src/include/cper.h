@@ -13,11 +13,11 @@
  * is not a complete definition, but contains enough to generate a BERT ACPI
  * table.
  *
- * All table numbers and references correspond with UEFI spec version 2.7,
- * errata A, available at uefi.org.
+ * All table numbers and references correspond with UEFI spec version 2.10,
+ * Appendix N, available at uefi.org.
  */
 
-/* Error Record Header, Timestamp field (Table 251) */
+/* Error Record Header, Timestamp field (Table N.1) */
 typedef struct cper_timestamp { /* BCD values */
 	u8 sec;
 	u8 min;
@@ -31,7 +31,7 @@ typedef struct cper_timestamp { /* BCD values */
 
 #define CPER_TIMESTAMP_PRECISE			BIT(0)
 
-/* Section Descriptor, Flags field (Table 253) */
+/* Section Descriptor, Flags field (Table N.5) */
 #define CPER_SEC_PRIMARY			BIT(0)
 #define CPER_SEC_CONTAINMENT_WARNING		BIT(1)
 #define CPER_SEC_RESET				BIT(2)
@@ -41,7 +41,7 @@ typedef struct cper_timestamp { /* BCD values */
 #define CPER_SEC_PROPAGATED			BIT(6)
 #define CPER_SEC_OVERFLOW			BIT(7)
 
-/* Section Descriptor, Section Types values (Table 253) */
+/* Section Descriptor, Section Types values (Table N.5) */
 #define CPER_SEC_PROC_GENERIC_GUID			\
 		GUID_INIT(0x9876ccad, 0x47b4, 0x4bdb,	\
 		0xb6, 0x5e, 0x16, 0xf1, 0x93, 0xc4, 0xf3, 0xdb)
@@ -80,7 +80,7 @@ typedef struct cper_timestamp { /* BCD values */
 		0xa7, 0x9e, 0x57, 0x5f, 0xdf, 0xaa, 0x84, 0xec)
 
 /*
- * Processor Generic Error Section (Table 254)
+ * Processor Generic Error Section (Table N.6)
  */
 typedef struct cper_proc_generic_error_section {
 	u64 validation;
@@ -100,7 +100,7 @@ typedef struct cper_proc_generic_error_section {
 	u64 instruction_ip;
 } __packed cper_proc_generic_error_section_t;
 
-/* Processor Generic Error Section, Validation Bits field (Table 254) */
+/* Processor Generic Error Section, Validation Bits field (Table N.6) */
 #define GENPROC_VALID_PROC_TYPE			BIT(0)
 #define GENPROC_VALID_PROC_ISA			BIT(1)
 #define GENPROC_VALID_PROC_ERR_TYPE		BIT(2)
@@ -115,12 +115,12 @@ typedef struct cper_proc_generic_error_section {
 #define GENPROC_VALID_RSPR_ID			BIT(11)
 #define GENPROC_VALID_INSTR_IP			BIT(12)
 
-/* Processor Generic Error Section, Processor Type field (Table 254) */
+/* Processor Generic Error Section, Processor Type field (Table N.6) */
 #define GENPROC_PROCTYPE_IA32X64		0x0
 #define GENPROC_PROCTYPE_IA64			0x1
 #define GENPROC_PROCTYPE_ARM			0x2
 
-/* Processor Generic Error Section, Processor ISA (@time of fail) (Table 254) */
+/* Processor Generic Error Section, Processor ISA (@time of fail) (Table N.6) */
 #define GENPROC_ISA_IA32			0x0
 #define GENPROC_ISA_IA64			0x1
 #define GENPROC_ISA_X64				0x2
@@ -128,27 +128,27 @@ typedef struct cper_proc_generic_error_section {
 #define GENPROC_ISA_ARM64			0x4
 
 /* error_type definitions */
-/* Processor Generic Error Section, Processor Error Type field (Table 254) */
+/* Processor Generic Error Section, Processor Error Type field (Table N.6) */
 #define GENPROC_ERRTYPE_UNKNOWN			0x0
 #define GENPROC_ERRTYPE_CACHE			0x1
 #define GENPROC_ERRTYPE_TLB			0x2
 #define GENPROC_ERRTYPE_BUS			0x4
 #define GENPROC_ERRTYPE_UARCH			0x8
 
-/* Processor Generic Error Section, Operation field (Table 254) */
+/* Processor Generic Error Section, Operation field (Table N.6) */
 #define GENPROC_ERROP_UNKNOWN			0x0
 #define GENPROC_ERROP_READ			0x1
 #define GENPROC_ERROP_WRITE			0x2
 #define GENPROC_ERROP_EXECUTION			0x3
 
-/* Processor Generic Error Section, Flags field (Table 254) */
+/* Processor Generic Error Section, Flags field (Table N.6) */
 #define GENPROC_FLAG_RESTARTABLE		0x0
 #define GENPROC_FLAG_PRECISE_IP			0x1
 #define GENPROC_FLAG_OVERFLOW			0x2
 #define GENPROC_FLAG_CORRECTED			0x3
 
 /*
- * IA32/X64 Processor Error Section (Table 255)
+ * IA32/X64 Processor Error Section (Table N.7)
  */
 typedef struct cper_ia32x64_proc_error_section {
 	u64 validation;
@@ -158,7 +158,7 @@ typedef struct cper_ia32x64_proc_error_section {
 	/* PROC_CONTEXT_INFO_NUM x context structures */
 } __packed cper_ia32x64_proc_error_section_t;
 
-/* IA32/X64 Processor Error, Validation Bits field (Table 255) */
+/* IA32/X64 Processor Error, Validation Bits field (Table N.7) */
 #define I32X64SEC_VALID_LAPIC			BIT(0)
 #define I32X64SEC_VALID_CPUID			BIT(1)
 #define I32X64SEC_VALID_ERRNUM_SH		2
@@ -172,7 +172,7 @@ typedef struct cper_ia32x64_proc_error_section {
 					(I32X64SEC_VALID_CTXNUM_MAX \
 					<< I32X64SEC_VALID_CTXNUM_SH)
 
-/* IA32/X64 Processor Error Information Structure (Table 256) */
+/* IA32/X64 Processor Error Information Structure (Table N.8) */
 typedef struct cper_ia32x64_proc_error_info {
 	guid_t type; /* cache, tlb, bus, micro-architecture specific */
 	u64 validation;
@@ -183,7 +183,7 @@ typedef struct cper_ia32x64_proc_error_info {
 	u64 instruction_ip;
 } cper_ia32x64_proc_error_info_t;
 
-/* IA32/X64 Processor Error Information Structs, Err Struct Types (Table 256) */
+/* IA32/X64 Processor Error Information Structs, Err Struct Types (Table N.8) */
 #define X86_PROCESSOR_CACHE_CHK_ERROR_GUID		\
 		GUID_INIT(0xa55701f5, 0xe3ef, 0x43de,	\
 		0xac, 0x72, 0x24, 0x9b, 0x57, 0x3f, 0xad, 0x2c)
@@ -205,14 +205,14 @@ enum cper_x86_check_type {
 };
 #define X86_PROCESSOR_CHK_MAX X86_PROCESSOR_MS_CHK
 
-/* IA32/X64 Processor Error Information Structure, Validation Bits (Tbl 256) */
+/* IA32/X64 Processor Error Information Structure, Validation Bits (Table N.8) */
 #define I32X64ERRINFO_VALID_CHECK		BIT(0)
 #define I32X64ERRINFO_VALID_TGT_ADDR		BIT(1)
 #define I32X64ERRINFO_VALID_RQST_ID		BIT(2)
 #define I32X64ERRINFO_VALID_RSPD_ID		BIT(3)
 #define I32X64ERRINFO_VALID_IPPTR		BIT(4)
 
-/* IA32/X64 Proc. Error Info: Cache/TLB/Check defs (Tables 257, 258, 259) */
+/* IA32/X64 Proc. Error Info: Cache/TLB/Check defs (Tables N.9, N.10, N.11) */
 #define X86_PROC_CHK_XACT_TYPE_VALID		BIT(0)  /* CACHE|TLB|BUS */
 #define X86_PROC_CHK_OPERATION_VALID		BIT(1)  /* CACHE|TLB|BUS */
 #define X86_PROC_CHK_LEVEL_VALID		BIT(2)  /* CACHE|TLB|BUS */
@@ -262,7 +262,7 @@ enum cper_x86_check_type {
 #define X86_PROC_CHK_SPACE_MEM			(0 << X86_PROC_CHK_SPACE_SH)
 #define X86_PROC_CHK_SPACE_IO			(2 << X86_PROC_CHK_SPACE_SH)
 #define X86_PROC_CHK_SPACE_OTHER		(3 << X86_PROC_CHK_SPACE_SH)
-/* MS check defines & aligns (Table 260 */
+/* MS check defines & aligns (Table N.12) */
 #define X86_PROC_MS_ERROR_TYPE_VALID		BIT(0)
 #define X86_PROC_MS_CONTEXT_CORPT_VALID		BIT(1)
 #define X86_PROC_MS_UNCORRECTED_VALID		BIT(2)
@@ -283,7 +283,7 @@ enum cper_x86_check_type {
 #define X86_PROC_MS_CHK_RESTARTABLE_IP		(1 << 22)
 #define X86_PROC_MS_CHK_OVERFLOW		(1 << 23)
 
-/* IA32/X64 Processor Context Information (Table 261) */
+/* IA32/X64 Processor Context Information (Table N.13) */
 typedef struct cper_ia32x64_context {
 	u16 type;
 	u16 array_size;
@@ -292,7 +292,7 @@ typedef struct cper_ia32x64_context {
 	/* N bytes of register array */
 } cper_ia32x64_context_t;
 
-/* IA32/X64 Processor Context Information, Types field (Table 261) */
+/* IA32/X64 Processor Context Information, Types field (Table N.13) */
 #define CPER_IA32X64_CTX_UNCL			0
 #define CPER_IA32X64_CTX_MSR			1
 #define CPER_IA32X64_CTX_32BIT_EX		2
@@ -302,7 +302,7 @@ typedef struct cper_ia32x64_context {
 #define CPER_IA32X64_CTX_64BIT_DBG		6
 #define CPER_IA32X64_CTX_MEMMAPPED		7
 
-/* IA32/X64 Processor Context IA32 Register State (Table 262) */
+/* IA32/X64 Processor Context IA32 Register State (Table N.14) */
 typedef struct cper_ia32x64_ctx_ia32state {
 	u32 eax;
 	u32 ebx;
@@ -331,7 +331,7 @@ typedef struct cper_ia32x64_ctx_ia32state {
 	u16 tr;
 } cper_ia32x64_ctx_ia32state_t;
 
-/* IA32/X64 Processor Context X64 Register state (Table 263) */
+/* IA32/X64 Processor Context X64 Register state (Table N.15) */
 typedef struct cper_ia32x64_ctx_x64state {
 	u64 rax;
 	u64 rbx;
@@ -406,7 +406,7 @@ struct cper_memory_section {
 	GUID_INIT(0x8f87f311, 0xc998, 0x4d9e,			\
 		0xa0, 0xc4, 0x60, 0x65, 0x51, 0x8c, 0x4f, 0x6d)
 
-/* Firmware Error Record Reference, UEFI v2.8 sec N.2.10  */
+/* Firmware Error Record Reference, UEFI v2.10 sec N.2.10  */
 typedef struct cper_fw_err_rec_section {
 	u8 record_type;
 	u8 revision;
@@ -446,7 +446,7 @@ static inline cper_timestamp_t cper_timestamp(int precise)
 /* Calculate the size of an IA32/X64 context by its type.  Some types have a
  * predetermined size, and others are variable size.  All sizes are rounded up
  * to the nearest multiple of 16 bytes (See Processor Context field of
- * Table 255).
+ * Table N.7).
  *
  * type is one of:
  *   CPER_IA32X64_CTX_UNCL
@@ -475,7 +475,7 @@ static inline size_t cper_ia32x64_ctx_sz_bytype(int type, int arr_num)
 	case CPER_IA32X64_CTX_64BIT_DBG:
 	case CPER_IA32X64_CTX_MEMMAPPED:
 	default:
-		/* Table 261: "size ... is determined by (Array Size / 8)" */
+		/* Table N.13: "size ... is determined by (Array Size / 8)" */
 		return ALIGN_UP(sz + arr_num * 8, 16);
 	}
 }

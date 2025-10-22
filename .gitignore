@@ -35,6 +35,7 @@ tags
 .cache
 compile_commands.json
 .vscode/
+.clangd
 
 # Cross-compile toolkits
 xgcc/

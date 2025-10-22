@@ -3,6 +3,11 @@
 chip northbridge/intel/sandybridge
 	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 	device domain 0 on
+		device ref peg10 on end
+		device ref igd on
+			subsystemid 0x1458 0xd000
+		end
+
 		chip southbridge/intel/bd82x6x	# Intel Series 7 Panther Point PCH
 			register "gen1_dec" = "0x003c0a01"
 

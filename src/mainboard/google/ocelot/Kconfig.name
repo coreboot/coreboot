@@ -2,6 +2,9 @@
 
 comment "Ocelot"
 
+config BOARD_GOOGLE_KODKOD
+	bool "-> Kodkod"
+
 config BOARD_GOOGLE_MATSU
 	bool "-> Matsu"
 

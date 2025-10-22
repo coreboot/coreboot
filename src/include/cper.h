@@ -181,7 +181,7 @@ typedef struct cper_ia32x64_proc_error_info {
 	u64 requestor_id;
 	u64 responder_id;
 	u64 instruction_ip;
-} cper_ia32x64_proc_error_info_t;
+} __packed cper_ia32x64_proc_error_info_t;
 
 /* IA32/X64 Processor Error Information Structs, Err Struct Types (Table N.8) */
 #define X86_PROCESSOR_CACHE_CHK_ERROR_GUID		\
@@ -290,7 +290,7 @@ typedef struct cper_ia32x64_context {
 	u32 msr_addr;
 	u64 mmap_addr;
 	/* N bytes of register array */
-} cper_ia32x64_context_t;
+} __packed cper_ia32x64_context_t;
 
 /* IA32/X64 Processor Context Information, Types field (Table N.13) */
 #define CPER_IA32X64_CTX_UNCL			0
@@ -329,7 +329,7 @@ typedef struct cper_ia32x64_ctx_ia32state {
 	u64 idtr;
 	u16 ldtr;
 	u16 tr;
-} cper_ia32x64_ctx_ia32state_t;
+} __packed cper_ia32x64_ctx_ia32state_t;
 
 /* IA32/X64 Processor Context X64 Register state (Table N.15) */
 typedef struct cper_ia32x64_ctx_x64state {
@@ -368,7 +368,7 @@ typedef struct cper_ia32x64_ctx_x64state {
 	u8 idtr[16];
 	u16 ldtr;
 	u16 tr;
-} cper_ia32x64_ctx_x64state_t;
+} __packed cper_ia32x64_ctx_x64state_t;
 
 /* UEFI Spec 2.10, Appendix N.2.5 Memory Error Types (Table N.31) */
 #define CPER_UNDEFINED			0
@@ -379,7 +379,7 @@ typedef struct cper_ia32x64_ctx_x64state {
 #define CPER_ERR_MEM_SCRUB_UCE_ERR	14
 
 /* UEFI Spec 2.10, Appendix N.2.5 Memory Error Section (Table N.31) */
-struct cper_memory_section {
+struct __packed cper_memory_section {
 	u64	valid_bits;
 	u64	err_sts;
 	u64	phys_addr;
@@ -413,7 +413,7 @@ typedef struct cper_fw_err_rec_section {
 	u8 reserved[6];
 	u64 record_id;
 	guid_t record_guid;
-} cper_fw_err_rec_section_t;
+} __packed cper_fw_err_rec_section_t;
 
 static inline cper_timestamp_t cper_timestamp(int precise)
 {

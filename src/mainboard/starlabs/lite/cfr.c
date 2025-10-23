@@ -14,15 +14,6 @@ static const struct sm_object card_reader = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
-#if CONFIG(EC_STARLABS_FAST_CHARGE)
-static const struct sm_object fast_charge = SM_DECLARE_BOOL({
-	.opt_name	= "fast_charge",
-	.ui_name	= "Fast Charge",
-	.ui_helptext	= "Charge the battery faster at the cost of heat and battery wear.",
-	.default_value	= false,
-});
-#endif
-
 static const struct sm_object power_profile = SM_DECLARE_ENUM({
 	.opt_name	= "power_profile",
 	.ui_name	= "Power Profile",
@@ -93,9 +84,6 @@ static struct sm_obj_form processor = {
 static struct sm_obj_form power = {
 	.ui_name = "Power",
 	.obj_list = (const struct sm_object *[]) {
-		#if CONFIG(EC_STARLABS_FAST_CHARGE)
-		&fast_charge,
-		#endif
 		&power_on_after_fail_bool,
 		NULL
 	},

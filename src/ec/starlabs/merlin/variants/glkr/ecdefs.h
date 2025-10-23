@@ -22,7 +22,6 @@
 #define ECRAM_FN_CTRL_REVERSE	0x13
 #define ECRAM_MAX_CHARGE	dead_code_t(uint8_t)
 #define ECRAM_FAN_MODE		dead_code_t(uint8_t)
-#define ECRAM_FAST_CHARGE       0x18
 #define ECRAM_CHARGING_SPEED	dead_code_t(uint8_t)
 #define ECRAM_LID_SWITCH	dead_code_t(uint8_t)
 #define ECRAM_POWER_LED		0x1f

@@ -42,11 +42,12 @@ chip soc/intel/alderlake
 
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
-		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C6] = PchSerialIoPci,
 	}"
 
 	register "serial_io_uart_mode" = "{
@@ -60,7 +61,7 @@ chip soc/intel/alderlake
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 		},
-		.i2c[1] = {
+		.i2c[6] = {
 			.speed = I2C_SPEED_FAST,
 		},
 	}"
@@ -119,7 +120,7 @@ chip soc/intel/alderlake
 			}"
 		end
 		device ref i2c0 on end
-		device ref i2c1 on end
+		device ref i2c6 on end
 		device ref xhci on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""

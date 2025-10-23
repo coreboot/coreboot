@@ -47,10 +47,6 @@
 #define ITE_CHIPID2		0x21	/* Device ID register 2 */
 #define NUVOTON_CHIPID		0x27	/* Device ID register */
 
-/* EC RAM common offsets */
-#define ECRAM_MAJOR_VERSION	0x00
-#define ECRAM_MINOR_VERSION	0x01
-
 /*
  * CMOS Settings
  */

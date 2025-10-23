@@ -10,7 +10,7 @@ chip soc/intel/pantherlake
 	}"
 	register "thermal_design_current[PTL_SKU_1]" = "{
 		[VR_DOMAIN_IA] = 23 * 8,
-		[VR_DOMAIN_GT] = 15 * 8
+		[VR_DOMAIN_GT] = 23 * 8
 	}"
 	register "icc_max[PTL_SKU_1]" = "{
 		[VR_DOMAIN_IA] = 80 * 4,
@@ -27,7 +27,7 @@ chip soc/intel/pantherlake
 	}"
 	register "thermal_design_current[PTL_SKU_5]" = "{
 		[VR_DOMAIN_IA] = 23 * 8,
-		[VR_DOMAIN_GT] = 15 * 8
+		[VR_DOMAIN_GT] = 23 * 8
 	}"
 	register "icc_max[PTL_SKU_5]" = "{
 		[VR_DOMAIN_IA] = 80 * 4,
@@ -44,7 +44,7 @@ chip soc/intel/pantherlake
 	}"
 	register "thermal_design_current[PTL_SKU_2]" = "{
 		[VR_DOMAIN_IA] = 31 * 8,
-		[VR_DOMAIN_GT] = 25 * 8
+		[VR_DOMAIN_GT] = 44 * 8
 	}"
 	register "icc_max[PTL_SKU_2]" = "{
 		[VR_DOMAIN_IA] = 107 * 4,
@@ -67,7 +67,7 @@ chip soc/intel/pantherlake
 
 	register "thermal_design_current[PTL_SKU_6]" = "{
 		[VR_DOMAIN_IA] = 31 * 8,
-		[VR_DOMAIN_GT] = 25 * 8
+		[VR_DOMAIN_GT] = 44 * 8
 	}"
 	register "icc_max[PTL_SKU_6]" = "{
 		[VR_DOMAIN_IA] = 90 * 4,
@@ -77,7 +77,6 @@ chip soc/intel/pantherlake
 	}"
 
 	register "tdc_mode[VR_DOMAIN_IA]" = "TDC_IRMS"
-	register "tdc_mode[VR_DOMAIN_GT]" = "TDC_IRMS"
 	register "tdc_time_window_ms[VR_DOMAIN_IA]" = "28000"
 
 	# Set the power state thresholds according to document 813278

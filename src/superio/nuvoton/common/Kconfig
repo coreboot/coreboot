@@ -21,3 +21,9 @@ config HAVE_SHARED_PS2_PORT
 	  port. This one port usually works for keyboards only. Add the nvram option
 	  "swap_keyboard_and_mouse" to cmos.layout to allow changing this port into a
 	  mouse port.
+
+config SUPERIO_NUVOTON_PNP_BASE
+	hex
+	depends on SUPERIO_NUVOTON_COMMON_PRE_RAM
+	help
+	  Set the base port of the super I/O chip.

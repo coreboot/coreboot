@@ -39,3 +39,12 @@ uint32_t pcie_rp_enable_mask(const struct pcie_rp_group *const groups)
 
 	return mask;
 }
+
+unsigned int pcie_speed_control_to_upd(enum PCIE_SPEED_control pcie_speed_control)
+{
+	/* Use auto unless overwritten */
+	if (!pcie_speed_control)
+		return UPD_INDEX(SPEED_AUTO);
+
+	return UPD_INDEX(pcie_speed_control);
+}

@@ -149,6 +149,19 @@ void pcie_rp_update_devicetree(const struct pcie_rp_group *groups);
  */
 uint32_t pcie_rp_enable_mask(const struct pcie_rp_group *groups);
 
+/*
+ * Convert PCIe speed control setting to UPD index format.
+ *
+ * Takes a PCIE_SPEED_control enum value and converts it to the corresponding
+ * UPD (Unit Parameter Data) index required by the firmware interface.
+ *
+ * If pcie_speed_control is 0 (uninitialized/default), the function returns
+ * the UPD index for SPEED_AUTO, enabling automatic speed negotiation.
+ * Otherwise, it returns the UPD index corresponding to the specified speed
+ * control value.
+ */
+unsigned int pcie_speed_control_to_upd(enum PCIE_SPEED_control pcie_speed_control);
+
 /* Get PCH root port groups */
 const struct pcie_rp_group *soc_get_pch_rp_groups(void);
 

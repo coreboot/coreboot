@@ -74,15 +74,6 @@ static unsigned int l1ss_control_to_upd(enum L1_substates_control l1_substates_c
 	return UPD_INDEX(l1_substates_control);
 }
 
-static unsigned int pcie_speed_control_to_upd(enum PCIE_SPEED_control pcie_speed_control)
-{
-	/* Use auto unless overwritten */
-	if (!pcie_speed_control)
-		return UPD_INDEX(SPEED_AUTO);
-
-	return UPD_INDEX(pcie_speed_control);
-}
-
 void configure_pch_rp_power_management(FSP_S_CONFIG *s_cfg,
 					      const struct pcie_rp_config *rp_cfg,
 					      unsigned int index)

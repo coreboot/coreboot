@@ -12,10 +12,12 @@ Method(_PTS, 1)
 	{
 	    BLINK_POWER_LED = 1
 	}
+	\_SB.PCI0.LPCB.SIO0.SIOS(Arg0)
 }
 
 Method(_WAK, 1)
 {
 	BLINK_POWER_LED = 0
+	\_SB.PCI0.LPCB.SIO0.SIOW(Arg0)
 	Return(Package(){0, 0})
 }

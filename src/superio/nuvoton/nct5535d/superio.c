@@ -2,10 +2,11 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
+#include <superio/nuvoton/common/nuvoton.h>
 
 #include "nct5535d.h"
 
-/* Initialization C code is provided by nct6779d */
+/* Initialization C code is provided by common code */
 
 static struct pnp_info pnp_dev_info[] = {
 	{ NULL, NCT5535D_SP1, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
@@ -18,7 +19,7 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &_nuvoton_nct6779d_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &nuvoton_common_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_nuvoton_nct5535d_ops = {

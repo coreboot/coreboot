@@ -547,7 +547,7 @@ chip soc/intel/alderlake
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E11_IRQ)"
 				register "generic.detect" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
-				register "generic.reset_delay_ms" = "20"
+				register "generic.reset_delay_ms" = "0"
 				register "generic.reset_off_delay_ms" = "2"
 				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C4)"
 				register "generic.stop_off_delay_ms" = "2"

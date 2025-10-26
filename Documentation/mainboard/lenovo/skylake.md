@@ -1,6 +1,7 @@
-# Lenovo ThinkPad T480/T480s
+# Lenovo ThinkPad T470s/T480/T480s/T580
 
-This page describes how to run coreboot on the [Lenovo ThinkPad T480/T480s].
+This page describes how to run coreboot on the Lenovo [Thinkpad T470s], [ThinkPad T480],
+[Thinkpad T480s], and [Thinkpad T580].
 
 ## Important Notes
 
@@ -12,11 +13,13 @@ feature, you need to downgrade the vendor firmware to a version with a compatibl
 
 The mapping can be seen here [on Lenovo's site].
 
-### Bootguard
-The T480/T480s both have Intel Bootguard enabled, which prevents the device from running
-firmware which is not cryptographically signed using the manufacturer's key.
+### Boot Guard
+Most Thinkpads newer than the xx30 models except machines with swappable CPUs (T440p, W541) and
+some models in the E series (E460, E470) have Intel Boot Guard enabled. This prevents these
+laptops from running custom firmware which is not cryptographically signed with the manufacturer's
+key.
 
-The [deguard utility](../../soc/intel/deguard) will need to be used in order to bypass Bootguard
+The [deguard utility](../../soc/intel/deguard) will need to be used in order to bypass Boot Guard
 on these devices.
 
 ### Thunderbolt
@@ -46,12 +49,12 @@ Follow the coreboot [tutorial](../../tutorial/part1) to:
 * clone the coreboot repo
 * build the coreboot toolchain
 
-You will also need to clone the [deguard](https://review.coreboot.org/deguard) repository, in
-order to bypass BootGuard.
+You will also need to clone the [deguard](https://review.coreboot.org/deguard) repository in
+order to bypass Boot Guard.
 
 ## Required proprietary blobs
 
-When flashing the T480/T480s for the first time, the following blobs are required for a full
+When flashing the laptop for the first time, the following blobs are required for a full
 flash image:
  * Flash Descriptor (IFD)
  * Management Engine (ME)
@@ -59,31 +62,32 @@ flash image:
 
 These will either be extracted from the vendor firmware on the device or downloaded as needed.
 
-Additionally, the T480/T480s make use of Intel's Firmware Support Package (FSP) for memory and
-silicon init. FSP is provided by default as part of the coreboot build, no user intervention is
-required.
+Additionally, all Skylake/Kabylake machines require Intel's Firmware Support Package (FSP) for
+hardware initialization. FSP is provided by default as part of the coreboot build, no user
+intervention is required.
 
 ## Reading the vendor firmware
 
-The T480/T480s have a single flash chip, a 16 MiB W25Q128 in a SOIC-8 package. The flash chip
-uses the following layout:
+The Skylake Thinkpads have a single BIOS flash chip (16 MiB serial flash in a SOIC-8 package).
+The flash chip uses the following layout:
 
     00000000:00000fff flash descriptor (fd)
-    00fff000:00000fff platform data (unused)
     00001000:00002fff gbe
     00003000:006fffff me
     00700000:00ffffff bios
 
-
 To read the vendor firmware, disconnect external power and remove the back of the laptop
-according to the T480 [Hardware Maintenance Manual].
-Disconnect/remove the battery (and CMOS battery if equipped). Attach a chip clip to the flash.
-Use an external programmer (ch341a, raspberry Pi, etc) and flashrom to read the chip.
+as described in the [hardware maintenance manual](thinkpad_hmm).
+Disconnect/remove all batteries (and CMOS battery if equipped). Attach a chip clip to the flash.
+Use an external SPI programmer (ch341a, raspberry Pi, etc) to read the chip `bios.bin`.
 
 ## Preparing the binaries
 
 The IFD and GBE need to be extracted from the vendor firmware backup read from the flash chip.
 See [Extract IFD binaries](../../util/ifdtool/binary_extraction).
+
+    ifdtool -x -p sklkbl bios.bin
+
 Rename the extracted files to `ifd.bin` and `gbe.bin` and move them to the `binaries` folder
 you created per the instructions.
 
@@ -91,8 +95,9 @@ you created per the instructions.
 
 Please review the documentation on the use of the [deguard utility](../../soc/intel/deguard).
 
-Since the T480/T480s is already a supported target, we simply need to download/extract the donor
-image, then generate the "deguarded" ME firmware image
+All Skylake/Kabylake Thinkpads supported by coreboot are also supported in deguard. Hence, we
+simply need to download/extract the donor image, then generate the "deguarded" ME firmware
+image.
 
 The donor ME binary required for use with the deguard utility can be downloaded as part of the
 [Dell firmware updater]. After downloading, use [Dell_PFS_Extract.py] to extract the required ME
@@ -101,9 +106,9 @@ firmware image from the updater:
     python Dell_PFS_Extract.py Inspiron_5468_1.3.0.exe
 
 The resulting binary should be renamed `me_donor.bin` and moved to the `binaries` folder with
-the IFD and GBE.
+the IFD and GBE binaries.
 
-Then, generate the deguarded ME firmware image:
+Then, generate the deguarded ME firmware image adjusting the `--delta` argument accordingly:
 
     ./finalimage.py --delta data/delta/thinkpad_t480 --version 11.6.0.1126 --pch LP --sku 2M --fake-fpfs data/fpfs/zero --input ../coreboot/binaries/me_donor.bin --output ../coreboot/binaries/me_deguarded.bin
 
@@ -111,6 +116,10 @@ The command above assumes you are running deguard from the root of the deguard r
 deguard and coreboot repos are checked out under the same parent directory, and that your ME
 donor firmware is in the `binaries` subdirectory of coreboot (along with the IFD/GBE binaries).
 Adjust the paths as necessary if that is not the case.
+
+Please be careful with [me_cleaner](../../northbridge/intel/sandybridge/me_cleaner). While
+me_cleaner is generally expected to work, truncating the ME binary can have unintended side
+effects like disabling PCIe devices on Thinkpad T470s (NVMe, WLAN, WWAN, etc.).
 
 ### Preparing the IFD
 
@@ -124,16 +133,17 @@ the HAP-enabled one to `ifd.bin`
 
 ## Building coreboot
 
-You can use `make menuconfig` or `make nconfig` to select the mainboard (Lenovo T480 or T480s),
+You can use `make menuconfig` or `make nconfig` to select the mainboard matching your machine,
 enable the inclusion of the IFD/ME/GBE binaries, and select your payload and options.
-You can also just use the following defconfig:
+For example, you can also just use the following defconfig for a Thinkpad T480 with EDK2/UEFI
+as a payload:
 
     CONFIG_VENDOR_LENOVO=y
+    CONFIG_BOARD_LENOVO_T480=y
     CONFIG_IFD_BIN_PATH="binaries/ifd.bin"
     CONFIG_ME_BIN_PATH="binaries/me_deguarded.bin"
     CONFIG_GBE_BIN_PATH="binaries/gbe.bin"
     CONFIG_HAVE_IFD_BIN=y
-    CONFIG_BOARD_LENOVO_T480=y
     CONFIG_HAVE_ME_BIN=y
     CONFIG_HAVE_GBE_BIN=y
     CONFIG_PAYLOAD_EDK2=y
@@ -190,8 +200,10 @@ binaries if only flashing the `bios` region.
 - Virtualization: VT-x and VT-d
 - Internal flashing (after initial flash with unlocked IFD)
 
-[Lenovo ThinkPad T480/T480s]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t480-type-20l5-20l6/
-[Hardware Maintenance Manual]: https://download.lenovo.com/pccbbs/mobiles_pdf/t480_hmm_en.pdf
+[Thinkpad T470s]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t470s/
+[ThinkPad T480]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t480-type-20l5-20l6/
+[ThinkPad T480s]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t480s-type-20l7-20l8/
+[Thinkpad T580]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t580-type-20l9-20la/
 [on Lenovo's site]: https://support.lenovo.com/us/en/downloads/ds502355-bios-update-utility-bootable-cd-for-windows-10-64-bit-linux-thinkpad-t480
 [from Lenovo's site]: https://pcsupport.lenovo.com/gb/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t480s-type-20l7-20l8/solutions/ht508988-critical-intel-thunderbolt-software-and-firmware-updates-thinkpad
 [how to externally flash the TB3 firmware]: https://libreboot.org/docs/install/t480.html#thunderbolt-issue-read-this-before-flashing

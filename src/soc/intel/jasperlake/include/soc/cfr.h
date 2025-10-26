@@ -10,6 +10,18 @@
 #include <drivers/option/cfr_frontend.h>
 #include <soc/soc_chip.h>
 
+/* IGD Enabled */
+static const struct sm_object igd_enabled = SM_DECLARE_ENUM({
+	.opt_name	= "igd_enabled",
+	.ui_name	= "Enable the Intel iGPU",
+	.ui_helptext	= "Enable or disable the Intel iGPU",
+	.default_value	= !CONFIG(SOC_INTEL_DISABLE_IGD),
+	.values		= (const struct sm_enum_value[]) {
+				{ "Disabled",		0	},
+				{ "Enabled",		1	},
+				SM_ENUM_VALUE_END		},
+});
+
 /* IGD Aperture Size */
 static const struct sm_object igd_aperture = SM_DECLARE_ENUM({
 	.opt_name	= "igd_aperture_size",
@@ -21,7 +33,7 @@ static const struct sm_object igd_aperture = SM_DECLARE_ENUM({
 				{ " 256 MB",		IGD_AP_SZ_256MB		},
 				{ " 512 MB",		IGD_AP_SZ_512MB		},
 				SM_ENUM_VALUE_END				},
-});
+}, WITH_DEP_VALUES(&igd_enabled, 1));
 
 /* IGD DVMT pre-allocated memory */
 static const struct sm_object igd_dvmt = SM_DECLARE_ENUM({
@@ -37,7 +49,7 @@ static const struct sm_object igd_dvmt = SM_DECLARE_ENUM({
 				{ "128 MB",		IGD_SM_128MB	},
 				{ "160 MB",		IGD_SM_160MB	},
 				SM_ENUM_VALUE_END			},
-});
+}, WITH_DEP_VALUES(&igd_enabled, 1));
 
 /* Legacy 8254 Timer */
 static const struct sm_object legacy_8254_timer = SM_DECLARE_ENUM({

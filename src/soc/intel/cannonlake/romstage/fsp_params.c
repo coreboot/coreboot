@@ -34,7 +34,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	 * Probe for no IGD and disable InternalGfx and panel power to prevent a
 	 * crash in FSP-M.
 	 */
-	const bool igd_on = !CONFIG(SOC_INTEL_DISABLE_IGD) && is_devfn_enabled(SA_DEVFN_IGD);
+	const bool igd_on = get_uint_option("igd_enabled", !CONFIG(SOC_INTEL_DISABLE_IGD)) && is_devfn_enabled(SA_DEVFN_IGD);
 	if (igd_on && pci_read_config16(SA_DEV_IGD, PCI_VENDOR_ID) != 0xffff) {
 		/* Set IGD stolen size to 64MB. */
 		m_cfg->InternalGfx = 1;

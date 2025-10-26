@@ -104,7 +104,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 				const struct soc_intel_skylake_config *config)
 {
-	m_cfg->InternalGfx = !CONFIG(SOC_INTEL_DISABLE_IGD) && is_devfn_enabled(SA_DEVFN_IGD);
+	m_cfg->InternalGfx = get_uint_option("igd_enabled", !CONFIG(SOC_INTEL_DISABLE_IGD)) && is_devfn_enabled(SA_DEVFN_IGD);
 
 	/*
 	 * If iGPU is enabled, set IGD stolen size to 64MB. The FBC

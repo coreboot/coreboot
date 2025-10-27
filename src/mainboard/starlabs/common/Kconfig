@@ -8,6 +8,8 @@ config MB_COMMON_DIR
 	string
 	default "starlabs/common"
 
+source "src/mainboard/starlabs/common/hda/Kconfig"
+
 endmenu
 
 endif

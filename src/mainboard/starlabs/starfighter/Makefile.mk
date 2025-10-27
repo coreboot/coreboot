@@ -7,6 +7,5 @@ subdirs-y += variants/$(VARIANT_DIR)
 bootblock-y += bootblock.c
 
 ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
-ramstage-y += hda_verb.c
 ramstage-y += mainboard.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += variants/$(VARIANT_DIR)/gma-mainboard.ads

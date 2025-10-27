@@ -1,0 +1,7 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config DRIVERS_I2C_TAS2563
+	bool
+	default n
+	help
+	  Enable support for TI TAS2563 Amplifier.

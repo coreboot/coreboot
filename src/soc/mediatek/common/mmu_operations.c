@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/mmu.h>
-#include <bootmode.h>
 #include <symbols.h>
 #include <soc/emi.h>
 #include <soc/mmu_operations.h>
@@ -52,7 +51,7 @@ void mtk_mmu_after_dram(void)
 
 	mmu_config_range(_dram_dma, REGION_SIZE(dram_dma), NONSECURE_UNCACHED_MEM);
 
-	if (display_init_required())
+	if (REGION_SIZE(framebuffer))
 		mmu_config_range(_framebuffer, REGION_SIZE(framebuffer),
 				 NONSECURE_UNCACHED_MEM);
 

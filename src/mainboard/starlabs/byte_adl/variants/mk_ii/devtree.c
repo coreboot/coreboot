@@ -8,6 +8,7 @@
 #include <static.h>
 #include <types.h>
 #include <variants.h>
+#include <common/powercap.h>
 
 #define TJ_MAX		105
 #define TCC(temp)	(TJ_MAX - temp)

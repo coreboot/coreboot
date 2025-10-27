@@ -2,6 +2,7 @@
 
 subdirs-$(CONFIG_VENDOR_STARLABS) += cfr
 subdirs-$(CONFIG_VENDOR_STARLABS) += hda
+subdirs-$(CONFIG_VENDOR_STARLABS) += powercap
 subdirs-$(CONFIG_VENDOR_STARLABS) += pin_mux
 subdirs-$(CONFIG_VENDOR_STARLABS) += smbios
 

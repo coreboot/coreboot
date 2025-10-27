@@ -7,14 +7,9 @@
 #include <static.h>
 #include <types.h>
 #include <variants.h>
+#include <common/powercap.h>
 
 #include "soc/intel/apollolake/chip.h"
-
-enum cmos_power_profile get_power_profile(enum cmos_power_profile fallback)
-{
-	const unsigned int power_profile = get_uint_option("power_profile", fallback);
-	return power_profile < NUM_POWER_PROFILES ? power_profile : fallback;
-}
 
 void devtree_update(void)
 {

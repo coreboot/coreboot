@@ -85,6 +85,7 @@ chip soc/intel/alderlake
 			# Internal Bluetooth			1874 mil
 			register "usb2_ports[9]"		= "USB2_PORT_SHORT(OC_SKIP)"
 
+			# Card Reader
 			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"
 
 			chip drivers/usb/acpi
@@ -123,6 +124,12 @@ chip soc/intel/alderlake
 						register "type"			= "UPC_TYPE_HUB"
 						register "group"		= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"			= ""Card Reader""
+						register "type"			= "UPC_TYPE_INTERNAL"
+						register "group"		= "ACPI_PLD_GROUP(0, 6)"
+						device usb 2.3 alias card_reader on end
 					end
 					chip drivers/usb/acpi
 						register "desc"			= ""USB 2.0 Hub""

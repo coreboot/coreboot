@@ -278,8 +278,8 @@ chip soc/intel/pantherlake
 		end # I2C4
 		device ref i2c5 on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN9004""
-				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.hid" = ""GT7936L""
+				register "generic.desc" = ""Goodix Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F18_IRQ)"
 				register "generic.detect" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F16)"
@@ -289,11 +289,11 @@ chip soc/intel/pantherlake
 				register "generic.enable_delay_ms" = "6"
 				register "generic.enable_off_delay_ms" = "30"
 				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E05)"
-				register "generic.stop_off_delay_ms" = "1"
+				register "generic.stop_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "generic.use_gpio_for_status" = "true"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 0x10 on end
+				device i2c 0x14 on end
 			end
 		end # I2C5
 		device ref gspi0 on end

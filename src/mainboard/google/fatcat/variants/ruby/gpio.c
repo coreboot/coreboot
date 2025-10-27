@@ -197,7 +197,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E03:     NC */
 	PAD_NC(GPP_E03, NONE),
 	/* GPP_E05:     TCHSCR_RPT_EN */
-	PAD_CFG_GPO(GPP_E05, 1, DEEP),
+	PAD_CFG_GPO(GPP_E05, 0, PLTRST),
 	/* GPP_E06:     SECURE_CAM_SW */
 	PAD_CFG_GPI_TRIG_OWN(GPP_E06, NONE, PLTRST, LEVEL, ACPI),
 	/* GPP_E07 : [] ==> EC_SOC_INT_ODL */
@@ -254,7 +254,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F07:     NC */
 	PAD_NC(GPP_F07, NONE),
 	/* GPP_F08:     EN_TCHSCR_PWR */
-	PAD_CFG_GPO(GPP_F08, 1, DEEP),
+	PAD_CFG_GPO(GPP_F08, 1, PLTRST),
 	/* GPP_F09:     NC */
 	PAD_NC(GPP_F09, NONE),
 	/* GPP_F10:     ISH_GP_6_SNSR_HDR */

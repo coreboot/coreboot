@@ -103,6 +103,7 @@ int mtk_display_init(void)
 	const char *name;
 	struct panel_description *panel = get_active_panel();
 	uintptr_t fb_addr;
+	u32 lanes;
 
 	if (!panel || panel->disp_path == DISP_PATH_NONE) {
 		printk(BIOS_ERR, "%s: Failed to get the active panel\n", __func__);
@@ -146,7 +147,14 @@ int mtk_display_init(void)
 				      MIPI_DSI_MODE_LPM |
 				      MIPI_DSI_MODE_EOT_PACKET);
 
-		if (mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, &edid,
+		if (mipi_data->flags & PANEL_FLAG_CPHY) {
+			mipi_dsi_flags |= MIPI_DSI_MODE_CPHY;
+			lanes = 3;
+		} else {
+			lanes = 4;
+		}
+
+		if (mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, lanes, &edid,
 				 mipi_data ? mipi_data->init : NULL) < 0) {
 			printk(BIOS_ERR, "%s: Failed in DSI init\n", __func__);
 			return -1;

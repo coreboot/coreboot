@@ -31,24 +31,29 @@ struct dsi_regs {
 	u32 dsi_bllp_wc;
 	u32 dsi_cmdq_size;
 	u32 dsi_hstx_cklp_wc;
-	u8 reserved2[156];
+	u8 reserved2[4];
+	u32 dsi_cmd_type1_hs;
+	u8 reserved3[148];
 	u32 dsi_phy_lccon;
 	u32 dsi_phy_ld0con;
-	u8 reserved3[4];
+	u8 reserved4[4];
 	u32 dsi_phy_timecon0;
 	u32 dsi_phy_timecon1;
 	u32 dsi_phy_timecon2;
 	u32 dsi_phy_timecon3;
-	u8 reserved4[16];
+	u32 dsi_cphy_con0;
+	u8 reserved5[12];
 	u32 dsi_vm_cmd_con;
-	u8 reserved5[92];
+	u8 reserved6[92];
 	u32 dsi_force_commit;  /* Available since MT8183 */
-	u8 reserved6[2924];
+	u8 reserved7[2924];
 	u32 dsi_cmdq[128];
 };
 
+check_member(dsi_regs, dsi_cmd_type1_hs, 0x6c);
 check_member(dsi_regs, dsi_phy_lccon, 0x104);
 check_member(dsi_regs, dsi_phy_timecon3, 0x11c);
+check_member(dsi_regs, dsi_cphy_con0, 0x120);
 check_member(dsi_regs, dsi_vm_cmd_con, 0x130);
 check_member(dsi_regs, dsi_force_commit, 0x190);
 check_member(dsi_regs, dsi_cmdq, 0xd00);

@@ -54,6 +54,12 @@ config MEDIATEK_DRAM_SCRAMBLE
 	  This option enables DRAM data scramble, which can prevent DRAM data from
 	  being hacked.
 
+config MEDIATEK_DSI_CPHY
+	bool
+	default n
+	help
+	  The configuration to support DSI C-PHY.
+
 config MEMORY_TEST
 	bool
 	default y

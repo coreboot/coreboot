@@ -43,6 +43,8 @@ enum {
 	MIPI_DSI_MODE_LPM = BIT(11),
 	/* dsi per line's data end same time on all lanes */
 	MIPI_DSI_MODE_LINE_END = BIT(12),
+	/* mipi is in CPHY mode */
+	MIPI_DSI_MODE_CPHY = BIT(13),
 };
 
 static struct dsi_regs *const dsi0 = (void *)DSI0_BASE;
@@ -55,6 +57,11 @@ enum {
 	VM_DONE_INT_FLAG     = BIT(3),
 	EXT_TE_RDY_INT_FLAG  = BIT(4),
 	DSI_BUSY             = BIT(31),
+};
+
+/* DSI_CMD_TYPE1_HS */
+enum {
+	CMD_CPHY_6BYTE_EN = BIT(18),
 };
 
 /* DSI_CON_CTRL */
@@ -103,6 +110,7 @@ enum {
 /* DSI_CMDQ_SIZE */
 enum {
 	CMDQ_SIZE = 0x3f,
+	CMDQ_SIZE_SEL = BIT(15),
 };
 
 /* DSI_PHY_LCCON */
@@ -192,13 +200,25 @@ struct mtk_phy_timing {
 
 /* Functions that each SOC should provide. */
 void mtk_dsi_reset(void);
-void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes);
 
 /* Functions as weak no-ops that can be overridden. */
 void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing);
 
-/* Public API provided in common/dsi_common.c */
-int mtk_dsi_bpp_from_format(u32 format);
+/*
+ * Public API provided in common/dsi_common.c, common/dsi_v1.c, and
+ * common/mtk_mipi_{c/d}phy.c
+ */
+void mtk_dsi_cphy_enable(void);
+void mtk_dsi_cphy_enable_cmdq_6byte(void);
+void mtk_dsi_cphy_lane_sel_setting(void);
+void mtk_dsi_cphy_timing(u32 data_rate, struct mtk_phy_timing *timing);
+void mtk_dsi_cphy_vdo_timing(const u32 lanes, const struct edid *edid,
+			     const struct mtk_phy_timing *phy_timing,
+			     const u32 bytes_per_pixel, const u32 hbp, const u32 hfp,
+			     s32 *hbp_byte, s32 *hfp_byte, u32 *hsync_active_byte);
+void mtk_dsi_cphy_disable_ck_mode(void);
+void mtk_dsi_dphy_disable_ck_mode(void);
+void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes, bool is_cphy);
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 		 const u8 *init_commands);
 

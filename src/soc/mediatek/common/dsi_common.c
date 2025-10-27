@@ -12,6 +12,9 @@
 #define MIN_HFP_BYTE	2
 #define MIN_HBP_BYTE	2
 
+#define CPHY_SYMBOL_RATE		7
+#define CPHY_SYMBOL_RATE_DIVISOR	16
+
 static unsigned int mtk_dsi_get_bits_per_pixel(u32 format)
 {
 	switch (format) {
@@ -29,7 +32,7 @@ static unsigned int mtk_dsi_get_bits_per_pixel(u32 format)
 }
 
 static u32 mtk_dsi_get_data_rate(u32 bits_per_pixel, u32 lanes,
-				 const struct edid *edid)
+				 const struct edid *edid, bool is_cphy)
 {
 	/* data_rate = pixel_clock * bits_per_pixel * mipi_ratio / lanes
 	 * Note pixel_clock comes in kHz and returned data_rate is in bps.
@@ -37,11 +40,16 @@ static u32 mtk_dsi_get_data_rate(u32 bits_per_pixel, u32 lanes,
 	 * for older platforms which do not have complete implementation in HFP.
 	 * Newer platforms should just set that to 1.0 (100 / 100).
 	 */
-	u32 data_rate = DIV_ROUND_UP((u64)edid->mode.pixel_clock *
-				     bits_per_pixel * 1000 *
-				     MTK_DSI_MIPI_RATIO_NUMERATOR,
-				     (u64)lanes *
-				     MTK_DSI_MIPI_RATIO_DENOMINATOR);
+	u32 data_rate;
+	u64 dividend = (u64)edid->mode.pixel_clock * bits_per_pixel * 1000 *
+			MTK_DSI_MIPI_RATIO_NUMERATOR;
+	u64 divisor = (u64)lanes * MTK_DSI_MIPI_RATIO_DENOMINATOR;
+
+	if (is_cphy) {
+		dividend *= CPHY_SYMBOL_RATE;
+		divisor *= CPHY_SYMBOL_RATE_DIVISOR;
+	}
+	data_rate = DIV_ROUND_UP(dividend, divisor);
 	printk(BIOS_INFO, "DSI data_rate: %u bps\n", data_rate);
 
 	if (data_rate < MTK_DSI_DATA_RATE_MIN_MHZ * MHz) {
@@ -63,12 +71,10 @@ __weak void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
 	/* Do nothing. */
 }
 
-static void mtk_dsi_phy_timing(u32 data_rate, struct mtk_phy_timing *timing)
+static void mtk_dsi_dphy_timing(u32 data_rate, struct mtk_phy_timing *timing)
 {
 	u32 timcon0, timcon1, timcon2, timcon3;
 	u32 data_rate_mhz = DIV_ROUND_UP(data_rate, MHz);
-
-	memset(timing, 0, sizeof(*timing));
 
 	timing->lpx = (60 * data_rate_mhz / (8 * 1000)) + 1;
 	timing->da_hs_prepare = (80 * data_rate_mhz + 4 * 1000) / 8000;
@@ -163,46 +169,19 @@ static void mtk_dsi_rxtx_control(u32 mode_flags, u32 lanes)
 	write32(&dsi0->dsi_txrx_ctrl, tmp_reg);
 }
 
-static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
-				      const struct edid *edid,
-				      const struct mtk_phy_timing *phy_timing)
+static void mtk_dsi_dphy_vdo_timing(const u32 mode_flags,
+				    const u32 lanes,
+				    const struct edid *edid,
+				    const struct mtk_phy_timing *phy_timing,
+				    const u32 bytes_per_pixel,
+				    const u32 hbp,
+				    const u32 hfp,
+				    s32 *hbp_byte,
+				    s32 *hfp_byte,
+				    u32 *hsync_active_byte)
 {
-	u32 hsync_active_byte;
-	u32 hbp;
-	u32 hfp;
-	s32 hbp_byte;
-	s32 hfp_byte;
-	u32 vbp_byte;
-	u32 vfp_byte;
-	u32 bytes_per_pixel;
-	u32 packet_fmt;
-	u32 hactive;
-	u32 data_phy_cycles;
-
-	bytes_per_pixel = DIV_ROUND_UP(mtk_dsi_get_bits_per_pixel(format), 8);
-	vbp_byte = edid->mode.vbl - edid->mode.vso - edid->mode.vspw -
-		   edid->mode.vborder;
-	vfp_byte = edid->mode.vso - edid->mode.vborder;
-
-	write32(&dsi0->dsi_vsa_nl, edid->mode.vspw);
-	write32(&dsi0->dsi_vbp_nl, vbp_byte);
-	write32(&dsi0->dsi_vfp_nl, vfp_byte);
-	write32(&dsi0->dsi_vact_nl, edid->mode.va);
-
-	hsync_active_byte = edid->mode.hspw * bytes_per_pixel - 10;
-
-	hbp = edid->mode.hbl - edid->mode.hso - edid->mode.hspw -
-	      edid->mode.hborder;
-	hfp = edid->mode.hso - edid->mode.hborder;
-
-	if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
-		hbp_byte = hbp * bytes_per_pixel - 10;
-	else
-		hbp_byte = (hbp + edid->mode.hspw) * bytes_per_pixel - 10;
-	hfp_byte = hfp * bytes_per_pixel;
-
-	data_phy_cycles = phy_timing->lpx + phy_timing->da_hs_prepare +
-			  phy_timing->da_hs_zero + phy_timing->da_hs_exit + 3;
+	u32 data_phy_cycles = phy_timing->lpx + phy_timing->da_hs_prepare +
+				phy_timing->da_hs_zero + phy_timing->da_hs_exit + 3;
 
 	u32 delta = 10;
 
@@ -217,20 +196,65 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 		d_phy = data_phy_cycles * lanes + delta;
 
 	if ((hfp + hbp) * bytes_per_pixel > d_phy) {
-		hfp_byte -= d_phy * hfp / (hfp + hbp);
-		hbp_byte -= d_phy * hbp / (hfp + hbp);
+		*hfp_byte -= d_phy * hfp / (hfp + hbp);
+		*hbp_byte -= d_phy * hbp / (hfp + hbp);
 	} else {
 		printk(BIOS_ERR, "HFP %u plus HBP %u is not greater than d_phy %u, "
-		       "the panel may not work properly.\n", hfp * bytes_per_pixel,
-		       hbp * bytes_per_pixel, d_phy);
+			"the panel may not work properly.\n", hfp * bytes_per_pixel,
+			hbp * bytes_per_pixel, d_phy);
 	}
 
+	*hsync_active_byte = edid->mode.hspw * bytes_per_pixel - 10;
 	if (mode_flags & MIPI_DSI_MODE_LINE_END) {
-		hsync_active_byte = DIV_ROUND_UP(hsync_active_byte, lanes) * lanes - 2;
-		hbp_byte = DIV_ROUND_UP(hbp_byte, lanes) * lanes - 2;
-		hfp_byte = DIV_ROUND_UP(hfp_byte, lanes) * lanes - 2;
-		hbp_byte -= (edid->mode.ha * bytes_per_pixel + 2) % lanes;
+		*hsync_active_byte = DIV_ROUND_UP(*hsync_active_byte, lanes) * lanes - 2;
+		*hbp_byte = DIV_ROUND_UP(*hbp_byte, lanes) * lanes - 2;
+		*hfp_byte = DIV_ROUND_UP(*hfp_byte, lanes) * lanes - 2;
+		*hbp_byte -= (edid->mode.ha * bytes_per_pixel + 2) % lanes;
 	}
+}
+
+static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
+				      const struct edid *edid,
+				      const struct mtk_phy_timing *phy_timing)
+{
+	u32 hsync_active_byte;
+	u32 hbp;
+	u32 hfp;
+	s32 hbp_byte;
+	s32 hfp_byte;
+	u32 vbp_byte;
+	u32 vfp_byte;
+	u32 bytes_per_pixel;
+	u32 packet_fmt;
+	u32 hactive;
+	bool is_cphy = !!(mode_flags & MIPI_DSI_MODE_CPHY);
+
+	bytes_per_pixel = DIV_ROUND_UP(mtk_dsi_get_bits_per_pixel(format), 8);
+	vbp_byte = edid->mode.vbl - edid->mode.vso - edid->mode.vspw -
+		   edid->mode.vborder;
+	vfp_byte = edid->mode.vso - edid->mode.vborder;
+
+	write32(&dsi0->dsi_vsa_nl, edid->mode.vspw);
+	write32(&dsi0->dsi_vbp_nl, vbp_byte);
+	write32(&dsi0->dsi_vfp_nl, vfp_byte);
+	write32(&dsi0->dsi_vact_nl, edid->mode.va);
+
+	hbp = edid->mode.hbl - edid->mode.hso - edid->mode.hspw -
+	      edid->mode.hborder;
+	hfp = edid->mode.hso - edid->mode.hborder;
+
+	if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
+		hbp_byte = hbp * bytes_per_pixel - 10;
+	else
+		hbp_byte = (hbp + edid->mode.hspw) * bytes_per_pixel - 10;
+	hfp_byte = hfp * bytes_per_pixel;
+
+	if (CONFIG(MEDIATEK_DSI_CPHY) && is_cphy)
+		mtk_dsi_cphy_vdo_timing(lanes, edid, phy_timing, bytes_per_pixel, hbp, hfp,
+					&hbp_byte, &hfp_byte, &hsync_active_byte);
+	else
+		mtk_dsi_dphy_vdo_timing(mode_flags, lanes, edid, phy_timing, bytes_per_pixel,
+					hbp, hfp, &hbp_byte, &hfp_byte, &hsync_active_byte);
 
 	if (hfp_byte + hbp_byte < MIN_HFP_BYTE + MIN_HBP_BYTE) {
 		printk(BIOS_ERR, "Calculated hfp_byte %d and hbp_byte %d are too small, "
@@ -281,6 +305,8 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 		write32(&dsi0->dsi_size_con,
 			edid->mode.va << DSI_SIZE_CON_HEIGHT_SHIFT |
 			hactive << DSI_SIZE_CON_WIDTH_SHIFT);
+	if (CONFIG(MEDIATEK_DSI_CPHY) && is_cphy)
+		mtk_dsi_cphy_enable_cmdq_6byte();
 }
 
 static void mtk_dsi_start(void)
@@ -339,6 +365,7 @@ static enum cb_err mtk_dsi_cmdq(enum mipi_dsi_transaction type, const u8 *data, 
 		}
 		write32(&dsi0->dsi_cmdq_size, 1 + DIV_ROUND_UP(len, 4));
 	}
+	setbits32(&dsi0->dsi_cmdq_size, CMDQ_SIZE_SEL);
 
 	mtk_dsi_start();
 
@@ -351,7 +378,7 @@ static enum cb_err mtk_dsi_cmdq(enum mipi_dsi_transaction type, const u8 *data, 
 	return CB_SUCCESS;
 }
 
-static void mtk_dsi_reset_dphy(void)
+static void mtk_dsi_reset_phy(void)
 {
 	setbits32(&dsi0->dsi_con_ctrl, DPHY_RESET);
 	clrbits32(&dsi0->dsi_con_ctrl, DPHY_RESET);
@@ -362,18 +389,28 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 {
 	u32 data_rate;
 	u32 bits_per_pixel = mtk_dsi_get_bits_per_pixel(format);
+	bool is_cphy = !!(mode_flags & MIPI_DSI_MODE_CPHY);
 
-	data_rate = mtk_dsi_get_data_rate(bits_per_pixel, lanes, edid);
+	if (!CONFIG(MEDIATEK_DSI_CPHY) && is_cphy) {
+		printk(BIOS_ERR, "%s: Board is built without C-PHY interface support. "
+		       "Please check Kconfig MEDIATEK_DSI_CPHY.\n", __func__);
+		return -1;
+	}
+
+	data_rate = mtk_dsi_get_data_rate(bits_per_pixel, lanes, edid, is_cphy);
 	if (!data_rate)
 		return -1;
 
-	mtk_dsi_configure_mipi_tx(data_rate, lanes);
+	mtk_dsi_configure_mipi_tx(data_rate, lanes, is_cphy);
 	mtk_dsi_reset();
-	struct mtk_phy_timing phy_timing;
-	mtk_dsi_phy_timing(data_rate, &phy_timing);
+	struct mtk_phy_timing phy_timing = {};
+	if (CONFIG(MEDIATEK_DSI_CPHY) && is_cphy)
+		mtk_dsi_cphy_timing(data_rate, &phy_timing);
+	else
+		mtk_dsi_dphy_timing(data_rate, &phy_timing);
 	mtk_dsi_rxtx_control(mode_flags, lanes);
 	mdelay(1);
-	mtk_dsi_reset_dphy();
+	mtk_dsi_reset_phy();
 	mtk_dsi_clk_hs_mode_disable();
 	mtk_dsi_config_vdo_timing(mode_flags, format, lanes, edid, &phy_timing);
 	mtk_dsi_clk_hs_mode_enable();

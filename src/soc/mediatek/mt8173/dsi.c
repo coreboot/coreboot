@@ -7,7 +7,7 @@
 #include <soc/dsi.h>
 #include <timer.h>
 
-void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes)
+void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes, bool is_cphy)
 {
 	u32 txdiv0, txdiv1;
 	u64 pcw;

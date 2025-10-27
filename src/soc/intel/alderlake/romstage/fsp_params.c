@@ -55,6 +55,19 @@ static uint8_t clk_src_to_fsp(enum pcie_rp_type type, int rp_number)
 		return CPU_PCIE_BASE + rp_number;
 }
 
+static void configure_cpu_rp_speed(FSP_M_CONFIG *m_cfg,
+			const struct pcie_rp_config *cfg,
+			size_t index)
+{
+	static const char *const speeds[] = {"AUTO", "GEN1", "GEN2", "GEN3", "GEN4"};
+
+	m_cfg->CpuPcieRpPcieSpeed[index] =
+		pcie_speed_control_to_upd(get_uint_option("pciexp_speed",
+			cfg->pcie_rp_pcie_speed));
+	printk(BIOS_DEBUG, "CPU PCIe RP%zu: speed set to %s\n",
+		index + 1, speeds[m_cfg->CpuPcieRpPcieSpeed[index]]);
+}
+
 static void configure_rp_clocks(FSP_M_CONFIG *m_cfg, enum pcie_rp_type type,
 		const struct pcie_rp_config *rp_cfg, size_t index)
 {
@@ -89,6 +102,8 @@ static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask, enum pcie_rp_typ
 		if (!(en_mask & BIT(i)))
 			continue;
 		configure_rp_clocks(m_cfg, type, &cfg[i], i);
+		if (type == PCIE_RP_CPU)
+			configure_cpu_rp_speed(m_cfg, &cfg[i], i);
 	}
 }
 

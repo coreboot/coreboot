@@ -4,6 +4,7 @@
 #define _STARLABS_CMN_CFR_H_
 
 #include <drivers/option/cfr_frontend.h>
+#include <soc/soc_chip.h>
 #include <common/powercap.h>
 
 void cfr_card_reader_update(struct sm_object *new_obj);

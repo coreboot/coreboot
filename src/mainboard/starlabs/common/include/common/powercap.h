@@ -3,6 +3,10 @@
 #ifndef _STARLABS_CMN_POWERCAP_H_
 #define _STARLABS_CMN_POWERCAP_H_
 
+#include <soc/soc_chip.h>
+
+#define TCC(temp)	(CONFIG_TJ_MAX - temp)
+
 enum cmos_power_profile {
 	PP_POWER_SAVER	= 0,
 	PP_BALANCED	= 1,
@@ -10,6 +14,6 @@ enum cmos_power_profile {
 };
 #define NUM_POWER_PROFILES 3
 
-enum cmos_power_profile get_power_profile(enum cmos_power_profile fallback);
+void update_power_limits(config_t *cfg);
 
 #endif

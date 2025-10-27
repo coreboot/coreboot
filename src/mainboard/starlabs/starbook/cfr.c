@@ -7,7 +7,7 @@
 #include <intelblocks/cfr.h>
 #include <common/cfr.h>
 
-static struct sm_obj_form performance = {
+static struct sm_obj_form performance_group = {
 	.ui_name = "Performance",
 	.obj_list = (const struct sm_object *[]) {
 		&bluetooth_rtd3,
@@ -17,7 +17,7 @@ static struct sm_obj_form performance = {
 	},
 };
 
-static struct sm_obj_form processor = {
+static struct sm_obj_form processor_group = {
 	.ui_name = "Processor",
 	.obj_list = (const struct sm_object *[]) {
 		&me_state,
@@ -31,7 +31,7 @@ static struct sm_obj_form processor = {
 	},
 };
 
-static struct sm_obj_form power = {
+static struct sm_obj_form power_group = {
 	.ui_name = "Power",
 	.obj_list = (const struct sm_object *[]) {
 		&max_charge,
@@ -45,7 +45,7 @@ static struct sm_obj_form power = {
 	},
 };
 
-static struct sm_obj_form keyboard = {
+static struct sm_obj_form keyboard_group = {
 	.ui_name = "Keyboard",
 	.obj_list = (const struct sm_object *[]) {
 		&kbl_timeout,
@@ -54,7 +54,7 @@ static struct sm_obj_form keyboard = {
 	},
 };
 
-static struct sm_obj_form devices = {
+static struct sm_obj_form devices_group = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
 		&bluetooth,
@@ -84,7 +84,7 @@ static struct sm_obj_form devices = {
 	},
 };
 
-static struct sm_obj_form pci = {
+static struct sm_obj_form pci_group = {
 	.ui_name = "PCI",
 	.obj_list = (const struct sm_object *[]) {
 		#if CONFIG(BOARD_STARLABS_STARBOOK_ADL)
@@ -103,7 +103,7 @@ static struct sm_obj_form pci = {
 	},
 };
 
-static struct sm_obj_form coreboot = {
+static struct sm_obj_form coreboot_group = {
 	.ui_name = "coreboot",
 	.obj_list = (const struct sm_object *[]) {
 		&debug_level,
@@ -112,13 +112,13 @@ static struct sm_obj_form coreboot = {
 };
 
 static struct sm_obj_form *sm_root[] = {
-	&performance,
-	&processor,
-	&power,
-	&keyboard,
-	&devices,
-	&pci,
-	&coreboot,
+	&performance_group,
+	&processor_group,
+	&power_group,
+	&keyboard_group,
+	&devices_group,
+	&pci_group,
+	&coreboot_group,
 	NULL
 };
 

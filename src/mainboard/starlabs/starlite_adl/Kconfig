@@ -100,6 +100,14 @@ config EDK2_BOOTSPLASH_FILE
 config SOC_INTEL_CSE_SEND_EOP_EARLY
 	default n
 
+config TJ_MAX
+	int
+	default 105
+
+config PL4_WATTS
+	int
+	default 37
+
 config UART_FOR_CONSOLE
 	default 0
 

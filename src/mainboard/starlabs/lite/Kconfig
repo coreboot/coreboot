@@ -83,6 +83,14 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	default n
 
+config TJ_MAX
+	int
+	default 100
+
+config PL4_WATTS
+	int
+	default 45
+
 config TRACKPAD_INTERRUPT
 	hex
 	default 0x1 if BOARD_STARLABS_LITE_GLK

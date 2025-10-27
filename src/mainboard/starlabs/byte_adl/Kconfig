@@ -85,8 +85,7 @@ config ME_BIN_PATH
 
 config PL4_WATTS
 	int
-	default 65 if BOARD_STARLABS_BYTE_TWL
-	default 36
+	default 65
 
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	default n
@@ -97,6 +96,10 @@ config EDK2_BOOTSPLASH_FILE
 
 config SOC_INTEL_CSE_SEND_EOP_EARLY
 	default n
+
+config TJ_MAX
+	int
+	default 105
 
 config UART_FOR_CONSOLE
 	default 0

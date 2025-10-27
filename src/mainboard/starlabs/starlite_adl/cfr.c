@@ -19,7 +19,7 @@ void cfr_card_reader_update(struct sm_object *new_obj)
 		new_obj->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
 }
 
-static struct sm_obj_form performance = {
+static struct sm_obj_form performance_group = {
 	.ui_name = "Performance",
 	.obj_list = (const struct sm_object *[]) {
 		&bluetooth_rtd3,
@@ -29,7 +29,7 @@ static struct sm_obj_form performance = {
 	},
 };
 
-static struct sm_obj_form processor = {
+static struct sm_obj_form processor_group = {
 	.ui_name = "Processor",
 	.obj_list = (const struct sm_object *[]) {
 		&me_state,
@@ -40,7 +40,7 @@ static struct sm_obj_form processor = {
 	},
 };
 
-static struct sm_obj_form power = {
+static struct sm_obj_form power_group = {
 	.ui_name = "Power",
 	.obj_list = (const struct sm_object *[]) {
 		&max_charge,
@@ -54,7 +54,7 @@ static struct sm_obj_form power = {
 	},
 };
 
-static struct sm_obj_form devices = {
+static struct sm_obj_form devices_group = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
 		&accelerometer,
@@ -75,7 +75,7 @@ static struct sm_obj_form devices = {
 	},
 };
 
-static struct sm_obj_form pci = {
+static struct sm_obj_form pci_group = {
 	.ui_name = "PCI",
 	.obj_list = (const struct sm_object *[]) {
 		#if CONFIG(SOC_INTEL_COMMON_BLOCK_ASPM)
@@ -87,7 +87,7 @@ static struct sm_obj_form pci = {
 	},
 };
 
-static struct sm_obj_form coreboot = {
+static struct sm_obj_form coreboot_group = {
 	.ui_name = "coreboot",
 	.obj_list = (const struct sm_object *[]) {
 		&debug_level,
@@ -96,12 +96,12 @@ static struct sm_obj_form coreboot = {
 };
 
 static struct sm_obj_form *sm_root[] = {
-	&performance,
-	&processor,
-	&power,
-	&devices,
-	&pci,
-	&coreboot,
+	&performance_group,
+	&processor_group,
+	&power_group,
+	&devices_group,
+	&pci_group,
+	&coreboot_group,
 	NULL
 };
 

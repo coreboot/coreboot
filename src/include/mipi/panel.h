@@ -15,6 +15,11 @@ enum panel_init_cmd {
 	PANEL_CMD_DCS = 3,
 };
 
+/* Definitions for flags in panel_serializable_data */
+enum panel_flag {
+	PANEL_FLAG_CPHY = BIT(0),
+};
+
 struct panel_init_command {
 	u8 cmd;
 	u8 len;
@@ -27,6 +32,7 @@ struct panel_init_command {
  * cannot be really serialized.
  */
 struct panel_serializable_data {
+	u32 flags; /* flags of panel_flag */
 	struct edid edid;  /* edid info of this panel */
 	u8 init[]; /* A packed array of panel_init_command */
 };

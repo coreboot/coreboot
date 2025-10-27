@@ -19,6 +19,7 @@ static const char *get_spkr_tplg_str(enum _spkr_tplg tplg)
 	case rt1015: return "rt1015";
 	case rt1019: return "rt1019";
 	case rt5650_sp: return "rt5650";
+	case tas2563: return "tas2563";
 	default: return "default";
 	}
 }

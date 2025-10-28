@@ -55,36 +55,40 @@ static uint8_t clk_src_to_fsp(enum pcie_rp_type type, int rp_number)
 		return CPU_PCIE_BASE + rp_number;
 }
 
-static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask, enum pcie_rp_type type,
-			const struct pcie_rp_config *cfg, size_t cfg_count)
+static void configure_rp_clocks(FSP_M_CONFIG *m_cfg, enum pcie_rp_type type,
+		const struct pcie_rp_config *rp_cfg, size_t index)
 {
-	size_t i;
 	/* bitmask to save the status of clkreq assignment */
 	static unsigned int clk_req_mapping = 0;
 
-	/* Will be refactored to only skip configuring CLKSRC and CLKREQ */
 	if (CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE))
 		return;
+	if (rp_cfg->flags & PCIE_RP_CLK_SRC_UNUSED)
+		return;
+	if (!rp_cfg->flags && rp_cfg->clk_src == 0 && rp_cfg->clk_req == 0) {
+		printk(BIOS_WARNING, "Missing %s root port %zu clock structure definition\n",
+			type == PCIE_RP_CPU ? "CPU" : "PCH", index + 1);
+		return;
+	}
+	if (!(rp_cfg->flags & PCIE_RP_CLK_REQ_UNUSED)) {
+		if (clk_req_mapping & (BIT(rp_cfg->clk_req))) {
+			printk(BIOS_WARNING,
+				"Found overlapped clkreq assignment on clk req %u\n",
+				rp_cfg->clk_req);
+		}
+		m_cfg->PcieClkSrcClkReq[rp_cfg->clk_src] = rp_cfg->clk_req;
+		clk_req_mapping |= BIT(rp_cfg->clk_req);
+	}
+	m_cfg->PcieClkSrcUsage[rp_cfg->clk_src] = clk_src_to_fsp(type, index);
+}
 
-	for (i = 0; i < cfg_count; i++) {
+static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask, enum pcie_rp_type type,
+		const struct pcie_rp_config *cfg, size_t cfg_count)
+{
+	for (size_t i = 0; i < cfg_count; i++) {
 		if (!(en_mask & BIT(i)))
 			continue;
-		if (cfg[i].flags & PCIE_RP_CLK_SRC_UNUSED)
-			continue;
-		if (!cfg[i].flags && cfg[i].clk_src == 0 && cfg[i].clk_req == 0) {
-			printk(BIOS_WARNING, "Missing root port clock structure definition\n");
-			continue;
-		}
-
-		if (!(cfg[i].flags & PCIE_RP_CLK_REQ_UNUSED)) {
-			if (clk_req_mapping & (1 << cfg[i].clk_req))
-				printk(BIOS_WARNING,
-				       "Found overlapped clkreq assignment on clk req %u\n",
-				       cfg[i].clk_req);
-			m_cfg->PcieClkSrcClkReq[cfg[i].clk_src] = cfg[i].clk_req;
-			clk_req_mapping |= 1 << cfg[i].clk_req;
-		}
-		m_cfg->PcieClkSrcUsage[cfg[i].clk_src] = clk_src_to_fsp(type, i);
+		configure_rp_clocks(m_cfg, type, &cfg[i], i);
 	}
 }
 

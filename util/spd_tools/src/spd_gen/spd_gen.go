@@ -3,7 +3,10 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
+	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -163,23 +166,101 @@ func findIndex(dedupedAttribs []interface{}, newSPDAttribs interface{}) int {
 	return -1
 }
 
+// readJSONNoComments reads a JSON file and strips supported comment styles:
+// - line comments: "// ..." (on their own line, with optional leading spaces)
+// - block comments: "/* ... */"
+func readJSONNoComments(path string) ([]byte, error) {
+	dataBytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	re := regexp.MustCompile(`(?m)^\s*//.*`)
+	dataBytes = re.ReplaceAll(dataBytes, []byte(""))
+	reBlock := regexp.MustCompile(`(?s)/\*.*?\*/`)
+	dataBytes = reBlock.ReplaceAll(dataBytes, []byte(""))
+	return dataBytes, nil
+}
+
 func readMemParts(memPartsFilePath string) (memParts, error) {
 	var memParts memParts
 
-	dataBytes, err := ioutil.ReadFile(memPartsFilePath)
+	dataBytes, err := readJSONNoComments(memPartsFilePath)
 	if err != nil {
 		return memParts, err
 	}
-
-	// Strip comments from json file
-	re := regexp.MustCompile(`(?m)^\s*//.*`)
-	dataBytes = re.ReplaceAll(dataBytes, []byte(""))
 
 	if err := json.Unmarshal(dataBytes, &memParts); err != nil {
 		return memParts, err
 	}
 
 	return memParts, nil
+}
+
+func readSingleAttributes(path string) (string, interface{}, error) {
+	dataBytes, err := readJSONNoComments(path)
+	if err != nil {
+		return "", nil, err
+	}
+
+	var root interface{}
+	if err := json.Unmarshal(dataBytes, &root); err != nil {
+		return "", nil, err
+	}
+
+	m, ok := root.(map[string]interface{})
+	if !ok {
+		return "", nil, errors.New("expected JSON object at top-level")
+	}
+
+	baseName := ""
+	{
+		base := filepath.Base(path)
+		if i := strings.LastIndex(base, "."); i >= 0 {
+			base = base[:i]
+		}
+		baseName = base
+	}
+
+	// Accept either:
+	//  1) {"name": "...", "attributes": {...}} (or "attribs")
+	//  2) {"parts":[{"name":"...","attribs":{...}}]} (single-part memory_parts.json)
+	if partsRaw, ok := m["parts"]; ok {
+		parts, ok := partsRaw.([]interface{})
+		if !ok || len(parts) == 0 {
+			return "", nil, errors.New("expected non-empty 'parts' array")
+		}
+		if len(parts) != 1 {
+			return "", nil, errors.New("expected exactly one part in 'parts' array")
+		}
+		p, ok := parts[0].(map[string]interface{})
+		if !ok {
+			return "", nil, errors.New("expected part entry to be a JSON object")
+		}
+		name, _ := p["name"].(string)
+		if name == "" {
+			name = baseName
+		}
+		if a, ok := p["attributes"]; ok {
+			return name, a, nil
+		}
+		if a, ok := p["attribs"]; ok {
+			return name, a, nil
+		}
+		return "", nil, errors.New("missing 'attribs'/'attributes' in part entry")
+	}
+
+	name, _ := m["name"].(string)
+	if name == "" {
+		name = baseName
+	}
+	if a, ok := m["attributes"]; ok {
+		return name, a, nil
+	}
+	if a, ok := m["attribs"]; ok {
+		return name, a, nil
+	}
+
+	return "", nil, errors.New("missing 'attribs'/'attributes' in JSON")
 }
 
 func createSPD(memAttribs interface{}, t memTech) string {
@@ -249,31 +330,86 @@ func writeSetMap(setMap map[int][]int, SPDDirName string) {
 }
 
 func usage() {
-	fmt.Printf("\nUsage: %s <mem_parts_list_json> <mem_technology>\n\n", os.Args[0])
+	fmt.Printf("\nUsage: %s [options] <mem_parts_list_json> <mem_technology> [<output_dir>|<output_hex>]\n\n", os.Args[0])
 	fmt.Printf("   where,\n")
 	fmt.Printf("   mem_parts_list_json = JSON File containing list of memory parts and attributes\n")
 	fmt.Printf("   mem_technology = Memory technology for which to generate SPDs\n")
 	fmt.Printf("                    supported technologies: %v\n\n\n",
 		reflect.ValueOf(memTechMap).MapKeys())
+	fmt.Printf("Options:\n")
+	fmt.Printf("   -out <output_dir>           Output directory (default: directory of JSON input)\n")
+	fmt.Printf("   -set <n>                    Set number when writing a single output_hex (default: 0)\n\n")
 }
 
 func main() {
-	if len(os.Args) != 3 {
+	fs := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+	fs.SetOutput(io.Discard)
+	fs.Usage = usage
+
+	outOpt := fs.String("out", "", "Output directory (default: directory of JSON input)")
+	setOpt := fs.Int("set", 0, "Set number when writing a single output_hex (default: 0)")
+
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		usage()
+		os.Exit(2)
+	}
+
+	if *setOpt < 0 {
+		log.Fatal("Invalid -set value: ", *setOpt)
+	}
+
+	varPos := fs.Args()
+	if len(varPos) != 2 && len(varPos) != 3 {
 		usage()
 		log.Fatal("Incorrect number of arguments")
 	}
 
 	var t memTech
-	memPartsFilePath, memTechnology := os.Args[1], os.Args[2]
+	memPartsFilePath, memTechnology := varPos[0], varPos[1]
 
 	t, ok := memTechMap[strings.ToLower(memTechnology)]
 	if !ok {
 		log.Fatal("Unsupported memory technology ", memTechnology)
 	}
 
-	SPDDir, err := filepath.Abs(filepath.Dir(memPartsFilePath))
+	var SPDDir string
+	fileOutput := false
+	SPDOutFile := ""
+	var err error
+	if len(varPos) == 3 && strings.HasSuffix(strings.ToLower(varPos[2]), ".hex") {
+		fileOutput = true
+		SPDOutFile, err = filepath.Abs(varPos[2])
+	} else if *outOpt != "" {
+		SPDDir, err = filepath.Abs(*outOpt)
+	} else if len(varPos) == 3 {
+		SPDDir, err = filepath.Abs(varPos[2])
+	} else {
+		SPDDir, err = filepath.Abs(filepath.Dir(memPartsFilePath))
+	}
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if fileOutput {
+		name, attrs, err := readSingleAttributes(memPartsFilePath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err := t.addNewPart(name, attrs); err != nil {
+			log.Fatal(err)
+		}
+		spdAttribs, err := t.getSPDAttribs(name, *setOpt)
+		if err != nil {
+			log.Fatal(err)
+		}
+		s := createSPD(spdAttribs, t)
+		if err := os.MkdirAll(filepath.Dir(SPDOutFile), os.ModePerm); err != nil {
+			log.Fatal(err)
+		}
+		if err := ioutil.WriteFile(SPDOutFile, []byte(s), 0644); err != nil {
+			log.Fatal(err)
+		}
+		return
 	}
 
 	memParts, err := readMemParts(memPartsFilePath)

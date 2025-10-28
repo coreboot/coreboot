@@ -563,7 +563,7 @@ make -C util/spd_tools
 Usage:
 
 ```
-util/spd_tools/bin/spd_gen <mem_parts_list_json> <mem_technology>
+util/spd_tools/bin/spd_gen [ -o <output_dir> ] <mem_parts_list_json> <mem_technology> [<output_dir>|<output_hex>]
 ```
 
 Usage Examples:
@@ -572,6 +572,8 @@ Usage Examples:
 util/spd_tools/bin/spd_gen spd/ddr4/memory_parts.json ddr4
 util/spd_tools/bin/spd_gen spd/lp4x/memory_parts.json lp4x
 util/spd_tools/bin/spd_gen spd/lp5/memory_parts.json lp5
+util/spd_tools/bin/spd_gen -o out/lp5 spd/lp5/memory_parts.json lp5
+util/spd_tools/bin/spd_gen --set 0 part.spd.json lp5 out/spd.hex
 ```
 
 ### `part_id_gen`

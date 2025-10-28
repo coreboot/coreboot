@@ -154,6 +154,10 @@ chip soc/intel/alderlake
 				.PcieRpL1Substates			= L1_SS_L1_2,
 
 			}"
+			chip drivers/pcie/generic
+				register "wake_gpe" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
 			smbios_slot_desc				"SlotTypePciExpressGen4x1"
 									"SlotLengthShort"
 									"SlotTypePci"
@@ -167,6 +171,10 @@ chip soc/intel/alderlake
 				.pcie_rp_aspm				= ASPM_L0S_L1,
 				.PcieRpL1Substates			= L1_SS_L1_2,
 			}"
+			chip drivers/pcie/generic
+				register "wake_gpe" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
 			smbios_slot_desc				"SlotTypePciExpressGen3X4"
 									"SlotLengthShort"
 									"SlotTypePci"

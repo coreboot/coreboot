@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <soc/amd/common/acpi/pci_root.asl>
+#include <soc/amd/common/acpi/cxl_root.asl>
 #include "globalnvs.asl"
 
 Scope(\_SB) {
@@ -15,14 +15,16 @@ Scope(\_SB) {
 
 	#include "mmio.asl"
 
-	ROOT_BRIDGE(S0B0)
-	ROOT_BRIDGE(S0B1)
-	ROOT_BRIDGE(S0B2)
-	ROOT_BRIDGE(S0B3)
-	ROOT_BRIDGE(S0B4)
-	ROOT_BRIDGE(S0B5)
-	ROOT_BRIDGE(S0B6)
-	ROOT_BRIDGE(S0B7)
+	CXL_ROOT_BRIDGE(S0B0, 0)
+	CXL_ROOT_BRIDGE(S0B1, 1)
+	CXL_ROOT_BRIDGE(S0B2, 2)
+	CXL_ROOT_BRIDGE(S0B3, 3)
+	CXL_ROOT_BRIDGE(S0B4, 4)
+	CXL_ROOT_BRIDGE(S0B5, 5)
+	CXL_ROOT_BRIDGE(S0B6, 6)
+	CXL_ROOT_BRIDGE(S0B7, 7)
+
+	#include "cxl_root_dev.asl"
 
 	Scope(S0B0) {
 		#include "resources.asl"

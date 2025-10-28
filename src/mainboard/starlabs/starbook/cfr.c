@@ -55,6 +55,7 @@ static struct sm_obj_form keyboard = {
 static struct sm_obj_form devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
+		&bluetooth,
 		&card_reader,
 		#if CONFIG(BOARD_USES_FIXED_MODE_VBT)
 		&display_native_res,
@@ -76,7 +77,7 @@ static struct sm_obj_form devices = {
 		&vpu,
 		#endif
 		&webcam,
-		&wireless,
+		&wifi,
 		NULL
 	},
 };

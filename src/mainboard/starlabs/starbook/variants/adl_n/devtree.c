@@ -49,7 +49,7 @@ void devtree_update(void)
 	soc_conf_4core->tdp_pl2_override = (soc_conf_4core->tdp_pl2_override * performance_scale) / 100;
 
 	/* Enable/Disable Bluetooth based on CMOS settings */
-	if (get_uint_option("wireless", 1) == 0)
+	if (get_uint_option("bluetooth", 1) == 0)
 		cfg->usb2_ports[9].enable = 0;
 
 	/* Enable/Disable Webcam based on CMOS settings */

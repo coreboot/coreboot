@@ -57,6 +57,7 @@ static struct sm_obj_form devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
 		&accelerometer,
+		&bluetooth,
 		&card_reader,
 		&display_native_res,
 		#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
@@ -68,7 +69,7 @@ static struct sm_obj_form devices = {
 		&microphone,
 		&touchscreen,
 		&webcam,
-		&wireless,
+		&wifi,
 		NULL
 	},
 };

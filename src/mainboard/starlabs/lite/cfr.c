@@ -45,10 +45,11 @@ static struct sm_obj_form keyboard = {
 static struct sm_obj_form devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
+		&bluetooth,
 		&card_reader,
 		&microphone,
 		&webcam,
-		&wireless,
+		&wifi,
 		NULL
 	},
 };

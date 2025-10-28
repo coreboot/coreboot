@@ -15,6 +15,13 @@ static const struct sm_object accelerometer = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
+static const struct sm_object bluetooth = SM_DECLARE_BOOL({
+	.opt_name	= "bluetooth",
+	.ui_name	= "Bluetooth",
+	.ui_helptext	= "Enable or disable the built-in Bluetooth",
+	.default_value	= true,
+});
+
 static const struct sm_object bluetooth_rtd3 = SM_DECLARE_BOOL({
 	.opt_name	= "bluetooth_rtd3",
 	.ui_name	= "Bluetooth Runtime-D3",
@@ -146,10 +153,10 @@ static const struct sm_object webcam = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
-static const struct sm_object wireless = SM_DECLARE_BOOL({
-	.opt_name	= "wireless",
-	.ui_name	= "Wireless",
-	.ui_helptext	= "Enable or disable the built-in wireless card",
+static const struct sm_object wifi = SM_DECLARE_BOOL({
+	.opt_name	= "wifi",
+	.ui_name	= "WiFi",
+	.ui_helptext	= "Enable or disable the built-in WiFi",
 	.default_value	= true,
 });
 

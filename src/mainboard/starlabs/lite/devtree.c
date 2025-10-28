@@ -23,7 +23,7 @@ void devtree_update(void)
 	struct soc_power_limits_config *soc_conf =
 		&cfg->power_limits_config;
 
-	struct device *nic_dev = pcidev_on_root(0x0c, 0);
+	struct device *wifi_dev = pcidev_on_root(0x0c, 0);
 
 	uint8_t performance_scale = 100;
 
@@ -52,9 +52,10 @@ void devtree_update(void)
 	soc_conf->tdp_pl1_override = (soc_conf->tdp_pl1_override * performance_scale) / 100;
 	soc_conf->tdp_pl2_override = (soc_conf->tdp_pl2_override * performance_scale) / 100;
 
-	/* Enable/Disable Wireless based on CMOS settings */
-	if (get_uint_option("wireless", 1) == 0)
-		nic_dev->enabled = 0;
+
+	/* Enable/Disable WiFi based on CMOS settings */
+	if (get_uint_option("wifi", 1) == 0)
+		wifi_dev->enabled = 0;
 
 	/* Enable/Disable Webcam based on CMOS settings */
 	cfg->usb2_port[CONFIG_WEBCAM_USB_PORT].enable = get_uint_option("webcam", 1);

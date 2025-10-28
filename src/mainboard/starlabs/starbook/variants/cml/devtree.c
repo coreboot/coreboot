@@ -48,8 +48,10 @@ void devtree_update(void)
 	soc_conf->tdp_pl2_override = (soc_conf->tdp_pl2_override * performance_scale) / 100;
 
 	/* Enable/Disable Wireless based on CMOS settings */
-	if (get_uint_option("wireless", 1) == 0)
+	if (get_uint_option("wireless", 1) == 0) {
 		nic_dev->enabled = 0;
+		cfg->usb2_ports[9].enable = 0;
+	}
 
 	/* Enable/Disable Webcam based on CMOS settings */
 	cfg->usb2_ports[CONFIG_CCD_PORT].enable = get_uint_option("webcam", 1);

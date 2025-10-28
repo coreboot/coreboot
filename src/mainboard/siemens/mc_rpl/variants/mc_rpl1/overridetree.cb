@@ -96,6 +96,7 @@ chip soc/intel/alderlake
 			}"
 		end
 		device ref pcie_rp5 on
+			# Uses CLKSRC 1 + 2 (only 1 configurable)
 			register "pch_pcie_rp[PCH_RP(5)]" = "{
 				.clk_src = 1,
 				.flags = PCIE_RP_CLK_REQ_UNUSED,

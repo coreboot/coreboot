@@ -3,6 +3,7 @@
 #include <boot/coreboot_tables.h>
 #include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
+#include <ec/starlabs/merlin/cfr.h>
 #include <intelblocks/cfr.h>
 #include <variants.h>
 
@@ -54,6 +55,7 @@ static struct sm_obj_form performance = {
 	.ui_name = "Performance",
 	.obj_list = (const struct sm_object *[]) {
 		&bluetooth_rtd3,
+		&fan_mode,
 		&power_profile,
 		NULL
 	},

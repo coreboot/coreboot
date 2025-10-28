@@ -42,11 +42,11 @@ static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask,
 	size_t i;
 	static unsigned int clk_req_mapping = 0;
 
+	/* Will be refactored to only skip configuring CLKSRC and CLKREQ */
+	if (CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE))
+		return;
+
 	for (i = 0; i < cfg_count; i++) {
-		if (CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE)) {
-			m_cfg->PcieClkSrcUsage[i] = FSP_CLK_FREE_RUNNING;
-			continue;
-		}
 		if (!(en_mask & BIT(i)))
 			continue;
 		if (cfg[i].flags & PCIE_RP_CLK_SRC_UNUSED)
@@ -76,7 +76,9 @@ static void fill_fspm_pcie_rp_params(FSP_M_CONFIG *m_cfg,
 	uint8_t max_clock = get_max_pcie_clock();
 
 	for (i = 0; i < max_clock; i++) {
-		if (config->pcie_clk_config_flag[i] & PCIE_CLK_FREE_RUNNING)
+		if (CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE))
+			m_cfg->PcieClkSrcUsage[i] = FSP_CLK_FREE_RUNNING;
+		else if (config->pcie_clk_config_flag[i] & PCIE_CLK_FREE_RUNNING)
 			m_cfg->PcieClkSrcUsage[i] = FSP_CLK_FREE_RUNNING;
 		else if (config->pcie_clk_config_flag[i] & PCIE_CLK_LAN)
 			m_cfg->PcieClkSrcUsage[i] = FSP_CLK_LAN;

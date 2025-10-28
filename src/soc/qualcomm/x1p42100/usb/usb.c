@@ -8,6 +8,7 @@
 #include <soc/qcom_spmi.h>
 #include <delay.h>
 #include <gpio.h>
+#include <timer.h>
 
 struct usb_dwc3 {
 	u32 sbuscfg0;
@@ -668,68 +669,49 @@ void usb_update_refclk_for_core(u32 core_num, bool enable)
 }
 
 /*
- * wait_for_otg_enabled - Waits for OTG block to reach enabled state
- * @status_reg_addr: SPMI address of the OTG status register
- * @core_name: Name of the core for logging (e.g., "SMB1", "SMB2")
- * @return: true if OTG enabled successfully, false if timeout or error
- */
-static bool wait_for_otg_enabled(u32 status_reg_addr, const char *core_name)
-{
-	u32 timeout_ms = 0;
-	u8 otg_status;
-	u8 otg_state;
-
-	while (timeout_ms < OTG_STATUS_TIMEOUT_MS) {
-		otg_status = spmi_read8(status_reg_addr);
-		otg_state = otg_status & OTG_STATE_MASK;
-
-		printk(BIOS_DEBUG, "%s OTG Status: 0x%02x, State: 0x%02x\n",
-		       core_name, otg_status, otg_state);
-
-		switch (otg_state) {
-		case OTG_STATE_ENABLED:
-			printk(BIOS_INFO, "%s OTG block enabled successfully\n", core_name);
-			return true;
-		case OTG_STATE_ERROR:
-			printk(BIOS_ERR, "%s OTG block in ERROR state (0x%02x)\n",
-			       core_name, otg_status);
-			return false;
-		case OTG_STATE_DISABLED:
-		case OTG_STATE_ENABLING:
-		case OTG_STATE_DISABLING:
-			/* Continue polling */
-			break;
-		default:
-			printk(BIOS_WARNING, "%s OTG block in unknown state: 0x%02x\n",
-			       core_name, otg_state);
-			break;
-		}
-
-		mdelay(OTG_STATUS_POLL_INTERVAL_MS);
-		timeout_ms += OTG_STATUS_POLL_INTERVAL_MS;
-	}
-
-	printk(BIOS_ERR, "%s OTG enable timeout after %d ms, final state: 0x%02x\n",
-	       core_name, timeout_ms, otg_state);
-	return false;
-}
-
-/*
  * enable_vbus_ss - Enables VBUS SuperSpeed for specified USB core
  * @config: Controller configuration containing SMB slave address
  */
 void enable_vbus_ss(const struct dwc3_controller_config *config)
 {
 	u8 slave = config->smb_slave_addr;
+	u8 misc_status, otg_status = 0, otg_state = 0;
+	struct stopwatch sw;
 
 	printk(BIOS_INFO, "Enabling %s VBUS SuperSpeed\n", config->name);
+
+	/* Configure SDCDC CFG7 register before enabling OTG */
+	spmi_write8(SPMI_ADDR(slave, SCHG_DCDC_ENG_SDCDC_CFG7),
+		    SCHG_DCDC_ENG_SDCDC_GM_CLOOP_PD_OTG_BUCK_MASK);
 
 	spmi_write8(SPMI_ADDR(slave, SCHG_DCDC_OTG_CFG), 0x20);
 	spmi_write8(SPMI_ADDR(slave, SCHG_DCDC_CMD_OTG), 0x1);
 
-	/* Wait for OTG block to reach enabled state */
-	if (!wait_for_otg_enabled(SPMI_ADDR(slave, SCHG_DCDC_OTG_STATUS), config->name))
-		printk(BIOS_ERR, "%s OTG enable failed\n", config->name);
+	/* Check Type-C mode */
+	misc_status = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_MISC_STATUS));
+
+	/* Check SNK_SRC_MODE bit (bit 6): 0 = SNK, 1 = SRC */
+	if (misc_status & TYPEC_SNK_SRC_MODE) {
+		/* In SRC mode, poll OTG status until enabled */
+		stopwatch_init_msecs_expire(&sw, OTG_STATUS_TIMEOUT_MS);
+		while (!stopwatch_expired(&sw)) {
+			otg_status = spmi_read8(SPMI_ADDR(slave, SCHG_DCDC_OTG_STATUS));
+			otg_state = otg_status & OTG_STATE_MASK;
+
+			if (otg_state == OTG_STATE_ENABLED) {
+				printk(BIOS_INFO, "%s in SRC mode - OTG Status: 0x%02x, State: 0x%02x (OTG Enabled)\n",
+				       config->name, otg_status, otg_state);
+				return;
+			}
+			mdelay(OTG_STATUS_POLL_DELAY_MS);
+		}
+
+		/* Timeout - log final state */
+		printk(BIOS_INFO, "%s in SRC mode - OTG Status: 0x%02x, State: 0x%02x - Timeout after %d ms\n",
+		       config->name, otg_status, otg_state, OTG_STATUS_TIMEOUT_MS);
+	} else {
+		printk(BIOS_INFO, "%s in SNK mode - skipping OTG status read\n", config->name);
+	}
 }
 
 /*
@@ -746,8 +728,7 @@ void usb_typec_status_check(const struct dwc3_controller_config *config)
 	mode_cfg = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_MODE_CFG));
 
 	printk(BIOS_INFO, "%s Type-C Status:\n", config->name);
-	printk(BIOS_INFO, "  Misc Status (0x2B0B): 0x%02x, VBUS Status (bit 5): %d\n",
-	       misc_status, (misc_status & TYPEC_VBUS_STATUS_MASK) ? 1 : 0);
+	printk(BIOS_INFO, "  Misc Status (0x2B0B): 0x%02x\n", misc_status);
 	printk(BIOS_INFO, "  Src Status (0x2B08): 0x%02x\n", src_status);
 	printk(BIOS_INFO, "  Mode Config (0x2B44): 0x%02x\n", mode_cfg);
 }

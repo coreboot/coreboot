@@ -106,24 +106,21 @@
 #define SCHG_DCDC_CMD_OTG 0x2740
 #define SCHG_DCDC_OTG_CFG 0x2753
 #define SCHG_DCDC_OTG_STATUS 0x270D
+#define SCHG_DCDC_ENG_SDCDC_CFG7 0x27C7
+#define SCHG_DCDC_ENG_SDCDC_GM_CLOOP_PD_OTG_BUCK_MASK 0x30
 
 /* OTG Status register bit definitions */
 #define OTG_STATE_MASK 0x07
-#define OTG_STATE_DISABLED 0x00
-#define OTG_STATE_ENABLING 0x01
 #define OTG_STATE_ENABLED 0x02
-#define OTG_STATE_DISABLING 0x03
-#define OTG_STATE_ERROR 0x04
-
-/* OTG Status check timeout and polling interval */
-#define OTG_STATUS_TIMEOUT_MS 100
-#define OTG_STATUS_POLL_INTERVAL_MS 2
+#define OTG_STATUS_TIMEOUT_MS 20
+#define OTG_STATUS_POLL_DELAY_MS 2
 
 /* Type-C register offsets */
 #define SCHG_TYPE_C_TYPE_C_MISC_STATUS 0x2B0B
 #define SCHG_TYPE_C_TYPE_C_SRC_STATUS 0x2B08
 #define SCHG_TYPE_C_TYPE_C_MODE_CFG 0x2B44
 #define TYPEC_VBUS_STATUS_MASK BIT(5)
+#define TYPEC_SNK_SRC_MODE BIT(6)
 #define CCOUT_INVERT_POLARITY 0x03
 
 /* USB Repeater SPMI Tune register offsets */

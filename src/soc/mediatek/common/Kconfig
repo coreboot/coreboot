@@ -60,6 +60,15 @@ config MEDIATEK_DSI_CPHY
 	help
 	  The configuration to support DSI C-PHY.
 
+config MEDIATEK_WDT_RESET_BY_SW
+	bool
+	default n
+	help
+	  This option allows triggering secondary watchdog (WDT) reset by the
+	  software driver, as opposed to by the watchdog hardware.
+	  If the kernel disables WDT external reset (mediatek,disable-extrst),
+	  then this option must be disabled to allow WDT hardware external reset.
+
 config MEMORY_TEST
 	bool
 	default y

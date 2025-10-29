@@ -5,6 +5,7 @@
 #include <device/mmio.h>
 #include <console/console.h>
 #include <halt.h>
+#include <reset.h>
 #include <soc/wdt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -15,20 +16,27 @@ __weak void mtk_wdt_clear_efuse_ecc(void) { /* do nothing */ }
 static inline void mtk_wdt_swreset(void)
 {
 	/*
-	 * We trigger a secondary reset by triggering WDT hardware to send the
-	 * signal to EC.
-	 * We do not use do_board_reset() to send the signal to EC which is
-	 * controlled by software driver.
-	 * Before triggering the secondary reset, clean the data cache so the
-	 * logs in cbmem console (either in SRAM or DRAM) can be flushed.
+	 * We trigger a secondary reset by either do_board_reset() or WDT hardware,
+	 * both of which eventually send the signal to EC.
 	 */
 	printk(BIOS_INFO, "%s() called!\n", __func__);
 
-	dcache_clean_all();
+	/* Kick the watchdog to reset timer. */
 	write32(&mtk_wdt->wdt_restart, MTK_WDT_RESTART_KEY);
-	setbits32(&mtk_wdt->wdt_mode, MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
-	udelay(100);
-	write32(&mtk_wdt->wdt_swrst, MTK_WDT_SWRST_KEY);
+
+	if (CONFIG(MEDIATEK_WDT_RESET_BY_SW)) {
+		board_reset();
+	} else {
+		/*
+		 * Before triggering the secondary reset, clean the data cache so the
+		 * logs in cbmem console (either in SRAM or DRAM) can be flushed.
+		 */
+		dcache_clean_all();
+
+		setbits32(&mtk_wdt->wdt_mode, MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
+		udelay(100);
+		write32(&mtk_wdt->wdt_swrst, MTK_WDT_SWRST_KEY);
+	}
 
 	halt();
 }

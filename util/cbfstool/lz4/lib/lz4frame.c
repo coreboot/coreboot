@@ -64,6 +64,7 @@ You can contact the author at :
 #include "lz4hc.h"
 #include "xxhash.h"
 
+#include <assert.h>
 
 /**************************************
 *  Basic Types
@@ -929,6 +930,10 @@ LZ4F_errorCode_t LZ4F_getFrameInfo(LZ4F_decompressionContext_t dCtx, LZ4F_frameI
                                    const void* srcBuffer, size_t* srcSizePtr)
 {
     LZ4F_dctx_t* dctxPtr = (LZ4F_dctx_t*)dCtx;
+
+    assert(dCtx != NULL);
+    if (frameInfoPtr == NULL || srcSizePtr == NULL)
+	    return (size_t)-LZ4F_ERROR_srcPtr_wrong;
 
     if (dctxPtr->dStage > dstage_storeHeader)   /* note : requires dstage_* header related to be at beginning of enum */
     {

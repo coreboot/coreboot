@@ -134,6 +134,44 @@ bool google_chromeec_has_kbbacklight(void)
 	}
 }
 
+bool google_chromeec_has_fan(void)
+{
+	/* Try the PWM fan feature flag (most reliable for modern ECs) */
+	int feature_check = google_chromeec_check_feature(EC_FEATURE_PWM_FAN);
+
+	if (feature_check > 0) {
+		printk(BIOS_DEBUG, "Chrome EC: Fan detected (feature flag)\n");
+		return true;
+	} else if (feature_check == 0) {
+		printk(BIOS_DEBUG, "Chrome EC: No fan (feature flag)\n");
+		return false;
+	}
+
+	/* Feature flag unavailable, try reading fan duty as a fallback test */
+	printk(BIOS_DEBUG, "Chrome EC: Feature flag unavailable, testing fan read\n");
+	const struct ec_params_pwm_get_fan_duty params = {
+		.fan_idx = 0,
+	};
+	struct ec_response_pwm_get_fan_rpm resp = {};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_PWM_GET_FAN_TARGET_RPM,
+		.cmd_version = 0,
+		.cmd_data_in = &params,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_out = &resp,
+		.cmd_size_out = sizeof(resp),
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd) == 0) {
+		printk(BIOS_DEBUG, "Chrome EC: Fan detected (read test)\n");
+		return true;
+	} else {
+		printk(BIOS_DEBUG, "Chrome EC: No fan (read test)\n");
+		return false;
+	}
+}
+
 void google_chromeec_post(uint8_t postcode)
 {
 	/* backlight is a percent. postcode is a uint8_t.

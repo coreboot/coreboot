@@ -9,123 +9,15 @@
 #include <device/i2c_simple.h>
 #include <static.h>
 #include <variants.h>
+#include <common/cfr.h>
 
-static const struct sm_object accelerometer = SM_DECLARE_BOOL({
-	.opt_name	= "accelerometer",
-	.ui_name	= "Accelerometer",
-	.ui_helptext	= "Enable or disable the built-in accelerometer",
-	.default_value	= true,
-});
-
-static void update_card_reader(const struct sm_object *obj, struct sm_object *new)
+void cfr_card_reader_update(const struct sm_object *obj, struct sm_object *new_obj)
 {
 	struct device *mxc_accel = DEV_PTR(mxc6655);
 
 	if (!i2c_dev_detect(i2c_busdev(mxc_accel), mxc_accel->path.i2c.device))
-		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+		new_obj->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
 }
-
-static const struct sm_object card_reader = SM_DECLARE_BOOL({
-	.opt_name	= "card_reader",
-	.ui_name	= "Card Reader",
-	.ui_helptext	= "Enable or disable the built-in card reader",
-	.default_value	= true,
-}, WITH_CALLBACK(update_card_reader));
-
-#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
-static const struct sm_object gna = SM_DECLARE_BOOL({
-	.opt_name	= "gna",
-	.ui_name	= "Gaussian & Neural Accelerator",
-	.ui_helptext	= "Enable or Disable the Gaussian & Neural Accelerator",
-	.default_value	= false,
-});
-#endif
-
-static const struct sm_object memory_speed = SM_DECLARE_ENUM({
-	.opt_name	= "memory_speed",
-	.ui_name	= "Memory Speed",
-	.ui_helptext	= "Configure the speed that the memory will run at. Higher speeds produce more heat and consume more power but provide higher performance.",
-	.default_value	= 1,
-	.values		= (const struct sm_enum_value[]) {
-		{	"5500MT/s",	0		},
-		{	"6400MT/s",	1		},
-		{	"7500MT/s",	2		},
-		SM_ENUM_VALUE_END,
-	}
-});
-
-static const struct sm_object power_profile = SM_DECLARE_ENUM({
-	.opt_name	= "power_profile",
-	.ui_name	= "Power Profile",
-	.ui_helptext	= "Select whether to maximize performance, battery life or both.",
-	.default_value	= 1,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Power Saver",	PP_POWER_SAVER	},
-				{ "Balanced",		PP_BALANCED	},
-				{ "Performance",	PP_PERFORMANCE	},
-				SM_ENUM_VALUE_END			},
-});
-
-static const struct sm_object microphone = SM_DECLARE_BOOL({
-	.opt_name	= "microphone",
-	.ui_name	= "Microphone",
-	.ui_helptext	= "Enable or disable the built-in microphone",
-	.default_value	= true,
-});
-
-static const struct sm_object touchscreen = SM_DECLARE_BOOL({
-	.opt_name	= "touchscreen",
-	.ui_name	= "Touchscreen",
-	.ui_helptext	= "Enable or disable the built-in touch-screen",
-	.default_value	= true,
-});
-
-static const struct sm_object webcam = SM_DECLARE_BOOL({
-	.opt_name	= "webcam",
-	.ui_name	= "Webcam",
-	.ui_helptext	= "Enable or disable the built-in webcam",
-	.default_value	= true,
-});
-
-static const struct sm_object wireless = SM_DECLARE_BOOL({
-	.opt_name	= "wireless",
-	.ui_name	= "Wireless",
-	.ui_helptext	= "Enable or disable the built-in wireless card",
-	.default_value	= true,
-});
-
-static const struct sm_object vtd = SM_DECLARE_BOOL({
-	.opt_name	= "vtd",
-	.ui_name	= "VT-d",
-	.ui_helptext	= "Enable or disable Intel VT-d (virtualization)",
-	.default_value	= true,
-});
-
-static const struct sm_object bluetooth_rtd3 = SM_DECLARE_BOOL({
-	.opt_name	= "bluetooth_rtd3",
-	.ui_name	= "Bluetooth Runtime-D3",
-	.ui_helptext	= "Enable or disable Bluetooth power optimization.\n"
-			  "Recommended to disable when booting Windows.",
-	.default_value	= true,
-});
-
-static const struct sm_object display_native_res = SM_DECLARE_BOOL({
-	.opt_name	= "display_native_res",
-	.ui_name	= "Display: Use Native Resolution",
-	.ui_helptext	= "Enabled: use the native panel resolution at boot.\n"
-			  "Disabled: use a fixed/scaled video mode at boot.",
-	.default_value	= false,
-});
-
-static const struct sm_object s0ix_enable = SM_DECLARE_BOOL({
-	.opt_name	= "s0ix_enable",
-	.ui_name	= "Modern Standby (S0ix)",
-	.ui_helptext	= "Enabled: Use S0ix for device sleep.\n"
-			  "Disabled: Use ACPI S3 for device sleep.\n"
-			  "Requires Intel ME to be enabled.\n"
-			  "Recommended: Enabled when booting Windows, disabled otherwise.",
-	.default_value	= false,
-});
 
 static struct sm_obj_form performance = {
 	.ui_name = "Performance",

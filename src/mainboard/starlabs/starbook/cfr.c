@@ -5,7 +5,7 @@
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <intelblocks/cfr.h>
-#include "cfr.h"
+#include <common/cfr.h>
 
 static struct sm_obj_form performance = {
 	.ui_name = "Performance",

@@ -1023,7 +1023,10 @@ improvement, not simply stylistic changes.
 
 Basically, when refactoring code, there should be a clear benefit to
 the project and codebase. The reviewers and submitters get to make the
-call on how to interpret this.
+call on how to interpret this. When planning a large, sweeping
+refactoring that touches hundreds of files across many different
+platforms/subsystems in the codebase, the author should seek feedback on this
+in the biweekly meeting or on the mailing list before uploading patches.
 
 When refactoring, adding unit tests to verify that the post-change
 functionality matches or improves upon pre-change functionality is

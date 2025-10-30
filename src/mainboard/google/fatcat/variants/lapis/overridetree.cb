@@ -1,42 +1,52 @@
 fw_config
-	field AUDIO 0 1
-		option AUDIO_NONE		0
-		option CS42L43_SNDW		1
+	field AUDIO_CODEC 0 2
+		option AUDIO_CODEC_UNKNOWN	0
+		option AUDIO_CODEC_CS42L43	1
 	end
-	field WIFI 2 3
-		option WIFI_CNVI_7		0
-		option WIFI_CNVI_7E		1
+	field CAMERA_UFC_NAME 6 8
+		option CAMERA_UFC_NAME_UNKNOWN	0
+		option CAMERA_UFC_NAME_FL225F	1
 	end
-	field TOUCHSCREEN 4 5
-		option NONE_TOUCH	0
-		option THC_RAYDIMU	1
-		option THC_ILITEK	2
+	field STORAGE_TYPE 12 14
+		option STORAGE_TYPE_UNKNOWN	0
+		option STORAGE_TYPE_NVME_GEN4	1
+		option STORAGE_TYPE_NVME_GEN5	2
 	end
-	field TOUCHPAD 6 7
-		option TOUCHPAD_UNKNOWN		0
-		option TOUCHPAD_PCT4802		1
+	field TOUCHSCREEN 17 18
+		option TOUCHSCREEN_UNKNOWN	0
+		option TOUCHSCREEN_RAYDIUM	1
+		option TOUCHSCREEN_ILITEK	2
 	end
-	field STORAGE 8 9
-		option STORAGE_UNKNOWN		0
-		option STORAGE_NVME_GEN4	1
-		option STORAGE_NVME_GEN5	2
-		option STORAGE_UFS		3
+	field TOUCHSCREEN_SOC_INTERFACE 21 22
+		option TOUCHSCREEN_SOC_INTERFACE_UNKNOWN	0
+		option TOUCHSCREEN_SOC_INTERFACE_I2C_LPSS	1
+		option TOUCHSCREEN_SOC_INTERFACE_I2C_THC	2
 	end
-	field KB 10 11
-		option KB_UNKNOWN	0
-		option KB_BL		1
+	field FINGERPRINT_INTERFACE 24 25
+		option FINGERPRINT_INTERFACE_UNKNOWN	0
+		option FINGERPRINT_INTERFACE_SPI	1
+		option FINGERPRINT_INTERFACE_USB	2
 	end
-	field UFC 12 13
-		option UFC_UNKNOWN	0
-		option UFC_1080P	1
+	field WIFI_INTERFACE 26 27
+		option WIFI_INTERFACE_UNKNOWN	0
+		option WIFI_INTERFACE_CNVI	1
 	end
-	field FP 14 15
-		option FP_ABSENT	0
-		option FP_PRESENT	1
+	field TRACKPAD 32 34
+		option TRACKPAD_UNKNOWN		0
+		option TRACKPAD_PCT4802QR	1
 	end
-	field STYLUS 16 16
-		option STYLUS_ABSENT	0
-		option STYLUS_PRESENT	1
+	field TRACKPAD_SOC_INTERFACE 37 38
+		option TRACKPAD_SOC_INTERFACE_UNKNOWN	0
+		option TRACKPAD_SOC_INTERFACE_I2C_LPSS	1
+		option TRACKPAD_SOC_INTERFACE_I2C_THC	2
+	end
+	field KB_BACKLIGHT_PRESENT 43 43
+		option KB_BACKLIGHT_ABSENT	0
+		option KB_BACKLIGHT_PRESENT	1
+	end
+	field WIFI_SAR 56 58
+		option WIFI_SAR_ID0	0
+		option WIFI_SAR_ID1	1
 	end
 end
 
@@ -377,8 +387,8 @@ chip soc/intel/pantherlake
 		end
 
 		device ref pcie_rp9 on
-			probe STORAGE STORAGE_UNKNOWN
-			probe STORAGE STORAGE_NVME_GEN4
+			probe STORAGE_TYPE STORAGE_TYPE_UNKNOWN
+			probe STORAGE_TYPE STORAGE_TYPE_NVME_GEN4
 			register "pcie_rp[PCIE_RP(9)]" = "{
 			.clk_src = 0,
 			.clk_req = 0,
@@ -392,8 +402,7 @@ chip soc/intel/pantherlake
 		end # Gen4 SSD
 
 		device ref cnvi_wifi on
-			probe WIFI WIFI_CNVI_7
-			probe WIFI WIFI_CNVI_7E
+			probe WIFI_INTERFACE WIFI_INTERFACE_CNVI
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
 				register "add_acpi_dma_property" = "true"
@@ -404,8 +413,7 @@ chip soc/intel/pantherlake
 		end # CNVi
 
 		device ref cnvi_bluetooth on
-			probe WIFI WIFI_CNVI_7
-			probe WIFI WIFI_CNVI_7E
+			probe WIFI_INTERFACE WIFI_INTERFACE_CNVI
 			chip soc/intel/common/block/cnvi
 				register "wake" = "GPE0_PME_B0"
 				device generic 0 on end
@@ -415,7 +423,7 @@ chip soc/intel/pantherlake
 		device ref thc0 on
 			register "thc_wake_on_touch[0]" = "true"
 			register "thc_mode[0]" = "THC_HID_I2C_MODE"
-			probe TOUCHPAD TOUCHPAD_PCT4802
+			probe TRACKPAD TRACKPAD_PCT4802QR
 			# THC0 is function 0; hence it needs to be enabled when THC1 is to be enabled.
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC0_NAME"
@@ -433,12 +441,12 @@ chip soc/intel/pantherlake
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
-		end #Touchpad
+		end #Trackpad
 		device ref thc1 on
 			register "thc_wake_on_touch[1]" = "true"
 			register "thc_mode[1]" = "THC_HID_I2C_MODE"
-			probe TOUCHSCREEN THC_RAYDIMU
-			probe TOUCHSCREEN THC_ILITEK
+			probe TOUCHSCREEN TOUCHSCREEN_RAYDIUM
+			probe TOUCHSCREEN TOUCHSCREEN_ILITEK
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC1_NAME"
 				register "mode" = "THC_HID_I2C_MODE"
@@ -455,7 +463,7 @@ chip soc/intel/pantherlake
 				register "connected_device" = "TH_SENSOR_GENERIC"
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on
-					probe TOUCHSCREEN THC_RAYDIMU
+					probe TOUCHSCREEN TOUCHSCREEN_RAYDIUM
 				end
 			end
 			chip drivers/intel/touch
@@ -474,13 +482,13 @@ chip soc/intel/pantherlake
 				register "connected_device" = "TH_SENSOR_GENERIC"
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on
-					probe TOUCHSCREEN THC_ILITEK
+					probe TOUCHSCREEN TOUCHSCREEN_ILITEK
 				end
 			end
-		end #Touchpenal
+		end #Touchscreen
 
 		device ref hda on
-			probe AUDIO CS42L43_SNDW
+			probe AUDIO_CODEC AUDIO_CODEC_CS42L43
 			chip drivers/intel/soundwire
 				device generic 0 on
 					chip drivers/soundwire/cs42l43

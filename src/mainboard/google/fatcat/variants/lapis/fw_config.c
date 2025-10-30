@@ -5,5 +5,5 @@
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI));
+	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI_SAR));
 }

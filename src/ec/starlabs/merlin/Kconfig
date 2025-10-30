@@ -94,6 +94,12 @@ config EC_STARLABS_POWER_LED
 	bool "Enable lowering the brightess of the Power LED"
 	default y
 	help
-	  Select the in the mainboard supports reducing the LED brightness
+	  Select if the mainboard supports reducing the power LED brightness
+
+config EC_STARLABS_CHARGE_LED
+	bool "Enable lowering the brightess of the Charge LED"
+	default y
+	help
+	  Select if the mainboard supports reducing the charge LED brightness
 
 endif

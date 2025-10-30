@@ -20,6 +20,7 @@
 #define ECRAM_FN_LOCK_STATE		0x2c
 #define ECRAM_FAN_MODE			0x42
 #define ECRAM_FN_CTRL_REVERSE		0x43
+#define ECRAM_CHARGE_LED		dead_code_t(uint8_t)
 #define ECRAM_MAX_CHARGE		dead_code_t(uint8_t)
 #define ECRAM_CHARGING_SPEED		dead_code_t(uint8_t)
 #define ECRAM_LID_SWITCH		dead_code_t(uint8_t)

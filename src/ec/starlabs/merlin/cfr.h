@@ -98,6 +98,13 @@ static const struct sm_object lid_switch = SM_DECLARE_ENUM({
 			SM_ENUM_VALUE_END				},
 });
 
+const struct sm_enum_value led_brightness[] = {
+	{ "Normal",	LED_NORMAL	},
+	{ "Reduced",	LED_REDUCED	},
+	{ "Off",	LED_OFF		},
+	SM_ENUM_VALUE_END
+};
+
 /*
  * Power LED Brightness
  */
@@ -106,9 +113,16 @@ static const struct sm_object power_led = SM_DECLARE_ENUM({
 	.ui_name	= "Power LED Brightness",
 	.ui_helptext	= "Control the maximum brightness of the power LED",
 	.default_value	= LED_NORMAL,
-	.values		= (const struct sm_enum_value[]) {
-			{ "Normal",		LED_NORMAL	},
-			{ "Reduced",		LED_REDUCED	},
-			{ "Off",		LED_OFF		},
-			SM_ENUM_VALUE_END			},
+	.values		= led_brightness,
+});
+
+/*
+ * Charge LED Brightness
+ */
+static const struct sm_object charge_led = SM_DECLARE_ENUM({
+	.opt_name	= "charge_led",
+	.ui_name	= "Charge LED Brightness",
+	.ui_helptext	= "Control the maximum brightness of the charge LED",
+	.default_value	= LED_NORMAL,
+	.values		= led_brightness,
 });

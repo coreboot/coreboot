@@ -345,7 +345,7 @@ static void merlin_init(struct device *dev)
 	 * Default:	0
 	 *
 	 */
-	const uint8_t power_led[] = {
+	const uint8_t led_brightness[] = {
 		LED_NORMAL,
 		LED_REDUCED,
 		LED_OFF
@@ -355,8 +355,27 @@ static void merlin_init(struct device *dev)
 		ec_write(ECRAM_POWER_LED,
 			get_ec_value_from_option("power_led",
 				LED_NORMAL,
-				power_led,
-				ARRAY_SIZE(power_led),
+				led_brightness,
+				ARRAY_SIZE(led_brightness),
+				UINT_MAX,
+				UINT_MAX));
+
+	/*
+	 * Charge LED Brightness
+	 *
+	 * Setting:	charge_led
+	 *
+	 * Values:	0, 1, 2
+	 * Default:	0
+	 *
+	 */
+
+	if (CONFIG(EC_STARLABS_CHARGE_LED))
+		ec_write(ECRAM_CHARGE_LED,
+			get_ec_value_from_option("charge_led",
+				LED_NORMAL,
+				led_brightness,
+				ARRAY_SIZE(led_brightness),
 				UINT_MAX,
 				UINT_MAX));
 }

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <device/pci.h>
 #include <cpu/x86/msr.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
@@ -104,7 +105,14 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 				const struct soc_intel_skylake_config *config)
 {
-	m_cfg->InternalGfx = get_uint_option("igd_enabled", !CONFIG(SOC_INTEL_DISABLE_IGD)) && is_devfn_enabled(SA_DEVFN_IGD);
+	bool igd_enabled = get_uint_option("igd_enabled", !CONFIG(SOC_INTEL_DISABLE_IGD))
+			&& is_devfn_enabled(SA_DEVFN_IGD);
+
+	/* Probe for no IGD and disable InternalGfx to prevent a crash in FSP-M. */
+	if (igd_enabled && pci_read_config16(SA_DEV_IGD, PCI_VENDOR_ID) == 0xffff) {
+		printk(BIOS_ERR, "igd_enabled is set, but IGD is not present. Disabling IGD.\n");
+		igd_enabled = false;
+	}
 
 	/*
 	 * If iGPU is enabled, set IGD stolen size to 64MB. The FBC
@@ -116,12 +124,13 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 	 *
 	 * If disabled, don't reserve memory for it.
 	 */
-	if (m_cfg->InternalGfx) {
-		/* IGD is enabled, set IGD stolen size to 64MB. */
+	if (igd_enabled) {
+		/* Set IGD stolen size to 64MB. */
+		m_cfg->InternalGfx = 1;
 		m_cfg->IgdDvmt50PreAlloc = get_uint_option("igd_dvmt_prealloc", IGD_SM_64MB);
 		m_cfg->ApertureSize = get_uint_option("igd_aperture_size", IGD_AP_SZ_256MB);
 	} else {
-		/* IGD is disabled, skip IGD init in FSP. */
+		m_cfg->InternalGfx = 0;
 		m_cfg->IgdDvmt50PreAlloc = 0;
 	}
 

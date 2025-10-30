@@ -5,6 +5,7 @@
 #include <acpi/acpi.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/pci.h>
 #include <device/pci_ids.h>
 #include <fsp/util.h>
 #include <gpio.h>
@@ -491,7 +492,18 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Enable VT-d and X2APIC */
 	if (soc_vtd_enabled()) {
-		params->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
+		/*
+		* Probe for no IGD and set VtdBaseAddress accordingly to prevent a
+		* crash in FSP-S.
+		*/
+		const struct device *igd_dev = pcidev_path_on_root(SA_DEVFN_IGD);
+		if (igd_dev && pci_read_config16(igd_dev, PCI_VENDOR_ID) != 0xffff) {
+			printk(BIOS_DEBUG, "iGPU present - GFXVT_BASE_ADDRESS set\n");
+			params->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
+		} else {
+			printk(BIOS_DEBUG, "No iGPU - GFXVT_BASE_ADDRESS disabled\n");
+			params->VtdBaseAddress[0] = 0;
+		}
 		params->VtdBaseAddress[1] = VTVC0_BASE_ADDRESS;
 		params->X2ApicOptOut = 0;
 		tconfig->VtdDisable = 0;

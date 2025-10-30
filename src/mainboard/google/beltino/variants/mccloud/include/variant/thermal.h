@@ -3,29 +3,27 @@
 #ifndef THERMAL_H
 #define THERMAL_H
 
-/* Fan is OFF */
-#define FAN4_THRESHOLD_OFF	0
-#define FAN4_THRESHOLD_ON	0
+/* Fan is OFF at idle (passive cooling) */
 #define FAN4_PWM		0x00
 
 /* Fan is at LOW speed */
-#define FAN3_THRESHOLD_OFF	35
-#define FAN3_THRESHOLD_ON	40
-#define FAN3_PWM		0x88
+#define FAN3_THRESHOLD_OFF	40
+#define FAN3_THRESHOLD_ON	50
+#define FAN3_PWM		0x68
 
 /* Fan is at MEDIUM speed */
-#define FAN2_THRESHOLD_OFF	44
-#define FAN2_THRESHOLD_ON	48
-#define FAN2_PWM		0x94
+#define FAN2_THRESHOLD_OFF	55
+#define FAN2_THRESHOLD_ON	67
+#define FAN2_PWM		0x84
 
 /* Fan is at HIGH speed */
-#define FAN1_THRESHOLD_OFF	53
-#define FAN1_THRESHOLD_ON	58
-#define FAN1_PWM		0xb5
+#define FAN1_THRESHOLD_OFF	67
+#define FAN1_THRESHOLD_ON	75
+#define FAN1_PWM		0xa5
 
 /* Fan is at FULL speed */
-#define FAN0_THRESHOLD_OFF	65
-#define FAN0_THRESHOLD_ON	70
+#define FAN0_THRESHOLD_OFF	85
+#define FAN0_THRESHOLD_ON	90
 #define FAN0_PWM		0xc4
 
 /* Temperature which OS will shutdown at */

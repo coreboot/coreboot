@@ -406,6 +406,7 @@ chip soc/intel/pantherlake
 
 		device ref thc0 on
 			register "thc_wake_on_touch[0]" = "true"
+			register "thc_mode[0]" = "THC_HID_I2C_MODE"
 			# THC0 is function 0; hence it needs to be enabled when THC1 is to be enabled.
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC0_NAME"
@@ -424,6 +425,7 @@ chip soc/intel/pantherlake
 		end #Touchpad
 		device ref thc1 on
 			register "thc_wake_on_touch[1]" = "true"
+			register "thc_mode[1]" = "THC_HID_I2C_MODE"
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC1_NAME"
 				register "mode" = "THC_HID_I2C_MODE"

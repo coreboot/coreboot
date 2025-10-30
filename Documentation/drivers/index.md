@@ -18,6 +18,7 @@ Some of the drivers currently available include:
 ```{toctree}
 :maxdepth: 1
 
+ACPI Five-Level Fan Control <acpi_fan_control.md>
 CFR <cfr.md>
 CFR use within coreboot <cfr_internal.md>
 Intel DPTF <dptf.md>

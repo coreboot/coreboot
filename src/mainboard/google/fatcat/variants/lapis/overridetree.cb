@@ -37,6 +37,10 @@ fw_config
 end
 
 chip soc/intel/pantherlake
+	# GPE configuration override
+	register "pmc_gpe0_dw0" = "GPP_VGPIO"
+	register "pmc_gpe0_dw1" = "GPP_F"
+	register "pmc_gpe0_dw2" = "GPP_E"
 
 	register "power_limits_config[PTL_CORE_1]" = "{
 		.tdp_pl1_override = 15,

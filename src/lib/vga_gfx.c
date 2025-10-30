@@ -37,7 +37,7 @@ static void set_pixel(int x_logical, int y_logical, int value)
 	 * The physical buffer is always buffer_width x buffer_height.
 	 */
 	switch (current_orientation) {
-	case LB_FB_ORIENTATION_LEFT_UP:
+	case LB_FB_ORIENTATION_RIGHT_UP:
 		/* Logical (x,y) -> Physical (buffer_width-1-y, x) */
 		buffer_x = buffer_width - 1 - y_logical;
 		buffer_y = x_logical;
@@ -50,7 +50,7 @@ static void set_pixel(int x_logical, int y_logical, int value)
 		buffer_x = buffer_width - 1 - x_logical;
 		buffer_y = buffer_height - 1 - y_logical;
 		break;
-	case LB_FB_ORIENTATION_RIGHT_UP:
+	case LB_FB_ORIENTATION_LEFT_UP:
 		/* Logical (x,y) -> Physical (y, buffer_height-1-x) */
 		buffer_x = y_logical;
 		buffer_y = buffer_height - 1 - x_logical;

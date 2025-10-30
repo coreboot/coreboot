@@ -196,9 +196,9 @@ Scope (\_TZ)
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				\FLVL = 4
-				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F4PW
-				Notify (\_TZ.THRM, 0x81)
+				// FAN4 is the minimum cooling state (idle/lowest fan speed)
+				// There is no lower state to transition to, so _OFF is a no-op
+				// to maintain proper ACPI power resource state machine semantics
 			}
 		}
 

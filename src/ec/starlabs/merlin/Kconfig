@@ -66,7 +66,7 @@ config EC_STARLABS_POWER_LED
 	bool "Enable lowering the brightess of the Power LED"
 	depends on EC_STARLABS_ITE
 	help
-	  Selec the in the mainboard supports reducing the LED brightness
+	  Select the in the mainboard supports reducing the LED brightness
 
 config EC_STARLABS_MERLIN
 	bool "Use open-source Merlin EC Firmware"

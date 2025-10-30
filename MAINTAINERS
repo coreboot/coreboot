@@ -395,6 +395,7 @@ F:	src/mainboard/google/guybrush/
 F:	src/mainboard/google/skyrim/
 
 GOOGLE MEDIATEK-BASED MAINBOARDS
+M:	Chen-Tsung Hsieh <chentsung@google.com>
 M:	Hung-Te Lin <hungte@chromium.org>
 M:	Yu-Ping Wu <yupingso@google.com>
 M:	Yidi Lin <yidilin@google.com>

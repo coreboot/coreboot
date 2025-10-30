@@ -217,10 +217,6 @@ chip soc/intel/pantherlake
 		end
 
 		device ref iaa off end
-		device ref tbt_pcie_rp0 on end
-		device ref tbt_pcie_rp1 on
-			probe IO_PORT USB3C
-		end
 		device ref tbt_pcie_rp2 on
 			probe IO_PORT USB2A2C_HDMI
 		end
@@ -262,13 +258,6 @@ chip soc/intel/pantherlake
 			end
 		end
 
-		device ref tcss_dma0 on
-			chip drivers/intel/usb4/retimer
-				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
-				use tcss_usb3_port0 as dfp[0].typec_port
-				device generic 0 on end
-			end
-		end
 		device ref tcss_dma1 on
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"

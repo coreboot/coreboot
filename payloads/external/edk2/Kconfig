@@ -298,15 +298,6 @@ config EDK2_DISABLE_TPM
 	  Select this option to disable TPM support in edk2. This is necessary to avoid boot
 	  hangs on some boards with a CR50 TPM, particularly those with an AMD Zen SoC.
 
-config EDK2_PCO_MMIO_EMMC
-	bool "Enable MMIO eMMC driver for AMD Picasso boards in edk2"
-	depends on EDK2_REPO_MRCHROMEBOX
-	default n
-	help
-	  Select this option to enable the MMIO eMMC DXE driver in MrChromebox's fork of edk2.
-	  It is needed for AMD Picasso boards with eMMC storage, but will conflict with the
-	  PCI-based eMMC driver, so should only be enabled for AMD Picasso boards.
-
 config EDK2_USE_LAPIC_TIMER
 	bool "Use LAPIC timer instead of HPET"
 	default n

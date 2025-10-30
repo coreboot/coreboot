@@ -101,18 +101,6 @@ static int printf_putnchars(const char *buf, size_t count,
 }
 
 /**
- * Print a string without adding a newline.
- *
- * @param str	String to print.
- * @param ps	Write function specification and support data.
- * @return	Number of characters printed.
- */
-static inline int printf_putstr(const char *str, struct printf_spec *ps)
-{
-	return printf_putnchars(str, strlen(str), ps);
-}
-
-/**
  * Print one character.
  *
  * @param c	Character to be printed.
@@ -191,19 +179,19 @@ static int print_char(char c, int width, uint64_t flags, struct printf_spec *ps)
  * @return		Number of characters printed, negative value on	failure.
  */
 /** Structure for specifying output methods for different printf clones. */
-static int print_string(char *s, int width, unsigned int precision,
+static int print_string(const char *s, int width, int precision,
 			uint64_t flags, struct printf_spec *ps)
 {
 	int counter = 0, retval;
 	size_t size;
 
 	if (s == NULL)
-		return printf_putstr("(NULL)", ps);
-	size = strlen(s);
-	/* Print leading spaces. */
-	if (precision == 0)
-		precision = size;
-	width -= precision;
+		s = "(null)";
+	if (precision >= 0)
+		size = strnlen(s, precision);
+	else
+		size = strlen(s);
+	width -= size;
 
 	if (!(flags & __PRINTF_FLAG_LEFTALIGNED)) {
 		if ((retval = print_spaces(width, ps)) < 0)
@@ -212,7 +200,7 @@ static int print_string(char *s, int width, unsigned int precision,
 			counter += retval;
 	}
 
-	if ((retval = printf_putnchars(s, MIN(size, precision), ps)) < 0)
+	if ((retval = printf_putnchars(s, size, ps)) < 0)
 		return retval;
 	counter += retval;
 
@@ -264,7 +252,7 @@ static int print_number(uint64_t num, int width, int precision, int base,
 	}
 
 	/* Both precision and LEFTALIGNED overrule ZEROPADDED. */
-	if ((flags & __PRINTF_FLAG_LEFTALIGNED) || precision)
+	if ((flags & __PRINTF_FLAG_LEFTALIGNED) || precision >= 0)
 		flags &= ~__PRINTF_FLAG_ZEROPADDED;
 
 	/* Fix precision now since it doesn't count prefixes/signs. */
@@ -517,9 +505,10 @@ static int printf_core(const char *fmt, struct printf_spec *ps, va_list ap)
 			}
 
 			/* Precision and '*' operator. */
-			precision = 0;
+			precision = -1;
 			if (fmt[i] == '.') {
 				++i;
+				precision = 0;
 				if (isdigit(fmt[i])) {
 					while (isdigit(fmt[i])) {
 						precision *= 10;
@@ -529,9 +518,6 @@ static int printf_core(const char *fmt, struct printf_spec *ps, va_list ap)
 					/* Get precision from argument list. */
 					i++;
 					precision = (int)va_arg(ap, int);
-					/* Ignore negative precision. */
-					if (precision < 0)
-						precision = 0;
 				}
 			}
 

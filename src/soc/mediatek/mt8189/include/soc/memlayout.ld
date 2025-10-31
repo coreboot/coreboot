@@ -4,9 +4,12 @@
 
 SECTIONS
 {
-	/* MT8189 has 64KB SRAM. */
+	/*
+	 * MT8189 has 64KB SRAM. Per HW design, on SoC reset via GPIO
+	 * AP_SYSRST_ODL (SYSRSTB), SRAM will be powered down. That means
+	 * SRAM data will be lost across SoC resets.
+	 */
 	SRAM_START(0x00100000)
-	WATCHDOG_TOMBSTONE(0x00100030, 4)
 
 	/*
 	 * MCUPM uses the following regions to exchange data with kernel.
@@ -58,7 +61,8 @@ SECTIONS
 	DMA_COHERENT(0x020DC000, 4K)
 	STACK(0x020DD000, 15K)
 	TIMESTAMP(0x020E0C00, 1K)
-	PRERAM_CBMEM_CONSOLE(0x020E1000, 124K)
+	PRERAM_CBMEM_CONSOLE(0x020E1000, 123K)
+	WATCHDOG_TOMBSTONE(0x0020FFC00, 4)
 	SRAM_L2C_END(0x02100000)
 
 	DRAM_START(0x40000000)

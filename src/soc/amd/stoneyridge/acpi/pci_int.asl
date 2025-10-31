@@ -5,8 +5,6 @@
 		 * ((bus number + 1) * ((device number * 8) * 4096)) + register offset
 		 * The 8 comes from 8 functions per device, and 4096 bytes per function config space
 		*/
-		Offset(0x00088024),	/* Byte offset to SATA register 24h - Bus 0, Device 17, Function 0 */
-		STB5, 32,
 		Offset(0x00098042),	/* Byte offset to OHCI0 register 42h - Bus 0, Device 19, Function 0 */
 		PT0D, 1,
 		PT1D, 1,
@@ -30,76 +28,12 @@
 		P92E, 1,		/* Port92 decode enable */
 	}
 
-	OperationRegion(SB5, SystemMemory, STB5, 0x1000)
-		Field(SB5, AnyAcc, NoLock, Preserve){
-		/* Port 0 */
-		Offset(0x120),		/* Port 0 Task file status */
-		P0ER, 1,
-		, 2,
-		P0DQ, 1,
-		, 3,
-		P0BY, 1,
-		Offset(0x128),		/* Port 0 Serial ATA status */
-		P0DD, 4,
-		, 4,
-		P0IS, 4,
-		Offset(0x12c),		/* Port 0 Serial ATA control */
-		P0DI, 4,
-		Offset(0x130),		/* Port 0 Serial ATA error */
-		, 16,
-		P0PR, 1,
-
-		/* Port 1 */
-		offset(0x1a0),		/* Port 1 Task file status */
-		P1ER, 1,
-		, 2,
-		P1DQ, 1,
-		, 3,
-		P1BY, 1,
-		Offset(0x1a8),		/* Port 1 Serial ATA status */
-		P1DD, 4,
-		, 4,
-		P1IS, 4,
-		Offset(0x1ac),		/* Port 1 Serial ATA control */
-		P1DI, 4,
-		Offset(0x1b0),		/* Port 1 Serial ATA error */
-		, 16,
-		P1PR, 1,
-
-		/* Port 2 */
-		Offset(0x220),		/* Port 2 Task file status */
-		P2ER, 1,
-		, 2,
-		P2DQ, 1,
-		, 3,
-		P2BY, 1,
-		Offset(0x228),		/* Port 2 Serial ATA status */
-		P2DD, 4,
-		, 4,
-		P2IS, 4,
-		Offset(0x22c),		/* Port 2 Serial ATA control */
-		P2DI, 4,
-		Offset(0x230),		/* Port 2 Serial ATA error */
-		, 16,
-		P2PR, 1,
-
-		/* Port 3 */
-		Offset(0x2a0),		/* Port 3 Task file status */
-		P3ER, 1,
-		, 2,
-		P3DQ, 1,
-		, 3,
-		P3BY, 1,
-		Offset(0x2a8),		/* Port 3 Serial ATA status */
-		P3DD, 4,
-		, 4,
-		P3IS, 4,
-		Offset(0x2aC),		/* Port 3 Serial ATA control */
-		P3DI, 4,
-		Offset(0x2b0),		/* Port 3 Serial ATA error */
-		, 16,
-		P3PR, 1,
-	}
+	/*
+	* SATA OperationRegion (STB5, SB5) and port Fields (P0ER, P0DQ, etc.)
+	* are now generated at runtime via acpigen in acpi_sata.c
+	* This allows the SATA registers to only be included when the SATA
+	* controller (device 00:11.0) is enabled in the devicetree.
+	*/
 
 	Name(IRQB, ResourceTemplate(){
 		IRQ(Level,ActiveLow,Shared){15}

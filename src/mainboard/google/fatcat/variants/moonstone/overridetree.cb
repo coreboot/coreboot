@@ -16,6 +16,10 @@ fw_config
 		option USB2A2C_HDMI		0
 		option USB3C			1
 	end
+	field TOUCH_SCREEN 13 13
+		option ABSENCE			0
+		option PRESENCE			1
+	end
 end
 
 chip soc/intel/pantherlake
@@ -428,6 +432,7 @@ chip soc/intel/pantherlake
 			end
 		end # I2C4
 		device ref i2c5 on
+			probe TOUCH_SCREEN PRESENCE
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN9004""
 				register "generic.desc" = ""ELAN Touchscreen""

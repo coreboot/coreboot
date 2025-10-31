@@ -77,6 +77,17 @@ static const struct pad_config pre_mem_fp_spi_enable_pads[] = {
 	PAD_CFG_GPO(GPP_C15, 0, DEEP),
 };
 
+static const struct pad_config touchscreen_disable_pads[] = {
+	/* GPP_F08:     EN_TCHSCR_PWR => NC */
+	PAD_NC(GPP_F08, NONE),
+	/* GPP_F16:     TCHSCR_RST_L => NC */
+	PAD_NC(GPP_F16, NONE),
+	/* GPP_F18:     TCHSCR_INT_L => NC */
+	PAD_NC(GPP_F18, NONE),
+	/* GPP_E05:     TCHSCR_RPT_EN => NC */
+	PAD_NC(GPP_E05, NONE),
+};
+
 void fw_config_configure_pre_mem_gpio(void)
 {
 	if (!fw_config_is_provisioned()) {
@@ -134,4 +145,7 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, use_usb3c_enable_pads);
 	else
 		GPIO_PADBASED_OVERRIDE(padbased_table, use_usb2a2c_hdmi_enable_pads);
+
+	if (fw_config_probe(FW_CONFIG(TOUCH_SCREEN, ABSENCE)))
+		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_disable_pads);
 }

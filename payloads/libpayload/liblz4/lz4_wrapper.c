@@ -74,6 +74,7 @@ typedef uint64_t U64;
 #include "lz4.c.inc"	/* #include for inlining, do not link! */
 
 #define LZ4F_MAGICNUMBER 0x184D2204
+#define LEGACY_MAGICNUMBER 0x184C2102
 
 struct lz4_frame_header {
 	uint32_t magic;
@@ -111,6 +112,14 @@ struct lz4_block_header {
 	/* + size bytes of data */
 	/* + uint32_t block_checksum iff has_block_checksum is set */
 } __packed;
+
+/* A wrapper function used by ulz4fn and ulz4ln to inline LZ4_decompress_generic
+   which is critical for performance. */
+static int lz4_wrap(const void *in, void *out, int in_size, int out_size)
+{
+	return LZ4_decompress_generic(in, out, in_size, out_size, endOnInputSize,
+				      full, 0, noDict, out, NULL, 0);
+}
 
 size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 {
@@ -163,14 +172,10 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 			else
 				out += size;
 		} else {
-			/* constant folding essential, do not touch params! */
-			int ret = LZ4_decompress_generic(in, out, b.size,
-					dst + dstn - out, endOnInputSize,
-					full, 0, noDict, out, NULL, 0);
+			int ret = lz4_wrap(in, out, b.size, dst + dstn - out);
 			if (ret < 0)
 				break;		/* decompression error */
-			else
-				out += ret;
+			out += ret;
 		}
 
 		in += b.size;
@@ -185,4 +190,41 @@ size_t ulz4f(const void *src, void *dst)
 {
 	/* LZ4 uses signed size parameters, so can't just use ((u32)-1) here. */
 	return ulz4fn(src, 1*GiB, dst, 1*GiB);
+}
+
+size_t ulz4ln(const void *src, size_t srcn, void *dst, size_t dstn)
+{
+	const void *in = src;
+	void *out = dst;
+	size_t out_size = 0;
+
+	if (le32toh(*((const uint32_t *)in)) != LEGACY_MAGICNUMBER)
+		return 0;
+
+	in += sizeof(uint32_t);
+	while (1) {
+		uint32_t block_size;
+
+		if ((size_t)(in - src) == srcn) {
+			out_size = out - dst;	/* decompression is complete */
+			break;
+		}
+
+		if ((size_t)(in - src) + sizeof(block_size) > srcn)
+			break;	/* input overrun */
+
+		block_size = le32toh(*(uint32_t *)in);
+		in += sizeof(block_size);
+
+		if ((size_t)(in - src) + block_size > srcn)
+			break;	/* input overrun */
+
+		int ret = lz4_wrap(in, out, block_size, dst + dstn - out);
+		if (ret < 0)
+			break;		/* decompression error */
+		out += ret;
+		in += block_size;
+	}
+
+	return out_size;
 }

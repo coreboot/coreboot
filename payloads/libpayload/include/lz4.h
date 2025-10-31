@@ -47,4 +47,11 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn);
 /* Same as ulz4fn() but does not perform any bounds checks. */
 size_t ulz4f(const void *src, void *dst);
 
+/* Decompresses an Legacy LZ4 image from src to dst, ensuring that it doesn't read
+ * more than srcn bytes and doesn't write more than dstn. Will reliably return an
+ * error if buffer was too small.
+ * Returns amount of decompressed bytes, or 0 on error.
+ */
+size_t ulz4ln(const void *src, size_t srcn, void *dst, size_t dstn);
+
 #endif /* __LZ4_H_ */

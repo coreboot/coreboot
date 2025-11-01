@@ -1,0 +1,12 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config DRIVERS_HWID_DMI
+	bool "HWID from CBFS for SMBIOS product name"
+	default n
+	help
+	  Enable this option to read the hardware ID (HWID) from a
+	  file in CBFS and use it to populate the SMBIOS product name.
+	  The driver will read a file named 'hwid' from CBFS, process it
+	  to extract the base HWID (trimming whitespace, removing 'hwid:'
+	  prefix, and dropping everything after hyphen or space), and
+	  use it as the SMBIOS system product name.

@@ -87,6 +87,7 @@ ramstage-y += ../common/pmif_clk.c pmif_clk.c
 ramstage-y += ../common/pmif.c pmif_init.c
 ramstage-y += ../common/pmif_spmi_v2.c pmif_spmi.c
 ramstage-y += ../common/rtc.c ../common/rtc_osc_init.c
+ramstage-y += ../common/tps65132s.c
 ramstage-y += ../common/usb.c usb.c
 
 BL31_MAKEARGS += PLAT=mt8196

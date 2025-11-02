@@ -9,7 +9,7 @@
 #include "gpio.h"
 #include "panel.h"
 
-static void configure_backlight(bool enable)
+void configure_backlight(bool enable)
 {
 	gpio_output(GPIO_AP_EDP_BKLTEN, enable);
 	gpio_output(GPIO_BL_PWM_1V8, enable);
@@ -47,6 +47,9 @@ __weak void fw_config_panel_override(struct panel_description *panel)
 
 struct panel_description *get_active_panel(void)
 {
+	if (CONFIG(BOARD_GOOGLE_SAPPHIRE))
+		return get_panel_description();
+
 	if (CONFIG(BOARD_GOOGLE_RAURU))
 		return &rauru_panel;
 

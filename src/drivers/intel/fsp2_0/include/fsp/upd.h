@@ -22,6 +22,8 @@ typedef struct {
 	uint8_t                       Reserved[23];
 } __packed FSP_UPD_HEADER;
 
+_Static_assert(sizeof(FSP_UPD_HEADER) == 32, "FSP_UPD_HEADER not packed");
+
 #if CONFIG(PLATFORM_USES_FSP2_X86_32)
 typedef struct {
 	///
@@ -55,6 +57,8 @@ typedef struct {
 	uint32_t                      BootMode;
 	uint8_t                       Reserved1[8];
 } __packed FSPM_ARCH_UPD;
+
+_Static_assert(sizeof(FSPM_ARCH_UPD) == 32, "FSPM_ARCH_UPD not packed");
 #else
 #error You need to implement this struct for x86_64 FSP
 #endif
@@ -76,5 +80,7 @@ typedef struct {
 	uint8_t                       EnableMultiPhaseSiliconInit;
 	uint8_t                       Reserved2[19];
 } __packed FSPS_ARCH_UPD;
+
+_Static_assert(sizeof(FSPS_ARCH_UPD) == 32, "FSPS_ARCH_UPD not packed");
 
 #endif /* _FSP2_0_UPD_H_ */

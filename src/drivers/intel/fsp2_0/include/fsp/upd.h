@@ -58,7 +58,6 @@ struct FSPM_ARCH_UPD {
 #error You need to implement this struct for x86_64 FSP
 #endif
 
-#endif
 struct FSPS_ARCH_UPD {
 	///
 	/// Revision of the structure. For FSP v2.2 value is 1.

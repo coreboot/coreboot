@@ -28,7 +28,8 @@ void cbmemc_copy_in(void *buffer, size_t size);
 
 void cbmem_dump_console_to_uart(void);
 void cbmem_dump_console(void);
-#endif
 
 /* Retrieves the location of the CBMEM Console buffer in SMM mode */
 void smm_get_cbmemc_buffer(void **buffer_out, size_t *size_out);
+
+#endif // _CONSOLE_CBMEM_CONSOLE_H_

@@ -252,4 +252,5 @@ static inline void zero_n(void *dest, size_t n)
 	memset(dest, 0, n);
 }
 
+#pragma GCC diagnostic pop /* restore -Warray-bounds */
 #endif /* _COMMONLIB_ENDIAN_H_ */

@@ -430,9 +430,6 @@ config PCIE_LTR_MAX_NO_SNOOP_LATENCY
 	help
 	  Latency tolerance reporting, max non-snoop latency value defaults to 15.73 ms.
 
-config HAVE_BMP_LOGO_COMPRESS_LZMA
-	default n
-
 # The default offset to store CSE RW FW version information is at 68.
 # However, in Intel Panther Lake based systems that use PSR, the additional
 # size required to keep CSE RW FW version information and PSR back-up status

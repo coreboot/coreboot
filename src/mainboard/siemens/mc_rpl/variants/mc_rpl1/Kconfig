@@ -24,7 +24,7 @@ config EARLY_PCI_BRIDGE_DEVICE
 config EARLY_PCI_BRIDGE_FUNCTION
 	hex
 	depends on NC_FPGA_POST_CODE
-	default 0x0
+	default 0x2
 
 config EARLY_PCI_MMIO_BASE
 	hex

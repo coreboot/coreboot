@@ -15,14 +15,14 @@ static const struct sm_object kbl_timeout = SM_DECLARE_ENUM({
 	.ui_name	= "Keyboard Backlight Timeout",
 	.ui_helptext	= "Set the amount of time before the keyboard backlight turns off"
 			  " when un-used",
-	.default_value	= 0,
+	.default_value	= SEC_30,
 	.values		= (struct sm_enum_value[]) {
-				{ "30 seconds",		0	},
-				{ "1 minute",		1	},
-				{ "3 minutes",		2	},
-				{ "5 minutes",		3	},
-				{ "Never",		4	},
-				SM_ENUM_VALUE_END		},
+			{ "30 seconds",		SEC_30	},
+			{ "1 minute",		MIN_1	},
+			{ "3 minutes",		MIN_3	},
+			{ "5 minutes",		MIN_5	},
+			{ "Never",		NEVER	},
+			SM_ENUM_VALUE_END		},
 });
 
 
@@ -43,12 +43,12 @@ static const struct sm_object max_charge = SM_DECLARE_ENUM({
 	.opt_name	= "max_charge",
 	.ui_name	= "Maximum Charge Level",
 	.ui_helptext	= "Set the maximum level the battery will charge to.",
-	.default_value	= 0,
+	.default_value	= CHARGE_100,
 	.values		= (const struct sm_enum_value[]) {
-				{ "100%",		0	},
-				{ "80%",		1	},
-				{ "60%",		2	},
-				SM_ENUM_VALUE_END		},
+			{ "100%",		CHARGE_100	},
+			{ "80%",		CHARGE_80	},
+			{ "60%",		CHARGE_60	},
+			SM_ENUM_VALUE_END			},
 });
 
 /*
@@ -58,13 +58,13 @@ static const struct sm_object fan_mode = SM_DECLARE_ENUM({
 	.opt_name	= "fan_mode",
 	.ui_name	= "Fan Mode",
 	.ui_helptext	= "Adjust the fan curve to prioritize performance or noise levels.",
-	.default_value	= 0,
+	.default_value	= FAN_NORMAL,
 	.values		= (const struct sm_enum_value[]) {
-				{ "Normal",		0		},
-				{ "Aggressive",		1		},
-				{ "Quiet",		2		},
-				{ "Disabled",		3		},
-				SM_ENUM_VALUE_END			},
+			{ "Normal",		FAN_NORMAL	},
+			{ "Aggressive",		FAN_AGGRESSIVE	},
+			{ "Quiet",		FAN_QUIET	},
+			{ "Disabled",		FAN_DISABLED	},
+			SM_ENUM_VALUE_END			},
 });
 
 /*
@@ -74,13 +74,13 @@ static const struct sm_object charging_speed = SM_DECLARE_ENUM({
 	.opt_name	= "charging_speed",
 	.ui_name	= "Charging Speed",
 	.ui_helptext	= "Set the maximum speed to charge the battery. Charging faster"
-			  " will increase heat and battery wear.",
-	.default_value	= 1,
+		  " will increase heat and battery wear.",
+	.default_value	= SPEED_0_5C,
 	.values		= (const struct sm_enum_value[]) {
-				{ "1.0C",		0	},
-				{ "0.5C",		1	},
-				{ "0.2C",		2	},
-				SM_ENUM_VALUE_END		},
+			{ "1.0C",		SPEED_1_0C	},
+			{ "0.5C",		SPEED_0_5C	},
+			{ "0.2C",		SPEED_0_2C	},
+			SM_ENUM_VALUE_END			},
 });
 
 /*
@@ -90,12 +90,12 @@ static const struct sm_object lid_switch = SM_DECLARE_ENUM({
 	.opt_name	= "lid_switch",
 	.ui_name	= "Lid Switch",
 	.ui_helptext	= "Configure what opening or closing the lid will do.",
-	.default_value	= 0,
+	.default_value	= SWITCH_NORMAL,
 	.values		= (const struct sm_enum_value[]) {
-				{ "Normal",		0	},
-				{ "Sleep Only",		1	},
-				{ "Disabled",		2	},
-				SM_ENUM_VALUE_END		},
+			{ "Normal",		SWITCH_NORMAL		},
+			{ "Sleep Only",		SWITCH_SLEEP_ONLY	},
+			{ "Disabled",		SWITCH_DISABLED		},
+			SM_ENUM_VALUE_END				},
 });
 
 /*
@@ -105,11 +105,10 @@ static const struct sm_object power_led = SM_DECLARE_ENUM({
 	.opt_name	= "power_led",
 	.ui_name	= "Power LED Brightness",
 	.ui_helptext	= "Control the maximum brightness of the power LED",
-	.default_value	= 0,
+	.default_value	= LED_NORMAL,
 	.values		= (const struct sm_enum_value[]) {
-				{ "Normal",		0		},
-				{ "Reduced",		1		},
-				{ "Off",		2		},
-				SM_ENUM_VALUE_END,
-	},
+			{ "Normal",		LED_NORMAL	},
+			{ "Reduced",		LED_REDUCED	},
+			{ "Off",		LED_OFF		},
+			SM_ENUM_VALUE_END			},
 });

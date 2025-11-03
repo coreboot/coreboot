@@ -381,6 +381,28 @@
                 "speedMbps": 8533,
                 "lp5x": true
             }
+    },
+    {
+        "name":  "MT62F1G32D2DS-020 WT:D",
+        "attribs": {
+            "densityPerDieGb": 16,
+            "diesPerPackage": 2,
+            "bitWidthPerChannel": 16,
+            "ranksPerChannel": 2,
+            "speedMbps": 8533,
+            "lp5x": true
+        }
+    },
+    {
+        "name":  "K3KL8L80EM-MGCV",
+        "attribs": {
+            "densityPerDieGb": 16,
+            "diesPerPackage": 4,
+            "bitWidthPerChannel": 16,
+            "ranksPerChannel": 2,
+            "speedMbps": 8533,
+            "lp5x": true
+        }
     }
     ]
 }

@@ -76,10 +76,7 @@ CPPFLAGS_common += -Isrc/soc/mediatek/common/dp/include
 MT8189_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8189
 
 BL31_LIB := $(top)/$(MT8189_BLOB_DIR)/libbl31.a
-
-ifneq ($(wildcard $(BL31_LIB)),)
 BL31_MAKEARGS += MTKLIB_PATH=$(BL31_LIB)
-endif
 
 firmware-files := \
 	$(CONFIG_DPM_DM_FIRMWARE) \

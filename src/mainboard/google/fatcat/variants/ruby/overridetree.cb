@@ -257,23 +257,13 @@ chip soc/intel/pantherlake
 		end # I2C3
 		device ref i2c4 on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""PIXA2305""
-				register "generic.desc" = ""PIXA Touchpad""
-				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E18_IRQ)"
-				# NOTE: pmc_gpe0_dw2 is GPP_E in baseboard devicetree.cb.
-				register "generic.wake" = "GPE0_DW2_18"
-				register "generic.detect" = "1"
-				register "hid_desc_reg_offset" = "0x20"
-				device i2c 68 on end
-			end
-			chip drivers/i2c/hid
-				register "generic.hid" = ""PNP0C50""
+				register "generic.hid" = ""ELAN2705""
 				register "generic.desc" = ""ELAN Touchpad""
 				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E18_IRQ)"
 				register "generic.wake" = "GPE0_DW2_18"
 				register "generic.detect" = "1"
-				register "hid_desc_reg_offset" = "0x20"
-				device i2c 2c on end
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
 			end
 		end # I2C4
 		device ref i2c5 on

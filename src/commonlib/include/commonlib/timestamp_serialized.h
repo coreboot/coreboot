@@ -178,6 +178,9 @@ enum timestamp_id {
 	TS_PVMFW_GSC_NVRAM_DONE = 1111,
 	TS_PVMFW_SETUP_DONE = 1112,
 
+	TS_PKVM_DRNG_SEED_START = 1120,
+	TS_PKVM_DRNG_SEED_DONE = 1121,
+
 	/* 1200-1300: ChromeOS Hypervisor */
 	TS_CRHV_BOOT = 1200,
 	TS_CRHV_PLATFORM_INIT = 1201,
@@ -378,6 +381,9 @@ static const struct timestamp_id_to_name {
 	TS_NAME_DEF(TS_PVMFW_SETUP_START, 0, "started pvmfw setup"),
 	TS_NAME_DEF(TS_PVMFW_GSC_NVRAM_DONE, 0, "finished fetching boot params from GSC"),
 	TS_NAME_DEF(TS_PVMFW_SETUP_DONE, 0, "finished pvmfw setup"),
+
+	TS_NAME_DEF(TS_PKVM_DRNG_SEED_START, 0, "started generating pKVM DRNG seed"),
+	TS_NAME_DEF(TS_PKVM_DRNG_SEED_DONE, 0, "finished generating pKVM DRNG seed"),
 
 	/* ChromeOS hypervisor */
 	TS_NAME_DEF(TS_CRHV_BOOT, 0, "hypervisor boot finished"),

@@ -150,5 +150,24 @@ static const struct sm_object intel_tme = SM_DECLARE_BOOL({
 	.default_value	= CONFIG(INTEL_TME),
 }, WITH_CALLBACK(update_intel_tme));
 
+/* BIOS Lock */
+static void update_smm_bwp(struct sm_object *new)
+{
+	if (!CONFIG(BOOTMEDIA_SMM_BWP_RUNTIME_OPTION))
+		new->sm_bool.flags |= CFR_OPTFLAG_SUPPRESS;
+}
+
+static const struct sm_object bios_lock = SM_DECLARE_ENUM({
+	.opt_name	= "bios_lock",
+	.ui_name	= "BIOS Lock",
+	.ui_helptext	= "Enable BIOS write protection in SMM. When enabled, the boot media"
+			  " (SPI flash) is only writable in System Management Mode, preventing"
+			  " unauthorized writes through the internal controller.",
+	.default_value	= CONFIG(BOOTMEDIA_SMM_BWP),
+	.values		= (const struct sm_enum_value[]) {
+				{ "Disabled",	false	},
+				{ "Enabled",	true	},
+				SM_ENUM_VALUE_END	},
+}, WITH_CALLBACK(update_smm_bwp));
 
 #endif /* SOC_INTEL_CMN_CFR_H */

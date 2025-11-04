@@ -2,6 +2,8 @@
 
 #include <console/console.h>
 #include <device/pci_ops.h>
+#include <option.h>
+#include <security/lockdown/lockdown.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/pmutil.h>
 #include <southbridge/intel/common/rcba.h>
@@ -45,7 +47,7 @@ void intel_pch_finalize_smm(void)
 	pci_write_config32(PCI_DEV(0, 27, 0), 0x74,
 		    pci_read_config32(PCI_DEV(0, 27, 0), 0x74));
 
-	if (CONFIG(BOOTMEDIA_SMM_BWP))
+	if (enable_smm_bios_protection())
 		write_pmbase16(SMI_EN, read_pmbase16(SMI_EN) | TCO_EN);
 
 	write_pmbase16(TCO1_CNT, read_pmbase16(TCO1_CNT) | TCO_LOCK);

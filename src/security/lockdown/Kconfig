@@ -107,6 +107,14 @@ config BOOTMEDIA_SMM_BWP
 	  while also preventing unauthorized writes through the internal controller.
 	  Note that this breaks flashconsole, since the flash becomes read-only.
 
+config BOOTMEDIA_SMM_BWP_RUNTIME_OPTION
+	bool "Boot media only writable in SMM can be controlled via option API"
+	depends on BOOTMEDIA_SMM_BWP
+	depends on DRIVERS_OPTION_CFR
+	help
+	  Provide a runtime option "bios_lock" to enable or disable SMM BIOS Write Protection
+	  via the option API.
+
 choice
 	prompt "SPI Flash write protection duration"
 	default BOOTMEDIA_SPI_LOCK_REBOOT

@@ -8,6 +8,9 @@ config BOARD_GOOGLE_ANAKIN
 config BOARD_GOOGLE_BAZE
 	bool "->  Baze"
 
+config BOARD_GOOGLE_DOOKU
+	bool "->  Dooku"
+
 config BOARD_GOOGLE_GROGU
 	bool "->  Grogu"
 

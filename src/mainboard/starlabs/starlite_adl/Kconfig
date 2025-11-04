@@ -52,9 +52,6 @@ config DEVICETREE
 config DIMM_SPD_SIZE
 	default 512
 
-config EC_GPE_SCI
-	default 0x6e
-
 config EC_STARLABS_BATTERY_MODEL
 	default "AEC3756153-2S1P-N"
 

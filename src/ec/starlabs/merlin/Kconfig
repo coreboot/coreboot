@@ -49,7 +49,7 @@ config EC_VARIANT_DIR
 
 config EC_GPE_SCI
 	hex
-	default 0x50
+	default 0x6e
 
 config EC_STARLABS_BATTERY_MODEL
 	string

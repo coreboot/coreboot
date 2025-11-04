@@ -52,9 +52,6 @@ config DEVICETREE
 config DIMM_SPD_SIZE
 	default 512
 
-config EC_GPE_SCI
-	default 0x6e
-
 config EC_STARLABS_ITE_BIN_PATH
 	string
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"

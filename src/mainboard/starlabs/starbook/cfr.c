@@ -90,9 +90,10 @@ static struct sm_obj_form pci = {
 		#endif
 		#if CONFIG(SOC_INTEL_COMMON_BLOCK_ASPM)
 		&pciexp_clk_pm,
-		&pciexp_aspm,
-		#if CONFIG(HAS_INTEL_CPU_ROOT_PORTS)
+		#if CONFIG(BOARD_STARLABS_STARBOOK_RPL)
 		&pciexp_aspm_cpu,
+		#else
+		&pciexp_aspm,
 		#endif
 		&pciexp_l1ss,
 		#endif

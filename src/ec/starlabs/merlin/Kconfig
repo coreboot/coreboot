@@ -8,6 +8,7 @@ config EC_STARLABS_NUVOTON
 
 config EC_STARLABS_ITE
 	bool
+	default y if EC_STARLABS_MERLIN
 	select EC_ACPI
 	help
 	  Interface to ITE embedded controller principally in Star Labs notebooks.
@@ -30,52 +31,17 @@ config EC_STARLABS_ITE_BIN_PATH
 	string "Star Labs EC binary file path"
 	depends on EC_STARLABS_ADD_ITE_BIN
 
+config EC_STARLABS_FAN
+	bool
+	help
+	  Select if the mainboard has a fan.
+
 config EC_STARLABS_KBL_LEVELS
 	bool
 	default n
 	depends on EC_STARLABS_ITE || EC_STARLABS_NUVOTON
 	help
 	  Select if the mainboard supports multiple levels of brightness for the keyboard.
-
-config EC_STARLABS_FAN
-	bool
-	default n
-	depends on EC_STARLABS_ITE
-	help
-	  Select if the mainboard has a fan.
-
-config EC_STARLABS_MAX_CHARGE
-	bool
-	default n
-	depends on EC_STARLABS_ITE
-	help
-	  Select if the mainboard supports limiting the maximum charge of the battery.
-
-config EC_STARLABS_CHARGING_SPEED
-	bool "Enable setting the charging speed"
-	depends on EC_STARLABS_MERLIN
-	help
-	  Select if the mainboard supports configuring the charging speed.
-
-config EC_STARLABS_LID_SWITCH
-	bool "Enable disabling the lid switch"
-	depends on EC_STARLABS_ITE
-	help
-	  Select if the mainboard supports disabling the lid switch
-
-config EC_STARLABS_POWER_LED
-	bool "Enable lowering the brightess of the Power LED"
-	depends on EC_STARLABS_ITE
-	help
-	  Select the in the mainboard supports reducing the LED brightness
-
-config EC_STARLABS_MERLIN
-	bool "Use open-source Merlin EC Firmware"
-	default n
-	depends on EC_STARLABS_ITE
-	help
-	  Use open source embedded controller firmware. Both firmwares have the
-	  same features but differ in licensing and compilers.
 
 config EC_VARIANT_DIR
 	string
@@ -96,3 +62,38 @@ config EC_STARLABS_BATTERY_TYPE
 config EC_STARLABS_BATTERY_OEM
 	string
 	default "Unknown"
+
+config EC_STARLABS_MERLIN
+	bool "Use open-source Merlin EC Firmware"
+	default n
+	help
+	  Use open source embedded controller firmware. Both firmwares have the
+	  same features but differ in licensing and compilers.
+
+if EC_STARLABS_MERLIN
+
+config EC_STARLABS_MAX_CHARGE
+	bool
+	default y
+	help
+	  Select if the mainboard supports limiting the maximum charge of the battery.
+
+config EC_STARLABS_CHARGING_SPEED
+	bool "Enable setting the charging speed"
+	default y
+	help
+	  Select if the mainboard supports configuring the charging speed.
+
+config EC_STARLABS_LID_SWITCH
+	bool "Enable disabling the lid switch"
+	default y
+	help
+	  Select if the mainboard supports disabling the lid switch
+
+config EC_STARLABS_POWER_LED
+	bool "Enable lowering the brightess of the Power LED"
+	default y
+	help
+	  Select the in the mainboard supports reducing the LED brightness
+
+endif

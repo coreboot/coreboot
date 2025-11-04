@@ -8,7 +8,7 @@ config BOARD_STARLABS_BYTE_SERIES
 	select DRIVERS_INTEL_PMC
 	select DRIVERS_OPTION_CFR_ENABLED
 	select DRIVERS_PCIE_GENERIC
-	select EC_STARLABS_ITE
+	select EC_STARLABS_FAN
 	select EC_STARLABS_MERLIN
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
@@ -58,9 +58,6 @@ config EC_GPE_SCI
 config EC_STARLABS_ITE_BIN_PATH
 	string
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"
-
-config EC_VARIANT_DIR
-	default "merlin"
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/vboot.fmd" if VBOOT

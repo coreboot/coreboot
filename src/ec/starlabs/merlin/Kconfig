@@ -40,14 +40,14 @@ config EC_STARLABS_KBL_LEVELS
 config EC_STARLABS_FAN
 	bool
 	default n
-	depends on EC_STARLABS_ITE || EC_STARLABS_NUVOTON
+	depends on EC_STARLABS_ITE
 	help
 	  Select if the mainboard has a fan.
 
 config EC_STARLABS_MAX_CHARGE
 	bool
 	default n
-	depends on EC_STARLABS_ITE || EC_STARLABS_NUVOTON
+	depends on EC_STARLABS_ITE
 	help
 	  Select if the mainboard supports limiting the maximum charge of the battery.
 

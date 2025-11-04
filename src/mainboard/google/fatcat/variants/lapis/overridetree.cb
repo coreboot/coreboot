@@ -417,6 +417,8 @@ chip soc/intel/pantherlake
 				register "mode" = "THC_HID_I2C_MODE"
 				register "dev_hidi2c.intf.hidi2c.addr" = "0x15"
 				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0x01"
+				register "soc_hidi2c.fm_scl_low_period" = "160"
+				register "soc_hidi2c.fm_scl_high_period" = "146"
 				register "wake_on_touch" = "true"
 				# NOTE: Use GpioInt() in _CRS and does not use GPE.
 				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC0)"

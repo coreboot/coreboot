@@ -247,6 +247,7 @@ static const enum ps2_action_key ps2_enum_val[] = {
 	[TK_DICTATE] = PS2_KEY_DICTATE,
 	[TK_ACCESSIBILITY] = PS2_KEY_ACCESSIBILITY,
 	[TK_DONOTDISTURB] = PS2_KEY_DO_NOT_DISTURB,
+	[TK_HOME] = PS2_KEY_HOMEPAGE,
 };
 
 static void fill_ssdt_ps2_keyboard(const struct device *dev)

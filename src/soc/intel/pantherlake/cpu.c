@@ -16,6 +16,7 @@
 #include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/pmclib.h>
+#include <option.h>
 #include <smbios.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
@@ -141,7 +142,7 @@ void soc_core_init(struct device *cpu)
 	/* Set core type in struct cpu_info */
 	set_dev_core_type();
 
-	if (CONFIG(INTEL_TME) && is_tme_supported())
+	if (get_uint_option("intel_tme", CONFIG(INTEL_TME)) && is_tme_supported())
 		set_tme_core_activate();
 
 	if (CONFIG(DROP_CPU_FEATURE_PROGRAM_IN_FSP)) {

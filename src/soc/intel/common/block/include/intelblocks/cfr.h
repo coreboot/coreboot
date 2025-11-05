@@ -8,6 +8,7 @@
 #define SOC_INTEL_CMN_CFR_H
 
 #include <drivers/option/cfr_frontend.h>
+#include <cpu/intel/common/common.h>
 #include <intelblocks/pcie_rp.h>
 #include <intelblocks/pmclib.h>
 
@@ -132,5 +133,22 @@ static const struct sm_object pciexp_speed = SM_DECLARE_ENUM({
 				{ "Gen4",	SPEED_GEN4	},
 				SM_ENUM_VALUE_END		},
 });
+
+/* TME */
+static void update_intel_tme(struct sm_object *new)
+{
+	if (!is_tme_supported())
+		new->sm_bool.flags |= CFR_OPTFLAG_SUPPRESS;
+}
+
+static const struct sm_object intel_tme = SM_DECLARE_BOOL({
+	.opt_name	= "intel_tme",
+	.ui_name	= "Total Memory Encryption",
+	.ui_helptext	= "Enable TME (Total Memory Encryption). When enabled, all data stored in"
+			  " system memory is encrypted to prevent unauthorized access or data theft."
+			  " Disabling TME decreases boot time by around 100ms",
+	.default_value	= CONFIG(INTEL_TME),
+}, WITH_CALLBACK(update_intel_tme));
+
 
 #endif /* SOC_INTEL_CMN_CFR_H */

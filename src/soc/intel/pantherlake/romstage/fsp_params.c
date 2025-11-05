@@ -10,6 +10,7 @@
 #include <fsp/util.h>
 #include <intelbasecode/ramtop.h>
 #include <intelblocks/cpulib.h>
+#include <option.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pcie.h>
@@ -112,7 +113,7 @@ static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,
 
 static void fill_tme_params(FSP_M_CONFIG *m_cfg)
 {
-	m_cfg->TmeEnable = CONFIG(INTEL_TME) && is_tme_supported();
+	m_cfg->TmeEnable = get_uint_option("intel_tme", CONFIG(INTEL_TME)) && is_tme_supported();
 	if (!m_cfg->TmeEnable || acpi_is_wakeup_s3())
 		return;
 	m_cfg->GenerateNewTmeKey = CONFIG(TME_KEY_REGENERATION_ON_WARM_BOOT);

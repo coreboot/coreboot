@@ -20,6 +20,7 @@
 #include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/acpi.h>
+#include <option.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -140,7 +141,7 @@ void soc_core_init(struct device *cpu)
 	/* Enable Turbo */
 	enable_turbo();
 
-	if (CONFIG(INTEL_TME) && is_tme_supported())
+	if (get_uint_option("intel_tme", CONFIG(INTEL_TME)) && is_tme_supported())
 		set_tme_core_activate();
 }
 

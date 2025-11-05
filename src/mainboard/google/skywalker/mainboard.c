@@ -50,6 +50,17 @@ static void configure_cs35l51(void)
 	printk(BIOS_INFO, "%s: AMP configuration done\n", __func__);
 }
 
+static void configure_aw88081(void)
+{
+	/* Set the SOC corresponding pin to I2S related function */
+	setup_i2s_speaker();
+
+	/* Init I2C bus timing register for audio codecs */
+	mtk_i2c_bus_init(I2C8, I2C_SPEED_STANDARD);
+
+	printk(BIOS_INFO, "%s: AMP configuration done\n", __func__);
+}
+
 static void configure_alc5645(void)
 {
 	/* SoC I2S */
@@ -75,6 +86,8 @@ static void configure_audio(void)
 	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_RT9123)) ||
 	    fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_RT1019)))
 		configure_rt9123_rt1019();
+	else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_AW88081)))
+		configure_aw88081();
 	else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC5645)))
 		configure_alc5645();
 	else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_CS35L51)))

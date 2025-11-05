@@ -14,18 +14,20 @@
 #define NUVOTON_CHIPID_VAL	0x0004
 
 /* EC RAM offsets. */
-#define ECRAM_MAJOR_VERSION	0x00
-#define ECRAM_MINOR_VERSION	0x01
-#define ECRAM_TRACKPAD_STATE	0x14
-#define ECRAM_KBL_STATE		0x16
-#define ECRAM_KBL_BRIGHTNESS	0x17
-#define ECRAM_KBL_TIMEOUT	0x12
-#define ECRAM_FN_LOCK_STATE	0x15
-#define ECRAM_FN_CTRL_REVERSE	0x13
-#define ECRAM_MAX_CHARGE	dead_code_t(uint8_t)
-#define ECRAM_FAN_MODE		dead_code_t(uint8_t)
-#define ECRAM_CHARGING_SPEED	dead_code_t(uint8_t)
-#define ECRAM_LID_SWITCH	dead_code_t(uint8_t)
-#define ECRAM_POWER_LED		0x1f
+#define ECRAM_MAJOR_VERSION		0x00
+#define ECRAM_MINOR_VERSION		0x01
+#define ECRAM_TRACKPAD_STATE		0x14
+#define ECRAM_KBL_STATE			0x16
+#define ECRAM_KBL_BRIGHTNESS		0x17
+#define ECRAM_KBL_TIMEOUT		0x12
+#define ECRAM_FN_LOCK_STATE		0x15
+#define ECRAM_FN_CTRL_REVERSE		0x13
+#define ECRAM_MAX_CHARGE		dead_code_t(uint8_t)
+#define ECRAM_FAN_MODE			dead_code_t(uint8_t)
+#define ECRAM_CHARGING_SPEED		dead_code_t(uint8_t)
+#define ECRAM_LID_SWITCH		dead_code_t(uint8_t)
+#define ECRAM_POWER_LED			0x1f
+#define ECRAM_BATTERY_DESIGN_CAPACITY	0x84
+#define ECRAM_BATTERY_DESIGN_VOLTAGE	0x86
 
 #endif

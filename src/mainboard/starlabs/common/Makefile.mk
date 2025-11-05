@@ -2,3 +2,5 @@
 
 subdirs-$(CONFIG_VENDOR_STARLABS) += smbios
 subdirs-$(CONFIG_VENDOR_STARLABS) += pin_mux
+
+CPPFLAGS_common += -I$(src)/mainboard/starlabs/common/include

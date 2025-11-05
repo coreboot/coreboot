@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <fsp/api.h>
-#include "pin_mux.h"
+#include <common/pin_mux.h>
 
 void configure_pin_mux(FSP_S_CONFIG *supd)
 {

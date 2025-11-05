@@ -16,6 +16,12 @@ Device(LPCB) {
 	*	DBGO("\\_SB\\PCI0\\LpcIsaBr\\_INI\n")
 	} */ /* End Method(_SB.SBRDG._INI) */
 
+	OperationRegion (ERMM, SystemMemory, 0xFED80300, 0x1)
+	Field (ERMM, AnyAcc, NoLock, Preserve)
+	{
+		, 6,
+		HPEN, 1
+	}
 
 	Device(LDRC)	// LPC device: Resource consumption
 	{
@@ -60,10 +66,23 @@ Device(LPCB) {
 	/* Real Time Clock Device */
 	Device(RTC0) {
 		Name(_HID, EISAID("PNP0B00"))   /* AT Real Time Clock (not PIIX4 compatible) */
-		Name(_CRS, ResourceTemplate() {
+		Name(CRS0, ResourceTemplate() {
+			IO(Decode16,0x0070, 0x0070, 0, 2)
+		})
+		Name(CRS1, ResourceTemplate() {
 			IRQNoFlags(){8}
 			IO(Decode16,0x0070, 0x0070, 0, 2)
 		})
+		Method (_CRS, 0)
+		{
+			/* Avoid IRQ resource conflict with HPET */
+			If (^^HPEN)
+			{
+				Return (CRS0)
+			}
+
+			Return (CRS1)
+		}
 	} /* End Device(_SB.PCI0.LpcIsaBr.RTC0) */
 
 	Device(TMR) {	/* Timer */
@@ -111,4 +130,27 @@ Device(LPCB) {
 			IRQNoFlags(){13}
 		})
 	} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */
+
+	Device (HPET) {
+		Name (_HID,EISAID("PNP0103"))	/* HPET System Timer */
+		Name (_CRS, ResourceTemplate () {
+			Memory32Fixed(ReadWrite,
+			0xFED00000,
+			0x00000400,
+			)
+			IRQNoFlags(){0}
+			IRQNoFlags(){8}
+		})
+
+		Method (_STA, 0, NotSerialized)
+		{
+			If (^^HPEN)
+			{
+				Return (0xF)
+			}
+
+			Return (0x1)
+		}
+	}
+
 } /* end LPCB */

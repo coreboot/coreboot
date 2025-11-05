@@ -100,6 +100,7 @@ config SOC_AMD_CEZANNE
 config SOC_AMD_RENOIR
 	bool
 	select SOC_AMD_CEZANNE_BASE
+	select SOC_AMD_COMMON_BLOCK_CPU_SYNC_PSP_ADDR_MSR
 	help
 		AMD Renoir support
 

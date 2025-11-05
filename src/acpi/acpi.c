@@ -936,14 +936,9 @@ static void acpi_create_facs(void *header)
 {
 	acpi_facs_t *facs = header;
 
+	memset(facs, 0, sizeof(acpi_facs_t));
 	memcpy(facs->signature, "FACS", 4);
 	facs->length = sizeof(acpi_facs_t);
-	facs->hardware_signature = 0;
-	facs->firmware_waking_vector = 0;
-	facs->global_lock = 0;
-	facs->flags = 0;
-	facs->x_firmware_waking_vector_l = 0;
-	facs->x_firmware_waking_vector_h = 0;
 	facs->version = get_acpi_table_revision(FACS);
 }
 

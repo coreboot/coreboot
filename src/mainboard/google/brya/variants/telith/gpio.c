@@ -96,7 +96,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR_X */
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
 	/* C1  : SMBDATA ==> TCHSCR_RST_L */
-	PAD_CFG_GPO(GPP_C1, 1, DEEP),
+	PAD_CFG_GPO(GPP_C1, 0, DEEP),
 
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H20, 0, DEEP),

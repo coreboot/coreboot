@@ -181,7 +181,7 @@ chip soc/intel/pantherlake
 						register "desc" = ""USB2 Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "has_power_resource" = "true"
-						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C06)"
+						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C05)"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi

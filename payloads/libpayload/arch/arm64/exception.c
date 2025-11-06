@@ -30,7 +30,7 @@
 #include <libpayload.h>
 #include <stdint.h>
 
-u64 exception_stack[2*KiB] __attribute__((aligned(16)));
+u64 exception_stack[2*KiB] __aligned(16);
 u64 *exception_stack_end = exception_stack + ARRAY_SIZE(exception_stack);
 
 struct exception_handler_info
@@ -39,7 +39,10 @@ struct exception_handler_info
 };
 
 static exception_hook hook;
-struct exception_state exception_state;
+
+/* To make the exception entry easier, we write this into SP_EL2. AArch64 demands
+   that stack pointers are always 16-byte aligned at function boundaries. */
+struct exception_state exception_state __aligned(16);
 
 static struct exception_handler_info exceptions[EXC_COUNT] = {
 	[EXC_SYNC_SP0] = { "_sync_sp_el0" },

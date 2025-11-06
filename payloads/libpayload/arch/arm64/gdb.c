@@ -32,7 +32,7 @@ struct gdb_regs
 } __packed;
 
 /* Scratch value to write reentrant exception states to. We never read it. */
-static struct exception_state sentinel_exception_state;
+static struct exception_state sentinel_exception_state __aligned(16);
 
 static int gdb_exception_hook(u32 type)
 {

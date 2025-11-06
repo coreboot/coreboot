@@ -204,16 +204,6 @@ device ref tbt_pcie_rp0 on end
 			end
 		end
 
-		device ref pcie_rp2 on
-			# Enable PCH PCIE x1 slot using CLK 6
-			register "pcie_rp[PCIE_RP(2)]" = "{
-				.clk_src = 6,
-				.clk_req = 6,
-				.flags = PCIE_RP_HOTPLUG | PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
-				.pcie_rp_aspm = ASPM_L1,
-			}"
-		end # SD Card
-
 		device ref pcie_rp4 on
 			probe WIFI WIFI_PCIE_6
 			probe WIFI WIFI_PCIE_7

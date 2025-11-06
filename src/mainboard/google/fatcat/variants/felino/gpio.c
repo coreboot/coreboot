@@ -288,8 +288,13 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F18, NONE),
 	/* GPP_F19:     GPP_F19 */
 	PAD_NC(GPP_F19, NONE),
-	/* GPP_F20:     NC */
+#if CONFIG(BOARD_GOOGLE_FELINO4ES)
+	/* GPP_F20:     Not used */
 	PAD_NC(GPP_F20, NONE),
+#else
+	/* GPP_F20:     SOC_SSD1_RST# */
+	PAD_CFG_GPO(GPP_F20, 1, PLTRST),
+#endif
 	/* GPP_F22:     NC */
 	PAD_NC(GPP_F22, NONE),
 	/* GPP_F23:     NC */

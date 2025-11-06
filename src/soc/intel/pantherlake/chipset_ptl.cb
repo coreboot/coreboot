@@ -8,7 +8,11 @@ chip soc/intel/pantherlake
 		.tdp_pl4 = 163,
 		.tdp_pl4_fastvmode = 150,
 	}"
-	register "thermal_design_current[PTL_SKU_1]" = "{
+	register "thermal_design_current[PTL_TDC_1]" = "{
+		[VR_DOMAIN_IA] = 23 * 8,
+		[VR_DOMAIN_GT] = 15 * 8
+	}"
+	register "thermal_design_current[PTL_TDC_2]" = "{
 		[VR_DOMAIN_IA] = 23 * 8,
 		[VR_DOMAIN_GT] = 23 * 8
 	}"
@@ -25,10 +29,6 @@ chip soc/intel/pantherlake
 		.tdp_pl4 = 163,
 		.tdp_pl4_fastvmode = 150,
 	}"
-	register "thermal_design_current[PTL_SKU_5]" = "{
-		[VR_DOMAIN_IA] = 23 * 8,
-		[VR_DOMAIN_GT] = 23 * 8
-	}"
 	register "icc_max[PTL_SKU_5]" = "{
 		[VR_DOMAIN_IA] = 80 * 4,
 		[VR_DOMAIN_GT] = 56 * 4,
@@ -42,7 +42,7 @@ chip soc/intel/pantherlake
 		.tdp_pl4 = 175,
 		.tdp_pl4_fastvmode = 160,
 	}"
-	register "thermal_design_current[PTL_SKU_2]" = "{
+	register "thermal_design_current[PTL_TDC_3]" = "{
 		[VR_DOMAIN_IA] = 31 * 8,
 		[VR_DOMAIN_GT] = 44 * 8
 	}"
@@ -52,7 +52,7 @@ chip soc/intel/pantherlake
 		[VR_DOMAIN_SA] = 56 * 4,
 		[VR_DOMAIN_ATOM] = 30 * 4
 	}"
-	register "thermal_design_current[PTL_SKU_3]" = "{
+	register "thermal_design_current[PTL_TDC_4]" = "{
 		[VR_DOMAIN_IA] = 31 * 8,
 		[VR_DOMAIN_GT] = 23 * 8
 	}"
@@ -64,11 +64,6 @@ chip soc/intel/pantherlake
 		.tdp_pl4_fastvmode = 140
 	}"
 
-
-	register "thermal_design_current[PTL_SKU_6]" = "{
-		[VR_DOMAIN_IA] = 31 * 8,
-		[VR_DOMAIN_GT] = 44 * 8
-	}"
 	register "icc_max[PTL_SKU_6]" = "{
 		[VR_DOMAIN_IA] = 90 * 4,
 		[VR_DOMAIN_GT] = 124 * 4,

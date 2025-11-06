@@ -350,10 +350,10 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 	}
 
 	for (size_t i = 0; i < ARRAY_SIZE(config->thermal_design_current[0]); i++) {
-		if (!config->thermal_design_current[map->sku][i])
+		if (!config->thermal_design_current[map->tdc][i])
 			continue;
 		m_cfg->TdcEnable[i] = 1;
-		m_cfg->TdcCurrentLimit[i] = config->thermal_design_current[map->sku][i];
+		m_cfg->TdcCurrentLimit[i] = config->thermal_design_current[map->tdc][i];
 	}
 
 	for (size_t i = 0; i < ARRAY_SIZE(config->icc_max[0]); i++) {

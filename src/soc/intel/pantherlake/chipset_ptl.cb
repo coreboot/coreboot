@@ -3,7 +3,7 @@ chip soc/intel/pantherlake
 	device cpu_cluster 0 on end
 
 	register "power_limits_config[PTL_CORE_1]" = "{
-		.tdp_pl1_override = 15,
+		.tdp_pl1_override = 0, /* Use TDP */
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 163,
 		.tdp_pl4_fastvmode = 150,
@@ -24,7 +24,7 @@ chip soc/intel/pantherlake
 	}"
 
 	register "power_limits_config[PTL_CORE_2]" = "{
-		.tdp_pl1_override = 15,
+		.tdp_pl1_override = 0,  /* Use TDP */
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 163,
 		.tdp_pl4_fastvmode = 150,
@@ -37,7 +37,7 @@ chip soc/intel/pantherlake
 	}"
 
 	register "power_limits_config[PTL_CORE_3]" = "{
-		.tdp_pl1_override = 25,
+		.tdp_pl1_override = 0,  /* Use TDP */
 		.tdp_pl2_override = 65,
 		.tdp_pl4 = 175,
 		.tdp_pl4_fastvmode = 160,
@@ -58,7 +58,7 @@ chip soc/intel/pantherlake
 	}"
 
 	register "power_limits_config[PTL_CORE_4]" = "{
-		.tdp_pl1_override = 25,
+		.tdp_pl1_override = 0,  /* Use TDP */
 		.tdp_pl2_override = 65,
 		.tdp_pl4 = 160,
 		.tdp_pl4_fastvmode = 140

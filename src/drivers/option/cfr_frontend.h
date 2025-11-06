@@ -5,6 +5,7 @@
 
 #include <commonlib/coreboot_tables.h>
 #include <commonlib/cfr.h>
+#include <string.h>
 #include <types.h>
 
 /* Front-end */
@@ -118,6 +119,51 @@ struct sm_object {
 	.dep = (d),								\
 	.dep_values = ((const uint32_t[]) { __VA_ARGS__ }),			\
 	.num_dep_values = sizeof((uint32_t[]) { __VA_ARGS__ }) / sizeof(uint32_t)
+
+/*
+ * CFR Default Value Override System
+ *
+ * Mainboards can override default values of CFR objects defined in SoC/common
+ * code by declaring an override table. This avoids duplicating object metadata.
+ *
+ * Usage:
+ *   1. Declare overrides in mainboard cfr.c:
+ *
+ *      const struct cfr_default_override mb_cfr_overrides[] = {
+ *          CFR_OVERRIDE_BOOL("s0ix_enable", false),
+ *          CFR_OVERRIDE_ENUM("pciexp_aspm", ASPM_DISABLE),
+ *          CFR_OVERRIDE_END
+ *      };
+ *
+ *   2. Register the table in mb_cfr_setup_menu():
+ *
+ *      void mb_cfr_setup_menu(struct lb_cfr *cfr_root)
+ *      {
+ *          cfr_register_overrides(mb_cfr_overrides);
+ *          cfr_write_setup_menu(cfr_root, sm_root);
+ *      }
+ */
+
+/* Override table entry */
+struct cfr_default_override {
+	const char *opt_name;
+	enum sm_object_kind kind;
+	union {
+		bool bool_value;
+		uint32_t uint_value;
+		const char *str_value;
+	};
+};
+
+/* Helper macros for override table entries */
+#define CFR_OVERRIDE_BOOL(name, val)	{ .opt_name = (name), .kind = SM_OBJ_BOOL, .bool_value = (val) }
+#define CFR_OVERRIDE_ENUM(name, val)	{ .opt_name = (name), .kind = SM_OBJ_ENUM, .uint_value = (val) }
+#define CFR_OVERRIDE_NUMBER(name, val)	{ .opt_name = (name), .kind = SM_OBJ_NUMBER, .uint_value = (val) }
+#define CFR_OVERRIDE_VARCHAR(name, val)	{ .opt_name = (name), .kind = SM_OBJ_VARCHAR, .str_value = (val) }
+#define CFR_OVERRIDE_END			{ .opt_name = NULL }
+
+/* Register mainboard override table (call before cfr_write_setup_menu) */
+void cfr_register_overrides(const struct cfr_default_override *overrides);
 
 void cfr_write_setup_menu(struct lb_cfr *cfr_root, struct sm_obj_form *sm_root[]);
 

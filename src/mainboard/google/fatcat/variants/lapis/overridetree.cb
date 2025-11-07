@@ -1,16 +1,20 @@
 fw_config
+	field AUDIO 0 1
+		option AUDIO_NONE		0
+		option CS42L43_SNDW		1
+	end
 	field WIFI 2 3
 		option WIFI_CNVI_7		0
 		option WIFI_CNVI_7E		1
 	end
 	field TOUCHSCREEN 4 5
 		option NONE_TOUCH	0
-		option 14_TOUCH		1
+		option THC_RAYDIMU	1
+		option THC_ILITEK	2
 	end
 	field TOUCHPAD 6 7
 		option TOUCHPAD_UNKNOWN		0
-		option TOUCHPAD_LPSS_I2C	1
-		option TOUCHPAD_THC_I2C		2
+		option TOUCHPAD_PCT4802		1
 	end
 	field STORAGE 8 9
 		option STORAGE_UNKNOWN		0
@@ -411,6 +415,7 @@ chip soc/intel/pantherlake
 		device ref thc0 on
 			register "thc_wake_on_touch[0]" = "true"
 			register "thc_mode[0]" = "THC_HID_I2C_MODE"
+			probe TOUCHPAD TOUCHPAD_PCT4802
 			# THC0 is function 0; hence it needs to be enabled when THC1 is to be enabled.
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC0_NAME"
@@ -432,6 +437,8 @@ chip soc/intel/pantherlake
 		device ref thc1 on
 			register "thc_wake_on_touch[1]" = "true"
 			register "thc_mode[1]" = "THC_HID_I2C_MODE"
+			probe TOUCHSCREEN THC_RAYDIMU
+			probe TOUCHSCREEN THC_ILITEK
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC1_NAME"
 				register "mode" = "THC_HID_I2C_MODE"
@@ -447,11 +454,14 @@ chip soc/intel/pantherlake
 				register "idle_ltr" = "0"
 				register "connected_device" = "TH_SENSOR_GENERIC"
 				register "add_acpi_dma_property" = "true"
-				device generic 0 on end
+				device generic 0 on
+					probe TOUCHSCREEN THC_RAYDIMU
+				end
 			end
 		end #Touchpenal
 
 		device ref hda on
+			probe AUDIO CS42L43_SNDW
 			chip drivers/intel/soundwire
 				device generic 0 on
 					chip drivers/soundwire/cs42l43

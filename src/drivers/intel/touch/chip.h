@@ -178,7 +178,6 @@ enum intel_touch_device {
 	TH_SENSOR_GOOGLE,   /* ELAN9006 for SPI and ELAN6918 for I2C */
 	TH_SENSOR_HYNITRON, /* NYITRON for I2C only  */
 	TH_SENSOR_GENERIC,  /* for device properity thru devicetree */
-	TH_SENSOR_MAX
 };
 
 /*

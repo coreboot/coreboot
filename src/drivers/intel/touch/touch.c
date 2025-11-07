@@ -39,17 +39,17 @@ __weak const struct intel_thc_hidspi_info *soc_get_thc_hidspi_info(void) { retur
 static const struct drivers_intel_touch_config *get_driver_config(const struct device *dev)
 
 {
-	const struct drivers_intel_touch_config none_driver_config;
 	const struct drivers_intel_touch_config *config = dev->chip_info;
-	const struct drivers_intel_touch_config *devices[TH_SENSOR_MAX] = {
-		[TH_SENSOR_NONE] = &none_driver_config,
-		[TH_SENSOR_WACOM] = &wacom_touch_config,
-		[TH_SENSOR_ELAN] = &elan_touch_config,
-		[TH_SENSOR_GOOGLE] = &google_touch_config,
-		[TH_SENSOR_HYNITRON] = &hynitron_touch_config,
-		[TH_SENSOR_GENERIC] = config
-	};
-	return devices[config->connected_device];
+	switch (config->connected_device) {
+	case TH_SENSOR_WACOM:    return &wacom_touch_config;
+	case TH_SENSOR_ELAN:     return &elan_touch_config;
+	case TH_SENSOR_GOOGLE:   return &google_touch_config;
+	case TH_SENSOR_HYNITRON: return &hynitron_touch_config;
+	case TH_SENSOR_GENERIC:  return config;
+	case TH_SENSOR_NONE:     return NULL;
+	/* no default so that we get an error in case someone forgets to add a case here */
+	}
+	return NULL;
 }
 
 /* Use only Device-tree definition. */

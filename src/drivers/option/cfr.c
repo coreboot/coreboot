@@ -326,8 +326,8 @@ static uint32_t sm_write_object(char *current, const struct sm_object *sm_obj)
 	uint64_t dep_id, obj_id;
 	const uint32_t *dep_values;
 	uint32_t num_dep_values;
-	struct sm_object sm_obj_copy;
 	assert(sm_obj);
+	struct sm_object sm_obj_copy = *sm_obj;
 
 	/* Assign uniqueue ID */
 	obj_id = sm_gen_obj_id((void *)sm_obj);
@@ -346,37 +346,34 @@ static uint32_t sm_write_object(char *current, const struct sm_object *sm_obj)
 
 	/* Invoke callback to update fields */
 	if (sm_obj->ctor) {
-		memcpy(&sm_obj_copy, sm_obj, sizeof(*sm_obj));
-
 		sm_obj->ctor(&sm_obj_copy);
 		assert(sm_obj->kind == sm_obj_copy.kind);
-		sm_obj = (const struct sm_object *)&sm_obj_copy;
 	}
 
-	switch (sm_obj->kind) {
+	switch (sm_obj_copy.kind) {
 	case SM_OBJ_NONE:
 		return 0;
 	case SM_OBJ_ENUM:
-		return sm_write_opt_enum(current, &sm_obj->sm_enum, obj_id,
+		return sm_write_opt_enum(current, &sm_obj_copy.sm_enum, obj_id,
 					 dep_id, dep_values, num_dep_values);
 	case SM_OBJ_NUMBER:
-		return sm_write_opt_number(current, &sm_obj->sm_number, obj_id,
+		return sm_write_opt_number(current, &sm_obj_copy.sm_number, obj_id,
 					   dep_id, dep_values, num_dep_values);
 	case SM_OBJ_BOOL:
-		return sm_write_opt_bool(current, &sm_obj->sm_bool, obj_id,
+		return sm_write_opt_bool(current, &sm_obj_copy.sm_bool, obj_id,
 					 dep_id, dep_values, num_dep_values);
 	case SM_OBJ_VARCHAR:
-		return sm_write_opt_varchar(current, &sm_obj->sm_varchar, obj_id,
+		return sm_write_opt_varchar(current, &sm_obj_copy.sm_varchar, obj_id,
 					    dep_id, dep_values, num_dep_values);
 	case SM_OBJ_COMMENT:
-		return sm_write_opt_comment(current, &sm_obj->sm_comment, obj_id,
+		return sm_write_opt_comment(current, &sm_obj_copy.sm_comment, obj_id,
 					    dep_id, dep_values, num_dep_values);
 	case SM_OBJ_FORM:
-		return sm_write_form(current, (struct sm_obj_form *)&sm_obj->sm_form, obj_id,
+		return sm_write_form(current, (struct sm_obj_form *)&sm_obj_copy.sm_form, obj_id,
 				     dep_id, dep_values, num_dep_values);
 	default:
 		BUG();
-		printk(BIOS_ERR, "Unknown setup menu object kind %u, ignoring\n", sm_obj->kind);
+		printk(BIOS_ERR, "Unknown setup menu object kind %u, ignoring\n", sm_obj_copy.kind);
 		return 0;
 	}
 }

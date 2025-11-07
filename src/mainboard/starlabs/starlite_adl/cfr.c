@@ -11,7 +11,7 @@
 #include <variants.h>
 #include <common/cfr.h>
 
-void cfr_card_reader_update(const struct sm_object *obj, struct sm_object *new_obj)
+void cfr_card_reader_update(struct sm_object *new_obj)
 {
 	struct device *mxc_accel = DEV_PTR(mxc6655);
 

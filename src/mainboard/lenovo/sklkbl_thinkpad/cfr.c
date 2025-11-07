@@ -9,7 +9,7 @@
 #include <static.h>
 
 /* Hide the dGPU CFR entry if dGPU not present */
-static void update_dgpu(const struct sm_object *obj, struct sm_object *new)
+static void update_dgpu(struct sm_object *new)
 {
 	struct device *dgpu = DEV_PTR(dgpu);
 	if (!dgpu || !dgpu->enabled) {

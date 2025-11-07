@@ -6,7 +6,7 @@
 #include <drivers/option/cfr_frontend.h>
 #include <common/powercap.h>
 
-void cfr_card_reader_update(const struct sm_object *obj, struct sm_object *new_obj);
+void cfr_card_reader_update(struct sm_object *new_obj);
 
 static const struct sm_object accelerometer = SM_DECLARE_BOOL({
 	.opt_name	= "accelerometer",

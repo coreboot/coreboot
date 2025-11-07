@@ -82,7 +82,7 @@ struct sm_object {
 	const struct sm_object *dep;
 	const uint32_t *dep_values;
 	const uint32_t num_dep_values;
-	void (*ctor)(const struct sm_object *obj, struct sm_object *new);	/* Called on object creation */
+	void (*ctor)(struct sm_object *new);	/* Called on object creation */
 	union {
 		struct sm_obj_enum sm_enum;
 		struct sm_obj_number sm_number;

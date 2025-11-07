@@ -347,8 +347,8 @@ static uint32_t sm_write_object(char *current, const struct sm_object *sm_obj)
 	/* Invoke callback to update fields */
 	if (sm_obj->ctor) {
 		memcpy(&sm_obj_copy, sm_obj, sizeof(*sm_obj));
-		sm_obj->ctor(sm_obj, &sm_obj_copy);
 
+		sm_obj->ctor(&sm_obj_copy);
 		assert(sm_obj->kind == sm_obj_copy.kind);
 		sm_obj = (const struct sm_object *)&sm_obj_copy;
 	}

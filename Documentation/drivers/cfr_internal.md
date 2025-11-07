@@ -78,7 +78,7 @@ coreboot table.
 EMI eeprom.
 
 ```
-static void update_serial(const struct sm_object *obj, struct sm_object *new)
+static void update_serial(struct sm_object *new)
 {
 	new->sm_varchar.default_value = get_emi_eeprom_vpd()->serial_number;
 }

@@ -12,23 +12,23 @@
 
 #include "vpd.h"
 
-static void update_rt_perf(const struct sm_object *obj, struct sm_object *new)
+static void update_rt_perf(struct sm_object *new)
 {
 	const bool rt_perf = get_emi_eeprom_vpd()->profile == ATLAS_PROF_REALTIME_PERFORMANCE;
 
 	if (!rt_perf)
 		return;
 
-	if (obj->kind == SM_OBJ_BOOL) {
+	if (new->kind == SM_OBJ_BOOL) {
 		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
 		new->sm_bool.default_value = false;
-	} else if (obj->kind == SM_OBJ_ENUM) {
+	} else if (new->kind == SM_OBJ_ENUM) {
 		new->sm_enum.flags = CFR_OPTFLAG_SUPPRESS;
 		new->sm_enum.default_value = 0;
 	}
 }
 
-static void update_bad_profile(const struct sm_object *obj, struct sm_object *new)
+static void update_bad_profile(struct sm_object *new)
 {
 	const bool pf_ok = get_emi_eeprom_vpd()->profile != 0;
 
@@ -37,17 +37,17 @@ static void update_bad_profile(const struct sm_object *obj, struct sm_object *ne
 	new->sm_comment.flags |= CFR_OPTFLAG_SUPPRESS;
 }
 
-static void update_serial(const struct sm_object *obj, struct sm_object *new)
+static void update_serial(struct sm_object *new)
 {
 	new->sm_varchar.default_value = get_emi_eeprom_vpd()->serial_number;
 }
 
-static void update_part_number(const struct sm_object *obj, struct sm_object *new)
+static void update_part_number(struct sm_object *new)
 {
 	new->sm_varchar.default_value = get_emi_eeprom_vpd()->part_number;
 }
 
-static void update_profile(const struct sm_object *obj, struct sm_object *new)
+static void update_profile(struct sm_object *new)
 {
 	new->sm_number.default_value = get_emi_eeprom_vpd()->profile;
 }
@@ -180,7 +180,7 @@ static struct sm_enum_value pch_pm_pcie_pll_ssc_values[] = {
 	SM_ENUM_VALUE_END,
 };
 
-static void update_pll_ssc_values(const struct sm_object *obj, struct sm_object *new)
+static void update_pll_ssc_values(struct sm_object *new)
 {
 	for (size_t i = 0; i < NUM_PCIE_SSC_SETTINGS; i++) {
 		char buffer[16];

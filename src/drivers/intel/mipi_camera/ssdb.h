@@ -37,6 +37,12 @@ enum platform_type {
 	PLAT_NVL,
 };
 
+enum platform_subtype {
+	PLAT_SUB_UNKNOWN,
+	PLAT_SUB_FFD,
+	PLAT_SUB_CHT1,
+	PLAT_SUB_CHT2,
+};
 
 enum flash_support {
 	FLASH_DEFAULT = 0,	/* default is driver defined */

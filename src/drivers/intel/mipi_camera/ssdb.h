@@ -37,8 +37,9 @@ enum platform_type {
 	PLAT_NVL,
 };
 
-enum intel_camera_flash_type {
-	FLASH_DEFAULT = 0,
+
+enum flash_support {
+	FLASH_DEFAULT = 0,	/* default is driver defined */
 	FLASH_DISABLE = 2,
 	FLASH_ENABLE = 3
 };

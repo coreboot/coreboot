@@ -192,9 +192,18 @@ struct intel_ssdb {
 	uint8_t mipi_data_format;		/* MIPI data format */
 	uint8_t silicon_version;		/* Silicon version */
 	uint8_t customer_id;			/* Customer ID */
-	uint8_t mclk_port;
-	uint8_t reserved[13];			/* Pads SSDB out so the binary blob in ACPI is
-						   the same size as seen on other firmwares.*/
+	uint8_t mclk_port;			/* MCLK port */
+	uint8_t camera_position;		/* Physical position on camera card and PMIC
+						   assignment. See enum cam_position */
+	uint8_t voltage_rail;			/* Number of voltage rails required by sensor */
+	uint8_t ppr_value;			/* Peak Power Rating value for sensor power mgmt */
+	uint8_t ppr_unit;			/* PPR unit multiplier */
+	uint8_t flash_id;			/* Flash ID: 0: default, 1: flash support */
+	uint8_t phy_config;			/* PHY config: 0: DPHY, 1: CPHY */
+	uint8_t lane_config;			/* 0: 1 lane, 1: 2 lanes,
+						   2: 3 lanes, 3: 4 lanes */
+	uint8_t use_ext_mclk_source;		/* 0: internal, 1: external */
+	uint8_t reserved[5];			/* Padding to match SSDB_SIZE */
 } __packed;
 _Static_assert(sizeof(struct intel_ssdb) == SSDB_SIZE,
 		"SSDB structure size must match SSDB_SIZE");

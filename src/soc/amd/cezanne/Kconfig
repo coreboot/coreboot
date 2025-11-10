@@ -157,10 +157,12 @@ config PSP_APOB_DRAM_ADDRESS
 
 config PSP_APOB_DRAM_SIZE
 	hex
+	default 0x1E000 if SOC_AMD_RENOIR
 	default 0x10000
 
 config PSP_SHAREDMEM_BASE
 	hex
+	default 0x201F000 if VBOOT && SOC_AMD_RENOIR
 	default 0x2011000 if VBOOT
 	default 0x0
 	help

@@ -32,7 +32,7 @@
  *                     |     (C_ENV_BOOTBLOCK_SIZE)     |
  *                     +--------------------------------+ BOOTBLOCK_ADDR = BOOTBLOCK_END - C_ENV_BOOTBLOCK_SIZE
  *                     |          Unused hole           |
- *                     |            (86KiB)             |
+ *                     |            (30KiB)             |
  *                     +--------------------------------+
  *                     |     FMAP cache (FMAP_SIZE)     |
  *                     +--------------------------------+ PSP_SHAREDMEM_BASE + PSP_SHAREDMEM_SIZE + PRERAM_CBMEM_CONSOLE_SIZE + 0x200
@@ -44,7 +44,7 @@
  *                     |   PSP shared (vboot workbuf)   |
  *                     |      (PSP_SHAREDMEM_SIZE)      |
  *                     +--------------------------------+ PSP_SHAREDMEM_BASE
- *                     |          APOB (64KiB)          |
+ *                     |          APOB (120KiB)         |
  *                     +--------------------------------+ PSP_APOB_DRAM_ADDRESS
  *                     |        Early BSP stack         |
  *                     |   (EARLYRAM_BSP_STACK_SIZE)    |

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+	Name (BRLV, 100)
 	/*
 	 * Pseudo device that contains methods to modify Opregion
 	 * "Mailbox 3 BIOS to Driver Notification"
@@ -147,6 +148,7 @@
 
 	Method (XBCM, 1, NotSerialized)
 	{
+		BRLV = Arg0
 		If (^BOX3.XBCM (Arg0) == Ones)
 		{
 			/*
@@ -163,9 +165,16 @@
 	Method (XBQC, 0, NotSerialized)
 	{
 		/*
-		 * Always query the hardware directly. Not all OS drivers
-		 * keep CBLV up to date (one is Linux' i915). Some years
-		 * after that is fixed we can probably use CBLV?
+		 * During early boot / resume the IGD driver has not yet populated
+		 * the OpRegion brightness fields (BCLM stays zero), so fall back to
+		 * the cached value we last exposed to the OS.
 		 */
-		Return (^LEGA.XBQC ())
+		If (BCLM == 0)
+		{
+			Return (BRLV)
+		}
+
+		Local0 = ^LEGA.XBQC ()
+		BRLV = Local0
+		Return (Local0)
 	}

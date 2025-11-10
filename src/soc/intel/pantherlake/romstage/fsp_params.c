@@ -196,6 +196,15 @@ static void fill_fspm_audio_params(FSP_M_CONFIG *m_cfg,
 	memset(m_cfg->PchHdaAudioLinkDmicEnable, 0, sizeof(m_cfg->PchHdaAudioLinkDmicEnable));
 	memset(m_cfg->PchHdaAudioLinkSspEnable, 0, sizeof(m_cfg->PchHdaAudioLinkSspEnable));
 	memset(m_cfg->PchHdaAudioLinkSndwEnable, 0, sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
+
+	/*
+	 * Get HDA Subsystem Vendor ID and Device ID from devicetree
+	 * and set it in FSPM UPD.
+	 */
+	const struct device_path path = { .type = DEVICE_PATH_PCI, .pci.devfn = PCI_DEVFN_HDA };
+	const struct device *dev = find_dev_path(pci_root_bus(), &path);
+	if (is_dev_enabled(dev) && dev->subsystem_vendor && dev->subsystem_device)
+		m_cfg->PchHdaSubSystemIds = dev->subsystem_vendor | (dev->subsystem_device << 16);
 }
 
 static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask,

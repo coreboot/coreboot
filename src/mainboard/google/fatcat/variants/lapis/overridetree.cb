@@ -119,6 +119,7 @@ chip soc/intel/pantherlake
 	}"
 
 	device domain 0 on
+		subsystemid 0x1043 0x15e4 inherit
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information

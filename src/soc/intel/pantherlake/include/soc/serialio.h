@@ -12,6 +12,11 @@ enum {
 };
 
 enum {
+	PchSerialPio,
+	PchSerialDma
+};
+
+enum {
 	PchSerialIoIndexI2C0,
 	PchSerialIoIndexI2C1,
 	PchSerialIoIndexI2C2,

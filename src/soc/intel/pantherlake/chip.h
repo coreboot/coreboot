@@ -483,12 +483,21 @@ struct soc_intel_pantherlake_config {
 	uint8_t serial_io_i2c_mode[CONFIG_SOC_INTEL_I2C_DEV_MAX];
 	uint8_t serial_io_gspi_mode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 	uint8_t serial_io_uart_mode[CONFIG_SOC_INTEL_UART_DEV_MAX];
+
+	/*
+	 * SerialIO DMA/PIO mode:
+	 * 0: Disable (PIO)
+	 * 1: Enable (DMA)
+	 */
+	uint8_t serial_io_uart_dma_enable[CONFIG_SOC_INTEL_UART_DEV_MAX];
+
 	/*
 	 * GSPIn Default Chip Select Mode:
 	 * 0:Hardware Mode,
 	 * 1:Software Mode
 	 */
 	uint8_t serial_io_gspi_cs_mode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+
 	/*
 	 * GSPIn Default Chip Select State:
 	 * 0: Low,

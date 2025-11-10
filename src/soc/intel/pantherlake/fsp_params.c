@@ -289,6 +289,8 @@ static void fill_fsps_lpss_params(FSP_S_CONFIG *s_cfg,
 			config->serial_io_uart_mode[i] : 0;
 		s_cfg->SerialIoUartPowerGating[i] = is_devfn_enabled(uart_dev[i]) ?
 			LPSS_UART_PG_ENABLED : LPSS_UART_PG_AUTO;
+		s_cfg->SerialIoUartDmaEnable[i] = is_devfn_enabled(uart_dev[i]) ?
+			config->serial_io_uart_dma_enable[i] : 0;
 	}
 }
 

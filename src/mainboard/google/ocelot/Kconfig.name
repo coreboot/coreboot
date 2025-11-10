@@ -28,3 +28,6 @@ config BOARD_GOOGLE_OCELOTITE4ES
 
 config BOARD_GOOGLE_OCELOTMCHP4ES
 	bool "-> Ocelotmchp4ES"
+
+config BOARD_GOOGLE_OCICAT
+	bool "-> Ocicat"

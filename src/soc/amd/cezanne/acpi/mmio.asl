@@ -94,6 +94,7 @@ Device (MMC0)
 	}
 }
 
+#if !CONFIG(UART0_REMOVE_FROM_DSDT)
 Device (FUR0)
 {
 	Name (_HID, "AMDI0020")
@@ -131,6 +132,7 @@ Device (FUR0)
 
 	AOAC_DEVICE(FCH_AOAC_DEV_UART0, 0)
 }
+#endif
 
 Device (FUR1) {
 	Name (_HID, "AMDI0020")

@@ -351,6 +351,14 @@ config DISABLE_KEYBOARD_RESET_PIN
 	  functionality isn't disabled, configuring it as an output and driving
 	  it as 0 will cause a reset.
 
+config UART0_REMOVE_FROM_DSDT
+	bool "Do not add UART0 to ACPI DSDT"
+	default n
+	help
+	  Select this option to remove the UART0 device from the ACPI DSDT, so that the UART
+	  can be passed through to domU instead of being used by dom0 in the virtualization
+	  case.
+
 menu "PSP Configuration Options"
 
 config AMDFW_CONFIG_FILE

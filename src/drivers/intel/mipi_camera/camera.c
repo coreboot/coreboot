@@ -297,7 +297,7 @@ static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *c
 		config->ssdb.bdf_value = PCI_DEVFN(CIO2_PCI_DEV, CIO2_PCI_FN);
 
 	if (!config->ssdb.platform)
-		config->ssdb.platform = PLATFORM_SKC;
+		config->ssdb.platform = PLAT_SKC;
 
 	if (!config->ssdb.flash_support)
 		config->ssdb.flash_support = FLASH_DISABLE;

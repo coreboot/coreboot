@@ -14,15 +14,27 @@ enum camera_device_type {
 	DEV_TYPE_ROM
 };
 
-enum intel_camera_platform_type {
-	PLATFORM_BXT = 8,
-	PLATFORM_SKC = 9,
-	PLATFORM_CNL = 10,
-	PLATFORM_TGL = 12,
-	PLATFORM_JSL = 14,
-	PLATFORM_ADL = 15,
-	PLATFORM_MTL = 16,
-	PLATFORM_LNL = 17
+enum platform_type {
+	PLAT_UNK,
+	PLAT_BYT,
+	PLAT_CHT,
+	PLAT_CHT1,
+	PLAT_CHT2,
+	PLAT_CHT_CR,
+	PLAT_CHT_COPOP,
+	PLAT_BSW,
+	PLAT_BXT,
+	PLAT_SKC,
+	PLAT_CNL,
+	PLAT_LKF,
+	PLAT_TGL,
+	PLAT_TGL_H,
+	PLAT_JSL,
+	PLAT_ADL,
+	PLAT_MTL,
+	PLAT_LNL,
+	PLAT_PTL,
+	PLAT_NVL,
 };
 
 enum intel_camera_flash_type {

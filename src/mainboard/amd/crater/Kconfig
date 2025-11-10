@@ -53,6 +53,9 @@ config CRATER_MCHP_FW_FILE
 	help
 	  The EC firmware blob is at the EC_BODY FMAP region of the firmware image.
 
+config PSP_RECOVERY_AB
+	default y
+
 config VBOOT
 	select VBOOT_NO_BOARD_SUPPORT
 	select VBOOT_SEPARATE_VERSTAGE

@@ -149,7 +149,14 @@
 	{
 		If (^BOX3.XBCM (Arg0) == Ones)
 		{
-			^LEGA.XBCM (Arg0)
+			/*
+			 * Only touch the legacy PWM registers after the graphics driver
+			 * reprograms them during boot/resume (BCLM stays zero until then).
+			 */
+			If (BCLM != 0)
+			{
+				^LEGA.XBCM (Arg0)
+			}
 		}
 	}
 

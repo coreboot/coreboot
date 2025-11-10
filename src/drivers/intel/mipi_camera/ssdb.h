@@ -64,6 +64,98 @@ enum intel_camera_mipi_info {
 #define CLK_FREQ_24MHZ		24000000
 #define CLK_FREQ_20MHZ		20000000
 
+enum rom_type {
+	ROM_NONE,
+	ROM_OTP,
+	ROM_EEPROM_16K_64,
+	ROM_EEPROM_16K_16,
+	ROM_OTP_ACPI,
+	ROM_ACPI,
+	ROM_EEPROM_BRCA016GWZ,
+	ROM_EEPROM_24AA32,
+	ROM_EEPROM_CAT24C08,
+	ROM_EEPROM_M24C64,
+	ROM_EFLASH_DW9806B,
+	ROM_EEPROM_CAT24C16 = 16,
+	ROM_EEPROM_CAT24C64,
+	ROM_EEPROM_24AA16,
+};
+
+enum vcm_type {
+	VCM_NONE,
+	VCM_AD5823,
+	VCM_DW9714,
+	VCM_AD5816,
+	VCM_DW9719,
+	VCM_DW9718,
+	VCM_DW9806B,
+	VCM_WV517S,
+	VCM_LC898122XA,
+	VCM_LC898212AXB,
+	VCM_AK7371 = 15,
+	VCM_BU64297GWZ,
+	VCM_DW9800,
+	VCM_DW9808,
+	VCM_LC898217,
+};
+
+enum orientation {
+	DEGREE_0,
+	DEGREE_180,
+};
+
+enum control_logic_id {
+	PMIC_NODE_0,
+	PMIC_NODE_1,
+	PMIC_NODE_2,
+	PMIC_NODE_3,
+	PMIC_NODE_4,
+	PMIC_NODE_5,
+};
+
+enum cam_position {
+	CAM_POS_CRD_G2_LEFT,		/* Left position on CRD-G2 card (one PMIC controls two sensors) */
+	CAM_POS_CRD_G2_RIGHT,		/* Right position on CRD-G2 card (one PMIC controls two sensors) */
+	CAM_POS_CRD_G3_SHARED_RAIL,	/* Shared power rail sensor on CRD-G3 card */
+};
+
+enum voltage_rail {
+	VOLTAGE_THREE_RAILS = 0,	/* Sensor requires 3 voltage rails (typically Core, Analog, IO) */
+	VOLTAGE_TWO_RAILS = 1,		/* Sensor requires 2 voltage rails */
+};
+
+enum phy_config {
+	PHY_DPHY,
+	PHY_CPHY,
+};
+
+enum ext_mclk_source {
+	MCLK_INTERNAL,
+	MCLK_EXTERNAL,
+};
+
+enum sku_vendor {
+	VENDOR_SEMCO,
+	VENDOR_LITEON,
+};
+
+enum sku_card_type {
+	SKU_DEFAULT,
+	SKU_PTC,
+	SKU_CRD_D,
+	SKU_CRD_G,
+	SKU_KILSHON_PPV,
+	SKU_CRD_G2,
+	SKU_IMX135_CRD_D,
+	SKU_CRG_VALUE,
+	SKU_CRD_G3 = 9,
+};
+
+struct sensor_sku_info {
+	enum sku_vendor vendor : 4;
+	enum sku_card_type card_type : 4;
+} __packed;
+
 struct intel_ssdb {
 	uint8_t version;			/* Current version */
 	uint8_t sensor_card_sku;		/* CRD Board type */

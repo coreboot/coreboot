@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef _SOC_PANTHERLAKE_USB_H_
-#define _SOC_PANTHERLAKE_USB_H_
+#ifndef SOC_INTEL_COMMON_BLOCK_USB_H
+#define SOC_INTEL_COMMON_BLOCK_USB_H
 
 #include <stdint.h>
 
@@ -152,4 +152,4 @@ struct tcss_port_config {
 	.ocpin            = (pin), \
 }
 
-#endif /* _SOC_PANTHERLAKE_USB_H_ */
+#endif

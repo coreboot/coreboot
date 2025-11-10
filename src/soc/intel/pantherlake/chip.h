@@ -12,12 +12,12 @@
 #include <intelblocks/power_limit.h>
 #include <intelblocks/pcie_rp.h>
 #include <intelblocks/tcss.h>
+#include <intelblocks/usb.h>
 #include <soc/gpe.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/serialio.h>
 #include <soc/tcss.h>
-#include <soc/usb.h>
 #include <stdint.h>
 
 /* Define config parameters for In-Band ECC (IBECC). */

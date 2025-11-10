@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <uuid.h>
 
+#define SSDB_SIZE 108
+
 enum camera_device_type {
 	DEV_TYPE_SENSOR = 0,
 	DEV_TYPE_VCM,
@@ -83,5 +85,7 @@ struct intel_ssdb {
 	uint8_t reserved[13];			/* Pads SSDB out so the binary blob in ACPI is
 						   the same size as seen on other firmwares.*/
 } __packed;
+_Static_assert(sizeof(struct intel_ssdb) == SSDB_SIZE,
+		"SSDB structure size must match SSDB_SIZE");
 
 #endif

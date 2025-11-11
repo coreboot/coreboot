@@ -353,9 +353,11 @@ config DISABLE_KEYBOARD_RESET_PIN
 menu "PSP Configuration Options"
 
 config AMDFW_CONFIG_FILE
-	string
+	string "AMD PSP Firmware config file"
 	#default "src/soc/amd/cezanne/fw_renoir.cfg" if SOC_AMD_RENOIR
 	default "src/soc/amd/cezanne/fw.cfg"
+	help
+	  Specify the path/location of AMD PSP Firmware config file.
 
 config PSP_DISABLE_POSTCODES
 	bool "Disable PSP post codes"

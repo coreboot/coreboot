@@ -11,6 +11,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select DRIVERS_ETH_PHY_M88E1512
 	select MAINBOARD_HAS_TPM2
 	select MEMORY_MAPPED_TPM
+	select NC_FPGA_POST_CODE
 	select TPM_MEASURED_BOOT
 	select TPM_MEASURED_BOOT_INIT_BOOTBLOCK
 
@@ -20,5 +21,20 @@ config FMDFILE
 config UART_FOR_CONSOLE
 	int
 	default 0
+
+config EARLY_PCI_BRIDGE_DEVICE
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0x1c
+
+config EARLY_PCI_BRIDGE_FUNCTION
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0x0
+
+config EARLY_PCI_MMIO_BASE
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0xfe800000
 
 endif # BOARD_SIEMENS_MC_EHL6

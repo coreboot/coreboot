@@ -36,8 +36,8 @@ fw_config
 	end
 	field SD 13 14
 		option SD_NONE			0
-		option SD_GENSYS		1
-		option SD_BAYHUB		2
+		option SD_GENSYS		1	# use pin B17 as PRSNT2#
+		option SD_BAYHUB		2	# use pin B17 as ClkReq#
 	end
 	field STORAGE 15 16
 		option STORAGE_UNKNOWN		0
@@ -602,6 +602,10 @@ chip soc/intel/pantherlake
 			register "pcie_rp[PCIE_RP(3)]" = "{
 				.clk_src = 2,
 				.clk_req = 2,
+				/*
+				 * NOTE: The clock usage flag is changed to
+				 * PCIE_RP_CLK_REQ_UNUSED in variant.c when PRSNT#2 is used.
+				 */
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			chip soc/intel/common/block/pcie/rtd3

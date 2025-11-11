@@ -75,6 +75,14 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 			 */
 			config->thc_mode[0] = THC_HID_I2C_MODE;
 	}
+
+	/* x1 Slot */
+	if (fw_config_probe(FW_CONFIG(SD, SD_GENSYS))) {
+		uint8_t flags = config->pcie_rp[PCIE_RP(3)].flags;
+		flags &= ~(PCIE_RP_CLK_REQ_DETECT | PCIE_RP_CLK_REQ_UNUSED);
+		flags |= PCIE_RP_CLK_SRC_UNUSED;
+		config->pcie_rp[PCIE_RP(3)].flags = flags;
+	}
 }
 
 void variant_update_soc_memory_init_params(FSPM_UPD *memupd)

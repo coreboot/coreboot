@@ -19,6 +19,7 @@ const struct pad_config *variant_early_gpio_table(size_t *num);
 const struct pad_config *variant_romstage_gpio_table(size_t *num);
 void fw_config_configure_pre_mem_gpio(void);
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table);
+void fw_config_post_gpio_configure(void);
 
 const struct mb_cfg *variant_memory_params(void);
 void variant_get_spd_info(struct mem_spd *spd_info);

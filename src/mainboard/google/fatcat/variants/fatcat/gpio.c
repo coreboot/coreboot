@@ -28,6 +28,8 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_A06:     ESPI_RST_EC_R_N */
 	/*  GPP_A06 : GPP_A06 ==> ESPI_RST_HDR configured on reset, do not touch */
 
+	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
+	/* NOTE: x1 slot power will be updated according to SD fw_config */
 	/* GPP_A09:     M.2_WWAN_FCP_OFF_N */
 	PAD_CFG_GPO(GPP_A09, 1, PLTRST),
 	/* GPP_A10:     M.2_WWAN_DISABLE_N */
@@ -81,7 +83,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_B21, 0, DEEP),
 	/* GPP_B24:     ESPI_ALERT0_EC_R_N */
 	PAD_NC(GPP_B24, NONE),
-
+	/* GPP_B25:     X1_SLOT_WAKE_N */
+	/* NOTE: x1 slot wake will be overridden according to SD fw_config */
 	/* GPP_C00:     GPP_C0_SMBCLK */
 	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
 	/* GPP_C01:     GPP_C1_SMBDATA */
@@ -101,7 +104,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C10:     CLKREQ1_X4_GEN5_M2_SSD_N */
 	PAD_CFG_NF(GPP_C10, NONE, DEEP, NF1),
 	/* GPP_C11:     CLKREQ2_X1_GEN4_DT_CEM_SLOT_N */
-	PAD_CFG_NF(GPP_C11, NONE, DEEP, NF1),
+	/* NOTE: x1 slot clkreq will be overridden according to SD fw_config */
 	/* GPP_C12:     CLKREQ3_X1_GEN1_GBE_LAN_N */
 	PAD_CFG_NF(GPP_C12, NONE, DEEP, NF1),
 	/* GPP_C13:     CLKREQ4_X1_GEN4_M2_WLAN_N */
@@ -159,6 +162,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
 	/* GPP_D18:     CLKREQ6_X4_GEN4_M2_SSD_N */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
+	/* GPP_D19:     X1_DT_PCIE_RST_N */
+	/* NOTE: X1 PERST will follow power sequence according to SD fw_config */
 	/* GPP_D20:     CSE_EARLY_SW */
 	PAD_CFG_GPI_SCI_HIGH(GPP_D20, NONE, DEEP, LEVEL),
 	/* GPP_D21:     NC */
@@ -363,8 +368,6 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Pad configuration in romstage */
 static const struct pad_config romstage_gpio_table[] = {
-	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
-	PAD_CFG_GPO(GPP_A08, 0, PLTRST),
 	/* GPP_C00:     GPP_C0_SMBCLK */
 	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
 	/* GPP_C01:     GPP_C1_SMBDATA */

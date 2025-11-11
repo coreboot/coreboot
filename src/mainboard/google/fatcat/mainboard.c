@@ -62,6 +62,18 @@ static void mainboard_early(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, mainboard_early, NULL);
 
+void __weak fw_config_post_gpio_configure(void)
+{
+	/* default implementation does nothing */
+}
+
+static void mainboard_pre_dev_init_chips(void *unused)
+{
+	fw_config_post_gpio_configure();
+}
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, mainboard_pre_dev_init_chips, NULL);
+
 void __weak baseboard_devtree_update(void)
 {
 	/* Override dev tree settings per baseboard */

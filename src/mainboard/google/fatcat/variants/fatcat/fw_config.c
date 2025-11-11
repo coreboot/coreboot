@@ -168,20 +168,70 @@ static const struct pad_config audio_disable_pads[] = {
 	PAD_NC(GPP_D17, NONE),
 };
 
+/*
+ * NOTE: The PCIe slot power PADs are pulled high by default on Fatcat. Since
+ * these PADs default to GPI configuration, slot power is enabled during early
+ * boot. Also, PERST# PADs are logically ANDed with PLTRST#. This ensures that
+ * PLTRST# de-assertion at the slot occurs after PCIe slot power stabilization,
+ * maintaining proper PCIe power-on sequences.
+ *
+ * If slot power must be disabled at boot, PERST# de-assertion must occur after
+ * power restoration and satisfy PCIe link training timing requirements.
+ * Additionally, the slot power PADs are recommended to be reworked to pull low
+ *  to avoid a power glitch. The suggested power sequence is:
+ *
+ *  Step 1 (romstage): ClkReq PAD off; PERST# asserted; power off
+ *  Step 2 (ramstage at BS_PRE_DEVICE exit): Power on; ClkReq PAD on (if used)
+ *  Step 3 (ramstage at BS_DEV_INIT_CHIPS entry): PERST# de-asserted
+ */
+
+/* x1 slot power sequence: 1. no clkreq; PERST=asserted; power=off */
+static const struct pad_config pre_mem_x1slot_pads[] = {
+	/* GPP_C11:     CLKREQ2_X1_GEN4_DT_CEM_SLOT_N */
+	PAD_CFG_GPI(GPP_C11, NONE, DEEP),
+	/* GPP_D19:     X1_DT_PCIE_RST_N */
+	PAD_CFG_GPO(GPP_D19, 0, PLTRST),
+	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
+	PAD_CFG_GPO(GPP_A08, 0, PLTRST),
+};
+
+/* x1 slot CBI + x1 slot power sequence: 2. power=on */
 static const struct pad_config x1slot_pads[] = {
 	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
 	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
 	/* GPP_D19:     X1_DT_PCIE_RST_N */
-	PAD_CFG_GPO(GPP_D19, 1, PLTRST),
+	PAD_CFG_GPO(GPP_D19, 0, PLTRST),
 	/* GPP_B25:     X1_SLOT_WAKE_N */
 	PAD_CFG_GPI_SCI_LOW(GPP_B25, NONE, DEEP, LEVEL),
 };
 
+/*
+ * x1 slot power sequence: 3. PERST# = de-assert;
+ */
+static const struct pad_config post_x1slot_pads[] = {
+	/* GPP_D19:     X1_DT_PCIE_RST_N */
+	PAD_CFG_GPO(GPP_D19, 1, PLTRST),
+};
+
+static const struct pad_config x1slot_clkreq_pads[] = {
+	/* x1 slot power sequence: 3a. Clkreq = enable for AIC with clkreq support */
+	/* GPP_C11:     CLKREQ2_X1_GEN4_DT_CEM_SLOT_N */
+	PAD_CFG_NF(GPP_C11, NONE, DEEP, NF1),
+};
+
+static const struct pad_config x1slot_prsnt_pads[] = {
+	/* x1 slot power sequence: 3b. clkreq = GPI or NC for AIC using PRSNT2# */
+	/* GPP_C11:     for PRSNT2_X1_GEN4_DT_CEM_SLOT_N */
+	PAD_CFG_GPI(GPP_C11, NONE, DEEP),
+};
+
 static const struct pad_config x1slot_disable_pads[] = {
 	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
-	PAD_CFG_GPO(GPP_A08, 0, PLTRST),
+	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
 	/* GPP_D19:     X1_DT_PCIE_RST_N */
 	PAD_NC(GPP_D19, NONE),
+	/* GPP_C11:     CLKREQ2_X1_GEN4_DT_CEM_SLOT_N */
+	PAD_NC(GPP_C11, NONE),
 	/* GPP_B25:     X1_SLOT_WAKE_N */
 	PAD_NC(GPP_B25, NONE)
 };
@@ -579,6 +629,9 @@ void fw_config_configure_pre_mem_gpio(void)
 		GPIO_CONFIGURE_PADS(pre_mem_gen5_ssd_pwr_pads);
 	}
 
+	if (!fw_config_probe(FW_CONFIG(SD, SD_NONE)))
+		GPIO_CONFIGURE_PADS(pre_mem_x1slot_pads);
+
 	/*
 	 * NOTE: We place WWAN sequence 2 here. According to the WWAN FIBOCOM
 	 * FM350-GL datasheet, the minimum time requirement (Tpr: time between 3.3V
@@ -661,10 +714,15 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, wwan_disable_pads);
 	}
 
-	if (fw_config_probe(FW_CONFIG(SD, SD_NONE)))
-		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_disable_pads);
-	else
+	if (fw_config_probe(FW_CONFIG(SD, SD_GENSYS))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_prsnt_pads);
+	} else if (fw_config_probe(FW_CONFIG(SD, SD_BAYHUB))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_clkreq_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_disable_pads);
+	}
 
 	if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_LPSS_I2C))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_lpss_i2c_enable_pads);
@@ -726,4 +784,10 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	} else {
 		GPIO_PADBASED_OVERRIDE(padbased_table, fp_disable_pads);
 	}
+}
+
+void fw_config_post_gpio_configure(void)
+{
+	if (!fw_config_probe(FW_CONFIG(SD, SD_NONE)))
+		GPIO_CONFIGURE_PADS(post_x1slot_pads);
 }

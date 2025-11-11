@@ -317,7 +317,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_H16:     NC */
 	PAD_NC(GPP_H16, NONE),
 	/* GPP_H17:     SOC_HP_INT_L */
-	PAD_CFG_GPI(GPP_H17, NONE, DEEP),
+	PAD_CFG_GPI_INT(GPP_H17, NONE, PLTRST, EDGE_BOTH),
 	/* GPP_H19:     I3C0_SDA_HDR */
 	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF2),
 	/* GPP_H20:     I3C0_SCL_HDR */

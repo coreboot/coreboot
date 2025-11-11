@@ -18,8 +18,6 @@ void platform_romstage_main(void)
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
 
-	enable_slow_battery_charging();
-
 	aop_fw_load_reset();
 
 	qclib_rerun();

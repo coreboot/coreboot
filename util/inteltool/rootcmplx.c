@@ -126,6 +126,7 @@ int print_rcba(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_ICH5:
 	case PCI_DEVICE_ID_INTEL_ADL_N:
 	case PCI_DEVICE_ID_INTEL_HM470:
+	case PCI_DEVICE_ID_INTEL_Q470:
 		printf("This southbridge does not have RCBA.\n");
 		return 1;
 	default:

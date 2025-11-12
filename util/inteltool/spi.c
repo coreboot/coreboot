@@ -351,6 +351,7 @@ static int print_bioscntl(struct pci_dev *sb)
 		break;
 	case PCI_DEVICE_ID_INTEL_ADL_N:
 	case PCI_DEVICE_ID_INTEL_HM470:
+	case PCI_DEVICE_ID_INTEL_Q470:
 		bios_cntl = pci_read_byte(sb, 0xdc);
 		bios_cntl_register = adl_pch_bios_cntl_registers;
 		size = ARRAY_SIZE(adl_pch_bios_cntl_registers);
@@ -534,6 +535,7 @@ static int print_spibar(struct pci_dev *sb, struct pci_access *pacc) {
 		size = ARRAY_SIZE(elkhart_spi_bar_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_HM470:
+	case PCI_DEVICE_ID_INTEL_Q470:
 		if (get_espibar_phys(sb, pacc, 5, 0x10, 0xfffff000, &rcba_phys))
 			return 1;
 		rcba_size = 4096;

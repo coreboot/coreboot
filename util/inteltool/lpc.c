@@ -151,6 +151,7 @@ int print_lpc(struct pci_dev *sb, struct pci_access *pacc)
 		}
 		break;
 	case PCI_DEVICE_ID_INTEL_HM470:
+	case PCI_DEVICE_ID_INTEL_Q470:
 		dev = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, 0);
 		if (!dev) {
 			printf("LPC/eSPI interface not found.\n");

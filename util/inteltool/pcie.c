@@ -327,6 +327,11 @@ int print_epbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_CORE_CML_H_8_2:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_H_6_2:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_H_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_10:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_8:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_6:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_4:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_2:
 		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
 		epbar_phys |= ((uint64_t)pci_read_long(nb, 0x44)) << 32;
 		break;
@@ -474,6 +479,11 @@ int print_dmibar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_CORE_CML_H_8_2:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_H_6_2:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_H_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_10:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_8:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_6:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_4:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_2:
 		dmi_registers = cometlake_dmi_registers;
 		size = ARRAY_SIZE(cometlake_dmi_registers);
 		dmibar_phys = pci_read_long(nb, 0x68);
@@ -608,6 +618,11 @@ int print_pciexbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_CORE_CML_H_8_2:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_H_6_2:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_H_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_10:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_8:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_6:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_4:
+	case PCI_DEVICE_ID_INTEL_CORE_CML_S_2:
 		pciexbar_reg = pci_read_long(nb, 0x60);
 		pciexbar_reg |= ((uint64_t)pci_read_long(nb, 0x64)) << 32;
 		break;

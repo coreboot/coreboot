@@ -17,10 +17,10 @@
 #define ESPI1_MMIO_BASE		0xfec30000
 #define ESPI_MMIO_SIZE		0x10000
 
-#define BRH_ESPI0_SMN_BASE	0x02DC5000
-#define BRH_ESPI1_SMN_BASE	0x02DCA000
+#define ESPI0_SMN_BASE		0x02DC5000
+#define ESPI1_SMN_BASE		0x02DCA000
 
-static const io_register_t kunlun_espi_cfg_registers[] = {
+static const io_register_t espi_cfg_registers[] = {
 	{0x2C, 4, "MASTER_CAP"},
 	{0x30, 4, "GLBL_CTL0"},
 	{0x34, 4, "GLBL_CTL1"},
@@ -105,12 +105,13 @@ static uint32_t espi_read8(const io_register_t *reg, size_t espi_cntrlr)
 		return read8(espibar + (espi_cntrlr * ESPI_MMIO_SIZE) + reg->addr);
 }
 
-int print_espi(struct pci_dev *sb)
+int print_espi(struct pci_dev *sb, struct pci_dev *nb)
 {
-	size_t i, espi, num_espi, cfg_registers_size = 0;
+	size_t i, espi, cfg_registers_size = 0;
 	uint32_t spibar_phys, spibar_mask;
 	const io_register_t *cfg_registers;
 	int smbus_rev = 0;
+	size_t num_espi = 1;
 
 	printf("\n========== eSPI ==========\n\n");
 
@@ -122,11 +123,13 @@ int print_espi(struct pci_dev *sb)
 
 		switch (smbus_rev) {
 		case 0x71:
-			num_espi = 2;
-			cfg_registers = kunlun_espi_cfg_registers;
-			cfg_registers_size = ARRAY_SIZE(kunlun_espi_cfg_registers);
-			espi_smn_addr[0] = BRH_ESPI0_SMN_BASE;
-			espi_smn_addr[1] = BRH_ESPI1_SMN_BASE;
+			if (nb->device_id == PCI_DEVICE_ID_AMD_BRH_ROOT_COMPLEX)
+				num_espi = 2;
+
+			cfg_registers = espi_cfg_registers;
+			cfg_registers_size = ARRAY_SIZE(espi_cfg_registers);
+			espi_smn_addr[0] = ESPI0_SMN_BASE;
+			espi_smn_addr[1] = ESPI1_SMN_BASE;
 			spibar_mask = 0xffffff00;
 			break;
 		default:

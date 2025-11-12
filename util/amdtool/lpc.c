@@ -7,7 +7,7 @@
 #include <commonlib/helpers.h>
 #include "amdtool.h"
 
-static const io_register_t kunlun_lpc_cfg_registers[] = {
+static const io_register_t lpc_cfg_registers[] = {
 	{0x00, 4, "ID"},
 	{0x04, 2, "CMD"},
 	{0x06, 2, "STS"},
@@ -81,8 +81,8 @@ int print_lpc(struct pci_dev *sb)
 
 		switch (smbus_rev) {
 		case 0x71:
-			cfg_registers = kunlun_lpc_cfg_registers;
-			cfg_registers_size = ARRAY_SIZE(kunlun_lpc_cfg_registers);
+			cfg_registers = lpc_cfg_registers;
+			cfg_registers_size = ARRAY_SIZE(lpc_cfg_registers);
 			break;
 		default:
 			printf("Error: Dumping LPC on this southbridge is not (yet) supported.\n");

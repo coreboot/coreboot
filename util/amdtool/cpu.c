@@ -518,6 +518,7 @@ int print_amd_msrs(void)
 
 	cpu_t cpulist[] = {
 		{ CPUID_TURIN_C1, common_msrs, ARRAY_SIZE(common_msrs) },
+		{ CPUID_PHOENIX_A2, common_msrs, ARRAY_SIZE(common_msrs) },
 	};
 
 	cpu_t *cpu = NULL;

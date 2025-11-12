@@ -134,6 +134,7 @@ void print_psb(struct pci_dev *nb)
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_AMD_BRH_ROOT_COMPLEX:
+	case PCI_DEVICE_ID_AMD_PHX_ROOT_COMPLEX:
 		print_psb_status_v2(c2p_msg_38_error_codes,
 				    breithorn_c2p_msg_37_fields,
 				    ARRAY_SIZE(breithorn_c2p_msg_37_fields),

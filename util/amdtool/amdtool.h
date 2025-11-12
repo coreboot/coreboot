@@ -87,7 +87,21 @@ static inline void outl(uint32_t value, uint16_t port)
 #define PCI_DEVICE_ID_AMD_BRH_DATA_FABRIC_6	0x12c6
 #define PCI_DEVICE_ID_AMD_BRH_DATA_FABRIC_7	0x12c7
 
+#define PCI_DEVICE_ID_AMD_PHX_ROOT_COMPLEX	0x14e8
+#define PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_0	0x14f0
+#define PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_1	0x14f1
+#define PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_2	0x14f2
+#define PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_3	0x14f3
+#define PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_4	0x14f4
+#define PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_5	0x14f5
+#define PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_6	0x14f6
+#define PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_7	0x14f7
+
 #define CPUID_TURIN_C1				0x00b00f21
+#define CPUID_PHOENIX_A1			0x00a70f41
+#define CPUID_PHOENIX_A2			0x00a70f52
+#define CPUID_PHOENIX2_A0			0x00a70f80
+#define CPUID_HAWKPOINT2_A0			0x00a70fc0
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)
 typedef struct { uint32_t hi, lo; } msr_t;
@@ -117,11 +131,11 @@ uint32_t cpuid(uint32_t eax);
 int print_amd_msrs(void);
 int print_cpu_info(void);
 int print_lpc(struct pci_dev *sb);
-int print_espi(struct pci_dev *sb);
-int print_gpios(struct pci_dev *sb, int show_all, int show_diffs);
-int print_spi(struct pci_dev *sb);
+int print_espi(struct pci_dev *sb, struct pci_dev *nb);
+int print_gpios(struct pci_dev *sb, struct pci_dev *nb, int show_all, int show_diffs);
+int print_spi(struct pci_dev *sb, struct pci_dev *nb);
 int print_acpimmio(struct pci_dev *sb);
 void print_psb(struct pci_dev *nb);
-int print_irq_routing(struct pci_dev *sb);
+int print_irq_routing(struct pci_dev *sb, struct pci_dev *nb);
 
 #endif

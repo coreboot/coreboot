@@ -11,7 +11,7 @@
 #define AMD_IOMUX_SIZE			0x100
 #define AMD_GPIO_BANK_SIZE		(0x100 / 4)
 
-#define AMD_BRH_IOMUX_SMN_BASE		0x02D01000
+#define AMD_FCH_ACPIMMIO_SMN_BASE	0x02D01000
 
 static uint8_t *iomux_base;
 static uint32_t *gpio_base;
@@ -105,6 +105,90 @@ const char *const kunlun_iomux_gpio_names[] = {
 	[0x98 * 4] = "I3C3_SDA",		"I2C3_SDA",	"GPIO152",	"GPIO152",
 };
 
+const char *const tacoma_iomux_gpio_names[] = {
+	[0 ... AMD_IOMUX_MAX_FUNC_COUNT * AMD_IOMUX_SIZE - 1] = "",
+	[  0 * 4] = "PWR_BTN_L",		"GPIO0",		"GPIO0",		"GPIO0",
+	[  1 * 4] = "SYS_RESET_L",		"GPIO1",		"GPIO1",		"GPIO1",
+	[  2 * 4] = "WAKE_L",			"GPIO2",		"GPIO2",		"GPIO2",
+	[  3 * 4] = "GPIO3",			"GPIO3",		"GPIO3",		"GPIO3",
+	[  4 * 4] = "GPIO4",			"GPIO4",		"GPIO4",		"GPIO4",
+	[  5 * 4] = "GPIO5",			"GPIO5",		"GPIO5",		"GPIO5",
+	[  6 * 4] = "GPIO6",			"GPIO6",		"GPIO6",		"GPIO6",
+	[  7 * 4] = "GPIO7",			"GPIO7",		"GPIO7",		"GPIO7",
+	[  8 * 4] = "GPIO8",			"TMU_CLK_OUT0",		"TMU_CLK_OUT1",		"GPIO8",
+	[  9 * 4] = "GPIO9",			"GPIO9",		"GPIO9",		"GPIO9",
+	[ 10 * 4] = "GPIO10",			"S0A3_GPIO",		"GPIO10",		"DF_VRCONTEXT_0",
+	[ 11 * 4] = "GPIO11",			"BLINK",		"GPIO11",		"GPIO11",
+	[ 12 * 4] = "LLB_L",			"GPIO12",		"GPIO12",		"GPIO12",
+	[ 16 * 4] = "USB_OC0_L",		"GPIO16",		"GPIO16",		"GPIO16",
+	[ 17 * 4] = "USB_OC1_L",		"GPIO17",		"GPIO17",		"GPIO17",
+	[ 18 * 4] = "USB_OC2_L",		"GPIO18",		"GPIO18",		"GPIO18",
+	[ 19 * 4] = "SMBUS1_SCL",		"I2C3_SCL",		"I3C3_SCL",		"GPIO19",
+	[ 20 * 4] = "SMBUS1_SDA",		"I2C3_SDA",		"I3C3_SDA",		"GPIO20",
+	[ 21 * 4] = "ESPI_RESET_L",		"KBRST_L",		"GPIO21",		"GPIO21",
+	[ 22 * 4] = "ESPI_ALERT_D1",		"GPIO22",		"GPIO22",		"SD0_CMD",
+	[ 23 * 4] = "AC_PRES",			"GPIO23",		"GPIO23",		"GPIO23",
+	[ 24 * 4] = "USB_OC3_L",		"GPIO24",		"GPIO24",		"GPIO24",
+	[ 26 * 4] = "PCIE_RST0_L",		"GPIO26",		"GPIO26",		"GPIO26",
+	[ 29 * 4] = "SPI_TPM_CS_L",		"GPIO29",		"GPIO29",		"GPIO29",
+	[ 30 * 4] = "SPI_CS2_L",		"ESPI_CS_L",		"GPIO30",		"GPIO30",
+	[ 31 * 4] = "SPI_CS3_L",		"GPIO31",		"GPIO31",		"GPIO31",
+	[ 32 * 4] = "GPIO32",			"LPC_RST_L",		"GPIO32",		"GPIO32",
+	[ 38 * 4] = "CLK_REQ5_L",		"GPIO38",		"GPIO38",		"GPIO38",
+	[ 39 * 4] = "CLK_REQ6_L",		"GPIO39",		"GPIO39",		"GPIO39",
+	[ 40 * 4] = "GPIO40",			"GPIO40",		"GPIO40",		"GPIO40",
+	[ 42 * 4] = "GPIO42",			"DF_VRCONTEXT_1",	"GPIO42",		"GPIO42",
+	[ 67 * 4] = "SPI_ROM_REQ",		"GPIO67",		"GPIO67",		"GPIO67",
+	[ 68 * 4] = "SPI1_DAT2",		"GPIO68",		"GPIO68",		"SD0_DATA3",
+	[ 69 * 4] = "SPI1_DAT3",		"GPIO69",		"SD0_CLK",		"GPIO69",
+	[ 70 * 4] = "SPI2_CLK",			"GPIO70",		"GPIO70",		"GPIO70",
+	[ 74 * 4] = "SPI1_CS1_L",		"GPIO74",		"GFX10_CAC_IPIO0",	"GPIO74",
+	[ 75 * 4] = "SPI2_CS1_L",		"GPIO75",		"GPIO75",		"GPIO75",
+	[ 76 * 4] = "SPI_ROM_GNT",		"GPIO76",		"GPIO76",		"GPIO76",
+	[ 77 * 4] = "SPI1_CLK",			"GPIO77",		"GPIO77",		"SD0_DATA0",
+	[ 78 * 4] = "SPI1_CS2_L",		"GPIO78",		"GFX10_CAC_IPIO1",	"GPIO78",
+	[ 79 * 4] = "SPI1_CS3_L",		"GPIO79",		"GPIO79",		"GPIO79",
+	[ 80 * 4] = "SPI1_DAT1",		"GPIO80",		"GPIO80",		"SD0_DATA2",
+	[ 81 * 4] = "SPI1_DAT0",		"GPIO81",		"GPIO81",		"GPIO81",
+	[ 84 * 4] = "FANIN0",			"GPIO84",		"GPIO84",		"GPIO84",
+	[ 85 * 4] = "FANOUT0",			"GPIO85",		"GPIO85",		"GPIO85",
+	[ 86 * 4] = "GPIO86",			"GPIO86",		"GPIO86",		"GPIO86",
+	[ 89 * 4] = "GENINT1_L",		"PSP_INTR0",		"GPIO89",		"GPIO89",
+	[ 90 * 4] = "GENINT2_L",		"PSP_INTR1",		"GPIO90",		"GPIO90",
+	[ 91 * 4] = "SPKR",			"GPIO91",		"GPIO91",		"GPIO91",
+	[ 92 * 4] = "CLK_REQ0_L",		"GPIO92",		"GPIO92",		"GPIO92",
+	[104 * 4] = "SPI2_DAT0",		"GPIO104",		"GPIO104",		"GPIO104",
+	[105 * 4] = "SPI2_DAT1",		"GPIO105",		"GPIO105",		"GPIO105",
+	[106 * 4] = "SPI2_DAT2",		"GPIO106",		"GPIO106",		"GPIO106",
+	[107 * 4] = "SPI2_DAT3",		"GPIO107",		"GPIO107",		"GPIO107",
+	[113 * 4] = "SMBUS0_SCL",		"I2C2_SCL",		"I3C2_SCL",		"GPIO113",
+	[114 * 4] = "SMBUS0_SDA",		"I2C2_SDA",		"I3C2_SDA",		"GPIO114",
+	[115 * 4] = "CLK_REQ1_L",		"GPIO115",		"GPIO115",		"GPIO115",
+	[116 * 4] = "CLK_REQ2_L",		"GPIO116",		"GPIO116",		"GPIO116",
+	[130 * 4] = "GPIO130",			"GPIO130",		"GPIO130",		"GPIO130",
+	[131 * 4] = "CLK_REQ3_L",		"GPIO131",		"GPIO131",		"GPIO131",
+	[132 * 4] = "CLK_REQ4_L",		"OSCIN",		"GPIO132",		"GPIO132",
+	[135 * 4] = "GPIO135",			"UART2_CTS_L",		"UART3_TXD",		"GPIO135",
+	[136 * 4] = "GPIO136",			"UART2_RXD",		"GPIO136",		"GPIO136",
+	[137 * 4] = "GPIO137",			"UART2_RTS_L",		"UART3_RXD",		"GPIO137",
+	[138 * 4] = "GPIO138",			"UART2_TXD",		"GPIO138",		"GPIO138",
+	[139 * 4] = "GPIO139",			"UART2_INTR",		"GPIO139",		"GPIO139",
+	[140 * 4] = "GPIO140",			"UART0_CTS_L",		"UART1_TXD",		"GPIO140",
+	[141 * 4] = "GPIO141",			"UART0_RXD",		"GPIO141",		"GPIO141",
+	[142 * 4] = "GPIO142",			"UART0_RTS_L",		"UART1_RXD",		"GPIO142",
+	[143 * 4] = "GPIO143",			"UART0_TXD",		"GPIO143",		"GPIO143",
+	[144 * 4] = "GPIO144",			"SHUTDOWN_L",		"UART0_INTR",		"GPIO144",
+	[145 * 4] = "I2C0_SCL",			"I3C0_SCL",		"GPIO145",		"GPIO145",
+	[146 * 4] = "I2C0_SDA",			"I3C0_SDA",		"GPIO146",		"GPIO146",
+	[147 * 4] = "I2C1_SCL",			"I3C1_SCL",		"GPIO147",		"GPIO147",
+	[148 * 4] = "I2C1_SDA",			"I3C1_SDA",		"GPIO148",		"GPIO148",
+	[153 * 4] = "GPIO153",			"UART4_CTS_L",		"GPIO153",		"GPIO153",
+	[154 * 4] = "GPIO154",			"UART4_RTS_L",		"GPIO154",		"GPIO154",
+	[155 * 4] = "GPIO155",			"UART4_RXD",		"GPIO155",		"GPIO155",
+	[156 * 4] = "GPIO156",			"UART4_TXD",		"GPIO156",		"GPIO156",
+	[157 * 4] = "GPIO157",			"UART4_INTR",		"GPIO157",		"GPIO157",
+};
+
 const uint8_t kunlun_iomux_group_defaults[] = {
 	[0 ...  AMD_IOMUX_SIZE - 1] = 0x00,
 	[0x13] = 0x01,
@@ -113,6 +197,10 @@ const uint8_t kunlun_iomux_group_defaults[] = {
 	[0x89] = 0x02,
 	[0x8A] = 0x01,
 	[0x8E] = 0x01,
+};
+
+const uint8_t tacoma_iomux_group_defaults[] = {
+	[0 ...  AMD_IOMUX_SIZE - 1] = 0x00
 };
 
 const uint32_t kunlun_gpio_group_defaults[] = {
@@ -146,11 +234,48 @@ const uint32_t kunlun_gpio_group_defaults[] = {
 	[0x0260 / 4] = 0x00040000, 0x00000000, 0x00000000, 0x00000000,
 };
 
+const uint32_t tacoma_gpio_group_defaults[] = {
+	[0 ...  4 * AMD_GPIO_BANK_SIZE - 1] = 0,
+	[0x0000]     = 0x00140000, 0x00140000, 0x00140000, 0x00140000,
+	[0x0010 / 4] = 0x00240000, 0x00240000, 0x00240000, 0x00140000,
+	[0x0020 / 4] = 0x00240000, 0x00240000, 0x00140000, 0x00140000,
+	[0x0030 / 4] = 0x00140000, 0x00000000, 0x00000000, 0x00000000,
+	[0x0040 / 4] = 0x00140000, 0x00140000, 0x00140000, 0x00000000,
+	[0x0050 / 4] = 0x00060000, 0x00140000, 0x00240000, 0x00140000,
+	[0x0060 / 4] = 0x00140000, 0x00000000, 0x00240000, 0x00240000,
+	[0x0070 / 4] = 0x00000000, 0x00140000, 0x00140000, 0x00140000,
+	[0x0080 / 4] = 0x00240000, 0x00000000, 0x00000000, 0x00000000,
+	[0x0090 / 4] = 0x00000000, 0x00000000, 0x00140000, 0x00140000,
+	[0x00A0 / 4] = 0x00240000, 0x00000000, 0x00140000, 0x00000000,
+	[0x0100 / 4] = 0x00000000, 0x00000000, 0x00000000, 0x00240000,
+	[0x0110 / 4] = 0x00140000, 0x00140000, 0x00240000, 0x00000000,
+	[0x0120 / 4] = 0x00000000, 0x00000000, 0x00140000, 0x00140000,
+	[0x0130 / 4] = 0x00240000, 0x00240000, 0x00140000, 0x00140000,
+	[0x0140 / 4] = 0x00240000, 0x00240000, 0x00000000, 0x00000000,
+	[0x0150 / 4] = 0x00140000, 0x00140000, 0x00140000, 0x00000000,
+	[0x0160 / 4] = 0x00000000, 0x00140000, 0x00140000, 0x00240000,
+	[0x0170 / 4] = 0x00140000, 0x00000000, 0x00000000, 0x00000000,
+	[0x01A0 / 4] = 0x00240000, 0x00240000, 0x00140000, 0x00140000,
+	[0x01C0 / 4] = 0x00000000, 0x00100000, 0x00140000, 0x00160000,
+	[0x01D0 / 4] = 0x00140000, 0x00000000, 0x00000000, 0x00000000,
+	[0x0200 / 4] = 0x00000000, 0x00000000, 0x00140000, 0x00140000,
+	[0x0210 / 4] = 0x00140000, 0x00000000, 0x00000000, 0x00240000,
+	[0x0220 / 4] = 0x00240000, 0x00140000, 0x00140000, 0x00240000,
+	[0x0230 / 4] = 0x00240000, 0x00240000, 0x00140000, 0x00140000,
+	[0x0240 / 4] = 0x00240000, 0x00000000, 0x00060000, 0x00000000,
+	[0x0250 / 4] = 0x00060000, 0x00000000, 0x00000000, 0x00000000,
+	[0x0260 / 4] = 0x00000000, 0x00240000, 0x00140000, 0x00240000,
+	[0x0260 / 4] = 0x00140000, 0x00240000, 0x00000000, 0x00000000,
+};
 
 #pragma GCC diagnostic pop
 
 const uint16_t kunlun_special_gpio_regs[] = {
 	0x0fc, 0x1fc, 0x2f0, 0x02f4, 0x2f8, 0x2fc
+};
+
+const uint16_t tacoma_special_gpio_regs[] = {
+	0x0fc, 0x2f0, 0x02f4, 0x2f8, 0x2fc
 };
 
 const struct gpio_group kunlun_gpio_group = {
@@ -160,6 +285,17 @@ const struct gpio_group kunlun_gpio_group = {
 	.gpio_defaults		= kunlun_gpio_group_defaults,
 	.special_gpio_regs	= kunlun_special_gpio_regs,
 	.special_gpio_regs_size = ARRAY_SIZE(kunlun_special_gpio_regs),
+	.acpimmio_gpio_offset	= 0x1500,
+	.acpimmio_iomux_offset	= 0x0d00,
+};
+
+const struct gpio_group tacoma_gpio_group = {
+	.iomux_defaults		= tacoma_iomux_group_defaults,
+	.gpio_names		= tacoma_iomux_gpio_names,
+	.gpio_bank_count	= 4,
+	.gpio_defaults		= tacoma_gpio_group_defaults,
+	.special_gpio_regs	= tacoma_special_gpio_regs,
+	.special_gpio_regs_size = ARRAY_SIZE(tacoma_special_gpio_regs),
 	.acpimmio_gpio_offset	= 0x1500,
 	.acpimmio_iomux_offset	= 0x0d00,
 };
@@ -278,7 +414,7 @@ static bool is_special_gpio_register(uint16_t reg, const struct gpio_group *sb_g
 	return false;
 }
 
-int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
+int print_gpios(struct pci_dev *sb, struct pci_dev *nb, int show_all, int show_diffs)
 {
 	size_t i;
 	const struct gpio_group *sb_gpio_group = NULL;
@@ -297,19 +433,28 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 
 		switch (smbus_rev) {
 		case 0x71:
-			sb_gpio_group = &kunlun_gpio_group;
-			acpi_mmio_smn_bar = AMD_BRH_IOMUX_SMN_BASE;
-			use_smn = true;
+			switch (nb->device_id) {
+			case PCI_DEVICE_ID_AMD_BRH_ROOT_COMPLEX:
+				sb_gpio_group = &kunlun_gpio_group;
+				acpi_mmio_smn_bar = AMD_FCH_ACPIMMIO_SMN_BASE;
+				use_smn = true;
+				break;
+			case PCI_DEVICE_ID_AMD_PHX_ROOT_COMPLEX:
+				sb_gpio_group = &tacoma_gpio_group;
+				acpi_mmio_smn_bar = AMD_FCH_ACPIMMIO_SMN_BASE;
+				use_smn = true;
+				break;
+			default:
+				goto err_out;
+			}
 			break;
 		default:
-			printf("Error: Dumping GPIOs on this southbridge is not (yet) supported.\n");
-			return 1;
+			goto err_out;
 		}
 
 		break;
 	default:
-		printf("Error: Dumping GPIOs on this southbridge is not (yet) supported.\n");
-		return 1;
+		goto err_out;
 	}
 
 	if (show_diffs && !show_all)
@@ -391,4 +536,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	}
 
 	return 0;
+err_out:
+	printf("Error: Dumping GPIOs on this southbridge is not (yet) supported.\n");
+	return 1;
 }

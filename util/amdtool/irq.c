@@ -118,13 +118,56 @@ static const struct irq_routing_table kunlun_irq_routing[] = {
 	{ { 0x79, 1, "UART3" }, NULL },
 };
 
+static const struct irq_routing_table tacoma_irq_routing[] = {
+	{ { 0x00, 1, "INTA#" }, NULL },
+	{ { 0x01, 1, "INTB#" }, NULL },
+	{ { 0x02, 1, "INTC#" }, NULL },
+	{ { 0x03, 1, "INTD#" }, NULL },
+	{ { 0x04, 1, "INTE#" }, NULL },
+	{ { 0x05, 1, "INTF#/GENINT2" }, NULL },
+	{ { 0x06, 1, "INTG#" }, NULL },
+	{ { 0x07, 1, "INTH#" }, NULL },
+	{ { 0x08, 1, "Misc" }, print_misc_irq },
+	{ { 0x09, 1, "Misc0" }, print_misc0_irq },
+	{ { 0x0A, 1, "Misc1/HPET_L" }, NULL },
+	{ { 0x0B, 1, "Misc2/HPET_H" }, NULL },
+	{ { 0x0C, 1, "INTA from SERIRQ" }, NULL },
+	{ { 0x0D, 1, "INTB from SERIRQ" }, NULL },
+	{ { 0x0E, 1, "INTC from SERIRQ" }, NULL },
+	{ { 0x0F, 1, "INTD from SERIRQ" }, NULL },
+	{ { 0x10, 1, "SCI" }, NULL },
+	{ { 0x11, 1, "SMBUS0" }, NULL },
+	{ { 0x12, 1, "ASF" }, NULL },
+	{ { 0x16, 1, "PerMon" }, NULL },
+	{ { 0x17, 1, "SD" }, NULL },
+	{ { 0x1A, 1, "SDIO" }, NULL },
+	{ { 0x20, 1, "CIR (no IRQ connected)" }, NULL },
+	{ { 0x21, 1, "GPIOa (from PAD_FANIN0)" }, NULL },
+	{ { 0x22, 1, "GPIOb (from PAD_FANOUT0)" }, NULL },
+	{ { 0x23, 1, "GPIOc (no IRQ connected)" }, NULL },
+	{ { 0x43, 1, "EMMC" }, NULL },
+	{ { 0x60, 1, "Gevent SCI interrupt" }, NULL },
+	{ { 0x61, 1, "Gevent SMI interrupt" }, NULL },
+	{ { 0x62, 1, "GPIO controller interrupt" }, NULL },
+	{ { 0x70, 1, "I2C0" }, NULL },
+	{ { 0x71, 1, "I2C1" }, NULL },
+	{ { 0x72, 1, "I2C2" }, NULL },
+	{ { 0x73, 1, "I2C3" }, NULL },
+	{ { 0x74, 1, "UART0" }, NULL },
+	{ { 0x75, 1, "UART1" }, NULL },
+	{ { 0x76, 1, "I2C4" }, NULL },
+	{ { 0x77, 1, "UART4" }, NULL },
+	{ { 0x78, 1, "UART2" }, NULL },
+	{ { 0x79, 1, "UART3" }, NULL },
+};
+
 static uint8_t read_irq_reg(uint8_t addr)
 {
 	outb(addr, AMD_PCI_INTR_IDX);
 	return inb(AMD_PCI_INTR_DATA);
 }
 
-int print_irq_routing(struct pci_dev *sb)
+int print_irq_routing(struct pci_dev *sb,struct pci_dev *nb)
 {
 	int i, irq_table_size;
 	const struct irq_routing_table *irq_table = NULL;
@@ -141,18 +184,25 @@ int print_irq_routing(struct pci_dev *sb)
 
 		switch (smbus_rev) {
 		case 0x71:
-			irq_table_size = ARRAY_SIZE(kunlun_irq_routing);
-			irq_table = kunlun_irq_routing;
+			switch (nb->device_id) {
+			case PCI_DEVICE_ID_AMD_BRH_ROOT_COMPLEX:
+				irq_table_size = ARRAY_SIZE(kunlun_irq_routing);
+				irq_table = kunlun_irq_routing;
+				break;
+			case PCI_DEVICE_ID_AMD_PHX_ROOT_COMPLEX:
+				irq_table_size = ARRAY_SIZE(tacoma_irq_routing);
+				irq_table = tacoma_irq_routing;
+				break;
+			default:
+				goto err_out;
+			}
 			break;
 		default:
-			printf("Error: Dumping IRQ routing on this southbridge is not (yet) supported.\n");
-			return 1;
+			goto err_out;
 		}
-
 		break;
 	default:
-		printf("Error: Dumping IRQ routing on this southbridge is not (yet) supported.\n");
-		return 1;
+		goto err_out;
 	}
 
 	printf("PIC routing:\n\n");
@@ -177,4 +227,8 @@ int print_irq_routing(struct pci_dev *sb)
 	printf("========================================\n");
 
 	return 0;
+
+err_out:
+	printf("Error: Dumping IRQ routing on this southbridge is not (yet) supported.\n");
+	return 1;
 }

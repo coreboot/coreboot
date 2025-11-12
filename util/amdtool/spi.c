@@ -8,7 +8,7 @@
 
 #define AMD_FCH_SPIBAR_OFFSET	0xa0
 
-#define BRH_SPI_SMN_BASE	0x2DC4000
+#define SPI_SMN_BASE	0x2DC4000
 
 static const io_register_t spi100_speed_cfg_fields[] = {
 	{ 0x0, 4, "TPM Speed" },
@@ -27,7 +27,7 @@ static const io_register_t spi100_host_prefetch_cfg_fields[] = {
 	{ 0xf, 1, "Host Burst to 4DW Enable" },
 };
 
-static const io_register_t kunlun_spi_cntl0_fields[] = {
+static const io_register_t spi_cntl0_fields[] = {
 	{ 0x0, 8, "Spi OpCode (Reserved)" },
 	{ 0x8, 1, "Disable Index Retry" },
 	{ 0x9, 1, "Index Cacheline Stop" },
@@ -49,7 +49,13 @@ static const io_register_t kunlun_alt_spi_cs_fields[] = {
 	{ 0x6, 1, "Lock SPI CS" },
 };
 
-static const char * const kunlun_spi100_speed_values[] = {
+static const io_register_t tacoma_alt_spi_cs_fields[] = {
+	{ 0x0, 2, "Alt SPI CS Enable" },
+	{ 0x3, 1, "SPI Protect Enable 0" },
+	{ 0x5, 1, "SPI Protect Lock" },
+};
+
+static const char * const spi100_speed_values[] = {
 	"66.66 MHz",
 	"33.33 MHz",
 	"22.22 MHz",
@@ -60,7 +66,7 @@ static const char * const kunlun_spi100_speed_values[] = {
 	"Defined in SPIx6C[13:8]"
 };
 
-static const io_register_t kunlun_spi_bar_registers[] = {
+static const io_register_t spi_bar_registers[] = {
 	{ 0x00, 4, "SPI Control 0" },
 	{ 0x04, 4, "SPI Restricted Command" },
 	{ 0x08, 4, "SPI Restricted Command 2" },
@@ -144,8 +150,8 @@ static int print_spi_cntrl0(struct pci_dev *sb)
 		switch (smbus_rev) {
 		case 0x71:
 			spi_cntrl0 = spi_read32(0);
-			spi_cntrl_register = kunlun_spi_cntl0_fields;
-			size = ARRAY_SIZE(kunlun_spi_cntl0_fields);
+			spi_cntrl_register = spi_cntl0_fields;
+			size = ARRAY_SIZE(spi_cntl0_fields);
 			break;
 		default:
 			printf("Error: Dumping SPI CNTRL on this southbridge is not (yet) supported.\n");
@@ -171,7 +177,7 @@ static int print_spi_cntrl0(struct pci_dev *sb)
 	return 0;
 }
 
-static int print_spi_alt_cs(struct pci_dev *sb)
+static int print_spi_alt_cs(struct pci_dev *sb, struct pci_dev *nb)
 {
 	int i, size = 0;
 	int smbus_rev = 0;
@@ -188,19 +194,28 @@ static int print_spi_alt_cs(struct pci_dev *sb)
 
 		switch (smbus_rev) {
 		case 0x71:
-			spi_alt_cs = spi_read8(0x1d);
-			spi_alt_cs_register = kunlun_alt_spi_cs_fields;
-			size = ARRAY_SIZE(kunlun_alt_spi_cs_fields);
+			switch (nb->device_id) {
+			case PCI_DEVICE_ID_AMD_BRH_ROOT_COMPLEX:
+				spi_alt_cs = spi_read8(0x1d);
+				spi_alt_cs_register = kunlun_alt_spi_cs_fields;
+				size = ARRAY_SIZE(kunlun_alt_spi_cs_fields);
+				break;
+			case PCI_DEVICE_ID_AMD_PHX_ROOT_COMPLEX:
+				spi_alt_cs = spi_read8(0x1d);
+				spi_alt_cs_register = tacoma_alt_spi_cs_fields;
+				size = ARRAY_SIZE(tacoma_alt_spi_cs_fields);
+				break;
+			default:
+				goto alt_cs_err;
+			}
 			break;
 		default:
-			printf("Error: Dumping SPI_ALT_CS on this southbridge is not (yet) supported.\n");
-			return 1;
+			goto alt_cs_err;
 		}
 
 		break;
 	default:
-		printf("Error: Dumping SPI_ALT_CS on this southbridge is not (yet) supported.\n");
-		return 1;
+		goto alt_cs_err;
 	}
 
 	printf("SPI_ALT_CS = 0x%02x\n\n", spi_alt_cs);
@@ -214,6 +229,10 @@ static int print_spi_alt_cs(struct pci_dev *sb)
 	}
 
 	return 0;
+
+alt_cs_err:
+	printf("Error: Dumping SPI_ALT_CS on this southbridge is not (yet) supported.\n");
+	return 1;
 }
 
 static int print_spi_speed_config(struct pci_dev *sb)
@@ -237,8 +256,8 @@ static int print_spi_speed_config(struct pci_dev *sb)
 			spi_speed_cfg = spi_read16(0x22);
 			spi_speed_cfg_register = spi100_speed_cfg_fields;
 			size = ARRAY_SIZE(spi100_speed_cfg_fields);
-			speed_values = kunlun_spi100_speed_values;
-			values_size = ARRAY_SIZE(kunlun_spi100_speed_values);
+			speed_values = spi100_speed_values;
+			values_size = ARRAY_SIZE(spi100_speed_values);
 			break;
 		default:
 			printf("Error: Dumping SPI100_SPEED_CFG on this southbridge is not (yet) supported.\n");
@@ -313,7 +332,7 @@ static int print_spi_host_prefetch(struct pci_dev *sb)
 	return 0;
 }
 
-static int print_spibar(struct pci_dev *sb)
+static int print_spibar(struct pci_dev *sb, struct pci_dev *nb)
 {
 	int i, size = 0, spi_size = 0x1000;
 	uint32_t spibar_phys, spibar_mask;
@@ -330,10 +349,10 @@ static int print_spibar(struct pci_dev *sb)
 
 		switch (smbus_rev) {
 		case 0x71:
-			size = ARRAY_SIZE(kunlun_spi_bar_registers);
-			spi_register = kunlun_spi_bar_registers;
+			size = ARRAY_SIZE(spi_bar_registers);
+			spi_register = spi_bar_registers;
 			spibar_mask = 0xffffff00;
-			spi_smn_base = BRH_SPI_SMN_BASE;
+			spi_smn_base = SPI_SMN_BASE;
 			break;
 		default:
 			printf("Error: Dumping SPI on this southbridge is not (yet) supported.\n");
@@ -387,7 +406,7 @@ static int print_spibar(struct pci_dev *sb)
 	}
 
 	print_spi_cntrl0(sb);
-	print_spi_alt_cs(sb);
+	print_spi_alt_cs(sb, nb);
 	print_spi_speed_config(sb);
 	print_spi_host_prefetch(sb);
 
@@ -399,7 +418,7 @@ static int print_spibar(struct pci_dev *sb)
 	return 0;
 }
 
-int print_spi(struct pci_dev *sb)
+int print_spi(struct pci_dev *sb, struct pci_dev *nb)
 {
-	return print_spibar(sb);
+	return print_spibar(sb, nb);
 }

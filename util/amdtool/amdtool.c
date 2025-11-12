@@ -34,7 +34,15 @@ static const struct {
 	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_BRH_DATA_FABRIC_5, "Turin Data Fabric 5" },
 	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_BRH_DATA_FABRIC_6, "Turin Data Fabric 6" },
 	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_BRH_DATA_FABRIC_7, "Turin Data Fabric 7" },
-
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_PHX_ROOT_COMPLEX, "Phoenix Root Complex" },
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_0, "Phoenix Data Fabric 0" },
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_1, "Phoenix Data Fabric 1" },
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_2, "Phoenix Data Fabric 2" },
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_3, "Phoenix Data Fabric 3" },
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_4, "Phoenix Data Fabric 4" },
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_5, "Phoenix Data Fabric 5" },
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_6, "Phoenix Data Fabric 6" },
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_PHX_DATA_FABRIC_7, "Phoenix Data Fabric 7" },
 	/* FCHs (Southbridges) */
 	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_FCH_SMB_1, "FCH SMBus Controller" },
 	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_FCH_LPC_1, "FCH LPC Bridge" },
@@ -351,7 +359,7 @@ int main(int argc, char *argv[])
 	if (dump_lpc) {
 		print_lpc(sb);
 		printf("\n\n");
-		print_espi(sb);
+		print_espi(sb, nb);
 		printf("\n\n");
 	}
 
@@ -371,20 +379,20 @@ int main(int argc, char *argv[])
 	}
 
 	if (dump_gpios) {
-		print_gpios(sb, 1, show_gpio_diffs);
+		print_gpios(sb, nb, 1, show_gpio_diffs);
 		printf("\n\n");
 	} else if (show_gpio_diffs) {
-		print_gpios(sb, 0, show_gpio_diffs);
+		print_gpios(sb, nb, 0, show_gpio_diffs);
 		printf("\n\n");
 	}
 
 	if (dump_spi) {
-		print_spi(sb);
+		print_spi(sb, nb);
 		printf("\n\n");
 	}
 
 	if (dump_irq) {
-		print_irq_routing(sb);
+		print_irq_routing(sb, nb);
 		printf("\n\n");
 	}
 

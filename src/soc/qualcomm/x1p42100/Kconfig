@@ -39,6 +39,8 @@ config SOC_QUALCOMM_X1P42100
 
 config SOC_QUALCOMM_HAMOA
 	bool
+	select ARM64_USE_SECURE_OS
+	select ARM64_USE_SECURE_OS_PAYLOAD
 	select SOC_QUALCOMM_BASE
 	default n
 	help

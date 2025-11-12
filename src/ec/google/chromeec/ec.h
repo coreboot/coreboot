@@ -81,6 +81,18 @@ uint64_t  google_chromeec_get_events_b(void);
 int google_chromeec_clear_events_b(uint64_t mask);
 int google_chromeec_kbbacklight(int percent);
 bool google_chromeec_has_kbbacklight(void);
+enum google_chromeec_rgbkbd_color {
+	GOOGLE_CHROMEEC_RGBKBD_COLOR_UNSET = -1,
+	GOOGLE_CHROMEEC_RGBKBD_COLOR_OFF = 0,
+	GOOGLE_CHROMEEC_RGBKBD_COLOR_RED,
+	GOOGLE_CHROMEEC_RGBKBD_COLOR_GREEN,
+	GOOGLE_CHROMEEC_RGBKBD_COLOR_BLUE,
+	GOOGLE_CHROMEEC_RGBKBD_COLOR_YELLOW,
+	GOOGLE_CHROMEEC_RGBKBD_COLOR_WHITE,
+	GOOGLE_CHROMEEC_RGBKBD_COLOR_COUNT,
+};
+int google_chromeec_rgbkbd_set_color(enum google_chromeec_rgbkbd_color color);
+bool google_chromeec_has_rgbkbd(void);
 bool google_chromeec_has_fan(void);
 void google_chromeec_post(uint8_t postcode);
 uint8_t google_chromeec_get_switches(void);

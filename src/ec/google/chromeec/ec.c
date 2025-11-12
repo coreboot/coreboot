@@ -134,6 +134,86 @@ bool google_chromeec_has_kbbacklight(void)
 	}
 }
 
+static bool google_chromeec_rgb_color_to_struct(enum google_chromeec_rgbkbd_color color,
+						struct rgb_s *rgb)
+{
+	switch (color) {
+	case GOOGLE_CHROMEEC_RGBKBD_COLOR_OFF:
+		*rgb = (struct rgb_s){ .r = 0x00, .g = 0x00, .b = 0x00 };
+		return true;
+	case GOOGLE_CHROMEEC_RGBKBD_COLOR_RED:
+		*rgb = (struct rgb_s){ .r = 0xFF, .g = 0x00, .b = 0x00 };
+		return true;
+	case GOOGLE_CHROMEEC_RGBKBD_COLOR_GREEN:
+		*rgb = (struct rgb_s){ .r = 0x00, .g = 0xFF, .b = 0x00 };
+		return true;
+	case GOOGLE_CHROMEEC_RGBKBD_COLOR_BLUE:
+		*rgb = (struct rgb_s){ .r = 0x00, .g = 0x00, .b = 0xFF };
+		return true;
+	case GOOGLE_CHROMEEC_RGBKBD_COLOR_YELLOW:
+		*rgb = (struct rgb_s){ .r = 0xFF, .g = 0xFF, .b = 0x00 };
+		return true;
+	case GOOGLE_CHROMEEC_RGBKBD_COLOR_WHITE:
+		*rgb = (struct rgb_s){ .r = 0xFF, .g = 0xFF, .b = 0xFF };
+		return true;
+	default:
+		printk(BIOS_DEBUG, "Chrome EC: Invalid RGB keyboard color: %d\n", color);
+		return false;
+	}
+}
+
+bool google_chromeec_has_rgbkbd(void)
+{
+	struct ec_params_rgbkbd params = {
+		.subcmd = EC_RGBKBD_SUBCMD_GET_CONFIG,
+	};
+	struct ec_response_rgbkbd resp = {};
+
+	/* Query the EC to determine if RGB keyboard is supported. */
+	if (ec_cmd_rgbkbd(PLAT_EC, &params, &resp) == 0 &&
+			resp.rgbkbd_type != EC_RGBKBD_TYPE_UNKNOWN) {
+		printk(BIOS_DEBUG, "ChromeEC: RGB keyboard detected (type: %d)\n", resp.rgbkbd_type);
+		return true;
+	}
+
+	printk(BIOS_DEBUG, "Chrome EC: No RGB keyboard\n");
+	return false;
+}
+
+int google_chromeec_rgbkbd_set_color(enum google_chromeec_rgbkbd_color color)
+{
+	struct rgb_s target_rgb;
+
+	if (!google_chromeec_rgb_color_to_struct(color, &target_rgb))
+		return -1;
+
+	/*
+	 * Disable any demo mode so the keyboard will honour the static color
+	 * we are about to set. Ignore failures in case older firmware doesn't
+	 * implement the subcommand.
+	 */
+	struct ec_params_rgbkbd params = {
+		.subcmd = EC_RGBKBD_SUBCMD_DEMO,
+		.demo = EC_RGBKBD_DEMO_OFF,
+	};
+	struct ec_response_rgbkbd resp = {};
+
+	(void)ec_cmd_rgbkbd(PLAT_EC, &params, &resp);
+
+	params = (struct ec_params_rgbkbd){
+		.subcmd = EC_RGBKBD_SUBCMD_CLEAR,
+		.color = target_rgb,
+	};
+
+	if (ec_cmd_rgbkbd(PLAT_EC, &params, &resp) != 0)
+		return -1;
+
+	printk(BIOS_DEBUG, "Chrome EC: RGB keyboard color set to RGB %02x,%02x,%02x\n",
+			target_rgb.r, target_rgb.g, target_rgb.b);
+
+	return 0;
+}
+
 bool google_chromeec_has_fan(void)
 {
 	/* Try the PWM fan feature flag (most reliable for modern ECs) */

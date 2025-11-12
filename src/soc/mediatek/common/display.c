@@ -191,6 +191,9 @@ int mtk_display_init(void)
 	if (info)
 		fb_set_orientation(info, panel->orientation);
 
+	if (panel->disp_path == DISP_PATH_DUAL_MIPI)
+		fb_set_dual_pipe_flag(info, true);
+
 	if (CONFIG(BMP_LOGO))
 		display_logo(panel, fb_addr, &edid);
 

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
+#include <assert.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <edid.h>
@@ -7,6 +8,40 @@
 #include <soc/ddp.h>
 
 #define SIZE(w, h) ((u32)(h) << 16 | (w))
+#define DUAL_PIPE(path) ((path) == DISP_PATH_DUAL_MIPI)
+
+struct disp_pipe_regs {
+	struct disp_mdp_rsz_regs *const mdp_rsz;
+	struct disp_tdshp_regs *const tdshp;
+	struct disp_ccorr_regs *const ccorr0;
+	struct disp_ccorr_regs *const ccorr1;
+	struct disp_gamma_regs *const gamma;
+	struct disp_postmask_regs *const postmask;
+	struct disp_dither_regs *const dither;
+	struct disp_dsc_regs *const dsc;
+};
+
+static const struct disp_pipe_regs disp_pipe0_regs = {
+	.mdp_rsz  = disp_mdp_rsz0_reg,
+	.tdshp    = disp_tdshp0_reg,
+	.ccorr0   = disp_ccorr0_reg,
+	.ccorr1   = disp_ccorr1_reg,
+	.gamma    = disp_gamma0_reg,
+	.postmask = disp_postmask0_reg,
+	.dither   = disp_dither0_reg,
+	.dsc      = disp_dsc2_reg,
+};
+
+static const struct disp_pipe_regs disp_pipe1_regs = {
+	.mdp_rsz  = disp_mdp_rsz1_reg,
+	.tdshp    = disp_tdshp1_reg,
+	.ccorr0   = disp_ccorr2_reg,
+	.ccorr1   = disp_ccorr3_reg,
+	.gamma    = disp_gamma1_reg,
+	.postmask = disp_postmask1_reg,
+	.dither   = disp_dither1_reg,
+	.dsc      = disp_dsc3_reg,
+};
 
 static void blender_config(struct blender *reg, u16 width, u16 height,
 			   enum mtk_disp_blender_layer type)
@@ -121,19 +156,37 @@ static void dither_start(struct disp_dither_regs *reg)
 	setbits32(&reg->en, BIT(0));
 }
 
+static void dsc_config(struct disp_dsc_regs *reg, u16 width, u16 height)
+{
+	write32(&reg->dsc_con, BIT(5));
+	write32(&reg->pic_w, width);
+	write32(&reg->pic_h, height);
+	write32(&reg->chunk_size, width << 16);
+}
+
+static void dsc_start(struct disp_dsc_regs *reg)
+{
+	setbits32(&reg->dsc_con, BIT(0));
+}
+
+static void ovlsys_path_connect(struct ovlsys_cfg *reg)
+{
+	setbits32(&reg->bypass_mux_shadow, BIT(0));
+	write32(&reg->cb_con, 0xFF << 16);
+	setbits32(&reg->rsz_in_cb2, BIT(1));
+	setbits32(&reg->exdma_out_cb3, BIT(2));
+	setbits32(&reg->blender_out_cb4, BIT(0));
+	setbits32(&reg->outproc_out_cb0, BIT(0));
+}
+
 static void disp_config_main_path_connection(enum disp_path_sel path)
 {
 	/* ovlsys */
-	setbits32(&ovlsys_cfg->bypass_mux_shadow, BIT(0));
-	write32(&ovlsys_cfg->cb_con, 0xFF << 16);
-	setbits32(&ovlsys_cfg->rsz_in_cb2, BIT(1));
-	setbits32(&ovlsys_cfg->exdma_out_cb3, BIT(2));
-	setbits32(&ovlsys_cfg->blender_out_cb4, BIT(0));
-	setbits32(&ovlsys_cfg->outproc_out_cb0, BIT(0));
+	ovlsys_path_connect(ovlsys_cfg);
 
 	/* dispsys */
 	write32(&mmsys_cfg->bypass_mux_shadow, 0xFF << 16 | BIT(0));
-	setbits32(&mmsys_cfg->pq_in_cb0, BIT(0));
+	setbits32(&mmsys_cfg->pq_in_cb[0], BIT(0));
 	setbits32(&mmsys_cfg->disp_mdp_rsz0_mout, BIT(0));
 	write32(&mmsys_cfg->disp_tdshp0_sout, 0x2);
 	write32(&mmsys_cfg->disp_ccorr0_sel, 0x2);
@@ -142,45 +195,95 @@ static void disp_config_main_path_connection(enum disp_path_sel path)
 	write32(&mmsys_cfg->disp_ccorr1_sout, 0x1);
 	write32(&mmsys_cfg->disp_gamma0_sel, 0x1);
 	write32(&mmsys_cfg->disp_postmask_sout, 0x0);
-	setbits32(&mmsys_cfg->pq_out_cb0, BIT(1));
+	setbits32(&mmsys_cfg->pq_out_cb[0], BIT(1));
 	setbits32(&mmsys_cfg->panel_comp_out_cb1, BIT(1));
 
 	/* dispsys1 */
 	write32(&mmsys1_cfg->bypass_mux_shadow, 0xFF << 16 | BIT(0));
 	setbits32(&mmsys1_cfg->splitter_in_cb1, BIT(5));
-	setbits32(&mmsys1_cfg->splitter_out_cb9, BIT(10));
-	setbits32(&mmsys1_cfg->comp_out_cb6, BIT(0));
-	if (path == DISP_PATH_EDP)
+	setbits32(&mmsys1_cfg->splitter_out_cb9, BIT(5));
+	setbits32(&mmsys1_cfg->comp_out_cb3, BIT(0));
+
+	if (DUAL_PIPE(path)) {
+		/* ovlsys1 */
+		ovlsys_path_connect(ovlsys1_cfg);
+		/* dispsys */
+		setbits32(&mmsys_cfg->pq_in_cb[8], BIT(1));
+		setbits32(&mmsys_cfg->disp_mdp_rsz1_mout, BIT(0));
+		write32(&mmsys_cfg->disp_tdshp1_sout, 0x2);
+		write32(&mmsys_cfg->disp_ccorr2_sel, 0x2);
+		write32(&mmsys_cfg->disp_ccorr2_sout, 0x1);
+		write32(&mmsys_cfg->disp_ccorr3_sel, 0x1);
+		write32(&mmsys_cfg->disp_ccorr3_sout, 0x1);
+		write32(&mmsys_cfg->disp_gamma1_sel, 0x1);
+		write32(&mmsys_cfg->disp_postmask1_sout, 0x0);
+		setbits32(&mmsys_cfg->pq_out_cb[3], BIT(2));
+		setbits32(&mmsys_cfg->panel_comp_out_cb2, BIT(2));
+
+		/* dispsys1 */
+		setbits32(&mmsys1_cfg->splitter_in_cb2, BIT(8));
+		setbits32(&mmsys1_cfg->splitter_out_cb12, BIT(7));
+		setbits32(&mmsys1_cfg->comp_out_cb4, BIT(3));
+	}
+
+	if (path == DISP_PATH_EDP) {
 		setbits32(&mmsys1_cfg->merge_out_cb0, BIT(9));
-	else
+	} else if (path == DISP_PATH_MIPI) {
 		setbits32(&mmsys1_cfg->merge_out_cb0, BIT(0));
+	} else {
+		setbits32(&mmsys1_cfg->merge_out_cb0, BIT(0));
+		setbits32(&mmsys1_cfg->merge_out_cb3, BIT(3));
+	}
 }
 
-static void async_config(u16 width, u16 height)
+static void async_config(u16 width, u16 height, enum disp_path_sel path)
 {
+	u32 relay = BIT(30) | SIZE(width, height);
+
 	write32(&ovlsys_cfg->relay5_size, SIZE(width, height));
-	write32(&mmsys_cfg->dl_in_relay0, BIT(30) | SIZE(width, height));
-	write32(&mmsys_cfg->dl_out_relay1, BIT(30) | SIZE(width, height));
-	write32(&mmsys1_cfg->dl_in_relay21, BIT(30) | SIZE(width, height));
+	write32(&mmsys_cfg->dl_in_relay[0], relay);
+	write32(&mmsys_cfg->dl_out_relay[1], relay);
+	write32(&mmsys1_cfg->dl_in_relay21, relay);
+
+	if (DUAL_PIPE(path)) {
+		write32(&ovlsys1_cfg->relay5_size, SIZE(width, height));
+		write32(&mmsys_cfg->dl_in_relay[8], relay);
+		write32(&mmsys_cfg->dl_out_relay[2], relay);
+		write32(&mmsys1_cfg->dl_in_relay22, relay);
+	}
 }
 
 static void disp_config_main_path_mutex(enum disp_path_sel path)
 {
-	u32 val;
+	u32 val, val1;
 
 	/* ovlsys mutex */
 	write32(&mmsys_mutex[OVL0]->mutex[0].mod, MUTEX_MOD_OVL_MAIN_PATH);
 	write32(&mmsys_mutex[OVL0]->mutex[0].mod1, MUTEX_MOD1_OVL_MAIN_PATH);
 
+	if (DUAL_PIPE(path)) {
+		write32(&mmsys_mutex[OVL1]->mutex[0].mod, MUTEX_MOD_OVL_MAIN_PATH_DUAL);
+		write32(&mmsys_mutex[OVL1]->mutex[0].mod1, MUTEX_MOD1_OVL_MAIN_PATH_DUAL);
+	}
+
 	/* dispsys mutex */
-	write32(&mmsys_mutex[DISP0]->mutex[0].mod, MUTEX_MOD_DISP_MAIN_PATH);
-	write32(&mmsys_mutex[DISP0]->mutex[0].mod1, MUTEX_MOD1_DISP_MAIN_PATH);
+	val = MUTEX_MOD_DISP_MAIN_PATH;
+	val1 = MUTEX_MOD1_DISP_MAIN_PATH;
+	if (DUAL_PIPE(path)) {
+		val |= MUTEX_MOD_DISP_MAIN_PATH_DUAL;
+		val1 |= MUTEX_MOD1_DISP_MAIN_PATH_DUAL;
+	}
+	write32(&mmsys_mutex[DISP0]->mutex[0].mod, val);
+	write32(&mmsys_mutex[DISP0]->mutex[0].mod1, val1);
 
 	/* dispsys1 mutex */
 	if (path == DISP_PATH_EDP)
-		write32(&mmsys_mutex[DISP1]->mutex[0].mod, MUTEX_MOD_DISP1_MAIN_PATH_EDP);
+		val = MUTEX_MOD_DISP1_MAIN_PATH_EDP;
+	else if (path == DISP_PATH_MIPI)
+		val = MUTEX_MOD_DISP1_MAIN_PATH_DSI0;
 	else
-		write32(&mmsys_mutex[DISP1]->mutex[0].mod, MUTEX_MOD_DISP1_MAIN_PATH_DSI0);
+		val = MUTEX_MOD_DISP1_MAIN_PATH_DUAL_DSI;
+	write32(&mmsys_mutex[DISP1]->mutex[0].mod, val);
 
 	/* mutex source from DVO */
 	if (path == DISP_PATH_EDP)
@@ -188,52 +291,81 @@ static void disp_config_main_path_mutex(enum disp_path_sel path)
 	else
 		val = MUTEX_SOF_DSI0 | (MUTEX_SOF_DSI0 << 7);
 	write32(&mmsys_mutex[OVL0]->mutex[0].ctl, val);
+	if (DUAL_PIPE(path))
+		write32(&mmsys_mutex[OVL1]->mutex[0].ctl, val);
 	write32(&mmsys_mutex[DISP0]->mutex[0].ctl, val);
 	write32(&mmsys_mutex[DISP1]->mutex[0].ctl, val);
 
 	/* mutex enable */
 	write32(&mmsys_mutex[OVL0]->mutex[0].en, BIT(0));
+	if (DUAL_PIPE(path))
+		write32(&mmsys_mutex[OVL1]->mutex[0].en, BIT(0));
 	write32(&mmsys_mutex[DISP0]->mutex[0].en, BIT(0));
 	write32(&mmsys_mutex[DISP1]->mutex[0].en, BIT(0));
 }
 
-static void main_disp_path_setup(u16 width, u16 height, u32 vrefresh, enum disp_path_sel path)
+static void disp_config_blender(struct blender *const blenders[], size_t size, u16 width,
+				u16 height)
 {
 	int i;
-	enum mtk_disp_blender_layer blender_type[ARRAY_SIZE(blenders)] = {
+	static const enum mtk_disp_blender_layer blender_type[] = {
 		FIRST_BLENDER,
 		OTHER_BLENDER,
 		OTHER_BLENDER,
 		LAST_BLENDER,
 	};
 
+	assert(size <= ARRAY_SIZE(blender_type));
+
 	/* ovlsys config */
-	for (i = 0; i < ARRAY_SIZE(blenders); i++) {
+	for (i = 0; i < size; i++) {
 		blender_config(blenders[i], width, height, blender_type[i]);
 		blender_start(blenders[i]);
 	}
+}
 
-	outproc_config(outproc0_reg, width, height);
-	outproc_start(outproc0_reg);
+static void main_disp_path_setup(u16 width, u16 height, u32 vrefresh, enum disp_path_sel path)
+{
+	u16 w = width;
+	size_t num_pipe = DUAL_PIPE(path) ? 2 : 1;
+	const struct disp_pipe_regs pipes[] = {disp_pipe0_regs, disp_pipe1_regs};
+
+	if (DUAL_PIPE(path))
+		w /= 2;
+
+	disp_config_blender(ovl_blenders, ARRAY_SIZE(ovl_blenders), w, height);
+	if (DUAL_PIPE(path))
+		disp_config_blender(ovl1_blenders, ARRAY_SIZE(ovl1_blenders), w, height);
+
+	outproc_config(ovl_outproc0_reg, w, height);
+	outproc_start(ovl_outproc0_reg);
+	if (DUAL_PIPE(path)) {
+		outproc_config(ovl1_outproc0_reg, w, height);
+		outproc_start(ovl1_outproc0_reg);
+	}
 
 	/* disp config */
-	mdp_rsz_config(disp_mdp_rsz0_reg, width, height);
-	mdp_rsz_start(disp_mdp_rsz0_reg);
-	tdshp_config(disp_tdshp0_reg, width, height);
-	tdshp_start(disp_tdshp0_reg);
-	ccorr_config(disp_ccorr0_reg, width, height);
-	ccorr_start(disp_ccorr0_reg);
-	ccorr_config(disp_ccorr1_reg, width, height);
-	ccorr_start(disp_ccorr1_reg);
-	gamma_config(disp_gamma0_reg, width, height);
-	gamma_start(disp_gamma0_reg);
-	postmask_config(disp_postmask0_reg, width, height);
-	postmask_start(disp_postmask0_reg);
-	dither_config(disp_dither0_reg, width, height);
-	dither_start(disp_dither0_reg);
+	for (int i = 0; i < num_pipe; i++) {
+		mdp_rsz_config(pipes[i].mdp_rsz, w, height);
+		mdp_rsz_start(pipes[i].mdp_rsz);
+		tdshp_config(pipes[i].tdshp, w, height);
+		tdshp_start(pipes[i].tdshp);
+		ccorr_config(pipes[i].ccorr0, w, height);
+		ccorr_start(pipes[i].ccorr0);
+		ccorr_config(pipes[i].ccorr1, w, height);
+		ccorr_start(pipes[i].ccorr1);
+		gamma_config(pipes[i].gamma, w, height);
+		gamma_start(pipes[i].gamma);
+		postmask_config(pipes[i].postmask, w, height);
+		postmask_start(pipes[i].postmask);
+		dither_config(pipes[i].dither, w, height);
+		dither_start(pipes[i].dither);
+		dsc_config(pipes[i].dsc, w, height);
+		dsc_start(pipes[i].dsc);
+	}
 
 	/* async config */
-	async_config(width, height);
+	async_config(w, height, path);
 
 	/* path connect */
 	disp_config_main_path_connection(path);
@@ -255,25 +387,40 @@ static void disp_clock_on(void)
 	clrbits32(&ovlsys_cfg->mmsys_cg_con2, CG_CON_ALL);
 }
 
-static void ovlsys_layer_config(u32 fmt, u32 bpp, u16 width, u16 height)
+static void ovlsys_layer_config_pipe(struct exdma *exdma, struct blender *blender,
+				     u32 fmt, u16 width, u16 height, u16 pitch)
 {
 	/* exdma config */
-	write32(&exdma2_reg->roi_size, SIZE(width, height));
-	write32(&exdma2_reg->ovl_l_size, SIZE(width, height));
-	write32(&exdma2_reg->pitch, (width * bpp) & 0xFFFF);
-	write32(&exdma2_reg->ovl_l_clrfmt, fmt);
+	write32(&exdma->roi_size, SIZE(width, height));
+	write32(&exdma->ovl_l_size, SIZE(width, height));
+	write32(&exdma->pitch, pitch & 0xFFFF);
+	write32(&exdma->ovl_l_clrfmt, fmt);
 
 	/* exdma start */
-	clrsetbits32(&exdma2_reg->rdma_burst_ctl, BIT(28) | BIT(30) | BIT(31),
+	clrsetbits32(&exdma->rdma_burst_ctl, BIT(28) | BIT(30) | BIT(31),
 		     BIT(28) | BIT(31));
-	setbits32(&exdma2_reg->dummy, BIT(2) | BIT(3));
-	setbits32(&exdma2_reg->datapath_con, BIT(0) | BIT(24) | BIT(25));
-	clrsetbits32(&exdma2_reg->ovl_mout, BIT(0) | BIT(1), BIT(1));
-	write32(&exdma2_reg->gdrdy_period, 0xFFFFFFFF);
+	setbits32(&exdma->dummy, BIT(2) | BIT(3));
+	setbits32(&exdma->datapath_con, BIT(0) | BIT(24) | BIT(25));
+	clrsetbits32(&exdma->ovl_mout, BIT(0) | BIT(1), BIT(1));
+	write32(&exdma->gdrdy_period, 0xFFFFFFFF);
 
 	/* Enable layer */
-	setbits32(&exdma2_reg->rdma0_ctl, BIT(0));
-	setbits32(&blenders[0]->bld_l_fmt, fmt);
+	setbits32(&exdma->rdma0_ctl, BIT(0));
+	setbits32(&blender->bld_l_fmt, fmt);
+}
+
+static void ovlsys_layer_config(u32 fmt, u32 bpp, u16 width, u16 height,
+				enum disp_path_sel path)
+{
+	u16 w = width;
+
+	if (DUAL_PIPE(path))
+		w /= 2;
+
+	ovlsys_layer_config_pipe(ovl_exdma2_reg, ovl_blenders[0], fmt, w, height, width * bpp);
+	if (DUAL_PIPE(path))
+		ovlsys_layer_config_pipe(ovl1_exdma2_reg, ovl1_blenders[0], fmt, w, height,
+					 width * bpp);
 }
 
 void mtk_ddp_init(void)
@@ -308,13 +455,13 @@ void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path)
 		       width, height, 0x1FFF);
 
 	main_disp_path_setup(width, height, vrefresh, path);
-	ovlsys_layer_config(fmt, bpp, width, height);
+	ovlsys_layer_config(fmt, bpp, width, height, path);
 }
 
 void mtk_ddp_ovlsys_start(uintptr_t fb_addr)
 {
-	write32(&exdma2_reg->ovl_addr, fb_addr);
-	setbits32(&exdma2_reg->ovl_en, BIT(0));
-	setbits32(&exdma2_reg->ovl_l_en, BIT(0));
-	setbits32(&blenders[0]->bld_l_en, BIT(0));
+	write32(&ovl_exdma2_reg->ovl_addr, fb_addr);
+	setbits32(&ovl_exdma2_reg->ovl_en, BIT(0));
+	setbits32(&ovl_exdma2_reg->ovl_l_en, BIT(0));
+	setbits32(&ovl_blenders[0]->bld_l_en, BIT(0));
 }

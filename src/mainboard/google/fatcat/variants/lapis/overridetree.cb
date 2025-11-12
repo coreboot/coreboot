@@ -80,8 +80,8 @@ chip soc/intel/pantherlake
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Discrete Bluetooth
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3.2 x1 Type-A Con #1 (MB)/
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3.2 x1 Type-A Con #2 (DB)/
+	register "usb3_ports[0]" = "USB3_PORT_TX_CFG(OC_SKIP, 0x4)" # USB3.2 x1 Type-A Con #1 (MB)/
+	register "usb3_ports[1]" = "USB3_PORT_TX_CFG(OC_SKIP, 0x4)" # USB3.2 x1 Type-A Con #2 (DB)/
 
 	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC_SKIP)"

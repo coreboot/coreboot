@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <commonlib/coreboot_tables.h>
+#include <types.h>
 
 struct fb_info;
 
@@ -19,6 +20,8 @@ int fb_add_framebuffer_info_simple(uintptr_t fb_addr, uint32_t x_res, uint32_t y
 
 void fb_set_orientation(struct fb_info *info,
 			enum lb_fb_orientation orientation);
+
+void fb_set_dual_pipe_flag(struct fb_info *info, bool dual_pipe);
 
 struct edid;
 struct fb_info *fb_new_framebuffer_info_from_edid(const struct edid *edid,

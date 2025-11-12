@@ -163,6 +163,14 @@ void fb_set_orientation(struct fb_info *info, enum lb_fb_orientation orientation
 	info->fb.orientation = orientation;
 }
 
+void fb_set_dual_pipe_flag(struct fb_info *info, bool dual_pipe)
+{
+	if (!info)
+		return;
+
+	info->fb.flags.has_dual_pipe = dual_pipe;
+}
+
 /*
  * Take an edid, and create a framebuffer.
  */

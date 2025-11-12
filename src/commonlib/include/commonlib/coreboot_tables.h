@@ -281,7 +281,8 @@ enum lb_fb_orientation {
 
 struct lb_framebuffer_flags {
 	uint8_t has_external_display : 1;
-	uint8_t reserved : 7;
+	uint8_t has_dual_pipe : 1;
+	uint8_t reserved : 6;
 };
 
 struct lb_framebuffer {

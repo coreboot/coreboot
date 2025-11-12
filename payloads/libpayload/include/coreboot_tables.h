@@ -223,7 +223,8 @@ enum cb_fb_orientation {
 
 struct cb_framebuffer_flags {
 	u8 has_external_display : 1;
-	u8 reserved : 7;
+	u8 has_dual_pipe : 1;
+	u8 reserved : 6;
 };
 
 struct cb_framebuffer {

@@ -12,6 +12,30 @@
 #include "board.h"
 #include <soc/usb/usb.h>
 
+/*
+ * Check if the system is in low battery boot mode.
+ *
+ * This function calls the underlying EC function only once during the
+ * first execution and caches the result for all subsequent calls.
+ *
+ * Return `true` if system battery is below critical threshold, `false` otherwise.
+ */
+static inline bool is_low_battery_mode(void)
+{
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return false;
+
+	static bool low_battery_mode_cached = false;
+	static bool cached_low_battery_result = false;
+
+	if (!low_battery_mode_cached) {
+		cached_low_battery_result = google_chromeec_is_below_critical_threshold();
+		low_battery_mode_cached = true;
+	}
+
+	return cached_low_battery_result;
+}
+
 static void setup_usb(void)
 {
 	setup_usb_host0();
@@ -29,7 +53,7 @@ void lb_add_boot_mode(struct lb_header *header)
 	mode->size = sizeof(*mode);
 	mode->boot_mode = LB_BOOT_MODE_NORMAL;
 
-	if (google_chromeec_is_below_critical_threshold())
+	if (is_low_battery_mode())
 		mode->boot_mode = LB_BOOT_MODE_LOW_BATTERY;
 
 	/* Enable charging only during low-battery mode */
@@ -39,6 +63,10 @@ void lb_add_boot_mode(struct lb_header *header)
 
 bool mainboard_needs_pcie_init(void)
 {
+	/* Skip PCIe initialization if boot mode is "low-battery" or "off-mode charging"*/
+	if (is_low_battery_mode())
+		return false;
+
 	return true;
 }
 
@@ -54,6 +82,10 @@ static void display_startup(void)
 
 static void mainboard_init(struct device *dev)
 {
+	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging"*/
+	if (is_low_battery_mode())
+		return;
+
 	gpi_firmware_load(QUP_0_GSI_BASE);
 	gpi_firmware_load(QUP_1_GSI_BASE);
 	gpi_firmware_load(QUP_2_GSI_BASE);

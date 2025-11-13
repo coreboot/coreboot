@@ -175,6 +175,23 @@
 		}
 
 		Local0 = ^LEGA.XBQC ()
+		If (Local0 != BRLV)
+		{
+			/*
+			 * The OS replays _BCM requests while the graphics driver is
+			 * still reinitializing, so hardware brightness can diverge
+			 * from what we cached in BRLV. Reapply the cached level once
+			 * the OpRegion is ready to keep firmware and OS state aligned.
+			 * Use BRCT flag to prevent recursion.
+			 */
+			If (BRCT == 0)
+			{
+				BRCT = 1
+				XBCM (BRLV)
+				Local0 = ^LEGA.XBQC ()
+				BRCT = 0
+			}
+		}
 		BRLV = Local0
 		Return (Local0)
 	}

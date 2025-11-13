@@ -403,6 +403,16 @@
             "speedMbps": 8533,
             "lp5x": true
         }
+    },
+    {
+        "name":  "MT62F1G32D2DS-031RF WT:C",
+        "attribs": {
+            "densityPerDieGb": 16,
+            "diesPerPackage": 2,
+            "bitWidthPerChannel": 16,
+            "ranksPerChannel": 1,
+            "speedMbps": 6400
+       }
     }
     ]
 }

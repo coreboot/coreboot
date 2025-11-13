@@ -2149,3 +2149,19 @@ int dt_apply_overlay(struct device_tree *tree, struct device_tree *overlay)
 
 	return 0;
 }
+
+bool dt_is_overlay(struct device_tree *tree)
+{
+	/* The actual overlaid nodes/props are in an __overlay__ child node. */
+	const char * const overlay_path[] = { "__overlay__", NULL };
+	struct device_tree_node *fragment;
+
+	if (!tree)
+		return false;
+
+	list_for_each(fragment, tree->root->children, list_node)
+		if (dt_find_node(fragment, overlay_path, NULL, NULL, 0))
+			return true;
+
+	return false;
+}

@@ -234,4 +234,7 @@ int dt_apply_fixups(struct device_tree *tree);
  */
 struct device_tree_node *dt_init_reserved_memory_node(struct device_tree *tree);
 
+/* Check whether a devicetree is an overlay device tree */
+bool dt_is_overlay(struct device_tree *tree);
+
 #endif /* __COMMONLIB_DEVICE_TREE_H__ */

@@ -135,6 +135,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_D02, 0, DEEP),
 	/* GPP_D03:     X4_SLOT_WAKE_N */
 	PAD_CFG_GPI_SCI_LOW(GPP_D03, NONE, DEEP, LEVEL),
+	/* GPP_D05:     disable ISH_UART0_RXD */
+	PAD_NC(GPP_D05, NONE),
 	/* GPP_D07:     ISH_UART0_RTS_N_SNSR_HDR */
 	PAD_NC(GPP_D07, NONE),
 	/* GPP_D08:     ISH_UART0_CTS_N_SNSR_HDR */

@@ -392,8 +392,6 @@ static const struct pad_config ish_disable_pads[] = {
 	PAD_NC(GPP_B22, NONE),
 	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
 	PAD_NC(GPP_B23, NONE),
-	/* GPP_D05:     ISH_UART0_ECAIC_RXD */
-	PAD_NC(GPP_D05, NONE),
 	/* GPP_D06:     ISH_UART0_ECAIC_TXD */
 	PAD_NC(GPP_D06, NONE),
 	/* GPP_F23:     SMC_LID / ISH_GP9A*/
@@ -413,8 +411,6 @@ static const struct pad_config ish_enable_pads[] = {
 	PAD_CFG_NF(GPP_B22, NONE, DEEP, NF4),
 	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
 	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF4),
-	/* GPP_D05:     ISH_UART0_ECAIC_RXD */
-	PAD_CFG_NF(GPP_D05, NONE, DEEP, NF2),
 	/* GPP_D06:     ISH_UART0_ECAIC_TXD */
 	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF2),
 	/* GPP_F23:     SMC_LID / ISH_GP9A*/

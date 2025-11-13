@@ -69,7 +69,7 @@ xhci_wait_for_command(xhci_t *const xhci,
 	int cc;
 
 	cc = xhci_wait_for_command_done(xhci, cmd_trb, clear_event);
-	if (cc != TIMEOUT)
+	if (cc != USB_TIMEOUT)
 		return cc;
 
 	/* Abort command on timeout */

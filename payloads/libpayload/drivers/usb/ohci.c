@@ -39,6 +39,7 @@ static void ohci_stop(hci_t *controller);
 static void ohci_reset(hci_t *controller);
 static void ohci_shutdown(hci_t *controller);
 static int ohci_bulk(endpoint_t *ep, int size, u8 *data, int finalize);
+static int ohci_bulk_timeout(endpoint_t *ep, int size, u8 *data, int timeout_us);
 static int ohci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq,
 			 int dalen, u8 *data);
 static void* ohci_create_intr_queue(endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
@@ -181,6 +182,7 @@ ohci_init(unsigned long physical_bar)
 	controller->init = ohci_reinit;
 	controller->shutdown = ohci_shutdown;
 	controller->bulk = ohci_bulk;
+	controller->bulk_timeout = ohci_bulk_timeout;
 	controller->control = ohci_control;
 	controller->set_address = generic_set_address;
 	controller->finish_device_config = NULL;
@@ -295,10 +297,10 @@ ohci_stop(hci_t *controller)
 #define OHCI_SLEEP_TIME_US	1000
 
 static int
-wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
+wait_for_ed(usbdev_t *dev, ed_t *head, int pages, int timeout_us)
 {
 	/* wait for results */
-	int timeout = USB_MAX_PROCESSING_TIME_US / OHCI_SLEEP_TIME_US;
+	int timeout = timeout_us / OHCI_SLEEP_TIME_US;
 	while (((head->head_pointer & ~3) != head->tail_pointer) &&
 		!(head->head_pointer & 1) &&
 		((((td_t*)phys_to_virt(head->head_pointer & ~3))->config
@@ -326,7 +328,7 @@ wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 		usb_debug("HALTED!\n");
 		return -1;
 	}
-	return result;
+	return timeout <= 0 ? USB_TIMEOUT : result;
 }
 
 static void
@@ -481,7 +483,8 @@ ohci_control(usbdev_t *dev, direction_t dir, int drlen, void *setup, int dalen,
 	OHCI_INST(dev->controller)->opreg->HcCommandStatus = ControlListFilled;
 
 	int result = wait_for_ed(dev, head,
-			(dalen == 0)?0:(last_page - first_page + 1));
+			(dalen == 0)?0:(last_page - first_page + 1),
+			USB_MAX_PROCESSING_TIME_US);
 	/* Wait some frames before and one after disabling list access. */
 	mdelay(4);
 	OHCI_INST(dev->controller)->opreg->HcControl &= ~ControlListEnable;
@@ -501,7 +504,7 @@ ohci_control(usbdev_t *dev, direction_t dir, int drlen, void *setup, int dalen,
 
 /* finalize == 1: if data is of packet aligned size, add a zero length packet */
 static int
-ohci_bulk(endpoint_t *ep, int dalen, u8 *src, int finalize)
+ohci_bulk_finalize_timeout(endpoint_t *ep, int dalen, u8 *src, int finalize, int timeout_us)
 {
 	int i;
 	td_t *cur, *next;
@@ -608,7 +611,7 @@ ohci_bulk(endpoint_t *ep, int dalen, u8 *src, int finalize)
 	OHCI_INST(ep->dev->controller)->opreg->HcCommandStatus = BulkListFilled;
 
 	int result = wait_for_ed(ep->dev, head,
-			(dalen == 0)?0:(last_page - first_page + 1));
+			(dalen == 0)?0:(last_page - first_page + 1), timeout_us);
 	/* Wait some frames before and one after disabling list access. */
 	mdelay(4);
 	OHCI_INST(ep->dev->controller)->opreg->HcControl &= ~BulkListEnable;
@@ -626,6 +629,19 @@ ohci_bulk(endpoint_t *ep, int dalen, u8 *src, int finalize)
 	}
 
 	return result;
+}
+
+static int
+ohci_bulk_timeout(endpoint_t *ep, int dalen, u8 *src, int timeout_us)
+{
+	/* usbdev_hc bulk_timeout API doesn't have finalize argument. Assume it should be 0. */
+	return ohci_bulk_finalize_timeout(ep, dalen, src, 0, timeout_us);
+}
+
+static int
+ohci_bulk(endpoint_t *ep, int dalen, u8 *src, int finalize)
+{
+	return ohci_bulk_finalize_timeout(ep, dalen, src, finalize, USB_MAX_PROCESSING_TIME_US);
 }
 
 struct _intr_queue;

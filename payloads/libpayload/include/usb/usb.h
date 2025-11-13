@@ -231,6 +231,12 @@ struct usbdev {
 
 typedef enum { OHCI = 0, UHCI = 1, EHCI = 2, XHCI = 3, DWC2 = 4} hc_type;
 
+/*
+ * Use higher value so it is less likely to conflict with error codes that
+ * controller drivers may already use.
+ */
+#define USB_TIMEOUT -65
+
 struct usbdev_hc {
 	hci_t *next;
 	uintptr_t reg_base;
@@ -255,6 +261,10 @@ struct usbdev_hc {
 	void (*shutdown) (hci_t *controller);
 
 	int (*bulk) (endpoint_t *ep, int size, u8 *data, int finalize);
+	/* bulk_timeout():		Perform bulk transfer, but timeout after
+					specified time in us. Returns
+					USB_TIMEOUT in that case. */
+	int (*bulk_timeout) (endpoint_t *ep, int size, u8 *data, int timeout_us);
 	int (*control) (usbdev_t *dev, direction_t pid, int dr_length,
 			void *devreq, int data_length, u8 *data);
 	void* (*create_intr_queue) (endpoint_t *ep, int reqsize, int reqcount, int reqtiming);

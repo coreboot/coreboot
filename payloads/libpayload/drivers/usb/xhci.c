@@ -40,6 +40,7 @@ static void xhci_reset(hci_t *controller);
 static void xhci_reinit(hci_t *controller);
 static void xhci_shutdown(hci_t *controller);
 static int xhci_bulk(endpoint_t *ep, int size, u8 *data, int finalize);
+static int xhci_bulk_timeout(endpoint_t *ep, int size, u8 *data, int timeout_us);
 static int xhci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq,
 			 int dalen, u8 *data);
 static void* xhci_create_intr_queue(endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
@@ -168,6 +169,7 @@ xhci_init(unsigned long physical_bar)
 	controller->init		= xhci_reinit;
 	controller->shutdown		= xhci_shutdown;
 	controller->bulk		= xhci_bulk;
+	controller->bulk_timeout	= xhci_bulk_timeout;
 	controller->control		= xhci_control;
 	controller->set_address		= xhci_set_address;
 	controller->finish_device_config = xhci_finish_device_config;
@@ -705,10 +707,11 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 	int i, transferred = 0;
 	const int n_stages = 2 + !!dalen;
 	for (i = 0; i < n_stages; ++i) {
-		const int ret = xhci_wait_for_transfer(xhci, dev->address, 1);
+		const int ret = xhci_wait_for_transfer(xhci, dev->address, 1,
+						       USB_MAX_PROCESSING_TIME_US);
 		transferred += ret;
 		if (ret < 0) {
-			if (ret == TIMEOUT) {
+			if (ret == USB_TIMEOUT) {
 				xhci_debug("Stopping ID %d EP 1\n",
 					   dev->address);
 				xhci_cmd_stop_endpoint(xhci, dev->address, 1);
@@ -732,14 +735,10 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 	return transferred;
 }
 
-/* finalize == 1: if data is of packet aligned size, add a zero length packet */
 static int
-xhci_bulk(endpoint_t *const ep, const int size, u8 *const src,
-	  const int finalize)
+xhci_bulk_timeout(endpoint_t *const ep, const int size, u8 *const src,
+		  int timeout_us)
 {
-	/* finalize: Hopefully the xHCI controller always does this.
-		     We have no control over the packets. */
-
 	u8 *data = src;
 	xhci_t *const xhci = XHCI_INST(ep->dev->controller);
 	const int slot_id = ep->dev->address;
@@ -777,9 +776,9 @@ xhci_bulk(endpoint_t *const ep, const int size, u8 *const src,
 	xhci_ring_doorbell(ep);
 
 	/* Wait for transfer event */
-	const int ret = xhci_wait_for_transfer(xhci, ep->dev->address, ep_id);
+	const int ret = xhci_wait_for_transfer(xhci, ep->dev->address, ep_id, timeout_us);
 	if (ret < 0) {
-		if (ret == TIMEOUT) {
+		if (ret == USB_TIMEOUT) {
 			xhci_debug("Stopping ID %d EP %d\n",
 				   ep->dev->address, ep_id);
 			xhci_cmd_stop_endpoint(xhci, ep->dev->address, ep_id);
@@ -796,6 +795,11 @@ xhci_bulk(endpoint_t *const ep, const int size, u8 *const src,
 	if (ep->direction == IN && data != src)
 		memcpy(src, data, ret);
 	return ret;
+}
+
+static int xhci_bulk(endpoint_t *ep, int size, u8 *data, int finalize)
+{
+	return xhci_bulk_timeout(ep, size, data, USB_MAX_PROCESSING_TIME_US);
 }
 
 static trb_t *

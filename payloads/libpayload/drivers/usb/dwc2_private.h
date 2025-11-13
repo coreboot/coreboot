@@ -48,7 +48,6 @@ typedef enum {
 	HCSTAT_NAK,
 	HCSTAT_NYET,
 	HCSTAT_UNKNOW,
-	HCSTAT_TIMEOUT,
 	HCSTAT_DISCONNECTED,
 } hcstat_t;
 #endif

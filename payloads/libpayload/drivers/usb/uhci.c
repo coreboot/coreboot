@@ -39,6 +39,7 @@ static void uhci_stop(hci_t *controller);
 static void uhci_reset(hci_t *controller);
 static void uhci_shutdown(hci_t *controller);
 static int uhci_bulk(endpoint_t *ep, int size, u8 *data, int finalize);
+static int uhci_bulk_timeout(endpoint_t *ep, int size, u8 *data, int timeout_us);
 static int uhci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq,
 			 int dalen, u8 *data);
 static void* uhci_create_intr_queue(endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
@@ -162,6 +163,7 @@ uhci_pci_init(pcidev_t addr)
 	controller->init = uhci_reinit;
 	controller->shutdown = uhci_shutdown;
 	controller->bulk = uhci_bulk;
+	controller->bulk_timeout = uhci_bulk_timeout;
 	controller->control = uhci_control;
 	controller->set_address = generic_set_address;
 	controller->finish_device_config = NULL;
@@ -273,23 +275,23 @@ uhci_stop(hci_t *controller)
 }
 
 #define UHCI_SLEEP_TIME_US 30
-#define UHCI_TIMEOUT (USB_MAX_PROCESSING_TIME_US / UHCI_SLEEP_TIME_US)
 #define GET_TD(x) ((void *)(((unsigned long)(x))&~0xf))
 
 static td_t *
-wait_for_completed_qh(hci_t *controller, qh_t *qh)
+wait_for_completed_qh(hci_t *controller, qh_t *qh, int *timeout_us)
 {
-	int timeout = UHCI_TIMEOUT;
+	int timeout = *timeout_us / UHCI_SLEEP_TIME_US;
 	void *current = GET_TD(qh->elementlinkptr);
 	while (((qh->elementlinkptr & FLISTP_TERMINATE) == 0) && (timeout-- > 0)) {
 		if (current != GET_TD(qh->elementlinkptr)) {
 			current = GET_TD(qh->elementlinkptr);
-			timeout = UHCI_TIMEOUT;
+			timeout = *timeout_us / UHCI_SLEEP_TIME_US;
 		}
 		uhci_reg_write16(controller, USBSTS,
 				 uhci_reg_read16(controller, USBSTS) | 0);	// clear resettable registers
 		udelay(UHCI_SLEEP_TIME_US);
 	}
+	*timeout_us = timeout * UHCI_SLEEP_TIME_US;
 	return (GET_TD(qh->elementlinkptr) ==
 		0) ? 0 : GET_TD(phys_to_virt(qh->elementlinkptr));
 }
@@ -370,9 +372,10 @@ uhci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq, const int 
 		TD_STATUS_ACTIVE;
 	UHCI_INST(dev->controller)->qh_data->elementlinkptr =
 		virt_to_phys(tds) & ~(FLISTP_QH | FLISTP_TERMINATE);
+	int timeout_us = USB_MAX_PROCESSING_TIME_US;
 	td_t *td = wait_for_completed_qh(dev->controller,
 					  UHCI_INST(dev->controller)->
-					  qh_data);
+					  qh_data, &timeout_us);
 	int result;
 	if (td == 0) {
 		result = dalen; /* TODO: We should return the actually transferred length. */
@@ -423,23 +426,24 @@ fill_schedule(td_t *td, endpoint_t *ep, int length, unsigned char *data,
 }
 
 static int
-run_schedule(usbdev_t *dev, td_t *td)
+run_schedule(usbdev_t *dev, td_t *td, int timeout_us)
 {
 	UHCI_INST(dev->controller)->qh_data->elementlinkptr =
 		virt_to_phys(td) & ~(FLISTP_QH | FLISTP_TERMINATE);
 	td = wait_for_completed_qh(dev->controller,
-				    UHCI_INST(dev->controller)->qh_data);
+				    UHCI_INST(dev->controller)->qh_data, &timeout_us);
 	if (td == 0) {
 		return 0;
 	} else {
 		td_dump(td);
-		return 1;
+		return timeout_us <= 0 ? USB_TIMEOUT : -2;
 	}
 }
 
 /* finalize == 1: if data is of packet aligned size, add a zero length packet */
 static int
-uhci_bulk(endpoint_t *ep, const int dalen, u8 *data, int finalize)
+uhci_bulk_finalize_timeout(endpoint_t *ep, const int dalen, u8 *data, int finalize,
+			   int timeout_us)
 {
 	int maxpsize = ep->maxpacketsize;
 	if (maxpsize == 0)
@@ -460,13 +464,27 @@ uhci_bulk(endpoint_t *ep, const int dalen, u8 *data, int finalize)
 		data += maxpsize;
 		len_left -= maxpsize;
 	}
-	if (run_schedule(ep->dev, tds) == 1) {
+	int ret = run_schedule(ep->dev, tds, timeout_us);
+	if (ret) {
 		free(tds);
-		return -1;
+		return ret;
 	}
 	ep->toggle = toggle;
 	free(tds);
 	return dalen; /* TODO: We should return the actually transferred length. */
+}
+
+static int
+uhci_bulk_timeout(endpoint_t *ep, int dalen, u8 *src, int timeout_us)
+{
+	/* usbdev_hc bulk_timeout API doesn't have finalize argument. Assume it should be 0. */
+	return uhci_bulk_finalize_timeout(ep, dalen, src, 0, timeout_us);
+}
+
+static int
+uhci_bulk(endpoint_t *ep, const int dalen, u8 *data, int finalize)
+{
+	return uhci_bulk_finalize_timeout(ep, dalen, data, finalize, USB_MAX_PROCESSING_TIME_US);
 }
 
 typedef struct {

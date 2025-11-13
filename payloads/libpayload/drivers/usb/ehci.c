@@ -249,23 +249,25 @@ static void free_qh_and_tds(ehci_qh_t *qh, qtd_t *cur)
 
 #define EHCI_SLEEP_TIME_US	50
 
-static int wait_for_tds(qtd_t *head)
+static int wait_for_tds(qtd_t *head, int timeout_us)
 {
-	/* returns the amount of bytes *not* transmitted, or -1 for error */
+	/* returns the amount of bytes *not* transmitted, USB_TIMEOUT on timeout,
+	 * or -1 for error
+	 */
 	int result = 0;
 	qtd_t *cur = head;
 	while (1) {
 		if (0) dump_td(virt_to_phys(cur));
 
 		/* wait for results */
-		int timeout = USB_MAX_PROCESSING_TIME_US / EHCI_SLEEP_TIME_US;
+		int timeout = timeout_us / EHCI_SLEEP_TIME_US;
 		while ((cur->token & QTD_ACTIVE) && !(cur->token & QTD_HALTED)
 				&& timeout--)
 			udelay(EHCI_SLEEP_TIME_US);
 		if (timeout < 0) {
 			usb_debug("Error: ehci: queue transfer "
 				"processing timed out.\n");
-			return -1;
+			return USB_TIMEOUT;
 		}
 		if (cur->token & QTD_HALTED) {
 			usb_debug("ERROR with packet\n");
@@ -319,7 +321,7 @@ static int ehci_set_async_schedule(ehci_t *ehcic, int enable)
 }
 
 static int ehci_process_async_schedule(
-		ehci_t *ehcic, ehci_qh_t *qhead, qtd_t *head)
+		ehci_t *ehcic, ehci_qh_t *qhead, qtd_t *head, int timeout_us)
 {
 	int result;
 
@@ -333,7 +335,7 @@ static int ehci_process_async_schedule(
 	if (ehci_set_async_schedule(ehcic, 1)) return -1;
 
 	/* wait for result */
-	result = wait_for_tds(head);
+	result = wait_for_tds(head, timeout_us);
 
 	/* disable async schedule */
 	ehci_set_async_schedule(ehcic, 0);
@@ -341,7 +343,7 @@ static int ehci_process_async_schedule(
 	return result;
 }
 
-static int ehci_bulk(endpoint_t *ep, int size, u8 *src, int finalize)
+static int ehci_bulk_timeout(endpoint_t *ep, int size, u8 *src, int timeout_us)
 {
 	int result = 0;
 	u8 *end = src + size;
@@ -410,7 +412,7 @@ static int ehci_bulk(endpoint_t *ep, int size, u8 *src, int finalize)
 	head->token |= (ep->toggle?QTD_TOGGLE_DATA1:0);
 
 	result = ehci_process_async_schedule(
-			EHCI_INST(ep->dev->controller), qh, head);
+			EHCI_INST(ep->dev->controller), qh, head, timeout_us);
 	if (result >= 0) {
 		result = size - result;
 		if (pid == EHCI_IN && end != src + size)
@@ -427,6 +429,11 @@ oom:
 	usb_debug("Not enough DMA memory for EHCI control structures!\n");
 	free_qh_and_tds(qh, head);
 	return -1;
+}
+
+static int ehci_bulk(endpoint_t *ep, int size, u8 *src, int finalize)
+{
+	return ehci_bulk_timeout(ep, size, src, USB_MAX_PROCESSING_TIME_US);
 }
 
 /* FIXME: Handle control transfers as 3 QHs, so the 2nd stage can be >0x4000 bytes */
@@ -530,7 +537,7 @@ static int ehci_control(usbdev_t *dev, direction_t dir, int drlen, void *setup,
 	qh->td.next_qtd = virt_to_phys(head);
 
 	result = ehci_process_async_schedule(
-			EHCI_INST(dev->controller), qh, head);
+			EHCI_INST(dev->controller), qh, head, USB_MAX_PROCESSING_TIME_US);
 	if (result >= 0) {
 		result = dalen - result;
 		if (dir == IN && data != src)
@@ -784,6 +791,7 @@ ehci_init(unsigned long physical_bar)
 	controller->init = ehci_reinit;
 	controller->shutdown = ehci_shutdown;
 	controller->bulk = ehci_bulk;
+	controller->bulk_timeout = ehci_bulk_timeout;
 	controller->control = ehci_control;
 	controller->set_address = generic_set_address;
 	controller->finish_device_config = NULL;

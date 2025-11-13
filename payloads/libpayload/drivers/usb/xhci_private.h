@@ -45,8 +45,7 @@
 
 #define MASK(startbit, lenbit) (((1<<(lenbit))-1)<<(startbit))
 
-/* Make these high enough to not collide with negative XHCI CCs */
-#define TIMEOUT			-65
+/* Make these high enough to not collide with negative XHCI CCs and generic USB_TIMEOUT */
 #define CONTROLLER_ERROR	-66
 #define COMMUNICATION_ERROR	-67
 #define OUT_OF_MEMORY		-68
@@ -496,7 +495,8 @@ void xhci_update_event_dq(xhci_t *);
 void xhci_handle_events(xhci_t *);
 int xhci_wait_for_command_aborted(xhci_t *, const trb_t *);
 int xhci_wait_for_command_done(xhci_t *, const trb_t *, int clear_event);
-int xhci_wait_for_transfer(xhci_t *, const int slot_id, const int ep_id);
+int xhci_wait_for_transfer(xhci_t *, const int slot_id, const int ep_id,
+			   unsigned long timeout_us);
 
 void xhci_clear_trb(trb_t *, int pcs);
 

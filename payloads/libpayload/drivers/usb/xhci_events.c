@@ -232,7 +232,7 @@ xhci_wait_for_event_type(xhci_t *const xhci,
  *
  * Process events from xHCI Abort command.
  *
- * Returns CC_COMMAND_RING_STOPPED on success and TIMEOUT on failure.
+ * Returns CC_COMMAND_RING_STOPPED on success and USB_TIMEOUT on failure.
  */
 
 int
@@ -244,7 +244,7 @@ xhci_wait_for_command_aborted(xhci_t *const xhci, const trb_t *const address)
 	 * what to do then.
 	 */
 	unsigned long timeout_us = USB_MAX_PROCESSING_TIME_US; /* 5s */
-	int cc = TIMEOUT;
+	int cc = USB_TIMEOUT;
 	/*
 	 * Expects two command completion events:
 	 * The first with CC == COMMAND_ABORTED should point to address
@@ -292,7 +292,7 @@ update_and_return:
 
 /*
  * returns cc of command in question (pointed to by `address`)
- * caller should abort command if cc is TIMEOUT
+ * caller should abort command if cc is USB_TIMEOUT
  */
 int
 xhci_wait_for_command_done(xhci_t *const xhci,
@@ -300,7 +300,7 @@ xhci_wait_for_command_done(xhci_t *const xhci,
 			   const int clear_event)
 {
 	unsigned long timeout_us = USB_MAX_PROCESSING_TIME_US; /* 5s */
-	int cc = TIMEOUT;
+	int cc = USB_TIMEOUT;
 	while (xhci_wait_for_event_type(xhci, TRB_EV_CMD_CMPL, &timeout_us)) {
 		if ((xhci->er.cur->ptr_low == virt_to_phys(address)) &&
 				(xhci->er.cur->ptr_high == 0)) {
@@ -321,12 +321,11 @@ xhci_wait_for_command_done(xhci_t *const xhci,
 
 /* returns amount of bytes transferred on success, negative CC on error */
 int
-xhci_wait_for_transfer(xhci_t *const xhci, const int slot_id, const int ep_id)
+xhci_wait_for_transfer(xhci_t *const xhci, const int slot_id, const int ep_id,
+		       unsigned long timeout_us)
 {
 	xhci_spew("Waiting for transfer on ID %d EP %d\n", slot_id, ep_id);
-	/* 5s for all types of transfers */
-	unsigned long timeout_us = USB_MAX_PROCESSING_TIME_US;
-	int ret = TIMEOUT;
+	int ret = USB_TIMEOUT;
 	while (xhci_wait_for_event_type(xhci, TRB_EV_TRANSFER, &timeout_us)) {
 		if (TRB_GET(ID, xhci->er.cur) == slot_id &&
 				TRB_GET(EP, xhci->er.cur) == ep_id) {

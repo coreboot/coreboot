@@ -5,7 +5,7 @@
 
 void variant_config_gpios(void);
 
-int variant_memory_sku(void);
+uint8_t variant_memory_sku(void);
 
 void ssdt_add_dgpu(const struct device *dev);
 

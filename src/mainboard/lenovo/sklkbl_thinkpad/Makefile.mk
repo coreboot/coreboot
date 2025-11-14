@@ -13,6 +13,11 @@ ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += variants/$(VARIANT_DIR)/gma-mainb
 
 subdirs-y += variants/$(VARIANT_DIR)
 
+ifeq ($(CONFIG_BOARD_LENOVO_T470S),y)
+subdirs-y += variants/$(VARIANT_DIR)/memory
+subdirs-y += spd
+endif
+
 ifeq ($(CONFIG_VARIANT_HAS_DGPU),y)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
 endif

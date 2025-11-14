@@ -1,0 +1,39 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <cbfs.h>
+#include <console/console.h>
+#include <device/dram/ddr4.h>
+#include <spd.h>
+
+#include "spd.h"
+
+/* Get SPD data for on-board memory */
+uint8_t *mainboard_find_spd_data(uint8_t spd_index)
+{
+	uint8_t *spd_data;
+	size_t spd_file_len;
+	char *spd_file;
+
+	spd_file = cbfs_map("spd.bin", &spd_file_len);
+	if (!spd_file)
+		die("SPD data not found.");
+
+	if (spd_file_len < ((spd_index + 1) * SPD_SIZE_MAX_DDR4)) {
+		printk(BIOS_ERR,
+		       "SPD index override to 0 due to incorrect SPD index.\n");
+		spd_index = 0;
+	}
+
+	if (spd_file_len < SPD_SIZE_MAX_DDR4)
+		die("Missing SPD data (spd.bin size %zu smaller than SPD size %u).", spd_file_len, SPD_SIZE_MAX_DDR4);
+
+	/* Assume same memory in both channels */
+	spd_index *= SPD_SIZE_MAX_DDR4;
+	spd_data = (uint8_t *)(spd_file + spd_index);
+
+	/* Make sure a valid SPD was found */
+	if (spd_data[0] == 0)
+		die("Invalid SPD data.");
+
+	return spd_data;
+}

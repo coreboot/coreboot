@@ -16,7 +16,7 @@ static const struct pad_config memory_id_gpio_table[] = {
        PAD_CFG_GPI_TRIG_OWN(GPP_F20, UP_20K, DEEP, OFF, ACPI),         /* MEMORYID4 */
 };
 
-int variant_memory_sku(void)
+uint8_t variant_memory_sku(void)
 {
         gpio_t spd_gpios[] = {
                 GPP_F16,
@@ -31,7 +31,7 @@ int variant_memory_sku(void)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	int spd_idx;
+	uint8_t spd_idx;
 	char spd_name[20];
 	size_t spd_size;
 

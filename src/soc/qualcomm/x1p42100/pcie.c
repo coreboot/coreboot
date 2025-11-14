@@ -11,6 +11,7 @@
 #include <soc/pcie.h>
 
 #define NVME_REG_EN GPIO(18)
+#define NVME_PLN_GPIO GPIO(157)  /* Power Loss Notification */
 
 static const struct qcom_qmp_phy_init_tbl x1p42100_qmp_pcie_serdes_pll_tbl[] = {
 	QMP_PHY_INIT_CFG(QSERDES_V4_PLL_SSC_STEP_SIZE1_MODE1, 0x26),
@@ -301,9 +302,31 @@ int32_t qcom_dw_pcie_enable_clock(void)
 	return ret;
 }
 
+/*
+ * Configure NVMe Power Loss Notification GPIO
+ *
+ * Hamoa target wired the PLN signal to a SoC GPIO. The circuitry
+ * for connecting the PLN from the SoC (1.2volts) to the NVMe (3.3volts)
+ * caused the voltage level on the PLN signal on the NVMe side to be
+ * different depending on the NVMe part. This function will Configure PLN
+ * GPIO in software to make sure the PLN is high and this GPIO can be used
+ * for other HW configurations.
+ */
+static void nvme_core_pln_gpio(void)
+{
+	gpio_configure(NVME_PLN_GPIO,   /* GPIO 157 */
+		       GPIO_FUNC_GPIO,  /* Function, 0 for generic */
+		       GPIO_NO_PULL,    /* Pull */
+		       GPIO_2MA,        /* Drive strength */
+		       GPIO_INPUT);     /* Direction */
+}
+
 /* Turn on NVMe */
 void gcom_pcie_power_on_ep(void)
 {
+	/* Configure Power Loss Notification GPIO before powering on */
+	nvme_core_pln_gpio();
+
 	gpio_output(NVME_REG_EN, 1);
 }
 

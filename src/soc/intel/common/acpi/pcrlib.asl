@@ -97,4 +97,29 @@ Method (OPCR, 4, Serialized)
 	RPCR (Arg0, Arg1, Arg2)
 }
 
+/*
+ * Perform PCR register write for specified Die at PID and offset
+ * Arg0 - Die Index
+ * Arg1 - PCR Port ID
+ * Arg2 - Register Offset
+ * Arg3 - Value to write
+ */
+Method (WPCR, 4, Serialized)
+{
+	OperationRegion (PCRD, SystemMemory, GPCR (Arg0, Arg1) + Arg2, 4)
+	Field (PCRD, DWordAcc, NoLock, Preserve)
+	{
+		DATA, 32
+	}
+	DATA = Arg3
+
+	/*
+	 * After every write one needs to read an innocuous register
+	 * to ensure the writes are completed for certain ports. This is done
+	 * for all ports so that the callers don't need the per-port knowledge
+	 * for each transaction.
+	 */
+	RPCR (Arg0, Arg1, Arg2)
+}
+
 #endif /* _SOC_INTEL_ACPI_PCR_LIB_ */

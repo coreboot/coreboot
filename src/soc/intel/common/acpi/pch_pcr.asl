@@ -44,3 +44,14 @@ Method (PCRO, 3, Serialized)
 {
 	OPCR(PCH_P2SB, Arg0, Arg1, Arg2)
 }
+
+/*
+ * Write a value with PCR register at specified PID and offset
+ * Arg0 - PCR Port ID
+ * Arg1 - Register Offset
+ * Arg2 - Value to Write
+ */
+Method (PCRW, 3, Serialized)
+{
+	WPCR(PCH_P2SB, Arg0, Arg1, Arg2)
+}

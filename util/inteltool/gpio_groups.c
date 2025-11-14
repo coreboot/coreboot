@@ -198,6 +198,7 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 	case PCI_DEVICE_ID_INTEL_TIGERPOINT_U_BASE:
 	case PCI_DEVICE_ID_INTEL_TIGERPOINT_Y_SUPER:
 	case PCI_DEVICE_ID_INTEL_TIGERPOINT_Y_PREM:
+	case PCI_DEVICE_ID_INTEL_TIGERPOINT_EMBEDDED_IOTG:
 		*community_count = ARRAY_SIZE(tigerlake_pch_lp_communities);
 		*pad_stepping = 16;
 		return tigerlake_pch_lp_communities;

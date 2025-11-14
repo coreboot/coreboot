@@ -139,7 +139,7 @@ UART_FW_FILE := $(X1P42100_BLOB)/qup_fw/uart_fw.bin
 UART_FW_CBFS := $(CONFIG_CBFS_PREFIX)/uart_fw
 $(UART_FW_CBFS)-file := $(UART_FW_FILE)
 $(UART_FW_CBFS)-type := raw
-$(UART_FW_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+$(UART_FW_CBFS)-compression := none
 cbfs-files-y += $(UART_FW_CBFS)
 
 ################################################################################
@@ -147,7 +147,7 @@ SPI_FW_FILE := $(X1P42100_BLOB)/qup_fw/spi_fw.bin
 SPI_FW_CBFS := $(CONFIG_CBFS_PREFIX)/spi_fw
 $(SPI_FW_CBFS)-file := $(SPI_FW_FILE)
 $(SPI_FW_CBFS)-type := raw
-$(SPI_FW_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+$(SPI_FW_CBFS)-compression := none
 cbfs-files-y += $(SPI_FW_CBFS)
 
 ################################################################################
@@ -155,7 +155,7 @@ I2C_FW_FILE := $(X1P42100_BLOB)/qup_fw/i2c_fw.bin
 I2C_FW_CBFS := $(CONFIG_CBFS_PREFIX)/i2c_fw
 $(I2C_FW_CBFS)-file := $(I2C_FW_FILE)
 $(I2C_FW_CBFS)-type := raw
-$(I2C_FW_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+$(I2C_FW_CBFS)-compression := none
 cbfs-files-y += $(I2C_FW_CBFS)
 
 ################################################################################
@@ -259,7 +259,7 @@ GSI_FW_FILE := $(X1P42100_BLOB)/qup_fw/gsi_fw.bin
 GSI_FW_CBFS := $(CONFIG_CBFS_PREFIX)/gsi_fw
 $(GSI_FW_CBFS)-file := $(GSI_FW_FILE)
 $(GSI_FW_CBFS)-type := raw
-$(GSI_FW_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+$(GSI_FW_CBFS)-compression := none
 cbfs-files-y += $(GSI_FW_CBFS)
 
 ################################################################################

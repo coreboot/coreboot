@@ -379,6 +379,8 @@ static void configure_phy_port(pcie_qmp_phy_base_t *port, pcie_qmp_phy_cfg_t *qp
 	qcom_qmp_phy_config_lane(port->rx0, qphy->rx_tbl, qphy->rx_tbl_num, lane_base);
 	qcom_qmp_phy_config_lane(port->tx1, qphy->tx_tbl, qphy->tx_tbl_num, lane_base + 1);
 	qcom_qmp_phy_config_lane(port->rx1, qphy->rx_tbl, qphy->rx_tbl_num, lane_base + 1);
+	/* Apply RX1-specific overrides after common RX settings */
+	qcom_qmp_phy_config_lane(port->rx1, qphy->rx_tbl_sec, qphy->rx_tbl_num_sec, lane_base + 1);
 	qcom_qmp_phy_configure(port->ln_shrd, qphy->ln_shrd_tbl, qphy->ln_shrd_tbl_num);
 	qcom_qmp_phy_configure(port->serdes, qphy->serdes_tbl, qphy->serdes_tbl_num);
 	qcom_qmp_phy_configure(port->pcs, qphy->pcs_tbl, qphy->pcs_tbl_num);

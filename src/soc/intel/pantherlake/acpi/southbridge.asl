@@ -57,3 +57,6 @@
 #if CONFIG(SOC_INTEL_WILDCATLAKE)
 #include <soc/intel/common/block/acpi/acpi/ufs.asl>
 #endif
+
+/* P2B access for IOST */
+#include <soc/intel/common/acpi/iost.asl>

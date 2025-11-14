@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpigen.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
@@ -15,6 +16,7 @@
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tcss.h>
 #include <intelblocks/xdci.h>
+#include <option.h>
 #include <soc/intel/common/reset.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/iomap.h>
@@ -219,6 +221,40 @@ static void cpu_fill_ssdt(const struct device *dev)
 		printk(BIOS_ERR, "Failed to generate ACPI _PRT table!\n");
 
 	generate_cpu_entries(dev);
+}
+
+/*
+ * This implements SoC-specific function used in common P2SB code to generate
+ * additional P2SB-related ACPI code.
+ */
+void soc_fill_p2sb_ssdt(const struct device *dev)
+{
+	/*
+	 * Enable IOST for debug via P2SB at OS level. The associated IOST ASL file
+	 * (i.e., src/soc/intel/common/acpi/iost.asl) is included in the SoC's
+	 * southbridge.asl. The CBFS option "iost_enable" is used to expose this
+	 * IOST interface to the OS.
+	 * Use cbfstool command to add this option to the image.
+	 */
+	if (!get_uint_option("iost_enable", 0))
+		return;
+
+	printk(BIOS_INFO, "IOST is enabled\n");
+	/*
+	 * The following generates:
+	 * Scope (\_SB.PCI0.IOST)
+	 * {
+	 *     If (CondRefOf (IOSE))
+	 *     {
+	 *         IOSE = 0x0F
+	 *     }
+	 * }
+	 */
+	acpigen_write_scope("\\_SB.PCI0.IOST");
+		acpigen_write_if_cond_ref_of("IOSE");
+			acpigen_write_store_int_to_namestr(0xf, "IOSE");
+		acpigen_write_if_end();
+	acpigen_write_scope_end();
 }
 
 static void cpu_set_north_irqs(struct device *dev)

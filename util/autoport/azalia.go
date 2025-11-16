@@ -9,6 +9,10 @@ type azalia struct {
 }
 
 func (i azalia) Scan(ctx Context, addr PCIDevData) {
+	/* FIXME: Rework to output new verb table format, or better
+	   yet use hda-decoder to avoid duplicating functionality */
+	KconfigBool["AZALIA_USE_LEGACY_VERB_TABLE"] = true
+
 	az := Create(ctx, "hda_verb.c")
 	defer az.Close()
 

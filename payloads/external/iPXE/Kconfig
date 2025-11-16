@@ -51,7 +51,7 @@ if BUILD_IPXE
 
 choice
 	prompt "iPXE version"
-	default IPXE_STABLE
+	default IPXE_MASTER
 
 config IPXE_STABLE
 	bool "2022.1"

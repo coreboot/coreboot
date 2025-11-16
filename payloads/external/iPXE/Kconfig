@@ -34,6 +34,7 @@ config PXE_ROM_FILE
 
 config PXE_ROM_ID
 	string "network card PCI IDs"
+	depends on !IPXE_BUILD_EFI
 	default "10ec,8168"
 	help
 	  The comma-separated PCI vendor and device ID that would associate

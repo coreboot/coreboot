@@ -212,7 +212,7 @@ config EDK2_CPU_TIMER_LIB
 
 config EDK2_FOLLOW_BGRT_SPEC
 	bool "Center logo 38.2% from the top of screen"
-	depends on EDK2_REPO_MRCHROMEBOX
+	depends on !EDK2_REPO_OFFICIAL
 	default n
 	help
 	  Follow the BGRT Specification implemented by Microsoft and
@@ -235,14 +235,14 @@ config EDK2_HAVE_EFI_SHELL
 
 config EDK2_PRIORITIZE_INTERNAL
 	bool "Prioritize internal boot devices"
-	depends on EDK2_REPO_MRCHROMEBOX
+	depends on !EDK2_REPO_OFFICIAL
 	default y
 	help
 	  Prioritize internal boot devices over external devices
 
 config EDK2_LOAD_OPTION_ROMS
 	bool "Load and Execute OpROMs on PCIe devices"
-	depends on EDK2_REPO_MRCHROMEBOX
+	depends on !EDK2_REPO_OFFICIAL
 	default n
 	help
 	  Load and execute OpROMs on PCIe devices.
@@ -271,7 +271,7 @@ config EDK2_SERIAL_SUPPORT
 
 config EDK2_SECURE_BOOT_SUPPORT
 	bool "Enable UEFI Secure Boot support"
-	depends on EDK2_REPO_MRCHROMEBOX && SMMSTORE_V2
+	depends on !EDK2_REPO_OFFICIAL && SMMSTORE_V2
 	default y if EDK2_REPO_MRCHROMEBOX && SMMSTORE_V2
 	help
 	  Select this option to enable UEFI SecureBoot support in edk2.
@@ -279,7 +279,7 @@ config EDK2_SECURE_BOOT_SUPPORT
 
 config EDK2_GOP_DRIVER
 	bool "Add a GOP driver to the Tianocore build"
-	depends on INTEL_GMA_ADD_VBT && NO_GFX_INIT && EDK2_REPO_MRCHROMEBOX
+	depends on INTEL_GMA_ADD_VBT && NO_GFX_INIT && !EDK2_REPO_OFFICIAL
 	default y if INTEL_GMA_ADD_VBT && NO_GFX_INIT && EDK2_REPO_MRCHROMEBOX
 	help
 	  Select this option to have edk2 use an external GOP driver for display init.

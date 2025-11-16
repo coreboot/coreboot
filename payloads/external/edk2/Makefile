@@ -130,9 +130,9 @@ BUILD_STR += -D CAPSULE_MAIN_FW_GUID=$(CONFIG_DRIVERS_EFI_MAIN_FW_GUID)
 endif
 
 #
-# The MrChromebox repository has the following addition options:
+# One or more downstream edk2 repositories support the following additional options:
 #
-ifeq ($(CONFIG_EDK2_REPO_MRCHROMEBOX),y)
+ifeq ($(CONFIG_EDK2_REPO_OFFICIAL),)
 
 # FOLLOW_BGRT_SPEC		= FALSE
 ifeq ($(CONFIG_EDK2_FOLLOW_BGRT_SPEC),y)
@@ -159,7 +159,7 @@ ifeq ($(CONFIG_EDK2_LOAD_OPTION_ROMS),y)
 BUILD_STR += -D LOAD_OPTION_ROMS=TRUE
 endif
 
-endif
+endif # !CONFIG_EDK2_REPO_OFFICIAL
 
 #
 # EDKII has the below PCDs that are relevant to coreboot:

@@ -4,8 +4,24 @@
 #include <arch/encoding.h>
 #include <arch/smp/smp.h>
 #include <arch/smp/atomic.h>
+#include <assert.h>
 #include <console/console.h>
 #include <mcall.h>
+
+/*
+ *                                                               BSP
+ *                                                 --------------------------------- <---
+ *                          AP                     |     sync_b=HART_SLEEPING      |     |
+ *    ---> ---------------------------------       ---------------------------------     |
+ *   |     |     sync_a=HART_SLEEPING      | ----> | Wait for sync_a=HART_SLEEPING |     |
+ *   |     ---------------------------------       ---------------------------------     |
+ *   |     |      Wait for Interrupt       | <---- |        set_msip()             |     |
+ *   |     ---------------------------------       ---------------------------------     |
+ *   |     |     sync_a=HART_AWAKE         | ----> | Wait for sync_a=HART_AWAKE    |     |
+ *   |     ---------------------------------       ---------------------------------     |
+ *   |     |  Wait for sync_b=HART_AWAKE   | <---- |     sync_b=HART_AWAKE         |     |
+ *    ---- ---------------------------------       --------------------------------- ----
+ */
 
 // made up value to sync hart state
 #define HART_SLEEPING 0x1
@@ -29,6 +45,11 @@ void smp_pause(int working_hartid)
 		} while ((read_csr(mip) & MIP_MSIP) == 0);
 
 		atomic_set(&HLS()->entry.sync_a, HART_AWAKE); // mark the hart as awake
+
+		// wait for working_hart to notice that this hart is awake
+		while (atomic_read(&HLS()->entry.sync_b) != HART_AWAKE)
+			;
+
 		HLS()->entry.fn(HLS()->entry.arg);
 	}
 }
@@ -47,6 +68,8 @@ void smp_resume(void (*fn)(void *), void *arg)
 	if (CONFIG(RISCV_GET_HART_COUNT_AT_RUNTIME))
 		hart_count = smp_get_hart_count();
 
+	assert(hart_count <= CONFIG_MAX_CPUS);
+
 	// check that all harts are present
 
 	u32 count_awake_harts = 0;
@@ -54,6 +77,8 @@ void smp_resume(void (*fn)(void *), void *arg)
 		// The working hart never sleeps. It is a hard working hart.
 		if (i == working_hartid)
 			continue;
+
+		atomic_set(&OTHER_HLS(i)->entry.sync_b, HART_SLEEPING);
 
 		if (atomic_read(&OTHER_HLS(i)->entry.sync_a) != HART_SLEEPING) {
 			/*
@@ -83,6 +108,9 @@ void smp_resume(void (*fn)(void *), void *arg)
 		// wait for hart to publish its waking state
 		while (atomic_read(&OTHER_HLS(i)->entry.sync_a) != HART_AWAKE)
 			;
+
+		// signal to hart that we noticed it woke up
+		atomic_set(&OTHER_HLS(i)->entry.sync_b, HART_AWAKE);
 		count_awake_harts++;
 	}
 	printk(BIOS_DEBUG, "all harts up and running...\n");

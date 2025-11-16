@@ -71,7 +71,7 @@ endchoice
 
 config IPXE_SERIAL_CONSOLE
 	bool "Enable iPXE serial console"
-	def_bool y
+	def_bool y if CONSOLE_SERIAL
 	help
 	  Enable/disable iPXE serial console. Since SeaBIOS supports serial
 	  console this option might be helpful to avoid duplicated output.

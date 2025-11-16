@@ -9,6 +9,7 @@ const (
 	LYNX_POINT_DESKTOP
 	LYNX_POINT_SERVER
 	LYNX_POINT_ULT
+	LYNX_POINT_REFRESH
 )
 
 type lynxpoint struct {
@@ -159,6 +160,11 @@ func (b lynxpoint) Scan(ctx Context, addr PCIDevData) {
 		lpPchGetFlashSize(ctx)
 	} else {
 		ich9GetFlashSize(ctx)
+	}
+
+	if (b.variant == LYNX_POINT_REFRESH) {
+		KconfigBool["USE_BROADWELL_MRC"] = true
+		KconfigComment["USE_BROADWELL_MRC"] = "if !USE_NATIVE_RAMINIT # FIXME: Uncomment the if"
 	}
 
 	FADT := ctx.InfoSource.GetACPI()["FACP"]
@@ -393,12 +399,14 @@ const struct usb3_port_config mainboard_usb3_ports[MAX_USB3_PORTS] = {
 
 func init() {
 	for _, id := range []uint16{
+		/* Lynx Point (8 Series PCH) */
 		0x8c41, 0x8c49, 0x8c4b, 0x8c4f,
 	} {
 		RegisterPCI(0x8086, uint16(id), lynxpoint{variant: LYNX_POINT_MOBILE})
 	}
 
 	for _, id := range []uint16{
+		/* Lynx Point (8 Series PCH) */
 		0x8c42, 0x8c44, 0x8c46, 0x8c4a,
 		0x8c4c, 0x8c4e, 0x8c50, 0x8c5c,
 	} {
@@ -417,52 +425,78 @@ func init() {
 		RegisterPCI(0x8086, uint16(id), lynxpoint{variant: LYNX_POINT_ULT})
 	}
 
+	for _, id := range []uint16{
+		/* Lynx Point Refresh (9 Series PCH) */
+		0x8cc1, 0x8cc2, 0x8cc3, 0x8cc4, 0x8cc6,
+	} {
+		RegisterPCI(0x8086, uint16(id), lynxpoint{variant: LYNX_POINT_REFRESH})
+	}
+
 	/* PCIe bridge */
 	for _, id := range []uint16{
+		/* Lynx Point (8 Series PCH) */
 		0x8c10, 0x8c12, 0x8c14, 0x8c16, 0x8c18, 0x8c1a, 0x8c1c, 0x8c1e,
+		/* Lynx Point LP */
 		0x9c10, 0x9c12, 0x9c14, 0x9c16, 0x9c18, 0x9c1a,
+		/* Lynx Point Refresh (9 Series PCH) */
+		0x8c90, 0x8c92, 0x8c94, 0x8c96, 0x8c98, 0x8c9a, 0x8c9c, 0x8c9e,
 	} {
 		RegisterPCI(0x8086, id, GenericPCI{})
 	}
 
 	/* SMBus controller  */
-	RegisterPCI(0x8086, 0x8c22, GenericPCI{MissingParent: "smbus"})
-	RegisterPCI(0x8086, 0x9c22, GenericPCI{MissingParent: "smbus"})
+	RegisterPCI(0x8086, 0x8c22, GenericPCI{MissingParent: "smbus"}) /* Lynx Point (8 Series PCH) */
+	RegisterPCI(0x8086, 0x9c22, GenericPCI{MissingParent: "smbus"}) /* Lynx Point LP */
+	RegisterPCI(0x8086, 0x8ca2, GenericPCI{MissingParent: "smbus"}) /* Lynx Point Refresh (9 Series PCH) */
 
 	/* SATA */
 	for _, id := range []uint16{
+		/* Lynx Point (8 Series PCH) */
 		0x8c00, 0x8c02, 0x8c04, 0x8c06, 0x8c08, 0x8c0e,
 		0x8c01, 0x8c03, 0x8c05, 0x8c07, 0x8c09, 0x8c0f,
+		/* Lynx Point LP */
 		0x9c03, 0x9c05, 0x9c07, 0x9c0f,
+		/* Lynx Point Refresh (9 Series PCH) */
+		0x8c80, 0x8c82, 0x8c84, 0x8c86, 0x8c88, 0x8c8e,
+		0x8c81, 0x8c83, 0x8c85, 0x8c87, 0x8c89, 0x8c8f,
 	} {
 		RegisterPCI(0x8086, id, GenericPCI{})
 	}
 
 	/* EHCI */
 	for _, id := range []uint16{
-		0x9c26, 0x8c26, 0x8c2d,
+		0x8c26, 0x8c2d, /* Lynx Point (8 Series PCH) */
+		0x9c26,         /* Lynx Point LP */
+		0x8ca6, 0x8cad, /* Lynx Point Refresh (9 Series PCH) */
 	} {
 		RegisterPCI(0x8086, id, GenericPCI{})
 	}
 
 	/* XHCI */
-	RegisterPCI(0x8086, 0x8c31, GenericPCI{})
-	RegisterPCI(0x8086, 0x9c31, GenericPCI{})
+	RegisterPCI(0x8086, 0x8c31, GenericPCI{}) /* Lynx Point (8 Series PCH) */
+	RegisterPCI(0x8086, 0x9c31, GenericPCI{}) /* Lynx Point LP */
+	RegisterPCI(0x8086, 0x8cb1, GenericPCI{}) /* Lynx Point Refresh (9 Series PCH) */
 
 	/* ME and children */
 	for _, id := range []uint16{
+		/* Lynx Point (8 Series PCH) */
 		0x8c3a, 0x8c3b, 0x8c3c, 0x8c3d,
+		/* Lynx Point LP */
 		0x9c3a, 0x9c3b, 0x9c3c, 0x9c3d,
+		/* Lynx Point Refresh (9 Series PCH) */
+		0x8cba, 0x8cbb, 0x8cbc, 0x8cbd,
 	} {
 		RegisterPCI(0x8086, id, GenericPCI{})
 	}
 
 	/* Ethernet */
-	RegisterPCI(0x8086, 0x8c33, GenericPCI{})
+	RegisterPCI(0x8086, 0x8c33, GenericPCI{}) /* Lynx Point (8 Series PCH) */
+	RegisterPCI(0x8086, 0x8cb3, GenericPCI{}) /* Lynx Point Refresh (9 Series PCH) */
 
 	/* Thermal */
-	RegisterPCI(0x8086, 0x8c24, GenericPCI{})
-	RegisterPCI(0x8086, 0x9c24, GenericPCI{})
+	RegisterPCI(0x8086, 0x8c24, GenericPCI{}) /* Lynx Point (8 Series PCH) */
+	RegisterPCI(0x8086, 0x9c24, GenericPCI{}) /* Lynx Point LP */
+	RegisterPCI(0x8086, 0x8ca4, GenericPCI{}) /* Lynx Point Refresh (9 Series PCH) */
 
 	/* LAN Controller on LP PCH (if EEPROM has 0x0000/0xffff in DID) */
 	RegisterPCI(0x8086, 0x155a, GenericPCI{})

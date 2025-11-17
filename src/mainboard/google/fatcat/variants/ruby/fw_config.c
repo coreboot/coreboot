@@ -36,10 +36,6 @@ static const struct pad_config i2s_enable_pads[] = {
 	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF5),
 	/* DMIC_CLK_A0 */
 	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF5),
-	/* DMIC_CLK_A1 */
-	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF3),
-	/* DMIC_DATA_A1 */
-	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF3),
 };
 
 static const struct pad_config bt_i2s_enable_pads[] = {
@@ -94,8 +90,6 @@ static const struct pad_config audio_disable_pads[] = {
 	PAD_NC(GPP_D11, NONE),
 	PAD_NC(GPP_D12, NONE),
 	PAD_NC(GPP_D13, NONE),
-	PAD_NC(GPP_D16, NONE),
-	PAD_NC(GPP_D17, NONE),
 };
 
 void fw_config_configure_pre_mem_gpio(void)

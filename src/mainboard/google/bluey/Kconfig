@@ -54,6 +54,7 @@ config BOARD_GOOGLE_QUENBIH
 config BOARD_GOOGLE_QUARTZ
 	select BOARD_GOOGLE_MODEL_QUARTZ
 	select SOC_QUALCOMM_HAMOA
+	select MAINBOARD_NO_USB_A_PORT
 
 if BOARD_GOOGLE_BLUEY_COMMON
 
@@ -86,6 +87,12 @@ config MAINBOARD_HAS_SD_CONTROLLER
 	default n
 	help
 	  Enable this option if your mainboard is equipped with SD card controller.
+
+config MAINBOARD_NO_USB_A_PORT
+	bool
+	default n
+	help
+	  Enable this option if your mainboard is not equipped with USB-A port.
 
 config MAINBOARD_HAS_GOOGLE_TPM
 	bool

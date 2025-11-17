@@ -17,6 +17,10 @@ static const struct mb_cfg ddr5_mem_config = {
 	.ddr_config = {
 		.dq_pins_interleaved = false,
 	},
+
+	.rcomp = {
+		.resistor = 100,
+	},
 };
 const struct mb_cfg *variant_memory_params(void)
 {

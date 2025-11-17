@@ -2,9 +2,9 @@
 
 Scope (\_SB.PCI0.CIO2)
 {
-        /* Define two ports for CIO2 device where endpoint of port0
-	is connected to CAM0 and endpoint of port1 is connected to CAM1
-	Endpoints can be customized by the variants of the based board */
+	/* Define the port for CIO2 device where endpoint of port0
+	 * is connected to CAM0.
+	 * Endpoints can be customized by the variants of the based board */
 
 	Name (_DSD, Package () {
 		ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),

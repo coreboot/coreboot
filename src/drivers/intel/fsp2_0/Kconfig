@@ -507,8 +507,20 @@ config FSP_VGA_MODE12
 	help
 	  Select this if the FSP supports VGA mode 12.
 
+config FSP_VGA_MODE12_MONOCHROME
+	bool
+	default n
+	depends on VGA || ROMSTAGE_VGA
+	select FSP_VGA_MODE12
+	help
+	  Select this if the FSP supports monochrome VGA mode 12. This implies
+	  that FSP can accept 1 bit-per-pixel planar buffer instead of 4 to save
+	  the crucial space. The FSP internally replicates the pixel data to other
+	  3 planes.
+
 config FSP_VGA_MODE12_BPP
 	hex
+	default 0x1 if FSP_VGA_MODE12_MONOCHROME
 	default 0x4 if FSP_VGA_MODE12
 	default 0x0
 	help

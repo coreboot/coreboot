@@ -3,6 +3,7 @@
 #include <bootmem.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <soc/booker.h>
 #include <soc/dcc.h>
 #include <soc/dramc_info.h>
 #include <soc/emi.h>
@@ -51,6 +52,12 @@ static void soc_init(struct device *dev)
 	gpueb_init();
 	mcupm_init();
 	mt6685_init_pmif_arb();
+	/*
+	 * According to CI-700 documentation:
+	 * Registers are only accessible by Secure accesses. Writes to them must occur prior to
+	 * the first non-configuration access targeting the device.
+	 */
+	booker_mte_init(MTE_TAG_ADDR);
 }
 
 static struct device_operations soc_ops = {

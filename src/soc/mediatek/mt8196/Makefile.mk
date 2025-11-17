@@ -54,6 +54,7 @@ romstage-y += ../common/thermal.c thermal.c
 romstage-y += ../common/thermal_sram.c thermal_sram.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
+ramstage-y += booker.c
 ramstage-y += dcc.c
 ramstage-y += ddp.c
 ramstage-y += ../common/display.c

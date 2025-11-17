@@ -46,6 +46,8 @@ static void setup_vga_mode12_params(FSP_M_CONFIG *m_cfg, enum ux_locale_msg id)
 	m_cfg->LogoXPosition = (VGA12_WIDTH - img_width) / 2;
 	m_cfg->LogoYPosition = (VGA12_HEIGHT - img_height) / 2;
 	m_cfg->VgaInitControl |= VGA_INIT_CONTROL_MODE12;
+	if (CONFIG(FSP_VGA_MODE12_MONOCHROME))
+		m_cfg->VgaInitControl |= VGA_INIT_CONTROL_MODE12_MONOCHROME;
 }
 
 static bool ux_inform_user_of_operation(const char *name, enum ux_locale_msg id,

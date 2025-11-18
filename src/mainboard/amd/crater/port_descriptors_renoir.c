@@ -15,12 +15,12 @@
 
 #define ECRAM_BOARDID_OFFSET 0x93
 
-#define CRATER_EC_CMD	0x666
-#define CRATER_EC_DATA	0x662
+#define CRATER_EC_CMD   0x666
+#define CRATER_EC_DATA  0x662
 
-#define CRATER_REVB     0x42
+#define CRATER_REVB 0x42
 
-#define mxm_dxio_descriptor {	\
+#define mxm_dxio_descriptor { \
 	.engine_type = PCIE_ENGINE, \
 	.port_present = true, \
 	.start_logical_lane = 16, \
@@ -67,7 +67,7 @@
 	.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122},  \
 }
 
-#define wwan_dxio_descriptor {	\
+#define wwan_dxio_descriptor { \
 	.engine_type = PCIE_ENGINE,  \
 	.port_present = true,  \
 	.start_logical_lane = 2,  \

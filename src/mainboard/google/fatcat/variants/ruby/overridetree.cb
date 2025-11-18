@@ -301,7 +301,7 @@ chip soc/intel/pantherlake
 				register "generic.has_power_resource" = "1"
 				register "generic.use_gpio_for_status" = "true"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 0x14 on end
+				device i2c 0x5d on end
 			end
 		end # I2C5
 		device ref gspi0 on end

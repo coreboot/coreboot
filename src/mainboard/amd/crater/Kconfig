@@ -112,6 +112,58 @@ config PCIE_DT_SLOT
 
 endchoice
 
+choice
+	prompt "SGMII lanes interface"
+	depends on XGBE_WWAN_WLAN
+	default GBE_PATH_SELECT_AIC2
+	help
+	  Option to select either AIC2 card (Marvell Phy), AIC3 card (Broadcom Phy) or
+	  Backplane mode for SGMII
+
+config GBE_PATH_SELECT_AIC2
+	bool "AIC2 PHY"
+	help
+	  Select to use AIC2 Marvell Phy card
+
+config GBE_PATH_SELECT_AIC3
+	bool "AIC3 PHY"
+	help
+	  Select to use AIC3 Boradcom Phy card
+
+config XGBE_PATH_SELECT_BACKPLANE
+	bool "BackPlane"
+	help
+	  Select to use BackPlane Mode
+
+endchoice # "SGMII lanes interface"
+
+choice
+	prompt "XGBE port speed"
+	depends on XGBE_WWAN_WLAN && !XGBE_PATH_SELECT_BACKPLANE
+	default XGBE_10_100_1000MB_SPEED
+
+config XGBE_10_100_1000MB_SPEED
+	bool "10/100/1000MB"
+	help
+	  Set XGBE port speed to support 10/100/1000MB.
+
+config XGBE_10MB_SPEED
+	bool "10MB Port Speed"
+	help
+	  Set XGBE port speed to support 10MBps.
+
+config XGBE_100MB_SPEED
+	bool "100 MBps port speed"
+	help
+	  Set XGBE port speed to support 1000MBps.
+
+config XGBE_1G_SPEED
+	bool "1G Port Speed"
+	help
+	  Set XGBE port speed to support 1GBps.
+
+endchoice # "XGBE port speed"
+
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
 	default 3	# Quad IO (1-1-4)

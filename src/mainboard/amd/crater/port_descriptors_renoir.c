@@ -10,8 +10,8 @@
 #include <ec/acpi/ec.h>
 #include <stdint.h>
 
-#define ECRAM_MACID_OFFSET 0x54
-#define MACID_LEN 12
+#include <static.h>
+#include "ec.h"
 
 #define ECRAM_BOARDID_OFFSET 0x93
 
@@ -199,4 +199,151 @@ void mainboard_get_dxio_ddi_descriptors(
 	*dxio_num = ARRAY_SIZE(crater_dxio_descriptors);
 	*ddi_descs = crater_ddi_descriptors;
 	*ddi_num = ARRAY_SIZE(crater_ddi_descriptors);
+}
+
+#if CONFIG(XGBE_PATH_SELECT_BACKPLANE)
+
+#define xgbe_port0_table_descriptor { \
+	.xgbe_port_config          = XGBE_PORT_DISABLE, \
+	.xgbe_port_connected_type  = XGBE_BACKPLANE_CONNECTION, \
+	.xgbe_port_platform_config = BACKPLANE_AUTONEG_OFF, \
+	.xgbe_port_supported_speed = XGBE_PORT_SPEED_1G, \
+	.xgba_port_pad_mdio           = 0x0, \
+	.xgba_port_pad_i2c            = 0x1, \
+	.xgbe_port_sfp_tx_fault_gpio  = 0xE, \
+	.xgbe_port_sfp_rx_los_gpio    = 0xD, \
+	.xgbe_port_sfp_mod_abs_gpio   = 0xC, \
+	.xgbe_port_sfp_twi_bus        = 0x1, \
+	.xgbe_port_mdio_reset_type    = 0x0, \
+	.xgbe_port_reset_gpio_num     = 0x0, \
+	.xgbe_port_mdio_reset_i2c_address = 0x0, \
+	.xgbe_port_sfp_i2c_address    = 0x1, \
+	.xgbe_port_sfp_gpio_mask      = 0x2, \
+	.xgbe_port_sfp_rs_gpio        = 0x0, \
+	.xgba_port_redriver_model     = 0x0, \
+	.xgba_port_redriver_interface = 0x1, \
+	.xgba_port_redriver_address   = 0x0, \
+	.xgba_port_redriver_lane      = 0x0, \
+	.xgbe_port_sfp_twi_address    = 0x1C, \
+	.xgba_port_pad_gpio           = 0x0, \
+	.reserve1                     = 0x0, \
+	.xgbe_port_mdio_id            = 0x0, \
+}
+#define xgbe_port1_table_descriptor { \
+	.xgbe_port_config          = XGBE_PORT_DISABLE, \
+	.xgbe_port_connected_type  = XGBE_BACKPLANE_CONNECTION, \
+	.xgbe_port_platform_config = BACKPLANE_AUTONEG_OFF, \
+	.xgbe_port_supported_speed = XGBE_PORT_SPEED_1G, \
+	.xgba_port_pad_mdio           = 0x0, \
+	.xgbe_port_mdio_id            = 0x0, \
+	.xgba_port_pad_i2c            = 0x1, \
+	.xgbe_port_sfp_tx_fault_gpio  = 0xA, \
+	.xgbe_port_sfp_rx_los_gpio    = 0x9, \
+	.xgbe_port_sfp_mod_abs_gpio   = 0x8, \
+	.xgbe_port_sfp_twi_bus        = 0x2, \
+	.xgbe_port_mdio_reset_type    = 0x0, \
+	.xgbe_port_reset_gpio_num     = 0x0, \
+	.xgbe_port_mdio_reset_i2c_address = 0x0, \
+	.xgbe_port_sfp_i2c_address    = 0x1, \
+	.xgbe_port_sfp_gpio_mask      = 0x2, \
+	.xgbe_port_sfp_rs_gpio        = 0x0, \
+	.xgba_port_redriver_model     = 0x0, \
+	.xgba_port_redriver_interface = 0x1, \
+	.xgba_port_redriver_address   = 0x0, \
+	.xgba_port_redriver_lane      = 0x0, \
+	.xgbe_port_sfp_twi_address    = 0x1C, \
+	.xgba_port_pad_gpio           = 0x0, \
+	.reserve1                     = 0x0, \
+}
+
+#else
+
+#define xgbe_port0_table_descriptor { \
+	.xgbe_port_config          = XGBE_PORT_DISABLE, \
+	.xgbe_port_connected_type  = XGBE_CONNECTION_MDIO_PHY, \
+	.xgbe_port_platform_config = XGBE_SOLDERED_DOWN_1000BASE_T, \
+	.xgbe_port_supported_speed = CONFIG(XGBE_1G_SPEED)    ? XGBE_PORT_SPEED_1G : \
+				     CONFIG(XGBE_100MB_SPEED) ? XGBE_PORT_SPEED_100M : \
+				     CONFIG(XGBE_10MB_SPEED)  ? XGBE_PORT_SPEED_10M : XGBE_PORT_SPEED_10_100_1000M, \
+	.xgba_port_pad_mdio           = 0x1, \
+	.xgba_port_pad_i2c            = 0x0, \
+	.xgbe_port_sfp_tx_fault_gpio  = 0xB, \
+	.xgbe_port_sfp_rx_los_gpio    = 0xD, \
+	.xgbe_port_sfp_mod_abs_gpio   = 0xC, \
+	.xgbe_port_sfp_twi_bus        = 0x0, \
+	.xgbe_port_mdio_reset_type    = 0x0, \
+	.xgbe_port_reset_gpio_num     = 0x0, \
+	.xgbe_port_mdio_reset_i2c_address = 0x0, \
+	.xgbe_port_sfp_i2c_address     = 0x1, \
+	.xgbe_port_sfp_gpio_mask       = 0x2, \
+	.xgbe_port_sfp_rs_gpio         = 0x0, \
+	.xgba_port_redriver_model      = 0x0, \
+	.xgba_port_redriver_interface  = 0x1, \
+	.xgba_port_redriver_address    = 0x0, \
+	.xgba_port_redriver_lane       = 0x0, \
+	.xgbe_port_sfp_twi_address     = 0x1C, \
+	.xgba_port_pad_gpio            = 0x0, \
+	.reserve1                      = 0x0, \
+	.xgbe_port_mdio_id             = 0x0, \
+}
+#define xgbe_port1_table_descriptor { \
+	.xgbe_port_config = XGBE_PORT_DISABLE, \
+	.xgbe_port_connected_type = XGBE_CONNECTION_MDIO_PHY, \
+	.xgbe_port_platform_config = XGBE_SOLDERED_DOWN_1000BASE_T, \
+	.xgbe_port_supported_speed = CONFIG(XGBE_1G_SPEED)    ? XGBE_PORT_SPEED_1G : \
+				     CONFIG(XGBE_100MB_SPEED) ? XGBE_PORT_SPEED_100M : \
+				     CONFIG(XGBE_10MB_SPEED)  ? XGBE_PORT_SPEED_10M : XGBE_PORT_SPEED_10_100_1000M, \
+	.xgba_port_pad_mdio          = CONFIG(GBE_PATH_SELECT_AIC3) ? 0x2 : CONFIG(GBE_PATH_SELECT_AIC3) ? 0x01 : 0x0, \
+	.xgbe_port_mdio_id           = CONFIG(GBE_PATH_SELECT_AIC3) ? 0x0 : CONFIG(GBE_PATH_SELECT_AIC3) ? 0x01 : 0x0, \
+	.xgba_port_pad_i2c            = 0x0, \
+	.xgbe_port_sfp_tx_fault_gpio  = 0xA, \
+	.xgbe_port_sfp_rx_los_gpio    = 0x9, \
+	.xgbe_port_sfp_mod_abs_gpio   = 0x8, \
+	.xgbe_port_sfp_twi_bus        = 0x1, \
+	.xgbe_port_mdio_reset_type    = 0x0, \
+	.xgbe_port_reset_gpio_num     = 0x0, \
+	.xgbe_port_mdio_reset_i2c_address = 0x0, \
+	.xgbe_port_sfp_i2c_address    = 0x1, \
+	.xgbe_port_sfp_gpio_mask      = 0x2, \
+	.xgbe_port_sfp_rs_gpio        = 0x0, \
+	.xgba_port_redriver_model     = 0x0, \
+	.xgba_port_redriver_interface = 0x1, \
+	.xgba_port_redriver_address   = 0x0, \
+	.xgba_port_redriver_lane      = 0x0, \
+	.xgbe_port_sfp_twi_address    = 0x1C, \
+	.xgba_port_pad_gpio           = 0x0, \
+	.reserve1                     = 0x0, \
+}
+
+#endif
+
+static void xgbe_init(FSP_M_CONFIG *mcfg)
+{
+	static struct xgbe_port_table xgbe_port[2] = {
+		xgbe_port0_table_descriptor,
+		xgbe_port1_table_descriptor
+	};
+
+	/* MAC can be updated here to pass the same to FSP */
+	crater_ec_get_mac_addresses(&mcfg->xgbe_port0_mac, &mcfg->xgbe_port1_mac);
+	printk(BIOS_SPEW, "MAC Address XGBE port0: 0x%02llx\n", mcfg->xgbe_port0_mac);
+	printk(BIOS_SPEW, "MAC Address XGBE port1: 0x%02llx\n", mcfg->xgbe_port1_mac);
+
+	mcfg->xgbe_port0_config_en = is_dev_enabled(DEV_PTR(xgbe_0));
+	mcfg->xgbe_port1_config_en = is_dev_enabled(DEV_PTR(xgbe_1));
+
+	if (mcfg->xgbe_port0_config_en) {
+		xgbe_port[0].xgbe_port_config = XGBE_PORT_ENABLE;
+		mcfg->xgbe_port0_table = (uint32_t)(uintptr_t)&xgbe_port[0];
+	}
+
+	if (mcfg->xgbe_port1_config_en) {
+		xgbe_port[1].xgbe_port_config = XGBE_PORT_ENABLE;
+		mcfg->xgbe_port1_table = (uint32_t)(uintptr_t)&xgbe_port[1];
+	}
+}
+
+void mb_pre_fspm(FSP_M_CONFIG *mcfg)
+{
+	xgbe_init(mcfg);
 }

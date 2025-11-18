@@ -4,10 +4,12 @@ bootblock-y += bootblock.c
 bootblock-y += early_gpio.c
 bootblock-y += ec.c
 
+romstage-y += ec.c
 romstage-$(CONFIG_BOARD_AMD_CRATER_RENOIR) += port_descriptors_renoir.c
 
 ramstage-y += chromeos.c
 ramstage-y += gpio.c
+ramstage-y += ec.c
 ramstage-$(CONFIG_BOARD_AMD_CRATER_RENOIR) += port_descriptors_renoir.c
 
 ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_RN_D4_Updatable.bin),)

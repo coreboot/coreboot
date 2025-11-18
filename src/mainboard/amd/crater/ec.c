@@ -106,6 +106,8 @@
 
 #define ECRAM_BOARDID_OFFSET 0x93
 #define CRATER_REVB    0x42
+#define ECRAM_MACID_OFFSET 0x54
+#define MACID_LEN 12
 
 static void configure_ec_gpio(void)
 {
@@ -210,4 +212,31 @@ void crater_ec_init(void)
 	ec_set_ports(CRATER_EC_CMD, CRATER_EC_DATA);
 	crater_boardrevision();
 	configure_ec_gpio();
+}
+
+void crater_ec_get_mac_addresses(uint64_t *xgbe_port0_mac, uint64_t *xgbe_port1_mac)
+{
+	uint64_t port0_mac = 0;
+	uint64_t port1_mac = 0;
+	uint8_t value = 0;
+	uint8_t index = 0;
+	uint8_t offset = ECRAM_MACID_OFFSET;
+
+	ec_set_ports(CRATER_EC_CMD, CRATER_EC_DATA);
+	for (index = 0; index < MACID_LEN; index++) {
+		value = ec_read(offset + index);
+		printk(BIOS_SPEW, "READ MACID REG 0x%2x Value 0x%02x\n", offset - index, value);
+
+		if (index < 6) {
+			port0_mac = (port0_mac << 8) | value;
+		} else {
+			port1_mac = (port1_mac << 8) | value;
+		}
+	}
+
+	printk(BIOS_SPEW, "MAC Address XGBE port0: 0x%02llx\n", port0_mac);
+	printk(BIOS_SPEW, "MAC Address XGBE port1: 0x%02llx\n", port1_mac);
+
+	*xgbe_port0_mac = port0_mac;
+	*xgbe_port1_mac = port1_mac;
 }

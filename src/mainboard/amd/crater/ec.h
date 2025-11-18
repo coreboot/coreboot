@@ -5,5 +5,6 @@
 
 void crater_ec_init(void);
 void crater_boardrevision(void);
+void crater_ec_get_mac_addresses(uint64_t *xgbe_port0_mac, uint64_t *xgbe_port1_mac);
 
 #endif /* CRATER_EC_H */

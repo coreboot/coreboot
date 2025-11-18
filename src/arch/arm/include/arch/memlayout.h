@@ -22,11 +22,6 @@
 	REGION(stack, addr, size, 8) \
 	_ = ASSERT(size >= 2K, "stack should be >= 2K, see toolchain.mk");
 
-#define DMA_COHERENT(addr, size) \
-	REGION(dma_coherent, addr, size, SUPERPAGE_SIZE) \
-	_ = ASSERT(size % SUPERPAGE_SIZE == 0, \
-		"DMA coherency buffer must fit exactly in full superpages!");
-
 #define FRAMEBUFFER(addr, size) \
 	REGION(framebuffer, addr, size, SUPERPAGE_SIZE) \
 	_ = ASSERT(size % SUPERPAGE_SIZE == 0, \

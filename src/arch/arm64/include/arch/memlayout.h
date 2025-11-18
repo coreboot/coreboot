@@ -9,11 +9,6 @@
 	REGION(ttb, addr, size, 4K) \
 	_ = ASSERT(size % 4K == 0, "TTB size must be divisible by 4K!");
 
-#define DMA_COHERENT(addr, size) \
-	REGION(dma_coherent, addr, size, 4K) \
-	_ = ASSERT(size % 4K == 0, \
-		"DMA buffer should be multiple of smallest page size (4K)!");
-
 #define FRAMEBUFFER(addr, size) \
 	REGION(framebuffer, addr, size, 1M) \
 	_ = ASSERT(size % 1M == 0, \

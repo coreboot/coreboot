@@ -73,4 +73,7 @@ void qc_mmu_dram_config_post_dram_init(size_t ddr_size)
 							CACHED_RAM);
 	mmu_config_range((void *)_aop_data_ram, REGION_SIZE(aop_data_ram),
 							CACHED_RAM);
+	if (_preram_dma_coherent != _postram_dma_coherent)
+		mmu_config_range((void *)_postram_dma_coherent, REGION_SIZE(postram_dma_coherent),
+							UNCACHED_RAM);
 }

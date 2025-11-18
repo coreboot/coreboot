@@ -71,6 +71,13 @@ chip soc/intel/pantherlake
 		[VR_DOMAIN_ATOM] = 30 * 4
 	}"
 
+	register "icc_max[PTL_SKU_7]" = "{
+		[VR_DOMAIN_IA] = 90 * 4,
+		[VR_DOMAIN_GT] = 56 * 4,
+		[VR_DOMAIN_SA] = 56 * 4,
+		[VR_DOMAIN_ATOM] = 30 * 4
+	}"
+
 	register "tdc_mode[VR_DOMAIN_IA]" = "TDC_IRMS"
 	register "tdc_time_window_ms[VR_DOMAIN_IA]" = "28000"
 

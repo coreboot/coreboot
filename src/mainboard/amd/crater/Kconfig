@@ -101,12 +101,15 @@ choice
 config XGBE_WWAN_WLAN
 	bool "XGBE_WWAN_WLAN"
 	help
-	  Use GPP[0:1] for XGBE (ETH_AIC_SLOT), GPP[2] for WWAN slot and GPP[3] for WLAN slot.
+	  Use GPP[0:1] connected to ETH AIC  (PCIe x4 Slot)
+	  Use GPP[2]   connected to WWAN/GPS (M.2 B-Key)
+	  Use GPP[3]   connected to WiFi/BT  (M.2 E-Key)
 
-config ETH_AIC_SLOT_ONLY
-	bool "DT Enablement"
+config PCIE_DT_SLOT
+	bool "PCIe Slot"
 	help
-	  Use GPP[0:3] for as PCIE (ETH_AIC_SLOT) only
+	  Use GPP[0:3] connected to PCIe x4 Slot
+
 endchoice
 
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig

@@ -185,10 +185,9 @@ void mainboard_get_dxio_ddi_descriptors(
 		mxm_dxio_descriptor,
 		ssd_dxio_descriptor,
 		tb_dxio_descriptor,
-#if CONFIG(ETH_AIC_SLOT_ONLY)
+#if CONFIG(PCIE_DT_SLOT)
 		dt_dxio_descriptor, // GPP 0~3
-#endif
-#if CONFIG(XGBE_WWAN_WLAN)
+#elif CONFIG(XGBE_WWAN_WLAN)
 		xgbe_port0_dxio_descriptor, // GPP 0
 		xgbe_port1_dxio_descriptor, // GPP 1
 		wwan_dxio_descriptor, // GPP 2

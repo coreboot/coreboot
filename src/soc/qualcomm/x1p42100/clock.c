@@ -317,37 +317,122 @@ void clock_configure_qspi(uint32_t hz)
 	clock_enable(&gcc->qspi_core_cbcr);
 }
 
+/* Helper function to get SE index within a wrap */
+static inline int get_qup_se_index(int qup)
+{
+	return qup % QUP_WRAP1_S0;
+}
+
+/* Helper function to get pointer to QUP SE clock structure */
+static void *get_qup_se_clk(int qup, int s)
+{
+	struct x1p42100_qupv3_wrap *wrap;
+	void *se_clk_array[8];
+
+	/* Determine which wrap based on qup value */
+	if (qup <= QUP_WRAP0_S7)
+		wrap = qup_wrap0_clk;
+	else if (qup <= QUP_WRAP1_S7)
+		wrap = qup_wrap1_clk;
+	else
+		wrap = qup_wrap2_clk;
+
+	/* Build array of pointers to SE clock structures */
+	se_clk_array[0] = &wrap->qupv3_s0;
+	se_clk_array[1] = &wrap->qupv3_s1;
+	se_clk_array[2] = &wrap->qupv3_s2;
+	se_clk_array[3] = &wrap->qupv3_s3;
+	se_clk_array[4] = &wrap->qupv3_s4;
+	se_clk_array[5] = &wrap->qupv3_s5;
+	se_clk_array[6] = &wrap->qupv3_s6;
+	se_clk_array[7] = &wrap->qupv3_s7;
+
+	return se_clk_array[s];
+}
+
 void clock_enable_qup(int qup)
 {
-	struct qupv3_clock *qup_clk;
-	int s = qup % QUP_WRAP1_S0, clk_en_off;
-	void *clk_br_en_ptr = NULL;	// Pointer to the correct apcs_clk_br_enX
-	qup_clk = qup < QUP_WRAP1_S0 ? &gcc->qup_wrap0_s[s] : qup < QUP_WRAP2_S0 ?
-		&gcc->qup_wrap1_s[s] : &gcc->qup_wrap2_s[s];
+	int s = get_qup_se_index(qup), clk_en_off;
+	void *clk_br_en_ptr = NULL;
+	u32 *cbcr;
 
 	if (qup <= QUP_WRAP0_S7) {
 		clk_en_off = QUPV3_WRAP0_CLK_ENA_S(s);
 		clk_br_en_ptr = &gcc->apcs_clk_br_en4;
-	} else if (qup >= QUP_WRAP1_S0 && qup <= QUP_WRAP1_S6) {
-		clk_en_off = QUPV3_WRAP1_CLK_ENA_S(s);
-		clk_br_en_ptr = &gcc->apcs_clk_br_en1;
-	} else if (qup >= QUP_WRAP2_S0 && qup <= QUP_WRAP2_S6) {
-		clk_en_off = QUPV3_WRAP2_CLK_ENA_S(s);
-		clk_br_en_ptr = &gcc->apcs_clk_br_en2;
-	} else if (qup == QUP_WRAP1_S7 || qup == QUP_WRAP2_S7) {
-		clk_en_off = qup == QUP_WRAP1_S7 ? QUPV3_WRAP1_SE7_CLK_ENA : QUPV3_WRAP2_SE7_CLK_ENA;
+	} else if (qup <= QUP_WRAP1_S7) {
+		clk_en_off = (qup == QUP_WRAP1_S7) ? QUPV3_WRAP1_SE7_CLK_ENA : QUPV3_WRAP1_CLK_ENA_S(s);
+		clk_br_en_ptr = (qup == QUP_WRAP1_S7) ? &gcc->apcs_clk_br_en2 : &gcc->apcs_clk_br_en1;
+	} else {
+		clk_en_off = (qup == QUP_WRAP2_S7) ? QUPV3_WRAP2_SE7_CLK_ENA : QUPV3_WRAP2_CLK_ENA_S(s);
 		clk_br_en_ptr = &gcc->apcs_clk_br_en2;
 	}
 
+	if (s == 2 || s == 3)
+		cbcr = &((struct qupv3_clock_v2 *)get_qup_se_clk(qup, s))->cbcr;
+	else
+		cbcr = &((struct qupv3_clock *)get_qup_se_clk(qup, s))->cbcr;
+
 	/* Only call if a valid pointer was assigned */
 	if (clk_br_en_ptr)
-		clock_enable_vote(&qup_clk->cbcr, clk_br_en_ptr, clk_en_off);
+		clock_enable_vote(cbcr, clk_br_en_ptr, clk_en_off);
+}
+
+/* Clock Root clock Generator with DFS Operations */
+void clock_configure_dfsr_table_x1p42100(int qup, struct clock_freq_config *clk_cfg,
+	uint32_t num_perfs)
+{
+	unsigned int idx;
+	int s = get_qup_se_index(qup);
+	uint32_t reg_val;
+	struct clock_rcg_dfsr *dfsr_clk;
+
+	/* Validate s value is within bounds */
+	if (s > 7) {
+		printk(BIOS_ERR, "Invalid QUP index: s=%d\n", s);
+		return;
+	}
+
+	/* Get DFSR clock pointer - cast based on SE type
+	 * (s2, s3 are qupv3_clock_v2, others are qupv3_clock)
+	 */
+	if (s == 2 || s == 3)
+		dfsr_clk = &((struct qupv3_clock_v2 *)get_qup_se_clk(qup, s))->dfsr_clk;
+	else
+		dfsr_clk = &((struct qupv3_clock *)get_qup_se_clk(qup, s))->dfsr_clk;
+
+	clrsetbits32(&dfsr_clk->cmd_dfsr,
+			BIT(CLK_CTL_CMD_RCG_SW_CTL_SHFT),
+			BIT(CLK_CTL_CMD_DFSR_SHFT));
+
+	for (idx = 0; idx < num_perfs; idx++) {
+		reg_val = (clk_cfg[idx].src << CLK_CTL_CFG_SRC_SEL_SHFT) |
+			(clk_cfg[idx].div << CLK_CTL_CFG_SRC_DIV_SHFT);
+
+		write32(&dfsr_clk->perf_dfsr[idx], reg_val);
+
+		if (clk_cfg[idx].m == 0)
+			continue;
+
+		setbits32(&dfsr_clk->perf_dfsr[idx], RCG_MODE_DUAL_EDGE << CLK_CTL_CFG_MODE_SHFT);
+
+		reg_val = clk_cfg[idx].m & CLK_CTL_RCG_MND_BMSK;
+		write32(&dfsr_clk->perf_m_dfsr[idx], reg_val);
+
+		reg_val = ~(clk_cfg[idx].n - clk_cfg[idx].m) & CLK_CTL_RCG_MND_BMSK;
+		write32(&dfsr_clk->perf_n_dfsr[idx], reg_val);
+
+		reg_val = ~(clk_cfg[idx].d_2) & CLK_CTL_RCG_MND_BMSK;
+		write32(&dfsr_clk->perf_d_dfsr[idx], reg_val);
+	}
 }
 
 void clock_configure_dfsr(int qup)
 {
-	clock_configure_dfsr_table(qup, qupv3_wrap_cfg,
-						ARRAY_SIZE(qupv3_wrap_cfg));
+	int s = get_qup_se_index(qup);
+	uint32_t qupv3_cfg_size = (s < 4) ? (ARRAY_SIZE(qupv3_wrap_cfg) - 1) :
+				ARRAY_SIZE(qupv3_wrap_cfg);
+
+	clock_configure_dfsr_table_x1p42100(qup, qupv3_wrap_cfg, qupv3_cfg_size);
 }
 static enum cb_err clock_configure_gpll0(void)
 {

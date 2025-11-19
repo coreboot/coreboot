@@ -52,6 +52,15 @@ struct qupv3_clock {
 	struct clock_rcg_dfsr dfsr_clk;
 };
 
+struct qupv3_clock_v2 {
+	u32 cbcr;
+#if CONFIG(QC_COMMON_QUPV3_2)
+	u8 reserved[0x10];
+#endif
+	struct clock_rcg_mnd clk;
+	struct clock_rcg_dfsr dfsr_clk;
+};
+
 /* PLL Configuration */
 struct alpha_pll_reg_val_config {
 	void *reg_mode;

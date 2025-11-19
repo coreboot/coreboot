@@ -447,6 +447,18 @@ check_member(x1p42100_gcc, apcs_pll_br_en, 0x52030);
 check_member(x1p42100_gcc, pcie_6_phy_gdscr, 0x8e000);
 check_member(x1p42100_gcc, pcie_6a_phy_bcr, 0xac01c);
 
+/* Generic QUPV3 wrapper structure - all wrappers have identical layout */
+struct x1p42100_qupv3_wrap {
+	struct qupv3_clock qupv3_s0;
+	struct qupv3_clock qupv3_s1;
+	struct qupv3_clock_v2 qupv3_s2;
+	struct qupv3_clock_v2 qupv3_s3;
+	struct qupv3_clock qupv3_s4;
+	struct qupv3_clock qupv3_s5;
+	struct qupv3_clock qupv3_s6;
+	struct qupv3_clock qupv3_s7;
+};
+
 enum clk_qup {
 	QUP_WRAP0_S0,
 	QUP_WRAP0_S1,
@@ -619,6 +631,8 @@ enum cb_err usb_clock_enable(enum clk_usb clk_type);
 enum cb_err clock_enable_usb_gdsc(enum clk_usb_gdsc gdsc_type);
 enum cb_err usb_prim_clock_enable(enum clk_usb_prim clk_type);
 enum cb_err usb_sec_clock_enable(enum clk_usb_sec clk_type);
+void clock_configure_dfsr_table_x1p42100(int qup, struct clock_freq_config *clk_cfg,
+		uint32_t num_perfs);
 
 void usb_clock_reset(enum clk_usb clk_type, bool assert);
 void usb_prim_clock_reset(enum clk_usb_prim clk_type, bool assert);
@@ -628,6 +642,9 @@ void usb_sec_clock_reset(enum clk_usb_sec clk_type, bool assert);
 static struct aoss *const aoss = (void *)AOSS_CC_BASE;
 static struct x1p42100_gcc *const gcc = (void *)GCC_BASE;
 static struct x1p42100_ncc0_clock *const apss_ncc0 = (void *)NCC0_BASE;
+static struct x1p42100_qupv3_wrap *const qup_wrap0_clk = (void *)GCC_QUPV3_WRAP0_BASE;
+static struct x1p42100_qupv3_wrap *const qup_wrap1_clk = (void *)GCC_QUPV3_WRAP1_BASE;
+static struct x1p42100_qupv3_wrap *const qup_wrap2_clk = (void *)GCC_QUPV3_WRAP2_BASE;
 
 /* Does nothing */
 #define clock_reset_aop() do {} while (0)

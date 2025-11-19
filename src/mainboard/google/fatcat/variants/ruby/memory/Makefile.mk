@@ -4,6 +4,4 @@
 # ./util/spd_tools/bin/part_id_gen ADL lp5 src/mainboard/google/fatcat/variants/ruby/memory/ src/mainboard/google/fatcat/variants/ruby/memory/mem_parts_used.txt
 
 SPD_SOURCES =
-SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 0(0b0000)  Parts = H58G56CK8BX146
-SPD_SOURCES += spd/lp5/set-0/spd-14.hex      # ID = 1(0b0001)  Parts = MT62F1G32D2DS-020 WT:D
-SPD_SOURCES += spd/lp5/set-0/spd-10.hex      # ID = 2(0b0010)  Parts = K3KL8L80EM-MGCV
+SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 0(0b0000)  Parts = H58G56CK8BX146, MT62F1G32D2DS-020 WT:D, K3KL8L80EM-MGCV

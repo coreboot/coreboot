@@ -17,6 +17,7 @@
 #include <soc/qclib_common.h>
 #include <soc/symbols_common.h>
 #include <string.h>
+#include <timestamp.h>
 #include <vb2_api.h>
 
 #define QCLIB_VERSION 0
@@ -247,6 +248,8 @@ void qclib_load_and_run(void)
 {
 	ssize_t data_size;
 
+	timestamp_add_now(TS_QUALCOMM_QCLIB_INIT_START);
+
 	/* zero ddr_information SRAM region, needs new data each boot */
 	memset(ddr_region, 0, sizeof(struct region));
 
@@ -328,6 +331,7 @@ void qclib_load_and_run(void)
 	assert((uintptr_t)_dram == region_offset(ddr_region) &&
 		region_sz(ddr_region) >= (u8 *)cbmem_top() - _dram);
 
+	timestamp_add_now(TS_QUALCOMM_QCLIB_INIT_END);
 	return;
 
 fail:
@@ -336,6 +340,8 @@ fail:
 
 void qclib_rerun(void)
 {
+	timestamp_add_now(TS_QUALCOMM_QCLIB_REINIT_START);
+
 	ssize_t data_size;
 
 	assert(prog_type(&qclib) == PROG_REFCODE)
@@ -372,6 +378,7 @@ void qclib_rerun(void)
 	printk(BIOS_DEBUG, "\n\n\nRe-enter QCLib to bring up AOP\n");
 	qclib_prepare_and_run();
 
+	timestamp_add_now(TS_QUALCOMM_QCLIB_REINIT_END);
 	return;
 
 fail:

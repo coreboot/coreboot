@@ -45,6 +45,10 @@
 
 #include <coreboot_tables.h>
 
+#if CONFIG(LP_GPL)
+#include <commonlib/memory_info.h>
+#endif
+
 /*
  * This is a collection of information and pointers gathered
  * mostly from the coreboot table.
@@ -174,6 +178,8 @@ struct sysinfo_t {
 	uintptr_t pvmfw;
 	uint32_t pvmfw_size;
 	enum boot_mode_t boot_mode;
+
+	uintptr_t memory_info;
 };
 
 extern struct sysinfo_t lib_sysinfo;

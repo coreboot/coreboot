@@ -273,6 +273,9 @@ static void cb_parse_cbmem_entry(void *ptr, struct sysinfo_t *info)
 		info->pvmfw = cbmem_entry->address;
 		info->pvmfw_size = cbmem_entry->entry_size;
 		break;
+	case CBMEM_ID_MEMINFO:
+		info->memory_info = cbmem_entry->address;
+		break;
 	default:
 		break;
 	}

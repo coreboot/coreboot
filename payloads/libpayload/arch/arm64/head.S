@@ -37,6 +37,13 @@ ENTRY(_entry)
 	ldr w1, =(SCTLR_RES1 | SCTLR_I | SCTLR_SA)
 	msr sctlr_el2, x1
 
+	/* Initialize HCR to intended state (route all exceptions to EL2) */
+	mov x1, #HCR_TGE
+	msr hcr_el2, x1
+
+	/* Initialize PSTATE.DAIF to intended state (unmask all exceptions) */
+	msr DAIFClr, #0xf
+
 	/* Save off the location of the coreboot tables */
 	ldr x1, 1f
 	str x0, [x1]

@@ -45,6 +45,8 @@
 #define SCTLR_RES1           ((0x3 << 4) | (0x1 << 11) | (0x1 << 16) |	\
 			      (0x1 << 18) | (0x3 << 22) | (0x3 << 28))
 
+#define HCR_TGE		(1 << 27)	/* Trap General Exception	*/
+
 #define DAIF_DBG_BIT      (1 << 3)
 #define DAIF_ABT_BIT      (1 << 2)
 #define DAIF_IRQ_BIT      (1 << 1)

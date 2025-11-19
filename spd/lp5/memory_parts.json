@@ -388,7 +388,7 @@
             "densityPerDieGb": 16,
             "diesPerPackage": 2,
             "bitWidthPerChannel": 16,
-            "ranksPerChannel": 2,
+            "ranksPerChannel": 1,
             "speedMbps": 8533,
             "lp5x": true
         }
@@ -397,9 +397,9 @@
         "name":  "K3KL8L80EM-MGCV",
         "attribs": {
             "densityPerDieGb": 16,
-            "diesPerPackage": 4,
+            "diesPerPackage": 2,
             "bitWidthPerChannel": 16,
-            "ranksPerChannel": 2,
+            "ranksPerChannel": 1,
             "speedMbps": 8533,
             "lp5x": true
         }

@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-	Name (BRLV, 100)
+	Name (BRLV, 0) /* Brightness Last Value */
+	Name (BRVA, 0) /* Brightness Valid */
+
 	/*
 	 * Pseudo device that contains methods to modify Opregion
 	 * "Mailbox 3 BIOS to Driver Notification"
@@ -149,6 +151,7 @@
 	Method (XBCM, 1, NotSerialized)
 	{
 		BRLV = Arg0
+		BRVA = 1
 		If (^BOX3.XBCM (Arg0) == Ones)
 		{
 			/*
@@ -167,16 +170,21 @@
 		/*
 		 * During early boot / resume the IGD driver has not yet populated
 		 * the OpRegion brightness fields (BCLM stays zero), so fall back to
-		 * the cached value we last exposed to the OS.
+		 * the cached value we last exposed to the OS. If there's no cached
+		 * value yet, use the platform's default from BRIG[0].
 		 */
-		If (BCLM == 0)
-		{
-			Return (BRLV)
+		If (BCLM == 0) {
+			If (BRVA != 0) {
+				Return (BRLV)
+			}
+
+			/* No cached brightness yet, fall back to platform default. */
+			Local0 = DeRefOf (BRIG[0])
+			Return (Local0)
 		}
 
 		Local0 = ^LEGA.XBQC ()
-		If (Local0 != BRLV)
-		{
+		If (BRVA != 0 && Local0 != BRLV) {
 			/*
 			 * The OS replays _BCM requests while the graphics driver is
 			 * still reinitializing, so hardware brightness can diverge
@@ -193,5 +201,6 @@
 			}
 		}
 		BRLV = Local0
+		BRVA = 1
 		Return (Local0)
 	}

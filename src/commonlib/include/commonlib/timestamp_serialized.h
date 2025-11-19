@@ -127,7 +127,7 @@ enum timestamp_id {
 	TS_CSE_FW_SYNC_START = 948,
 	TS_CSE_FW_SYNC_END = 949,
 
-	/* 950+ reserved for vendorcode extensions (950-989: intel/fsp) */
+	/* 950+ reserved for vendorcode extensions (950-980: intel/fsp) */
 	TS_FSP_MEMORY_INIT_START = 950,
 	TS_FSP_MEMORY_INIT_END = 951,
 	TS_FSP_TEMP_RAM_EXIT_START = 952,
@@ -147,11 +147,20 @@ enum timestamp_id {
 	TS_FSP_MEMORY_INIT_LOAD = 970,
 	TS_FSP_SILICON_INIT_LOAD = 971,
 
-	/* 990+ reserved for vendorcode extensions (990-999: Intel ME continued) */
+	/* 980+ reserved for vendorcode extensions (980-990: qualcomm/qclib) */
+	TS_QUALCOMM_QCLIB_INIT_START = 980,
+	TS_QUALCOMM_QCLIB_INIT_END = 981,
+	TS_QUALCOMM_QCLIB_REINIT_START = 982,
+	TS_QUALCOMM_QCLIB_REINIT_END = 983,
+
+	/* 990+ reserved for vendorcode extensions (990-997: Intel ME continued) */
 	TS_ME_ROM_START = 990,
 	TS_ISSE_DMU_LOAD_END = 991,
 	TS_ESE_LOAD_AUNIT_END = 992,
 
+	/* 998-999 reserved for ARM Trusted firmware) */
+	TS_TFA_LOAD_BL32_START = 998,
+	TS_TFA_LOAD_BL32_END = 999,
 	/* 1000+ reserved for payloads */
 
 	/* 1000-1200: Depthcharge */
@@ -353,10 +362,19 @@ static const struct timestamp_id_to_name {
 	TS_NAME_DEF(TS_FSP_MEMORY_INIT_LOAD, 0, "loading FSP-M"),
 	TS_NAME_DEF(TS_FSP_SILICON_INIT_LOAD, 0, "loading FSP-S"),
 
+	/* Qualcomm QCLib related timestamps */
+	TS_NAME_DEF(TS_QUALCOMM_QCLIB_INIT_START, 0, "Entering into QcLib"),
+	TS_NAME_DEF(TS_QUALCOMM_QCLIB_INIT_END, 0, "returning from QcLib"),
+	TS_NAME_DEF(TS_QUALCOMM_QCLIB_REINIT_START, 0, "Reentering from QcLib"),
+	TS_NAME_DEF(TS_QUALCOMM_QCLIB_REINIT_END, 0, "QcLib execution completed"),
+
 	/* Intel ME continued */
 	TS_NAME_DEF(TS_ME_ROM_START, 0, "CSME ROM started execution"),
 	TS_NAME_DEF(TS_ISSE_DMU_LOAD_END, 0, "Die Management Unit (DMU) load completed"),
 	TS_NAME_DEF(TS_ESE_LOAD_AUNIT_END, 0, "ESE completed AUnit loading"),
+
+	TS_NAME_DEF(TS_TFA_LOAD_BL32_START, 0, "BL32(secure_os) loading start"),
+	TS_NAME_DEF(TS_TFA_LOAD_BL32_END, 0, "BL32(secure_os) loading end"),
 
 	/* Depthcharge entry timestamp */
 	TS_NAME_DEF(TS_DC_START, 0, "depthcharge start"),

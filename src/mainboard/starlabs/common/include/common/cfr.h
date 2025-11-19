@@ -113,8 +113,7 @@ static const struct sm_object s0ix_enable = SM_DECLARE_BOOL({
 	.ui_name	= "Modern Standby (S0ix)",
 	.ui_helptext	= "Enabled: Use S0ix for device sleep.\n"
 			  "Disabled: Use ACPI S3 for device sleep.\n"
-			  "Requires Intel ME to be enabled.\n"
-			  "Recommended: Enabled when booting Windows, disabled otherwise.",
+			  "Requires Intel ME to be enabled.",
 	.default_value	= false,
 });
 

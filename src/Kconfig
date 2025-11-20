@@ -1012,6 +1012,13 @@ config SMBIOS_PROVIDED_BY_MOBO
 	bool
 	default n
 
+config SMBIOS_TYPE4_SOCKETED_CPU
+	bool
+	default n
+	help
+	  If enabled the CPU can be replaced and Type 4 advertises upgrade
+	  support.
+
 if GENERATE_SMBIOS_TABLES
 
 config BIOS_VENDOR

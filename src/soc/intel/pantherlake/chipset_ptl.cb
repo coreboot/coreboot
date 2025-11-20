@@ -10,7 +10,7 @@ chip soc/intel/pantherlake
 	}"
 	register "thermal_design_current[PTL_TDC_1]" = "{
 		[VR_DOMAIN_IA] = 23 * 8,
-		[VR_DOMAIN_GT] = 15 * 8
+		[VR_DOMAIN_GT] = 23 * 8
 	}"
 	register "thermal_design_current[PTL_TDC_2]" = "{
 		[VR_DOMAIN_IA] = 28 * 8,

@@ -455,6 +455,7 @@ const struct pad_config *variant_board_gpio_diff_table(size_t *num)
 
 	switch (board_id) {
 	case PTLP_LP5_T3_RVP:
+	case PTLP_LPCAMM_T3_RVP:
 		return NULL;
 	case PTLP_LP5_T4_RVP:
 		*num = ARRAY_SIZE(t4_gpio_diff_table);

@@ -12,6 +12,7 @@
 
 enum ptl_boardid {
 	PTLP_LP5_T3_RVP = 0x01,
+	PTLP_LPCAMM_T3_RVP = 0x02,
 	PTLP_LP5_T4_RVP = 0x03,
 	PTLP_DDR5_RVP = 0x04,
 	GCS_32GB = 0x11,

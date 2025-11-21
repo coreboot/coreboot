@@ -16,6 +16,7 @@
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 #include <static.h>
+#include <tdp.h>
 
 /*
  * SoC implementation
@@ -145,7 +146,7 @@ static void configure_tdp(struct device *dev)
 	struct soc_power_limits_config *soc_config;
 	struct device *sa;
 	uint16_t sa_pci_id;
-	u8 tdp;
+	enum soc_intel_pantherlake_cpu_tdps tdp;
 	size_t i;
 	bool config_tdp = false;
 	struct soc_intel_pantherlake_config *config;
@@ -161,7 +162,7 @@ static void configure_tdp(struct device *dev)
 		return;
 	}
 
-	tdp = get_cpu_tdp();
+	tdp = soc_get_cpu_tdp();
 
 	/*
 	 * Choose power limits configuration based on the CPU SA PCI ID and
@@ -174,6 +175,7 @@ static void configure_tdp(struct device *dev)
 			if (config->enable_fast_vmode[VR_DOMAIN_IA] &&
 			    soc_config->tdp_pl4_fastvmode)
 				soc_config->tdp_pl4 = soc_config->tdp_pl4_fastvmode;
+			soc_config->tdp_pl1_override = tdp;
 			set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
 			config_tdp = true;
 			printk(BIOS_DEBUG, "Configured power limits for SA PCI ID: 0x%4x\n",

@@ -14,6 +14,7 @@
 #include <soc/msr.h>
 #include <soc/pcie.h>
 #include <soc/romstage.h>
+#include <tdp.h>
 #include <static.h>
 
 #include "ux.h"
@@ -321,7 +322,7 @@ static const struct soc_intel_pantherlake_power_map *get_map(const struct soc_in
 		return NULL;
 	}
 
-	uint8_t tdp = get_cpu_tdp();
+	enum soc_intel_pantherlake_cpu_tdps tdp = soc_get_cpu_tdp();
 	for (size_t i = 0; i < ARRAY_SIZE(cpuid_to_ptl); i++) {
 		const struct soc_intel_pantherlake_power_map *current = &cpuid_to_ptl[i];
 		if (current->cpu_id == sa_pci_id && current->cpu_tdp == tdp)

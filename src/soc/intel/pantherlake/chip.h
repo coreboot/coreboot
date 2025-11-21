@@ -486,6 +486,15 @@ struct soc_intel_pantherlake_config {
 	uint16_t ps3_threshold[NUM_VR_DOMAINS];
 
 	/*
+	 * Thermal Design Power setting.
+	 *
+	 * Certain Panther Lake SKUs are compatible with multiple TDP options. For these
+	 * SKUs, the following field can be set to choose the TDP that best fits the
+	 * board's power and thermal requirements.
+	 */
+	enum soc_intel_pantherlake_cpu_tdps tdp;
+
+	/*
 	 * SerialIO device mode selection:
 	 * PchSerialIoDisabled,
 	 * PchSerialIoPci,

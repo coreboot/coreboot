@@ -24,6 +24,7 @@ romstage-y += espi.c
 romstage-y += meminit.c
 romstage-y += pcie_rp.c
 romstage-y += reset.c
+romstage-y += tdp.c
 
 ramstage-y += acpi.c
 ramstage-y += cbfs_preload.c
@@ -43,6 +44,7 @@ ramstage-y += retimer.c
 ramstage-y += soundwire.c
 ramstage-y += systemagent.c
 ramstage-y += tcss.c
+ramstage-y += tdp.c
 ramstage-y += xhci.c
 ramstage-$(CONFIG_DRIVERS_INTEL_TOUCH) += touch.c
 

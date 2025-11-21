@@ -218,6 +218,7 @@ void mtk_dsi_cphy_vdo_timing(const u32 lanes, const struct edid *edid,
 			     s32 *hbp_byte, s32 *hfp_byte, u32 *hsync_active_byte);
 void mtk_dsi_cphy_disable_ck_mode(void);
 void mtk_dsi_dphy_disable_ck_mode(void);
+void mtk_dsi_dphy_timing_calculation(u32 data_rate_mhz, struct mtk_phy_timing *timing);
 void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes, bool is_cphy);
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 		 const u8 *init_commands);

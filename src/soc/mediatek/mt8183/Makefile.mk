@@ -50,6 +50,7 @@ ramstage-y += emi.c
 ramstage-y += ../common/auxadc.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += ../common/dsi_common.c ../common/dsi_v1.c ../common/mtk_mipi_dphy.c
+ramstage-y += ../common/mtk_mipi_dphy_v1.c
 ramstage-y += ../common/gpio_eint_v1.c ../common/gpio.c gpio.c
 ramstage-y += ../common/i2c.c i2c.c
 ramstage-y += ../common/mcu.c

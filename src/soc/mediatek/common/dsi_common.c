@@ -76,24 +76,7 @@ static void mtk_dsi_dphy_timing(u32 data_rate, struct mtk_phy_timing *timing)
 	u32 timcon0, timcon1, timcon2, timcon3;
 	u32 data_rate_mhz = DIV_ROUND_UP(data_rate, MHz);
 
-	timing->lpx = (60 * data_rate_mhz / (8 * 1000)) + 1;
-	timing->da_hs_prepare = (80 * data_rate_mhz + 4 * 1000) / 8000;
-	timing->da_hs_zero = (170 * data_rate_mhz + 10 * 1000) / 8000 + 1 -
-			     timing->da_hs_prepare;
-	timing->da_hs_trail = timing->da_hs_prepare + 1;
-
-	timing->ta_go = 4 * timing->lpx - 2;
-	timing->ta_sure = timing->lpx + 2;
-	timing->ta_get = 4 * timing->lpx;
-	timing->da_hs_exit = 2 * timing->lpx + 1;
-
-	timing->da_hs_sync = 1;
-
-	timing->clk_hs_prepare = 70 * data_rate_mhz / (8 * 1000);
-	timing->clk_hs_post = timing->clk_hs_prepare + 8;
-	timing->clk_hs_trail = timing->clk_hs_prepare;
-	timing->clk_hs_zero = timing->clk_hs_trail * 4;
-	timing->clk_hs_exit = 2 * timing->clk_hs_trail;
+	mtk_dsi_dphy_timing_calculation(data_rate_mhz, timing);
 
 	/* Allow board-specific tuning. */
 	mtk_dsi_override_phy_timing(timing);

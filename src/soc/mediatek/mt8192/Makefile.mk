@@ -41,6 +41,7 @@ ramstage-y += ../common/dfd.c
 ramstage-y += ../common/dpm.c
 ramstage-y += ../common/dpm_v1.c
 ramstage-y += ../common/dsi_common.c ../common/dsi_v1.c ../common/mtk_mipi_dphy.c
+ramstage-y += ../common/mtk_mipi_dphy_v1.c
 ramstage-y += ../common/l2c_ops.c
 ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mcupm.c

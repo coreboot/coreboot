@@ -57,6 +57,7 @@ ramstage-y += ../common/mt6359p.c mt6359p.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += ../common/mtk_fsp.c
 ramstage-y += ../common/mtk_mipi_cphy.c ../common/mtk_mipi_dphy.c
+ramstage-y += ../common/mtk_mipi_dphy_v1.c
 ramstage-y += ../common/pi_image.c
 ramstage-y += ../common/pmif.c ../common/pmif_clk.c ../common/pmif_init.c pmif_clk.c
 ramstage-y += ../common/pmif_spi.c pmif_spi.c

@@ -31,6 +31,11 @@ struct mem_pool cbfs_cache =
 	MEM_POOL_INIT(_cbfs_cache, REGION_SIZE(cbfs_cache), CONFIG_CBFS_CACHE_ALIGN);
 #endif
 
+__weak const char *cbfs_fmap_region_hint(void)
+{
+	return "COREBOOT";
+}
+
 static void switch_to_postram_cache(int unused)
 {
 	if (_preram_cbfs_cache != _postram_cbfs_cache)
@@ -670,6 +675,7 @@ enum cb_err cbfs_init_boot_device(const struct cbfs_boot_device *cbd,
 
 const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro)
 {
+	printk(BIOS_DEBUG, "Starting cbfs_boot_device\n");
 	static struct cbfs_boot_device ro;
 
 	/* Ensure we always init RO mcache, even if the first file is from the RW CBFS.
@@ -693,8 +699,14 @@ const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro)
 	if (region_device_sz(&ro.rdev))
 		return &ro;
 
-	if (fmap_locate_area_as_rdev("COREBOOT", &ro.rdev))
-		die("Cannot locate primary CBFS");
+	/* Falls back to the default COREBOOT region if no overriding mechanisms are in
+	   place (e.g. Intel Top Swap). */
+	const char *region = cbfs_fmap_region_hint();
+
+	if (fmap_locate_area_as_rdev(region, &ro.rdev))
+		die("Cannot locate %s CBFS", region);
+
+	printk(BIOS_INFO, "Booting from %s region\n", region);
 
 	if (ENV_INITIAL_STAGE) {
 		enum cb_err err = cbfs_init_boot_device(&ro, metadata_hash_get());

@@ -13,6 +13,10 @@
 	#error "FMAP must always start flash address 0"
 #endif
 
+/* Return the name of the boot region. Falls back to COREBOOT, if not overridden
+ * by any multi-slot mechanism (e.g Intel Top Swap, vboot). */
+const char *cbfs_fmap_region_hint(void);
+
 /* Locate the named area in the fmap and fill in a region device representing
  * that area. The region is a sub-region of the readonly boot media. Return
  * 0 on success, < 0 on error. */

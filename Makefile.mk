@@ -979,6 +979,14 @@ extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-)
 # multiple CBFSes in fmap regions, override it.
 regions-for-file ?= $(if $(value regions-for-file-$(1)), $(regions-for-file-$(1)), COREBOOT)
 
+ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
+ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
+TS_OPTIONS := -j $(CONFIG_INTEL_TOP_SWAP_BOOTBLOCK_SIZE)
+else
+regions-for-file = $(if $(value regions-for-file-$(1)), $(regions-for-file-$(1)), COREBOOT,COREBOOT_TS)
+endif
+endif
+
 ifeq ($(CONFIG_CBFS_AUTOGEN_ATTRIBUTES),y)
 	cbfs-autogen-attributes=-g
 endif
@@ -1259,12 +1267,6 @@ $(obj)/fmap.desc: $(obj)/fmap.fmap
 $(obj)/fmap.fmap: $(obj)/fmap.fmd $(FMAPTOOL)
 	echo "    FMAP       $(FMAPTOOL) -h $(obj)/fmap_config.h $< $@"
 	$(FMAPTOOL) -h $(obj)/fmap_config.h -R $(obj)/fmap.desc $< $@
-
-ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
-ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
-TS_OPTIONS := -j $(CONFIG_INTEL_TOP_SWAP_BOOTBLOCK_SIZE)
-endif
-endif
 
 ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
 BB_FIT_REGION = COREBOOT

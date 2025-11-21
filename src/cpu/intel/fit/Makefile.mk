@@ -66,6 +66,9 @@ pbp.bin-type := raw
 $(call add_intermediate, add_pbp_fit, set_fit_ptr $(IFITTOOL))
 	@printf "    UPDATE-FIT Platform Boot Policy binary\n"
 	$(IFITTOOL) -f $< -a -n pbp.bin -t 4 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -r COREBOOT
+ifeq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
+	$(IFITTOOL) -f $< -a -n pbp.bin -t 4 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -r COREBOOT_TS
+endif
 
 endif # CONFIG_HAVE_PBP_BIN
 

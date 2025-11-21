@@ -117,7 +117,7 @@ static bool read_spd_dimm(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cf
 	 */
 	uint32_t pop_mask = 0;
 
-	if (!(info->topo & MEM_TOPO_DIMM_MODULE))
+	if (!(info->topo & (MEM_TOPO_DIMM_MODULE | MEM_TOPO_LP5_CAMM)))
 		return false;
 
 	for (ch = 0; ch < num_phys_ch; ch++) {
@@ -212,7 +212,8 @@ void mem_populate_channel_data(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_m
 
 	if (spd_info->topo == MEM_TOPO_MEMORY_DOWN) {
 		data->spd_len = spd_md_len;
-	} else if (spd_info->topo == MEM_TOPO_DIMM_MODULE) {
+	} else if (spd_info->topo == MEM_TOPO_DIMM_MODULE ||
+			spd_info->topo == MEM_TOPO_LP5_CAMM) {
 		data->spd_len = spd_dimm_len;
 	} else {
 		/*

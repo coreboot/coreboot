@@ -3,6 +3,8 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_RTC_H
 #define SOC_INTEL_COMMON_BLOCK_RTC_H
 
+#define TOP_SWAP_ENABLE_CMOS_OPTION "attempt_slot_b"
+
 /* Top swap feature enable/disable config */
 enum ts_config {
 	TS_DISABLE,
@@ -31,6 +33,11 @@ void configure_rtc_buc_top_swap(enum ts_config ts_state);
  *   TS_DISABLE - Top swap disabled.
  */
 enum ts_config get_rtc_buc_top_swap_status(void);
+
+/*
+ * Set/unset the top swap bit based on TOP_SWAP_ENABLE_CMOS_OPTION state
+ */
+void sync_rtc_buc_top_swap(void);
 
 /* Set RTC Configuration BILD bit. */
 void rtc_conf_set_bios_interface_lockdown(void);

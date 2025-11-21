@@ -2,6 +2,7 @@
 
 #include <bootblock_common.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/rtc.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
@@ -30,4 +31,7 @@ void bootblock_soc_init(void)
 
 	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
 	tco_configure();
+
+	if (CONFIG(INTEL_TOP_SWAP_OPTION_CONTROL))
+		sync_rtc_buc_top_swap();
 }

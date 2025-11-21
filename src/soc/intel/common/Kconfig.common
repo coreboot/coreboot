@@ -57,6 +57,15 @@ config INTEL_TOP_SWAP_SEPARATE_REGIONS
 	  facilitate firmware updates using the Top Swap as Slot A/Slot B redundancy.
 	  Requires a custom .fmd with the regions added at the end.
 
+config INTEL_TOP_SWAP_OPTION_CONTROL
+	bool "Toggle the Top Swap functionality using a CMOS option"
+	depends on INTEL_TOP_SWAP_SEPARATE_REGIONS && USE_OPTION_TABLE && SOC_INTEL_ALDERLAKE
+	default n
+	help
+	  Switch between the Top Swap bootblocks using the "attempt_slot_b" CMOS
+	  option. Note that the option must be present in the board's cmos.layout.
+	  file.
+
 endif
 
 config SOC_INTEL_COMMON

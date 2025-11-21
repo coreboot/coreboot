@@ -17,6 +17,12 @@ chip soc/intel/alderlake
 		[1] = 1,
 	}"
 
+	# Enable IBECC for the complete memory
+	register "ibecc" = "{
+		.enable = 1,
+		.mode = IBECC_MODE_ALL
+	}"
+
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Port1
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Port2
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Onboard USB

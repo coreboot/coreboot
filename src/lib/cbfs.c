@@ -150,17 +150,9 @@ static inline bool cbfs_lzma_enabled(void)
 	/* Payload loader (ramstage) always needs LZMA. */
 	if (ENV_PAYLOAD_LOADER)
 		return true;
-	/* Only other use of LZMA is ramstage compression. */
-	if (!CONFIG(COMPRESS_RAMSTAGE_LZMA))
-		return false;
-	/* If there is a postcar, it loads the ramstage. */
-	if (CONFIG(POSTCAR_STAGE))
-		return ENV_POSTCAR;
-	/* If there is no postcar but a separate romstage, it loads the ramstage. */
-	if (CONFIG(SEPARATE_ROMSTAGE))
-		return ENV_SEPARATE_ROMSTAGE;
-	/* Otherwise, the combined bootblock+romstage loads the ramstage. */
-	return ENV_BOOTBLOCK;
+	if (ENV_RAMSTAGE_LOADER && CONFIG(COMPRESS_RAMSTAGE_LZMA))
+		return true;
+	return false;
 }
 
 static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,

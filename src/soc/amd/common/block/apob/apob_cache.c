@@ -7,6 +7,7 @@
 #include <bootstate.h>
 #include <commonlib/helpers.h>
 #include <commonlib/region.h>
+#include <commonlib/bsd/xxhash.h>
 #include <console/console.h>
 #include <fmap.h>
 #include <fmap_config.h>
@@ -16,7 +17,6 @@
 #include <thread.h>
 #include <timestamp.h>
 #include <types.h>
-#include <xxhash.h>
 
 #define DEFAULT_MRC_CACHE	"RW_MRC_CACHE"
 #define DEFAULT_MRC_CACHE_SIZE	FMAP_SECTION_RW_MRC_CACHE_SIZE

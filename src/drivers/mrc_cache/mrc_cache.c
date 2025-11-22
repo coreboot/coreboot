@@ -5,6 +5,7 @@
 #include <bootstate.h>
 #include <bootmode.h>
 #include <console/console.h>
+#include <commonlib/bsd/xxhash.h>
 #include <cbmem.h>
 #include <elog.h>
 #include <fmap.h>
@@ -14,7 +15,6 @@
 #include <security/vboot/mrc_cache_hash_tpm.h>
 #include <security/vboot/vboot_common.h>
 #include <spi_flash.h>
-#include <xxhash.h>
 
 #include "mrc_cache.h"
 

@@ -14,7 +14,7 @@
 #include "cbfs_sections.h"
 #include "elfparsing.h"
 #include "partitioned_file.h"
-#include "lz4/lib/xxhash.h"
+#include "lz4/lib/lz4_xxhash.h"
 #include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/bsd/compression.h>
 #include <commonlib/bsd/metadata_hash.h>

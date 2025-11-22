@@ -9,10 +9,9 @@
  * - xxHash source repository: https://github.com/Cyan4973/xxHash
  */
 
-#include <arch/byteorder.h>
+#include <commonlib/bsd/xxhash.h>
 #include <endian.h>
 #include <string.h>
-#include <xxhash.h>
 
 /*-*************************************
  * Macros

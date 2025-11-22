@@ -62,7 +62,7 @@ You can contact the author at :
 #include "lz4frame_static.h"
 #include "lz4.h"
 #include "lz4hc.h"
-#include "xxhash.h"
+#include "lz4_xxhash.h"
 
 
 /**************************************

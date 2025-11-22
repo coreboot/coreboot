@@ -46,7 +46,8 @@
 #ifndef XXHASH_H
 #define XXHASH_H
 
-#include <types.h>
+#include <stdint.h>
+#include <stddef.h>
 
 /*-****************************
  * Simple Hash Functions

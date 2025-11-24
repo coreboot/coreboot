@@ -662,6 +662,7 @@ chip soc/intel/pantherlake
 				register "vcm_name" = ""VCM1""
 
 				register "ssdb.lanes_used" = "4"
+				register "ssdb.platform" = "PLAT_PTL"
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "560 * MHz" # 560 MHz
 				register "remote_name" = ""IPU0""
@@ -763,6 +764,7 @@ chip soc/intel/pantherlake
 				register "vcm_name" = ""VCM1""
 
 				register "ssdb.lanes_used" = "2"
+				register "ssdb.platform" = "PLAT_PTL"
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "560 * MHz" # 560 MHz
 				register "remote_name" = ""IPU0""

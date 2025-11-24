@@ -510,6 +510,7 @@ chip soc/intel/meteorlake
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
+				register "ssdb.platform" = "PLAT_MTL"
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "437 * MHz"
 				register "remote_name" = ""IPU0""

@@ -347,6 +347,7 @@ chip soc/intel/jasperlake
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
+				register "ssdb.platform" = "PLAT_JSL"
 				register "ssdb.vcm_type" = "0x0C"
 				register "vcm_name" = ""VCM0""
 				register "num_freq_entries" = "1"
@@ -391,6 +392,7 @@ chip soc/intel/jasperlake
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
+				register "ssdb.platform" = "PLAT_JSL"
 				register "ssdb.vcm_type" = "0x0C"
 				register "vcm_name" = ""VCM0""
 				register "num_freq_entries" = "2"

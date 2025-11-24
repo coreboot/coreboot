@@ -516,6 +516,7 @@ chip soc/intel/meteorlake
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 				register "ssdb.lanes_used" = "4"
 				register "ssdb.link_used" = "1"
+				register "ssdb.platform" = "PLAT_MTL"
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "400 * MHz"
 				register "remote_name" = ""IPU0""

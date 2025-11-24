@@ -327,6 +327,7 @@ chip soc/intel/alderlake
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
+				register "ssdb.platform" = "PLAT_ADL"
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "360 * MHz"
 				register "remote_name" = ""IPU0""
@@ -367,6 +368,7 @@ chip soc/intel/alderlake
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
+				register "ssdb.platform" = "PLAT_ADL"
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "437 * MHz" # 437 MHz
 				register "remote_name" = ""IPU0""

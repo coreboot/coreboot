@@ -544,6 +544,7 @@ chip soc/intel/alderlake
 
 				register "ssdb.lanes_used" = "4"
 				register "ssdb.link_used" = "0"
+				register "ssdb.platform" = "PLAT_ADL"
 				register "ssdb.vcm_type" = "0x0C"
 				register "vcm_name" = ""VCM0""
 				register "num_freq_entries" = "2"
@@ -649,6 +650,7 @@ chip soc/intel/alderlake
 
 				register "ssdb.lanes_used" = "4"
 				register "ssdb.link_used" = "0"
+				register "ssdb.platform" = "PLAT_ADL"
 				register "ssdb.vcm_type" = "0x0C"
 				register "vcm_name" = ""VCM0""
 				register "num_freq_entries" = "2"
@@ -859,6 +861,7 @@ chip soc/intel/alderlake
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
+				register "ssdb.platform" = "PLAT_ADL"
 				register "num_freq_entries" = "2"
 				register "link_freq[0]" = "384 * MHz" # 384 MHz
 				register "link_freq[1]" = "96 * MHz" # 96 MHz

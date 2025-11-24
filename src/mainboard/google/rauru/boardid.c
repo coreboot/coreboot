@@ -7,6 +7,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <soc/mt6363_sdmadc.h>
 
+#include "panel.h"
 #include "storage.h"
 
 #define ADC_LEVELS 8
@@ -18,9 +19,12 @@ DEFINE_BITFIELD(PANEL_TYPE, 7, 0);
 enum {
 	/* Storage IDs */
 	STORAGE_ID_LOW_CHANNEL = AUXADC_CHAN_VIN1,
+	/* Panel IDS */
+	PANEL_ID0_CHANNEL = AUXADC_CHAN_VIN3,
+	PANEL_ID1_CHANNEL = AUXADC_CHAN_VIN4,
 };
 
-static const unsigned int storageid_voltages[ADC_LEVELS] = {
+static const unsigned int id_voltages[ADC_LEVELS] = {
 	/* ID : Voltage (unit: mV) */
 	[0]  =   50,
 	[1]  =  210,
@@ -33,7 +37,9 @@ static const unsigned int storageid_voltages[ADC_LEVELS] = {
 };
 
 static const unsigned int *adc_voltages[] = {
-	[STORAGE_ID_LOW_CHANNEL] = storageid_voltages,
+	[STORAGE_ID_LOW_CHANNEL] = id_voltages,
+	[PANEL_ID0_CHANNEL] = id_voltages,
+	[PANEL_ID1_CHANNEL] = id_voltages,
 };
 
 static uint32_t get_adc_index(unsigned int channel)
@@ -53,6 +59,25 @@ static uint32_t get_adc_index(unsigned int channel)
 
 	printk(BIOS_DEBUG, "ADC[%u]: Raw value=%u ID=%u\n", channel, value, id);
 	return id;
+}
+
+uint32_t panel_id(void)
+{
+	static uint32_t cached_panel_id = BOARD_ID_INIT;
+
+	if (cached_panel_id != BOARD_ID_INIT)
+		return cached_panel_id;
+
+	uint32_t id0 = get_adc_index(PANEL_ID0_CHANNEL);
+	uint32_t id1 = get_adc_index(PANEL_ID1_CHANNEL);
+
+	if (id0 && id0 != 0x7)
+		printk(BIOS_ERR, "Invalid Panel ID0: %#02x\n", id0);
+
+	cached_panel_id = (!!id0) << 3 | (id1 & 0x7);
+	printk(BIOS_DEBUG, "Panel ID: %#02x\n", cached_panel_id);
+
+	return cached_panel_id;
 }
 
 uint32_t storage_id(void)

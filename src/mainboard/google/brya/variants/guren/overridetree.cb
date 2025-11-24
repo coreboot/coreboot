@@ -647,6 +647,7 @@ chip soc/intel/alderlake
 							probe DB_USB DB_1A
 							probe DB_USB DB_1C_1A
 							probe DB_USB DB_1C_LTE
+							probe DB_USB DB_1C_5G
 						end
 					end
 				end
@@ -671,6 +672,7 @@ chip soc/intel/alderlake
 							probe DB_USB DB_1C
 							probe DB_USB DB_1C_1A
 							probe DB_USB DB_1C_LTE
+							probe DB_USB DB_1C_5G
 						end
 					end
 				end
@@ -695,6 +697,7 @@ chip soc/intel/alderlake
 							probe DB_USB DB_1C
 							probe DB_USB DB_1C_1A
 							probe DB_USB DB_1C_LTE
+							probe DB_USB DB_1C_5G
 						end
 					end
 					chip drivers/usb/acpi

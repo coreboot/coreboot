@@ -284,9 +284,6 @@ static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *c
 	struct device *cio2 = pcidev_on_root(CIO2_PCI_DEV, CIO2_PCI_FN);
 	struct drivers_intel_mipi_camera_config *cio2_config;
 
-	if (config->disable_ssdb_defaults)
-		return;
-
 	config->ssdb.version = 1;
 
 	if (!config->ssdb.sensor_card_sku.card_type)

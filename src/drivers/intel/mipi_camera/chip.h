@@ -143,7 +143,6 @@ struct drivers_intel_mipi_camera_config {
 	uint32_t cio2_prt[MAX_PORT_ENTRIES];
 
 	/* Settings specific to camera sensor */
-	bool disable_ssdb_defaults;
 
 	uint8_t num_freq_entries;	/* # of elements in link_freq */
 	uint32_t link_freq[MAX_LINK_FREQ_ENTRIES];

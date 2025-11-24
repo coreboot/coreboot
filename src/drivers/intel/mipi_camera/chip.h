@@ -150,8 +150,7 @@ struct drivers_intel_mipi_camera_config {
 	const char *sensor_name;	/* default "UNKNOWN" */
 	const char *remote_name;	/* default "\_SB.PCI0.CIO2" */
 	const char *vcm_name;		/* defaults to |vcm_address| device */
-	bool use_pld;
-	bool disable_pld_defaults;
+
 	struct acpi_pld pld;
 	uint16_t rom_address;		/* I2C to use if ssdb.rom_type != 0 */
 	uint16_t vcm_address;		/* I2C to use if ssdb.vcm_type != 0 */

@@ -107,11 +107,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		return;
 	}
 
-	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_NONE))) {
+	if (fw_config_probe(FW_CONFIG(AUDIO_CODEC, AUDIO_CODEC_UNKNOWN))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, audio_disable_pads);
 		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_disable_pads);
-	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_TAS2563_ALC5682I_I2S))) {
-		printk(BIOS_INFO, "Configure GPIOs for I2S TAS2563 ALC5682 audio.\n");
+	} else if (fw_config_probe(FW_CONFIG(AUDIO_CODEC, AUDIO_CODEC_ALC5682IVS))) {
+		printk(BIOS_INFO, "Configure GPIOs for I2S ALC5682IVS audio.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, i2s_enable_pads);
 		printk(BIOS_INFO, "Configure GPIOs for BT offload mode.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_enable_pads);

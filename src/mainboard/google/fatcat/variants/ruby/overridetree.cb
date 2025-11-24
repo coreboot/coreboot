@@ -1,7 +1,11 @@
 fw_config
-	field AUDIO 0 1
-		option AUDIO_NONE			0
-		option AUDIO_TAS2563_ALC5682I_I2S	1
+	field AUDIO_CODEC 0 2
+		option AUDIO_CODEC_UNKNOWN	0
+		option AUDIO_CODEC_ALC5682IVS	1
+	end
+	field AUDIO_AMPLIFIER 3 5
+		option AUDIO_AMPLIFIER_UNKNOWN	0
+		option AUDIO_AMPLIFIER_TAS2563	1
 	end
 end
 
@@ -249,7 +253,7 @@ chip soc/intel/pantherlake
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
 				device i2c 1a on
-					probe AUDIO AUDIO_TAS2563_ALC5682I_I2S
+					probe AUDIO_CODEC AUDIO_CODEC_ALC5682IVS
 				end
 			end
 			chip drivers/i2c/tas2563
@@ -260,7 +264,7 @@ chip soc/intel/pantherlake
 				register "audio_slots[2]" = "0x4c"
 				register "audio_slots[3]" = "0x4d"
 				device i2c 4a on
-					probe AUDIO AUDIO_TAS2563_ALC5682I_I2S
+					probe AUDIO_AMPLIFIER AUDIO_AMPLIFIER_TAS2563
 				end
 			end
 		end

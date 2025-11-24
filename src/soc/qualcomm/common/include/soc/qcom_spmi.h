@@ -11,5 +11,6 @@
 
 int spmi_read8(uint32_t addr);
 int spmi_write8(uint32_t addr, uint8_t data);
+int spmi_read_bytes(uint32_t addr, uint8_t *data, uint32_t num_bytes);
 
 #endif	// __SOC_QCOM_SPMI_H__

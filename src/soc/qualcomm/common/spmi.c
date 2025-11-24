@@ -125,3 +125,19 @@ int spmi_write8(uint32_t addr, uint8_t data)
 
 	return ret;
 }
+
+int spmi_read_bytes(uint32_t addr, uint8_t *data, uint32_t num_bytes)
+{
+	int spmi_result;
+	if (!data)
+		return -1;
+
+	for (uint32_t i = 0; i < num_bytes; i++) {
+		spmi_result = spmi_read8(addr + i);
+		if (spmi_result < 0)
+			return -1;
+		*data = spmi_result & 0xff;
+		data++;
+	}
+	return 0;
+}

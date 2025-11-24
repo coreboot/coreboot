@@ -10,7 +10,7 @@
 #include <drivers/option/cfr_frontend.h>
 #include "ec.h"
 
-static void update_fan_control(const struct sm_object *obj, struct sm_object *new)
+static void update_fan_control(struct sm_object *new)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC_AUTO_FAN_CTRL) && !google_chromeec_has_fan()) {
 		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
@@ -38,7 +38,7 @@ static const struct sm_enum_value ec_backlight_values[] = {
 	SM_ENUM_VALUE_END,
 };
 
-static void update_kb_backlight(const struct sm_object *obj, struct sm_object *new)
+static void update_kb_backlight(struct sm_object *new)
 {
 	if (!google_chromeec_has_kbbacklight()) {
 		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;

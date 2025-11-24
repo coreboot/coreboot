@@ -477,7 +477,8 @@ chip soc/intel/meteorlake
 				register "chip_name" = ""Ov 13b10 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 
-				register "ssdb.vcm_type" = "0x0C"
+				register "ssdb.vcm_type" = "VCM_DW9714"
+				register "vcm_address" = "0x0C"
 				register "vcm_name" = ""VCM1""
 
 				register "ssdb.lanes_used" = "4"

@@ -385,7 +385,8 @@ chip soc/intel/alderlake
 				register "ssdb.lanes_used" = "4"
 				register "ssdb.link_used" = "0"
 				register "ssdb.platform" = "PLAT_ADL"
-				register "ssdb.vcm_type" = "0x0C"
+				register "ssdb.vcm_type" = "VCM_DW9808"
+				register "vcm_address" = "0x0C"
 				register "vcm_name" = ""VCM0""
 				register "num_freq_entries" = "2"
 				register "link_freq[0]" = "360 * MHz" # 360 MHz

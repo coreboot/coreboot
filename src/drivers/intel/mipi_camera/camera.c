@@ -287,6 +287,11 @@ static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *c
 	if (config->disable_ssdb_defaults)
 		return;
 
+	config->ssdb.version = 1;
+
+	if (!config->ssdb.sensor_card_sku.card_type)
+		config->ssdb.sensor_card_sku.card_type = SKU_CRD_D;
+
 	guidcpy(&config->ssdb.csi2_data_stream_interface, &CSI2_DATA_STREAM_INTERFACE_GUID);
 
 	if (!config->ssdb.bdf_value)

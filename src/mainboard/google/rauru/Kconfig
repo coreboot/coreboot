@@ -72,4 +72,8 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
 
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-legacy.fmd" if CHROMEOS && (BOARD_GOOGLE_HYLIA || BOARD_GOOGLE_NAVI)
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
+
 endif

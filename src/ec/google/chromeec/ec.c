@@ -1454,6 +1454,10 @@ void google_chromeec_init(void)
 	int backlight_level = get_uint_option("ec_kb_backlight", -1);
 	if (backlight_level != -1 && !acpi_is_wakeup_s3() && google_chromeec_has_kbbacklight())
 		google_chromeec_kbbacklight(backlight_level);
+
+	int rgb_color = get_uint_option("ec_rgb_kb_color", -1);
+	if (rgb_color != -1 && !acpi_is_wakeup_s3() && google_chromeec_has_rgbkbd())
+		google_chromeec_rgbkbd_set_color((enum google_chromeec_rgbkbd_color)rgb_color);
 }
 
 int google_ec_running_ro(void)

@@ -40,7 +40,7 @@ static const struct sm_enum_value ec_backlight_values[] = {
 
 static void update_kb_backlight(struct sm_object *new)
 {
-	if (!google_chromeec_has_kbbacklight()) {
+	if (!google_chromeec_has_kbbacklight() || google_chromeec_has_rgbkbd()) {
 		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
 		new->sm_bool.default_value = -1;
 	}
@@ -54,5 +54,31 @@ static const struct sm_object ec_kb_backlight = SM_DECLARE_ENUM({
 	.default_value  = 50,
 	.values         = ec_backlight_values,
 }, WITH_CALLBACK(update_kb_backlight));
+
+static const struct sm_enum_value ec_rgb_backlight_values[] = {
+	{ "Off",	GOOGLE_CHROMEEC_RGBKBD_COLOR_OFF },
+	{ "Red",	GOOGLE_CHROMEEC_RGBKBD_COLOR_RED },
+	{ "Green",	GOOGLE_CHROMEEC_RGBKBD_COLOR_GREEN },
+	{ "Blue",	GOOGLE_CHROMEEC_RGBKBD_COLOR_BLUE },
+	{ "Yellow",	GOOGLE_CHROMEEC_RGBKBD_COLOR_YELLOW },
+	{ "White",	GOOGLE_CHROMEEC_RGBKBD_COLOR_WHITE },
+	SM_ENUM_VALUE_END,
+};
+
+static void update_rgb_kb_backlight(struct sm_object *new)
+{
+	if (!google_chromeec_has_rgbkbd()) {
+		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+		new->sm_bool.default_value = GOOGLE_CHROMEEC_RGBKBD_COLOR_OFF;
+	}
+}
+
+static const struct sm_object ec_rgb_kb_color = SM_DECLARE_ENUM({
+	.opt_name       = "ec_rgb_kb_color",
+	.ui_name        = "RGB Keyboard Color At Boot",
+	.ui_helptext    = "Select the static color applied to the RGB keyboard at boot.",
+	.default_value  = GOOGLE_CHROMEEC_RGBKBD_COLOR_OFF,
+	.values         = ec_rgb_backlight_values,
+}, WITH_CALLBACK(update_rgb_kb_backlight));
 
 #endif /* _CHROMEEC_CFR_H_ */

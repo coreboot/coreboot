@@ -86,6 +86,7 @@ static struct {
 	{ PCI_DID_INTEL_TGP_H_ESPI_HM570, "Tigerlake-H HM570" },
 	{ PCI_DID_INTEL_TGP_H_ESPI_QM580, "Tigerlake-H QM580" },
 	{ PCI_DID_INTEL_TGP_H_ESPI_WM590, "Tigerlake-H WM590" },
+	{ PCI_DID_INTEL_TGP_H_ESPI_RM590E, "Tigerlake-H RM590E" },
 };
 
 static struct {
@@ -93,6 +94,7 @@ static struct {
 	const char *name;
 } igd_table[] = {
 	{ PCI_DID_INTEL_TGL_GT0, "Tigerlake U GT0" },
+	{ PCI_DID_INTEL_TGL_GT1_H_32_1, "Tigerlake H GT1 32EU" },
 	{ PCI_DID_INTEL_TGL_GT1_H_32, "Tigerlake H GT1 32EU" },
 	{ PCI_DID_INTEL_TGL_GT1_H_16, "Tigerlake H GT1 16EU" },
 	{ PCI_DID_INTEL_TGL_GT2_ULT, "Tigerlake U GT2" },

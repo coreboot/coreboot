@@ -2,6 +2,9 @@
 
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
+#include <cbmem.h>
+#include <commonlib/bsd/cbmem_id.h>
+#include <commonlib/coreboot_tables.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
@@ -13,27 +16,30 @@
 #include <soc/usb/usb.h>
 
 /*
- * Check if the system is in low battery boot mode.
- *
- * This function calls the underlying EC function only once during the
+ * This function calls the underlying PMIC/EC function only once during the
  * first execution and caches the result for all subsequent calls.
- *
- * Return `true` if system battery is below critical threshold, `false` otherwise.
  */
-static inline bool is_low_battery_mode(void)
+static enum boot_mode_t get_boot_mode(void)
 {
-	if (!CONFIG(EC_GOOGLE_CHROMEEC))
-		return false;
-
-	static bool low_battery_mode_cached = false;
-	static bool cached_low_battery_result = false;
-
-	if (!low_battery_mode_cached) {
-		cached_low_battery_result = google_chromeec_is_below_critical_threshold();
-		low_battery_mode_cached = true;
+	static bool initialized = false;
+	static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
+	if (!initialized) {
+		enum boot_mode_t *boot_mode_ptr = cbmem_find(CBMEM_ID_BOOT_MODE);
+		if (boot_mode_ptr)
+			boot_mode = *boot_mode_ptr;
+		printk(BIOS_INFO, "Boot mode is %d\n", boot_mode);
+		initialized = true;
 	}
+	return boot_mode;
+}
 
-	return cached_low_battery_result;
+static bool is_low_power_boot(void)
+{
+	enum boot_mode_t boot_mode = get_boot_mode();
+	if ((boot_mode == LB_BOOT_MODE_LOW_BATTERY) ||
+	    (boot_mode == LB_BOOT_MODE_OFFMODE_CHARGING))
+		return true;
+	return false;
 }
 
 static void setup_usb(void)
@@ -51,20 +57,17 @@ void lb_add_boot_mode(struct lb_header *header)
 
 	mode->tag = LB_TAG_BOOT_MODE;
 	mode->size = sizeof(*mode);
-	mode->boot_mode = LB_BOOT_MODE_NORMAL;
+	mode->boot_mode = get_boot_mode();
 
-	if (is_low_battery_mode())
-		mode->boot_mode = LB_BOOT_MODE_LOW_BATTERY;
-
-	/* Enable charging only during low-battery mode */
-	if (mode->boot_mode == LB_BOOT_MODE_LOW_BATTERY)
+	/* Enable charging only during off-mode or low-battery mode */
+	if (is_low_power_boot())
 		enable_slow_battery_charging();
 }
 
 bool mainboard_needs_pcie_init(void)
 {
 	/* Skip PCIe initialization if boot mode is "low-battery" or "off-mode charging"*/
-	if (is_low_battery_mode())
+	if (is_low_power_boot())
 		return false;
 
 	return true;
@@ -83,7 +86,7 @@ static void display_startup(void)
 static void mainboard_init(struct device *dev)
 {
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging"*/
-	if (is_low_battery_mode())
+	if (is_low_power_boot())
 		return;
 
 	gpi_firmware_load(QUP_0_GSI_BASE);

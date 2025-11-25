@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 /* Macro to construct SPMI address from slave ID and register offset */
-#define SPMI_ADDR(slave, reg) ((slave << 16) | reg)
+#define SPMI_ADDR(slave, reg) (((slave) << 16) | (reg))
 
 int spmi_read8(uint32_t addr);
 int spmi_write8(uint32_t addr, uint8_t data);

@@ -11,30 +11,85 @@ const u32 cim_verb_data[] = {
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x152D0924 */
 	AZALIA_SUBVENDOR(0, 0x152D0924),
 
+	/* Padding - Power up sequence */
 	0x00170500,
-	0x00170500,	/* Padding */
-	0x00170500,	/* Padding */
-	0x00170500,	/* Padding */
+	0x00170500,
+	0x00170500,
+	0x00170500,
 
 	/* Pin Widget Verb Table */
 
-	/* Pin Complex (NID 0x05) */
-	AZALIA_PIN_CFG(0, 0x05, 0x022110f0),
+	/* Pin Complex (NID 0x05) - Headphone Jack */
+	AZALIA_PIN_CFG(0, 0x05, AZALIA_PIN_DESC(
+						AZALIA_JACK,
+						AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_FRONT,
+						AZALIA_HP_OUT,
+						AZALIA_STEREO_MONO_1_8,
+						AZALIA_BLACK,
+						AZALIA_JACK_PRESENCE_DETECT,
+						15,
+						0
+					)),
 
-	/* Pin Complex (NID 0x06) */
-	AZALIA_PIN_CFG(0, 0x06, 0x901700f0),
+	/* Pin Complex (NID 0x06) - Internal Speaker */
+	AZALIA_PIN_CFG(0, 0x06, AZALIA_PIN_DESC(
+						AZALIA_INTEGRATED,
+						AZALIA_INTERNAL,
+						AZALIA_SPEAKER,
+						AZALIA_OTHER_ANALOG,
+						AZALIA_COLOR_UNKNOWN,
+						AZALIA_JACK_PRESENCE_DETECT,
+						15,
+						0
+					)),
 
-	/* Pin Complex (NID 0x07) */
-	AZALIA_PIN_CFG(0, 0x07, 0x02a110f0),
+	/* Pin Complex (NID 0x07) - Microphone Jack */
+	AZALIA_PIN_CFG(0, 0x07, AZALIA_PIN_DESC(
+						AZALIA_JACK,
+						AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_FRONT,
+						AZALIA_MIC_IN,
+						AZALIA_STEREO_MONO_1_8,
+						AZALIA_BLACK,
+						AZALIA_JACK_PRESENCE_DETECT,
+						15,
+						0
+					)),
 
-	/* Pin Complex (NID 0x08) */
-	AZALIA_PIN_CFG(0, 0x08, 0x77a70037),
+	/* Pin Complex (NID 0x08) - Unused (NC) */
+	AZALIA_PIN_CFG(0, 0x08, AZALIA_PIN_DESC(
+					AZALIA_NC,
+					AZALIA_MOBILE_LID_INSIDE,
+					AZALIA_MIC_IN,
+					AZALIA_OTHER_ANALOG,
+					AZALIA_COLOR_UNKNOWN,
+					AZALIA_JACK_PRESENCE_DETECT,
+					3,
+					7
+				)),
 
-	/* Pin Complex (NID 0x09) */
-	AZALIA_PIN_CFG(0, 0x09, 0xb7a6003e),
+	/* Pin Complex (NID 0x09) - Internal Digital Mic */
+	AZALIA_PIN_CFG(0, 0x09, AZALIA_PIN_DESC(
+					AZALIA_INTEGRATED,
+					AZALIA_MOBILE_LID_INSIDE,
+					AZALIA_MIC_IN,
+					AZALIA_OTHER_DIGITAL,
+					AZALIA_COLOR_UNKNOWN,
+					AZALIA_JACK_PRESENCE_DETECT,
+					3,
+					14
+				)),
 
-	/* Pin Complex (NID 0x0a) */
-	AZALIA_PIN_CFG(0, 0x0a, 0x434510f0),
+	/* Pin Complex (NID 0x0a) - SPDIF Out (NC) */
+	AZALIA_PIN_CFG(0, 0x0a, AZALIA_PIN_DESC(
+					AZALIA_NC,
+					AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_LEFT,
+					AZALIA_SPDIF_OUT,
+					AZALIA_OPTICAL,
+					AZALIA_BLACK,
+					AZALIA_JACK_PRESENCE_DETECT,
+					15,
+					0
+				)),
 };
 
 const u32 pc_beep_verbs[] = {

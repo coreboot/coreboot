@@ -38,7 +38,7 @@ const u32 cim_verb_data[] = {
 						AZALIA_SPEAKER,
 						AZALIA_OTHER_ANALOG,
 						AZALIA_COLOR_UNKNOWN,
-						AZALIA_JACK_PRESENCE_DETECT,
+						AZALIA_NO_JACK_PRESENCE_DETECT,
 						15,
 						0
 					)),
@@ -56,16 +56,7 @@ const u32 cim_verb_data[] = {
 					)),
 
 	/* Pin Complex (NID 0x08) - Unused (NC) */
-	AZALIA_PIN_CFG(0, 0x08, AZALIA_PIN_DESC(
-					AZALIA_NC,
-					AZALIA_MOBILE_LID_INSIDE,
-					AZALIA_MIC_IN,
-					AZALIA_OTHER_ANALOG,
-					AZALIA_COLOR_UNKNOWN,
-					AZALIA_JACK_PRESENCE_DETECT,
-					3,
-					7
-				)),
+	AZALIA_PIN_CFG_NC(0),
 
 	/* Pin Complex (NID 0x09) - Internal Digital Mic */
 	AZALIA_PIN_CFG(0, 0x09, AZALIA_PIN_DESC(
@@ -74,7 +65,7 @@ const u32 cim_verb_data[] = {
 					AZALIA_MIC_IN,
 					AZALIA_OTHER_DIGITAL,
 					AZALIA_COLOR_UNKNOWN,
-					AZALIA_JACK_PRESENCE_DETECT,
+					AZALIA_NO_JACK_PRESENCE_DETECT,
 					3,
 					14
 				)),

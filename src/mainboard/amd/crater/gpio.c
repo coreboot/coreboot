@@ -28,7 +28,11 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* PCIE_RST1_L */
 	PAD_NFO(GPIO_27, PCIE_RST1_L, HIGH),
 	/* M2_SSD0_RST */
+#if CONFIG(NVME_RST_GPIO40)
+	PAD_GPO(GPIO_40, HIGH),
+#else
 	PAD_GPO(GPIO_24, HIGH),
+#endif
 	/* DEVSLP1 */
 	PAD_NFO(GPIO_6, DEVSLP1, LOW),
 

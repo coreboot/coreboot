@@ -98,6 +98,12 @@ config ENABLE_M2_SSD
 	help
 	  Use GPP[8:11] connected to M.2 SSD
 
+config NVME_RST_GPIO40
+	bool "NVMe Reset on GPIO40"
+	help
+	  Select if the NVMe reset pin is connected to GPIO40.
+	  Otherwise its assumed to be connected to GPIO24.
+
 choice
 	prompt "XGBE/WWAN/WLAN/DT Selection"
 	default XGBE_WWAN_WLAN

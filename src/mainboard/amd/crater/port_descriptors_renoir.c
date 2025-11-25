@@ -341,4 +341,6 @@ static void xgbe_init(FSP_M_CONFIG *mcfg)
 void mb_pre_fspm(FSP_M_CONFIG *mcfg)
 {
 	xgbe_init(mcfg);
+
+	mcfg->nvme_rst_gpio = CONFIG(NVME_RST_GPIO40) ? 40 : 24;
 }

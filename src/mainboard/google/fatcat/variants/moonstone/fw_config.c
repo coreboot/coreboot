@@ -77,17 +77,6 @@ static const struct pad_config pre_mem_fp_spi_enable_pads[] = {
 	PAD_CFG_GPO(GPP_C15, 0, DEEP),
 };
 
-static const struct pad_config touchscreen_disable_pads[] = {
-	/* GPP_F08:     EN_TCHSCR_PWR => NC */
-	PAD_NC(GPP_F08, NONE),
-	/* GPP_F16:     TCHSCR_RST_L => NC */
-	PAD_NC(GPP_F16, NONE),
-	/* GPP_F18:     TCHSCR_INT_L => NC */
-	PAD_NC(GPP_F18, NONE),
-	/* GPP_E05:     TCHSCR_RPT_EN => NC */
-	PAD_NC(GPP_E05, NONE),
-};
-
 void fw_config_configure_pre_mem_gpio(void)
 {
 	if (!fw_config_is_provisioned()) {
@@ -95,7 +84,7 @@ void fw_config_configure_pre_mem_gpio(void)
 		return;
 	}
 
-	if (fw_config_probe(FW_CONFIG(FPMCU, FP_SPI)))
+	if (fw_config_probe(FW_CONFIG(FINGERPRINT_INTERFACE, FINGERPRINT_INTERFACE_SPI)))
 		GPIO_CONFIGURE_PADS(pre_mem_fp_spi_enable_pads);
 
 }
@@ -113,7 +102,7 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	 *| FPMCU | GSPI0  | usb2_port6  |
 	 *+-------+--------+-------------+
 	 */
-	if (fw_config_probe(FW_CONFIG(FPMCU, FP_SPI))) {
+	if (fw_config_probe(FW_CONFIG(FINGERPRINT_INTERFACE, FINGERPRINT_INTERFACE_SPI))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, fp_spi_enable_pads);
 	} else {
 		GPIO_PADBASED_OVERRIDE(padbased_table, fp_spi_disable_pads);
@@ -121,10 +110,10 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	/* Probe fw_config : "IO_PORT" to reconfigure port settings accordingly.
 	 * proto0  : IO_PORT => "USB2A2C_HDMI:0"
 	 * porot1.5: IO_PORT => "USB3C:1"
-	 * +-----------------+------------------+------------------+
+	 *+-----------------+------------------+------------------+
 	 *| IO_PORT         | USB2A2C_HDMI     |  USB3C           |
 	 *+-----------------+------------------+------------------+
-	 *| tcss_usb3_port0 | USB4_C0 (MB-TBT) | USB4_C0 (MB-TBT) |
+	 *| tcss_usb3_port0 | USB4_C0 (MB-TBT) | USB4_C0 (MB)     |
 	 *+-----------------+------------------+------------------+
 	 *| tcss_usb3_port1 | N/A              | USB3.2 C2 (DB)   |
 	 *+-----------------+------------------+------------------+
@@ -141,11 +130,8 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	 *| usb2_port6      | USB2_A1          | USB_FP           |
 	 *+-----------------+------------------+------------------+
 	 */
-	if (fw_config_probe(FW_CONFIG(IO_PORT, USB3C)))
+	if (fw_config_probe(FW_CONFIG(AP_OEM_2BIT_FIELD0, IO_BOARD_USB3C)))
 		GPIO_PADBASED_OVERRIDE(padbased_table, use_usb3c_enable_pads);
 	else
 		GPIO_PADBASED_OVERRIDE(padbased_table, use_usb2a2c_hdmi_enable_pads);
-
-	if (fw_config_probe(FW_CONFIG(TOUCH_SCREEN, ABSENCE)))
-		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_disable_pads);
 }

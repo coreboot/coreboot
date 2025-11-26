@@ -1,24 +1,45 @@
 fw_config
-	field WIFI 2 2
-		option WIFI_CNVI_7		0
+	field AUDIO_CODEC 0 2
+		option AUDIO_CODEC_UNKNOWN	0
+		option AUDIO_CODEC_ALC721	1
 	end
-	field AUDIO 3 5
-		option AUDIO_UNKNOWN				0
-		option AUDIO_ALC721_SNDW			1
-		option AUDIO_ALC1320_ALC721_SNDW	2
+	field AUDIO_AMPLIFIER 3 5
+		option AUDIO_AMPLIFIER_UNKNOWN	0
+		option AUDIO_AMPLIFIER_ALC1320	1
 	end
-	field FPMCU 6 7
-		option FP_ABSENT		0
-		option FP_SPI			1
-		option FP_USB			2
+	field STORAGE_TYPE 12 14
+		option STORAGE_TYPE_UNKNOWN	0
+		option STORAGE_TYPE_NVME_GEN4	1
 	end
-	field IO_PORT 12 12
-		option USB2A2C_HDMI		0
-		option USB3C			1
+	field SENSOR_HUB_PRESENT 23 23
+		option ISH_ABSENT	0
+		option ISH_PRESENT	1
 	end
-	field TOUCH_SCREEN 13 13
-		option ABSENCE			0
-		option PRESENCE			1
+	field FINGERPRINT_INTERFACE 24 25
+		option FINGERPRINT_INTERFACE_UNKNOWN	0
+		option FINGERPRINT_INTERFACE_SPI	1
+		option FINGERPRINT_INTERFACE_USB	2
+	end
+	field WIFI_INTERFACE 26 27
+		option WIFI_INTERFACE_UNKNOWN	0
+		option WIFI_INTERFACE_CNVI	1
+	end
+	field FORM_FACTOR 30 31
+		option FORM_FACTOR_UNKNOWN	0
+		option FORM_FACTOR_CLAMSHELL	1
+		option FORM_FACTOR_CONVERTIBLE	2
+	end
+	field KB_BACKLIGHT_PRESENT 43 43
+		option KB_BACKLIGHT_ABSENT	0
+		option KB_BACKLIGHT_PRESENT	1
+	end
+	field KEYBOARD_LAYOUT 45 47
+		option KEYBOARD_LAYOUT_DEFAULT	0
+		option KEYBOARD_LAYOUT_CA_FR	1
+	end
+	field AP_OEM_2BIT_FIELD0 59 60
+		option IO_BOARD_USB2A2C_HDMI	0
+		option IO_BOARD_USB3C	1
 	end
 end
 
@@ -222,9 +243,11 @@ chip soc/intel/pantherlake
 
 		device ref iaa off end
 		device ref tbt_pcie_rp2 on
-			probe IO_PORT USB2A2C_HDMI
+			probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB2A2C_HDMI
 		end
-		device ref tbt_pcie_rp3 on end
+		device ref tbt_pcie_rp3 on
+			probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB3C
+		end
 		device ref tcss_xhci on
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on
@@ -239,7 +262,7 @@ chip soc/intel/pantherlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group" = "ACPI_PLD_GROUP(3, 2)"
 						device ref tcss_usb3_port1 on
-							probe IO_PORT USB3C
+							probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB3C
 						end
 					end
 					chip drivers/usb/acpi
@@ -247,7 +270,7 @@ chip soc/intel/pantherlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
 						device ref tcss_usb3_port2 on
-							probe IO_PORT USB2A2C_HDMI
+							probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB2A2C_HDMI
 						end
 					end
 					chip drivers/usb/acpi
@@ -255,7 +278,7 @@ chip soc/intel/pantherlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
 						device ref tcss_usb3_port3 on
-							probe IO_PORT USB3C
+							probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB3C
 						end
 					end
 				end
@@ -267,14 +290,14 @@ chip soc/intel/pantherlake
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
 				use tcss_usb3_port2 as dfp[0].typec_port
 				device generic 0 on
-					probe IO_PORT USB2A2C_HDMI
+					probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB2A2C_HDMI
 				end
 			end
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
 				use tcss_usb3_port3 as dfp[0].typec_port
 				device generic 0 on
-					probe IO_PORT USB3C
+					probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB3C
 				end
 			end
 		end
@@ -306,7 +329,7 @@ chip soc/intel/pantherlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group" = "ACPI_PLD_GROUP(3, 1)"
 						device ref usb2_port5 on
-							probe IO_PORT USB3C
+							probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB3C
 						end
 					end
 					chip drivers/usb/acpi
@@ -321,7 +344,7 @@ chip soc/intel/pantherlake
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(3, 1)"
 						device ref usb2_port5 on
-							probe IO_PORT USB2A2C_HDMI
+							probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB2A2C_HDMI
 						end
 					end
 					chip drivers/usb/acpi
@@ -329,7 +352,7 @@ chip soc/intel/pantherlake
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(4, 1)"
 						device ref usb2_port6 on
-							probe IO_PORT USB2A2C_HDMI
+							probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB2A2C_HDMI
 						end
 					end
 					chip drivers/usb/acpi
@@ -338,7 +361,7 @@ chip soc/intel/pantherlake
 						register "has_power_resource" = "true"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E19)"
 						device ref usb2_port6 on
-							probe FPMCU FP_USB
+							probe FINGERPRINT_INTERFACE FINGERPRINT_INTERFACE_USB
 						end
 					end
 					chip drivers/usb/acpi
@@ -346,7 +369,7 @@ chip soc/intel/pantherlake
 						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(3, 2)"
 						device ref usb3_port1 on
-							probe IO_PORT USB2A2C_HDMI
+							probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB2A2C_HDMI
 						end
 					end
 					chip drivers/usb/acpi
@@ -354,7 +377,7 @@ chip soc/intel/pantherlake
 						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(4, 2)"
 						device ref usb3_port2 on
-							probe IO_PORT USB2A2C_HDMI
+							probe AP_OEM_2BIT_FIELD0 IO_BOARD_USB2A2C_HDMI
 						end
 					end
 				end
@@ -432,7 +455,6 @@ chip soc/intel/pantherlake
 			end
 		end # I2C4
 		device ref i2c5 on
-			probe TOUCH_SCREEN PRESENCE
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN9004""
 				register "generic.desc" = ""ELAN Touchscreen""
@@ -467,7 +489,7 @@ chip soc/intel/pantherlake
 			end
 		end # I2C5
 		device ref gspi0 on
-			probe FPMCU FP_SPI
+			probe FINGERPRINT_INTERFACE FINGERPRINT_INTERFACE_SPI
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
@@ -481,15 +503,15 @@ chip soc/intel/pantherlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E19)"
 				register "enable_delay_ms" = "3"
 				device spi 0 on
-					probe FPMCU FP_SPI
+					probe FINGERPRINT_INTERFACE FINGERPRINT_INTERFACE_SPI
 				end
 			end
 		end
 
 		device ref smbus on end
 		device ref hda on
-			probe AUDIO AUDIO_ALC721_SNDW
-			probe AUDIO AUDIO_ALC1320_ALC721_SNDW
+			probe AUDIO_CODEC AUDIO_CODEC_ALC721
+			probe AUDIO_AMPLIFIER AUDIO_AMPLIFIER_ALC1320
 			chip drivers/intel/soundwire
 				device generic 0 on
 					chip drivers/soundwire/alc711
@@ -500,8 +522,8 @@ chip soc/intel/pantherlake
 						register "disable_clkstop_sm_support" = "true"
 						# SoundWire Link 3 ID 1
 						device generic 3.1 on
-							probe AUDIO AUDIO_ALC721_SNDW
-							probe AUDIO AUDIO_ALC1320_ALC721_SNDW
+							probe AUDIO_CODEC AUDIO_CODEC_ALC721
+							probe AUDIO_AMPLIFIER AUDIO_AMPLIFIER_ALC1320
 						end
 					end
 					chip drivers/soundwire/alc1320
@@ -511,7 +533,7 @@ chip soc/intel/pantherlake
 						register "alc1320_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC1320"
 						# SoundWire Link 3 ID 2
 						device generic 3.2 on
-							probe AUDIO AUDIO_ALC1320_ALC721_SNDW
+							probe AUDIO_AMPLIFIER AUDIO_AMPLIFIER_ALC1320
 						end # ALC1320 Smart Amp
 					end
 				end

@@ -8,7 +8,7 @@
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI));
+	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI_INTERFACE));
 }
 
 void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
@@ -20,7 +20,7 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 	 *| FPMCU | GSPI0  | usb2_port6  |
 	 *+-------+--------+-------------+
 	 */
-	if (fw_config_probe(FW_CONFIG(FPMCU, FP_USB))) {
+	if (fw_config_probe(FW_CONFIG(FINGERPRINT_INTERFACE, FINGERPRINT_INTERFACE_USB))) {
 		printk(BIOS_INFO, "Disable GSPI\n");
 		config->serial_io_gspi_mode[PchSerialIoIndexGSPI0] = PchSerialIoDisabled;
 		printk(BIOS_INFO, "usb2_port6 to FP\n");
@@ -29,10 +29,10 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 	/* Probe fw_config : "IO_PORT" to reconfigure port settings accordingly.
 	 * proto0  : IO_PORT => "USB2A2C_HDMI:0"
 	 * porot1.5: IO_PORT => "USB3C:1"
-	 * +-----------------+------------------+------------------+
+	 *+-----------------+------------------+------------------+
 	 *| IO_PORT         | USB2A2C_HDMI     |  USB3C           |
 	 *+-----------------+------------------+------------------+
-	 *| tcss_usb3_port0 | USB4_C0 (MB-TBT) | USB4_C0 (MB-TBT) |
+	 *| tcss_usb3_port0 | USB4_C0 (MB-TBT) | USB4_C0 (MB)     |
 	 *+-----------------+------------------+------------------+
 	 *| tcss_usb3_port1 | N/A              | USB3.2 C2 (DB)   |
 	 *+-----------------+------------------+------------------+
@@ -50,7 +50,7 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 	 *+-----------------+------------------+------------------+
 	 */
 
-	if (fw_config_probe(FW_CONFIG(IO_PORT, USB3C))) {
+	if (fw_config_probe(FW_CONFIG(AP_OEM_2BIT_FIELD0, IO_BOARD_USB3C))) {
 		printk(BIOS_INFO, "Disable Type-A Port A0/A1\n");
 		config->usb3_ports[0] = (struct usb3_port_config) USB3_PORT_EMPTY;
 		config->usb3_ports[1] = (struct usb3_port_config) USB3_PORT_EMPTY;

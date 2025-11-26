@@ -339,7 +339,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_V02:     LANWAKE_N_R */
 	PAD_CFG_NF(GPP_V02, NONE, DEEP, NF1),
 	/* GPP_V03:     PWRBTN_MCP_N */
-	PAD_CFG_NF(GPP_V03, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_V03, UP_20K, DEEP, NF1),
 	/* GPP_V04:     PM_SLP_S3_N */
 	PAD_CFG_NF(GPP_V04, NONE, DEEP, NF1),
 	/* GPP_V05:     PM_SLP_S4_N */

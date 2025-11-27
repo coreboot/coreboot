@@ -33,18 +33,21 @@ SECTIONS
 	 * can't reconfigure whole L3 as SRAM).
 	 */
 	SRAM_L2C_START(0x00200000)
-	/*
-	 * The bootROM needs 4K starting from SRAM_L2C_START so the bootblock starting address
-	 * is fixed at SRAM_L2C_START + 4K, and the 4K can be reused after bootblock is started.
-	 * To move the address, gen-bl-img.py also needs to be modified accordingly.
-	 */
-	BOOTBLOCK(0x00201000, 60K)
+	#if ENV_ROMSTAGE
 	/*
 	 * The needed size can be obtained by:
 	 *  aarch64-cros-linux-gnu-objdump -x dram.elf | grep memsz
 	 * To move the address, dram.elf also needs to be modified accordingly.
 	 */
 	DRAM_INIT_CODE(0x00210000, 300K)
+	#else
+	/*
+	 * The bootROM needs 4K starting from SRAM_L2C_START so the bootblock starting address
+	 * is fixed at SRAM_L2C_START + 4K, and the 4K can be reused after bootblock is started.
+	 * To move the address, gen-bl-img.py also needs to be modified accordingly.
+	 */
+	BOOTBLOCK(0x00201000, 70K)
+	#endif
 	OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE(0x0025b000, 272K)
 	PRERAM_CBFS_CACHE(0x0029f000, 48K)
 	PRERAM_CBMEM_CONSOLE(0x002ab000, 340K)

@@ -16,14 +16,14 @@ chip soc/intel/pantherlake
 	# Apply PTL-U's thermal settings here to avoid thermal issues.
 	register "power_limits_config[PTL_CORE_1]" = "{
 		.tdp_pl1_override = 15,
-		.tdp_pl2_override = 55,
-		.tdp_pl4 = 152,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 150,
 	}"
 
 	register "power_limits_config[PTL_CORE_2]" = "{
 		.tdp_pl1_override = 15,
-		.tdp_pl2_override = 55,
-		.tdp_pl4 = 152,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 150,
 	}"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C0

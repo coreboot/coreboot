@@ -199,3 +199,28 @@ int mtk_display_init(void)
 
 	return 0;
 }
+
+void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path)
+{
+	u32 fmt = OVL_INFMT_RGBA8888;
+	u32 bpp = edid->framebuffer_bits_per_pixel / 8;
+	u32 width = edid->mode.ha;
+	u32 height = edid->mode.va;
+	u32 vrefresh = edid->mode.refresh;
+
+	printk(BIOS_DEBUG, "%s: display resolution: %ux%u@%u bpp %u\n", __func__, width, height,
+	       vrefresh, bpp);
+
+	if (!vrefresh) {
+		if (!width || !height)
+			vrefresh = 60;
+		else
+			vrefresh = edid->mode.pixel_clock * 1000 /
+				   ((width + edid->mode.hbl) * (height + edid->mode.vbl));
+
+		printk(BIOS_WARNING, "%s: vrefresh is not provided; using %u\n", __func__,
+		       vrefresh);
+	}
+
+	mtk_ddp_soc_mode_set(fmt, bpp, width, height, vrefresh, path);
+}

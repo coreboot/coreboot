@@ -137,29 +137,10 @@ void mtk_ddp_init(void)
 	       __func__, read32(&smi_larb0->port_l0_ovl_rdma[0]));
 }
 
-void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path)
+void mtk_ddp_soc_mode_set(u32 fmt, u32 bpp, u32 width, u32 height, u32 vrefresh,
+			  enum disp_path_sel path)
 {
-	u32 fmt = OVL_INFMT_RGBA8888;
-	u32 bpp = edid->framebuffer_bits_per_pixel / 8;
-	u32 width = edid->mode.ha;
-	u32 height = edid->mode.va;
-	u32 vrefresh_hz = edid->mode.refresh;
-
-	printk(BIOS_INFO, "%s: display resolution: %dx%d@%d bpp %d\n",
-	       __func__, width, height, vrefresh_hz, bpp);
-
-	if (!vrefresh_hz) {
-		if (!width || !height)
-			vrefresh_hz = 60;
-		else
-			vrefresh_hz = edid->mode.pixel_clock * 1000 /
-				   ((width + edid->mode.hbl) * (height + edid->mode.vbl));
-
-		printk(BIOS_WARNING, "%s: vrefresh is not provided; using %d\n",
-		       __func__, vrefresh_hz);
-	}
-
-	main_disp_path_setup(width, height, vrefresh_hz, path);
+	main_disp_path_setup(width, height, vrefresh, path);
 	rdma_start();
 	ovl_layer_config(fmt, bpp, width, height);
 }

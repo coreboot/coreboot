@@ -263,8 +263,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F06, NONE),
 	/* GPP_F07:     Not used */
 	PAD_NC(GPP_F07, NONE),
-	/* GPP_F08:     TCHSCR_PWR_EN */
-	PAD_CFG_GPO(GPP_F08, 1, DEEP),
 	/* GPP_F09:     NC */
 	PAD_NC(GPP_F09, NONE),
 	/* GPP_F10:     NC */
@@ -398,6 +396,9 @@ static const struct pad_config early_gpio_table[] = {
 	/* GPP_E19:     FP_PWR_EN */
 	PAD_CFG_GPO(GPP_E19, 1, PLTRST),
 
+	/* GPP_F16:     THC0_SPI1_RST_N_TCH_PNL1 */
+	PAD_CFG_GPO(GPP_F16, 0, DEEP),
+
 	/* GPP_H08:     UART0_BUF_RXD */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
 	/* GPP_H09:     UART0_BUF_TXD */
@@ -409,6 +410,9 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H07, NONE, DEEP, NF1),
 	/* GPP_E02:     GSC_SOC_INT_ODL  */
 	PAD_CFG_GPI_APIC_LOCK(GPP_E02, NONE, LEVEL, INVERT, LOCK_CONFIG),
+
+	/* GPP_F08:     TCHSCR_PWR_EN */
+	PAD_CFG_GPO(GPP_F08, 1, DEEP),
 };
 
 /* Pad configuration in romstage */

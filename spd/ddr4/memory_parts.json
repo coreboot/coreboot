@@ -404,6 +404,39 @@
                 "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
+        },
+        {
+            "name": "H5AN4G6NAFR-UHC",
+            "attribs": {
+                "speedMTps": 2400,
+                "CL_nRCD_nRP": 17,
+                "capacityPerDieGb": 4,
+                "diesPerPackage": 1,
+                "packageBusWidth": 16,
+                "ranksPerPackage": 1
+            }
+        },
+        {
+            "name": "H5ANAG6NAMR-UHC",
+            "attribs": {
+                "speedMTps": 2400,
+                "CL_nRCD_nRP": 17,
+                "capacityPerDieGb": 4,
+                "diesPerPackage": 2,
+                "packageBusWidth": 16,
+                "ranksPerPackage": 1
+            }
+        },
+        {
+            "name": "MT40A512M16LY-075:H",
+            "attribs": {
+                "speedMTps": 2400,
+                "CL_nRCD_nRP": 17,
+                "capacityPerDieGb": 8,
+                "diesPerPackage": 1,
+                "packageBusWidth": 16,
+                "ranksPerPackage": 1
+            }
         }
     ]
 }

@@ -24,6 +24,10 @@ chip soc/intel/pantherlake
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
+	# Enable CNVi Wi-Fi and Bluetooth
+	register "cnvi_wifi_core" = "true"
+	register "cnvi_bt_core" = "true"
+
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
@@ -197,8 +201,6 @@ chip soc/intel/pantherlake
 		end
 
 		device ref iaa off end
-		device ref tbt_pcie_rp0 on end
-		device ref tbt_pcie_rp1 on end
 		device ref tcss_xhci on
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on

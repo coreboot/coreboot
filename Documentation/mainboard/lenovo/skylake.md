@@ -1,7 +1,7 @@
-# Lenovo ThinkPad T470s/T480/T480s/T580
+# Lenovo ThinkPad T470s/T480/T480s/T580/X280
 
 This page describes how to run coreboot on the Lenovo [Thinkpad T470s], [ThinkPad T480],
-[Thinkpad T480s], and [Thinkpad T580].
+[Thinkpad T480s], [Thinkpad T580], and [Thinkpad X280].
 
 ## Important Notes
 
@@ -105,10 +105,12 @@ firmware image from the updater:
 
     python Dell_PFS_Extract.py Inspiron_5468_1.3.0.exe
 
-The resulting binary should be renamed `me_donor.bin` and moved to the `binaries` folder with
-the IFD and GBE binaries.
+The resulting binary should be renamed `me_donor.bin` (file size 0x1f0000 bytes, sha256 
+`912271bb3ff2cf0e2e27ccfb94337baaca027e6c90b4245f9807a592c8a652e1`) and moved to the `binaries`
+folder with the IFD and GBE binaries.
 
-Then, generate the deguarded ME firmware image adjusting the `--delta` argument accordingly:
+Then, generate the deguarded ME firmware image adjusting the `--delta` argument according to 
+your laptop's model:
 
     ./finalimage.py --delta data/delta/thinkpad_t480 --version 11.6.0.1126 --pch LP --sku 2M --fake-fpfs data/fpfs/zero --input ../coreboot/binaries/me_donor.bin --output ../coreboot/binaries/me_deguarded.bin
 
@@ -130,6 +132,25 @@ HAP bit in the IFD using `ifdtool`:
 
 The modified IFD will be saved as `ifd.bin.new`. Rename the original file to `ifd.bin.orig` and
 the HAP-enabled one to `ifd.bin`
+
+If you want to allocate the space that has become available from truncating the ME firmware to
+corebios, you can modify the IFD layout. First, save the layout below into a text file
+`layout.txt`:
+
+    00000000:00000fff fd
+    001f4000:00ffffff bios
+    00003000:001f3fff me
+    00001000:00002fff gbe
+
+Then run ifdtool again:
+
+    util/ifdtool/ifdtool -p sklkbl -n layout.txt binaries/ifd.bin
+
+Once again, the modified IFD will be saved as `ifd.bin.new`. Rename `ifd.bin.new` to `ifd.bin`.
+
+The layout above allows you to maximize the CBFS size in your coreboot `.config`:
+
+    CONFIG_CBFS_SIZE=0xE0C000
 
 ## Building coreboot
 
@@ -204,6 +225,7 @@ binaries if only flashing the `bios` region.
 [ThinkPad T480]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t480-type-20l5-20l6/
 [ThinkPad T480s]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t480s-type-20l7-20l8/
 [Thinkpad T580]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t580-type-20l9-20la/
+[Thinkpad X280]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-x-series-laptops/thinkpad-x280-type-20kf-20ke/
 [on Lenovo's site]: https://support.lenovo.com/us/en/downloads/ds502355-bios-update-utility-bootable-cd-for-windows-10-64-bit-linux-thinkpad-t480
 [from Lenovo's site]: https://pcsupport.lenovo.com/gb/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t480s-type-20l7-20l8/solutions/ht508988-critical-intel-thunderbolt-software-and-firmware-updates-thinkpad
 [how to externally flash the TB3 firmware]: https://libreboot.org/docs/install/t480.html#thunderbolt-issue-read-this-before-flashing

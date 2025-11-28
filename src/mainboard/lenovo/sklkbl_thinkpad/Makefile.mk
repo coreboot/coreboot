@@ -18,6 +18,11 @@ subdirs-y += variants/$(VARIANT_DIR)/memory
 subdirs-y += spd
 endif
 
+ifeq ($(CONFIG_BOARD_LENOVO_X280),y)
+subdirs-y += variants/$(VARIANT_DIR)/memory
+subdirs-y += spd
+endif
+
 ifeq ($(CONFIG_VARIANT_HAS_DGPU),y)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
 endif

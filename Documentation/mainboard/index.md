@@ -248,7 +248,7 @@ T440p <lenovo/t440p.md>
 ```{toctree}
 :maxdepth: 1
 
-T470s/T480/T480s/T580 <lenovo/skylake.md>
+T470s/T480/T480s/T580/X280 <lenovo/skylake.md>
 ```
 ## Libretrend
 

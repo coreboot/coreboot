@@ -137,6 +137,11 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->s0i3_enable = config->s0ix_enable;
 	mcfg->iommu_support = is_devfn_enabled(IOMMU_DEVFN);
 
+	mcfg->Usb4Rt0En = is_dev_enabled(DEV_PTR(usb4_router_0));
+	mcfg->Usb4Rt1En = is_dev_enabled(DEV_PTR(usb4_router_1));
+	mcfg->Usb4Rt0XhciEn = is_dev_enabled(DEV_PTR(usb4_xhci_0));
+	mcfg->Usb4Rt1XhciEn = is_dev_enabled(DEV_PTR(usb4_xhci_1));
+
 	/* voltage regulator telemetry settings */
 	mcfg->telemetry_vddcrvddfull_scale_current =
 		config->telemetry_vddcrvddfull_scale_current_mA;

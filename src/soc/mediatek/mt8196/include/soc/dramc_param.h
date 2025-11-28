@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#define DRAMC_PARAM_HEADER_VERSION 4
+#define DRAMC_PARAM_HEADER_VERSION 5
 
 struct sdram_params {
 	/* rank, cbt */
@@ -21,7 +21,7 @@ struct sdram_params {
 	u32 dram_cbt_mode;
 
 	u16 delay_cell_timex100;
-	u8 u18ph_dly;
+	u8 u18ph_dly[CHANNEL_MAX];
 
 	/* duty */
 	s8 duty_clk_delay[CHANNEL_MAX][RANK_MAX];
@@ -91,7 +91,7 @@ struct sdram_params {
 	/* tx oe */
 	u8 tx_oe_dq_mck[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP5];
 	u8 tx_oe_dq_ui[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP5];
-	u16 tx_oe_offset[CHANNEL_MAX][RANK_MAX];
+	u16 tx_oe_offset[DQS_NUMBER_LP5];
 };
 
 struct dramc_data {

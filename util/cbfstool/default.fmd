@@ -7,9 +7,9 @@
 # | FMAP        |
 # +-------------+ <-- BIOS_BASE + 128K + FMAP_SIZE
 # | CBFS        |
-# +-------------+ <-- ROM_SIZE
+# +-------------+ <-- FLASH_SIZE
 
-FLASH ##ROM_SIZE## {
+FLASH ##FLASH_SIZE## {
 	BIOS@##BIOS_BASE## ##BIOS_SIZE## {
 		BOOTBLOCK 128K
 		FMAP@##FMAP_BASE## ##FMAP_SIZE##

@@ -1,5 +1,5 @@
 # layout for firmware residing at top of 4GB address space
-# +-------------+ <-- 4GB - ROM_SIZE / start of flash
+# +-------------+ <-- 4GB - FLASH_SIZE / start of flash
 # | unspecified |
 # +-------------+ <-- 4GB - BIOS_SIZE
 # | FMAP        |
@@ -7,7 +7,7 @@
 # | CBFS        |
 # +-------------+ <-- 4GB / end of flash
 
-FLASH ##ROM_SIZE## {
+FLASH ##FLASH_SIZE## {
 	BIOS@##BIOS_BASE## ##BIOS_SIZE## {
 		##CONSOLE_ENTRY##
 		##MRC_CACHE_ENTRY##

@@ -280,7 +280,7 @@
                 "CL_nRCD_nRP": 15,
                 "capacityPerDieGb": 8,
                 "diesPerPackage": 2,
-                "packageBusWidth": 8,
+                "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
         },
@@ -313,7 +313,7 @@
                 "CL_nRCD_nRP": 17,
                 "capacityPerDieGb": 8,
                 "diesPerPackage": 2,
-                "packageBusWidth": 8,
+                "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
         },
@@ -346,7 +346,7 @@
                 "CL_nRCD_nRP": 17,
                 "capacityPerDieGb": 8,
                 "diesPerPackage": 2,
-                "packageBusWidth": 8,
+                "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
         },
@@ -368,7 +368,7 @@
                 "CL_nRCD_nRP": 17,
                 "capacityPerDieGb": 8,
                 "diesPerPackage": 2,
-                "packageBusWidth": 8,
+                "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
         },

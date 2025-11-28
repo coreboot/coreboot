@@ -305,6 +305,7 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 	uint64_t mmio_x18_value;
 	uint64_t mmio_x4000_value;
 	uint32_t cap_offset_0;
+	uint32_t cap_offset_c;
 	uint32_t cap_offset_10;
 	struct acpi_ivrs_ivhd *ivhd;
 	struct device *iommu_dev;
@@ -342,6 +343,8 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 		ivhd->iommu_base_high = pci_read_config32(iommu_dev, IOMMU_CAP_BASE_HI);
 
 		cap_offset_0 = pci_read_config32(iommu_dev, ivhd->capability_offset);
+		cap_offset_c = pci_read_config32(iommu_dev,
+						ivhd->capability_offset + 0xC);
 		cap_offset_10 = pci_read_config32(iommu_dev,
 						ivhd->capability_offset + 0x10);
 		mmio_x18_value = read64p(ivhd->iommu_base_low + 0x18);
@@ -367,10 +370,8 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 
 		ivhd->pci_segment_group = nb_dev->upstream->segment_group;
 
-		ivhd->iommu_info = pci_read_config16(iommu_dev,
-			ivhd->capability_offset + 0x10) & 0x1F;
-		ivhd->iommu_info |= (pci_read_config16(iommu_dev,
-			ivhd->capability_offset + 0xC) & 0x1F) << IOMMU_INFO_UNIT_ID_SHIFT;
+		ivhd->iommu_info = cap_offset_10 & 0x1F;
+		ivhd->iommu_info |= (cap_offset_c & 0x1F) << IOMMU_INFO_UNIT_ID_SHIFT;
 
 		ivhd->iommu_feature_info = 0;
 		ivhd->iommu_feature_info |= (mmio_x30_value & MMIO_EXT_FEATURE_HATS_MASK)
@@ -409,10 +410,8 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 			? IOMMU_FEATURE_XT_SUP : 0);
 
 		/* Enable EFR if supported */
-		ivrs->iv_info = pci_read_config32(iommu_dev,
-					ivhd->capability_offset + 0x10) & 0x007fffe0;
-		if (pci_read_config32(iommu_dev,
-					ivhd->capability_offset) & EFR_FEATURE_SUP)
+		ivrs->iv_info = cap_offset_10 & 0x007fffe0;
+		if (cap_offset_0 & EFR_FEATURE_SUP)
 			ivrs->iv_info |= IVINFO_EFR_SUPPORTED;
 
 

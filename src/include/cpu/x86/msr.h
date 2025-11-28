@@ -40,9 +40,12 @@
 #define IA32_SMM_MONITOR_CTL_MSR	0x9B
 #define SMBASE_RO_MSR			0x98
 #define  IA32_SMM_MONITOR_VALID		(1 << 0)
+#define IA32_SYSENTER_EIP		0x176
 #define IA32_MCG_CAP			0x179
 #define  MCG_CTL_P			(1 << 8)
 #define  MCA_BANKS_MASK			0xff
+#define IA32_MCG_STATUS			0x17A
+#define  MCG_STAT_EIPV			(1 << 1)
 #define IA32_PERF_STATUS		0x198
 #define IA32_PERF_CTL			0x199
 #define IA32_THERM_INTERRUPT		0x19b
@@ -74,6 +77,8 @@
 #define  MCA_STATUS_HI_ADDRV		(1UL << (58 - 32))
 #define  MCA_STATUS_HI_PCC		(1UL << (57 - 32))
 #define  MCA_STATUS_HI_COREID_VAL	(1UL << (56 - 32))
+#define  MCA_STATUS_HI_TCC		(1UL << (55 - 32))
+#define  MCA_STATUS_HI_SYNDV		(1UL << (53 - 32))
 #define  MCA_STATUS_HI_CECC		(1UL << (46 - 32))
 #define  MCA_STATUS_HI_UECC		(1UL << (45 - 32))
 #define  MCA_STATUS_HI_DEFERRED		(1UL << (44 - 32))
@@ -170,6 +175,16 @@ static inline int mca_addrv(msr_t msr)
 static inline int mca_pcc(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_PCC);
+}
+
+static inline int mca_tcc(msr_t msr)
+{
+	return !!(msr.hi & MCA_STATUS_HI_TCC);
+}
+
+static inline int mca_syndv(msr_t msr)
+{
+	return !!(msr.hi & MCA_STATUS_HI_SYNDV);
 }
 
 static inline int mca_idv(msr_t msr)

@@ -3,6 +3,7 @@
 #ifndef SECURITY_INTEL_TXT_REGISTER_H_
 #define SECURITY_INTEL_TXT_REGISTER_H_
 
+#include <cpu/x86/msr.h>
 #include <types.h>
 
 /*
@@ -161,9 +162,6 @@
 #define ACM_FORMAT_SIZE_64KB   (64 * KiB / 4)
 #define ACM_FORMAT_SIZE_128KB (128 * KiB / 4)
 #define ACM_FORMAT_SIZE_256KB (256 * KiB / 4)
-
-/* MSRs */
-#define IA32_MCG_STATUS 0x17a
 
 /* DPR register layout, either in PCI config space or TXT MMIO space */
 union dpr_register {

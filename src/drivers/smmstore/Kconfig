@@ -23,7 +23,7 @@ if SMMSTORE
 
 config SMMSTORE_SIZE
 	hex "size of the SMMSTORE FMAP region"
-	default 0x40000
+	default 0x80000
 	help
 	  Sets the size of the default SMMSTORE FMAP region.
 	  If using an UEFI payload, note that UEFI specifies at least 64K.

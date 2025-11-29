@@ -338,9 +338,9 @@ void intel_me_status(void)
 	}
 }
 
-int send_global_reset(void)
+enum cse_tx_rx_status send_global_reset(void)
 {
-	int status = 0;
+	enum cse_tx_rx_status status = CSE_TX_ERR_CSE_NOT_READY;
 	union me_hfsts1 hfs1;
 
 	if (!is_cse_enabled())

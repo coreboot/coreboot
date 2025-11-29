@@ -3,6 +3,8 @@
 #ifndef _SKYLAKE_ME_H_
 #define _SKYLAKE_ME_H_
 
+#include <intelblocks/cse.h>
+
 /*
  * Management Engine PCI registers
  */
@@ -189,6 +191,6 @@ union me_hfsts6 {
 };
 
 void intel_me_status(void);
-int send_global_reset(void);
+enum cse_tx_rx_status send_global_reset(void);
 
 #endif

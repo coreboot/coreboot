@@ -295,6 +295,31 @@ $(HYPAC_CFG_FILE_CBFS)-type := payload
 $(HYPAC_CFG_FILE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(HYPAC_CFG_FILE_CBFS)
 
+################################################################################
+ifeq ($(CONFIG_QC_APDP_ENABLE),y)
+
+APDP_FILE := $(X1P42100_BLOB)/qtee/apdp.mbn
+APDP_CBFS := $(CONFIG_CBFS_PREFIX)/apdp
+$(APDP_CBFS)-file := $(APDP_FILE)
+$(APDP_CBFS)-type := payload
+$(APDP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(APDP_CBFS)
+
+################################################################################
+# Rule to create apdp_meta from apdp.mbn
+# This rule depends on apdp.mbn being built and the extractor script existing.
+$(obj)/mainboard/$(MAINBOARDDIR)/apdp_meta: $(X1P42100_BLOB)/qtee/apdp.mbn util/qualcomm/elf_segment_extractor.py
+	@echo "Extracting ELF headers and hash table segment from $< to $@"
+	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
+
+APDP_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/apdp_meta
+APDP_META_CBFS := $(CONFIG_CBFS_PREFIX)/apdp_meta
+$(APDP_META_CBFS)-file := $(APDP_META_FILE)
+$(APDP_META_CBFS)-type := raw
+$(APDP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(APDP_META_CBFS)
+
+endif # ifeq ($(CONFIG_QC_APDP_ENABLE),y)
 endif # ifeq ($(CONFIG_USE_QC_BLOBS),y)
 
 endif # ifeq ($(CONFIG_QC_BLOBS_UPSTREAM),y)

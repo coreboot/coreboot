@@ -224,6 +224,7 @@ chip soc/intel/meteorlake
 				end
 			end
 		end
+		device ref pmc_shared_sram on  end
 		device ref i2c0		on
 			chip drivers/i2c/hid
 				register "generic.hid"		= ""STAR0001""

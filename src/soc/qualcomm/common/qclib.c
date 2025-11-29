@@ -94,6 +94,8 @@ const char *qclib_file_default(enum qclib_cbfs_file file)
 		return CONFIG_CBFS_PREFIX "/aop_meta";
 	case QCLIB_CBFS_AOP_DEVCFG_META:
 		return CONFIG_CBFS_PREFIX "/aop_devcfg_meta";
+	case QCLIB_CBFS_APDP_META:
+		return CONFIG_CBFS_PREFIX "/apdp_meta";
 	default:
 		die("unknown QcLib file %d", file);
 	}
@@ -312,6 +314,28 @@ void qclib_load_and_run(void)
 	if (qclib_soc_override(&qclib_cb_if_table)) {
 		printk(BIOS_ERR, "qclib_soc_override failed\n");
 		goto fail;
+	}
+
+	/* Load APDP image */
+	if (CONFIG(QC_APDP_ENABLE)) {
+		struct prog apdp_prog =
+				PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/apdp");
+
+		if (!selfload(&apdp_prog))
+			die("SOC image: APDP load failed");
+
+		/* Attempt to load apdp_meta Blob. */
+		data_size = cbfs_load(qclib_file(QCLIB_CBFS_APDP_META),
+				_apdp_ramdump_meta, REGION_SIZE(apdp_ramdump_meta));
+		if (!data_size) {
+			printk(BIOS_ERR,
+				"[%s] /apdp_meta not loaded\n"
+				"apdp_meta is mandatory for APDP authentication; failure is fatal\n"
+				, __func__);
+			goto fail;
+		}
+
+		qclib_add_if_table_entry(QCLIB_TE_APDP_META_SETTINGS, _apdp_ramdump_meta, data_size, 0);
 	}
 
 	/* Attempt to load QCLib elf */

@@ -25,4 +25,12 @@ config QC_SDI_ENABLE
 	default n
 	prompt "Debug Build: enable SDI"
 
+config QC_APDP_ENABLE
+	bool
+	default n
+	prompt "Debug Build: enable APDP"
+	help
+	  Application Processor Debug Policy (APDP) is a configuration image
+	  to define and enforce debugging capabilities and restrictions for APPS.
+
 endif

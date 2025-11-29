@@ -90,7 +90,7 @@ CAR_init_done:
 	or	%rsi, %rdi
 	andl	$0xfffffff0, %esp
 #else
-	/* Restore the timestamp from bootblock_crt0.S (ebp:mm1) */
+	/* Restore the timestamp from entry32.S (ebp:mm1) */
 	push	%ebp
 	movd	%mm1, %eax
 	push	%eax

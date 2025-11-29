@@ -822,13 +822,6 @@ clean-abuild:
 
 #######################################################################
 # Development utilities
-printcrt0s:
-	@echo crt0s=$(crt0s)
-	@echo ldscripts=$(ldscripts)
-
-update:
-	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
-
 check-style:
 	grep "^# DESCR:" util/lint/check-style | sed "s,.*DESCR: *,,"
 	echo "========"

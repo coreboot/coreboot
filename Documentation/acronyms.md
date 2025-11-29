@@ -204,7 +204,6 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * CRLF - Carriage Return, Line Feed - \\r\\n - The standard window EOL
   (End-of-Line) marker.
 * crt0 - [**C Run Time 0**](https://en.wikipedia.org/wiki/Crt0)
-* crt0s - crt0 Source code
 * CRT - [**Cathode Ray Tube**](https://en.wikipedia.org/wiki/Cathode-ray_tube)
 * CSE - Intel: Converged Security Engine
 * CSI - MIPI: [**Camera Serial

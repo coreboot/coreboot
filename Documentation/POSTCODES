@@ -5,7 +5,7 @@ coreboot POST Codes
 This is an (incomplete) list of POST codes emitted by coreboot v4.
 
 0x10 Entry into protected mode
-0x01 Entry into 'crt0.s' reset code jumps to here
+0x01 Entry into 'entry16.S' reset code jumps to here
 0x11 Start copying coreboot to RAM with decompression if compressed
 0x12 Copy/decompression finished jumping to RAM
 0x80 Entry into coreboot in RAM

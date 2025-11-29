@@ -185,7 +185,7 @@ config BOOTBLOCK_DEBUG_SPINLOOP
 	bool
 	default n
 	help
-	  Add a spin (JMP .) in bootblock_crt0.S during early bootblock to wait
+	  Add a spin (JMP .) in entry32.S during early bootblock to wait
 	  for a JTAG debugger to break into the execution sequence.
 
 config HAVE_CMOS_DEFAULT

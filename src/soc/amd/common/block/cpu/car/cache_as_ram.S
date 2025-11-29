@@ -3,7 +3,7 @@
 /******************************************************************************
  * $Workfile:: cache_as_ram.S
  *
- * Description: CAR setup called from bootblock_crt0.S.
+ * Description: CAR setup called from entry32.S.
  *
  ******************************************************************************
  */

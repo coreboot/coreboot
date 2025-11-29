@@ -34,7 +34,7 @@
 #define POSTCODE_CODE_CLEAR				0x00
 
 /**
- * \brief  Entry into 'crt0.s'. reset code jumps to here
+ * \brief  Entry into 'entry16.S'. reset code jumps to here
  *
  * First instruction that gets executed after the reset vector jumps.
  * This indicates that the reset vector points to the correct code segment.

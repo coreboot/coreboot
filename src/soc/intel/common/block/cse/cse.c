@@ -737,12 +737,12 @@ static int cse_request_reset(enum rst_req_type rst_type)
 
 	if (!(rst_type == GLOBAL_RESET || rst_type == CSE_RESET_ONLY)) {
 		printk(BIOS_ERR, "HECI: Unsupported reset type is requested\n");
-		return 0;
+		return CSE_TX_ERR_INPUT;
 	}
 
 	if (!cse_is_global_reset_allowed() || !is_cse_enabled()) {
 		printk(BIOS_ERR, "HECI: CSE does not meet required prerequisites\n");
-		return 0;
+		return CSE_TX_ERR_CSE_NOT_READY;
 	}
 
 	heci_reset();

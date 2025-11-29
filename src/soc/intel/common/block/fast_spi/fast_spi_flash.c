@@ -9,6 +9,7 @@
 #include <spi_flash.h>
 #include <string.h>
 #include <timer.h>
+#include <smp/spinlock.h>
 
 /* Helper to create a FAST_SPI context on API entry. */
 #define BOILERPLATE_CREATE_CTX(ctx)		\
@@ -31,6 +32,9 @@ enum errors {
 struct fast_spi_flash_ctx {
 	uintptr_t mmio_base;
 };
+
+/* Spinlock to protect concurrent SPI flash controller access from multiple CPUs */
+DECLARE_SPIN_LOCK(fast_spi_lock);
 
 static void _fast_spi_flash_get_ctx(struct fast_spi_flash_ctx *ctx)
 {
@@ -160,15 +164,28 @@ static int exec_sync_hwseq_xfer(struct fast_spi_flash_ctx *ctx,
 				uint32_t hsfsts_cycle, uint32_t flash_addr,
 				size_t len)
 {
+	int ret;
+
+	/* Protect SPI flash controller from concurrent access by multiple CPUs.
+	 * The spinlock serializes access to the SPI controller hardware.
+	 * If SMP is not enabled, spinlock functions are no-ops.
+	 */
+	spin_lock(&fast_spi_lock);
+
 	if (wait_for_hwseq_spi_cycle_complete(ctx) != SUCCESS) {
 		printk(BIOS_ERR, "SPI Transaction Timeout (Exceeded %d ms) due to prior"
 				" operation at Flash Offset %x\n",
 				SPIBAR_HWSEQ_XFER_TIMEOUT_MS, flash_addr);
-		return E_TIMEOUT;
+		ret = E_TIMEOUT;
+		goto unlock;
 	}
 
 	start_hwseq_xfer(ctx, hsfsts_cycle, flash_addr, len);
-	return wait_for_hwseq_xfer(ctx, flash_addr);
+	ret = wait_for_hwseq_xfer(ctx, flash_addr);
+
+unlock:
+	spin_unlock(&fast_spi_lock);
+	return ret;
 }
 
 int fast_spi_cycle_in_progress(void)

@@ -5,10 +5,6 @@
 ################################################################################
 ifeq ($(CONFIG_ARCH_RISCV),y)
 
-ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
-check-ramstage-overlap-regions += stack
-endif
-
 riscv_flags = -I$(src)/arch/riscv/
 
 ifeq ($(CONFIG_ARCH_RISCV_RV64),y)
@@ -133,6 +129,8 @@ endif #CONFIG_ARCH_ROMSTAGE_RISCV
 ## ramstage
 ################################################################################
 ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
+
+check-ramstage-overlap-regions += stack ramstage
 
 ramstage-y =
 ramstage-y += ramstage.S

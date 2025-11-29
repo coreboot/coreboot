@@ -4,10 +4,6 @@
 # ARM specific options
 ###############################################################################
 
-ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM),y)
-check-ramstage-overlap-regions += postram_cbfs_cache stack ttb
-endif
-
 ifeq ($(CONFIG_ARCH_ARM),y)
 subdirs-y += libgcc/
 subdirs-y += armv4/ armv7/
@@ -98,6 +94,8 @@ endif # CONFIG_ARCH_ROMSTAGE_ARM
 ###############################################################################
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM),y)
+
+check-ramstage-overlap-regions += postram_cbfs_cache stack ttb ramstage
 
 ramstage-y += stages.c
 ramstage-y += div0.c

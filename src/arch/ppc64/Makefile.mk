@@ -65,6 +65,8 @@ endif
 ################################################################################
 ifeq ($(CONFIG_ARCH_RAMSTAGE_PPC64),y)
 
+check-ramstage-overlap-regions += ramstage
+
 ramstage-y += stages.c
 ramstage-y += arch_timer.c
 ramstage-y += boot.c

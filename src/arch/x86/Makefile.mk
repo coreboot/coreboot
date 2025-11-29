@@ -224,6 +224,10 @@ $(CONFIG_CBFS_PREFIX)/postcar-compression := none
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 
+# not adding a check-ramstage-overlap-regions here because x86 ramstage can automatically
+# relocate itself to a free area (its build as a rmodule). Therefore no ramstage segments can
+# overlap with other executables in RAM.
+
 ramstage-y += acpi.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 ramstage-$(CONFIG_ACPI_BERT) += acpi_bert_storage.c

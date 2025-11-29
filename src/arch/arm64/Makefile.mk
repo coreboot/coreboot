@@ -7,14 +7,6 @@
 subdirs-y += armv8/
 
 ################################################################################
-# ARM specific options
-################################################################################
-
-ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM64),y)
-check-ramstage-overlap-regions += postram_cbfs_cache stack ttb
-endif
-
-################################################################################
 # bootblock
 ################################################################################
 
@@ -105,6 +97,8 @@ endif # CONFIG_ARCH_ROMSTAGE_ARM64
 ################################################################################
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM64),y)
+
+check-ramstage-overlap-regions += postram_cbfs_cache stack ttb ramstage
 
 ramstage-y += div0.c
 ramstage-y += eabi_compat.c

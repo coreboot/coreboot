@@ -1447,11 +1447,6 @@ bootsplash$(BOOTSPLASH_SUFFIX)-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_F
 bootsplash$(BOOTSPLASH_SUFFIX)-type := bootsplash
 endif
 
-# Ensure that no payload segment overlaps with memory regions used by ramstage
-# (not for x86 since it can relocate itself in that case)
-ifneq ($(CONFIG_ARCH_X86),y)
-check-ramstage-overlap-regions := ramstage
-check-ramstage-overlap-files :=
 ifneq ($(CONFIG_PAYLOAD_NONE),y)
 check-ramstage-overlap-files += $(CONFIG_CBFS_PREFIX)/payload
 endif
@@ -1464,6 +1459,15 @@ ramstage-symbol-addr-cmd = $(OBJDUMP_ramstage) -t $(objcbfs)/ramstage.elf | \
 	sed -n '/ $(1)$$/s/^\([0-9a-fA-F]*\) .*/0x\1/p' | \
 	uniq
 
+# Ensures that no segments from files in check-ramstage-overlap-files overlap memory regions
+# used by ramstage. By default the segments of the payload are checked against the ramstage
+# segments, but there may be other executables in RAM (e.g. BL31, OPENSBI). So Architecture
+# Makefiles may add relevant executables to `check-ramstage-overlap-files`. Architecture
+# Makefiles need to initialize `check-ramstage-overlap-regions` to use this check.
+# For example:
+# Common regions to add are `ramstage`, `stack` or `postram_cbfs_cache`. Which means that the
+# ramstage segments `ramstage`, `stack`, `postram_cbfs_cache` are checked to make sure they
+# don't overlap with the segments of check-ramstage-overlap-files (e.g. payload).
 $(call add_intermediate, check-ramstage-overlaps)
 	programs=$$($(foreach file,$(check-ramstage-overlap-files), \
 		$(call cbfs-get-segments-cmd,$(file)) ; )) ; \
@@ -1489,5 +1493,3 @@ $(call add_intermediate, check-ramstage-overlaps)
 	    done ; \
 	    pstart= ; pend= ; \
 	done
-
-endif

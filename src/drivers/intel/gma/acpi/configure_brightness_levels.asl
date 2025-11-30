@@ -66,8 +66,7 @@
 			/* also set valid bit */
 			BCLP = Local1 | 0x80000000
 
-			If (ARDY == 0)
-			{
+			If (ARDY == 0) {
 				Return (Ones)
 			}
 
@@ -77,8 +76,7 @@
 			ASLE = 0x1
 
 			Local0 = 0x20
-			While (Local0 > 0)
-			{
+			While (Local0 > 0) {
 				Sleep (1)
 				If ((ASLC & 2) == 0) {
 					/* Request has been processed, check status: */
@@ -118,8 +116,7 @@
 		Method (XBQC, 0, NotSerialized)
 		{
 			/* Prevent DivideByZero if backlight control isn't enabled */
-			If (BCLM == 0)
-			{
+			If (BCLM == 0) {
 				Return (0)
 			}
 			/* Local0: current percentage */
@@ -152,14 +149,12 @@
 	{
 		BRLV = Arg0
 		BRVA = 1
-		If (^BOX3.XBCM (Arg0) == Ones)
-		{
+		If (^BOX3.XBCM (Arg0) == Ones) {
 			/*
 			 * Only touch the legacy PWM registers after the graphics driver
 			 * reprograms them during boot/resume (BCLM stays zero until then).
 			 */
-			If (BCLM != 0)
-			{
+			If (BCLM != 0) {
 				^LEGA.XBCM (Arg0)
 			}
 		}

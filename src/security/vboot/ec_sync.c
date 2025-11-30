@@ -56,7 +56,7 @@ void vboot_sync_ec(void)
 
 	case VB2_REQUEST_REBOOT_EC_TO_RO:
 		printk(BIOS_INFO, "EC Reboot requested. Doing cold reboot\n");
-		if (google_chromeec_reboot(EC_REBOOT_COLD, 0))
+		if (google_chromeec_reboot(EC_REBOOT_COLD, EC_REBOOT_FLAG_IMMEDIATE))
 			printk(BIOS_EMERG, "Failed to get EC to cold reboot\n");
 
 		halt();

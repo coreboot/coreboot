@@ -8,5 +8,5 @@
 void do_board_reset(void)
 {
 	if (CONFIG(EC_GOOGLE_CHROMEEC))
-		google_chromeec_reboot(EC_REBOOT_COLD, 0);
+		google_chromeec_reboot(EC_REBOOT_COLD, EC_REBOOT_FLAG_IMMEDIATE);
 }

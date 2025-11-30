@@ -116,10 +116,11 @@ int fdt_next_property(const void *blob, uint32_t offset,
 		      struct fdt_property *prop)
 {
 	struct fdt_header *header = (struct fdt_header *)blob;
-	uint32_t *ptr = (uint32_t *)(((uint8_t *)blob) + offset);
 
 	// skip NOP tokens
 	offset += fdt_skip_nops(blob, offset);
+
+	uint32_t *ptr = (uint32_t *)(((uint8_t *)blob) + offset);
 
 	int index = 0;
 	if (be32toh(ptr[index++]) != FDT_TOKEN_PROPERTY)

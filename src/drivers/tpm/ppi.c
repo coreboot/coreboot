@@ -580,7 +580,6 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 	ppib->ppin = 1; // Not used by ACPI. Read by EDK-2, must be 1.
 	ppib->ppip = 0;
 	ppib->fret = 0;
-	ppib->next_step = 0;
 
 	bool found = false;
 	/* Fill in defaults, the TPM command executor may overwrite this list */

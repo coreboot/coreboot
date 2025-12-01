@@ -1,3 +1,44 @@
+fw_config
+	field AUDIO_CODEC 0 2
+		option AUDIO_CODEC_UNKNOWN	0
+		option AUDIO_CODEC_ALC721	1
+	end
+	field STORAGE_TYPE 12 14
+		option STORAGE_TYPE_UNKNOWN	0
+		option STORAGE_TYPE_NVME	1
+		option STORAGE_TYPE_UFS	2
+	end
+	field SENSOR_HUB 23 23
+		option ISH_ABSENT	0
+		option ISH_PRESENT	1
+	end
+	field FINGERPRINT_INTERFACE 24 25
+		option FINGERPRINT_INTERFACE_UNKNOWN	0
+		option FINGERPRINT_INTERFACE_SPI	1
+		option FINGERPRINT_INTERFACE_USB	2
+	end
+	field WIFI_INTERFACE 26 27
+		option WIFI_INTERFACE_UNKNOWN	0
+		option WIFI_INTERFACE_CNVI	1
+	end
+	field FORM_FACTOR 30 31
+		option FORM_FACTOR_UNKNOWN	0
+		option FORM_FACTOR_CLAMSHELL	1
+		option FORM_FACTOR_CONVERTIBLE	2
+	end
+	field KB_BACKLIGHT 43 43
+		option KB_BACKLIGHT_ABSENT	0
+		option KB_BACKLIGHT_PRESENT	1
+	end
+	field KEYBOARD_LAYOUT 45 47
+		option KEYBOARD_LAYOUT_DEFAULT	0
+		option KEYBOARD_LAYOUT_CA_FR	1
+	end
+	field AP_OEM_2BIT_FIELD0 59 60
+		option IO_BOARD_USB2A2C_HDMI	0
+		option IO_BOARD_USB3C	1
+	end
+end
 chip soc/intel/pantherlake
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP0
@@ -283,10 +324,14 @@ chip soc/intel/pantherlake
 				end
 			end
 		end
-		#ToDo: Probe using fw_config after decision.
-		device ref ufs on end
+		device ref ufs on
+			probe STORAGE_TYPE STORAGE_TYPE_UFS
+			probe STORAGE_TYPE STORAGE_TYPE_UNKNOWN
+		end
 		#ToDo: Probe using fw_config after decision.
 		device ref pcie_rp1 on
+			probe STORAGE_TYPE STORAGE_TYPE_NVME
+			probe STORAGE_TYPE STORAGE_TYPE_UNKNOWN
 			register "pcie_rp[PCIE_RP(1)]" = "{
 			.clk_src = 3,
 			.clk_req = 3,
@@ -369,8 +414,8 @@ chip soc/intel/pantherlake
 				device i2c 0x10 on end
 			end
 		end # I2C5
-		#ToDo: Probe using fw_config after decision.
 		device ref hda on
+			probe AUDIO_CODEC AUDIO_CODEC_ALC721
 			chip drivers/intel/soundwire
 				device generic 0 on
 					chip drivers/soundwire/alc711
@@ -380,7 +425,9 @@ chip soc/intel/pantherlake
 						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC721"
 						register "disable_clkstop_sm_support" = "true"
 						# SoundWire Link 3 ID 1
-						device generic 3.1 on end
+						device generic 3.1 on
+							probe AUDIO_CODEC AUDIO_CODEC_ALC721
+						end
 					end
 				end
 			end

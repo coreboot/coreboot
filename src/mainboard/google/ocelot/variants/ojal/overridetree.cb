@@ -108,7 +108,7 @@ chip soc/intel/pantherlake
 		device ref igpu on
 			probe DISPLAY DISPLAY_PRESENT
 			chip drivers/gfx/generic
-				register "device_count" = "5"
+				register "device_count" = "4"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD0""
 				register "device[0].type" = "panel"

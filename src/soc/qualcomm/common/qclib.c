@@ -96,6 +96,8 @@ const char *qclib_file_default(enum qclib_cbfs_file file)
 		return CONFIG_CBFS_PREFIX "/aop_devcfg_meta";
 	case QCLIB_CBFS_APDP_META:
 		return CONFIG_CBFS_PREFIX "/apdp_meta";
+	case QCLIB_CBFS_RAMDUMP_META:
+		return CONFIG_CBFS_PREFIX "/ramdump_meta";
 	default:
 		die("unknown QcLib file %d", file);
 	}
@@ -185,6 +187,11 @@ static void dump_te_table(void)
 }
 
 __weak int qclib_soc_override(struct qclib_cb_if_table *table) { return 0; }
+
+__weak bool qclib_check_dload_mode(void)
+{
+	return false;
+}
 
 static bool qclib_debug_log_level(void)
 {
@@ -397,6 +404,28 @@ void qclib_rerun(void)
 	}
 
 	qclib_add_if_table_entry(QCLIB_TE_AOP_DEVCFG_META_SETTINGS, _aop_blob_meta, data_size, 0);
+
+	if (CONFIG(QC_RAMDUMP_ENABLE) && qclib_check_dload_mode()) {
+		struct prog ramdump_prog =
+				PROG_INIT(PROG_REFCODE, CONFIG_CBFS_PREFIX "/ramdump");
+
+		if (cbfs_prog_stage_load(&ramdump_prog))
+			die("SOC image: ramdump load failed");
+
+		/* Attempt to load ramdump_meta Blob. */
+		data_size = cbfs_load(qclib_file(QCLIB_CBFS_RAMDUMP_META),
+				_apdp_ramdump_meta, REGION_SIZE(apdp_ramdump_meta));
+		if (!data_size) {
+			printk(BIOS_ERR,
+			       "[%s] /ramdump_meta not loaded\n"
+			       "Ramdump will not be captured for crash analysis\n",
+			       __func__);
+
+			goto fail;
+		}
+
+		qclib_add_if_table_entry(QCLIB_TE_RAMDUMP_META_SETTINGS, _apdp_ramdump_meta, data_size, 0);
+	}
 
 	/* Set up the system and jump into QcLib */
 	printk(BIOS_DEBUG, "\n\n\nRe-enter QCLib to bring up AOP\n");

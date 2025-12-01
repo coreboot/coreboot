@@ -33,4 +33,12 @@ config QC_APDP_ENABLE
 	  Application Processor Debug Policy (APDP) is a configuration image
 	  to define and enforce debugging capabilities and restrictions for APPS.
 
+config QC_RAMDUMP_ENABLE
+	bool
+	default n
+	prompt "Debug Build: enable Ramdump"
+	help
+	  Ramdump is a debug image that is loaded during a system crash to capture
+	  memory contents for post-crash analysis.
+
 endif

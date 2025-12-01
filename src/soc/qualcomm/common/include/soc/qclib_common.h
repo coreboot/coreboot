@@ -3,6 +3,8 @@
 #ifndef _SOC_QUALCOMM_QCLIB_COMMON_H__
 #define _SOC_QUALCOMM_QCLIB_COMMON_H__
 
+#include <stdbool.h>
+
 /* coreboot & QCLib I/F definitions */
 
 /* string field lengths */
@@ -29,6 +31,7 @@
 #define QCLIB_TE_AOP_META_SETTINGS      "aop_metadata"
 #define QCLIB_TE_AOP_DEVCFG_META_SETTINGS	"aop_cfg_metadata"
 #define QCLIB_TE_APDP_META_SETTINGS	"apdp_metadata"
+#define QCLIB_TE_RAMDUMP_META_SETTINGS	"ramdump_metadata"
 
 /* BA_BMASK_VALUES (blob_attributes bit mask values) */
 #define QCLIB_BA_SAVE_TO_STORAGE 0x00000001
@@ -44,6 +47,7 @@ enum qclib_cbfs_file {
 	QCLIB_CBFS_AOP_META,
 	QCLIB_CBFS_AOP_DEVCFG_META,
 	QCLIB_CBFS_APDP_META,
+	QCLIB_CBFS_RAMDUMP_META,
 	QCLIB_CBFS_MAX
 };
 
@@ -82,6 +86,7 @@ void qclib_add_if_table_entry(const char *name, void *base,
 void qclib_load_and_run(void);
 void qclib_rerun(void);
 int  qclib_soc_override(struct qclib_cb_if_table *table);
+bool qclib_check_dload_mode(void);
 
 const char *qclib_file_default(enum qclib_cbfs_file file);
 const char *qclib_file(enum qclib_cbfs_file file);

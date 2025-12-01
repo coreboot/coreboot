@@ -320,6 +320,32 @@ $(APDP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(APDP_META_CBFS)
 
 endif # ifeq ($(CONFIG_QC_APDP_ENABLE),y)
+################################################################################
+ifeq ($(CONFIG_QC_RAMDUMP_ENABLE),y)
+
+RAMDUMP_FILE := $(X1P42100_BLOB)/boot/XblRamdump.elf
+RAMDUMP_CBFS := $(CONFIG_CBFS_PREFIX)/ramdump
+$(RAMDUMP_CBFS)-file := $(RAMDUMP_FILE)
+$(RAMDUMP_CBFS)-type := stage
+$(RAMDUMP_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+cbfs-files-y += $(RAMDUMP_CBFS)
+
+################################################################################
+# Rule to create ramdump_meta from XblRamdump.elf
+# This rule depends on XblRamdump.elf being built and the extractor script existing.
+$(obj)/mainboard/$(MAINBOARDDIR)/ramdump_meta: $(X1P42100_BLOB)/boot/XblRamdump.elf util/qualcomm/elf_segment_extractor.py
+	@echo "Extracting ELF headers and hash table segment from $< to $@"
+	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
+
+RAMDUMP_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/ramdump_meta
+RAMDUMP_META_CBFS := $(CONFIG_CBFS_PREFIX)/ramdump_meta
+$(RAMDUMP_META_CBFS)-file := $(RAMDUMP_META_FILE)
+$(RAMDUMP_META_CBFS)-type := raw
+$(RAMDUMP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(RAMDUMP_META_CBFS)
+
+endif # ifeq ($(CONFIG_QC_RAMDUMP_ENABLE),y)
+
 endif # ifeq ($(CONFIG_USE_QC_BLOBS),y)
 
 endif # ifeq ($(CONFIG_QC_BLOBS_UPSTREAM),y)

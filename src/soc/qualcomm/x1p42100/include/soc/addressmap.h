@@ -4,6 +4,7 @@
 #define _SOC_QUALCOMM_X1P42100_ADDRESS_MAP_H_
 
 #include <stdint.h>
+#include <types.h>
 
 #define AOSS_CC_BASE			0x0C2A0000
 #define QSPI_BASE			0x088DC000
@@ -175,6 +176,16 @@
 #define TCSR_GCC_USB4_2_CLKREF_EN_ADDR		((void *)0x1FD5124)
 #define TCSR_GCC_USB2_2_CLKREF_EN_ADDR		((void *)0x1FD5118)
 #define USB_CLKREF_ENABLE_VALUE			0x1
+
+/* TCSR Boot Misc Detect Register for Download Mode */
+#define TCSR_BOOT_MISC_DETECT		0x1FD9000
+
+/* Bits 4 and 5 represent the ramdump download cookies in SoC logic */
+enum dload_mode_cookies {
+	DLOAD_FULL_DUMP = BIT(4),
+	DLOAD_MINI_DUMP = BIT(5),
+	DLOAD_BOTH = (DLOAD_FULL_DUMP | DLOAD_MINI_DUMP)
+};
 
 /* SPMI PMIC ARB */
 #define SPMI_PMIC_ARB_CORE_BASE		0x0C400000

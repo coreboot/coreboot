@@ -8,39 +8,6 @@
 #include <endian.h>
 #include <types.h>
 
-#define __clrsetbits_impl(bits, addr, clear, set) write##bits(addr, \
-	(read##bits(addr) & ~((uint##bits##_t)(clear))) | (set))
-
-#define clrsetbits8(addr, clear, set)	__clrsetbits_impl(8, addr, clear, set)
-#define clrsetbits16(addr, clear, set)	__clrsetbits_impl(16, addr, clear, set)
-#define clrsetbits32(addr, clear, set)	__clrsetbits_impl(32, addr, clear, set)
-#define clrsetbits64(addr, clear, set)	__clrsetbits_impl(64, addr, clear, set)
-
-#define setbits8(addr, set)		clrsetbits8(addr, 0, set)
-#define setbits16(addr, set)		clrsetbits16(addr, 0, set)
-#define setbits32(addr, set)		clrsetbits32(addr, 0, set)
-#define setbits64(addr, set)		clrsetbits64(addr, 0, set)
-
-#define clrbits8(addr, clear)		clrsetbits8(addr, clear, 0)
-#define clrbits16(addr, clear)		clrsetbits16(addr, clear, 0)
-#define clrbits32(addr, clear)		clrsetbits32(addr, clear, 0)
-#define clrbits64(addr, clear)		clrsetbits64(addr, clear, 0)
-
-#define clrsetbits8p(addr, clear, set)	clrsetbits8((void *)((uintptr_t)addr), clear, set)
-#define clrsetbits16p(addr, clear, set)	clrsetbits16((void *)((uintptr_t)addr), clear, set)
-#define clrsetbits32p(addr, clear, set)	clrsetbits32((void *)((uintptr_t)addr), clear, set)
-#define clrsetbits64p(addr, clear, set)	clrsetbits64((void *)((uintptr_t)addr), clear, set)
-
-#define setbits8p(addr, set)		clrsetbits8((void *)((uintptr_t)addr), 0, set)
-#define setbits16p(addr, set)		clrsetbits16((void *)((uintptr_t)addr), 0, set)
-#define setbits32p(addr, set)		clrsetbits32((void *)((uintptr_t)addr), 0, set)
-#define setbits64p(addr, set)		clrsetbits64((void *)((uintptr_t)addr), 0, set)
-
-#define clrbits8p(addr, clear)		clrsetbits8((void *)((uintptr_t)addr), clear, 0)
-#define clrbits16p(addr, clear)		clrsetbits16((void *)((uintptr_t)addr), clear, 0)
-#define clrbits32p(addr, clear)		clrsetbits32((void *)((uintptr_t)addr), clear, 0)
-#define clrbits64p(addr, clear)		clrsetbits64((void *)((uintptr_t)addr), clear, 0)
-
 /*
  * Reads a transfer buffer from 32-bit FIFO registers. fifo_stride is the
  * distance in bytes between registers (e.g. pass 4 for a normal array of 32-bit
@@ -221,45 +188,5 @@ static inline void buffer_to_fifo32(const void *buffer, size_t size, void *fifo,
 
 #define READ32_BITFIELD(addr, name) \
 	EXTRACT_BITFIELD(read32(addr), name)
-
-static __always_inline uint8_t read8p(const uintptr_t addr)
-{
-	return read8((void *)addr);
-}
-
-static __always_inline uint16_t read16p(const uintptr_t addr)
-{
-	return read16((void *)addr);
-}
-
-static __always_inline uint32_t read32p(const uintptr_t addr)
-{
-	return read32((void *)addr);
-}
-
-static __always_inline uint64_t read64p(const uintptr_t addr)
-{
-	return read64((void *)addr);
-}
-
-static __always_inline void write8p(const uintptr_t addr, const uint8_t value)
-{
-	write8((void *)addr, value);
-}
-
-static __always_inline void write16p(const uintptr_t addr, const uint16_t value)
-{
-	write16((void *)addr, value);
-}
-
-static __always_inline void write32p(const uintptr_t addr, const uint32_t value)
-{
-	write32((void *)addr, value);
-}
-
-static __always_inline void write64p(const uintptr_t addr, const uint64_t value)
-{
-	write64((void *)addr, value);
-}
 
 #endif	/* __DEVICE_MMIO_H__ */

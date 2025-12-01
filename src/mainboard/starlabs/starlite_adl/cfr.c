@@ -48,6 +48,7 @@ static struct sm_obj_form power = {
 		&charging_speed,
 		#endif
 		&power_led,
+		&charge_led,
 		&power_on_after_fail_bool,
 		NULL
 	},

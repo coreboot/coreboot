@@ -1,10 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 fw_config
-	field OLED_WQXGA_PLUS 1 1
-		option PRESENT	1
-		option ABSENT	0
-	end
 	field AUDIO_AMPLIFIER 28 29
 		option AUDIO_AMPLIFIER_NAU8318 0
 		option AUDIO_AMPLIFIER_TAS2563 1

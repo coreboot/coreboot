@@ -1,0 +1,41 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+fw_config
+	field AUDIO_CODEC 0 2
+		option AUDIO_CODEC_UNKNOWN	0
+		option AUDIO_CODEC_ALC5682IVS	1
+	end
+	field AUDIO_AMPLIFIER 3 5
+		option AUDIO_AMPLIFIER_UNKNOWN	0
+		option AUDIO_AMPLIFIER_TAS2563	1
+	end
+	field STORAGE_TYPE 12 14
+		option STORAGE_TYPE_UNKNOWN	0
+		option STORAGE_TYPE_UFS_40	1
+	end
+	field FINGERPRINT_INTERFACE 24 25
+		option FINGERPRINT_INTERFACE_UNKNOWN	0
+		option FINGERPRINT_INTERFACE_USB	1
+	end
+	field WIFI_INTERFACE 26 27
+		option WIFI_INTERFACE_UNKNOWN	0
+		option WIFI_INTERFACE_PCIE	1
+	end
+	field FORM_FACTOR 30 31
+		option FORM_FACTOR_UNKNOWN	0
+		option FORM_FACTOR_DETACHABLE	1
+	end
+	field PANEL_ID 39 42
+		option PANEL_ID_NS130070_M00	9
+		option PANEL_ID_UNKNOWN		15
+	end
+	field STYLUS 48 48
+		option STYLUS_PRESENT_ABSENT	0
+		option STYLUS_PRESENT_PRESENT	1
+	end
+end
+
+chip soc/mediatek/mt8196
+	device domain 0 on
+	end
+end

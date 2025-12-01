@@ -29,6 +29,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select CHROMEOS_USE_EC_WATCHDOG_FLAG if CHROMEOS
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_BOARDID
+	select EC_GOOGLE_CHROMEEC_FW_CONFIG_FROM_UFSC if BOARD_GOOGLE_SAPPHIRE
 	select EC_GOOGLE_CHROMEEC_SPI
 	select I2C_TPM if VBOOT
 	select MAINBOARD_HAS_TPM2 if VBOOT
@@ -52,10 +53,13 @@ config MAINBOARD_PART_NUMBER
 	default "Sapphire" if BOARD_GOOGLE_SAPPHIRE
 
 config VARIANT_DIR
+	default "hylia" if BOARD_GOOGLE_HYLIA
 	default "navi" if BOARD_GOOGLE_NAVI
+	default "rauru" if BOARD_GOOGLE_RAURU
+	default "sapphire" if BOARD_GOOGLE_SAPPHIRE
 
 config OVERRIDE_DEVICETREE
-	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb" if BOARD_GOOGLE_NAVI
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int

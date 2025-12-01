@@ -2,8 +2,8 @@
 
 #include <boot/coreboot_tables.h>
 #include <drivers/tpm/cr50.h>
-#include <fw_config.h>
 #include <gpio.h>
+#include <variants.h>
 
 #include "gpio.h"
 
@@ -79,12 +79,20 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "speaker enable"},
 	};
 
-	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_TAS2563)))
-		lb_add_gpios(gpios, smartamp_gpios, ARRAY_SIZE(smartamp_gpios));
-	else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC5645)))
-		lb_add_gpios(gpios, alc5645_gpios, ARRAY_SIZE(alc5645_gpios));
-	else
+	switch (get_audio_amp_id()) {
+	case AUD_AMP_ID_NAU8318:
 		lb_add_gpios(gpios, nau8318_gpios, ARRAY_SIZE(nau8318_gpios));
+		break;
+	case AUD_AMP_ID_TAS2563:
+		lb_add_gpios(gpios, smartamp_gpios, ARRAY_SIZE(smartamp_gpios));
+		break;
+	case AUD_AMP_ID_ALC5645:
+		lb_add_gpios(gpios, alc5645_gpios, ARRAY_SIZE(alc5645_gpios));
+		break;
+	case AUD_AMP_ID_UNKNOWN:
+	default:
+		break;
+	}
 
 	struct lb_gpio edp_pwm_backlight_gpios[] = {
 		{GPIO_BL_PWM_1V8.id, ACTIVE_HIGH, -1, "PWM control"},

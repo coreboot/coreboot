@@ -3,7 +3,6 @@
 #include <bootmode.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <fw_config.h>
 #include <gpio.h>
 #include <soc/addressmap.h>
 #include <soc/bl31.h>
@@ -17,6 +16,7 @@
 #include <soc/spm_common.h>
 #include <soc/storage.h>
 #include <soc/usb.h>
+#include <variants.h>
 
 #include "gpio.h"
 #include "storage.h"
@@ -52,15 +52,22 @@ static void configure_alc5645(void)
 
 	printk(BIOS_INFO, "%s: done\n", __func__);
 }
+
 static void configure_audio(void)
 {
-	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_TAS2563))) {
+	switch (get_audio_amp_id()) {
+	case AUD_AMP_ID_TAS2563:
 		mtk_i2c_bus_init(I2C3, I2C_SPEED_FAST);
 		configure_tas2563();
-	} else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC5645))) {
+		break;
+	case AUD_AMP_ID_ALC5645:
 		configure_alc5645();
-	} else {
-		printk(BIOS_INFO, "Audio configure default amps NAU8318\n");
+		break;
+	case AUD_AMP_ID_NAU8318:
+	case AUD_AMP_ID_UNKNOWN:
+	default:
+		/* No configuration needed for NAU8318 or UNKNOWN */
+		break;
 	}
 
 	printk(BIOS_INFO, "%s: done\n", __func__);

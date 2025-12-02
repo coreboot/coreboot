@@ -1167,18 +1167,9 @@ bool google_chromeec_is_usb_pd_attached(void)
 /* This API checks if charger is present. */
 bool google_chromeec_is_charger_present(void)
 {
-	struct ec_params_battery_dynamic_info params = {
-		.index = 0,
-	};
-	struct ec_response_battery_dynamic_info resp;
-
-	if (ec_cmd_battery_get_dynamic(PLAT_EC, &params, &resp) == 0) {
-		/* Check if AC charger is present */
-		if (resp.flags & EC_BATT_FLAG_AC_PRESENT)
-			return true;
-	}
-
-	return false;
+	/* Check if the EC has posted the AC connect event. */
+	return !!(google_chromeec_get_events_b() &
+		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_CONNECTED));
 }
 
 /*

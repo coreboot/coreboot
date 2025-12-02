@@ -12,6 +12,7 @@ ramstage-y += BiosCallOuts.c
 ramstage-y += chromeos.c
 ramstage-y += ec.c
 ramstage-y += OemCustomize.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
 verstage-y += chromeos.c
 verstage-y += ec.c

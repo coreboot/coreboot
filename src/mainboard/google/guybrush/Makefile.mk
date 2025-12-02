@@ -10,6 +10,7 @@ ramstage-y += mainboard.c
 ramstage-y += ec.c
 ramstage-y += port_descriptors.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
 all-y += spi_speeds.c
 

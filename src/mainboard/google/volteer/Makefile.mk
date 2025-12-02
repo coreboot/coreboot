@@ -6,6 +6,7 @@ bootblock-y += bootblock.c
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-y += romstage.c
 
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c
 ramstage-$(CONFIG_FW_CONFIG) += fw_config.c

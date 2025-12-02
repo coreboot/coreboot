@@ -59,8 +59,8 @@ void lb_add_boot_mode(struct lb_header *header)
 	mode->size = sizeof(*mode);
 	mode->boot_mode = get_boot_mode();
 
-	/* Enable charging only during off-mode or low-battery mode */
-	if (is_low_power_boot())
+	/* Enable charging only during off-mode or low-battery mode and charger present */
+	if (is_low_power_boot() && google_chromeec_is_charger_present())
 		enable_slow_battery_charging();
 }
 

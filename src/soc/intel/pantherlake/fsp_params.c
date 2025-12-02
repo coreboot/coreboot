@@ -589,6 +589,10 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 	uint32_t enable_mask = pcie_rp_enable_mask(get_pcie_rp_table());
 
 	for (size_t i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
+		if (CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE)) {
+			s_cfg->PcieClockGating[i] = 0;
+			s_cfg->PciePowerGating[i] = 0;
+		}
 		if (!(enable_mask & BIT(i)))
 			continue;
 		const struct pcie_rp_config *rp_cfg = &config->pcie_rp[i];

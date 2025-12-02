@@ -113,6 +113,9 @@ static int read_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_cooki
 		return 1;
 	}
 
+	if (!entries || !num_entries)
+		return 0;
+
 	/* Read the entries */
 	*num_entries = header->num_entries;
 	*entries = malloc(sizeof(psp_directory_entry) * header->num_entries);
@@ -147,6 +150,9 @@ static int read_bios_directory(FILE *fw, uint32_t offset, uint32_t expected_cook
 			header->cookie, expected_cookie);
 		return 1;
 	}
+
+	if (!entries || !num_entries)
+		return 0;
 
 	/* Read the entries */
 	*num_entries = header->num_entries;
@@ -313,6 +319,64 @@ static int amdfw_bios_dir_walk(FILE *fw, uint32_t bios_offset, uint32_t cookie, 
 	return 0;
 }
 
+/*
+ * Returns the size of the PSP directory.
+ *
+ * @param fw			File to operate on
+ * @param psp_offset		Relative offset to PSP directory
+ * @param cookie		Expected table cookie
+ * @param size			Where to write the size to
+ *
+ * @return 0 on success, or < 0 on error.
+ */
+static int amdfw_psp_dir_size(FILE *fw, uint32_t psp_offset, uint32_t cookie, uint32_t *size)
+{
+	psp_directory_header header;
+
+	if (!fw || !size)
+		return -1;
+
+	if (read_psp_directory(fw, psp_offset, cookie, &header, NULL, NULL) != 0)
+		return -1;
+
+	if (header.additional_info_fields.version == 1)
+		*size = header.additional_info_fields_v1.dir_size;
+	else
+		*size = header.additional_info_fields.dir_size;
+
+	*size *= TABLE_ALIGNMENT;
+	return 0;
+}
+
+/*
+ * Returns the size of the BIOS directory.
+ *
+ * @param fw			File to operate on
+ * @param bios_offset		Relative offset to BIOS directory
+ * @param cookie		Expected table cookie
+ * @param size			Where to write the size to
+ *
+ * @return 0 on success, or < 0 on error.
+ */
+static int amdfw_bios_dir_size(FILE *fw, uint32_t bios_offset, uint32_t cookie, uint32_t *size)
+{
+	bios_directory_hdr header;
+
+	if (!fw || !size)
+		return -1;
+
+	if (read_bios_directory(fw, bios_offset, cookie, &header, NULL, NULL) != 0)
+		return -1;
+
+	if (header.additional_info_fields.version == 1)
+		*size = header.additional_info_fields_v1.dir_size;
+	else
+		*size = header.additional_info_fields.dir_size;
+
+	*size *= TABLE_ALIGNMENT;
+	return 0;
+}
+
 static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, uint8_t level)
 {
 	psp_directory_entry *current_entries = NULL;
@@ -339,7 +403,7 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 		uint32_t type = current_entries[i].type;
 		uint64_t mode = current_entries[i].address_mode;
 		uint64_t addr = current_entries[i].addr;
-
+		uint32_t dir_size = 0;
 		if (dir_mode < 2)
 			mode = dir_mode;
 
@@ -365,6 +429,10 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 
 			l2_dir_offset = relative_offset(psp_offset, addr, mode);
 			printf("    %sPSPL2: Dir  0x%08x\n", indent, l2_dir_offset);
+			if (amdfw_psp_dir_size(fw, l2_dir_offset, PSPL2_COOKIE, &dir_size) == 0)
+				printf("    %sPSPL2: Dir  [0x%08x-0x%08x)\n", indent, l2_dir_offset, l2_dir_offset + dir_size);
+			else
+				printf("    %sPSPL2: Dir  @0x%08x\n", indent, l2_dir_offset);
 			amdfw_psp_dir_walk(fw, l2_dir_offset, PSPL2_COOKIE, level + 2);
 			break;
 
@@ -384,13 +452,19 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 			}
 
 			l2_dir_offset = ish_dir.pl2_location;
-			printf("    %sPSPL2: Dir  0x%08x\n", indent, l2_dir_offset);
+			if (amdfw_psp_dir_size(fw, l2_dir_offset, PSPL2_COOKIE, &dir_size) == 0)
+				printf("    %sPSPL2: Dir  [0x%08x-0x%08x)\n", indent, l2_dir_offset, l2_dir_offset + dir_size);
+			else
+				printf("    %sPSPL2: Dir  @0x%08x\n", indent, l2_dir_offset);
 			amdfw_psp_dir_walk(fw, l2_dir_offset, PSPL2_COOKIE, level + 2);
 			break;
 
 		case AMD_FW_BIOS_TABLE:
 			bios_dir_offset = relative_offset(psp_offset, addr, mode);
-			printf("    %sBIOSL2: Dir  0x%08x\n", indent, bios_dir_offset);
+			if (amdfw_bios_dir_size(fw, bios_dir_offset, BHDL2_COOKIE, &dir_size) == 0)
+				printf("    %sBIOSL2: Dir  [0x%08x-0x%08x)\n", indent, bios_dir_offset, bios_dir_offset + dir_size);
+			else
+				printf("    %sBIOSL2: Dir  @0x%08x\n", indent, bios_dir_offset);
 			amdfw_bios_dir_walk(fw, bios_dir_offset, BHDL2_COOKIE, level + 2);
 			break;
 
@@ -406,7 +480,7 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 
 static int list_amdfw_psp_dir(FILE *fw, const embedded_firmware *fw_header)
 {
-	uint32_t psp_offset = 0;
+	uint32_t psp_offset = 0, dir_size = 0;
 
 	/* 0xffffffff or 0x00000000 indicates that the offset is in new_psp_directory */
 	if (fw_header->psp_directory != 0xffffffff && fw_header->psp_directory != 0x00000000)
@@ -414,18 +488,28 @@ static int list_amdfw_psp_dir(FILE *fw, const embedded_firmware *fw_header)
 	else
 		psp_offset = fw_header->new_psp_directory;
 
-	printf("PSPL1: Dir  0x%08x\n", psp_offset);
+	if (amdfw_psp_dir_size(fw, psp_offset, PSP_COOKIE, &dir_size) == 0)
+		printf("PSPL1: Dir  [0x%08x-0x%08x)\n", psp_offset, psp_offset + dir_size);
+	else
+		printf("PSPL1: Dir  @0x%08x\n", psp_offset);
+
 	amdfw_psp_dir_walk(fw, psp_offset, PSP_COOKIE, 0);
 	return 0;
 }
 
 static int list_amdfw_bios_dir(FILE *fw, const embedded_firmware *fw_header)
 {
+	uint32_t dir_size = 0;
+
 	/* 0xffffffff or 0x00000000 implies that the SoC uses recovery A/B
 	   layout. Only BIOS L2 directory is present and that too as part of
 	   PSP L2 directory. */
 	if (fw_header->bios3_entry != 0xffffffff && fw_header->bios3_entry != 0x00000000) {
-		printf("BIOSL1: Dir  0x%08x\n", fw_header->bios3_entry);
+		if (amdfw_psp_dir_size(fw, fw_header->bios3_entry, BHD_COOKIE, &dir_size) == 0)
+			printf("BIOSL1: Dir  [0x%08x-0x%08x)\n", fw_header->bios3_entry, fw_header->bios3_entry + dir_size);
+		else
+			printf("BIOSL1: Dir  @0x%08x\n", fw_header->bios3_entry);
+
 		amdfw_bios_dir_walk(fw, fw_header->bios3_entry, BHD_COOKIE, 0);
 	}
 	return 0;

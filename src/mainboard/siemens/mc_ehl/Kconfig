@@ -55,7 +55,4 @@ config MAINBOARD_PART_NUMBER
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
-config SOC_INTEL_ELKHARTLAKE_TCO_NO_REBOOT_EN
-	default y
-
 endif # BOARD_SIEMENS_BASEBOARD_MC_EHL

@@ -2,6 +2,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <drivers/option/cfr_frontend.h>
+#include <ec/google/chromeec/cfr.h>
 #include <intelblocks/cfr.h>
 #include <soc/cfr.h>
 
@@ -24,6 +25,14 @@ static struct sm_obj_form system = {
 	},
 };
 
+static struct sm_obj_form ec = {
+	.ui_name = "ChromeEC Embedded Controller",
+	.obj_list = (const struct sm_object *[]) {
+		&auto_fan_control,
+		NULL
+	},
+};
+
 static struct sm_obj_form power = {
 	.ui_name = "Power",
 	.obj_list = (const struct sm_object *[]) {
@@ -34,6 +43,7 @@ static struct sm_obj_form power = {
 
 static struct sm_obj_form *sm_root[] = {
 	&system,
+	&ec,
 	&power,
 	NULL
 };

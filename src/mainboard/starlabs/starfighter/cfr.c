@@ -37,6 +37,8 @@ static struct sm_obj_form power = {
 		#if CONFIG(EC_STARLABS_CHARGING_SPEED)
 		&charging_speed,
 		#endif
+		&power_led,
+		&charge_led,
 		&power_on_after_fail_bool,
 		NULL
 	},

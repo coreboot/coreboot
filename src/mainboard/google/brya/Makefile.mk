@@ -10,6 +10,7 @@ romstage-y += romstage.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += ec.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
 BASEBOARD_DIR:=$(call strip_quotes,$(CONFIG_BASEBOARD_DIR))
 

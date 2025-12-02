@@ -312,7 +312,8 @@ typedef struct _PPR_RESULT_COLUMNS_HOB {
   - DIMM_INFO: Added SerialNumber, TotalWidth and DataWidth
   - DIMM_INFO: Removed SpdModuleMemoryBusWidth
   - MFG ID fields: use HOB_MANUFACTURER_ID_CODE instead of UINT16 for easier parsing
-
+  <b>Revision 4:</b>
+  - Added FailingChannelMask
 **/
 typedef struct {
   UINT8             Revision;
@@ -363,6 +364,7 @@ typedef struct {
   UINT8             MaxRankCapacity;                   ///< Maximum possible rank capacity in [GB]
   UINT16            PprFailingChannelBitMask;          ///< PPR failing channel mask
   BOOLEAN           PprTargetedStatus[PPR_REQUEST_MAX]; ///< PPR status of each Targeted PPR request (0 = Targeted PPR was successful, 1 = PPR failed)
+  UINT8             FailingChannelMask;                 ///< Limp Home mode failing channel bitmask
 } MEMORY_INFO_DATA_HOB;
 
 /**

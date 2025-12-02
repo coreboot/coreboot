@@ -2463,12 +2463,12 @@ typedef struct {
   UINT8                       DlvrRfiEnable;
 
 /** Offset 0x0949 - Pcore VR Hysteresis time window
-  Enable/Disable DLVR RFI frequency hopping. 0: Disable; <b>1: Enable</b>.
+  0 is default. Range of PcoreHysteresisWindow from 1ms to 50ms.
 **/
   UINT8                       PcoreHysteresisWindow;
 
 /** Offset 0x094A - Ecore VR Hysteresis time window
-  Enable/Disable DLVR RFI frequency hopping. 0: Disable; <b>1: Enable</b>.
+  0 is default. Range of EcoreHysteresisWindow from 1ms to 50ms.
 **/
   UINT8                       EcoreHysteresisWindow;
 
@@ -2793,7 +2793,8 @@ typedef struct {
   Initialise SOL Init, BIT0 - (0 : Disable VGA Support, 1 : Enable VGA Support),,
   BIT1 - (0 : VGA Text Mode 3, 1 : VGA Graphics Mode 12), BIT2 - (0 : VGA Exit Supported,
   1: NO VGA Exit), BIT3 - (0 : VGA Init During Display Init, 1 - VGA Init During
-  MRC Cold Boot), BIT4 - (0 : Enable Progress Bar, 1 : Disable Progress Bar)
+  MRC Cold Boot), BIT4 - (0 : Enable Progress Bar, 1 : Disable Progress Bar), BIT5
+  - (0 : VGA Mode 12 16 Color Support, 1 : VGA Mode 12 Monochrome Black and White Support)
   0:VGA Disable, 1:Mode 3 VGA, 2:Mode 12 VGA
 **/
   UINT8                       VgaInitControl;
@@ -3121,7 +3122,31 @@ typedef struct {
 
 /** Offset 0x0B31 - Reserved
 **/
-  UINT8                       Reserved93[55];
+  UINT8                       Reserved93[17];
+
+/** Offset 0x0B42 - VDD2 Voltage
+  Voltage is multiple of 5mV where 0 means Auto.
+**/
+  UINT16                      Vdd2HVoltage;
+
+/** Offset 0x0B44 - VDD1 Voltage
+  Voltage is multiple of 5mV where 0 means Auto.
+**/
+  UINT16                      Vdd1Voltage;
+
+/** Offset 0x0B46 - VDD2L Voltage Override
+  Voltage is multiple of 5mV where 0 means Auto.
+**/
+  UINT16                      Vdd2LVoltage;
+
+/** Offset 0x0B48 - VDDQ Voltage Override
+  Voltage is multiple of 5mV where 0 means Auto.
+**/
+  UINT16                      VddqVoltage;
+
+/** Offset 0x0B4A - Reserved
+**/
+  UINT8                       Reserved94[30];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

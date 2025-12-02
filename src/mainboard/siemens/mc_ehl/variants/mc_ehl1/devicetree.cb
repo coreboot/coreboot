@@ -95,14 +95,8 @@ chip soc/intel/elkhartlake
 	}"
 
 	register "SerialIoI2cPadsTermination" = "{
-		[PchSerialIoIndexI2C0] = 1,
 		[PchSerialIoIndexI2C1] = 1,
-		[PchSerialIoIndexI2C2] = 1,
-		[PchSerialIoIndexI2C3] = 1,
 		[PchSerialIoIndexI2C4] = 1,
-		[PchSerialIoIndexI2C5] = 1,
-		[PchSerialIoIndexI2C6] = 1,
-		[PchSerialIoIndexI2C7] = 1,
 	}"
 
 	register "SerialIoUartMode" = "{

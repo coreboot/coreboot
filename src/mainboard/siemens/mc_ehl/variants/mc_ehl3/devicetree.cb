@@ -84,6 +84,15 @@ chip soc/intel/elkhartlake
 		[PchSerialIoIndexI2C7] = PchSerialIoDisabled,
 	}"
 
+	register "SerialIoI2cPadsTermination" = "{
+		[PchSerialIoIndexI2C0] = 1,
+		[PchSerialIoIndexI2C1] = 1,
+		[PchSerialIoIndexI2C2] = 1,
+		[PchSerialIoIndexI2C3] = 1,
+		[PchSerialIoIndexI2C4] = 1,
+		[PchSerialIoIndexI2C5] = 1,
+	}"
+
 	register "SerialIoUartMode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoPci,
 		[PchSerialIoIndexUART1] = PchSerialIoPci,

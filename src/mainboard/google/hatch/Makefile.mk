@@ -6,6 +6,7 @@ bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ramstage.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
 romstage-$(CONFIG_ROMSTAGE_SPD_CBFS) += romstage_spd_cbfs.c
 romstage-$(CONFIG_ROMSTAGE_SPD_SMBUS) += romstage_spd_smbus.c

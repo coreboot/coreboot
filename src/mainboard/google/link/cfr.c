@@ -1,0 +1,38 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <boot/coreboot_tables.h>
+#include <drivers/option/cfr_frontend.h>
+#include <ec/google/chromeec/cfr.h>
+#include <northbridge/intel/sandybridge/cfr.h>
+#include <southbridge/intel/bd82x6x/cfr.h>
+
+static struct sm_obj_form system = {
+	.ui_name = "System",
+	.obj_list = (const struct sm_object *[]) {
+		&gfx_uma_size,
+		&me_state,
+		&me_state_prev,
+		&nmi,
+		&sata_mode,
+		NULL
+	},
+};
+
+static struct sm_obj_form ec = {
+	.ui_name = "ChromeEC Embedded Controller",
+	.obj_list = (const struct sm_object *[]) {
+		&auto_fan_control,
+		&ec_kb_backlight,
+		NULL
+	},
+};
+static struct sm_obj_form *sm_root[] = {
+	&system,
+	&ec,
+	NULL
+};
+
+void mb_cfr_setup_menu(struct lb_cfr *cfr_root)
+{
+	cfr_write_setup_menu(cfr_root, sm_root);
+}

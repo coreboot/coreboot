@@ -1776,6 +1776,10 @@ enum ec_feature_code {
 	 * The EC supports PoE.
 	 */
 	EC_FEATURE_POE = 56,
+	/*
+	 * The EC supports a hybrid boost charger
+	 */
+	EC_FEATURE_CHARGER_HYBRID_POWER_BOOST = 57,
 };
 
 #define EC_FEATURE_MASK_0(event_code) BIT(event_code % 32)
@@ -5821,6 +5825,7 @@ enum ec_reboot_cmd {
 };
 
 /* Flags for ec_params_reboot_ec.reboot_flags */
+#define EC_REBOOT_FLAG_IMMEDIATE 0 /* Trigger Cold Reset */
 #define EC_REBOOT_FLAG_RESERVED0 BIT(0) /* Was recovery request */
 #define EC_REBOOT_FLAG_ON_AP_SHUTDOWN BIT(1) /* Reboot after AP shutdown */
 #define EC_REBOOT_FLAG_SWITCH_RW_SLOT BIT(2) /* Switch RW slot */
@@ -5969,6 +5974,18 @@ struct ec_params_panic_log_read {
  * EC_CMD_MEMORY_DUMP_READ_MEMORY response buffer is written directly into
  * host_cmd_handler_args.response and host_cmd_handler_args.response_size.
  */
+
+/*
+ * Enter bootloader mode
+ *
+ * This command requests EC to enter bootloader mode.
+ */
+#define EC_CMD_ENTER_BOOTLOADER 0x00E2
+
+struct ec_params_enter_bootloader {
+	/* Mode to enter bootloader. Chip specific value. Can be unused. */
+	uint8_t mode;
+} __ec_align1;
 
 /*****************************************************************************/
 /*
@@ -8659,6 +8676,20 @@ struct ec_params_fp_read_match_secret {
 	uint16_t fgr;
 } __ec_align4;
 
+/*
+ * Fingerprint vendor defined command.
+ *
+ * A custom per fingerprint vendor host command. It can be used to fetch some
+ * custom data during testing, manufacturing etc.
+ *
+ * This command should be handled only if the system is unlocked.
+ */
+#define EC_CMD_FP_VENDOR 0x040B
+struct ec_params_fp_vendor {
+	/* Parameter to be used by FP vendors. */
+	uint32_t param1;
+} __ec_align4;
+
 /* The positive match secret has the length of the SHA256 digest. */
 #define FP_POSITIVE_MATCH_SECRET_BYTES 32
 struct ec_response_fp_read_match_secret {
@@ -8959,6 +8990,14 @@ struct ec_response_get_boot_time {
 
 /* Issue AP shutdown */
 #define EC_CMD_AP_SHUTDOWN 0x0605
+
+/**
+ * Issue AP shutdown using heartbeat wake.
+ * The AP calls this to enter the low-power G3 state for off-mode charging.
+ * The EC then monitors battery SoC and wakes the AP when discharged by a
+ * configured threshold.
+ */
+#define EC_CMD_ENABLE_OFFMODE_HEARTBEAT 0x0606
 
 /*****************************************************************************/
 /*

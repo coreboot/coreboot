@@ -6,7 +6,7 @@
 #include <soc/dptx_reg_v2.h>
 
 #define DP_PHY_DIG_TX_CTL_0			0x1444
-#define RGS_AUX_LDO_EN_READY_MASK		BIT(2)
+#define RGS_AUX_LDO_EN_READY_MASK		BIT(0)
 #define DRIVING_FORCE				0x18
 #define EDP_TX_LN_PRE_EMPH_VAL_MASK		GENMASK(6, 5)
 #define EDP_TX_LN_PRE_EMPH_VAL_SHIFT		5

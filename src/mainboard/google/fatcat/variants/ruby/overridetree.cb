@@ -58,6 +58,17 @@ chip soc/intel/pantherlake
 		.tdp_pl4 = 150,
 	}"
 
+	register "fast_vmode_i_trip[PTL_CORE_1]" = "{
+		[VR_DOMAIN_IA] = 74 * 4,
+		[VR_DOMAIN_GT] = 38 * 4,
+		[VR_DOMAIN_SA] = 38 * 4
+	}"
+	register "fast_vmode_i_trip[PTL_CORE_2]" = "{
+		[VR_DOMAIN_IA] = 74 * 4,
+		[VR_DOMAIN_GT] = 38 * 4,
+		[VR_DOMAIN_SA] = 38 * 4
+	}"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C1
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # USB HUB (USB2 Camera)

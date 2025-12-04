@@ -13,9 +13,18 @@
 #define GPLL0_MAIN_HZ		(600 * MHz)
 #define CLK_100MHZ		(100 * MHz)
 #define CLK_200MHZ		(200 * MHz)
+#define CLK_400MHZ		(400 * MHz)
+#define CLK_75MHZ		(75 * MHz)
+#define CLK_575MHZ		(575 * MHz)
 
 /* CPU PLL*/
 #define L_VAL_1363P2MHz		0x47
+
+/* DISP PLL */
+#define L_VAL_1725MHz		0x59
+#define L_VAL_600MHz		0x1F
+#define DISP_PLL0_ALPHA_VAL	0xD800
+#define DISP_PLL1_ALPHA_VAL	0x4000
 
 #define PCIE_PHY_RCHNG_FREQ CLK_100MHZ
 #define USB3_MASTER_CLK_MIN_FREQ_HZ CLK_200MHZ
@@ -57,6 +66,21 @@ enum clk_pll_src {
 	SRC_GCC_DISP_GPLL0_CLK = 4,
 	SRC_GPLL10_MAIN_384MHZ = 5,
 	SRC_GPLL0_EVEN_300MHZ = 6,
+};
+
+enum disp_cc_mdss_ahb_clk_src {
+	SRC_XO_19_2MHZ_AHB = 0,
+	SRC_DISP_CC_PLL1_MAIN_AHB = 4,
+	SRC_DISP_CC_PLL1_EVEN_AHB = 6,
+	SRC_CORE_BI_PLL_TEST_SE_AHB = 7,
+};
+
+enum disp_cc_mdss_mdp_clk_src {
+	SRC_XO_19_2MHZ_MDP = 0,
+	SRC_DISP_CC_PLL0_MAIN_MDP = 1,
+	SRC_DISP_CC_PLL1_MAIN_MDP = 4,
+	SRC_DISP_CC_PLL1_EVEN_MDP = 6,
+	SRC_CORE_BI_PLL_TEST_SE_MDP = 7,
 };
 
 enum apcs_branch_en_vote {
@@ -156,6 +180,72 @@ struct x1p42100_ncc0_clock {
 	u32 pll0_test_ctl_u1;
 	u32 pll0_opmode;
 };
+
+struct x1p42100_disp_pll_clock {
+	u32 pll_mode;
+	u32 pll_opmode;
+	u32 pll_state;
+	u32 pll_status;
+	u32 pll_l;
+	u32 pll_alpha;
+	u32 pll_user_ctl;
+	u32 pll_user_ctl_u;
+};
+
+struct x1p42100_disp_cc {
+	uint8_t _res0[0x00C];
+	uint32_t mdss_mdp_cbcr;
+	uint8_t _res1[0x014];
+	uint32_t mdss_vsync_cbcr;
+	uint8_t _res2[0x06C];
+	uint32_t mdss_dptx3_pixel0_cbcr;
+	uint32_t mdss_dptx3_link_cbcr;
+	uint32_t mdss_dptx3_link_intf_cbcr;
+	uint32_t mdss_dptx3_aux_cbcr;
+	uint8_t _res3[0x004];
+	uint32_t mdss_ahb_cbcr;
+	uint8_t _res4[0x030];
+	struct clock_rcg mdss_mdp_rcg;
+	uint8_t _res5[0x010];
+	struct clock_rcg mdss_vsync_rcg;
+	uint8_t _res6[0x1A4];
+	struct clock_rcg mdss_dptx3_pixel0_rcg;
+	uint8_t _res7[0x010];
+	struct clock_rcg mdss_dptx3_link_rcg;
+	uint8_t _res8[0x014];
+	struct clock_rcg mdss_dptx3_aux_rcg;
+	uint8_t _res9[0x010];
+	struct clock_rcg mdss_ahb_rcg;
+	uint8_t  _res10[0x0D0C];
+	uint32_t mdss_core_gdscr;
+	uint8_t  _res11[0x3004];
+	uint32_t mdss_rscc_vsync_cbcr;
+	uint32_t mdss_rscc_ahb_cbcr;
+	uint8_t _res12[0x202C];
+	struct clock_rcg xo_rcg;
+	uint8_t _res13[0x010];
+	uint32_t xo_cbcr;
+};
+
+/* Offset checks (relative to DISP_CC_BASE) */
+check_member(x1p42100_disp_cc, mdss_mdp_cbcr,		0x00000C);
+check_member(x1p42100_disp_cc, mdss_vsync_cbcr,		0x000024);
+check_member(x1p42100_disp_cc, mdss_dptx3_pixel0_cbcr,	0x000094);
+check_member(x1p42100_disp_cc, mdss_dptx3_link_cbcr,	0x000098);
+check_member(x1p42100_disp_cc, mdss_dptx3_link_intf_cbcr,	0x00009C);
+check_member(x1p42100_disp_cc, mdss_dptx3_aux_cbcr,	0x0000A0);
+check_member(x1p42100_disp_cc, mdss_ahb_cbcr,		0x0000A8);
+check_member(x1p42100_disp_cc, mdss_mdp_rcg,		0x0000DC);
+check_member(x1p42100_disp_cc, mdss_vsync_rcg,		0x0000F4);
+check_member(x1p42100_disp_cc, mdss_dptx3_pixel0_rcg,	0x0002A0);
+check_member(x1p42100_disp_cc, mdss_dptx3_link_rcg,	0x0002B8);
+check_member(x1p42100_disp_cc, mdss_dptx3_aux_rcg,	0x0002D4);
+check_member(x1p42100_disp_cc, mdss_ahb_rcg,		0x0002EC);
+check_member(x1p42100_disp_cc, mdss_core_gdscr,	0x0001000);
+check_member(x1p42100_disp_cc, mdss_rscc_vsync_cbcr,	0x0004008);
+check_member(x1p42100_disp_cc, mdss_rscc_ahb_cbcr,	0x000400C);
+check_member(x1p42100_disp_cc, xo_rcg,			0x000603C);
+check_member(x1p42100_disp_cc, xo_cbcr,		0x0006054);
 
 struct x1p42100_pcie_noc {
 	u32 anoc_pcie_at_cbcr;
@@ -278,119 +368,125 @@ struct x1p42100_gcc {
 	u32 qup_wrap2_core_2x_cbcr;
 	u8 _res19[0x232c4 - 0x232bc];
 	struct clock_rcg qup_wrap2_core_2x;
-	u8 _res20[0x2a000 - 0x232cc];
+	u8 _res20[0x27004 - 0x232cc];
+	u32 gcc_disp_ahb_cbcr;
+	u8 _res21[0x2700c - 0x27008];
+	u32 gcc_disp_hf_axi_cbcr;
+	u8 _res22[0x27018 - 0x27010];
+	u32 gcc_disp_xo_cbcr;
+	u8 _res23[0x2a000 - 0x2701c];
 	u32 gcc_usb3_phy_sec_bcr;
 	u32 gcc_usb3phy_phy_sec_bcr;
-	u8 _res21[0x2a010 - 0x2a008];
+	u8 _res24[0x2a010 - 0x2a008];
 	u32 gcc_usb4_1_dp0_phy_sec_bcr;
-	u8 _res22[0x2d014 - 0x2a014];
+	u8 _res25[0x2d014 - 0x2a014];
 	u32 gcc_sys_noc_usb_axi_cbcr;
-	u8 _res23[0x2d024 - 0x2d018];
+	u8 _res26[0x2d024 - 0x2d018];
 	u32 gcc_cfg_noc_usb_anoc_ahb_cbcr;
 	u32 gcc_cfg_noc_usb_anoc_north_ahb_cbcr;
 	u32 gcc_cfg_noc_usb_anoc_south_ahb_cbcr;
-	u8 _res24[0x2d034 - 0x2d030];
+	u8 _res27[0x2d034 - 0x2d030];
 	u32 gcc_aggre_usb_noc_axi_cbcr;
-	u8 _res25[0x2d174 - 0x2d038];
+	u8 _res28[0x2d174 - 0x2d038];
 	u32 gcc_aggre_noc_usb_south_axi_cbcr;
-	u8 _res26[0x2d17c - 0x2d178];
+	u8 _res29[0x2d17c - 0x2d178];
 	u32 gcc_aggre_noc_usb_north_axi_cbcr;
-	u8 _res27[0x31000 - 0x2d180];
+	u8 _res30[0x31000 - 0x2d180];
 	struct x1p42100_pcie pcie_6a;
-	u8  _res28[0x39000 - 0x3108c];
+	u8  _res31[0x39000 - 0x3108c];
 	u32 gcc_usb30_prim_bcr;
 	u32 gcc_usb30_prim_gdscr;
-	u8  _res29[0x39018 - 0x39008];
+	u8  _res32[0x39018 - 0x39008];
 	u32 gcc_usb30_prim_master_cbcr;
-	u8  _res30[0x39024 - 0x3901c];
+	u8  _res33[0x39024 - 0x3901c];
 	u32 gcc_usb30_prim_sleep_cbcr;
 	u32 gcc_usb30_prim_mock_utmi_cbcr;
 	struct clock_rcg usb30_prim_master_rcg;
-	u8  _res31[0x39060 - 0x39034];
+	u8  _res34[0x39060 - 0x39034];
 	u32 gcc_usb3_prim_phy_aux_cbcr;
 	u32 gcc_usb3_prim_phy_com_aux_cbcr;
 	u32 gcc_usb3_prim_phy_pipe_cbcr;
 	u32 gcc_usb3_prim_phy_pipe_muxr;
 	u32 gcc_usb4_mode_prim_phy_pipe_muxr;
-	u8  _res32[0x3908c - 0x39074];
+	u8  _res35[0x3908c - 0x39074];
 	u32 gcc_cfg_noc_usb3_prim_axi_cbcr;
 	u32 gcc_aggre_usb3_prim_axi_cbcr;
-	u8  _res33[0x42004 - 0x39094];
+	u8  _res36[0x42004 - 0x39094];
 	struct qupv3_clock qup_wrap0_s[8];
-	u8 _res34[0x4b000 - 0x429c4];
+	u8 _res37[0x4b000 - 0x429c4];
 	u32 qspi_bcr;
 	u32 qspi_cnoc_ahb_cbcr;
 	u32 qspi_core_cbcr;
 	struct clock_rcg qspi_core;
-	u8 _res35[0x50000 - 0x4b014];
+	u8 _res38[0x50000 - 0x4b014];
 	u32 gcc_usb3_phy_prim_bcr;
 	u32 gcc_usb3phy_phy_prim_bcr;
-	u8 _res36[0x50010 - 0x50008];
+	u8 _res39[0x50010 - 0x50008];
 	u32 gcc_usb4_0_dp0_phy_prim_bcr;
-	u8 _res37[0x52000 - 0x50014];
+	u8 _res40[0x52000 - 0x50014];
 	u32 apcs_clk_br_en;
-	u8 _res38[0x52008 - 0x52004];
+	u8 _res41[0x52008 - 0x52004];
 	u32 apcs_clk_br_en1;
-	u8 _res39[0x52010 - 0x5200c];
+	u8 _res42[0x52010 - 0x5200c];
 	u32 apcs_clk_br_en2;
-	u8 _res40[0x52018 - 0x52014];
+	u8 _res43[0x52018 - 0x52014];
 	u32 apcs_clk_br_en3;
-	u8 _res41[0x52020 - 0x5201c];
+	u8 _res44[0x52020 - 0x5201c];
 	u32 apcs_clk_br_en4;
-	u8 _res42[0x52028 - 0x52024];
+	u8 _res45[0x52028 - 0x52024];
 	u32 apcs_clk_br_en5;
-	u8 _res43[0x52030 - 0x5202c];
+	u8 _res46[0x52030 - 0x5202c];
 	u32 apcs_pll_br_en;
-	u8 _res44[0x54000 - 0x52034];
+	u8 _res47[0x54000 - 0x52034];
 	u32 usb3_uniphy_mp1_bcr;
 	u32 usb3uniphy_phy_mp1_bcr;
 	u32 gcc_usb3_mp_ss1_phy_bcr;
 	u32 gcc_usb3_mp_ss1_phy_gdscr;
-	u8 _res45[0x8e000 - 0x54010];
+	u8 _res48[0x8e000 - 0x54010];
 	u32 pcie_6_phy_gdscr;
-	u8 _res46[0xa1000 - 0x8e004];
+	u8 _res49[0xa1000 - 0x8e004];
 	u32 gcc_usb30_sec_bcr;
 	u32 gcc_usb30_sec_gdscr;
-	u8 _res47[0xa1018 - 0xa1008];
+	u8 _res50[0xa1018 - 0xa1008];
 	u32 gcc_usb30_sec_master_cbcr;
-	u8 _res48[0xa1024 - 0xa101c];
+	u8 _res51[0xa1024 - 0xa101c];
 	u32 gcc_usb30_sec_sleep_cbcr;
 	u32 gcc_usb30_sec_mock_utmi_cbcr;
 	struct clock_rcg usb30_sec_master_rcg;
-	u8 _res49[0xa1060 - 0xa1034];
+	u8 _res52[0xa1060 - 0xa1034];
 	u32 gcc_usb3_sec_phy_aux_cbcr;
 	u32 gcc_usb3_sec_phy_com_aux_cbcr;
 	u32 gcc_usb3_sec_phy_pipe_cbcr;
 	u32 gcc_usb3_sec_phy_pipe_muxr;
-	u8 _res50[0xa108c - 0xa1070];
+	u8 _res53[0xa108c - 0xa1070];
 	u32 gcc_cfg_noc_usb3_sec_axi_cbcr;
 	u32 gcc_aggre_usb3_sec_axi_cbcr;
-	u8 _res51[0xa2000 - 0xa1094];
+	u8 _res54[0xa2000 - 0xa1094];
 	u32 gcc_usb30_tert_bcr;
 	u32 gcc_usb30_tert_gdscr;
-	u8 _res52[0xa2018 - 0xa2008];
+	u8 _res55[0xa2018 - 0xa2008];
 	u32 gcc_usb30_tert_master_cbcr;
-	u8 _res53[0xa2024 - 0xa201c];
+	u8 _res56[0xa2024 - 0xa201c];
 	u32 gcc_usb30_tert_sleep_cbcr;
 	u32 gcc_usb30_tert_mock_utmi_cbcr;
-	u8 _res54[0xa2034 - 0xa202c];
+	u8 _res57[0xa2034 - 0xa202c];
 	u32 gcc_usb30_tert_master_m;
 	u32 gcc_usb30_tert_master_n;
 	u32 gcc_usb30_tert_master_d;
-	u8 _res55[0xa2060 - 0xa2040];
+	u8 _res58[0xa2060 - 0xa2040];
 	u32 gcc_usb3_tert_phy_aux_cbcr;
 	u32 gcc_usb3_tert_phy_com_aux_cbcr;
 	u32 gcc_usb3_tert_phy_pipe_cbcr;
 	u32 gcc_usb3_tert_phy_pipe_muxr;
-	u8 _res56[0xa208c - 0xa2070];
+	u8 _res59[0xa208c - 0xa2070];
 	u32 gcc_cfg_noc_usb3_tert_axi_cbcr;
 	u32 gcc_aggre_usb3_tert_axi_cbcr;
-	u8 _res57[0xa3000 - 0xa2094];
+	u8 _res60[0xa3000 - 0xa2094];
 	u32 gcc_usb3_phy_tert_bcr;
 	u32 gcc_usb3phy_phy_tert_bcr;
-	u8 _res58[0xa3010 - 0xa3008];
+	u8 _res61[0xa3010 - 0xa3008];
 	u32 gcc_usb4_2_dp0_phy_tert_bcr;
-	u8 _res59[0xac01c - 0xa3014];
+	u8 _res62[0xac01c - 0xa3014];
 	u32 pcie_6a_phy_bcr;
 };
 
@@ -430,6 +526,9 @@ check_member(x1p42100_gcc, qup_wrap1_core_2x, 0x23174);
 check_member(x1p42100_gcc, qup_wrap2_m_ahb_cbcr, 0x232a0);
 check_member(x1p42100_gcc, qup_wrap2_core_cdivr, 0x232b4);
 check_member(x1p42100_gcc, qup_wrap2_core_2x, 0x232c4);
+check_member(x1p42100_gcc, gcc_disp_ahb_cbcr, 0x27004);
+check_member(x1p42100_gcc, gcc_disp_hf_axi_cbcr, 0x2700c);
+check_member(x1p42100_gcc, gcc_disp_xo_cbcr, 0x27018);
 check_member(x1p42100_gcc, gcc_sys_noc_usb_axi_cbcr, 0x2d014);
 check_member(x1p42100_gcc, gcc_cfg_noc_usb_anoc_north_ahb_cbcr, 0x2d028);
 check_member(x1p42100_gcc, gcc_aggre_usb_noc_axi_cbcr, 0x2d034);
@@ -545,6 +644,12 @@ enum clk_usb_gdsc {
 	USB30_SEC_GDSC,
 	MAX_USB_GDSC,
 };
+
+enum clk_disp_gdsc {
+	DISP_CC_CORE_GDSC,
+	MAX_DISP_GDSC,
+};
+
 enum clk_usb {
 	USB30_MP_MASTER_CBCR,
 	USB30_MP_SLEEP_CBCR,
@@ -562,6 +667,23 @@ enum clk_usb {
 	AGGRE_NOC_USB_SOUTH_AXI_CBCR,
 	AGGRE_NOC_USB_NORTH_AXI_CBCR,
 	USB_CLK_COUNT,
+};
+
+enum clk_mdss {
+	GCC_DISP_AHB_CBCR,
+	GCC_DISP_XO_CBCR,
+	GCC_DISP_HF_AXI_CBCR,
+	DISP_CC_MDSS_AHB_CBCR,
+	DISP_CC_MDSS_MDP_CBCR,
+	DISP_CC_MDSS_VSYNC_CBCR,
+	DISP_CC_MDSS_RSCC_AHB_CBCR,
+	DISP_CC_MDSS_RSCC_VSYNC_CBCR,
+	DISP_CC_XO_CBCR,
+	DISP_CC_MDSS_DPTX3_PIXEL0_CBCR,
+	DISP_CC_MDSS_DPTX3_LINK_CBCR,
+	DISP_CC_MDSS_DPTX3_AUX_CBCR,
+	DISP_CC_MDSS_DPTX3_LINK_INTF_CBCR,
+	MDSS_CLK_COUNT,
 };
 
 enum clk_usb_prim {
@@ -642,6 +764,9 @@ void usb_sec_clock_reset(enum clk_usb_sec clk_type, bool assert);
 static struct aoss *const aoss = (void *)AOSS_CC_BASE;
 static struct x1p42100_gcc *const gcc = (void *)GCC_BASE;
 static struct x1p42100_ncc0_clock *const apss_ncc0 = (void *)NCC0_BASE;
+static struct x1p42100_disp_pll_clock *const apss_disp_pll0 = (void *)DISP_PLL0_BASE;
+static struct x1p42100_disp_pll_clock *const apss_disp_pll1 = (void *)DISP_PLL1_BASE;
+static struct x1p42100_disp_cc *const disp_cc = (void *)DISP_CC_BASE;
 static struct x1p42100_qupv3_wrap *const qup_wrap0_clk = (void *)GCC_QUPV3_WRAP0_BASE;
 static struct x1p42100_qupv3_wrap *const qup_wrap1_clk = (void *)GCC_QUPV3_WRAP1_BASE;
 static struct x1p42100_qupv3_wrap *const qup_wrap2_clk = (void *)GCC_QUPV3_WRAP2_BASE;

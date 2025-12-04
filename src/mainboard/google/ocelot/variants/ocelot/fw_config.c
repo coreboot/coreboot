@@ -190,14 +190,17 @@ static const struct pad_config wwan_disable_pads[] = {
 };
 
 /* Gen4 NVME: at the top M.2 slot */
-static const struct pad_config pre_mem_gen4_ssd_pwr_pads[] = {
+static const struct pad_config pre_mem_gen4_ssd_pwr_seq1_pads[] = {
 	/* GPP_H18:     GEN4_SSD_PWREN */
 	PAD_CFG_GPO(GPP_H18, 0, PLTRST),
 };
 
-static const struct pad_config gen4_ssd_pads[] = {
+static const struct pad_config pre_mem_gen4_ssd_pwr_seq2_pads[] = {
 	/* GPP_H18:     GEN4_SSD_PWREN */
 	PAD_CFG_GPO(GPP_H18, 1, PLTRST),
+};
+
+static const struct pad_config gen4_ssd_pads[] = {
 	/* GPP_A08:     M2_GEN4_SSD_RESET_N */
 	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
 };
@@ -471,9 +474,9 @@ void fw_config_configure_pre_mem_gpio(void)
 		GPIO_CONFIGURE_PADS(pre_mem_wwan_pwr_seq1_pads);
 
 	if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME_GEN4))) {
-		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_pads);
+		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_seq1_pads);
 	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UNKNOWN))) {
-		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_pads);
+		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_seq1_pads);
 	}
 
 	/*
@@ -491,6 +494,13 @@ void fw_config_configure_pre_mem_gpio(void)
 
 	if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT)))
 		GPIO_CONFIGURE_PADS(pre_mem_fp_enable_pads);
+
+	if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME_GEN4))) {
+		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_seq2_pads);
+	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UNKNOWN))) {
+		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_seq2_pads);
+	}
+
 
 }
 

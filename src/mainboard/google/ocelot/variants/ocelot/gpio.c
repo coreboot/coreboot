@@ -288,8 +288,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H15, NONE),
 	/* GPP_H17:     MIC MUTE LED */
 	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
-	/* GPP_H18:     GEN4_SSD_PWREN */
-	PAD_CFG_GPO(GPP_H18, 1, DEEP),
 	/* GPP_H19:     I3C0_SDA_HDR */
 	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF2),
 	/* GPP_H20:     I3C0_SCL_HDR */

@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-if BOARD_LENOVO_M920Q
+if BOARD_LENOVO_M920Q || BOARD_LENOVO_M720Q
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select AZALIA_USE_LEGACY_VERB_TABLE
-	select BOARD_ROMSIZE_KB_24576
+	select BOARD_ROMSIZE_KB_16384 if BOARD_LENOVO_M720Q
+	select BOARD_ROMSIZE_KB_24576 if BOARD_LENOVO_M920Q
 	select DRIVERS_UART_8250IO
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
@@ -22,10 +23,11 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_NUVOTON_NCT6687D
 
 config MAINBOARD_DIR
-	default "lenovo/m920q"
+	default "lenovo/m720q_m920q"
 
 config MAINBOARD_PART_NUMBER
-	default "ThinkCentre M920 Tiny"
+	default "ThinkCentre M720 Tiny" if BOARD_LENOVO_M720Q
+	default "ThinkCentre M920 Tiny" if BOARD_LENOVO_M920Q
 
 config CBFS_SIZE
 	default 0x900000

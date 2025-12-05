@@ -255,7 +255,6 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_AMF_WLAN, .inst = 2, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_AMF_WLAN, .inst = 3, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_AMF_MFD, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_TA_IKEK, .level = PSP_BOTH | PSP_LVL2_AB, .skip_hashing = true },
 	{ .type = AMD_FW_MPCCX, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_MPCCX, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_LSDMA, .level = PSP_LVL2 | PSP_LVL2_AB },

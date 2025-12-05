@@ -215,6 +215,10 @@ chip soc/intel/pantherlake
 		end # CNVi
 
 		device ref cnvi_bluetooth on
+			chip soc/intel/common/block/cnvi
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
 		end
 
 		device ref i2c0 on

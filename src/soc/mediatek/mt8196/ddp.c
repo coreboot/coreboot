@@ -6,6 +6,7 @@
 #include <edid.h>
 #include <soc/addressmap.h>
 #include <soc/ddp.h>
+#include <soc/display.h>
 
 #define SIZE(w, h) ((u32)(h) << 16 | (w))
 #define DUAL_PIPE(path) ((path) == DISP_PATH_DUAL_MIPI)
@@ -429,7 +430,7 @@ void mtk_ddp_init(void)
 }
 
 void mtk_ddp_soc_mode_set(u32 fmt, u32 bpp, u32 width, u32 height, u32 vrefresh,
-			  enum disp_path_sel path)
+			  enum disp_path_sel path, struct dsc_config *dsc_config)
 {
 	if (width > 0x1FFF || height > 0x1FFF)
 		printk(BIOS_WARNING, "%s: w/h: %d/%d exceed hw limit %u\n", __func__,

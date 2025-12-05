@@ -45,6 +45,10 @@ enum {
 	MIPI_DSI_MODE_LINE_END = BIT(12),
 	/* mipi is in CPHY mode */
 	MIPI_DSI_MODE_CPHY = BIT(13),
+	/* mipi is DSI Dual Channel mode */
+	MIPI_DSI_DUAL_CHANNEL = BIT(14),
+	/* mipi is DSC compression mode */
+	MIPI_DSI_DSC_MODE = BIT(15),
 };
 
 static struct dsi_regs *const dsi0 = (void *)DSI0_BASE;

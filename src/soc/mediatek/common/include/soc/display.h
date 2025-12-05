@@ -33,9 +33,10 @@ void mtk_display_disable_secure_mode(void);
 int mtk_display_init(void);
 
 void mtk_ddp_init(void);
-void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path);
 void mtk_ddp_soc_mode_set(u32 fmt, u32 bpp, u32 width, u32 height, u32 vrefresh,
-			  enum disp_path_sel path);
+			  enum disp_path_sel path, struct dsc_config *dsc_config);
+void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path,
+		      struct dsc_config *dsc_config);
 void mtk_ddp_ovlsys_start(uintptr_t fb_addr);
 
 #endif

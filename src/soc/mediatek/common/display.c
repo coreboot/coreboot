@@ -99,6 +99,7 @@ int mtk_display_init(void)
 {
 	struct edid edid = {0};
 	struct mtk_dp mtk_edp = {0};
+	struct dsc_config *dsc_config_var = NULL;
 	struct fb_info *info;
 	const char *name;
 	struct panel_description *panel = get_active_panel();
@@ -125,6 +126,7 @@ int mtk_display_init(void)
 	process_panel_quirks(&mtk_edp, panel);
 
 	if (panel->disp_path == DISP_PATH_EDP) {
+		/* Currently eDP does not support DSC */
 		if (mtk_edp_init(&mtk_edp, &edid) < 0) {
 			printk(BIOS_ERR, "%s: Failed to initialize eDP\n", __func__);
 			return -1;
@@ -142,10 +144,22 @@ int mtk_display_init(void)
 			edid = mipi_data->edid;
 		}
 
+		dsc_config_var = &mipi_data->dsc_config;
 		u32 mipi_dsi_flags = (MIPI_DSI_MODE_VIDEO |
 				      MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
 				      MIPI_DSI_MODE_LPM |
 				      MIPI_DSI_MODE_EOT_PACKET);
+
+		if (panel->disp_path == DISP_PATH_DUAL_MIPI) {
+			mipi_dsi_flags |= MIPI_DSI_DUAL_CHANNEL;
+			printk(BIOS_INFO, "%s: DSI dual mode\n", __func__);
+		}
+
+		if (dsc_config_var->dsc_version_major) {
+			mipi_dsi_flags |= MIPI_DSI_DSC_MODE;
+			printk(BIOS_INFO, "%s: DSC main version: %d\n", __func__,
+			       dsc_config_var->dsc_version_major);
+		}
 
 		if (mipi_data->flags & PANEL_FLAG_CPHY) {
 			mipi_dsi_flags |= MIPI_DSI_MODE_CPHY;
@@ -175,7 +189,7 @@ int mtk_display_init(void)
 
 	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 
-	mtk_ddp_mode_set(&edid, panel->disp_path);
+	mtk_ddp_mode_set(&edid, panel->disp_path, dsc_config_var);
 
 	if (panel->disp_path == DISP_PATH_EDP) {
 		if (mtk_edp_enable(&mtk_edp) < 0) {
@@ -200,7 +214,8 @@ int mtk_display_init(void)
 	return 0;
 }
 
-void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path)
+void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path,
+		      struct dsc_config *dsc_config)
 {
 	u32 fmt = OVL_INFMT_RGBA8888;
 	u32 bpp = edid->framebuffer_bits_per_pixel / 8;
@@ -222,5 +237,5 @@ void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path)
 		       vrefresh);
 	}
 
-	mtk_ddp_soc_mode_set(fmt, bpp, width, height, vrefresh, path);
+	mtk_ddp_soc_mode_set(fmt, bpp, width, height, vrefresh, path, dsc_config);
 }

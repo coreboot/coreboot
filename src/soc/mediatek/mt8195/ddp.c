@@ -5,6 +5,7 @@
 #include <edid.h>
 #include <soc/addressmap.h>
 #include <soc/ddp.h>
+#include <soc/display.h>
 
 #define MERGE_MODE	6
 #define MERGE_SWAP	0
@@ -151,7 +152,7 @@ void mtk_ddp_init(void)
 }
 
 void mtk_ddp_soc_mode_set(u32 fmt, u32 bpp, u32 width, u32 height, u32 vrefresh,
-			  enum disp_path_sel path)
+			  enum disp_path_sel path, struct dsc_config *dsc_config)
 {
 	main_disp_path_setup(width, height, vrefresh);
 	rdma_start();

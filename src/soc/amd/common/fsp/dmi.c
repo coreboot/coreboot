@@ -84,7 +84,10 @@ static void transfer_memory_info(const TYPE17_DMI_INFO *dmi17,
 
 	dimm->bank_locator = 0;
 
-	dimm->vdd_voltage = ddr_get_voltage(dmi17->MemoryType);
+	dimm->vdd_max_voltage = dmi17->MaximumVoltage;
+	dimm->vdd_min_voltage = dmi17->MinimumVoltage;
+	dimm->vdd_voltage = dmi17->ConfiguredVoltage ? dmi17->ConfiguredVoltage :
+			    ddr_get_voltage(dmi17->MemoryType);
 
 	strncpy((char *)dimm->module_part_number, dmi17->PartNumber,
 		sizeof(dimm->module_part_number) - 1);

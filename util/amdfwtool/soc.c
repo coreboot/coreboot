@@ -148,7 +148,7 @@ static const struct platform_info platform_table[] = {
 		.is_multi_level = true,
 		.has_apob_nv_quirk = false,
 		.is_initial_alignment_required = true,
-		.is_second_gen = true,
+		.is_second_gen = false, /* Client SoC only flag */
 		.has_dir_header_v1 = false,
 		.psp_id = 0xBC0C0111,
 		.psb_reserved_size = 0x200,
@@ -173,6 +173,17 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = true,
 		.has_dir_header_v1 = true,
 		.psp_id = 0xbc0e0900,
+		.psb_reserved_size = 0x200,
+	},
+	[PLATFORM_TURIN] = {
+		.name = "Turin",
+		.needs_ish = false,
+		.is_multi_level = true,
+		.has_apob_nv_quirk = false,
+		.is_initial_alignment_required = false,
+		.is_second_gen = false, /* Client SoC only flag */
+		.has_dir_header_v1 = true,
+		.psp_id = 0xbc0e1100,
 		.psb_reserved_size = 0x200,
 	},
 };

@@ -714,6 +714,7 @@ static void fill_psp_directory_to_efs(embedded_firmware *amd_romsig, void *pspdi
 	case PLATFORM_GENOA:
 	case PLATFORM_KRACKAN2E:
 	case PLATFORM_STRIXHALO:
+	case PLATFORM_TURIN:
 	default:
 		/* for combo, it is also combo_psp_directory */
 		amd_romsig->new_psp_directory =
@@ -1679,7 +1680,6 @@ static int integrate_efs_table(context *ctx, amd_cb_config *cb_config)
 	case PLATFORM_MENDOCINO:
 	case PLATFORM_PHOENIX:
 	case PLATFORM_STRIX:
-	case PLATFORM_GENOA:
 	case PLATFORM_KRACKAN2E:
 	case PLATFORM_STRIXHALO:
 		amd_romsig->spi_readmode_f17_mod_30_3f = cb_config->efs_spi_readmode;
@@ -1696,6 +1696,40 @@ static int integrate_efs_table(context *ctx, amd_cb_config *cb_config)
 			break;
 		default:
 			fprintf(stderr, "Error: EFS Micron flag must be correctly set.\n\n");
+			return 1;
+		}
+		break;
+	case PLATFORM_GENOA:
+	case PLATFORM_TURIN:
+		/* For some reason Genoa and Turin uses the older fields */
+		amd_romsig->spi_readmode_f15_mod_60_6f = cb_config->efs_spi_readmode;
+		amd_romsig->fast_speed_new_f15_mod_60_6f = cb_config->efs_spi_speed;
+		amd_romsig->spi_readmode_f17_mod_00_2f = cb_config->efs_spi_readmode;
+		switch (cb_config->efs_spi_micron_flag) {
+		case 0:
+			amd_romsig->qpr_dummy_cycle_f17_mod_00_2f = 0xff;
+			break;
+		case 1:
+			amd_romsig->qpr_dummy_cycle_f17_mod_00_2f = 0xa;
+			break;
+		default:
+			fprintf(stderr, "Error: EFS Micron flag must be correctly set.\n\n");
+			return 1;
+		}
+		amd_romsig->espi0_config0 = cb_config->efs_espi0_config0;
+		amd_romsig->espi1_config0 = cb_config->efs_espi1_config0;
+		amd_romsig->espi0_config1 = cb_config->efs_espi0_config1;
+		amd_romsig->espi1_config1 = cb_config->efs_espi1_config1;
+		/* Fill in the EFS multi gen field properly for PSP to match EFS */
+		switch (cb_config->soc_id) {
+		case PLATFORM_GENOA:
+			amd_romsig->multi_gen_efs = 0xfffffffe;
+			break;
+		case PLATFORM_TURIN:
+			amd_romsig->multi_gen_efs = 0xffffffe3;
+			break;
+		default:
+			fprintf(stderr, "Error: Unsupported multi gen EFS platform.\n\n");
 			return 1;
 		}
 		break;

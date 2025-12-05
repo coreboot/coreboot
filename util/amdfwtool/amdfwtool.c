@@ -1699,7 +1699,9 @@ int main(int argc, char **argv)
 	int retval = 0;
 	context ctx = { 0 };
 	amd_cb_config cb_config = {
-		.efs_spi_readmode = 0xff, .efs_spi_speed = 0xff, .efs_spi_micron_flag = 0xff
+		.efs_spi_readmode = 0xff, .efs_spi_speed = 0xff, .efs_spi_micron_flag = 0xff,
+		.efs_espi0_config0 = 0xff, .efs_espi1_config0 = 0xff,
+		.efs_espi0_config1 = 0xff, .efs_espi1_config1 = 0xff
 	};
 
 	retval = amdfwtool_getopt(argc, argv, &cb_config);

@@ -71,6 +71,10 @@ enum {
 	LONGOPT_RPMC_NVRAM_SIZE	= 263,
 	LONGOPT_AB_NVRAM_BASE   = 264,
 	LONGOPT_AB_NVRAM_SIZE   = 265,
+	LONGOPT_ESPI0_CONFIG0	= 266,
+	LONGOPT_ESPI1_CONFIG0	= 267,
+	LONGOPT_ESPI0_CONFIG1	= 268,
+	LONGOPT_ESPI1_CONFIG1	= 269
 };
 
 static const char optstring[] = {AMDFW_OPT_CONFIG, ':',
@@ -122,6 +126,10 @@ static struct option long_options[] = {
 	{"body-location",     required_argument, 0, AMDFW_OPT_BODY_LOCATION },
 	{"recovery-a-location", required_argument, 0, AMDFW_OPT_RECOVERY_A_LOCATION },
 	{"recovery-b-location", required_argument, 0, AMDFW_OPT_RECOVERY_B_LOCATION },
+	{"espi0-config0",    required_argument, 0, LONGOPT_ESPI0_CONFIG0 },
+	{"espi0-config1",    required_argument, 0, LONGOPT_ESPI0_CONFIG1 },
+	{"espi1-config1",    required_argument, 0, LONGOPT_ESPI1_CONFIG1 },
+	{"espi1-config0",    required_argument, 0, LONGOPT_ESPI1_CONFIG0 },
 	/* other */
 	{"output",           required_argument, 0, AMDFW_OPT_OUTPUT },
 	{"flashsize",        required_argument, 0, AMDFW_OPT_FLASHSIZE },
@@ -174,6 +182,10 @@ static void usage(void)
 	printf("                                When set generates a separate file with\n");
 	printf("                                the .rb suffix, containing the PSP L2B and\n");
 	printf("                                BHD L2B tables.\n");
+	printf("--espi0-config0                 eSPI0 bus configuration 1st byte\n");
+	printf("--espi1-config0                 eSPI1 bus configuration 1st byte\n");
+	printf("--espi0-config1                 eSPI0 bus configuration 2nd byte\n");
+	printf("--espi1-config1                 eSPI1 bus configuration 2nd byte\n");
 	printf("\nBIOS options:\n");
 	printf("--instance <number>             Sets instance field for the next BIOS\n");
 	printf("                                firmware\n");
@@ -499,6 +511,22 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 			break;
 		case LONGOPT_SPI_MICRON_FLAG:
 			cb_config->efs_spi_micron_flag = strtoull(optarg, NULL, 16);
+			sub = instance = 0;
+			break;
+		case LONGOPT_ESPI0_CONFIG0:
+			cb_config->efs_espi0_config0 = strtoull(optarg, NULL, 16);
+			sub = instance = 0;
+			break;
+		case LONGOPT_ESPI1_CONFIG0:
+			cb_config->efs_espi1_config0 = strtoull(optarg, NULL, 16);
+			sub = instance = 0;
+			break;
+		case LONGOPT_ESPI0_CONFIG1:
+			cb_config->efs_espi0_config1 = strtoull(optarg, NULL, 16);
+			sub = instance = 0;
+			break;
+		case LONGOPT_ESPI1_CONFIG1:
+			cb_config->efs_espi1_config1 = strtoull(optarg, NULL, 16);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_OUTPUT:

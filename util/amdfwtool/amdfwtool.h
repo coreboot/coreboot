@@ -462,6 +462,10 @@ typedef struct _amd_cb_config {
 
 	uint8_t efs_spi_readmode, efs_spi_speed, efs_spi_micron_flag;
 	uint32_t body_location, efs_location, ral2_location, rbl2_location;
+	uint8_t efs_espi0_config0;
+	uint8_t efs_espi0_config1;
+	uint8_t efs_espi1_config0;
+	uint8_t efs_espi1_config1;
 	uint64_t signed_start_addr;
 	uint32_t rom_size;
 	char *manifest_file;

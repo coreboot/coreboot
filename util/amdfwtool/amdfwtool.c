@@ -266,7 +266,6 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_GFXIMU_0, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_GFXIMU_1, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_GFXIMU_1, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_GFXIMU_2, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_SRAM_FW_EXT, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_UMSMU, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_S3IMG, .level = PSP_LVL2 | PSP_LVL2_AB },

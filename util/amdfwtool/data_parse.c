@@ -407,10 +407,6 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		fw_type = AMD_FW_GFXIMU_1;
 		instance = 0;
 		subprog = 1;
-	} else if (strcmp(fw_name, "PSP_GFX_IMMU_FILE_2") == 0) {
-		fw_type = AMD_FW_GFXIMU_2;
-		instance = 0;
-		subprog = 0;
 	} else if (strcmp(fw_name, "MINIMSMU_FILE_INS1") == 0) {
 		fw_type = AMD_FW_MINIMSMU;
 		instance = 1;

@@ -542,6 +542,9 @@ enum cb_err spd_add_smbios17(const u8 channel, const u8 slot, const u16 selected
 	if (info->size_mb) {
 		dimm->ddr_type = MEMORY_TYPE_DDR3;
 		dimm->ddr_frequency = selected_freq;
+		dimm->configured_speed_mts = 2 * selected_freq;
+		if (info->tCK > 0)
+			dimm->max_speed_mts = 2 * NS2MHZ_DIV256 / info->tCK;
 		dimm->dimm_size = info->size_mb;
 		dimm->channel_num = channel;
 		dimm->rank_per_dimm = info->ranks;

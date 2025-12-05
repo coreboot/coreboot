@@ -269,7 +269,7 @@ static int amdfw_bios_dir_walk(FILE *fw, uint32_t bios_offset, uint32_t cookie, 
 	size_t num_current_entries = 0;
 	bios_directory_hdr header;
 	uint32_t l2_dir_offset = 0;
-	uint64_t dir_mode = 0;
+	uint64_t dir_mode = AMD_ADDR_PHYSICAL;
 	char indent[MAX_INDENTATION_LEN] = {0};
 
 	if (read_bios_directory(fw, bios_offset, cookie, &header,
@@ -287,7 +287,7 @@ static int amdfw_bios_dir_walk(FILE *fw, uint32_t bios_offset, uint32_t cookie, 
 		uint64_t mode = current_entries[i].address_mode;
 		uint64_t addr = current_entries[i].source;
 
-		if (dir_mode < 2)
+		if (dir_mode < AMD_ADDR_REL_TAB)
 			mode = dir_mode;
 
 		if (type == AMD_BIOS_APOB || type == AMD_BIOS_PSP_SHARED_MEM)
@@ -386,7 +386,7 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 	uint32_t bios_dir_offset = 0;
 	uint32_t ish_dir_offset = 0;
 	ish_directory_table ish_dir;
-	uint64_t dir_mode = 0;
+	uint64_t dir_mode = AMD_ADDR_PHYSICAL;
 	char indent[MAX_INDENTATION_LEN] = {0};
 
 	if (read_psp_directory(fw, psp_offset, cookie, &header,
@@ -404,7 +404,8 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 		uint64_t mode = current_entries[i].address_mode;
 		uint64_t addr = current_entries[i].addr;
 		uint32_t dir_size = 0;
-		if (dir_mode < 2)
+
+		if (dir_mode < AMD_ADDR_REL_TAB)
 			mode = dir_mode;
 
 		if (type == AMD_PSP_FUSE_CHAIN)

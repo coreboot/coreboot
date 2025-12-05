@@ -8,6 +8,7 @@
 
 /* ACPI spec 6.5 table B-2, Display Output Device */
 #define DOD_FW_DETECT	BIT(16)	/* Platform boot firmware can detect the device. */
+#define DOD_NONVGA	BIT(17) /* Non-VGA device whose power is related to the VGA device */
 #define DOD_DID_STD	BIT(31)	/* DID Scheme: Use standard bit-field definitions */
 enum display_type {
 	other	= 0,
@@ -53,6 +54,8 @@ struct drivers_gfx_generic_device_config {
 	/* Physical location of connection point */
 	bool use_pld;
 	struct acpi_pld pld;
+	/* Non-VGA device (e.g. Intel IPU) */
+	bool non_vga_device;
 };
 
 /* Config for an ACPI video device defined in Appendix A of the ACPI spec */
@@ -65,8 +68,8 @@ struct drivers_gfx_generic_config {
 	/* The number of output devices defined */
 	int device_count;
 	/* Config for output devices */
-	/* 1 DDIA + 1 DDIB + max 4 TCP = up to 6 GFX devices */
-	struct drivers_gfx_generic_device_config device[6];
+	/* 1 DDIA + 1 DDIB + max 4 TCP + IPU = up to 7 (6 GFX + 1 non-GFX) devices */
+	struct drivers_gfx_generic_device_config device[7];
 };
 
 #endif /* __DRIVERS_GFX_GENERIC_CHIP_H__ */

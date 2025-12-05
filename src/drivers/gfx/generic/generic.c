@@ -120,7 +120,10 @@ static void gfx_fill_ssdt_generator(const struct device *dev)
 			/* Though not strictly necessary, set the display index and
 			   port attachment to the device index, to ensure uniqueness */
 			config->device[i].addr = (config->device[i].type << 8) | (i << 4) | (i);
-		acpigen_write_dword(DOD_DID_STD | DOD_FW_DETECT | config->device[i].addr);
+		if (config->device[i].non_vga_device)
+			acpigen_write_dword(DOD_DID_STD | DOD_NONVGA | config->device[i].addr);
+		else
+			acpigen_write_dword(DOD_DID_STD | DOD_FW_DETECT | config->device[i].addr);
 	}
 	acpigen_pop_len(); /* End Package. */
 	acpigen_pop_len(); /* End Method. */

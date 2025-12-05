@@ -39,6 +39,10 @@ fw_config
 		option KB_BACKLIGHT_ABSENT	0
 		option KB_BACKLIGHT_PRESENT	1
 	end
+	field AP_OEM_3BIT_FIELD0 56 58
+		option WIFI_SAR_ID0     0
+		option WIFI_SAR_ID1     1
+	end
 end
 
 chip soc/intel/pantherlake

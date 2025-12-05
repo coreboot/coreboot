@@ -71,3 +71,48 @@ config SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN
 	  SMU will lock up at times if the port80h enable bit is cleared. Select
 	  this option to retain the port80 enable bit while clearing other enable
 	  bits in the ESPI Decode register.
+
+config EFS_ESPI0_CONFIG0
+	hex
+	default 0xff
+	help
+	  eSPI0 configuration byte to be programmed by the PSP. This value
+	  should be consumed by amdfwtool if integrated in the SoC Makefile.
+	  Boards should override this value to their needs.
+
+	  Detailed information on the bit field meaning in
+	  PSP BIOS Integration Guide (doc 57299 - server, doc 55758 - client).
+
+config EFS_ESPI1_CONFIG0
+	hex
+	default 0xff
+	help
+	  eSPI1 configuration byte to be programmed by the PSP. This value
+	  should be consumed by amdfwtool if integrated in the SoC Makefile.
+	  Boards should override this value to their needs.
+
+	  Detailed information on the bit field meaning in
+	  PSP BIOS Integration Guide (doc 57299 - server, doc 55758 - client).
+
+
+config EFS_ESPI0_CONFIG1
+	hex
+	default 0xff
+	help
+	  eSPI0 configuration 2nd byte to be programmed by the PSP. This value
+	  should be consumed by amdfwtool if integrated in the SoC Makefile.
+	  Boards should override this value to their needs.
+
+	  Detailed information on the bit field meaning in
+	  PSP BIOS Integration Guide (doc 57299 - server, doc 55758 - client).
+
+config EFS_ESPI1_CONFIG1
+	hex
+	default 0xff
+	help
+	  eSPI1 configuration 2nd byte to be programmed by the PSP. This value
+	  should be consumed by amdfwtool if integrated in the SoC Makefile.
+	  Boards should override this value to their needs.
+
+	  Detailed information on the bit field meaning in
+	  PSP BIOS Integration Guide (doc 57299 - server, doc 55758 - client).

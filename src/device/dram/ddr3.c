@@ -173,20 +173,29 @@ int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_ddr3_raw_data spd)
 
 	/* Module nominal voltage */
 	reg8 = spd[6];
+	dimm->min_voltage = UINT16_MAX;
+	dimm->max_voltage = 0;
+
 	printram("  Supported voltages :");
 	if (reg8 & (1 << 2)) {
 		dimm->flags.operable_1_25V = 1;
 		dimm->voltage = 1250;
+		dimm->max_voltage = MAX(dimm->voltage, dimm->max_voltage);
+		dimm->min_voltage = MIN(dimm->min_voltage, dimm->voltage);
 		printram(" 1.25V");
 	}
 	if (reg8 & (1 << 1)) {
 		dimm->flags.operable_1_35V = 1;
 		dimm->voltage = 1300;
+		dimm->max_voltage = MAX(dimm->voltage, dimm->max_voltage);
+		dimm->min_voltage = MIN(dimm->min_voltage, dimm->voltage);
 		printram(" 1.35V");
 	}
 	if (!(reg8 & (1 << 0))) {
 		dimm->flags.operable_1_50V = 1;
 		dimm->voltage = 1500;
+		dimm->max_voltage = MAX(dimm->voltage, dimm->max_voltage);
+		dimm->min_voltage = MIN(dimm->min_voltage, dimm->voltage);
 		printram(" 1.5V");
 	}
 	printram("\n");
@@ -454,6 +463,8 @@ int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_ddr3_raw_data spd,
 	dimm->voltage = (xmp[0] & 1) * 50;
 	dimm->voltage += ((xmp[0] >> 1) & 0xf) * 100;
 	dimm->voltage += ((xmp[0] >> 5) & 0x3) * 1000;
+	dimm->max_voltage = MAX(dimm->voltage, dimm->max_voltage);
+	dimm->min_voltage = MIN(dimm->min_voltage, dimm->voltage);
 
 	printram("  Requested voltage  : %u mV\n", dimm->voltage);
 
@@ -535,6 +546,9 @@ enum cb_err spd_add_smbios17(const u8 channel, const u8 slot, const u16 selected
 		dimm->channel_num = channel;
 		dimm->rank_per_dimm = info->ranks;
 		dimm->dimm_num = slot;
+		dimm->vdd_voltage = info->voltage;
+		dimm->vdd_min_voltage = info->min_voltage;
+		dimm->vdd_max_voltage = info->max_voltage;
 		memcpy(dimm->module_part_number, info->part_number, 16);
 		dimm->mod_id = info->manufacturer_id;
 		dimm->mod_type = info->dimm_type;
@@ -579,6 +593,8 @@ void dram_print_spd_ddr3(const struct dimm_attr_ddr3_st *dimm)
 	printk(BIOS_INFO, "  Column addr bits  : %u\n", dimm->col_bits);
 	printk(BIOS_INFO, "  Number of ranks   : %u\n", dimm->ranks);
 	printk(BIOS_INFO, "  DIMM Capacity     : %u MB\n", dimm->size_mb);
+	printk(BIOS_INFO, "  Vdd Min           : %u mV\n", dimm->min_voltage);
+	printk(BIOS_INFO, "  Vdd Max           : %u mV\n", dimm->max_voltage);
 
 	/* CAS Latencies Supported */
 	val16 = dimm->cas_supported;

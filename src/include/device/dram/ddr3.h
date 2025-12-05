@@ -138,6 +138,10 @@ struct dimm_attr_ddr3_st {
 	u8 reference_card;
 	/* XMP: Module voltage in mV */
 	u16 voltage;
+	/* Maximum voltage the DIMM supports in mV */
+	u16 max_voltage;
+	/* Minimum voltage the DIMM supports in mV */
+	u16 min_voltage;
 	/* XMP: max DIMMs per channel supported (1-4) */
 	u8 dimms_per_channel;
 	/* Manufacturer ID */

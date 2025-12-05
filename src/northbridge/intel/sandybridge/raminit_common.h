@@ -305,7 +305,7 @@ void iosav_write_memory_test_sequence(ramctr_timing *ctrl, int channel, int slot
 /*
  * WARNING: Do not forget to increase MRC_CACHE_VERSION when the saved data is changed!
  */
-#define MRC_CACHE_VERSION 5
+#define MRC_CACHE_VERSION 6
 
 enum power_down_mode {
 	PDM_NONE        = 0,

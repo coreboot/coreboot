@@ -17,7 +17,25 @@
 /* ARM64 stacks need 16-byte alignment. */
 #define STACK(addr, size) \
 	REGION(stack, addr, size, 16) \
-	_ = ASSERT(size >= 2K, "stack should be >= 2K, see toolchain.mk");
+	_ = ASSERT(size >= 2K, "stack should be >= 2K, see toolchain.mk"); \
+	ALIAS_REGION(stack, preram_stack) \
+	ALIAS_REGION(stack, postram_stack)
+
+#if ENV_ROMSTAGE_OR_BEFORE
+	#define PRERAM_STACK(addr, size) \
+		REGION(preram_stack, addr, size, 16) \
+		_ = ASSERT(size >= 2K, "preram_stack should be >= 2K, see toolchain.mk"); \
+		ALIAS_REGION(preram_stack, stack)
+	#define POSTRAM_STACK(addr, size) \
+		REGION(postram_stack, addr, size, 16)
+#else
+	#define PRERAM_STACK(addr, size) \
+		REGION(preram_stack, addr, size, 16)
+	#define POSTRAM_STACK(addr, size) \
+		REGION(postram_stack, addr, size, 16) \
+		_ = ASSERT(size >= 2K, "postram_stack should be >= 2K, see toolchain.mk"); \
+		ALIAS_REGION(postram_stack, stack)
+#endif
 
 #define BL31(addr, size) \
 	REGION(bl31, addr, size, 4K) \

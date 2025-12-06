@@ -73,6 +73,7 @@ endif
 ################################################################################
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARMV8_64),y)
 
+ramstage-y += ramstage_entry.S
 ramstage-y += cache.c
 ramstage-y += cpu.S
 ramstage-y += exception.c

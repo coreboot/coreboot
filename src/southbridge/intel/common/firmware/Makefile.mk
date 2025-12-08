@@ -47,7 +47,7 @@ ifeq ($(CONFIG_HAVE_EC_BIN),y)
 add_intel_firmware: $(call strip_quotes,$(CONFIG_EC_BIN_PATH))
 endif
 add_intel_firmware: $(obj)/coreboot.pre $(IFDTOOL)
-ifeq ($(INTEL_IFD_SET_TOP_SWAP_BOOTBLOCK_SIZE),y)
+ifeq ($(CONFIG_INTEL_IFD_SET_TOP_SWAP_BOOTBLOCK_SIZE),y)
 	printf "    IFDTOOL    Modifying top swap PCH strap in IFD\n"
 	printf "     $(IFDTOOL_USE_CHIPSET)"
 	$(objutil)/ifdtool/ifdtool \
@@ -56,7 +56,7 @@ ifeq ($(INTEL_IFD_SET_TOP_SWAP_BOOTBLOCK_SIZE),y)
 		-O $(obj)/ifd_custom_tsbs \
 		$(IFD_BIN_PATH)
 	printf "    DD         Adding Intel Firmware Descriptor\n"
-	dd if=$(obj)/ifd_custom_tsbs\
+	dd if=$(obj)/ifd_custom_tsbs \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
 else
 	printf "    DD         Adding Intel Firmware Descriptor\n"

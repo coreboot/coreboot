@@ -27,6 +27,9 @@ void boot_device_security_lockdown(void)
 		} else if (CONFIG(BOOTMEDIA_LOCK_WPRO_VBOOT_RO)) {
 			printk(BIOS_DEBUG, "'WP_RO only'");
 			lock_type = CTRLR_WP;
+		} else if (CONFIG(BOOTMEDIA_LOCK_TOPSWAP)) {
+			printk(BIOS_DEBUG, "'COREBOOT + BOOTBLOCK'");
+			lock_type = CTRLR_WP;
 		}
 		printk(BIOS_DEBUG, " using CTRL...\n");
 	} else {
@@ -45,6 +48,11 @@ void boot_device_security_lockdown(void)
 			printk(BIOS_ERR, "BM-LOCKDOWN: Could not find region 'WP_RO'\n");
 		else
 			rdev = &dev;
+	} else if (CONFIG(BOOTMEDIA_LOCK_TOPSWAP)) {
+		if (fmap_locate_area_as_rdev("COREBOOT", &dev) < 0)
+			printk(BIOS_ERR, "BM-LOCKDOWN: Could not find region 'COREBOOT'\n");
+		else
+			rdev = &dev;
 	} else {
 		rdev = boot_device_ro();
 	}
@@ -53,6 +61,18 @@ void boot_device_security_lockdown(void)
 		printk(BIOS_INFO, "BM-LOCKDOWN: Enabled bootmedia protection\n");
 	else
 		printk(BIOS_ERR, "BM-LOCKDOWN: Failed to enable bootmedia protection\n");
+
+	if (CONFIG(BOOTMEDIA_LOCK_TOPSWAP)) {
+		/*
+		 * Additionally set a protected range for the BOOTBLOCK region
+		 */
+		if (fmap_locate_area_as_rdev("BOOTBLOCK", &dev) < 0)
+			printk(BIOS_ERR, "BM-LOCKDOWN: Could not find region 'BOOTBLOCK'\n");
+		else if (boot_device_wp_region(&dev, lock_type) >= 0)
+			printk(BIOS_INFO, "BM-LOCKDOWN: Enabled bootmedia protection for BOOTBLOCK\n");
+		else
+			printk(BIOS_ERR, "BM-LOCKDOWN: Failed to enable bootmedia protection for BOOTBLOCK\n");
+	}
 }
 
 static void lock(void *unused)

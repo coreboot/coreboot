@@ -66,6 +66,20 @@ config INTEL_TOP_SWAP_OPTION_CONTROL
 	  option. Note that the option must be present in the board's cmos.layout.
 	  file.
 
+config TOP_SWAP_REDUNDANCY
+	bool "Toggle the Intel Top Swap - based redundancy"
+	depends on HAVE_OPTION_TABLE && INTEL_HAS_TOP_SWAP
+	select INTEL_ADD_TOP_SWAP_BOOTBLOCK
+	select MAINBOARD_NEEDS_CMOS_OPTIONS
+	select INTEL_TOP_SWAP_SEPARATE_REGIONS
+	select INTEL_TOP_SWAP_OPTION_CONTROL
+	help
+	  Toggle the Intel Top Swap based redundancy, where the BOOTBLOCK and COREBOOT
+	  regions form a read-only golden copy and TOPSWAP and COREBOOT_TS are an
+	  update partition. CMOS option "attempt_top_swap" decides which of the slots
+	  gets booted, which means the platform can be reverted to the known-good copy
+	  via CMOS reset.
+
 endif
 
 config SOC_INTEL_COMMON

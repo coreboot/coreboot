@@ -73,6 +73,18 @@ config BOOTMEDIA_LOCK_WPRO_VBOOT_RO
 	  is either triggered by coreboot (when INTEL_CHIPSET_LOCKDOWN is set) or
 	  has to be triggered later (e.g. by the payload or the OS).
 
+config BOOTMEDIA_LOCK_TOPSWAP
+	bool "Write-protect the COREBOOT & BOOTBLOCK regions"
+	depends on TOP_SWAP_REDUNDANCY
+	depends on BOOTMEDIA_LOCK_CONTROLLER
+	help
+	  Select this if you want to write-protect the BOOTBLOCK and COREBOOT
+	  (Slot A) regions as specified in the Top Swap FMAP. You will be able to
+	  write to the TOPSWAP and COREBOOT_TS (Slot B) regions and set the
+	  attempt_slot_b CMOS option to run updated firmware. The BOOTBLOCK and
+	  COREBOOT regions will remain a read-only golden copy, which you can
+	  then revert to by resetting CMOS.
+
 endchoice
 
 config BOOTMEDIA_LOCK_IN_VERSTAGE

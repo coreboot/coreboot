@@ -32,7 +32,10 @@ void setup_chromeos_gpios(void)
 	gpio_output(GPIO_WWAN_RESET_L, 0);
 	gpio_output(GPIO_EN_PWR_FP, 0);
 	gpio_output(GPIO_EDP_BL_EN_1V8, 0);
-	gpio_output(GPIO_TCHSCR_REPORT_DISABLE, 1);
+	if (CONFIG(BOARD_GOOGLE_PADME))
+		gpio_output(GPIO_EN_PP6000_MIPI_DISP, 0);
+	else
+		gpio_output(GPIO_TCHSCR_REPORT_DISABLE, 1);
 	gpio_output(GPIO_CODEC_PWR_SOC_EN, 0);
 	gpio_output(GPIO_EN_PP3300_EDP_X, 0);
 	gpio_output(GPIO_EN_PP3300_WWAN_X, 0);

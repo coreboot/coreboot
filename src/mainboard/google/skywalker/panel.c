@@ -44,10 +44,8 @@ void mipi_panel_power_on(void)
 {
 	struct aw37503_config config = {
 		.i2c_bus = PMIC_I2C_BUS,
-		.en = GPIO_TCHSCR_REPORT_DISABLE,
+		.en = GPIO_EN_PP6000_MIPI_DISP,
 	};
-	gpio_output(config.en, 0);
-	mdelay(1);
 
 	mainboard_set_regulator_voltage(MTK_REGULATOR_VCN18, 1800000);
 	mtk_i2c_bus_init(config.i2c_bus, I2C_SPEED_FAST);

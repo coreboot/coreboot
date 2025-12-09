@@ -64,6 +64,12 @@ chip soc/intel/pantherlake
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 257,
+				.scl_hcnt = 257,
+				.sda_hold = 30,
+			}
 		},
 		.i2c[1] = {
                         .speed = I2C_SPEED_FAST,

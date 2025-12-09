@@ -16,6 +16,10 @@ intel_fit-align := 16
 ifeq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
 regions-for-file-intel_fit = BOOTBLOCK
 regions-for-file-intel_fit_ts = TOPSWAP
+
+TS_MCU_REGION = COREBOOT_TS
+else
+TS_MCU_REGION = COREBOOT
 endif
 
 $(call add_intermediate, set_fit_ptr, $(IFITTOOL))
@@ -45,7 +49,7 @@ $(call add_intermediate, add_ts_mcu_fit, set_ts_fit_ptr $(IFITTOOL))
 ifneq ($(FIT_ENTRY),)
 	$(IFITTOOL) -f $< -A -n $(FIT_ENTRY) -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) $(TS_OPTIONS) -r $(TS_FIT_REGION)
 endif # FIT_ENTRY
-	$(IFITTOOL) -f $< -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) $(TS_OPTIONS) -r $(TS_FIT_REGION) -R COREBOOT
+	$(IFITTOOL) -f $< -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) $(TS_OPTIONS) -r $(TS_FIT_REGION) -R $(TS_MCU_REGION)
 
 cbfs-files-y += intel_fit_ts
 intel_fit_ts-file := fit_table.c:struct

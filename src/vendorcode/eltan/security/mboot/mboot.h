@@ -12,7 +12,6 @@
 #include <boot/coreboot_tables.h>
 #include <security/tpm/tss/tcg-2.0/tss_structures.h>
 #include <security/tpm/tss.h>
-#include <swab.h>
 
 /* TPM2 interface */
 #define EFI_TPM2_ACPI_TABLE_START_METHOD_TIS	6

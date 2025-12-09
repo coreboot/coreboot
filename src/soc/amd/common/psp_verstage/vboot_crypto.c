@@ -5,11 +5,11 @@
 #include <bl_uapp/bl_syscall_public.h>
 #include <commonlib/bsd/helpers.h>
 #include <console/console.h>
+#include <endian.h>
 #include "psp_verstage.h"
 #include <soc/psp_verstage_addr.h>
 #include <stddef.h>
 #include <string.h>
-#include <swab.h>
 #include <symbols.h>
 #include <vb2_api.h>
 
@@ -161,7 +161,7 @@ vb2_error_t vb2ex_hwcrypto_modexp(const struct vb2_public_key *key,
 		return VB2_ERROR_WORKBUF_SMALL;
 
 	for (i = 0; i < key->arrsize; i++)
-		sig_swapped[i] = swab32(inout_32[key->arrsize - i - 1]);
+		sig_swapped[i] = be32toh(inout_32[key->arrsize - i - 1]);
 
 	mod_exp_param.pExponent = (char *)&exp;
 	mod_exp_param.ExpSize = sizeof(exp);
@@ -179,7 +179,7 @@ vb2_error_t vb2ex_hwcrypto_modexp(const struct vb2_public_key *key,
 
 	/* vboot expects results in *inout with BE, so copy & convert. */
 	for (i = 0; i < key->arrsize; i++)
-		inout_32[i] = swab32(output_buffer[key->arrsize - i - 1]);
+		inout_32[i] = htobe32(output_buffer[key->arrsize - i - 1]);
 
 	return VB2_SUCCESS;
 }

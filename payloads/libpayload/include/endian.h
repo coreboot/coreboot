@@ -34,10 +34,6 @@
 #include <libpayload-config.h>
 #include <string.h>
 
-#define swab16(x) __builtin_bswap16(x)
-#define swab32(x) __builtin_bswap32(x)
-#define swab64(x) __builtin_bswap64(x)
-
 #if CONFIG(LP_BIG_ENDIAN)
 #define __BIG_ENDIAN
 #elif CONFIG(LP_LITTLE_ENDIAN)

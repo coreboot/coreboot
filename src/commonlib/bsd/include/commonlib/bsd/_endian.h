@@ -5,8 +5,8 @@
 
 /*
  * This header should not be included directly. Including source must define
- * prerequisites like uintXX_t types, the byteswap functions swabXX(),
- * __BIG_ENDIAN or __LITTLE_ENDIAN and I/O accessors readXX()/writeXX().
+ * prerequisites like uintXX_t types, __BIG_ENDIAN or __LITTLE_ENDIAN and
+ * I/O accessors readXX()/writeXX().
  */
 
 /* Endian functions from glibc 2.9 / BSD "endian.h" */
@@ -15,13 +15,13 @@
 	#define htobe16(in) (in)
 	#define htobe32(in) (in)
 	#define htobe64(in) (in)
-	#define htole16(in) ((uint16_t)swab16(in))
-	#define htole32(in) ((uint32_t)swab32(in))
-	#define htole64(in) ((uint64_t)swab64(in))
+	#define htole16(in) ((uint16_t)__builtin_bswap16(in))
+	#define htole32(in) ((uint32_t)__builtin_bswap32(in))
+	#define htole64(in) ((uint64_t)__builtin_bswap64(in))
 #elif defined(__LITTLE_ENDIAN)
-	#define htobe16(in) ((uint16_t)swab16(in))
-	#define htobe32(in) ((uint32_t)swab32(in))
-	#define htobe64(in) ((uint64_t)swab64(in))
+	#define htobe16(in) ((uint16_t)__builtin_bswap16(in))
+	#define htobe32(in) ((uint32_t)__builtin_bswap32(in))
+	#define htobe64(in) ((uint64_t)__builtin_bswap64(in))
 	#define htole16(in) (in)
 	#define htole32(in) (in)
 	#define htole64(in) (in)

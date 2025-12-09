@@ -6,7 +6,6 @@
 #include <arch/byteorder.h>
 #include <stdint.h>
 #include <string.h>
-#include <swab.h>
 
 /* This include depends on previous ones, do not reorder. */
 #include <commonlib/bsd/_endian.h>

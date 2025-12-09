@@ -3,7 +3,7 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <ec/acpi/ec.h>
-#include <swab.h>
+#include <endian.h>
 #include <timer.h>
 #include <types.h>
 
@@ -102,7 +102,7 @@ void ec_set_kbled_timeout(uint16_t timeout)
 	printk(BIOS_DEBUG, "EC: set keyboard backlight timeout to %us\n", timeout);
 
 	write8p(ECRAM + FDAT, timeout ? 0xff : 0x00);
-	write16p(ECRAM + FBUF, swab16(timeout));
+	write16p(ECRAM + FBUF, htobe16(timeout));
 	ec_fcmd(FCMD_SET_KBLED_TIMEOUT);
 }
 

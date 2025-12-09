@@ -55,7 +55,7 @@ static const struct sm_object legacy_8254_timer = SM_DECLARE_ENUM({
 static const struct sm_object s0ix_enable = SM_DECLARE_ENUM({
 	.opt_name	= "s0ix_enable",
 	.ui_name	= "Modern Standby (S0ix)",
-	.ui_helptext	= "Enabled: use Modern Standby / S0ix. Disabled: use APCI S3 sleep",
+	.ui_helptext	= "Enabled: use Modern Standby / S0ix. Disabled: use ACPI S3 sleep",
 	.default_value	= 1,
 	.values		= (const struct sm_enum_value[]) {
 				{ "Disabled",		0	},

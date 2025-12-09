@@ -151,7 +151,7 @@ choice
 	prompt "Option backend to use"
 	default USE_CBFS_FILE_OPTION_BACKEND if HAVE_CBFS_FILE_OPTION_BACKEND
 	default USE_MAINBOARD_SPECIFIC_OPTION_BACKEND if HAVE_MAINBOARD_SPECIFIC_OPTION_BACKEND
-	default USE_OPTION_TABLE if NVRAMCUI_SECONDARY_PAYLOAD
+	default USE_OPTION_TABLE if NVRAMCUI_SECONDARY_PAYLOAD || MAINBOARD_NEEDS_CMOS_OPTIONS
 	default USE_UEFI_VARIABLE_STORE if DRIVERS_EFI_VARIABLE_STORE && \
 		PAYLOAD_EDK2 && SMMSTORE_V2
 
@@ -903,6 +903,12 @@ config CMOS_LAYOUT_FILE
 	string
 	default "src/mainboard/\$(MAINBOARDDIR)/cmos.layout"
 	depends on HAVE_OPTION_TABLE
+
+config MAINBOARD_NEEDS_CMOS_OPTIONS
+	bool
+	help
+	  Select this option if a mainboard depends on storing options in CMOS
+	  for the implementation of some feature.
 
 config PCI_IO_CFG_EXT
 	bool

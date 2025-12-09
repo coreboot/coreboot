@@ -974,21 +974,23 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug $(objcbfs)/%.map
 # 4) replace all '*' characters with spaces
 extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-))))
 
+CBFS_REGIONS := COREBOOT
+
+ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
+ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
+TS_OPTIONS := -j $(CONFIG_INTEL_TOP_SWAP_BOOTBLOCK_SIZE)
+else
+CBFS_REGIONS := COREBOOT,COREBOOT_TS
+endif
+endif
+
 # regions-for-file - Returns a cbfstool regions parameter
 # $(call regions-for-file,$(filename))
 # returns "REGION1,REGION2,..."
 #
 # This is the default implementation. When using a boot strategy employing
 # multiple CBFSes in fmap regions, override it.
-regions-for-file ?= $(if $(value regions-for-file-$(1)), $(regions-for-file-$(1)), COREBOOT)
-
-ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
-ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
-TS_OPTIONS := -j $(CONFIG_INTEL_TOP_SWAP_BOOTBLOCK_SIZE)
-else
-regions-for-file = $(if $(value regions-for-file-$(1)), $(regions-for-file-$(1)), COREBOOT,COREBOOT_TS)
-endif
-endif
+regions-for-file ?= $(if $(value regions-for-file-$(1)), $(regions-for-file-$(1)), $(CBFS_REGIONS))
 
 ifeq ($(CONFIG_CBFS_AUTOGEN_ATTRIBUTES),y)
 	cbfs-autogen-attributes=-g

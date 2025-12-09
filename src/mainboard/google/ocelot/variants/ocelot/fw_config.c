@@ -12,37 +12,36 @@
 #define GPIO_CONFIGURE_PADS(t) gpio_configure_pads(t, ARRAY_SIZE(t))
 
 static const struct pad_config i2s_enable_pads[] = {
-	/* I2S_MCLK1_OUT */
+	/* GPP_D09:	I2S_MCLK1_OUT */
 	PAD_CFG_NF(GPP_D09, NONE, DEEP, NF2),
-	/* I2S0_SCLK_HDR */
-	PAD_CFG_NF(GPP_D10, NONE, DEEP, NF1),
-	/* I2S0_SFRM_HDR */
-	PAD_CFG_NF(GPP_D11, NONE, DEEP, NF1),
-	/* I2S0_TXD_HDR */
-	PAD_CFG_NF(GPP_D12, NONE, DEEP, NF1),
-	/* I2S0_RXD_HDR */
-	PAD_CFG_NF(GPP_D13, NONE, DEEP, NF1),
-	/* I2S1_TXD_HDR */
-	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF1),
-	/* I2S1_RXD_HDR */
-	PAD_CFG_NF(GPP_S01, NONE, DEEP, NF1),
-	/* I2S1_SCLK_HDR */
-	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF1),
-	/* I2S1_SFRM_HDR */
-	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF1),
-	/* I2S2_SCLK_HDR */
-	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF1),
-	/* I2S2_SFRM_HDR */
-	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF1),
-	/* I2S2_TXD_HDR */
-	PAD_NC(GPP_S06, NONE),
-	/* I2S2_RXD_HDR */
-	PAD_NC(GPP_S07, NONE),
-
-	/* DMIC_CLK */
-	PAD_NC(GPP_D16, NONE),
-	/* DMIC_DATA */
-	PAD_NC(GPP_D17, NONE),
+	/* GPP_D10:     I2S0_SCLK_HDR */
+	PAD_CFG_NF(GPP_D10, NONE, DEEP, NF2),
+	/* GPP_D11:     I2S0_SFRM_HDR */
+	PAD_CFG_NF(GPP_D11, NONE, DEEP, NF2),
+	/* GPP_D12:     I2S0_TXD_HDR */
+	PAD_CFG_NF(GPP_D12, NONE, DEEP, NF2),
+	/* GPP_D13:     I2S0_RXD_HDR */
+	PAD_CFG_NF(GPP_D13, NONE, DEEP, NF2),
+	/* GPP_S00:     I2S1_TXD_HDR */
+	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF6),
+	/* GPP_S01:     I2S1_RXD_HDR */
+	PAD_CFG_NF(GPP_S01, NONE, DEEP, NF6),
+	/* GPP_S02:     I2S1_SCLK_HDR */
+	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF6),
+	/* GPP_S03:     I2S1_SFRM_HDR */
+	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF6),
+	/* GPP_S04:     I2S2_SCLK_HDR */
+	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF6),
+	/* GPP_S05:     I2S2_SFRM_HDR */
+	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF6),
+	/* GPP_S06:     DMIC1_CLK (HDR) */
+	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF5),
+	 /* GPP_S07:    DMIC1_DATA (HDR) */
+	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF5),
+	/* GPP_D16:     DMIC_CLK */
+	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF3),
+	/* GPP_D17:     DMIC_DATA */
+	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF3),
 };
 
 static const struct pad_config hda_enable_pads[] = {
@@ -93,6 +92,8 @@ static const struct pad_config sndw_alc721_enable_pads[] = {
 };
 
 static const struct pad_config audio_disable_pads[] = {
+	/* GPP_D09:     I2S_MCLK1_OUT */
+	PAD_NC(GPP_D09, NONE),
 	/* GPP_D10:     HDA_BCLK (HDR) */
 	PAD_NC(GPP_D10, NONE),
 	/* GPP_D11:     HDA_SYNC (HDR) */

@@ -92,7 +92,7 @@ chip soc/intel/pantherlake
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 	}"
@@ -108,6 +108,7 @@ chip soc/intel/pantherlake
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
 	#| I2C1              | TPM(cr50)                 |
+	#| I2C3              | Audio                     |
 	#| I2C5              | Touchpad                  |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -115,6 +116,10 @@ chip soc/intel/pantherlake
 		.logo_bottom_margin = 100,
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.early_init = 1,
+		},
+		.i2c[3] = {
 			.speed = I2C_SPEED_FAST,
 			.early_init = 1,
 		},
@@ -532,6 +537,22 @@ chip soc/intel/pantherlake
 				device i2c 50 on end
 			end
 		end
+		device ref i2c3 on
+			chip drivers/i2c/generic
+				register "hid" = ""RTL5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_F17)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO AUDIO_MAX98360_ALC5682I_I2S
+				end
+			end
+		end #I2C3
 		device ref i2c5 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""HFW68H""
@@ -584,6 +605,14 @@ chip soc/intel/pantherlake
 							probe AUDIO AUDIO_ALC721_SNDW
 						end
 					end
+				end
+			end
+		        chip drivers/generic/max98357a
+				register "hid" = ""MX98360A""
+				register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A15)"
+				register "sdmode_delay" = "5"
+				device generic 0 on
+					probe AUDIO AUDIO_MAX98360_ALC5682I_I2S
 				end
 			end
 		end

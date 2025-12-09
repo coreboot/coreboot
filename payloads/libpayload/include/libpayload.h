@@ -493,6 +493,15 @@ u8 *sha1(const u8 *data, size_t len, u8 *buf);
  */
 
 int sysinfo_have_multiboot(unsigned long *addr);
+
+/**
+ * Check CBMEM_ID_MEM_CHIP and CBMEM_ID_MEMINFO, extract physical memory size
+ * present in the system.
+ *
+ * @returns physical memory detected in the system or zero in case of failure
+ */
+size_t sysinfo_get_physical_memory_size_mib(void);
+
 /** @} */
 
 /**

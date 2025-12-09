@@ -34,3 +34,23 @@ int sysinfo_have_multiboot(unsigned long *addr)
 	*addr = (unsigned long) lib_sysinfo.mbtable;
 	return (lib_sysinfo.mbtable == 0) ? 0 : 1;
 }
+
+size_t sysinfo_get_physical_memory_size_mib(void)
+{
+	const struct mem_chip_info *mc = phys_to_virt(lib_sysinfo.mem_chip_base);
+
+	if (mc)
+		return mem_chip_info_total_density_bytes(mc) / MiB;
+
+#if CONFIG(LP_GPL)
+	const struct memory_info *memory_info = phys_to_virt(lib_sysinfo.memory_info);
+	size_t memory_size_mib = 0;
+	if (memory_info) {
+		for (int i = 0; i < memory_info->dimm_cnt; ++i)
+			memory_size_mib += memory_info->dimm[i].dimm_size;
+		return memory_size_mib;
+	}
+#endif
+
+	return 0;
+}

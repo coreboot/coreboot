@@ -1296,9 +1296,16 @@ $(shell rm -f $(obj)/coreboot.pre)
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL) $(obj)/fmap.fmap $(obj)/fmap.desc $(objcbfs)/bootblock.bin
 	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap -r $(shell cat $(obj)/fmap.desc)
+# The bootblock must exist in the image before we call `prebuild-files`,
+# otherwise their hashes won't be added into the CBFS header and CBFS
+# verification will fail.
 	printf "    BOOTBLOCK\n"
 ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
 	$(call add_bootblock,$@.tmp,$(objcbfs)/bootblock.bin)
+else
+	@printf "    PREP       place bootblocks in $(BB_FIT_REGION) and $(TS_FIT_REGION)\n"
+	@printf "    $(BB_FIT_REGION),$(TS_FIT_REGION)\n"
+	$(CBFSTOOL) $@.tmp add -r $(BB_FIT_REGION),$(TS_FIT_REGION) $(bootblock_add_params)
 endif # ifneq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
 	$(prebuild-files) true
 	mv $@.tmp $@
@@ -1328,15 +1335,6 @@ endif
 add_intermediate = \
 	$(1): $(obj)/coreboot.pre $(2) | $(INTERMEDIATE) \
 	$(eval INTERMEDIATE+=$(1)) $(eval PHONY+=$(1))
-
-ifeq ($(CONFIG_INTEL_TOP_SWAP_SEPARATE_REGIONS),y)
-$(call add_intermediate, prep_bb_regions, $(CBFSTOOL))
-	@printf "    PREP       place bootblocks in BOOTBLOCK and TOPSWAP\n"
-	@printf "    BOOTBLOCK\n"
-	$(CBFSTOOL) $< add -r $(BB_FIT_REGION) $(bootblock_add_params)
-	@printf "    TOPSWAP\n"
-	$(CBFSTOOL) $< add -r $(TS_FIT_REGION) $(bootblock_add_params)
-endif
 
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(CBFSTOOL) $(IFITTOOL) $$(INTERMEDIATE)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"

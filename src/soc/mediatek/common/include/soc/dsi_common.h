@@ -10,8 +10,6 @@
 #include <soc/addressmap.h>
 #include <soc/display_dsi.h>
 
-static struct dsi_regs *const dsi0 = (void *)DSI0_BASE;
-
 /* DSI_INTSTA */
 enum {
 	LPRX_RD_RDY_INT_FLAG = BIT(0),

@@ -53,4 +53,6 @@ check_member(dsi_regs, dsi_vm_cmd_con, 0x130);
 check_member(dsi_regs, dsi_force_commit, 0x190);
 check_member(dsi_regs, dsi_cmdq, 0x200);
 
+static struct dsi_regs *const dsi0 = (void *)DSI0_BASE;
+
 #endif /* DSI_REGISTER_V1_H */

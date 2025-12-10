@@ -9,8 +9,8 @@
 #include <framebuffer_info.h>
 #include <soc/ddp.h>
 #include <soc/display.h>
+#include <soc/display_dsi.h>
 #include <soc/dptx.h>
-#include <soc/dsi.h>
 #include <soc/mtcmos.h>
 #include <stdio.h>
 #include <symbols.h>

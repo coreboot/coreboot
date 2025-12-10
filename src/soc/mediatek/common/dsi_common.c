@@ -5,6 +5,7 @@
 #include <device/mmio.h>
 #include <delay.h>
 #include <edid.h>
+#include <soc/display_dsi.h>
 #include <soc/dsi.h>
 #include <string.h>
 #include <timer.h>

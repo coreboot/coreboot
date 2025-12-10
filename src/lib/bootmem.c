@@ -14,6 +14,8 @@ static int table_written;
 static struct memranges bootmem;
 static struct memranges bootmem_os;
 
+static const char *bootmem_range_string(const enum bootmem_type tag);
+
 static int bootmem_is_initialized(void)
 {
 	return initialized;
@@ -104,6 +106,24 @@ void bootmem_add_range(uint64_t start, uint64_t size,
 		assert(!bootmem_memory_table_written());
 		memranges_insert(&bootmem_os, start, size, tag);
 	};
+}
+
+int bootmem_add_range_from(uint64_t start, uint64_t size, const enum bootmem_type new_tag,
+			   const enum bootmem_type from_tag)
+{
+	if (new_tag == from_tag)
+		return -1;
+
+	if (!bootmem_region_targets_type(start, size, from_tag)) {
+		printk(BIOS_ERR, "%s: Failed to add the range [%#llx, %#llx)"
+		       " from tag %s to %s\n", __func__, start, start + size,
+		       bootmem_range_string(from_tag), bootmem_range_string(new_tag));
+		return -1;
+	}
+
+	bootmem_add_range(start, size, new_tag);
+
+	return 0;
 }
 
 void bootmem_write_memory_table(struct lb_memory *mem)

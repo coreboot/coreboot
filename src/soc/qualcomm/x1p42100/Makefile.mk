@@ -53,6 +53,7 @@ ramstage-y += ../common/spmi.c
 ramstage-$(CONFIG_PCI) += pcie.c
 ramstage-y += cpucp_load_reset.c
 ramstage-y += ../common/cmd_db.c
+ramstage-y += ../common/rpmh.c ../common/rpmh_bcm.c ../common/rpmh_regulator.c ../common/rpmh_rsc.c
 
 ################################################################################
 

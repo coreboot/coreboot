@@ -19,22 +19,22 @@
 
 void mtk_dsi_cphy_lane_sel_setting(void)
 {
-	write32(&mipi_tx->phy_sel[0], MIPITX_CPHY_LANE_SEL0_SETTING);
-	write32(&mipi_tx->phy_sel[1], MIPITX_CPHY_LANE_SEL1_SETTING);
-	write32(&mipi_tx->phy_sel[2], MIPITX_CPHY_LANE_SEL2_SETTING);
-	write32(&mipi_tx->phy_sel[3], MIPITX_CPHY_LANE_SEL3_SETTING);
+	write32(&mipi_tx0->phy_sel[0], MIPITX_CPHY_LANE_SEL0_SETTING);
+	write32(&mipi_tx0->phy_sel[1], MIPITX_CPHY_LANE_SEL1_SETTING);
+	write32(&mipi_tx0->phy_sel[2], MIPITX_CPHY_LANE_SEL2_SETTING);
+	write32(&mipi_tx0->phy_sel[3], MIPITX_CPHY_LANE_SEL3_SETTING);
 }
 
 void mtk_dsi_cphy_enable(void)
 {
-	setbits32(&mipi_tx->lane_con, DSI_CPHY_EN);
+	setbits32(&mipi_tx0->lane_con, DSI_CPHY_EN);
 }
 
 void mtk_dsi_cphy_disable_ck_mode(void)
 {
-	clrsetbits32(&mipi_tx->voltage_sel, DSI_HSTX_LDO_REF_SEL, 0xF << 6);
-	clrbits32(&mipi_tx->ck_ckmode_en, DSI_CK_CKMODE_EN);
-	setbits32(&mipi_tx->lane_con, DE_EMPHASIS_EN);
+	clrsetbits32(&mipi_tx0->voltage_sel, DSI_HSTX_LDO_REF_SEL, 0xF << 6);
+	clrbits32(&mipi_tx0->ck_ckmode_en, DSI_CK_CKMODE_EN);
+	setbits32(&mipi_tx0->lane_con, DE_EMPHASIS_EN);
 }
 
 void mtk_dsi_cphy_enable_cmdq_6byte(void)

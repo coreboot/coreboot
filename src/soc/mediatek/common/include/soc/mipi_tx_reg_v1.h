@@ -39,7 +39,7 @@ check_member(mipi_tx_regs, phy_sel[0], 0x40);
 check_member(mipi_tx_regs, phy_sel[3], 0x4C);
 check_member(mipi_tx_regs, d3_sw_ctl_en, 0x544);
 
-static struct mipi_tx_regs *const mipi_tx = (void *)MIPITX0_BASE;
+static struct mipi_tx_regs *const mipi_tx0 = (void *)MIPITX0_BASE;
 
 /* Register values */
 #define DSI_CK_CKMODE_EN	BIT(0)

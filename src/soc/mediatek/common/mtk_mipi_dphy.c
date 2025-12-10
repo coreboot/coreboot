@@ -5,5 +5,5 @@
 
 void mtk_dsi_dphy_disable_ck_mode(void)
 {
-	setbits32(&mipi_tx->ck_ckmode_en, DSI_CK_CKMODE_EN);
+	setbits32(&mipi_tx0->ck_ckmode_en, DSI_CK_CKMODE_EN);
 }

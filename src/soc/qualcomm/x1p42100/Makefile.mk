@@ -52,6 +52,7 @@ ramstage-$(CONFIG_PCI) += ../common/pcie_common.c
 ramstage-y += ../common/spmi.c
 ramstage-$(CONFIG_PCI) += pcie.c
 ramstage-y += cpucp_load_reset.c
+ramstage-y += ../common/cmd_db.c
 
 ################################################################################
 

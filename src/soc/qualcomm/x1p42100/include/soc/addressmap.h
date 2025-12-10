@@ -18,6 +18,12 @@
 #define DISP_PLL1_BASE			0xAF01000
 #define DISP_CC_BASE			0xAF08000
 
+#define RPMH_BASE                       0x17520000
+#define CMD_DB_BASE_ADDR                0x81c60000
+#define CMD_DB_SIZE                     0x20000
+
+#define AOP_BOOT_COOKIE_ADDR            0xC3F0040
+
 #define CBMEM_TOP			0xC7800000
 /* X1P42100 NCC0 PLL CONFIG ADDRESSES */
 #define NCC0_NCC_CMU_NCC_PLL_CFG	0x199A2010

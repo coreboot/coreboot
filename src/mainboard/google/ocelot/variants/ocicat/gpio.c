@@ -254,11 +254,11 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F15:     NC */
 	PAD_NC(GPP_F15, NONE),
 	/* GPP_F16:     TCHSCR_RST_ODL */
-	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF3),
+	PAD_CFG_GPO(GPP_F16, 1, DEEP),
 	/* GPP_F17:     NC */
 	PAD_NC(GPP_F17, NONE),
 	/* GPP_F18:     TCHSCR_INT_ODL */
-	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF3),
+	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_F19:     NC */
 	PAD_NC(GPP_F19, NONE),
 	/* GPP_F20:     CSE_EARLY_SW */

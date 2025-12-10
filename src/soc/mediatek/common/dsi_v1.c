@@ -6,7 +6,8 @@
 #include <soc/dsi.h>
 #include <soc/pll.h>
 
-void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes, bool is_cphy)
+void mtk_dsi_configure_mipi_tx(struct mipi_tx_regs *mipi_tx_reg,
+			       u32 data_rate, u32 lanes, bool is_cphy)
 {
 	unsigned int txdiv0;
 	u64 pcw;
@@ -28,47 +29,48 @@ void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes, bool is_cphy)
 	}
 
 	if (CONFIG(MEDIATEK_DSI_CPHY) && is_cphy)
-		mtk_dsi_cphy_lane_sel_setting();
+		mtk_dsi_cphy_lane_sel_setting(mipi_tx_reg);
 
-	clrbits32(&mipi_tx0->pll_con4, BIT(11) | BIT(10));
-	setbits32(&mipi_tx0->pll_pwr, AD_DSI_PLL_SDM_PWR_ON);
+	clrbits32(&mipi_tx_reg->pll_con4, BIT(11) | BIT(10));
+	setbits32(&mipi_tx_reg->pll_pwr, AD_DSI_PLL_SDM_PWR_ON);
 	udelay(30);
-	clrbits32(&mipi_tx0->pll_pwr, AD_DSI_PLL_SDM_ISO_EN);
+	clrbits32(&mipi_tx_reg->pll_pwr, AD_DSI_PLL_SDM_ISO_EN);
 
 	pcw = (u64)data_rate * (1 << txdiv0);
 	pcw <<= 24;
 	pcw /= CLK26M_HZ;
 
-	write32(&mipi_tx0->pll_con0, pcw);
-	clrsetbits32(&mipi_tx0->pll_con1, RG_DSI_PLL_POSDIV, txdiv0 << 8);
+	write32(&mipi_tx_reg->pll_con0, pcw);
+	clrsetbits32(&mipi_tx_reg->pll_con1, RG_DSI_PLL_POSDIV, txdiv0 << 8);
 	udelay(30);
-	setbits32(&mipi_tx0->pll_con1, RG_DSI_PLL_EN);
+	setbits32(&mipi_tx_reg->pll_con1, RG_DSI_PLL_EN);
 
 	/* BG_LPF_EN / BG_CORE_EN */
-	write32(&mipi_tx0->lane_con, 0x3FFF0180);
+	write32(&mipi_tx_reg->lane_con, 0x3FFF0180);
 	udelay(40);
-	write32(&mipi_tx0->lane_con, 0x3FFF00C0);
+	write32(&mipi_tx_reg->lane_con, 0x3FFF00C0);
 
 	if (CONFIG(MEDIATEK_DSI_CPHY) && is_cphy)
-		mtk_dsi_cphy_enable();
+		mtk_dsi_cphy_enable(mipi_tx_reg);
 
 	/* Switch OFF each Lane */
-	clrbits32(&mipi_tx0->d0_sw_ctl_en, DSI_SW_CTL_EN);
-	clrbits32(&mipi_tx0->d1_sw_ctl_en, DSI_SW_CTL_EN);
-	clrbits32(&mipi_tx0->d2_sw_ctl_en, DSI_SW_CTL_EN);
-	clrbits32(&mipi_tx0->d3_sw_ctl_en, DSI_SW_CTL_EN);
-	clrbits32(&mipi_tx0->ck_sw_ctl_en, DSI_SW_CTL_EN);
+	clrbits32(&mipi_tx_reg->d0_sw_ctl_en, DSI_SW_CTL_EN);
+	clrbits32(&mipi_tx_reg->d1_sw_ctl_en, DSI_SW_CTL_EN);
+	clrbits32(&mipi_tx_reg->d2_sw_ctl_en, DSI_SW_CTL_EN);
+	clrbits32(&mipi_tx_reg->d3_sw_ctl_en, DSI_SW_CTL_EN);
+	clrbits32(&mipi_tx_reg->ck_sw_ctl_en, DSI_SW_CTL_EN);
 
 	if (CONFIG(MEDIATEK_DSI_CPHY) && is_cphy)
-		mtk_dsi_cphy_disable_ck_mode();
+		mtk_dsi_cphy_disable_ck_mode(mipi_tx_reg);
 	else
-		mtk_dsi_dphy_disable_ck_mode();
+		mtk_dsi_dphy_disable_ck_mode(mipi_tx_reg);
+
 }
 
-void mtk_dsi_reset(void)
+void mtk_dsi_reset(struct dsi_regs *dsi_reg)
 {
-	write32(&dsi0->dsi_force_commit,
+	write32(&dsi_reg->dsi_force_commit,
 		DSI_FORCE_COMMIT_USE_MMSYS | DSI_FORCE_COMMIT_ALWAYS);
-	write32(&dsi0->dsi_con_ctrl, 1);
-	write32(&dsi0->dsi_con_ctrl, 0);
+	write32(&dsi_reg->dsi_con_ctrl, 1);
+	write32(&dsi_reg->dsi_con_ctrl, 0);
 }

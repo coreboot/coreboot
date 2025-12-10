@@ -9,6 +9,7 @@
 #include <types.h>
 #include <soc/addressmap.h>
 #include <soc/display_dsi.h>
+#include <soc/dsi_reg.h>
 
 /* DSI_INTSTA */
 enum {
@@ -160,7 +161,7 @@ struct mtk_phy_timing {
 };
 
 /* Functions that each SOC should provide. */
-void mtk_dsi_reset(void);
+void mtk_dsi_reset(struct dsi_regs *dsi_reg);
 
 /* Functions as weak no-ops that can be overridden. */
 void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing);
@@ -169,17 +170,18 @@ void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing);
  * DSI-internal APIs provided in common/dsi_common.c, common/dsi_v1.c,
  * and common/mtk_mipi_{c/d}phy.c
  */
-void mtk_dsi_cphy_enable(void);
-void mtk_dsi_cphy_enable_cmdq_6byte(void);
-void mtk_dsi_cphy_lane_sel_setting(void);
+void mtk_dsi_cphy_enable(struct mipi_tx_regs *mipi_tx_reg);
+void mtk_dsi_cphy_enable_cmdq_6byte(struct dsi_regs *dsi_reg);
+void mtk_dsi_cphy_lane_sel_setting(struct mipi_tx_regs *mipi_tx_reg);
 void mtk_dsi_cphy_timing(u32 data_rate, struct mtk_phy_timing *timing);
 void mtk_dsi_cphy_vdo_timing(const u32 lanes, const struct edid *edid,
 			     const struct mtk_phy_timing *phy_timing,
 			     const u32 bytes_per_pixel, const u32 hbp, const u32 hfp,
 			     s32 *hbp_byte, s32 *hfp_byte, u32 *hsync_active_byte);
-void mtk_dsi_cphy_disable_ck_mode(void);
-void mtk_dsi_dphy_disable_ck_mode(void);
+void mtk_dsi_cphy_disable_ck_mode(struct mipi_tx_regs *mipi_tx_reg);
+void mtk_dsi_dphy_disable_ck_mode(struct mipi_tx_regs *mipi_tx_reg);
 void mtk_dsi_dphy_timing_calculation(u32 data_rate_mhz, struct mtk_phy_timing *timing);
-void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes, bool is_cphy);
+void mtk_dsi_configure_mipi_tx(struct mipi_tx_regs *mipi_tx_reg,
+			       u32 data_rate, u32 lanes, bool is_cphy);
 
 #endif /* SOC_MEDIATEK_DSI_COMMON_H */

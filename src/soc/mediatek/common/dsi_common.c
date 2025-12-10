@@ -290,7 +290,7 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 			edid->mode.va << DSI_SIZE_CON_HEIGHT_SHIFT |
 			hactive << DSI_SIZE_CON_WIDTH_SHIFT);
 	if (CONFIG(MEDIATEK_DSI_CPHY) && is_cphy)
-		mtk_dsi_cphy_enable_cmdq_6byte();
+		mtk_dsi_cphy_enable_cmdq_6byte(dsi0);
 }
 
 static void mtk_dsi_start(void)
@@ -385,8 +385,8 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 	if (!data_rate)
 		return -1;
 
-	mtk_dsi_configure_mipi_tx(data_rate, lanes, is_cphy);
-	mtk_dsi_reset();
+	mtk_dsi_configure_mipi_tx(mipi_tx0, data_rate, lanes, is_cphy);
+	mtk_dsi_reset(dsi0);
 	struct mtk_phy_timing phy_timing = {};
 	if (CONFIG(MEDIATEK_DSI_CPHY) && is_cphy)
 		mtk_dsi_cphy_timing(data_rate, &phy_timing);

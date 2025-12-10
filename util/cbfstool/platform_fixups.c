@@ -312,12 +312,14 @@ static int mediatek_fixup(struct buffer *buffer, unused size_t offset)
 platform_fixup_func platform_fixups_probe(struct buffer *buffer, size_t offset,
 					  const char *region_name)
 {
-	if (!strcmp(region_name, SECTION_NAME_BOOTBLOCK)) {
+	if (!strcmp(region_name, SECTION_NAME_BOOTBLOCK) ||
+	    !strcmp(region_name, SECTION_NAME_TOPSWAP)) {
 		if (qualcomm_probe(buffer, offset))
 			return qualcomm_fixup;
 		else if (mediatek_probe(buffer))
 			return mediatek_fixup;
-	} else if (!strcmp(region_name, SECTION_NAME_PRIMARY_CBFS)) {
+	} else if (!strcmp(region_name, SECTION_NAME_PRIMARY_CBFS) ||
+		   !strcmp(region_name, SECTION_NAME_TOPSWAP_CBFS)) {
 		/* TODO: add fixups for primary CBFS bootblock platforms, if needed */
 	} else {
 		ERROR("%s called for unexpected FMAP region %s!\n", __func__, region_name);

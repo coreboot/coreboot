@@ -984,6 +984,8 @@ CBFS_REGIONS := COREBOOT,COREBOOT_TS
 endif
 endif
 
+CBFS_REGION_COUNT := $(words $(subst $(comma),$(spc),$(CBFS_REGIONS)))
+
 # regions-for-file - Returns a cbfstool regions parameter
 # $(call regions-for-file,$(filename))
 # returns "REGION1,REGION2,..."
@@ -1356,8 +1358,8 @@ endif # CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	$(CBFSTOOL) $@ layout
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 ifeq ($(CONFIG_CBFS_VERIFICATION),y)
-	line=$$($(CBFSTOOL) $@ print -kv 2>/dev/null | grep -F '[CBFS VERIFICATION (COREBOOT)]') ;\
-	if ! printf "$$line" | grep -q 'fully valid'; then \
+	line=$$($(CBFSTOOL) $@ print -kv -r $(CBFS_REGIONS) 2>/dev/null | grep -F '[CBFS VERIFICATION') ;\
+	if [ "$$(printf "$$line" | grep -c 'fully valid')" -ne $(CBFS_REGION_COUNT) ]; then \
 		echo "CBFS verification error: $$line" ;\
 		exit 1 ;\
 	fi

@@ -173,7 +173,12 @@ static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
 
 	const struct vb2_hash *hash = NULL;
 
-	if (CONFIG(CBFS_VERIFICATION) && !skip_verification) {
+	/*
+	 * Skipping this block in SMM because vboot library isn't linked to SMM stage.  This is
+	 * an issue only if using a CMOS options backend, then SMM refers to an option and tries
+	 * to verify cmos.layout here.
+	 */
+	if (CONFIG(CBFS_VERIFICATION) && !ENV_SMM && !skip_verification) {
 		hash = cbfs_file_hash(mdata);
 		if (!hash) {
 			ERROR("'%s' does not have a file hash!\n", mdata->h.filename);
@@ -546,7 +551,8 @@ void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 }
 
 void *_cbfs_unverified_area_alloc(const char *area, const char *name,
-				  cbfs_allocator_t allocator, void *arg, size_t *size_out)
+				  cbfs_allocator_t allocator, void *arg, size_t *size_out,
+				  enum cbfs_type *type)
 {
 	struct region_device area_rdev, file_rdev;
 	union cbfs_mdata mdata;
@@ -560,6 +566,17 @@ void *_cbfs_unverified_area_alloc(const char *area, const char *name,
 	if (cbfs_lookup(&area_rdev, name, &mdata, &data_offset, NULL)) {
 		ERROR("'%s' not found in '%s'\n", name, area);
 		return NULL;
+	}
+
+	if (type) {
+		const enum cbfs_type real_type = be32toh(mdata.h.type);
+		if (*type == CBFS_TYPE_QUERY)
+			*type = real_type;
+		else if (*type != real_type) {
+			ERROR("'%s' type mismatch (is %u, expected %u)\n",
+			      mdata.h.filename, real_type, *type);
+			return NULL;
+		}
 	}
 
 	if (rdev_chain(&file_rdev, &area_rdev, data_offset, be32toh(mdata.h.len)))

@@ -135,6 +135,18 @@ struct mh_cache {
 	bool initialized;
 };
 
+static bool is_main_cbfs_region(const char *region_name)
+{
+	return strcmp(region_name, SECTION_NAME_PRIMARY_CBFS) == 0 ||
+		strcmp(region_name, SECTION_NAME_TOPSWAP_CBFS) == 0;
+}
+
+static bool is_topswap_region(const char *region_name)
+{
+	return strcmp(region_name, SECTION_NAME_TOPSWAP_CBFS) == 0 ||
+		strcmp(region_name, SECTION_NAME_TOPSWAP) == 0;
+}
+
 static struct mh_cache *get_mh_cache(void)
 {
 	static struct mh_cache mhc;
@@ -148,22 +160,24 @@ static struct mh_cache *get_mh_cache(void)
 	if (!fmap)
 		goto no_metadata_hash;
 
+	const char *bootblock_region = SECTION_NAME_BOOTBLOCK;
+	if (is_topswap_region(param.region_name))
+		bootblock_region = SECTION_NAME_TOPSWAP;
+
 	/* Find the metadata_hash container. If there is a "BOOTBLOCK" FMAP section, it's
 	   there. If not, it's a normal file in the primary CBFS section. */
 	size_t offset, size;
 	struct buffer buffer;
-	if (fmap_find_area(fmap, SECTION_NAME_BOOTBLOCK)) {
-		if (!partitioned_file_read_region(&buffer, param.image_file,
-						  SECTION_NAME_BOOTBLOCK))
+	if (fmap_find_area(fmap, bootblock_region)) {
+		if (!partitioned_file_read_region(&buffer, param.image_file, bootblock_region))
 			goto no_metadata_hash;
-		mhc.region = SECTION_NAME_BOOTBLOCK;
+		mhc.region = bootblock_region;
 		offset = 0;
 		size = buffer.size;
 	} else {
 		struct cbfs_image cbfs;
 		struct cbfs_file *mh_container;
-		if (!partitioned_file_read_region(&buffer, param.image_file,
-						  SECTION_NAME_PRIMARY_CBFS))
+		if (!partitioned_file_read_region(&buffer, param.image_file, SECTION_NAME_PRIMARY_CBFS))
 			goto no_metadata_hash;
 		mhc.region = SECTION_NAME_PRIMARY_CBFS;
 		if (cbfs_image_from_buffer(&cbfs, &buffer, param.headeroffset))
@@ -245,7 +259,7 @@ static int update_anchor(struct mh_cache *mhc, uint8_t *fmap_hash)
    will recalculate and update the metadata hash in the bootblock if needed. */
 static int maybe_update_metadata_hash(struct cbfs_image *cbfs)
 {
-	if (strcmp(param.region_name, SECTION_NAME_PRIMARY_CBFS))
+	if (!is_main_cbfs_region(param.region_name))
 		return 0;  /* Metadata hash only embedded in primary CBFS. */
 
 	struct mh_cache *mhc = get_mh_cache();
@@ -268,6 +282,7 @@ static int maybe_update_metadata_hash(struct cbfs_image *cbfs)
 static int maybe_update_fmap_hash(void)
 {
 	if (strcmp(param.region_name, SECTION_NAME_BOOTBLOCK) &&
+	    strcmp(param.region_name, SECTION_NAME_TOPSWAP) &&
 	    strcmp(param.region_name, SECTION_NAME_FMAP) &&
 	    param.type != CBFS_TYPE_BOOTBLOCK &&
 	    param.type != CBFS_TYPE_AMDFW)
@@ -1603,7 +1618,7 @@ static int cbfs_print(void)
 				vb2_digest_size(real_hash.algo));
 		printf("[METADATA HASH]\t%s:%s",
 		       vb2_get_hash_algorithm_name(real_hash.algo), hash_str);
-		if (!strcmp(param.region_name, SECTION_NAME_PRIMARY_CBFS)) {
+		if (is_main_cbfs_region(param.region_name)) {
 			if (!memcmp(mhc->cbfs_hash.raw, real_hash.raw,
 				    vb2_digest_size(real_hash.algo))) {
 				printf(":valid");
@@ -2364,6 +2379,10 @@ int main(int argc, char **argv)
 		strcpy(region_name_scratch, param.region_name);
 		param.region_name = strtok(region_name_scratch, ",");
 		for (unsigned region = 0; region < num_regions; ++region) {
+			// Reset metadata cache in case region uses anchor from a different
+			// location.
+			get_mh_cache()->initialized = false;
+
 			if (!param.region_name) {
 				ERROR("Encountered illegal degenerate region name in -r list\n");
 				ERROR("The image will be left unmodified.\n");
@@ -2371,8 +2390,7 @@ int main(int argc, char **argv)
 				return 1;
 			}
 
-			if (strcmp(param.region_name, SECTION_NAME_PRIMARY_CBFS)
-									== 0)
+			if (is_main_cbfs_region(param.region_name))
 				seen_primary_cbfs = true;
 
 			param.image_region = image_regions + region;

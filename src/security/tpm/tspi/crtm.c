@@ -9,6 +9,10 @@
 #include <stdio.h>
 #include <string.h>
 
+/* This include is available as <intelblocks/rtc.h> only if CONFIG_SOC_INTEL_COMMON_BLOCK is
+   set, which is not guaranteed for this file. */
+#include <soc/intel/common/block/include/intelblocks/rtc.h>
+
 static int tpm_log_initialized;
 static inline int tpm_log_available(void)
 {
@@ -72,7 +76,28 @@ static tpm_result_t tspi_init_crtm(void)
 		/* Mapping measures the file. We know we can safely map here because
 		   bootblock-as-a-file is only used on x86, where we don't need cache to map. */
 		enum cbfs_type type = CBFS_TYPE_BOOTBLOCK;
-		void *mapping = cbfs_ro_type_map("bootblock", NULL, &type);
+		void *mapping = NULL;
+
+		if (CONFIG(INTEL_TOP_SWAP_SEPARATE_REGIONS)) {
+			enum ts_config top_swap = get_rtc_buc_top_swap_status();
+			if (top_swap == TS_ENABLE)
+				printk(BIOS_INFO,
+				       "CRTM Top Swap: Measuring bootblock in TOPSWAP (will be logged as BOOTBLOCK).\n");
+			else
+				printk(BIOS_INFO,
+				       "CRTM Top Swap: Measuring bootblock in BOOTBLOCK.\n");
+
+			/*
+			 * Whether Top Swap is active or not, FMAP always refers to the same
+			 * memory ranges but the contents of BOOTBLOCK and TOPSWAP are swapped.
+			 * Hence always using BOOTBLOCK region to access the active bootblock.
+			 */
+			mapping = cbfs_unverified_area_type_alloc("BOOTBLOCK", "bootblock",
+								  NULL, NULL, NULL, &type);
+		} else {
+			mapping = cbfs_ro_type_map("bootblock", NULL, &type);
+		}
+
 		if (!mapping) {
 			printk(BIOS_INFO,
 			       "TSPI: Couldn't measure bootblock into CRTM!\n");

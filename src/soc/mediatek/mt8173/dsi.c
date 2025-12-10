@@ -118,7 +118,7 @@ void mtk_dsi_pin_drv_ctrl(void)
 	struct stopwatch sw;
 	uint32_t pwr_ack;
 
-	setbits32(&lvds_tx1->vopll_ctl3, RG_DA_LVDSTX_PWR_ON);
+	setbits32(&lvds_tx0->vopll_ctl3, RG_DA_LVDSTX_PWR_ON);
 
 	stopwatch_init_usecs_expire(&sw, 1000);
 
@@ -127,8 +127,8 @@ void mtk_dsi_pin_drv_ctrl(void)
 			printk(BIOS_ERR, "enable lvdstx_power failed!!!\n");
 			return;
 		}
-		pwr_ack = read32(&lvds_tx1->vopll_ctl3) & RG_AD_LVDSTX_PWR_ACK;
+		pwr_ack = read32(&lvds_tx0->vopll_ctl3) & RG_AD_LVDSTX_PWR_ACK;
 	} while (pwr_ack == 0);
 
-	clrbits32(&lvds_tx1->vopll_ctl3, RG_DA_LVDS_ISO_EN);
+	clrbits32(&lvds_tx0->vopll_ctl3, RG_DA_LVDS_ISO_EN);
 }

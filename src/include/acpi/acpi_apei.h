@@ -13,6 +13,19 @@
 
 #include <acpi/acpi.h>
 
+#define MAX_ERROR_BLOCK_SIZE      0x1000
+#define MAX_MCA_ERROR_BLOCK_SIZE  0x0400
+
+// Hardware Error Notification types. All other values are reserved
+#define HARDWARE_ERROR_NOTIFICATION_POLLED              0
+#define HARDWARE_ERROR_NOTIFICATION_EXTERNAL_INTERRUPT  1
+#define HARDWARE_ERROR_NOTIFICATION_LOCAL_INTERRUPT     2
+#define HARDWARE_ERROR_NOTIFICATION_SCI                 3
+#define HARDWARE_ERROR_NOTIFICATION_NMI                 4
+#define HARDWARE_ERROR_NOTIFICATION_CMCI                5
+#define HARDWARE_ERROR_NOTIFICATION_MCE                 6
+#define HARDWARE_ERROR_NOTIFICATION_GPIO                7
+
 /* HEST (Hardware Error Source Table) */
 typedef struct acpi_hest {
 	acpi_header_t header;
@@ -32,6 +45,19 @@ typedef struct acpi_hest_esd {
 					 */
 	u32 max_section_per_record;
 } __packed acpi_hest_esd_t;
+#define ACPI_APEI_ESD_TYPE_MCE          0 // Machine Check Exception
+#define ACPI_APEI_ESD_TYPE_CMC          1 // Corrected Machine Check
+#define ACPI_APEI_ESD_TYPE_NMI          2 // Non Maskable Interrupt
+#define ACPI_APEI_ESD_TYPE_RPORT_AER    6 // PCIe Root Port AER
+#define ACPI_APEI_ESD_TYPE_DEVICE_AER   7 // PCIe Device/Endpoint AER
+#define ACPI_APEI_ESD_TYPE_BRIDGE_AER   8 // PCIe Bridge AER
+#define ACPI_APEI_ESD_TYPE_GHE          9 // Generic Hardware Error
+#define ACPI_APEI_ESD_TYPE_GHE_V2      10 // Generic Hardware Error
+#define ACPI_APEI_ESD_TYPE_DMC         11 // Deferred Machine Check
+
+#define ERROR_SOURCE_FLAG_FIRMWARE_FIRST  BIT(0)
+#define ERROR_SOURCE_FLAG_GLOBAL          BIT(1)
+#define ERROR_SOURCE_FLAG_GHES_ASSIST     BIT(2)
 
 /* Hardware Error Notification */
 typedef struct acpi_hest_hen {

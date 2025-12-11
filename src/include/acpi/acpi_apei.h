@@ -102,6 +102,13 @@ struct __packed apei_esd_header {
 	u32 max_sections_per_record;
 };
 
+struct __packed apei_ia32_nmi {
+	struct apei_esd_header esd;
+	u32 max_raw_data_length;
+};
+_Static_assert(sizeof(struct apei_ia32_nmi) == 20,
+		"wrong acpi_ia32_nmi size");
+
 struct __packed apei_ia32_pci_root_port_aer {
 	struct apei_esd_header esd;
 	u32 bus;

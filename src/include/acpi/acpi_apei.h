@@ -63,7 +63,7 @@ typedef struct acpi_hest_esd {
 typedef struct acpi_hest_hen {
 	u8 type;
 	u8 length;
-	u16 conf_we;		/* Configuration Write Enable */
+	u16 conf_write_enable;
 	u32 poll_interval;
 	u32 vector;
 	u32 sw2poll_threshold_val;
@@ -240,13 +240,13 @@ typedef struct acpi_einj_trigger_table {
 } __packed acpi_einj_trigger_table_t;
 
 typedef struct set_error_type {
-	u32 errtype;
-	u32 vendorerrortype;
+	u32 err_type;
+	u32 vendor_error_type;
 	u32 flags;
-	u32 apicid;
-	u64 memaddr;
-	u64 memrange;
-	u32 pciesbdf;
+	u32 apic_id;
+	u64 mem_addr;
+	u64 mem_range;
+	u32 pcie_sbdf;
 } __packed set_error_type_t;
 
 #define EINJ_PARAM_NUM 6
@@ -259,7 +259,7 @@ typedef struct acpi_einj_smi {
 	u64 cmd_sts;
 	u64 einj_addr;
 	u64 einj_addr_msk;
-	set_error_type_t setaddrtable;
+	set_error_type_t set_addr_table;
 	u64 reserved[50];
 } __packed acpi_einj_smi_t;
 

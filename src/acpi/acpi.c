@@ -648,7 +648,7 @@ void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions)
 			.action = SET_ERROR_TYPE_WITH_ADDRESS,
 			.instruction = WRITE_REGISTER,
 			.flags = FLAG_PRESERVE,
-			.reg = EINJ_REG_MEMORY((u64)(uintptr_t)&einj_smi->setaddrtable),
+			.reg = EINJ_REG_MEMORY((u64)(uintptr_t)&einj_smi->set_addr_table),
 			.value = 1,
 			.mask = 0xffffffff
 		}
@@ -1027,7 +1027,7 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
 		memset(pos, 0, sizeof(acpi_hest_hen_t));
 		hen->type = 3;		/* SCI? */
 		hen->length = sizeof(acpi_hest_hen_t);
-		hen->conf_we = 0;	/* Configuration Write Enable. */
+		hen->conf_write_enable = 0;
 		hen->poll_interval = 0;
 		hen->vector = 0;
 		hen->sw2poll_threshold_val = 0;

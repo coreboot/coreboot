@@ -12,7 +12,7 @@ void reserve_buffer_for_dramc(void)
 {
 	const struct mem_chip_info *mc = cbmem_find(CBMEM_ID_MEM_CHIP_INFO);
 	int i;
-	const uint32_t reserved_size = 64 * KiB;
+	const uint32_t reserved_size = HW_TX_TRACING_BUF_SIZE;
 	uint64_t cbmem_top_addr = cbmem_top();
 	uint64_t reserved_addr;
 	uint64_t rank_size_sum = 0;

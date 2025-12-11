@@ -19,6 +19,9 @@
 #include <soc/symbols.h>
 #include <symbols.h>
 
+static uint64_t mte_start;
+static size_t mte_size;
+
 void bootmem_platform_add_ranges(void)
 {
 	if (CONFIG(ARM64_BL31_OPTEE_WITH_SMC))
@@ -30,11 +33,25 @@ void bootmem_platform_add_ranges(void)
 	bootmem_add_range((uint64_t)_resv_mem_gpu, REGION_SIZE(resv_mem_gpu), BM_MEM_RESERVED);
 	bootmem_add_range((uint64_t)_resv_mem_gpueb,
 			  REGION_SIZE(resv_mem_gpueb), BM_MEM_RESERVED);
+
+	bootmem_add_range_from(mte_start, mte_size, BM_MEM_TAG, BM_MEM_RAM);
 }
 
 static void soc_read_resources(struct device *dev)
 {
 	ram_range(dev, 0, (uintptr_t)_dram, sdram_size());
+}
+
+#define MTE_SIZE_ALIGNMENT	(64 * KiB)
+
+static void mte_setup(void)
+{
+	size_t dram_size = sdram_size();
+
+	mte_size = ALIGN_UP(dram_size / 33, MTE_SIZE_ALIGNMENT);
+	mte_start = ALIGN_DOWN((uint64_t)_dram + dram_size - mte_size - HW_TX_TRACING_BUF_SIZE,
+			       MTE_SIZE_ALIGNMENT);
+	booker_mte_init(mte_start);
 }
 
 static void soc_init(struct device *dev)
@@ -57,7 +74,7 @@ static void soc_init(struct device *dev)
 	 * Registers are only accessible by Secure accesses. Writes to them must occur prior to
 	 * the first non-configuration access targeting the device.
 	 */
-	booker_mte_init(MTE_TAG_ADDR);
+	mte_setup();
 }
 
 static struct device_operations soc_ops = {

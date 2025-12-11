@@ -662,6 +662,8 @@ chip soc/intel/pantherlake
 				register "vcm_address" = "0x0C"
 				register "vcm_name" = ""VCM1""
 
+				register "ssdb.rom_type" = "ROM_EEPROM_CAT24C16"
+				register "rom_address" = "0x50"
 				register "ssdb.lanes_used" = "4"
 				register "ssdb.platform" = "PLAT_PTL"
 				register "num_freq_entries" = "1"
@@ -765,6 +767,8 @@ chip soc/intel/pantherlake
 				register "vcm_address" = "0x0C"
 				register "vcm_name" = ""VCM1""
 
+				register "ssdb.rom_type" = "ROM_EEPROM_CAT24C16"
+				register "rom_address" = "0x50"
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.platform" = "PLAT_PTL"
 				register "num_freq_entries" = "1"

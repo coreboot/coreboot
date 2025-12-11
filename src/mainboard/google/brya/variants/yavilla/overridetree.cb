@@ -371,6 +371,8 @@ chip soc/intel/alderlake
 				register "ssdb.vcm_type" = "VCM_DW9714"
 				register "vcm_address" = "0x0C"
 				register "vcm_name" = ""VCM0""
+				register "ssdb.rom_type" = "ROM_EEPROM_CAT24C08"
+				register "rom_address" = "0x50"
 				register "num_freq_entries" = "2"
 				register "link_freq[0]" = "360000000"
 				register "link_freq[1]" = "180000000"

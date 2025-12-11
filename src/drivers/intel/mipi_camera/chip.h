@@ -134,6 +134,8 @@ struct drivers_intel_mipi_camera_config {
 	const char *acpi_name;
 	const char *chip_name;
 	unsigned int acpi_uid;
+	/* Absolute ACPI path for _DEP (e.g. "\\_SB.PCI0.I2C2.CLP0" or a sensor path) */
+	const char *acpi_dep;
 	const char *pr0;
 
 	/* Settings specific to CIO2 device */
@@ -167,6 +169,7 @@ struct drivers_intel_mipi_camera_config {
 
 	/* Settings specific to vcm */
 	const char *vcm_compat;
+
 	/* Does the device have a power resource entries */
 	bool has_power_resource;
 	/* Perform low power probe */

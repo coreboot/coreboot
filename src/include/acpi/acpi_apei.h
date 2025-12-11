@@ -102,6 +102,55 @@ struct __packed apei_esd_header {
 	u32 max_sections_per_record;
 };
 
+struct __packed apei_ia32_pci_root_port_aer {
+	struct apei_esd_header esd;
+	u32 bus;
+	u16 device;
+	u16 function;
+	u16 device_control;
+	u16 reserved2;
+	u32 uncorrectable_error_mask;
+	u32 uncorrectable_error_severity;
+	u32 correctable_error_mask;
+	u32 advanced_error_capabilities;
+	u32 root_error_command;
+};
+_Static_assert(sizeof(struct apei_ia32_pci_root_port_aer) == 48,
+		"wrong acpi_ia32_pci_device_aer size");
+
+struct __packed apei_ia32_pci_device_aer {
+	struct apei_esd_header esd;
+	u32 bus;
+	u16 device;
+	u16 function;
+	u16 device_control;
+	u16 reserved2;
+	u32 uncorrectable_error_mask;
+	u32 uncorrectable_error_severity;
+	u32 correctable_error_mask;
+	u32 advanced_error_capabilities;
+};
+_Static_assert(sizeof(struct apei_ia32_pci_device_aer) == 44,
+		"wrong acpi_ia32_pci_device_aer size");
+
+struct __packed apei_ia32_pci_bridge_aer {
+	struct apei_esd_header esd;
+	u32 bus;
+	u16 device;
+	u16 function;
+	u16 device_control;
+	u16 reserved2;
+	u32 uncorrectable_error_mask;
+	u32 uncorrectable_error_severity;
+	u32 correctable_error_mask;
+	u32 advanced_error_capabilities;
+	u32 secondary_uncorrectable_error_mask;
+	u32 secondary_uncorrectable_error_severity;
+	u32 secondary_advanced_capabilities;
+};
+_Static_assert(sizeof(struct apei_ia32_pci_bridge_aer) == 56,
+		"wrong acpi_ia32_pci_bridge_aer size");
+
 /* BERT (Boot Error Record Table) */
 typedef struct acpi_bert {
 	acpi_header_t header;

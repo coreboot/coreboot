@@ -55,6 +55,8 @@ static uint32_t bootmem_to_lb_tag(const enum bootmem_type tag)
 		return LB_MEM_TABLE;
 	case BM_MEM_SOFT_RESERVED:
 		return LB_MEM_SOFT_RESERVED;
+	case BM_MEM_TAG:
+		return LB_MEM_TAG;
 	default:
 		printk(BIOS_ERR, "Unsupported tag %u\n", tag);
 		return LB_MEM_RESERVED;
@@ -166,6 +168,7 @@ static const struct range_strings type_strings[] = {
 	{ BM_MEM_SOFT_RESERVED, "SOFT RESERVED" },
 	{ BM_MEM_RAMSTAGE, "RAMSTAGE" },
 	{ BM_MEM_PAYLOAD, "PAYLOAD" },
+	{ BM_MEM_TAG, "TAG STORAGE" },
 };
 
 static const char *bootmem_range_string(const enum bootmem_type tag)

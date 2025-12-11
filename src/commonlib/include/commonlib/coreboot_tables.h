@@ -143,6 +143,7 @@ struct lb_memory_range {
 #define LB_MEM_NVS		 4	/* ACPI NVS Memory */
 #define LB_MEM_UNUSABLE		 5	/* Unusable address space */
 #define LB_MEM_VENDOR_RSVD	 6	/* Vendor Reserved */
+#define LB_MEM_TAG		 7	/* Armv9 tag storage for MTE */
 #define LB_MEM_TABLE		16    /* Ram configuration tables are kept in */
 #define LB_MEM_SOFT_RESERVED	0xefffffff /* Specific purpose memory */
 };

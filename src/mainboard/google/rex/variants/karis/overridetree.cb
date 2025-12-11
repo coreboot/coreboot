@@ -24,7 +24,7 @@ fw_config
 	end
 	field KB_TYPE 12
 		option KB_TYPE_DEFAULT		0
-		option KB_TYPE_CA			1
+		option KB_TYPE_CA		1
 	end
 	field WIFI_TYPE 13
 		option WIFI_CNVI		0
@@ -33,6 +33,9 @@ fw_config
 	field PANEL_PWRSEQ_EC_CONTROL 14
 		option DISABLE			0
 		option ENABLE			1
+	end
+	field FACTORY 16
+		option WIFI_ALL			1
 	end
 end
 
@@ -356,6 +359,7 @@ chip soc/intel/meteorlake
 				register "enable_cnvi_ddr_rfim" = "true"
 				device generic 0 on
 					probe WIFI_TYPE WIFI_CNVI
+					probe FACTORY WIFI_ALL
 				end
 			end
 		end
@@ -527,6 +531,7 @@ chip soc/intel/meteorlake
 		end #I2C5
 		device ref pcie_rp5 on
 			probe WIFI_TYPE WIFI_PCIE
+			probe FACTORY WIFI_ALL
 			# Enable WLAN Card PCIE 5 using clk 5
 			register "pcie_rp[PCH_RP(5)]" = "{
 				.clk_src = 5,
@@ -539,6 +544,7 @@ chip soc/intel/meteorlake
 				use usb2_port10 as bluetooth_companion
 				device pci 00.0 on
 					probe WIFI_TYPE WIFI_PCIE
+					probe FACTORY WIFI_ALL
 				end
 			end
 			chip soc/intel/common/block/pcie/rtd3
@@ -547,6 +553,7 @@ chip soc/intel/meteorlake
 				register "srcclk_pin" = "5"
 				device generic 0 on
 					probe WIFI_TYPE WIFI_PCIE
+					probe FACTORY WIFI_ALL
 				end
 			end
 		end	#PCIE5 WLAN card

@@ -102,6 +102,51 @@ struct __packed apei_esd_header {
 	u32 max_sections_per_record;
 };
 
+struct __packed apei_ia32_mce_bank {
+	u8 bank_number;
+	u8 clear_status_on_initialization;
+	u8 status_data_format;
+	u8 reserved;
+	u32 control_reg_msr_addr;
+	u64 control_init_data;
+	u32 status_reg_msr_addr;
+	u32 address_reg_msr_addr;
+	u32 misc_reg_msr_addr;
+};
+_Static_assert(sizeof(struct apei_ia32_mce_bank) == 28,
+		"wrong acpi_ia32_mce_bank size");
+
+struct __packed apei_ia32_mce {
+	struct apei_esd_header esd;
+	u64 global_capability_init_data;
+	u64 global_control_init_data;
+	u8 number_of_hardware_banks;
+	u8 reserved[7];
+	struct apei_ia32_mce_bank banks[];
+};
+_Static_assert(sizeof(struct apei_ia32_mce) == 40,
+		"wrong acpi_ia32_mce size");
+
+struct __packed apei_ia32_corrected_mce {
+	struct apei_esd_header esd;
+	acpi_hest_hen_t notify;
+	u8 number_of_hardware_banks;
+	u8 reserved[3];
+	struct apei_ia32_mce_bank banks[];
+};
+_Static_assert(sizeof(struct apei_ia32_corrected_mce) == 48,
+		"wrong acpi_ia32_corrected_mce size");
+
+struct __packed apei_ia32_deferred_mce {
+	struct apei_esd_header esd;
+	acpi_hest_hen_t notify;
+	u8 number_of_hardware_banks;
+	u8 reserved[3];
+	struct apei_ia32_mce_bank banks[];
+};
+_Static_assert(sizeof(struct apei_ia32_deferred_mce) == 48,
+		"wrong acpi_ia32_deferred_mce size");
+
 struct __packed apei_ia32_nmi {
 	struct apei_esd_header esd;
 	u32 max_raw_data_length;

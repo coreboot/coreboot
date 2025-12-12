@@ -285,18 +285,19 @@ wwan_fm350gl_acpi_event_method(const struct device *dev,
 	if (CONFIG(GENERIC_GPIO_LIB))
 		pin = gpio_acpi_pin(pin);
 
-	if (pin > 0xff) {
-		printk(BIOS_ERR, "%s: pins above 0xFF are unsupported (pin %u)\n",
-		       __func__, pin);
-		return;
+	if (pin <= 0xff) {
+		snprintf(name, sizeof(name), "_%c%02X",
+			wake_gpio->irq.mode == ACPI_IRQ_EDGE_TRIGGERED ? 'E' : 'L', pin);
+		acpigen_write_method_serialized(name, 0);
+		acpigen_notify(acpi_device_path(dev), 0x02); /* NOTIFY_DEVICE_WAKE */
+		acpigen_write_method_end();
+	} else {
+		acpigen_write_method_serialized("_EVT", 1);
+		acpigen_write_if_lequal_op_int(ARG0_OP, pin);
+		acpigen_notify(acpi_device_path(dev), 0x02); /* NOTIFY_DEVICE_WAKE */
+		acpigen_pop_len();
+		acpigen_write_method_end();
 	}
-
-	snprintf(name, sizeof(name), "_%c%02X",
-		 wake_gpio->irq.mode == ACPI_IRQ_EDGE_TRIGGERED ? 'E' : 'L', pin);
-
-	acpigen_write_method_serialized(name, 0);
-	acpigen_notify(acpi_device_path(dev), 0x02); /* NOTIFY_DEVICE_WAKE */
-	acpigen_write_method_end();
 }
 
 static void wwan_fm350gl_acpi_gpio_events(const struct device *dev)

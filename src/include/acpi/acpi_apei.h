@@ -91,6 +91,17 @@ typedef struct ghes_record {
 	u32 err_sts_blk_len;
 } __packed ghes_record_t;
 
+// internal struct only. It is common between all Error Source Descriptors.
+struct __packed apei_esd_header {
+	u16 type;
+	u16 source_id;
+	u16 reserved;
+	u8 flags;
+	u8 enabled;
+	u32 prealloc_record_count;
+	u32 max_sections_per_record;
+};
+
 /* BERT (Boot Error Record Table) */
 typedef struct acpi_bert {
 	acpi_header_t header;

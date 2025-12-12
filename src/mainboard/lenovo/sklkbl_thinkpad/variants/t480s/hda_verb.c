@@ -5,7 +5,7 @@
 const u32 cim_verb_data[] = {
 	0x10ec0257, // Vendor/Device ID: Realtek ALC257
 	0x17aa2258, // Subsystem ID
-	11,
+	18,
 	AZALIA_SUBVENDOR(0, 0x17aa2258),
 
 	AZALIA_PIN_CFG(0, 0x12, AZALIA_PIN_DESC(
@@ -50,6 +50,41 @@ const u32 cim_verb_data[] = {
 		AZALIA_JACK_PRESENCE_DETECT,
 		1, 15
 	)),
+
+	//==========Widget node 0x20 - 0 :Hidden register SW reset
+	0x0205001A,
+	0x0204C003,
+	0x0205001A,
+	0x0204C003,
+	0x05850000,
+	0x0584F880,
+	0x05850000,
+	0x0584F880,
+	//==========Widget node 0x20 - 1 : ClassD 2W
+	0x02050038,
+	0x02048981,
+	0x0205001B,
+	0x02040A4B,
+	//==========Widget node 0x20 - 2
+	0x0205003C,
+	0x02043154,
+	0x0205003C,
+	0x02043114,
+	//==========Widget node 0x20 - 3 :
+	0x02050046,
+	0x02040004,
+	0x05750003,
+	0x057409A3,
+	//==========Widget node 0x20 - 4 :JD1 enable 1JD port for HP JD
+	0x02050009,
+	0x02046003,
+	0x0205000A,
+	0x02047770,
+	//==========Widget node 0x20 - 5 : Silence data mode Threshold (-84dB)
+	0x02050037,
+	0x0204FE15,
+	0x02050030,
+	0x02049004,
 
 	0x8086280b, // Vendor/Device ID: Intel Kabylake HDMI
 	0x80860101, // Subsystem ID

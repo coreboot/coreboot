@@ -8,7 +8,10 @@
 size_t sdram_size(void)
 {
 	const struct mem_chip_info *mc;
-	size_t size = 0;
+	static size_t size = 0;
+
+	if (size)
+		return size;
 
 	if (ENV_RAMINIT) {
 		size = mtk_dram_size();

@@ -3121,7 +3121,31 @@ typedef struct {
 
 /** Offset 0x0B31 - Reserved
 **/
-  UINT8                       Reserved93[55];
+  UINT8                       Reserved93[17];
+
+/** Offset 0x0B42 - VDD2 Voltage
+  Voltage is multiple of 5mV where 0 means Auto.
+**/
+  UINT16                      Vdd2HVoltage;
+
+/** Offset 0x0B44 - VDD1 Voltage
+  Voltage is multiple of 5mV where 0 means Auto.
+**/
+  UINT16                      Vdd1Voltage;
+
+/** Offset 0x0B46 - VDD2L Voltage Override
+  Voltage is multiple of 5mV where 0 means Auto.
+**/
+  UINT16                      Vdd2LVoltage;
+
+/** Offset 0x0B48 - VDDQ Voltage Override
+  Voltage is multiple of 5mV where 0 means Auto.
+**/
+  UINT16                      VddqVoltage;
+
+/** Offset 0x0B4A - Reserved
+**/
+  UINT8                       Reserved94[30];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

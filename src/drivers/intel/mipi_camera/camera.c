@@ -220,16 +220,9 @@ static uint32_t address_for_dev_type(const struct device *dev, uint8_t dev_type)
 	return (((uint32_t)i2c_bus) << 24 | ((uint32_t)i2c_addr) << 8 | dev_type);
 }
 
-static void camera_generate_dsm(const struct device *dev)
+static void camera_generate_dsm_sensor_name(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
-	int local1_ret = 1 + (config->ssdb.vcm_type ? 1 : 0) + (config->ssdb.rom_type ? 1 : 0);
-	int next_local1 = 1;
-	/* Method (_DSM, 4, NotSerialized) */
-	acpigen_write_method("_DSM", 4);
-
-	/* ToBuffer (Arg0, Local0) */
-	acpigen_write_to_buffer(ARG0_OP, LOCAL0_OP);
 
 	/* If (LEqual (Local0, ToUUID(uuid))) */
 	acpigen_write_if();
@@ -238,6 +231,13 @@ static void camera_generate_dsm(const struct device *dev)
 	acpigen_write_uuid(SENSOR_NAME_UUID);
 	acpigen_write_return_string(config->sensor_name ? config->sensor_name : "UNKNOWN");
 	acpigen_pop_len();	/* If */
+}
+
+static void camera_generate_dsm_sensor_type(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	int local1_ret = 1 + (config->ssdb.vcm_type ? 1 : 0) + (config->ssdb.rom_type ? 1 : 0);
+	int next_local1 = 1;
 
 	/* If (LEqual (Local0, ToUUID(uuid))) */
 	acpigen_write_if();
@@ -272,6 +272,18 @@ static void camera_generate_dsm(const struct device *dev)
 	}
 
 	acpigen_pop_len();      /* If uuid */
+}
+
+static void camera_generate_dsm(const struct device *dev)
+{
+	/* Method (_DSM, 4, NotSerialized) */
+	acpigen_write_method("_DSM", 4);
+
+	/* ToBuffer (Arg0, Local0) */
+	acpigen_write_to_buffer(ARG0_OP, LOCAL0_OP);
+
+	camera_generate_dsm_sensor_name(dev);
+	camera_generate_dsm_sensor_type(dev);
 
 	/* Return (Buffer (One) { 0x0 }) */
 	acpigen_write_return_singleton_buffer(0x0);

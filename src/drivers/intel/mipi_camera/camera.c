@@ -19,6 +19,7 @@
 
 #define UUID_DSM_SENSOR		"822ace8f-2814-4174-a56b-5f029fe079ee"
 #define UUID_DSM_I2C		"26257549-9271-4ca4-bb43-c4899d5a4881"
+#define UUID_DSM_I2C_V2		"5815c5c8-c47d-477b-9a8d-76173176414b"
 #define DEFAULT_ENDPOINT	0
 #define DEFAULT_REMOTE_NAME	"\\_SB.PCI0.CIO2"
 #define CIO2_PCI_DEV		0x14
@@ -333,6 +334,82 @@ static void camera_generate_dsm_i2c(const struct device *dev)
 	acpigen_pop_len();      /* If uuid */
 }
 
+/*
+ * Generate ASL DSM code for I2C device count and addresses (V2)
+ *
+ * Generated ASL:
+ * If (LEqual (Local0, ToUUID ("5815c5c8-c47d-477b-9a8d-76173176414b"))) {
+ *     If (LEqual (Arg2, Zero)) {
+ *         If (LEqual (Arg1, Zero)) {
+ *             Return (Buffer (One) { 0x3 })
+ *         } Else {
+ *             Return (Buffer (One) { 0x1 })
+ *         }
+ *     }
+ *     If (LEqual (Arg2, One)) {
+ *         Return (Buffer (52) {
+ *             i2c_count, sensor_addr, [vcm_addr], [rom_addr], 0, 0, ...
+ *         })
+ *         // Buffer is 13 * 4 = 52 bytes: count + up to 12 device addresses
+ *     }
+ * }
+ */
+static void camera_generate_dsm_i2c_v2(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	if (!config)
+		return;
+
+	int i2c_count = 1 + (config->ssdb.vcm_type ? 1 : 0) + (config->ssdb.rom_type ? 1 : 0);
+	int i2c_idx = 1;
+
+	/* If (LEqual (Local0, ToUUID(UUID_DSM_I2C_V2))) */
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_uuid(UUID_DSM_I2C_V2);
+
+	/* If (LEqual (Arg2, Zero)) */
+	acpigen_write_if_lequal_op_int(ARG2_OP, 0);
+
+	/* If (LEqual (Arg1, Zero)) */
+	acpigen_write_if_lequal_op_int(ARG1_OP, 0);
+	/* Return (Buffer (One) { 0x3 }) */
+	acpigen_write_return_singleton_buffer(0x3);
+	/* Else */
+	acpigen_write_else();
+	/* Return (Buffer (One) { 0x1 }) */
+	acpigen_write_return_singleton_buffer(0x1);
+	acpigen_pop_len();	/* If Arg1=0 */
+
+	acpigen_pop_len();	/* If Arg2=0 */
+
+	/* If (LEqual (Arg2, One)) */
+	acpigen_write_if_lequal_op_int(ARG2_OP, 1);
+
+	/* Buffer is 13 * 4 = 52 bytes: count + up to 12 device addresses */
+	uint32_t i2c_buffer[13] = {0};
+	_Static_assert(sizeof(i2c_buffer) == 52, "i2c_buffer size must be 52 bytes");
+
+	i2c_buffer[0] = i2c_count;
+	i2c_buffer[i2c_idx++] = address_for_dev_type(dev, DEV_TYPE_SENSOR);
+
+	if (config->ssdb.vcm_type) {
+		i2c_buffer[i2c_idx++] = address_for_dev_type(dev, DEV_TYPE_VCM);
+	}
+
+	if (config->ssdb.rom_type) {
+		i2c_buffer[i2c_idx] = address_for_dev_type(dev, DEV_TYPE_ROM);
+	}
+
+	acpigen_write_return_byte_buffer((uint8_t *)i2c_buffer, sizeof(i2c_buffer));
+
+	acpigen_pop_len();	/* If Arg2=1 */
+
+	acpigen_pop_len();	/* If uuid */
+}
+
+
 static void camera_generate_dsm(const struct device *dev)
 {
 	/* Method (_DSM, 4, NotSerialized) */
@@ -343,6 +420,7 @@ static void camera_generate_dsm(const struct device *dev)
 
 	camera_generate_dsm_sensor(dev);
 	camera_generate_dsm_i2c(dev);
+	camera_generate_dsm_i2c_v2(dev);
 
 	/* Return (Buffer (One) { 0x0 }) */
 	acpigen_write_return_singleton_buffer(0x0);

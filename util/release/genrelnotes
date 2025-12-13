@@ -26,9 +26,12 @@ then
 	exit 1
 fi
 
+# Save the original HEAD hash to restore later
+ORIGINAL_HEAD=$(git rev-parse HEAD)
+
 # Try to verify that the repo is clean before losing state.
 if ! git diff-index --quiet --cached HEAD 2>/dev/null || \
-	[ "$(git diff origin/main --shortstat 2>/dev/null | tail -n1)" != "" ]; then
+	! git diff-files --quiet 2>/dev/null; then
 	echo "ERROR: repo is not clean.  Exiting." >&2
 	exit 1
 fi
@@ -185,7 +188,7 @@ find_areas() {
 # up manually.
 version_ctrl_c() {
 	printf "\n Cleaning up and exiting.\n" >&2
-	git checkout origin/main > /dev/null 2>&1
+	git checkout "$ORIGINAL_HEAD" > /dev/null 2>&1
 	git submodule update --init --checkout  > /dev/null 2>&1
 	rm "$LOGFILE"
 	exit 1;
@@ -290,7 +293,8 @@ southbridge_list_new=$(find_areas "src/southbridge" "Kconfig" "")
 printf "Calculating new SLOC\n"
 NEW_SLOC=$(get_sloc)
 
-git checkout origin/main  > /dev/null 2>&1
+# Restore to original HEAD
+git checkout "$ORIGINAL_HEAD" > /dev/null 2>&1
 git submodule update --init --checkout  > /dev/null 2>&1
 trap "" SIGINT
 

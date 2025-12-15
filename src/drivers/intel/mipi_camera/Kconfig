@@ -8,8 +8,36 @@ config DRIVERS_INTEL_MIPI_CAMERA
 	  MIPI CSI I2C camera SSDT generator. Generates SSDB and PWDB
 	  structures which are used by the Intel kernel drivers.
 
+if DRIVERS_INTEL_MIPI_CAMERA
+
 config DRIVERS_INTEL_MIPI_SUPPORTS_PRE_PRODUCTION_SOC
 	def_bool n
 	help
 	  Use this config to provide information to IPU kernel driver
 	  if pre-production or production signed IPU FW needs to be loaded.
+
+choice
+	prompt "MIPI camera ACPI type"
+	default MIPI_ACPI_TYPE_CHROMEOS if CHROMEOS
+	default MIPI_ACPI_TYPE_WINDOWS_LINUX
+	help
+	  Select the ACPI device type to generate for the MIPI camera.
+
+config MIPI_ACPI_TYPE_WINDOWS_LINUX
+	bool "Windows / Linux"
+	help
+	  Generates a single ACPI device for the camera sensor and any
+	  associated VCM or NVM devices on the same I2C bus, instead of
+	  separate ACPI devices for each camera related device. The IPU
+	  ACPI device is attached to the iGPU, not standalone. This is
+	  the preferred method for Windows and mainline Linux.
+
+config MIPI_ACPI_TYPE_CHROMEOS
+	bool "Chrome OS"
+	help
+	  Generates separate ACPI devices for each camera related device.
+	  The IPU ACPI device is generated separately from the iGPU.
+	  This is the preferred method for ChromeOS.
+
+endchoice
+endif

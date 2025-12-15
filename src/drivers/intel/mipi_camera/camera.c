@@ -465,9 +465,6 @@ static void camera_generate_dsm(const struct device *dev)
 
 static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *config)
 {
-	struct device *cio2 = pcidev_on_root(CIO2_PCI_DEV, CIO2_PCI_FN);
-	struct drivers_intel_mipi_camera_config *cio2_config;
-
 	config->ssdb.version = 1;
 
 	if (!config->ssdb.sensor_card_sku.card_type)
@@ -477,9 +474,6 @@ static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *c
 
 	if (!config->ssdb.bdf_value)
 		config->ssdb.bdf_value = PCI_DEVFN(CIO2_PCI_DEV, CIO2_PCI_FN);
-
-	if (!config->ssdb.platform)
-		config->ssdb.platform = PLAT_SKC;
 
 	if (!config->ssdb.flash_support)
 		config->ssdb.flash_support = FLASH_DISABLE;
@@ -492,24 +486,6 @@ static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *c
 
 	if (!config->ssdb.mclk_speed)
 		config->ssdb.mclk_speed = CLK_FREQ_19_2MHZ;
-
-	if (!config->ssdb.lanes_used) {
-		cio2_config = cio2 ? cio2->chip_info : NULL;
-
-		if (!cio2_config) {
-			printk(BIOS_ERR, "Failed to get CIO2 config\n");
-		} else if (cio2_config->device_type != INTEL_ACPI_CAMERA_CIO2) {
-			printk(BIOS_ERR, "Device type isn't CIO2: %u\n",
-			       (u32)cio2_config->device_type);
-		} else if (config->ssdb.link_used >= cio2_config->cio2_num_ports) {
-			printk(BIOS_ERR, "%u exceeds CIO2's %u links\n",
-			       (u32)config->ssdb.link_used,
-			       (u32)cio2_config->cio2_num_ports);
-		} else {
-			config->ssdb.lanes_used =
-				cio2_config->cio2_lanes_used[config->ssdb.link_used];
-		}
-	}
 }
 
 /*
@@ -1266,6 +1242,36 @@ static struct device_operations camera_ops = {
 
 static void camera_enable(struct device *dev)
 {
+	//Validate Camera Parameters
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	bool params_error = false;
+
+	if (!config->ssdb.lanes_used) {
+		printk(BIOS_ERR, "MIPI camera: SSDB lanes_used not set\n");
+		params_error = true;
+	}
+
+	if (!config->ssdb.platform) {
+		printk(BIOS_ERR, "MIPI camera: SSDB platform not set\n");
+		params_error = true;
+	}
+
+	if (config->ssdb.rom_type && !config->rom_address) {
+		printk(BIOS_ERR, "MIPI camera: ROM address not set\n");
+		params_error = true;
+	}
+
+	if (config->ssdb.vcm_type && !config->vcm_address) {
+		printk(BIOS_ERR, "MIPI camera: VCM address not set\n");
+		params_error = true;
+	}
+
+	if (params_error) {
+		printk(BIOS_ERR, "MIPI camera: Parameters missing, ACPI device(s) will not be created.\n");
+		printk(BIOS_ERR, "MIPI camera: Please fix your devicetree configuration.\n");
+		return;
+	}
+
 	dev->ops = &camera_ops;
 }
 

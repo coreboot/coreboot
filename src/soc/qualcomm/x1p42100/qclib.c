@@ -8,6 +8,8 @@
 #include <soc/symbols_common.h>
 #include <soc/addressmap.h>
 
+__weak int qclib_mainboard_override(struct qclib_cb_if_table *table) { return 0; }
+
 bool qclib_check_dload_mode(void)
 {
 	if (!CONFIG(QC_RAMDUMP_ENABLE))
@@ -54,6 +56,12 @@ int qclib_soc_override(struct qclib_cb_if_table *table)
 	}
 
 	qclib_add_if_table_entry(QCLIB_TE_SHRM_META_SETTINGS, _qc_blob_meta, data_size, 0);
+
+	/* hook for platform specific policy configuration */
+	if (qclib_mainboard_override(table)) {
+		printk(BIOS_ERR, "qclib_mainboard_override failed\n");
+		return -1;
+	}
 
 	return 0;
 }

@@ -213,7 +213,7 @@ static void qclib_prepare_and_run(void)
 
 	/* Enable QCLib serial output, if below condition is met */
 	if (CONFIG(CONSOLE_SERIAL) && qclib_debug_log_level())
-		qclib_cb_if_table.global_attributes =
+		qclib_cb_if_table.global_attributes |=
 			QCLIB_GA_ENABLE_UART_LOGGING;
 
 	dump_te_table();

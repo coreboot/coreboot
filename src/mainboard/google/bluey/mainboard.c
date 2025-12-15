@@ -9,10 +9,12 @@
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
+#include <soc/clock.h>
 #include <soc/pcie.h>
 #include <soc/qupv3_config_common.h>
 #include <soc/qup_se_handlers_common.h>
 #include "board.h"
+#include <soc/rpmh_config.h>
 #include <soc/usb/usb.h>
 
 /*
@@ -87,7 +89,11 @@ static void display_startup(void)
 		return;
 	}
 
-	/* TODO: add logic for display init */
+	/* Initialize RPMh subsystem and display power rails */
+	if (display_rpmh_init() != CB_SUCCESS)
+		return;
+
+	enable_mdss_clk();
 }
 
 static void mainboard_init(struct device *dev)

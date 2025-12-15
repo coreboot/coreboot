@@ -322,6 +322,7 @@ F:	src/mainboard/gigabyte/ga-h61m-series/
 GOOGLE BLUEY MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
 M:	Kapil Porwal <kapilporwal@google.com>
+M:	Jayvik Desai <jayvik@google.com>
 F:	src/mainboard/google/bluey/
 
 GOOGLE REX MAINBOARDS
@@ -974,6 +975,7 @@ F:	src/vendorcode/mediatek/mt8192/
 QUALCOMM SOCS
 M:	Subrata Banik <subratabanik@google.com>
 M:	Kapil Porwal <kapilporwal@google.com>
+M:	Jayvik Desai <jayvik@google.com>
 F:	src/soc/qualcomm/
 
 ORPHANED ARM SOCS

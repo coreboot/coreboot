@@ -94,6 +94,12 @@ config MAINBOARD_NO_USB_A_PORT
 	help
 	  Enable this option if your mainboard is not equipped with USB-A port.
 
+config MAINBOARD_SUPPORTS_PARALLEL_CHARGING
+	bool
+	default n
+	help
+	  Enable this option if your mainboard supports parallel charging.
+
 config MAINBOARD_HAS_GOOGLE_TPM
 	bool
 	default n

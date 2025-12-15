@@ -85,6 +85,8 @@ static void display_startup(void)
 
 static void mainboard_init(struct device *dev)
 {
+	configure_parallel_charging();
+
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging"*/
 	if (is_low_power_boot())
 		return;

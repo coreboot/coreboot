@@ -695,10 +695,22 @@ void mtk_ddp_soc_mode_set(u32 fmt, u32 bpp, u32 width, u32 height, u32 vrefresh,
 	ovlsys_layer_config(fmt, bpp, width, height, path);
 }
 
-void mtk_ddp_ovlsys_start(uintptr_t fb_addr)
+void mtk_ddp_ovlsys_start(uintptr_t fb_addr, const struct edid *edid,
+			  enum disp_path_sel path)
 {
+	uint32_t offset;
+
 	write32(&ovl_exdma2_reg->ovl_addr, fb_addr);
 	setbits32(&ovl_exdma2_reg->ovl_en, BIT(0));
 	setbits32(&ovl_exdma2_reg->ovl_l_en, BIT(0));
 	setbits32(&ovl_blenders[0]->bld_l_en, BIT(0));
+
+	if (!DUAL_PIPE(path))
+		return;
+
+	offset = edid->x_resolution * edid->framebuffer_bits_per_pixel / 8 / 2;
+	write32(&ovl1_exdma2_reg->ovl_addr, fb_addr + offset);
+	setbits32(&ovl1_exdma2_reg->ovl_en, BIT(0));
+	setbits32(&ovl1_exdma2_reg->ovl_l_en, BIT(0));
+	setbits32(&ovl1_blenders[0]->bld_l_en, BIT(0));
 }

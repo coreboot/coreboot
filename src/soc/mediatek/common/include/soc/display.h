@@ -37,6 +37,7 @@ void mtk_ddp_soc_mode_set(u32 fmt, u32 bpp, u32 width, u32 height, u32 vrefresh,
 			  enum disp_path_sel path, struct dsc_config *dsc_config);
 void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path,
 		      struct dsc_config *dsc_config);
-void mtk_ddp_ovlsys_start(uintptr_t fb_addr);
+void mtk_ddp_ovlsys_start(uintptr_t fb_addr, const struct edid *edid,
+			  enum disp_path_sel path);
 
 #endif

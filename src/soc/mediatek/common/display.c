@@ -78,7 +78,8 @@ static void panel_configure_backlight(struct panel_description *panel,
 
 static void display_logo(struct panel_description *panel,
 			 uintptr_t fb_addr,
-			 const struct edid *edid)
+			 const struct edid *edid,
+			 enum disp_path_sel path)
 {
 	memset((void *)fb_addr, 0, edid->bytes_per_line * edid->y_resolution);
 
@@ -90,7 +91,7 @@ static void display_logo(struct panel_description *panel,
 	};
 	render_logo_to_framebuffer(&config);
 
-	mtk_ddp_ovlsys_start(fb_addr);
+	mtk_ddp_ovlsys_start(fb_addr, edid, path);
 
 	panel_configure_backlight(panel, true);
 }
@@ -209,7 +210,7 @@ int mtk_display_init(void)
 		fb_set_dual_pipe_flag(info, true);
 
 	if (CONFIG(BMP_LOGO))
-		display_logo(panel, fb_addr, &edid);
+		display_logo(panel, fb_addr, &edid, panel->disp_path);
 
 	return 0;
 }

@@ -39,15 +39,27 @@ bool is_off_mode(void)
 	return false;
 }
 
-static void set_boot_mode(void)
+static enum boot_mode_t set_boot_mode(void)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
-		return;
+		return boot_mode;
 
+	enum boot_mode_t boot_mode_new = LB_BOOT_MODE_NORMAL;
 	if (is_off_mode())
-		boot_mode = LB_BOOT_MODE_OFFMODE_CHARGING;
+		boot_mode_new = LB_BOOT_MODE_OFFMODE_CHARGING;
 	else if (google_chromeec_is_below_critical_threshold())
-		boot_mode = LB_BOOT_MODE_LOW_BATTERY;
+		boot_mode_new = LB_BOOT_MODE_LOW_BATTERY;
+	boot_mode = boot_mode_new;
+	return boot_mode_new;
+}
+
+int qclib_mainboard_override(struct qclib_cb_if_table *table)
+{
+	if (set_boot_mode() != LB_BOOT_MODE_NORMAL)
+		table->global_attributes |= QCLIB_GA_ENABLE_PD_NEGOTIATION;
+	else
+		table->global_attributes &= ~QCLIB_GA_ENABLE_PD_NEGOTIATION;
+	return 0;
 }
 
 void platform_romstage_main(void)

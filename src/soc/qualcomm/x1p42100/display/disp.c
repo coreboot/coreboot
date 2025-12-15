@@ -4,11 +4,67 @@
 #include <console/console.h>
 #include <timer.h>
 #include <soc/addressmap.h>
+#include <soc/clock.h>
 #include <soc/cmd_db.h>
 #include <soc/rpmh.h>
 #include <soc/rpmh_bcm.h>
 #include <soc/rpmh_config.h>
 #include <soc/rpmh_regulator.h>
+
+static struct clock_freq_config disp_cc_mdss_ahb_cfg[] = {
+	{
+		.hz = SRC_XO_HZ,        /* 19.2MHz */
+		.src = SRC_XO_19_2MHZ_AHB,
+		.div = QCOM_CLOCK_DIV(1),
+	},
+	{
+		.hz = CLK_37_5MHZ,
+		.src = SRC_DISP_CC_PLL1_MAIN_AHB,
+		.div = QCOM_CLOCK_DIV(16),
+	},
+	{
+		.hz = CLK_75MHZ,
+		.src = SRC_DISP_CC_PLL1_MAIN_AHB,
+		.div = QCOM_CLOCK_DIV(8),
+	},
+};
+
+static struct clock_freq_config disp_cc_mdss_mdp_cfg[] = {
+	{
+		.hz = CLK_575MHZ,
+		.src = SRC_DISP_CC_PLL0_MAIN_MDP,
+		.div = QCOM_CLOCK_DIV(3),
+	},
+	{
+		.hz = CLK_400MHZ,
+		.src = SRC_DISP_CC_PLL1_MAIN_MDP,
+		.div = QCOM_CLOCK_DIV(1.5),
+	},
+};
+
+void enable_mdss_clk(void)
+{
+	/*
+	 * Display clock initialization sequence
+	 * 1. Enable GCC clocks (AHB, AXI) - GCC clocks that are required for display
+	 * 2. Enable GDSC (power domain) - powers up the display subsystem
+	 * 3. Initialize display PLLs - required to use clock sources from disp_cc domain
+	 * 4. Configure and enable disp_cc clocks - enable display clocks
+	 */
+	mdss_clock_enable(GCC_DISP_AHB_CBCR);
+	clock_enable_disp_gdsc(DISP_CC_CORE_GDSC);
+	mdss_clock_enable(GCC_DISP_HF_AXI_CBCR);
+	disp_pll_init_and_set(apss_disp_pll0, L_VAL_1725MHz, DISP_PLL0_ALPHA_VAL);
+	disp_pll_init_and_set(apss_disp_pll1, L_VAL_600MHz, DISP_PLL1_ALPHA_VAL);
+	clock_configure(&disp_cc->mdss_ahb_rcg,
+		disp_cc_mdss_ahb_cfg, CLK_75MHZ, ARRAY_SIZE(disp_cc_mdss_ahb_cfg));
+	mdss_clock_enable(DISP_CC_MDSS_AHB_CBCR);
+	clock_configure(&disp_cc->mdss_mdp_rcg,
+		disp_cc_mdss_mdp_cfg, CLK_575MHZ, ARRAY_SIZE(disp_cc_mdss_mdp_cfg));
+	mdss_clock_enable(DISP_CC_MDSS_MDP_CBCR);
+	mdss_clock_enable(DISP_CC_MDSS_VSYNC_CBCR);
+	enable_disp_clock_tcsr();
+}
 
 /**
  * display_rpmh_init() - Initialize RPMh for display power management

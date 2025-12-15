@@ -16,6 +16,7 @@
 #define CLK_400MHZ		(400 * MHz)
 #define CLK_75MHZ		(75 * MHz)
 #define CLK_575MHZ		(575 * MHz)
+#define CLK_37_5MHZ		(37.5 * MHz)
 
 /* CPU PLL*/
 #define L_VAL_1363P2MHz		0x47
@@ -745,14 +746,20 @@ void clock_enable_qup(int qup);
 void clock_configure_dfsr(int qup);
 void clock_configure_pcie(void);
 void clock_configure_usb(void);
+void enable_disp_clock_tcsr(void);
+void enable_mdss_clk(void);
 enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type);
 enum cb_err clock_enable_pcie(enum clk_pcie clk_type);
 enum cb_err clock_configure_mux(enum clk_pcie clk_type, u32 src_type);
 enum cb_err usb_clock_configure_mux(enum clk_pipe_usb clk_type, u32 src_type);
 enum cb_err usb_clock_enable(enum clk_usb clk_type);
 enum cb_err clock_enable_usb_gdsc(enum clk_usb_gdsc gdsc_type);
+enum cb_err clock_enable_disp_gdsc(enum clk_disp_gdsc gdsc_type);
 enum cb_err usb_prim_clock_enable(enum clk_usb_prim clk_type);
 enum cb_err usb_sec_clock_enable(enum clk_usb_sec clk_type);
+enum cb_err mdss_clock_enable(enum clk_mdss clk_type);
+enum cb_err disp_pll_init_and_set(struct x1p42100_disp_pll_clock *disp_pll,
+		u32 l_val, u32 alpha_val);
 void clock_configure_dfsr_table_x1p42100(int qup, struct clock_freq_config *clk_cfg,
 		uint32_t num_perfs);
 

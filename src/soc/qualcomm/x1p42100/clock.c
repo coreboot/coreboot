@@ -294,6 +294,26 @@ static u32 *usb_sec_cbcr[USB_SEC_CLK_COUNT] = {
 	[USB_SEC_SYS_NOC_USB_AXI_CBCR] = &gcc->gcc_sys_noc_usb_axi_cbcr,
 };
 
+static u32 *disp_gdsc[MAX_DISP_GDSC] = {
+	[DISP_CC_CORE_GDSC] = &disp_cc->mdss_core_gdscr,
+};
+
+static u32 *mdss_cbcr[MDSS_CLK_COUNT] = {
+	[GCC_DISP_AHB_CBCR] = &gcc->gcc_disp_ahb_cbcr,
+	[GCC_DISP_XO_CBCR] = &gcc->gcc_disp_xo_cbcr,
+	[GCC_DISP_HF_AXI_CBCR] = &gcc->gcc_disp_hf_axi_cbcr,
+	[DISP_CC_MDSS_AHB_CBCR] = &disp_cc->mdss_ahb_cbcr,
+	[DISP_CC_MDSS_MDP_CBCR] = &disp_cc->mdss_mdp_cbcr,
+	[DISP_CC_MDSS_VSYNC_CBCR] = &disp_cc->mdss_vsync_cbcr,
+	[DISP_CC_MDSS_RSCC_AHB_CBCR] = &disp_cc->mdss_rscc_ahb_cbcr,
+	[DISP_CC_MDSS_RSCC_VSYNC_CBCR] = &disp_cc->mdss_rscc_vsync_cbcr,
+	[DISP_CC_XO_CBCR] = &disp_cc->xo_cbcr,
+	[DISP_CC_MDSS_DPTX3_PIXEL0_CBCR] = &disp_cc->mdss_dptx3_pixel0_cbcr,
+	[DISP_CC_MDSS_DPTX3_LINK_CBCR] = &disp_cc->mdss_dptx3_link_cbcr,
+	[DISP_CC_MDSS_DPTX3_AUX_CBCR] = &disp_cc->mdss_dptx3_aux_cbcr,
+	[DISP_CC_MDSS_DPTX3_LINK_INTF_CBCR] = &disp_cc->mdss_dptx3_link_intf_cbcr,
+};
+
 static struct clock_freq_config pcie_core_cfg[] = {
 	{
 		.hz = 100 * MHz,
@@ -500,6 +520,14 @@ enum cb_err clock_enable_usb_gdsc(enum clk_usb_gdsc gdsc_type)
 	return enable_and_poll_gdsc_status(usb_gdsc[gdsc_type]);
 }
 
+enum cb_err clock_enable_disp_gdsc(enum clk_disp_gdsc gdsc_type)
+{
+	if (gdsc_type >= MAX_DISP_GDSC)
+		return CB_ERR;
+
+	return enable_and_poll_gdsc_status(disp_gdsc[gdsc_type]);
+}
+
 enum cb_err usb_clock_enable(enum clk_usb clk_type)
 {
 	if (clk_type >= USB_CLK_COUNT)
@@ -621,6 +649,45 @@ static enum cb_err pll_init_and_set(struct x1p42100_ncc0_clock *ncc0, u32 l_val)
 	setbits64p(NCC0_NCC_CMU_NCC_CLK_CFG, BIT(SELCKMUXPLLFASTCLK));
 
 	return CB_SUCCESS;
+}
+
+enum cb_err disp_pll_init_and_set(struct x1p42100_disp_pll_clock *disp_pll, u32 l_val, u32 alpha_val)
+{
+	int ret;
+	struct alpha_pll_reg_val_config disp_pll_cfg = {0};
+
+	disp_pll_cfg.reg_l = &disp_pll->pll_l;
+	disp_pll_cfg.l_val = l_val;
+
+	disp_pll_cfg.reg_alpha = &disp_pll->pll_alpha;
+	disp_pll_cfg.alpha_val = alpha_val;
+
+	disp_pll_cfg.reg_user_ctl = &disp_pll->pll_user_ctl;
+	disp_pll_cfg.user_ctl_val = 0x1;
+
+	clock_configure_enable_gpll(&disp_pll_cfg, false, 0);
+
+	disp_pll_cfg.reg_mode = &disp_pll->pll_mode;
+	disp_pll_cfg.reg_opmode = &disp_pll->pll_opmode;
+	ret = lucidole_pll_enable(&disp_pll_cfg);
+	if (ret != CB_SUCCESS)
+		return CB_ERR;
+
+	return CB_SUCCESS;
+}
+
+enum cb_err mdss_clock_enable(enum clk_mdss clk_type)
+{
+	if (clk_type >= MDSS_CLK_COUNT)
+		return CB_ERR;
+
+	/* Enable clock */
+	return clock_enable(mdss_cbcr[clk_type]);
+}
+
+void enable_disp_clock_tcsr(void)
+{
+	write32(TCSR_GCC_EDP_CLKREF_EN_ADDR, 0x1);
 }
 
 static void speed_up_boot_cpu(void)

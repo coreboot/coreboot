@@ -14,6 +14,31 @@
 
 static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
 
+/*
+ * is_off_mode - Check if the system is booting due to an off-mode power event.
+ *
+ * This function provides the board-level policy wrapper for detecting if the
+ * system power-on was triggered by an external charging event (e.g., cable
+ * insertion). This is typically used to enter LB_BOOT_MODE_OFFMODE_CHARGING.
+ *
+ * @return true if the system was triggered by a specific off-mode reason
+ * (e.g., charging cable insertion).
+ * @return false otherwise.
+ */
+bool is_off_mode(void)
+{
+	const uint64_t manual_pwron_event_mask =
+		(EC_HOST_EVENT_MASK(EC_HOST_EVENT_POWER_BUTTON) |
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN));
+	uint64_t ec_events = google_chromeec_get_events_b();
+
+	if (!(ec_events & manual_pwron_event_mask) &&
+		(ec_events & EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_CONNECTED)))
+		return true;
+
+	return false;
+}
+
 static void set_boot_mode(void)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
@@ -35,7 +60,6 @@ void platform_romstage_main(void)
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
 
-	/* Underlying PMIC registers are accessible only at this point */
 	set_boot_mode();
 
 	aop_fw_load_reset();

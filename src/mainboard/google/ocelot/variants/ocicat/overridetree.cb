@@ -1,9 +1,4 @@
 fw_config
-	field WIFI 2 4
-		option WIFI_NONE			0
-		option WIFI_CNVI_7			1
-		option WIFI_PCIE_7			2
-	end
 	field STORAGE_TYPE 12 14
 		option STORAGE_TYPE_UNKNOWN		0
 		option STORAGE_TYPE_NVME_GEN4		1
@@ -13,6 +8,11 @@ fw_config
 		option TOUCHSCREEN_UNKNOWN	0
 		option TOUCH_ELAN_TOP	1
 		option TOUCH_ELAN_DBTS	2
+	end
+	field WIFI_INTERFACE 26 27
+		option WIFI_INTERFACE_UNKNOWN		0
+		option WIFI_INTERFACE_CNVI_7		1
+		option WIFI_INTERFACE_PCIE_7		2
 	end
 end
 
@@ -328,7 +328,7 @@ chip soc/intel/pantherlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B09)"
 						device ref usb2_port8 on
-							probe WIFI WIFI_PCIE_7
+                                                       probe WIFI_INTERFACE WIFI_INTERFACE_PCIE_7
 	                                	end
 
 					end
@@ -365,7 +365,7 @@ chip soc/intel/pantherlake
 		end # Gen4 M.2 SSD
 
 		device ref pcie_rp5 on
-			probe WIFI WIFI_PCIE_7
+			probe WIFI_INTERFACE WIFI_INTERFACE_PCIE_7
 			register "pcie_rp[PCIE_RP(5)]" = "{
 			.clk_src = 0,
 			.clk_req = 0,
@@ -384,7 +384,7 @@ chip soc/intel/pantherlake
 		end # CNVi
 
 		device ref cnvi_bluetooth on
-			probe WIFI WIFI_CNVI_7
+			probe WIFI_INTERFACE WIFI_INTERFACE_CNVI_7
 			chip soc/intel/common/block/cnvi
 				register "wake" = "GPE0_PME_B0"
 				device generic 0 on end

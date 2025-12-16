@@ -17,6 +17,8 @@ fw_config
 end
 
 chip soc/intel/pantherlake
+        # HD Audio
+        register "pch_hda_audio_link_hda_enable" = "true"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP1

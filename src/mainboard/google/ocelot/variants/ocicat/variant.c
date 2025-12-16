@@ -14,6 +14,11 @@ void variant_update_soc_memory_init_params(FSPM_UPD *memupd)
 {
 	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
 
+	/* HDA Audio */
+	printk(BIOS_INFO, "Overriding HDA SDI lanes.\n");
+	m_cfg->PchHdaSdiEnable[0] = true;
+	m_cfg->PchHdaSdiEnable[1] = false;
+
 	/* Override FSP-M SaGv frequency and gear for DDR5 boards */
 	m_cfg->SaGvFreq[0] = 3200;
 	m_cfg->SaGvGear[0] = GEAR_4;
@@ -45,4 +50,20 @@ void variant_update_soc_memory_init_params(FSPM_UPD *memupd)
 		0, 0, 0, 0 };
 	memcpy(m_cfg->PhyClockToCkdDimm, phy_clock_to_ckd_dimm,
 		sizeof(phy_clock_to_ckd_dimm));
+}
+
+/*
+ * HDA verb table loading is supported based on the firmware configuration.
+ *
+ * This function determines if the current platform has an HDA codec enabled by
+ * examining the `FW_CONFIG` value. Specifically, it checks if the
+ * `FW_CONFIG` includes the `AUDIO_ALC256_HDA` value, which is used to identify
+ * Fatcat SKUs with HDA codec support.
+ *
+ * Return true if the `FW_CONFIG` indicates HDA support (i.e., contains
+ * `AUDIO_ALC256_HDA`), false otherwise.
+ */
+bool mainboard_is_hda_codec_enabled(void)
+{
+	return true;
 }

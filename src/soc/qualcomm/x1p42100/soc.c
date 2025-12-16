@@ -30,6 +30,7 @@ static void soc_read_resources(struct device *dev)
 	for (int i = 0; i < count; i++)
 		ram_range(dev, index++, (uintptr_t)config[i].offset, config[i].size);
 
+	mmio_range(dev, index++, (uintptr_t)_dram_aop_cmd_db, REGION_SIZE(dram_aop_cmd_db));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_ncc, REGION_SIZE(dram_ncc));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_cpucp, REGION_SIZE(dram_cpucp));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_xbl_log, REGION_SIZE(dram_xbl_log));
@@ -39,6 +40,7 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz, REGION_SIZE(dram_tz));
 
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_aop, REGION_SIZE(dram_aop));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_aop_config, REGION_SIZE(dram_aop_config));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_tme_crashdump, REGION_SIZE(dram_tme_crashdump));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_tme_log, REGION_SIZE(dram_tme_log));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_dc_log, REGION_SIZE(dram_dc_log));

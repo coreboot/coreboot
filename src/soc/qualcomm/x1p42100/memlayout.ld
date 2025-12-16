@@ -73,6 +73,10 @@
  * 0x81CE0000    +----------------------------------------------------------+      |        |
  *               |                  dram_tme_crashdump                      |      |        |
  * 0x81CA0000    +----------------------------------------------------------+      |        |
+ *               |                   dram_aop_config                        |      |        |
+ * 0x81C80000    +----------------------------------------------------------+      |        |
+ *               |                   dram_aop_cmd_db                        |      |        |
+ * 0x81C60000    +----------------------------------------------------------+      |        |
  *               |                       dram_aop                           |      |        |
  * 0x81C00000    +----------------------------------------------------------+      |        |
  *               |                     dram_ramdump                         |      |        |
@@ -240,7 +244,9 @@ SECTIONS
 	REGION(dram_xbl_log, 0x81A00000, 0x40000, 4K)
 	REGION(dram_ramdump, 0x81A40000, 0x1C0000, 4K)
 
-	REGION(dram_aop, 0x81C00000, 0xA0000, 4K)
+	REGION(dram_aop, 0x81C00000, 0x60000, 4K)
+	REGION(dram_aop_cmd_db, 0x81C60000, 0x20000, 4K)
+	REGION(dram_aop_config, 0x81C80000, 0x20000, 4K)
 	REGION(dram_tme_crashdump, 0x81CA0000, 0x40000, 4K)
 	REGION(dram_tme_log, 0x81CE0000, 0x4000, 4K)
 	REGION(dram_dc_log, 0x81CE4000, 0x10000, 4K)

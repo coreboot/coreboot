@@ -223,10 +223,19 @@ struct panel_serializable_data {
 	u8 init[]; /* A packed array of panel_init_command */
 };
 
-typedef enum cb_err (*mipi_cmd_func_t)(enum mipi_dsi_transaction type, const u8 *data, u8 len);
+/*
+ * Callback function type for mipi_panel_parse_init_commands().
+ * @param type		MIPI DSI transaction type.
+ * @param data		panel_init_command data.
+ * @param len		panel_init_command len.
+ * @param user_data	Arbitrary user data passed from mipi_panel_parse_init_commands().
+ */
+typedef enum cb_err (*mipi_cmd_func_t)(enum mipi_dsi_transaction type, const u8 *data, u8 len,
+				       void *user_data);
 
 /* Parse a command array and call cmd_func() for each entry. Delays get handled internally. */
-enum cb_err mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func);
+enum cb_err mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func,
+					   void *user_data);
 
 #define PANEL_DCS(...) \
 	PANEL_CMD_DCS, \

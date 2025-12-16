@@ -313,7 +313,8 @@ static bool mtk_dsi_is_read_command(enum mipi_dsi_transaction type)
 	}
 }
 
-static enum cb_err mtk_dsi_cmdq(enum mipi_dsi_transaction type, const u8 *data, u8 len)
+static enum cb_err mtk_dsi_cmdq(enum mipi_dsi_transaction type, const u8 *data, u8 len,
+				void *user_data)
 {
 	const u8 *tx_buf = data;
 	u32 config;
@@ -399,7 +400,7 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 	mtk_dsi_config_vdo_timing(mode_flags, format, lanes, edid, &phy_timing);
 	mtk_dsi_clk_hs_mode_enable();
 	if (init_commands)
-		mipi_panel_parse_init_commands(init_commands, mtk_dsi_cmdq);
+		mipi_panel_parse_init_commands(init_commands, mtk_dsi_cmdq, NULL);
 	mtk_dsi_set_mode(mode_flags);
 	mtk_dsi_start();
 

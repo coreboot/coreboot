@@ -11,6 +11,8 @@ DECLARE_REGION(ddr_information);
 DECLARE_REGION(ssram)
 DECLARE_REGION(bsram)
 DECLARE_REGION(dram_aop)
+DECLARE_OPTIONAL_REGION(dram_aop_cmd_db)
+DECLARE_REGION(dram_aop_config)
 DECLARE_REGION(dram_soc)
 DECLARE_REGION(dcb)
 DECLARE_REGION(dtb)

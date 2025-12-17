@@ -7,6 +7,19 @@
 #include <intelblocks/cfr.h>
 #include <soc/cfr.h>
 
+static const struct sm_object touchpad_wake = SM_DECLARE_ENUM({
+	.opt_name	= "touchpad_wake",
+	.ui_name	= "Touchpad Wake",
+	.ui_helptext	= "Enable or disable touchpad wake from sleep.\n"
+			  "Disabled by default to prevent random wakeups when\n"
+			  "the system is moved while sleeping.",
+	.default_value	= 0,
+	.values		= (const struct sm_enum_value[]) {
+				{ "Disabled",	0	},
+				{ "Enabled",	1	},
+				SM_ENUM_VALUE_END	},
+});
+
 static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]) {
@@ -21,6 +34,7 @@ static struct sm_obj_form system = {
 		&pciexp_l1ss,
 		&pciexp_speed,
 		&s0ix_enable,
+		&touchpad_wake,
 		&vtd,
 		NULL
 	},

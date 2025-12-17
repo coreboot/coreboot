@@ -4,10 +4,12 @@
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <drivers/tpm/cr50.h>
+#include <drivers/i2c/generic/chip.h>
 #include <ec/ec.h>
 #include <fw_config.h>
 #include <gpio.h>
 #include <intelblocks/gpio.h>
+#include <option.h>
 #include <security/tpm/tss.h>
 #include <intelblocks/tcss.h>
 #include <soc/pci_devs.h>
@@ -16,10 +18,13 @@
 #include <stdio.h>
 #include <variant/gpio.h>
 #include <vb2_api.h>
+#include <static.h>
 
 #include "drivers/intel/pmc_mux/conn/chip.h"
 
 WEAK_DEV_PTR(conn1);
+WEAK_DEV_PTR(touchpad);
+WEAK_DEV_PTR(touchpad2);
 
 static void typec_orientation_fixup(void)
 {
@@ -74,12 +79,40 @@ static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t
 	fw_config_for_each_found(add_fw_config_oem_string, t);
 }
 
+static void update_touchpad_wake_config(const struct device *touchpad)
+{
+	if (!touchpad || !touchpad->chip_info || !is_dev_enabled(touchpad))
+		return;
+
+	/* Check CFR option for touchpad wake */
+	unsigned int touchpad_wake_enabled = get_uint_option("touchpad_wake", 0);
+
+	printk(BIOS_DEBUG, "Touchpad wake: %s\n", touchpad_wake_enabled?"enabled":"disabled");
+
+	/* Modify devicetree config directly */
+	struct drivers_i2c_generic_config *config =
+		(struct drivers_i2c_generic_config *)touchpad->chip_info;
+	if (!touchpad_wake_enabled) {
+		/* Disable wake GPE and wake flag in IRQ descriptor */
+		config->wake = 0;
+		config->irq.wake = 0;
+
+		/* Reconfigure GPIO pad to remove wake capability */
+		const struct pad_config touchpad_gpio[] = {
+			PAD_CFG_GPI_APIC(GPP_E15, NONE, PLTRST, LEVEL, INVERT),
+		};
+		gpio_configure_pads(touchpad_gpio, ARRAY_SIZE(touchpad_gpio));
+	}
+}
+
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_strings = mainboard_smbios_strings;
 
 	variant_ramstage_init();
+	update_touchpad_wake_config(DEV_PTR(touchpad));
+	update_touchpad_wake_config(DEV_PTR(touchpad2));
 }
 
 void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)

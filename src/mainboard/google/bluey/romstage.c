@@ -55,7 +55,10 @@ static enum boot_mode_t set_boot_mode(void)
 
 int qclib_mainboard_override(struct qclib_cb_if_table *table)
 {
-	if (set_boot_mode() != LB_BOOT_MODE_NORMAL)
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return 0;
+
+	if ((set_boot_mode() != LB_BOOT_MODE_NORMAL) || !google_chromeec_is_battery_present())
 		table->global_attributes |= QCLIB_GA_ENABLE_PD_NEGOTIATION;
 	else
 		table->global_attributes &= ~QCLIB_GA_ENABLE_PD_NEGOTIATION;

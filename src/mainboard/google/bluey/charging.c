@@ -43,3 +43,19 @@ void disable_slow_battery_charging(void)
 	spmi_write8(SMB1_CHGR_CHRG_EN_CMD, CHRG_DISABLE);
 	spmi_write8(SMB2_CHGR_CHRG_EN_CMD, CHRG_DISABLE);
 }
+
+/*
+ * is_off_mode - Check if the system is booting due to an off-mode power event.
+ *
+ * This function provides the board-level policy wrapper for detecting if the
+ * system power-on was triggered by an external charging event (e.g., cable
+ * insertion). This is typically used to enter LB_BOOT_MODE_OFFMODE_CHARGING.
+ *
+ * @return true if the system was triggered by a specific off-mode reason
+ * (e.g., charging cable insertion).
+ * @return false otherwise.
+ */
+bool is_off_mode(void)
+{
+	return is_pon_on_ac();
+}

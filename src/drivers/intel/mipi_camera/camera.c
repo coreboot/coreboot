@@ -246,27 +246,20 @@ static void camera_generate_dsm_sensor(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
 
-	/* If (LEqual (Local0, ToUUID (UUID_DSM_SENSOR))) */
 	acpigen_write_if();
 	acpigen_emit_byte(LEQUAL_OP);
 	acpigen_emit_byte(LOCAL0_OP);
 	acpigen_write_uuid(UUID_DSM_SENSOR);
 
-	/* If (LEqual (Arg2, Zero)) */
 	acpigen_write_if_lequal_op_int(ARG2_OP, 0);
-	/* If (LEqual (Arg1, Zero)) */
 	acpigen_write_if_lequal_op_int(ARG1_OP, 0);
-	/* Return (Buffer (One) { 0x3 }) */
 	acpigen_write_return_singleton_buffer(0x3);
-	/* Else */
 	acpigen_write_else();
-	/* Return (Buffer (One) { 0x1 }) */
 	acpigen_write_return_singleton_buffer(0x1);
 	acpigen_pop_len();	/* If Arg1=0 */
 
 	acpigen_pop_len();	/* If Arg2=0 */
 
-	/* If (LEqual (Arg2, One)) */
 	acpigen_write_if_lequal_op_int(ARG2_OP, 1);
 	acpigen_write_return_string(config && config->sensor_name ? config->sensor_name : "UNKNOWN");
 	acpigen_pop_len();	/* If Arg2=1 */
@@ -300,33 +293,27 @@ static void camera_generate_dsm_i2c(const struct device *dev)
 	int i2c_dev_count = 1 + (config->ssdb.vcm_type ? 1 : 0) + (config->ssdb.rom_type ? 1 : 0);
 	int i2c_dev_idx = 1;
 
-	/* If (LEqual (Local0, ToUUID (UUID_DSM_I2C))) */
 	acpigen_write_if();
 	acpigen_emit_byte(LEQUAL_OP);
 	acpigen_emit_byte(LOCAL0_OP);
 	acpigen_write_uuid(UUID_DSM_I2C);
-	/* ToInteger (Arg2, Local1) */
 	acpigen_write_to_integer(ARG2_OP, LOCAL1_OP);
 
-	/* If (LEqual (Local1, 1)) */
 	acpigen_write_if_lequal_op_int(LOCAL1_OP, i2c_dev_idx++);
 	acpigen_write_return_integer(i2c_dev_count);
 	acpigen_pop_len();	/* If Arg2=1 */
 
-	/* If (LEqual (Local1, 2)) */
 	acpigen_write_if_lequal_op_int(LOCAL1_OP, i2c_dev_idx++);
 	acpigen_write_return_integer(address_for_dev_type(dev, DEV_TYPE_SENSOR));
 	acpigen_pop_len();	/* If Arg2=2 */
 
 	if (config->ssdb.vcm_type) {
-		/* If (LEqual (Local1, 3)) */
 		acpigen_write_if_lequal_op_int(LOCAL1_OP, i2c_dev_idx++);
 		acpigen_write_return_integer(address_for_dev_type(dev, DEV_TYPE_VCM));
 		acpigen_pop_len();      /* If Arg2=3 */
 	}
 
 	if (config->ssdb.rom_type) {
-		/* If (LEqual (Local1, 3 or 4)) */
 		acpigen_write_if_lequal_op_int(LOCAL1_OP, i2c_dev_idx);
 		acpigen_write_return_integer(address_for_dev_type(dev, DEV_TYPE_ROM));
 		acpigen_pop_len();      /* If Arg2=3 or 4 */
@@ -364,28 +351,21 @@ static void camera_generate_dsm_i2c_v2(const struct device *dev)
 	int i2c_count = 1 + (config->ssdb.vcm_type ? 1 : 0) + (config->ssdb.rom_type ? 1 : 0);
 	int i2c_idx = 1;
 
-	/* If (LEqual (Local0, ToUUID(UUID_DSM_I2C_V2))) */
 	acpigen_write_if();
 	acpigen_emit_byte(LEQUAL_OP);
 	acpigen_emit_byte(LOCAL0_OP);
 	acpigen_write_uuid(UUID_DSM_I2C_V2);
 
-	/* If (LEqual (Arg2, Zero)) */
 	acpigen_write_if_lequal_op_int(ARG2_OP, 0);
 
-	/* If (LEqual (Arg1, Zero)) */
 	acpigen_write_if_lequal_op_int(ARG1_OP, 0);
-	/* Return (Buffer (One) { 0x3 }) */
 	acpigen_write_return_singleton_buffer(0x3);
-	/* Else */
 	acpigen_write_else();
-	/* Return (Buffer (One) { 0x1 }) */
 	acpigen_write_return_singleton_buffer(0x1);
 	acpigen_pop_len();	/* If Arg1=0 */
 
 	acpigen_pop_len();	/* If Arg2=0 */
 
-	/* If (LEqual (Arg2, One)) */
 	acpigen_write_if_lequal_op_int(ARG2_OP, 1);
 
 	/* Buffer is 13 * 4 = 52 bytes: count + up to 12 device addresses */
@@ -425,18 +405,15 @@ static void camera_generate_dsm_i2c_v2(const struct device *dev)
  */
 static void camera_generate_dsm_cvf(const struct device *dev)
 {
-	/* If (LEqual (Local0, ToUUID (UUID_DSM_CVF))) */
 	acpigen_write_if();
 	acpigen_emit_byte(LEQUAL_OP);
 	acpigen_emit_byte(LOCAL0_OP);
 	acpigen_write_uuid(UUID_DSM_CVF);
 
-	/* If (LEqual (Arg2, Zero)) */
 	acpigen_write_if_lequal_op_int(ARG2_OP, 0);
 	acpigen_write_return_singleton_buffer(0x3);
 	acpigen_pop_len();
 
-	/* If (LEqual (Arg2, One)) */
 	acpigen_write_if_lequal_op_int(ARG2_OP, 1);
 	acpigen_write_return_integer(0);
 	acpigen_pop_len();

@@ -164,7 +164,7 @@ chip soc/intel/cannonlake
 				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_A21_IRQ)"
 				register "detect" = "1"
 				register "wake" = "GPE0_DW0_21"
-				device i2c 0x15 on end
+				device i2c 0x15 alias touchpad on end
 			end
 		end
 		device ref i2c1		on

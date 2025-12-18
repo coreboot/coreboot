@@ -8,6 +8,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <soc/aop_common.h>
+#include <soc/pmic.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
 #include <soc/watchdog.h>
@@ -27,16 +28,7 @@ static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
  */
 bool is_off_mode(void)
 {
-	const uint64_t manual_pwron_event_mask =
-		(EC_HOST_EVENT_MASK(EC_HOST_EVENT_POWER_BUTTON) |
-		EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN));
-	uint64_t ec_events = google_chromeec_get_events_b();
-
-	if (!(ec_events & manual_pwron_event_mask) &&
-		(ec_events & EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_CONNECTED)))
-		return true;
-
-	return false;
+	return is_pon_on_ac();
 }
 
 static enum boot_mode_t set_boot_mode(void)
@@ -53,12 +45,32 @@ static enum boot_mode_t set_boot_mode(void)
 	return boot_mode_new;
 }
 
+static bool is_pd_sync_required(void)
+{
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return false;
+
+	const uint64_t manual_pwron_event_mask =
+		(EC_HOST_EVENT_MASK(EC_HOST_EVENT_POWER_BUTTON) |
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN));
+	uint64_t ec_events = google_chromeec_get_events_b();
+
+	if (!(ec_events & manual_pwron_event_mask) &&
+		(ec_events & EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_CONNECTED)))
+		return true;
+
+	if (google_chromeec_is_below_critical_threshold() || !google_chromeec_is_battery_present())
+		return true;
+
+	return false;
+}
+
 int qclib_mainboard_override(struct qclib_cb_if_table *table)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
 		return 0;
 
-	if ((set_boot_mode() != LB_BOOT_MODE_NORMAL) || !google_chromeec_is_battery_present())
+	if (is_pd_sync_required())
 		table->global_attributes |= QCLIB_GA_ENABLE_PD_NEGOTIATION;
 	else
 		table->global_attributes &= ~QCLIB_GA_ENABLE_PD_NEGOTIATION;
@@ -75,6 +87,7 @@ void platform_romstage_main(void)
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
 
+	/* Underlying PMIC registers are accessible only at this point */
 	set_boot_mode();
 
 	aop_fw_load_reset();

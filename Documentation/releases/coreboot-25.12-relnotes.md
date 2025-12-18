@@ -1,9 +1,9 @@
-Upcoming release - coreboot 25.12
+coreboot 25.12 release
 ========================================================================
 
 The coreboot project is pleased to announce the release of coreboot
 25.12, continuing our commitment to advancing open-source firmware
-development. This release incorporates over 680 commits from more than
+development. This release incorporates over 750 commits from more than
 110 contributors, including numerous first-time authors.
 
 Key improvements include:
@@ -84,6 +84,14 @@ configuration (30b43839448) and VCM type and address settings
 configuration under modern operating systems, particularly Windows,
 as proper SSDB and PLD configuration is required for full functionality.
 
+DSM (Device Specific Method) generation has been refactored into
+per-UUID functions (ea099e8b8c9, c8f89e00e4c), with new support for
+CVF (Computer Vision Framework) DSM and I2C V2 DSM functions
+(a64b93562d0, 1532eb60ee7). The driver now supports ACPI device type
+selection (ae0d2324021) and ROM type/address configuration for camera
+sensors (6459a2007a5), improving compatibility with various camera
+implementations.
+
 
 ### soc/qualcomm/x1p42100: Expanded platform support and debug capabilities
 
@@ -102,6 +110,15 @@ DRAM reservation for display requirements (36632a08a88). Memory
 layout refinements (c3afc13a0a5) optimize BL31 region placement and
 TZ Application memory alignment, improving overall platform memory
 utilization and security boundaries.
+
+The platform now includes CMD-DB (Command Database) driver support
+(01bc527afa2), enabling resource address and configuration data
+lookup for hardware accelerators. The CMD-DB region is properly mapped
+as non-cacheable in MMU (a4cc1784860, 2277edff88b), ensuring correct
+access patterns for shared resource management. ARM64 architecture
+improvements include distinct PRERAM and POSTRAM stack regions
+(641f7ac677b, 1b599a88449), with PRERAM stack relocated to BSRAM
+memory (4d53aa77042) for improved memory utilization.
 
 
 ### soc/intel: LPCAMM (Low Power Compression Attached Memory Module) support
@@ -133,6 +150,23 @@ ECAM MMCONF support has been extended to 64-bit addressing
 (8b97968e53d), and bootblock CRTM (Core Root of Trust for
 Measurement) initialization support has been added
 (33fc33c132c), improving security and system reliability.
+
+
+### include/acpi: Comprehensive APEI (Advanced Platform Error Interface) infrastructure
+
+Extensive APEI struct definitions have been added to support advanced
+error reporting capabilities (679ea61d4de, b689671e79d, 7a41dc416be,
+5251284e392). The implementation includes structs for Machine Check
+Exception (MCE), Non-Maskable Interrupt (NMI), and PCIe AER (Advanced
+Error Reporting) error sources, providing a foundation for BERT (Boot
+Error Record Table), HEST (Hardware Error Source Table), and EINJ
+(Error Injection Table) implementations.
+
+These additions enable platforms to properly report hardware errors
+to operating systems, supporting firmware-first error handling models
+and improving system reliability diagnostics. The struct definitions
+follow ACPI specification standards and include proper validation
+(847d91b82e5, b70309350f8).
 
 
 ### commonlib: Code consolidation and endian handling improvements
@@ -191,8 +225,19 @@ Additional coreboot changes
 * Intel FSP UPD header typedef additions (2ce4e094690)
 * Azalia verb table implementation rework for improved maintainability
   (31fc5b06a6b) across multiple platforms
+* Azalia driver timing fixes including proper 521us delay after RESET#
+  de-assertion (ecf202b8e4a) and link-reset improvements
+  (6e074550a5c, 152914272c1)
 * Intel touch driver enhancements for new devices with improved I2C
   speed handling (f1708cf21a2, fce489e9e5c, 1af54d9784b)
+* Generic graphics driver support extended to non-VGA devices
+  (0f1ae4ae5f1), expanding compatibility beyond traditional VGA
+  displays
+* MediaTek ARMv9 MTE (Memory Tagging Extension) tag memory support
+  added to bootmem (3d5135fdd07, 9203cc827f9), enabling proper memory
+  tagging for security-enhanced platforms
+* Parallel charging infrastructure and support for Google Bluey platforms
+  (de87ea0efad, 896984e800a), enabling faster charging capabilities
 * Qualcomm USB Type-C support with PHY configuration and repeater support
   (8ffa58723a2, 45cedbb9922, 155041ad4cf, b18dfde22a7)
 * SoundWire drivers for Cirrus Logic CS35L56 and CS42L43 codecs
@@ -264,15 +309,15 @@ Platform Updates
 
 Statistics from the 25.09 to the 25.12 release
 --------------------------------------------
-* Total Commits: 687
-* Average Commits per day: 8.79
-* Total lines added: 57757
-* Average lines added per commit: 84.07
-* Number of patches adding more than 100 lines: 69
-* Average lines added per small commit: 42.00
-* Total lines removed: 9190
-* Average lines removed per commit: 13.38
-* Total difference between added and removed: 48567
+* Total Commits: 757
+* Average Commits per day: 8.94
+* Total lines added: 62219
+* Average lines added per commit: 82.19
+* Number of patches adding more than 100 lines: 77
+* Average lines added per small commit: 42.02
+* Total lines removed: 9669
+* Average lines removed per commit: 12.77
+* Total difference between added and removed: 52550
 * Total authors: 106
 * New authors: 21
 

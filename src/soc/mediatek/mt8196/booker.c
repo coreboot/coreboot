@@ -4,6 +4,7 @@
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/booker.h>
+#include <soc/mcupm_plat.h>
 
 #define REG_READ_ONLY_HASH_VALUE	(MCUCFG_BASE + 0x059C)
 #define REG_MCUSYS_RESERVED_REG2	(MCUCFG_BASE + 0xFFE8)
@@ -60,6 +61,9 @@ void booker_init(void)
 void booker_mte_init(uint64_t mte_tag_addr)
 {
 	int i;
+
+	/* Notify MCUPM to configure MTE on resume path. */
+	setbits32p(MTE_ENABLE_REG, 0xF);
 
 	printk(BIOS_DEBUG, "%s: MTE tag addr %#llx\n", __func__, mte_tag_addr);
 

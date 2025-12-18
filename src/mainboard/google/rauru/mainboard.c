@@ -7,13 +7,11 @@
 #include <soc/addressmap.h>
 #include <soc/bl31.h>
 #include <soc/display.h>
-#include <soc/dpm_v2.h>
 #include <soc/gpio_common.h>
 #include <soc/i2c.h>
 #include <soc/msdc.h>
 #include <soc/mt6373.h>
 #include <soc/pcie.h>
-#include <soc/spm_common.h>
 #include <soc/storage.h>
 #include <soc/usb.h>
 #include <variants.h>
@@ -127,12 +125,6 @@ static void mainboard_init(struct device *dev)
 
 	if (CONFIG(RAURU_SDCARD_INIT))
 		mtk_msdc_configure_sdcard();
-
-	if (dpm_init())
-		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");
-
-	if (spm_init())
-		printk(BIOS_ERR, "spm init failed, Suspend may not work\n");
 
 	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE))
 		register_reset_to_bl31(GPIO_AP_EC_WARM_RST_REQ.id, true);

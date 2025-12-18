@@ -5,6 +5,7 @@
 #include <device/pci.h>
 #include <soc/booker.h>
 #include <soc/dcc.h>
+#include <soc/dpm_v2.h>
 #include <soc/dramc_info.h>
 #include <soc/emi.h>
 #include <soc/gpueb.h>
@@ -14,6 +15,7 @@
 #include <soc/mtk_fsp.h>
 #include <soc/pcie.h>
 #include <soc/pi_image.h>
+#include <soc/spm.h>
 #include <soc/sspm.h>
 #include <soc/storage.h>
 #include <soc/symbols.h>
@@ -54,7 +56,7 @@ static void mte_setup(void)
 	booker_mte_init(mte_start);
 }
 
-static void soc_init(struct device *dev)
+static void fsp_init(void)
 {
 	uint32_t storage_type = mainboard_get_storage_type();
 
@@ -63,8 +65,18 @@ static void soc_init(struct device *dev)
 	mtk_fsp_add_param(FSP_PARAM_TYPE_STORAGE, sizeof(storage_type), &storage_type);
 	pi_image_add_mtk_fsp_params();
 	mtk_fsp_load_and_run();
+}
 
+static void soc_init(struct device *dev)
+{
 	mtk_mmu_disable_l2c_sram();
+
+	if (dpm_init())
+		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");
+	if (spm_init())
+		printk(BIOS_ERR, "spm init failed, Suspend may not work\n");
+
+	fsp_init();
 	sspm_init();
 	gpueb_init();
 	mcupm_init();

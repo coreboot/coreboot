@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Reef"
+comment "Reef (Intel ApolloLake)"
 
 config BOARD_GOOGLE_REEF
 	bool "->  Reef/Electro (Acer Chromebook Spin 11 R751T)"

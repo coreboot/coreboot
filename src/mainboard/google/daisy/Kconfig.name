@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Daisy"
+comment "Daisy (Samsung Exynos 5250)"
 
 config BOARD_GOOGLE_DAISY
 	bool "->  Daisy (Samsung Chromebook (2012))"

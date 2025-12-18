@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Nyan Big"
+comment "Nyan Big (Nvidia Tegra K1 (T124))"
 
 config BOARD_GOOGLE_NYAN_BIG
 	bool "->  Nyan Big (Acer Chromebook 13 (CB5-311))"

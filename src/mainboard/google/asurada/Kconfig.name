@@ -1,12 +1,12 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Asurada"
+comment "Asurada (MediaTek Kompanio 820 (MT8192))"
 
 config BOARD_GOOGLE_ASURADA
 	bool "->  Asurada"
 
 config BOARD_GOOGLE_HAYATO
-	bool "->  Hayato"
+	bool "->  Hayato (ASUS Chromebook Flip CM3 (CM3200))"
 
 config BOARD_GOOGLE_SPHERION
 	bool "->  Spherion (Acer Chromebook 514 (CB514-2H, CB514-2HT))"

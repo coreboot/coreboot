@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Slippy"
+comment "Slippy (Intel Haswell (4th Gen))"
 
 config BOARD_GOOGLE_FALCO
 	bool "->  Falco (HP Chromebook 14)"

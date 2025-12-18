@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Oak"
+comment "Oak (MediaTek Kompanio 500 (MT8173))"
 
 config BOARD_GOOGLE_OAK
 	bool "->  Oak"

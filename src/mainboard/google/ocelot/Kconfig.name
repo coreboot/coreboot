@@ -1,33 +1,33 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Ocelot"
+comment "Ocelot (Intel WildcatLake (Ultra 3rd Gen))"
 
 config BOARD_GOOGLE_KODKOD
-	bool "-> Kodkod"
+	bool "->  Kodkod"
 
 config BOARD_GOOGLE_MATSU
-	bool "-> Matsu"
+	bool "->  Matsu"
 
 config BOARD_GOOGLE_OCELOT
-	bool "-> Ocelot"
+	bool "->  Ocelot"
 
 config BOARD_GOOGLE_OCELOTITE
-	bool "-> Ocelotite"
+	bool "->  Ocelotite"
 
 config BOARD_GOOGLE_OCELOTMCHP
-	bool "-> Ocelotmchp"
+	bool "->  Ocelotmchp"
 
 config BOARD_GOOGLE_OJAL
-	bool "-> Ojal"
+	bool "->  Ojal"
 
 config BOARD_GOOGLE_OCELOT4ES
-	bool "-> Ocelot4ES"
+	bool "->  Ocelot4ES"
 
 config BOARD_GOOGLE_OCELOTITE4ES
-	bool "-> Ocelotite4ES"
+	bool "->  Ocelotite4ES"
 
 config BOARD_GOOGLE_OCELOTMCHP4ES
-	bool "-> Ocelotmchp4ES"
+	bool "->  Ocelotmchp4ES"
 
 config BOARD_GOOGLE_OCICAT
-	bool "-> Ocicat"
+	bool "->  Ocicat"

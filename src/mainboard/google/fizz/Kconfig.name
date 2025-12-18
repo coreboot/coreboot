@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Fizz"
+comment "Fizz (Intel KabyLake/Kabylake-R (7th/8th Gen))"
 
 config BOARD_GOOGLE_FIZZ
 	bool "->  Fizz (Multiple devices - See help text)"

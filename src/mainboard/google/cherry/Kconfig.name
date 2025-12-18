@@ -1,12 +1,12 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Cherry"
+comment "Cherry (MediaTek Kompanio 1200 (MT8195))"
 
 config BOARD_GOOGLE_CHERRY
 	bool "->  Cherry"
 
 config BOARD_GOOGLE_DOJO
-	bool "->  Dojo"
+	bool "->  Dojo (HP Chromebook x360 (13b-ca0002sa))"
 
 config BOARD_GOOGLE_TOMATO
-	bool "->  Tomato"
+	bool "->  Tomato (Acer Chromebook Spin 513 (CP513-2H))"

@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Storm"
+comment "Storm (Qualcomm IPQ8064)"
 
 config BOARD_GOOGLE_STORM
 	bool "->  Storm (OnHub Router TGR1900)"

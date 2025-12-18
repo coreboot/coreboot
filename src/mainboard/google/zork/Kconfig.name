@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Zork"
+comment "Zork (AMD Ryzen Mobile 3000 (Picasso))"
 
 config BOARD_GOOGLE_BERKNIP
 	bool "->  Berknip (HP Pro c645 Chromebook Enterprise)"

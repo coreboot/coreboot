@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Volteer"
+comment "Volteer (Intel TigerLake (11th Gen))"
 
 config BOARD_GOOGLE_CHRONICLER
 	bool "->  Chronicler (FMV Chromebook 14F)"

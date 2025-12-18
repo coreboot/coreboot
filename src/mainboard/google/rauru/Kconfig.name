@@ -1,12 +1,12 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Rauru"
+comment "Rauru (MediaTek Kompanio Ultra 910 (MT8196))"
 
 config BOARD_GOOGLE_HYLIA
-	bool "->  Hylia"
+	bool "->  Hylia (Acer Chromebook Plus Spin 514 (CP514-5HN/CPE594-2N))"
 
 config BOARD_GOOGLE_NAVI
-	bool "->  Navi"
+	bool "->  Navi (Lenovo Chromebook Plus (14M9610))"
 
 config BOARD_GOOGLE_RAURU
 	bool "->  Rauru"

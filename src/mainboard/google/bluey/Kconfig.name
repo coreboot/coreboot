@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Bluey"
+comment "Bluey (Qualcomm Snapdragon X Plus (X1P-42-100))"
 
 config BOARD_GOOGLE_BLUEY
 	bool "->  Bluey"

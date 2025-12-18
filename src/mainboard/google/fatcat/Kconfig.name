@@ -1,48 +1,48 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Fatcat"
+comment "Fatcat (Intel PantherLake (Ultra 3rd Gen))"
 
 config BOARD_GOOGLE_FATCAT
-	bool "-> Fatcat"
+	bool "->  Fatcat"
 
 config BOARD_GOOGLE_FATCAT4ES
-	bool "-> Fatcat4ES"
+	bool "->  Fatcat4ES"
 
 config BOARD_GOOGLE_FATCATISH
-	bool "-> Fatcat_ish"
+	bool "->  Fatcat_ish"
 
 config BOARD_GOOGLE_FATCATITE
-	bool "-> Fatcatite"
+	bool "->  Fatcatite"
 
 config BOARD_GOOGLE_FATCATITE4ES
-	bool "-> Fatcatite4ES"
+	bool "->  Fatcatite4ES"
 
 config BOARD_GOOGLE_FATCATNUVO
-	bool "-> Fatcatnuvo"
+	bool "->  Fatcatnuvo"
 
 config BOARD_GOOGLE_FATCATNUVO4ES
-	bool "-> Fatcatnuvo4ES"
+	bool "->  Fatcatnuvo4ES"
 
 config BOARD_GOOGLE_FELINO
-	bool "-> Felino"
+	bool "->  Felino"
 
 config BOARD_GOOGLE_FELINO4ES
-	bool "-> Felino4ES"
+	bool "->  Felino4ES"
 
 config BOARD_GOOGLE_FRANCKA
-	bool "-> Francka"
+	bool "->  Francka"
 
 config BOARD_GOOGLE_KINMEN4ES
-	bool "-> Kinmen4ES"
+	bool "->  Kinmen4ES"
 
 config BOARD_GOOGLE_KINMEN
-	bool "-> Kinmen"
+	bool "->  Kinmen"
 
 config BOARD_GOOGLE_LAPIS
-	bool "-> Lapis"
+	bool "->  Lapis"
 
 config BOARD_GOOGLE_MOONSTONE
-	bool "-> Moonstone"
+	bool "->  Moonstone"
 
 config BOARD_GOOGLE_RUBY
-	bool "-> Ruby"
+	bool "->  Ruby"

@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Skyrim"
+comment "Skyrim (AMD Ryzen Mobile 7000 (Mendocino))"
 
 config BOARD_GOOGLE_CRYSTALDRIFT
 	bool "->  Crystaldrift (SPC Chromebook V1)"

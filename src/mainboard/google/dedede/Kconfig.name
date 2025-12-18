@@ -1,9 +1,16 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Dedede"
+comment "Dedede (Intel JasperLake)"
 
 config BOARD_GOOGLE_BEADRIX
-	bool "->  Beadrix"
+	bool "->  Beadrix (Multiple devices - See help text)"
+	help
+		The "Beadrix" board supports the following devces:
+		- DINATECH Gen1 Chromebook SG20JL1C
+		- Multilaser Chromebook M11C-PC919
+		- Evolve III Chromebook 11 E1
+		- Positivo Chromebook N2320
+		- Allied Chromebook 11 N5100E
 
 config BOARD_GOOGLE_BLIPPER
 	bool "->  Blipper (Lenovo 3i-15 Chromebook)"
@@ -57,10 +64,26 @@ config BOARD_GOOGLE_GOOEY
 	bool "->  Gooey"
 
 config BOARD_GOOGLE_HABOKI
-	bool "->  HABOKI"
+	bool "->  Haboki"
 
 config BOARD_GOOGLE_KRACKO
-	bool "->  Kracko"
+	bool "->  Kracko/Kracko360 (Multiple devices - See help text)"
+	help
+		The "Kracko" board is for "clamshell" form factor.
+		The "Kracko360" board is for "convertible" form factor.
+		They support the following devices:
+		- ADVAN Chromebook 116J
+		- Centerm Chromebook M610
+		- CTL Chromebook NL72
+		- CTL Chromebook NL72T
+		- Edxis Chromebook 11
+		- LG Chromebook 11TC50Q/11TQ50Q
+		- Poin2 Chromebook 11B
+		- Poin2 Chromebook 11E
+		- Zyrex Chromebook M432-64
+		- Multilaser Chromebook M11HC-PC916
+		- Positivo Chromebook N2310
+		- Positivo Chromebook N2312
 
 config BOARD_GOOGLE_LALALA
 	bool "->  Lalala"
@@ -78,7 +101,14 @@ config BOARD_GOOGLE_METAKNIGHT
 	bool "->  Metaknight (NEC Chromebook Y3)"
 
 config BOARD_GOOGLE_PIRIKA
-	bool "->  Pirika"
+	bool "->  Pirika (Multiple devices - See help text)"
+	help
+		The Drawcia board supports the following devices:
+		- Axioo Chromebook P14
+		- CTL Chromebook Enterprise
+		- Gateway Chromebook 14
+		- Arai Nimbus S1 Chromebook Enterprise
+		- Edxis E-Lite Chromebook 14
 
 config BOARD_GOOGLE_SASUKE
 	bool "->  Sasuke (Samsung Galaxy Chromebook Go)"

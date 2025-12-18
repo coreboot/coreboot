@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Puff"
+comment "Puff (Intel CometLake (10th Gen))"
 
 config BOARD_GOOGLE_AMBASSADOR
 	bool "->  Ambassador (Meet Compute System [Intel 10th Gen])"

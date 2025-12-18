@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Brya"
+comment "Brya (Intel AlderLake/RaptorLake/TwinLake (12 - 13th Gen))"
 
 config BOARD_GOOGLE_AGAH
 	bool "->  Agah"
@@ -189,7 +189,7 @@ config BOARD_GOOGLE_TEREID
 	bool "->  Tereid"
 
 config BOARD_GOOGLE_TIVVIKS
-	bool "-> Tivviks"
+	bool "->  Tivviks"
 
 config BOARD_GOOGLE_TRULO
 	bool "->  Trulo"

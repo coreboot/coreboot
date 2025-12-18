@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Glados"
+comment "Glados (Intel Skylake (6th Gen))"
 
 config BOARD_GOOGLE_ASUKA
 	bool "->  Asuka (Dell Chromebook 13 3380)"

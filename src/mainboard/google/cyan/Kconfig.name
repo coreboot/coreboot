@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Cyan"
+comment "Cyan (Intel Braswell)"
 
 config BOARD_GOOGLE_BANON
 	bool "->  Banon (Acer Chromebook 15 (CB3-532))"

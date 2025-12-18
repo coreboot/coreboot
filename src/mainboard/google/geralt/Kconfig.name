@@ -1,9 +1,9 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Geralt"
+comment "Geralt (MediaTek Kompanio 838 (MT8188))"
 
 config BOARD_GOOGLE_GERALT
 	bool "->  Geralt"
 
 config BOARD_GOOGLE_CIRI
-	bool "->  Ciri"
+	bool "->  Ciri (Lenovo Chromebook Duet Gen9 (11M889))"

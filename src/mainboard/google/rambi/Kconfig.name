@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Rambi"
+comment "Rambi (Intel Baytrail)"
 
 config BOARD_GOOGLE_BANJO
 	bool "->  Banjo (Acer Chromebook 15 (CB3-531))"

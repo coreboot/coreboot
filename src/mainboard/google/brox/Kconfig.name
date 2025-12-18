@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Brox"
+comment "Brox (Intel RaptorLake (13th Gen))"
 
 config BOARD_GOOGLE_BROX
 	bool "->  Brox"

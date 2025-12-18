@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Herobrine"
+comment "Herobrine (Qualcomm Snapdragon 7c+ Gen3 (SC7280))"
 
 config BOARD_GOOGLE_HEROBRINE
 	bool "->  Herobrine"
@@ -15,16 +15,16 @@ config BOARD_GOOGLE_PIGLIN
 	bool "->  Piglin"
 
 config BOARD_GOOGLE_HOGLIN
-	bool "-> Hoglin"
+	bool "->  Hoglin"
 
 config BOARD_GOOGLE_VILLAGER
-	bool "-> Villager"
+	bool "->  Villager"
 
 config BOARD_GOOGLE_EVOKER
-	bool "-> Evoker"
+	bool "->  Evoker"
 
 config BOARD_GOOGLE_ZOGLIN
-	bool "-> Zoglin"
+	bool "->  Zoglin"
 
 config BOARD_GOOGLE_ZOMBIE
 	bool "->  Zombie"

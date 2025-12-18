@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Kahlee"
+comment "Kahlee (AMD StoneyRidge)"
 
 config BOARD_GOOGLE_ALEENA
 	bool "->  Aleena/Kasumi (Acer Chromebook  315 (CB315-2H), 311 (C721) / Spin 311 (R721T))"

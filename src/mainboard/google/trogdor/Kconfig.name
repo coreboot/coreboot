@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Trogdor"
+comment "Trogdor (Qualcomm Snapdragon 7c (SC7180))"
 
 config BOARD_GOOGLE_BUBS
 	bool "->  Bubs"
@@ -12,10 +12,10 @@ config BOARD_GOOGLE_GELARSHIE
 	bool "->  Gelarshie"
 
 config BOARD_GOOGLE_HOMESTAR
-	bool "->  Homestar"
+	bool "->  Homestar (Lenovo IdeaPad Duet 5 Chromebook)"
 
 config BOARD_GOOGLE_KINGOFTOWN
-	bool "->  Kingoftown"
+	bool "->  Kingoftown (HP Fortis 11 G9 Q Chromebook)"
 
 config BOARD_GOOGLE_LAZOR
 	bool "->  Lazor (Acer Chromebook Spin 513, CP513-1H/1HL, R841T/LT)"
@@ -27,16 +27,20 @@ config BOARD_GOOGLE_MRBLAND
 	bool "->  Mrbland"
 
 config BOARD_GOOGLE_PAZQUEL
-	bool "->  Pazquel"
+	bool "->  Pazquel (see help text for details)"
+	help
+		The "Pazquel" board supports the following devices:
+		- Orbic Chromebook 4G
+		- Libera-Merdeka Chromebook C100/C110/C120/C150
 
 config BOARD_GOOGLE_POMPOM
-	bool "->  Pompom"
+	bool "->  Pompom (Dynabook Chromebook C1)"
 
 config BOARD_GOOGLE_QUACKINGSTICK
 	bool "->  Quackingstick (Acer Chromebook Tab 510 / Enterprise Tab 510)"
 
 config BOARD_GOOGLE_WORMDINGLER
-	bool "->  Wormdingler"
+	bool "->  Wormdingler (Lenovo IdeaPad Duet 3 Chromebook)"
 
 config BOARD_GOOGLE_TROGDOR
 	bool "->  Trogdor"

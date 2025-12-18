@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Kingler"
+comment "Kingler (MediaTek Kompanio 520 (MT8186))"
 
 config BOARD_GOOGLE_KINGLER
 	bool "->  Kingler"
@@ -12,18 +12,27 @@ config BOARD_GOOGLE_PONYTA
 	bool "->  Ponyta"
 
 config BOARD_GOOGLE_SQUIRTLE
-	bool "->  Squirtle"
+	bool "->  Squirtle (Acer Chromebook Spin 311 (R724T))"
 
 config BOARD_GOOGLE_STEELIX
-	bool "->  Steelix"
+	bool "->  Steelix/Magneton (see help text for details)"
+	help
+		The "Steelix" board supports the following devices:
+		- Lenovo 300e Yoga Chromebook Gen 4 (Steelix, convertible)
+		- Lenovo IdeaPad Slim 3 Chromebook (14M868) (Magneton, clamshell)
 
 config BOARD_GOOGLE_VOLTORB
-	bool "->  Voltorb"
+	bool "->  Voltorb (Acer Chromebook 311 (C723/C732T))"
 
-comment "Krabby"
+comment "Krabby (MediaTek Kompanio 520 (MT8186))"
 
 config BOARD_GOOGLE_CHINCHOU
-	bool "->  Chinchou"
+	bool "->  Chinchou/Chinochou360 (see help text for details)"
+	help
+		The "Chinochou" board supports the following devices:
+		- Asus Chromebook CZ1104CM2A/CZ1204CM2A
+		- Asus Chromebook CZ1104FM2A/CZ1204FM2A/CZ1104CM2A/CZ1204CM2A
+		- Asus Chromebook CZ1104FM2A/CZ1204FM2A Flip
 
 config BOARD_GOOGLE_KRABBY
 	bool "->  Krabby"
@@ -35,15 +44,19 @@ config BOARD_GOOGLE_SKITTY
 	bool "->  Skitty"
 
 config BOARD_GOOGLE_TENTACRUEL
-	bool "->  Tentacruel"
+	bool "->  Tentacruel/Tentacool (see help text for details)"
+	help
+		The "Tentacruel" board supports the following devices:
+		- ASUS Chromebook CM14 Flip (CM1402F) (Tentacruel, convertible)
+		- ASUS Chromebook CM14 (CM1402C) (Tentacool, clamshell)
 
 config BOARD_GOOGLE_VELUZA
 	bool "->  Veluza"
 
-comment "Staryu"
+comment "Staryu (MediaTek Kompanio 528 (MT8186T))"
 
 config BOARD_GOOGLE_STARMIE
-	bool "->  Starmie"
+	bool "->  Starmie (ASUS Chromebook Enterprise CM30 (CM3001))"
 
 config BOARD_GOOGLE_WUGTRIO
 	bool "->  Wugtrio"

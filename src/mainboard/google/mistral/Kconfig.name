@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Mistral"
+comment "Mistral (Qualcomm Dragonwing QCS405)"
 
 config BOARD_GOOGLE_MISTRAL
 	bool "->  Mistral"

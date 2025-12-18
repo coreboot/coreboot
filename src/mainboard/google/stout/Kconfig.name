@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Stout"
+comment "Stout (Intel SandyBridge (2nd Gen))"
 
 config BOARD_GOOGLE_STOUT
 	bool "->  Stout (Lenovo Thinkpad X131e Chromebook)"

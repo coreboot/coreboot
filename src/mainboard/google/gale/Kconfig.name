@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Gale"
+comment "Gale (Qualcomm IPQ4019)"
 
 config BOARD_GOOGLE_GALE
 	bool "->  Gale (Google WiFi)"

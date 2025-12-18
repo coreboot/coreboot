@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Eve"
+comment "Eve (Intel KabyLake (7th Gen))"
 
 config BOARD_GOOGLE_EVE
 	bool "->  Eve (Google Pixelbook)"

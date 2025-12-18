@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Gru"
+comment "Gru (Rockchip RK3399)"
 
 config BOARD_GOOGLE_KEVIN
 	bool "->  Kevin (Samsung Chromebook Plus)"

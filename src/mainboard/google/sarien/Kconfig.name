@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Sarien"
+comment "Sarien (Intel WhiskeyLake (8th Gen))"
 
 config BOARD_GOOGLE_ARCADA
 	bool "->  Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)"

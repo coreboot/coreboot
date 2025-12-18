@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Veyron"
+comment "Veyron (Rockchip RK3288)"
 
 config BOARD_GOOGLE_VEYRON_JAQ
 	bool "->  Veyron_Jaq (Haier Chromebook 11)"

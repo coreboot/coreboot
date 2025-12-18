@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Nyan"
+comment "Nyan (NVIDIA Tegra K1 (CD570M))"
 
 config BOARD_GOOGLE_NYAN
 	bool "->  Nyan"

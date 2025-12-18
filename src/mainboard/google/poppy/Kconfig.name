@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Poppy"
+comment "Poppy (Intel KabyLake/KabyLake-R (7th/8th Gen))"
 
 config BOARD_GOOGLE_ATLAS
 	bool "->  Atlas (Google Pixelbook Go)"

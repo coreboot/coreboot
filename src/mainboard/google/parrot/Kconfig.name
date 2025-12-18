@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Parrot"
+comment "Parrot (Intel SandyBridge (2nd Gen))"
 
 config BOARD_GOOGLE_PARROT
 	bool "->  Parrot (Acer C7/C710 Chromebook)"

@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Auron"
+comment "Auron (Intel Broadwell (5th Gen))"
 
 config BOARD_GOOGLE_AURON_PAINE
 	bool "->  Auron_Paine (Acer C740 Chromebook)"

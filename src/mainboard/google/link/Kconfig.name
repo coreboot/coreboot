@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Link"
+comment "Link (Intel IvyBridge (3rd Gen))"
 
 config BOARD_GOOGLE_LINK
 	bool "->  Link (Google Chromebook Pixel (2013))"

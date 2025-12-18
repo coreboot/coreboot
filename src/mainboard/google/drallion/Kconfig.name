@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Drallion"
+comment "Drallion (Intel CometLake (10th Gen) with ISH)"
 
 config BOARD_GOOGLE_DRALLION
-	bool "->  Drallion"
+	bool "->  Drallion/Drallion360 (Dell Latitude 7410 Chromebook Enterprise)"

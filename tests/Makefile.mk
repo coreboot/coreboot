@@ -149,7 +149,7 @@ clean-junit.xml-unit-tests:
 ifeq ($(COV),1)
 coverage-report:
 	lcov -o $(testobj)/tests.info -c -d $(testobj) --exclude '$(testsrc)/*'
-	genhtml -q -o $(testobj)/$(coverage_dir) -t "coreboot unit tests" \
+	genhtml --ignore-errors inconsistent,corrupt -q -o $(testobj)/$(coverage_dir) -t "coreboot unit tests" \
 	-s $(testobj)/tests.info
 
 clean-coverage-report:

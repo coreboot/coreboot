@@ -341,6 +341,7 @@ chip soc/intel/alderlake
 				register "acpi_uid" = "0"
 				register "acpi_name" = ""CAM0""
 				register "chip_name" = ""Ov 8856 Camera""
+				register "sensor_name" = ""CJAJ813""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 				register "has_power_resource" = "true"
 

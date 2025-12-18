@@ -284,6 +284,7 @@ chip soc/intel/alderlake
 				register "acpi_uid" = "0"
 				register "acpi_name" = ""CAM0""
 				register "chip_name" = ""Ov 13b10 Camera""
+				register "sensor_name" = ""09B13U""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 
 				register "ssdb.lanes_used" = "4"

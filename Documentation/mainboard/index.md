@@ -360,6 +360,7 @@ StarBook Mk VII (N200) <starlabs/starbook_adl_n.md>
 StarBook Mk VII (165H) <starlabs/starbook_mtl.md>
 Byte Mk II <starlabs/byte_adl.md>
 StarFighter Mk I <starlabs/starfighter_rpl.md>
+StarFighter Mk II <starlabs/starfighter_mtl.md>
 
 Building coreboot <starlabs/common/building.md>
 Flashing devices <starlabs/common/flashing.md>

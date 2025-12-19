@@ -174,7 +174,8 @@ void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing);
 void mtk_dsi_cphy_enable(struct mipi_tx_regs *mipi_tx_reg);
 void mtk_dsi_cphy_enable_cmdq_6byte(struct dsi_regs *dsi_reg);
 void mtk_dsi_cphy_lane_sel_setting(struct mipi_tx_regs *mipi_tx_reg);
-void mtk_dsi_cphy_timing(u32 data_rate, struct mtk_phy_timing *timing);
+void mtk_dsi_cphy_timing(struct dsi_regs *dsi_reg, u32 data_rate,
+			 struct mtk_phy_timing *timing);
 void mtk_dsi_cphy_vdo_timing(const u32 lanes, const struct edid *edid,
 			     const struct mtk_phy_timing *phy_timing,
 			     const u32 bytes_per_pixel, const u32 hbp, const u32 hfp,

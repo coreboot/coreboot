@@ -481,8 +481,7 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 		mtk_dsi_reset(dsi);
 		struct mtk_phy_timing phy_timing = {};
 		if (CONFIG(MEDIATEK_DSI_CPHY) && is_cphy)
-			/* Dual channel is not implemented for CPHY. */
-			mtk_dsi_cphy_timing(data_rate, &phy_timing);
+			mtk_dsi_cphy_timing(dsi, data_rate, &phy_timing);
 		else
 			mtk_dsi_dphy_timing(dsi, data_rate, &phy_timing);
 

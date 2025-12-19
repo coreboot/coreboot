@@ -42,7 +42,8 @@ void mtk_dsi_cphy_enable_cmdq_6byte(struct dsi_regs *dsi_reg)
 	clrbits32(&dsi_reg->dsi_cmd_type1_hs, CMD_CPHY_6BYTE_EN);
 }
 
-void mtk_dsi_cphy_timing(u32 data_rate, struct mtk_phy_timing *timing)
+void mtk_dsi_cphy_timing(struct dsi_regs *dsi_reg, u32 data_rate,
+			 struct mtk_phy_timing *timing)
 {
 	u32 cycle_time, value;
 
@@ -72,14 +73,14 @@ void mtk_dsi_cphy_timing(u32 data_rate, struct mtk_phy_timing *timing)
 
 	value = timing->lpx | timing->da_hs_prepare << 8 |
 		  timing->da_hs_zero << 16 | timing->da_hs_trail << 24;
-	write32(&dsi0->dsi_phy_timecon0, value);
+	write32(&dsi_reg->dsi_phy_timecon0, value);
 
 	value = timing->ta_go | timing->ta_sure << 8 |
 		  timing->ta_get << 16 | timing->da_hs_exit << 24;
-	write32(&dsi0->dsi_phy_timecon1, value);
+	write32(&dsi_reg->dsi_phy_timecon1, value);
 
-	write32(&dsi0->dsi_cphy_con0, 0x012C0003);
-	write32(&dsi0->dsi_bllp_wc, 16 * 3);
+	write32(&dsi_reg->dsi_cphy_con0, 0x012C0003);
+	write32(&dsi_reg->dsi_bllp_wc, 16 * 3);
 }
 
 void mtk_dsi_cphy_vdo_timing(const u32 lanes,

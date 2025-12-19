@@ -25,7 +25,7 @@
 ## Google
 - Asurada
 - Hayato
-- Spherion
+- Spherion (Acer Chromebook 514 (CB514-2H, CB514-2HT))
 - Auron_Paine (Acer C740 Chromebook)
 - Auron_Yuna (Acer Chromebook 15 (C910/CB5-531))
 - Buddy (Acer Chromebase 24)
@@ -48,84 +48,84 @@
 - Brox TI PDC
 - Caboc
 - Greenbayupoc
-- Jubilant
-- Lotso
+- Jubilant (Multiple devices - See help text)
+- Lotso (Lenovo Chromebook Plus 2-in-1)
 - Agah
-- Anahera
+- Anahera (HP Elite c640 14 inch G3 Chromebook)
 - Anahera4ES
-- Anraggar
-- Aurash
-- Banshee
+- Anraggar (ASUS Chromebook CR12 CR1204C)
+- Aurash (AOpen Chromebox Commercial 3)
+- Banshee (Framework Laptop Chromebook Edition)
 - Brask
 - Brya 0
-- Craask
-- Craaskov
-- Constitution
-- Crota
-- Dirks
-- Dochi
-- Domika
-- Felwinter
+- Craask (Acer Chromebook Spin 512)
+- Craaskov (Acer Chromebook Spin 312)
+- Constitution (Google Meet Series Two)
+- Crota (Multiple devices - See help text)
+- Dirks (Acer Chromebox Mini CXM2 (TWL))
+- Dochi (Acer Chromebook Plus Spin 514)
+- Domika (Multiple devices - See help text)
+- Felwinter (ASUS Chromebook Flip CX5(CX5601))
 - Gaelin
-- Gimble
+- Gimble (HP Chromebook x360 14c-cd0)
 - Gimble4ES
-- Gladios
-- Glassway
-- Gothrax
-- Guren
+- Gladios (HP Chromebox Enterprise G4)
+- Glassway (CTL Chromebook Plus PX141GX)
+- Gothrax (Multiple OEM Chromebooks)
+- Guren (CTL Chromebook PX121E)
 - Hades
-- Kano
+- Kano (Acer Chromebook Spin 714)
 - Kaladin
-- Kinox
-- Kuldax
-- Joxer
-- Lisbon
-- Marasov
-- Mithrax
-- Moli
-- Moxie
+- Kinox (Lenovo ThinkCentre M60q Chromebox)
+- Kuldax (ASUS Chromebox 5/5a (CN67))
+- Joxer (HP Chromebook x360 14b)
+- Lisbon (Multiple devices - See help text)
+- Marasov (ASUS Chromebook Plus CX34 CX3402)
+- Mithrax (ASUS Chromebook CX34 Flip (CX3401))
+- Moli (Acer Chromebox CXI5)
+- Moxie (Acer Chromebox CXI6)
 - Nivviks
 - Nereid
 - Nokris
-- Omnigul
-- Osiris
+- Omnigul (Multiple devices - See help text)
+- Osiris (Acer Chromebook 516 GE)
 - Pirrha
-- Primus
-- Pujjo
-- Pujjoniru
-- Quandiso
-- Quandiso2
-- Redrix
+- Primus (Lenovo ThinkPad C14 Gen 1 Chromebook)
+- Pujjo (Lenovo 500e Yoga/Flex 3i Chromebook)
+- Pujjoniru (Lenovo Chromebook Plus 2-in-1 14ITN10)
+- Quandiso (CTL Chromebook NL73)
+- Quandiso2 (CTL Chromebook NL73 Gen 2)
+- Redrix (HP Elite Dragonfly Chromebook)
 - Redrix4ES
-- Riven
-- Rull
+- Riven (Acer Chromebook Spin 511)
+- Rull (Acer Chromebook 514 C937)
 - Skolas
 - Skolas4ES
-- Taeko
+- Taeko (Lenovo IdeaPad/Flex 5i Chromebook 14)
 - Taeko4ES
-- Taniks
-- Teliks
+- Taniks (Lenovo IdeaPad Gaming Chromebook 16)
+- Teliks (ASUS Chromebook CR11 (CR1104CTA))
 - Tereid
 - Tivviks
 - Trulo
-- Uldren
+- Uldren (Dell Chromebook 3120)
 - Uldrenite
-- Vell
-- Volmar
-- Xivu
-- Yaviks
-- Yavilla
+- Vell (HP Dragonfly Pro Chromebook)
+- Volmar (Acer Chromebook Vero 514)
+- Xivu (Asus Chromebook CR11 [CR1102C])
+- Yaviks (HP Chromebook 15.6)
+- Yavilla (HP Fortis 11 G10 Chromebook)
 - Zydron
-- Xol
+- Xol (Galaxy Chromebook Plus)
 - Nova
-- Bujia
+- Bujia (Multiple devices - See help text)
 - Yavista
-- Sundance
-- Pujjoga
-- Pujjogatwin
+- Sundance (NEC Chromebook Y4)
+- Pujjoga (Lenovo 500e Chromebook Gen 4s)
+- Pujjogatwin (Lenovo 500e Chromebook Gen 4s)
 - Pujjolo
 - Orisa
-- Telith
+- Telith (ASUS Chromebook CX15 (CX1505CTA))
 - Meliks
 - Epic
 - Pujjocento
@@ -154,11 +154,11 @@
 - Edgar (Acer Chromebook 14 (CB3-431))
 - Kefka (Dell Chromebook 11 3180/3189)
 - Reks (Lenovo N22/N42 Chromebook)
-- Relm
+- Relm (Multiple devices - See help text)
 - Setzer (HP Chromebook 11 G5)
 - Terra (ASUS Chromebook C202SA/C300SA/C301SA)
 - Ultima (Lenovo Yoga 11e G3)
-- Wizpig
+- Wizpig (Multiple devices - See help text)
 - Drallion
 - Eve (Google Pixelbook)
 - Fatcat
@@ -175,9 +175,10 @@
 - Kinmen
 - Lapis
 - Moonstone
-- Fizz
-- Karma
-- Endeavour
+- Ruby
+- Fizz (Multiple devices - See help text)
+- Karma (Acer Chromebase 24I2)
+- Endeavour (Google Meet Series One (Lenovo))
 - Foster
 - Gale (Google WiFi)
 - Geralt
@@ -192,7 +193,7 @@
 - Kevin (Samsung Chromebook Plus)
 - Gru
 - Bob (Asus Chromebook Flip C101PA)
-- Scarlet
+- Scarlet (Acer Chromebook Tab 10)
 - Nefario
 - Rainier
 - Dewatt (Acer Chromebook Spin 514)
@@ -233,7 +234,7 @@
 - Kodama (Lenovo 10e Chromebook Tablet)
 - Kakadu
 - Flapjack
-- Katsu
+- Katsu (ASUS Chromebook Detachable CZ1)
 - Jacuzzi
 - Juniper (Acer Chromebook Spin 311 (CP311-3H))
 - Kappa
@@ -244,7 +245,7 @@
 - Esche (HP Chromebook 11MK G9 EE)
 - Burnet (HP Chromebook x360 11MK G3 EE)
 - Fennel
-- Cozmo
+- Cozmo (Acer Chromebook 314 (CB314-2H/CB314-2HT))
 - Makomo
 - Munna
 - Pico
@@ -257,6 +258,7 @@
 - Oak
 - Elm (Acer Chromebook R13)
 - Hana (Lenovo N23 Yoga Chromebook)
+- Kodkod
 - Matsu
 - Ocelot
 - Ocelotite
@@ -265,6 +267,7 @@
 - Ocelot4ES
 - Ocelotite4ES
 - Ocelotmchp4ES
+- Ocicat
 - Parrot (Acer C7/C710 Chromebook)
 - Atlas (Google Pixelbook Go)
 - Poppy
@@ -285,10 +288,11 @@
 - Noibat (HP Chromebox G3)
 - Puff
 - Scout (Series One Desk 27)
-- Wyvern (CTL Chromebox CBx2)
+- Wyvern (Multiple devices - See help text)
 - Hylia
 - Navi
 - Rauru
+- Sapphire
 - Reef/Electro (Acer Chromebook Spin 11 R751T)
 - Pyro (Lenovo Thinkpad (Yoga) 11e Chromebook)
 - Sand (Acer Chromebook 15 CB515-1HT/1H)
@@ -296,7 +300,7 @@
 - Coral
 - Deku
 - Deku4ES
-- Karis
+- Karis (Acer Chromebook Plus Spin 714)
 - Karis4ES
 - Ovis
 - Ovis4ES
@@ -305,18 +309,20 @@
 - Rex4ES
 - Rex4ES EC ISH
 - Rex 64
-- Screebo
+- Screebo (ASUS ExpertBook CX54 Chromebook Plus (CX5403))
 - Screebo4ES
-- Kanix
+- Kanix (Acer Chromebook Plus 714)
 - Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)
 - Sarien (Dell Latitude 5400 Chromebook Enterprise)
-- Crystaldrift
+- Crystaldrift (SPC Chromebook V1)
 - Frostflow (ASUS Chromebook CM34 Flip)
 - Markarth (Acer Chromebook Plus 514)
 - Skyrim
 - Winterhold (Dell Latitude 3445 Chromebook)
 - Anakin
 - Baze
+- Dooku
+- Grogu
 - Obiwan
 - Padme
 - Skywalker
@@ -330,16 +336,16 @@
 - Storm (OnHub Router TGR1900)
 - Stout (Lenovo Thinkpad X131e Chromebook)
 - Bubs
-- Coachz
+- Coachz (HP Chromebook x2 11-da0)
 - Gelarshie
 - Homestar
 - Kingoftown
-- Lazor
+- Lazor (Acer Chromebook Spin 513, CP513-1H/1HL, R841T/LT)
 - Marzipan
 - Mrbland
 - Pazquel
 - Pompom
-- Quackingstick
+- Quackingstick (Acer Chromebook Tab 510 / Enterprise Tab 510)
 - Wormdingler
 - Trogdor
 - Veyron_Jaq (Haier Chromebook 11)
@@ -428,6 +434,7 @@
 ## Lenovo
 - ThinkPad T440p
 - ThinkPad W541
+- ThinkCentre M700 / M900 Tiny
 - ThinkPad T400
 - ThinkPad T500
 - ThinkPad R400
@@ -503,8 +510,8 @@
 - Star Labs StarBook Mk VII (N200)
 - Star Labs StarBook Mk VII (165H)
 - Star Labs StarFighter Mk I (i3-1315U, i7-13700H and i9-13900H)
-- Star Labs Lite Mk V (N200)
-- Star Labs Lite Mk V Smart Battery (N200)
+- Star Labs StarFighter Mk II (125H and 285H)
+- Star Labs Lite Mk V (N200/N355)
 
 ## Supermicro
 - X11SSH-TF

@@ -86,14 +86,6 @@ struct dsc_config {
 	 */
 	u16 slice_height;
 	/*
-	 * @pic_width: Width of the input display frame in pixels
-	 */
-	u16 pic_width;
-	/*
-	 * @pic_height: Vertical height of the input display frame
-	 */
-	u16 pic_height;
-	/*
 	 * @rc_tgt_offset_high:
 	 * Offset to bits/group used by RC to determine QP adjustment
 	 */

@@ -69,8 +69,10 @@ static const struct disp_pipe_regs disp_pipe1_regs = {
 };
 
 static void dsc_configure_registers(struct disp_dsc_regs *reg, u16 w, u16 h,
-				    const struct dsc_config *dsc_cfg)
+				    const struct dsc_config *dsc_cfg,
+				    const struct edid *edid)
 {
+	u32 pic_width = edid->mode.ha;
 	u32 init_delay_limit, init_delay_height;
 	u32 pic_group_width, pic_height_ext_num;
 	u32 slice_group_width;
@@ -84,11 +86,11 @@ static void dsc_configure_registers(struct disp_dsc_regs *reg, u16 w, u16 h,
 	if (dsc_cfg->bits_per_component == 0xA)
 		dsc_cfg_mode = 0x828;
 
-	assert(dsc_cfg->pic_width > 0);
-	assert(dsc_cfg->pic_width >= dsc_cfg->slice_width);
+	assert(pic_width > 0);
+	assert(pic_width >= dsc_cfg->slice_width);
 	assert(dsc_cfg->slice_width > 0);
-	slice_mode = dsc_cfg->pic_width / dsc_cfg->slice_width - 1;
-	pic_group_width = DIV_ROUND_UP(dsc_cfg->pic_width, 3);
+	slice_mode = pic_width / dsc_cfg->slice_width - 1;
+	pic_group_width = DIV_ROUND_UP(pic_width, 3);
 	pic_height_ext_num = DIV_ROUND_UP(h, dsc_cfg->slice_height);
 	slice_group_width = DIV_ROUND_UP(dsc_cfg->slice_width, 3);
 	pad_num = ALIGN_PADDING(dsc_cfg->slice_chunk_size * (slice_mode + 1), 3);
@@ -139,7 +141,7 @@ static void dsc_configure_registers(struct disp_dsc_regs *reg, u16 w, u16 h,
 	val = pad_num;
 	clrsetbits32(&reg->dsc_pad, mask, val);
 
-	val = dsc_cfg->slice_width | dsc_cfg->pic_width << 16;
+	val = dsc_cfg->slice_width | pic_width << 16;
 	write32(&reg->dsc_enc_width, val);
 
 	mask = DSC_PIC_PREPAD_HEIGHT_SEL | DSC_PIC_PREPAD_WIDTH_SEL;
@@ -288,7 +290,8 @@ static void dsc_configure_registers(struct disp_dsc_regs *reg, u16 w, u16 h,
 }
 
 static void dsc_config(struct disp_dsc_regs *reg, u16 w, u16 h,
-		       const struct dsc_config *dsc_cfg)
+		       const struct dsc_config *dsc_cfg,
+		       const struct edid *edid)
 {
 	bool dsc_enable;
 
@@ -304,7 +307,7 @@ static void dsc_config(struct disp_dsc_regs *reg, u16 w, u16 h,
 		return;
 	}
 
-	dsc_configure_registers(reg, w, h, dsc_cfg);
+	dsc_configure_registers(reg, w, h, dsc_cfg, edid);
 }
 
 static void blender_config(struct blender *reg, u16 width, u16 height,
@@ -581,7 +584,7 @@ static void disp_config_blender(struct blender *const blenders[], size_t size, u
 }
 
 static void main_disp_path_setup(u16 width, u16 height, u32 vrefresh, enum disp_path_sel path,
-				 const struct dsc_config *dsc_cfg)
+				 const struct dsc_config *dsc_cfg, const struct edid *edid)
 {
 	u16 w = width;
 	size_t num_pipe = DUAL_PIPE(path) ? 2 : 1;
@@ -617,7 +620,7 @@ static void main_disp_path_setup(u16 width, u16 height, u32 vrefresh, enum disp_
 		postmask_start(pipes[i].postmask);
 		dither_config(pipes[i].dither, w, height);
 		dither_start(pipes[i].dither);
-		dsc_config(pipes[i].dsc, w, height, dsc_cfg);
+		dsc_config(pipes[i].dsc, w, height, dsc_cfg, edid);
 		dsc_start(pipes[i].dsc);
 	}
 
@@ -696,7 +699,7 @@ void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path,
 	if (width > 0x1FFF || height > 0x1FFF)
 		printk(BIOS_WARNING, "%s: w/h: %d/%d exceed hw limit %u\n", __func__,
 		       width, height, 0x1FFF);
-	main_disp_path_setup(width, height, vrefresh, path, dsc_config);
+	main_disp_path_setup(width, height, vrefresh, path, dsc_config, edid);
 	ovlsys_layer_config(OVL_INFMT_RGBA8888, bpp, width, height, path);
 }
 

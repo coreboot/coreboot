@@ -176,4 +176,8 @@ config MAINBOARD_GPIO_PIN_FOR_GSC_AP_INTERRUPT
 	  used for the interrupt line from the Google Security Chip (GSC) to the
 	  Application Processor (AP).
 
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nogsc.fmd" if BOARD_GOOGLE_MODEL_BLUEY
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
+
 endif # BOARD_GOOGLE_BLUEY_COMMON

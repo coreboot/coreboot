@@ -288,6 +288,7 @@ chip soc/intel/alderlake
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 
 				register "ssdb.lanes_used" = "2"
+				register "ssdb.link_used" = "2"
 				register "ssdb.platform" = "PLAT_ADL"
 				register "ssdb.vcm_type" = "VCM_DW9714"
 				register "vcm_address" = "0x0C"
@@ -343,6 +344,7 @@ chip soc/intel/alderlake
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 
 				register "ssdb.lanes_used" = "2"
+				register "ssdb.link_used" = "1"
 				register "ssdb.platform" = "PLAT_ADL"
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "450000000"

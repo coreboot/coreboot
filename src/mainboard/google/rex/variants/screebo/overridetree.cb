@@ -515,7 +515,7 @@ chip soc/intel/meteorlake
 				register "chip_name" = ""Ov 08X40 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 				register "ssdb.lanes_used" = "4"
-				register "ssdb.link_used" = "1"
+				register "ssdb.link_used" = "4"
 				register "ssdb.platform" = "PLAT_MTL"
 				register "ssdb.rom_type" = "ROM_EEPROM_CAT24C64"
 				register "rom_address" = "0x50"

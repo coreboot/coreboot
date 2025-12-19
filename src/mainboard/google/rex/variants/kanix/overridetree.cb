@@ -509,7 +509,7 @@ chip soc/intel/meteorlake
 				register "has_power_resource" = "true"
 
 				register "ssdb.lanes_used" = "2"
-				register "ssdb.link_used" = "1"
+				register "ssdb.link_used" = "4"
 				register "ssdb.platform" = "PLAT_MTL"
 				register "ssdb.rom_type" = "ROM_EEPROM_CAT24C64"
 				register "rom_address" = "0x50"

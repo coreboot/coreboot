@@ -350,7 +350,7 @@ chip soc/intel/alderlake
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 
 				register "ssdb.lanes_used" = "2"
-				register "ssdb.link_used" = "1"
+				register "ssdb.link_used" = "2"
 				register "ssdb.platform" = "PLAT_ADL"
 				register "ssdb.rom_type" = "ROM_EEPROM_CAT24C64"
 				register "rom_address" = "0x50"
@@ -396,7 +396,7 @@ chip soc/intel/alderlake
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				register "ssdb.lanes_used" = "2"
-				register "ssdb.link_used" = "1"
+				register "ssdb.link_used" = "2"
 				register "ssdb.platform" = "PLAT_ADL"
 				register "ssdb.rom_type" = "ROM_EEPROM_CAT24C64"
 				register "rom_address" = "0x50"

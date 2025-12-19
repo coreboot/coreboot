@@ -469,7 +469,7 @@ chip soc/intel/meteorlake
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 
 				register "ssdb.lanes_used" = "4"
-				register "ssdb.link_used" = "0"
+				register "ssdb.link_used" = "4"
 				register "ssdb.platform" = "PLAT_MTL"
 				register "ssdb.vcm_type" = "VCM_DW9714"
 				register "vcm_address" = "0x0C"
@@ -627,7 +627,7 @@ chip soc/intel/meteorlake
 				register "has_power_resource" = "true"
 
 				register "ssdb.lanes_used" = "2"
-				register "ssdb.link_used" = "1"
+				register "ssdb.link_used" = "0"
 				register "ssdb.platform" = "PLAT_MTL"
 				register "ssdb.rom_type" = "ROM_EEPROM_CAT24C64"
 				register "rom_address" = "0x50"

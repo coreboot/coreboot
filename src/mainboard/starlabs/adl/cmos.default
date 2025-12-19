@@ -1,0 +1,6 @@
+## SPDX-License-Identifier: GPL-2.0-only
+# Functions
+fn_lock_state=0x1
+trackpad_state=0x1
+kbl_brightness=0x0
+kbl_state=0x1

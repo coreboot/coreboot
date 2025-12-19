@@ -1,0 +1,117 @@
+config BOARD_STARLABS_ADL_SERIES
+	def_bool n
+	select AZALIA_USE_LEGACY_VERB_TABLE
+	select CSE_DEFAULT_CFR_OPTION_STATE_DISABLED
+	select DRIVERS_EFI_VARIABLE_STORE
+	select DRIVERS_GFX_GENERIC
+	select DRIVERS_I2C_HID
+	select DRIVERS_INTEL_PMC
+	select DRIVERS_OPTION_CFR_ENABLED
+	select EC_STARLABS_MERLIN
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_HDA_DMIC
+	select HAVE_OPTION_TABLE
+	select HAVE_SPD_IN_CBFS
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_TPM2
+	select MEMORY_MAPPED_TPM
+	select NO_UART_ON_SUPERIO
+	select PMC_IPC_ACPI_INTERFACE
+	select SOC_INTEL_ALDERLAKE
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_COMMON_BLOCK_TCSS
+	select SOC_INTEL_CRASHLOG
+	select SPD_READ_BY_WORD
+	select SPI_FLASH_WINBOND
+	select SYSTEM_TYPE_LAPTOP
+	select TPM2
+	select TPM_MEASURED_BOOT
+	select VALIDATE_INTEL_DESCRIPTOR
+
+config BOARD_STARLABS_ADL_HORIZON
+	select BOARD_ROMSIZE_KB_16384
+	select BOARD_STARLABS_ADL_SERIES
+	select SOC_INTEL_ALDERLAKE_PCH_N
+
+if BOARD_STARLABS_ADL_HORIZON
+
+config CCD_PORT
+	int
+	default 4
+
+config CONSOLE_SERIAL
+	default n if !EDK2_DEBUG
+
+config D3COLD_SUPPORT
+	default n
+
+config DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config DIMM_SPD_SIZE
+	default 512
+
+config EDK2_BOOTSPLASH_FILE
+	string
+	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
+
+config EC_STARLABS_BATTERY_MODEL
+	default "U5266122PV-2S1P"
+
+config EC_STARLABS_BATTERY_TYPE
+	default "LION"
+
+config EC_STARLABS_BATTERY_OEM
+	default "Shenzhen Utility Energy Co., Ltd"
+
+config EC_STARLABS_ITE_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
+
+config IFD_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/flashdescriptor.bin"
+
+config MAINBOARD_DIR
+	default "starlabs/adl"
+
+config MAINBOARD_FAMILY
+	string
+	default "HZ"
+
+config MAINBOARD_PART_NUMBER
+	default "StarBook Horizon"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "StarBook Horizon"
+
+config ME_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/intel_me.bin"
+
+config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
+	default n
+
+config SOC_INTEL_CSE_SEND_EOP_EARLY
+	default n
+
+config TPM_PIRQ
+	depends on MAINBOARD_HAS_TPM2
+	default 0x28
+
+config UART_FOR_CONSOLE
+	default 0
+
+config USE_PM_ACPI_TIMER
+	default n
+
+config VARIANT_DIR
+	default "hz"
+
+endif

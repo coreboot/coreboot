@@ -1,0 +1,4 @@
+comment "Star Labs StarLite Series"
+
+config BOARD_STARLABS_ADL_HORIZON
+	bool "Star Labs StarBook Horizon (N305)"

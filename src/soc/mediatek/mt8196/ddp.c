@@ -685,14 +685,19 @@ void mtk_ddp_init(void)
 	disp_clock_on();
 }
 
-void mtk_ddp_soc_mode_set(u32 fmt, u32 bpp, u32 width, u32 height, u32 vrefresh,
-			  enum disp_path_sel path, struct dsc_config *dsc_config)
+void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path,
+		      struct dsc_config *dsc_config)
 {
+	u32 bpp = edid->framebuffer_bits_per_pixel / 8;
+	u32 width = edid->mode.ha;
+	u32 height = edid->mode.va;
+	u32 vrefresh = mtk_get_vrefresh(edid);
+
 	if (width > 0x1FFF || height > 0x1FFF)
 		printk(BIOS_WARNING, "%s: w/h: %d/%d exceed hw limit %u\n", __func__,
 		       width, height, 0x1FFF);
 	main_disp_path_setup(width, height, vrefresh, path, dsc_config);
-	ovlsys_layer_config(fmt, bpp, width, height, path);
+	ovlsys_layer_config(OVL_INFMT_RGBA8888, bpp, width, height, path);
 }
 
 void mtk_ddp_ovlsys_start(uintptr_t fb_addr, const struct edid *edid,

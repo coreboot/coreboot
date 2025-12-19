@@ -184,11 +184,12 @@ int mtk_display_init(void)
 	name = edid.ascii_string;
 	if (name[0] == '\0')
 		name = "unknown name";
-	printk(BIOS_INFO, "%s: '%s %s' %dx%d@%dHz\n", __func__,
-	       edid.manufacturer_name, name, edid.mode.ha, edid.mode.va,
-	       edid.mode.refresh);
 
 	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
+
+	printk(BIOS_INFO, "%s: '%s %s' %dx%d@%dHz bpp %u\n", __func__,
+	       edid.manufacturer_name, name, edid.mode.ha, edid.mode.va,
+	       edid.mode.refresh, edid.framebuffer_bits_per_pixel / 8);
 
 	mtk_ddp_mode_set(&edid, panel->disp_path, dsc_config_var);
 
@@ -215,28 +216,23 @@ int mtk_display_init(void)
 	return 0;
 }
 
-void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path,
-		      struct dsc_config *dsc_config)
+u32 mtk_get_vrefresh(const struct edid *edid)
 {
-	u32 fmt = OVL_INFMT_RGBA8888;
-	u32 bpp = edid->framebuffer_bits_per_pixel / 8;
 	u32 width = edid->mode.ha;
 	u32 height = edid->mode.va;
 	u32 vrefresh = edid->mode.refresh;
 
-	printk(BIOS_DEBUG, "%s: display resolution: %ux%u@%u bpp %u\n", __func__, width, height,
-	       vrefresh, bpp);
+	if (vrefresh)
+		return vrefresh;
 
-	if (!vrefresh) {
-		if (!width || !height)
-			vrefresh = 60;
-		else
-			vrefresh = edid->mode.pixel_clock * 1000 /
-				   ((width + edid->mode.hbl) * (height + edid->mode.vbl));
+	if (!width || !height)
+		vrefresh = 60;
+	else
+		vrefresh = edid->mode.pixel_clock * 1000 /
+			   ((width + edid->mode.hbl) * (height + edid->mode.vbl));
 
-		printk(BIOS_WARNING, "%s: vrefresh is not provided; using %u\n", __func__,
-		       vrefresh);
-	}
+	printk(BIOS_WARNING, "%s: vrefresh is not provided; using %u\n", __func__,
+	       vrefresh);
 
-	mtk_ddp_soc_mode_set(fmt, bpp, width, height, vrefresh, path, dsc_config);
+	return vrefresh;
 }

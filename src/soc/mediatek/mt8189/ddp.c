@@ -138,10 +138,15 @@ void mtk_ddp_init(void)
 	       __func__, read32(&smi_larb0->port_l0_ovl_rdma[0]));
 }
 
-void mtk_ddp_soc_mode_set(u32 fmt, u32 bpp, u32 width, u32 height, u32 vrefresh,
-			  enum disp_path_sel path, struct dsc_config *dsc_config)
+void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path,
+		      struct dsc_config *dsc_config)
 {
+	u32 bpp = edid->framebuffer_bits_per_pixel / 8;
+	u32 width = edid->mode.ha;
+	u32 height = edid->mode.va;
+	u32 vrefresh = mtk_get_vrefresh(edid);
+
 	main_disp_path_setup(width, height, vrefresh, path);
 	rdma_start();
-	ovl_layer_config(fmt, bpp, width, height);
+	ovl_layer_config(OVL_INFMT_RGBA8888, bpp, width, height);
 }

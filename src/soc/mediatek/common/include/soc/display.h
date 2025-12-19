@@ -4,6 +4,7 @@
 #define __SOC_MEDIATEK_COMMON_DISPLAY_H__
 
 #include <commonlib/coreboot_tables.h>
+#include <edid.h>
 #include <mipi/panel.h>
 #include <stdbool.h>
 
@@ -33,8 +34,7 @@ void mtk_display_disable_secure_mode(void);
 int mtk_display_init(void);
 
 void mtk_ddp_init(void);
-void mtk_ddp_soc_mode_set(u32 fmt, u32 bpp, u32 width, u32 height, u32 vrefresh,
-			  enum disp_path_sel path, struct dsc_config *dsc_config);
+u32 mtk_get_vrefresh(const struct edid *edid);
 void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path,
 		      struct dsc_config *dsc_config);
 void mtk_ddp_ovlsys_start(uintptr_t fb_addr, const struct edid *edid,

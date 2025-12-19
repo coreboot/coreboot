@@ -19,10 +19,10 @@ void mtk_dsi_configure_mipi_tx(struct mipi_tx_regs *mipi_tx_reg, u32 data_rate,
 
 	/* Select different voltage when different data rate */
 	if (data_rate < (u32)2500 * MHz) {
-		clrsetbits32(&mipi_tx_reg->pll_con1, RG_DSI_PRD_REF_SEL, RG_DSI_PRD_REF_MINI);
+		clrsetbits32(&mipi_tx_reg->voltage_sel, RG_DSI_PRD_REF_SEL, RG_DSI_PRD_REF_MINI);
 		write32(&mipi_tx_reg->cdphy_preserved, 0xFFFF00F0);
 	} else {
-		clrsetbits32(&mipi_tx_reg->pll_con1, RG_DSI_PRD_REF_SEL, RG_DSI_PRD_REF_DEF);
+		clrsetbits32(&mipi_tx_reg->voltage_sel, RG_DSI_PRD_REF_SEL, RG_DSI_PRD_REF_DEF);
 		write32(&mipi_tx_reg->cdphy_preserved, 0xFFFF0030);
 	}
 

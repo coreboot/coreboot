@@ -30,9 +30,6 @@ DefinitionBlock(
 			#include <soc/intel/tigerlake/acpi/tcss.asl>
 			#include <soc/intel/common/block/acpi/acpi/gna.asl>
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
-#if CONFIG(VARIANT_HAS_MIPI_CAMERA)
-			#include <soc/intel/common/block/acpi/acpi/ipu.asl>
-#endif
 		}
 		/* Mainboard hooks */
 		#include "mainboard.asl"
@@ -48,9 +45,4 @@ DefinitionBlock(
 	}
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
-
-#if CONFIG(VARIANT_HAS_MIPI_CAMERA)
-	/* Camera */
-	#include <variant/acpi/mipi_camera.asl>
-#endif /* VARIANT_HAS_MIPI_CAMERA */
 }

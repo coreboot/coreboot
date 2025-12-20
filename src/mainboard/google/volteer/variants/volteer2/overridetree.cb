@@ -117,7 +117,21 @@ chip soc/intel/tigerlake
 			probe DB_USB USB4_GEN3
 		end
 
-		device ref ipu on end # IPU                           0x9A19
+		device ref ipu on
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "0x50000"
+				register "acpi_name" = ""IPU0""
+				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
+
+				register "cio2_num_ports" = "2"
+				register "cio2_lanes_used" = "{4,2}" # 4 and 2 CSI Camera lanes are used
+				register "cio2_lane_endpoint[0]" = ""^I2C3.CAM0""
+				register "cio2_lane_endpoint[1]" = ""^I2C2.CAM1""
+				register "cio2_prt[0]" = "5"
+				register "cio2_prt[1]" = "1"
+				device generic 0 on end
+			end
+		end
 		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
@@ -224,6 +238,129 @@ chip soc/intel/tigerlake
 				register "startup_sensor" = "1"
 				register "proxraw_strength" = "0"
 				device i2c 28 on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""INT3474""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM1""
+				register "chip_name" = ""Ov 2740 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+				register "has_power_resource" = "true"
+				register "low_power_probe" = "1"
+
+				register "ssdb.lanes_used" = "2"
+				register "ssdb.link_used" = "1"
+				register "ssdb.platform" = "PLAT_TGL"
+				register "num_freq_entries" = "1"
+				register "link_freq[0]" = "360 * MHz"
+				register "remote_name" = ""IPU0""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
+
+				#Controls
+				register "clk_panel.clks[0].clknum" = "2"
+				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
+
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D4" #reset
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_D17" #power enable
+				register "gpio_panel.gpio[2].gpio_num" = "GPP_D18" #SNRPWR_EN
+
+				#_ON
+				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(0, 0)" # RST low
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(2, 0)" # SNRPWR_EN high
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(1, 10)" # PWREN high, sleep 10ms
+				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(0, 1)" # RST high, sleep 1ms
+
+				#_OFF
+				register "off_seq.ops_cnt" = "4"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 1)" # Disable clock, delay 1ms
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(0, 0)" # RST low
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)" # PWREN low
+				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 0)" # SNRPWR_EN low
+
+				device i2c 10 on end
+			end
+		end
+		device ref i2c3 on
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""OVTI8856""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM0""
+				register "chip_name" = ""Ov 8856 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+				register "has_power_resource" = "true"
+				register "low_power_probe" = "1"
+
+				register "ssdb.lanes_used" = "4"
+				register "ssdb.link_used" = "0"
+				register "ssdb.platform" = "PLAT_TGL"
+				register "ssdb.vcm_type" = "VCM_DW9808"
+				register "vcm_address" = "0x0C"
+				register "vcm_name" = ""VCM0""
+				# placeholder; ROM type 24C1024 currently unsupported
+				# register "ssdb.rom_type" = "ROM_EEPROM_24C1024"
+				# register "rom_address" = "0x50"
+				register "num_freq_entries" = "2"
+				register "link_freq[0]" = "360 * MHz" # 360 MHz
+				register "link_freq[1]" = "180 * MHz" # 180 MHz
+				register "remote_name" = ""IPU0""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
+
+				#Controls
+				register "clk_panel.clks[0].clknum" = "3"
+				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
+
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_F15" #reset
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_H20" #power enable
+				register "gpio_panel.gpio[2].gpio_num" = "GPP_H14" #SNRPWR_EN
+
+				#_ON
+				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(0, 0)" # RST low
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(2, 0)" # SNRPWR_EN high
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(1, 2)" # PWREN high, sleep 2ms
+				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(0, 1)" # RST high, sleep 1ms
+
+				#_OFF
+				register "off_seq.ops_cnt" = "4"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 1)" # Disable clock, delay 1ms
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(0, 0)" # RST low
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)" # PWREN low
+				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 0)" # SNRPWR_EN low
+
+				device i2c 10 on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "2"
+				register "acpi_name" = ""VCM0""
+				register "chip_name" = ""DW9768 VCM""
+				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C3.CAM0.PRIC""
+				register "vcm_compat" = ""dongwoon,dw9768""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
+
+				device i2c 0C on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
+				register "acpi_uid" = "1"
+				register "acpi_name" = ""NVM0""
+				register "chip_name" = ""AT24 EEPROM""
+				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+				register "pr0" = ""\\_SB.PCI0.I2C3.CAM0.PRIC""
+
+				register "nvm_size" = "0x2800"
+				register "nvm_pagesize" = "1"
+				register "nvm_readonly" = "1"
+				register "nvm_width" = "0x10"
+				register "nvm_compat" = ""atmel,24c1024""
+
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
+
+				device i2c 58 on end
 			end
 		end
 		device ref i2c5 on

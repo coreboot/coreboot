@@ -9,6 +9,20 @@ chip soc/intel/tigerlake
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E10, .pad_auxn_dc = GPP_E13}"
 
 	device domain 0 on
+		device ref igpu on
+			chip drivers/gfx/generic
+				register "device_count" = "2"
+				# DDIA for eDP
+				register "device[0].name" = ""LCD0""
+				register "device[0].type" = "panel"
+				# IPUA for IPU camera
+				register "device[1].name" = ""IPUA""
+				register "device[1].non_vga_device" = "true"
+				register "device[1].addr" = "0x3480"
+				device generic 0 on end
+			end
+		end
+
 		device ref ipu on
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"
@@ -80,6 +94,7 @@ chip soc/intel/tigerlake
 				register "acpi_uid" = "0"
 				register "acpi_name" = ""CAM1""
 				register "chip_name" = ""Ov 2740 Camera""
+				register "sensor_name" = ""CJFLE23""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 				register "has_power_resource" = "true"
 

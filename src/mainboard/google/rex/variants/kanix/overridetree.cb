@@ -152,7 +152,7 @@ chip soc/intel/meteorlake
 	device domain 0 on
 		device ref igpu on
 			chip drivers/gfx/generic
-				register "device_count" = "6"
+				register "device_count" = "7"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD0""
 				register "device[0].type" = "panel"
@@ -170,6 +170,11 @@ chip soc/intel/meteorlake
 				register "device[4].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(2, 1))"
 				# TCP3 (DP-4) unused
 				register "device[5].name" = ""DD05""
+				# IPUA for IPUs
+				register "device[6].name" = ""IPUA""
+				register "device[6].non_vga_device" = "true"
+				register "device[6].addr" = "0x3480"
+
 				device generic 0 on end
 			end
 		end # Integrated Graphics Device
@@ -505,6 +510,7 @@ chip soc/intel/meteorlake
 				register "acpi_uid" = "0"
 				register "acpi_name" = ""CAM0""
 				register "chip_name" = ""Hi-556 Camera""
+				register "sensor_name" = ""CJFLE25""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 				register "has_power_resource" = "true"
 

@@ -11,12 +11,18 @@
  * SUPERIO_CHIP_NAME	The name of the Super I/O chip (unique, required)
  * SUPERIO_KBC_LDN	The logical device number on the Super I/O
  *			chip for this keyboard controller (required)
+ * SUPERIO_KBC_PS2KID	The name of PS/2 keyboard controller device.
+ *			If not defined, defaults to KBD# where # is
+ *			SUPERIO_KBC_LDN.
  * SUPERIO_KBC_PS2M	If defined, PS/2 mouse support is included in
  *			the KBC_LDN. Mouse irq is set at IRQ1 of the
  *			KBC_LDN.
  * SUPERIO_KBC_PS2LDN	If defined, specifies a second LDN to configure
  *			PS/2 mouse support. Mouse irq is set at IRQ0 of
  *			this LDN.
+ * SUPERIO_KBC_PS2MID	The name of PS/2 mouse support device.
+ *			If not defined, defaults to PS2# where # is
+ *			KBC_LDN or KBC_PS2LDN as appropriate.
  * SUPERIO_KBC_PS2M and SUPERIO_KBC_PS2LDN are mutually exclusive.
  */
 
@@ -34,8 +40,20 @@
 # error "SUPERIO_KBC_PS2M and SUPERIO_KBC_PS2LDN are mutually exclusive."
 #endif
 
-Device (SUPERIO_ID(KBD, SUPERIO_KBC_LDN)) {
-	Name (_HID, EisaId ("PNP0303"))
+#ifndef SUPERIO_KBC_PS2KID
+#define SUPERIO_KBC_PS2KID SUPERIO_ID(KBD, SUPERIO_KBC_LDN)
+#endif
+
+#ifndef SUPERIO_KBC_PS2MID
+#ifdef SUPERIO_KBC_PS2LDN
+#define SUPERIO_KBC_PS2MID SUPERIO_ID(PS2, SUPERIO_KBC_PS2LDN)
+#else
+#define SUPERIO_KBC_PS2MID SUPERIO_ID(PS2, SUPERIO_KBC_LDN)
+#endif /* SUPERIO_KBC_PS2LDN */
+#endif
+
+Device (SUPERIO_KBC_PS2KID) {
+	Name (_HID, EisaId (CONFIG_PS2K_EISAID))
 	Name (_UID, SUPERIO_UID(KBD, SUPERIO_KBC_LDN))
 
 	Method (_STA)
@@ -48,10 +66,8 @@ Device (SUPERIO_ID(KBD, SUPERIO_KBC_LDN)) {
 		ENTER_CONFIG_MODE (SUPERIO_KBC_LDN)
 		  PNP_DEVICE_ACTIVE = 0
 		EXIT_CONFIG_MODE ()
-		#if defined(SUPERIO_KBC_PS2LDN)
-		Notify (SUPERIO_ID(PS2, SUPERIO_KBC_PS2LDN), 1)
-		#elif defined(SUPERIO_KBC_PS2M)
-		Notify (SUPERIO_ID(PS2, SUPERIO_KBC_LDN), 1)
+		#if defined(SUPERIO_KBC_PS2LDN) || defined(SUPERIO_KBC_PS2M)
+		Notify (SUPERIO_KBC_PS2MID, 1)
 		#endif
 	}
 
@@ -97,26 +113,24 @@ Device (SUPERIO_ID(KBD, SUPERIO_KBC_LDN)) {
 		  PNP_WRITE_IRQ(PNP_IRQ0, Arg0, IR0)
 		  PNP_DEVICE_ACTIVE = 1
 		EXIT_CONFIG_MODE ()
-		#if defined(SUPERIO_KBC_PS2LDN)
-		Notify (SUPERIO_ID(PS2, SUPERIO_KBC_PS2LDN), 1)
-		#elif defined(SUPERIO_KBC_PS2M)
-		Notify (SUPERIO_ID(PS2, SUPERIO_KBC_LDN), 1)
+		#if defined(SUPERIO_KBC_PS2LDN) || defined(SUPERIO_KBC_PS2M)
+		Notify (SUPERIO_KBC_PS2MID, 1)
 		#endif
 	}
 }
 
 #if defined(SUPERIO_KBC_PS2M)
-Device (SUPERIO_ID(PS2, SUPERIO_KBC_LDN)) {
-	Name (_HID, EisaId ("PNP0F13"))
+Device (SUPERIO_KBC_PS2MID) {
+	Name (_HID, EisaId (CONFIG_PS2M_EISAID))
 	Name (_UID, SUPERIO_UID(PS2, SUPERIO_KBC_LDN))
 
 	Method (_STA)
 	{
-		Return (^^SUPERIO_ID(KBD, SUPERIO_KBC_LDN)._STA ())
+		Return (^^SUPERIO_KBC_PS2KID._STA ())
 	}
 
 	Method (_PSC) {
-		Return (^^SUPERIO_ID(KBD, SUPERIO_KBC_LDN)._PSC ())
+		Return (^^SUPERIO_KBC_PS2KID._PSC ())
 	}
 
 	Method (_CRS, 0, Serialized)
@@ -149,13 +163,13 @@ Device (SUPERIO_ID(PS2, SUPERIO_KBC_LDN)) {
 	}
 }
 #elif defined(SUPERIO_KBC_PS2LDN)
-Device (SUPERIO_ID(PS2, SUPERIO_KBC_PS2LDN)) {
-	Name (_HID, EisaId ("PNP0F13"))
+Device (SUPERIO_KBC_PS2MID) {
+	Name (_HID, EisaId (CONFIG_PS2M_EISAID))
 	Name (_UID, SUPERIO_UID(PS2, SUPERIO_KBC_PS2LDN))
 
 	Method (_STA)
 	{
-		Local0 = ^^SUPERIO_ID(KBD, SUPERIO_KBC_LDN)._STA ()
+		Local0 = ^^SUPERIO_KBC_PS2KID._STA ()
 		If (Local0 == DEVICE_PRESENT_ACTIVE) {
 			PNP_GENERIC_STA(SUPERIO_KBC_PS2LDN)
 		} Else {

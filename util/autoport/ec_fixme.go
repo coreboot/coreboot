@@ -55,7 +55,7 @@ Method(_PTS,1)
 	MainboardInit += `
 		printk(BIOS_DEBUG, "Replaying EC dump ...");
 		for (i = 0; i < 256; i++)
-			ec_write (i, dmp[i]);
+			ec_write(i, dmp[i]);
 		printk(BIOS_DEBUG, "done\n");
 	}
 `

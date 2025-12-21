@@ -581,6 +581,15 @@ func makeSelect(name string) string {
 	return name + " if " + condition + makeComment(name)
 }
 
+func getSortedKeys[T any](strMap map[string]T) []string {
+	keys := []string{}
+	for k, _ := range strMap {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 func makeKconfig(ctx Context) {
 	kc := Create(ctx, "Kconfig")
 	defer kc.Close()
@@ -589,25 +598,12 @@ func makeKconfig(ctx Context) {
 	fmt.Fprintf(kc, "if %s\n\n", ctx.KconfigName)
 
 	fmt.Fprintf(kc, "config BOARD_SPECIFIC_OPTIONS\n\tdef_bool y\n")
-	keys := []string{}
-	for name, _ := range KconfigSelect {
-		keys = append(keys, name)
-	}
 
-	sort.Strings(keys)
-
-	for _, name := range keys {
+	for _, name := range getSortedKeys(KconfigSelect) {
 		fmt.Fprintf(kc, "\tselect %s\n", makeSelect(name))
 	}
 
-	keys = nil
-	for name, _ := range KconfigBool {
-		keys = append(keys, name)
-	}
-
-	sort.Strings(keys)
-
-	for _, name := range keys {
+	for _, name := range getSortedKeys(KconfigBool) {
 		var mapper map[bool]rune = map[bool]rune{false: 'n', true: 'y'}
 		fmt.Fprintf(kc, `
 config %s%s
@@ -616,14 +612,7 @@ config %s%s
 `, name, makeComment(name), mapper[KconfigBool[name]])
 	}
 
-	keys = nil
-	for name, _ := range KconfigString {
-		keys = append(keys, name)
-	}
-
-	sort.Strings(keys)
-
-	for _, name := range keys {
+	for _, name := range getSortedKeys(KconfigString) {
 		fmt.Fprintf(kc, `
 config %s%s
 	string
@@ -631,14 +620,7 @@ config %s%s
 `, name, makeComment(name), KconfigString[name])
 	}
 
-	keys = nil
-	for name, _ := range KconfigHex {
-		keys = append(keys, name)
-	}
-
-	sort.Strings(keys)
-
-	for _, name := range keys {
+	for _, name := range getSortedKeys(KconfigHex) {
 		fmt.Fprintf(kc, `
 config %s%s
 	hex
@@ -646,14 +628,7 @@ config %s%s
 `, name, makeComment(name), KconfigHex[name])
 	}
 
-	keys = nil
-	for name, _ := range KconfigInt {
-		keys = append(keys, name)
-	}
-
-	sort.Strings(keys)
-
-	for _, name := range keys {
+	for _, name := range getSortedKeys(KconfigInt) {
 		fmt.Fprintf(kc, `
 config %s%s
 	int

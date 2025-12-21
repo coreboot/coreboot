@@ -62,11 +62,11 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	PutPCIDev(addr, "")
 
 	/* FIXME:XX some configs are unsupported.  */
-	KconfigBool["NORTHBRIDGE_INTEL_SANDYBRIDGE"] = true
-	KconfigBool["USE_NATIVE_RAMINIT"] = true
-	KconfigBool["INTEL_INT15"] = true
-	KconfigBool["HAVE_ACPI_TABLES"] = true
-	KconfigBool["HAVE_ACPI_RESUME"] = true
+	KconfigSelect["NORTHBRIDGE_INTEL_SANDYBRIDGE"] = ""
+	KconfigSelect["USE_NATIVE_RAMINIT"] = ""
+	KconfigSelect["INTEL_INT15"] = ""
+	KconfigSelect["HAVE_ACPI_TABLES"] = ""
+	KconfigSelect["HAVE_ACPI_RESUME"] = ""
 
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{
 		File: "cpu/intel/common/acpi/cpu.asl",

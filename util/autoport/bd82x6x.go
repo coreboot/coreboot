@@ -62,8 +62,8 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	inteltool := ctx.InfoSource.GetInteltool()
 	GPIO(ctx, inteltool)
 
-	KconfigBool["SOUTHBRIDGE_INTEL_"+b.variant] = true
-	KconfigBool["SERIRQ_CONTINUOUS_MODE"] = true
+	KconfigSelect["SOUTHBRIDGE_INTEL_"+b.variant] = ""
+	KconfigSelect["SERIRQ_CONTINUOUS_MODE"] = ""
 	KconfigInt["USBDEBUG_HCD_INDEX"] = 2
 	KconfigComment["USBDEBUG_HCD_INDEX"] = "FIXME: check this"
 	dmi := ctx.InfoSource.GetDMI()

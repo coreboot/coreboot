@@ -101,9 +101,9 @@ func (i haswellmc) Scan(ctx Context, addr PCIDevData) {
 
 	PutPCIDev(addr, "Host bridge")
 
-	KconfigBool["NORTHBRIDGE_INTEL_HASWELL"] = true
-	KconfigBool["HAVE_ACPI_TABLES"] = true
-	KconfigBool["HAVE_ACPI_RESUME"] = true
+	KconfigSelect["NORTHBRIDGE_INTEL_HASWELL"] = ""
+	KconfigSelect["HAVE_ACPI_TABLES"] = ""
+	KconfigSelect["HAVE_ACPI_RESUME"] = ""
 
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{
 		File: "cpu/intel/common/acpi/cpu.asl",

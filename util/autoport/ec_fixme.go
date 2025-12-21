@@ -60,7 +60,7 @@ Method(_PTS,1)
 	}
 `
 
-	KconfigBool["EC_ACPI"] = true
+	KconfigSelect["EC_ACPI"] = ""
 	si := Create(ctx, "acpi/superio.asl")
 	defer si.Close()
 

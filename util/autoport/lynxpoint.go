@@ -143,11 +143,11 @@ func (b lynxpoint) Scan(ctx Context, addr PCIDevData) {
 		GPIO(ctx, inteltool)
 	}
 
-	KconfigBool["SOUTHBRIDGE_INTEL_LYNXPOINT"] = true
+	KconfigSelect["SOUTHBRIDGE_INTEL_LYNXPOINT"] = ""
 	if isULT {
-		KconfigBool["INTEL_LYNXPOINT_LP"] = true
+		KconfigSelect["INTEL_LYNXPOINT_LP"] = ""
 	}
-	KconfigBool["SERIRQ_CONTINUOUS_MODE"] = true
+	KconfigSelect["SERIRQ_CONTINUOUS_MODE"] = ""
 	if isULT {
 		KconfigInt["USBDEBUG_HCD_INDEX"] = 1
 	} else {

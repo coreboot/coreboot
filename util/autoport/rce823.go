@@ -30,7 +30,7 @@ func (r rce823) Scan(ctx Context, addr PCIDevData) {
 		PutPCIChip(addr, cur)
 	}
 	PutPCIDev(addr, "Ricoh SD card reader")
-	KconfigBool["DRIVERS_RICOH_RCE822"] = true
+	KconfigSelect["DRIVERS_RICOH_RCE822"] = ""
 }
 
 func init() {

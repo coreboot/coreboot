@@ -149,8 +149,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 	Add_SPDX(ec, ASL, GPL2_only)
 	ec.WriteString("#include <ec/lenovo/h8/acpi/ec.asl>\n")
 
-	KconfigBool["EC_LENOVO_PMH7"] = true
-	KconfigBool["EC_LENOVO_H8"] = true
+	KconfigSelect["EC_LENOVO_PMH7"] = ""
+	KconfigSelect["EC_LENOVO_H8"] = ""
 
 	pmh := DevTreeNode{
 		Chip: "ec/lenovo/pmh7",

@@ -130,6 +130,7 @@ var KconfigComment map[string]string = map[string]string{}
 var KconfigString map[string]string = map[string]string{}
 var KconfigHex map[string]uint32 = map[string]uint32{}
 var KconfigInt map[string]int = map[string]int{}
+var KconfigSelect map[string]string = map[string]string{}
 var ROMSizeKB = 0
 var ROMProtocol = ""
 var FlashROMSupport = ""
@@ -572,6 +573,14 @@ func makeComment(name string) string {
 	return " # " + cmt
 }
 
+func makeSelect(name string) string {
+	condition, ok := KconfigSelect[name]
+	if !ok || condition == "" {
+		return name + makeComment(name)
+	}
+	return name + " if " + condition + makeComment(name)
+}
+
 func makeKconfig(ctx Context) {
 	kc := Create(ctx, "Kconfig")
 	defer kc.Close()
@@ -581,33 +590,30 @@ func makeKconfig(ctx Context) {
 
 	fmt.Fprintf(kc, "config BOARD_SPECIFIC_OPTIONS\n\tdef_bool y\n")
 	keys := []string{}
-	for name, val := range KconfigBool {
-		if val {
-			keys = append(keys, name)
-		}
+	for name, _ := range KconfigSelect {
+		keys = append(keys, name)
 	}
 
 	sort.Strings(keys)
 
 	for _, name := range keys {
-		fmt.Fprintf(kc, "\tselect %s%s\n", name, makeComment(name))
+		fmt.Fprintf(kc, "\tselect %s\n", makeSelect(name))
 	}
 
 	keys = nil
-	for name, val := range KconfigBool {
-		if !val {
-			keys = append(keys, name)
-		}
+	for name, _ := range KconfigBool {
+		keys = append(keys, name)
 	}
 
 	sort.Strings(keys)
 
 	for _, name := range keys {
+		var mapper map[bool]rune = map[bool]rune{false: 'n', true: 'y'}
 		fmt.Fprintf(kc, `
 config %s%s
 	bool
-	default n
-`, name, makeComment(name))
+	default %c
+`, name, makeComment(name), mapper[KconfigBool[name]])
 	}
 
 	keys = nil
@@ -742,7 +748,7 @@ func main() {
 	}
 
 	if dmi.IsLaptop {
-		KconfigBool["SYSTEM_TYPE_LAPTOP"] = true
+		KconfigSelect["SYSTEM_TYPE_LAPTOP"] = ""
 	}
 	ctx.SaneVendor = sanitize(ctx.Vendor)
 	for {
@@ -767,7 +773,7 @@ func main() {
 	ScanRoot(ctx)
 
 	if IGDEnabled {
-		KconfigBool["MAINBOARD_HAS_LIBGFXINIT"] = true
+		KconfigSelect["MAINBOARD_HAS_LIBGFXINIT"] = ""
 		KconfigComment["MAINBOARD_HAS_LIBGFXINIT"] = "FIXME: check this"
 		AddRAMStageFile("gma-mainboard.ads", "CONFIG_MAINBOARD_USE_LIBGFXINIT")
 	}
@@ -851,10 +857,10 @@ func main() {
 	}
 
 	if ROMSizeKB == 0 {
-		KconfigBool["BOARD_ROMSIZE_KB_2048"] = true
+		KconfigSelect["BOARD_ROMSIZE_KB_2048"] = ""
 		KconfigComment["BOARD_ROMSIZE_KB_2048"] = "FIXME: correct this"
 	} else {
-		KconfigBool[fmt.Sprintf("BOARD_ROMSIZE_KB_%d", ROMSizeKB)] = true
+		KconfigSelect[fmt.Sprintf("BOARD_ROMSIZE_KB_%d", ROMSizeKB)] = ""
 	}
 
 	makeKconfig(ctx)

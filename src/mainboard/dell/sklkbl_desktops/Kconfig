@@ -45,4 +45,9 @@ config CBFS_SIZE
 config DIMM_SPD_SIZE
 	default 512 if BOARD_DELL_OPTIPLEX_3050	# DDR4
 
+# Won't boot if MFS partition is missing, deguard requires it
+config ME_CLEANER_ARGS
+	string
+	default "-S --whitelist MFS"
+
 endif

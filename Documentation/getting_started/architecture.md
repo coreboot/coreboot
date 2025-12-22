@@ -41,7 +41,7 @@ The bootblock loads the romstage or the verstage if verified boot is enabled.
 
 ### Cache-As-Ram
 The *Cache-As-Ram*, also called Non-Eviction mode, or *CAR* allows to use the
-CPU cache like regular SRAM. This is particullary useful for high level
+CPU cache like regular SRAM. This is particularly useful for high level
 languages like `C`, which need RAM for heap and stack.
 
 The CAR needs to be activated using vendor specific CPU instructions.

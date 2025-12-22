@@ -55,11 +55,11 @@ static bool is_pd_sync_required(void)
 		EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN));
 	uint64_t ec_events = google_chromeec_get_events_b();
 
-	if (!(ec_events & manual_pwron_event_mask) &&
-		(ec_events & EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_CONNECTED)))
-		return true;
+	if (!(ec_events & EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_CONNECTED)))
+		return false;
 
-	if (google_chromeec_is_below_critical_threshold() || !google_chromeec_is_battery_present())
+	if (!(ec_events & manual_pwron_event_mask) ||
+		google_chromeec_is_below_critical_threshold() || !google_chromeec_is_battery_present())
 		return true;
 
 	return false;

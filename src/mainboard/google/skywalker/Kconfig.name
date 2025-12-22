@@ -26,5 +26,8 @@ config BOARD_GOOGLE_SKYWALKER
 config BOARD_GOOGLE_TARKIN
 	bool "->  Tarkin"
 
+config BOARD_GOOGLE_VADER
+	bool "->  Vader"
+
 config BOARD_GOOGLE_YODA
 	bool "->  Yoda"

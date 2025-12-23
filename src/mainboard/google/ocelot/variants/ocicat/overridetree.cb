@@ -1,18 +1,26 @@
 fw_config
+	field AUDIO_CODEC 0 2
+		option AUDIO_CODEC_UNKNOWN	0
+		option AUDIO_CODEC_ALC3247	1
+	end
 	field STORAGE_TYPE 12 14
-		option STORAGE_TYPE_UNKNOWN		0
-		option STORAGE_TYPE_NVME_GEN4		1
-		option STORAGE_UFS			2
+		option STORAGE_TYPE_UNKNOWN	0
+		option STORAGE_TYPE_NVME_GEN4	1
+		option STORAGE_UFS		2
 	end
 	field TOUCHSCREEN 17 18
 		option TOUCHSCREEN_UNKNOWN	0
-		option TOUCH_ELAN_TOP	1
-		option TOUCH_ELAN_DBTS	2
+		option TOUCH_ELAN_TOP		1
+		option TOUCH_ELAN_DBTS		2
+	end
+	field SENSOR_HUB 23 23
+		option ISH_ABSENT		0
+		option ISH_PRESENT		1
 	end
 	field WIFI_INTERFACE 26 27
-		option WIFI_INTERFACE_UNKNOWN		0
-		option WIFI_INTERFACE_CNVI_7		1
-		option WIFI_INTERFACE_PCIE_7		2
+		option WIFI_INTERFACE_UNKNOWN	0
+		option WIFI_INTERFACE_CNVI_7	1
+		option WIFI_INTERFACE_PCIE_7	2
 	end
 end
 
@@ -464,11 +472,14 @@ chip soc/intel/pantherlake
 
 		device ref smbus on end
 		device ref hda on
+			probe AUDIO_CODEC AUDIO_CODEC_ALC3247
 			chip drivers/sof
 				register "spkr_tplg" = "max98360a"
 				register "jack_tplg" = "rt5682"
 				register "mic_tplg" = "_2ch_pdm0"
-				device generic 0 on end
+				device generic 0 on
+					probe AUDIO_CODEC AUDIO_CODEC_ALC3247
+				end
 			end
 		end
 	end

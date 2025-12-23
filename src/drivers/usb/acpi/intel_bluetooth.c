@@ -50,29 +50,9 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 			  bool audio_offload)
 {
 /*
- *	Name (_S0W, 3)
+ *	Name (_S0W, 2)
  */
-	if (get_uint_option("bluetooth_rtd3", 1))
-		acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D3_HOT);
-	else
-		acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D0);
-
-/*
- *	Name (_DSD, Package (0x02)
- *	{
- *		ToUUID ("6211e2c0-58a3-4af3-90e1-927a4e0c55a4")
- *		Package (0x01)
- *		{
- *			Package (0x02)
- *			{
- *				"HotPlugSupportInD3",
- *				One
- *			}
- *		}
- *	})
- *
- */
-	acpi_device_add_hotplug_support_in_d3(NULL);
+	acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D2);
 
 /*
  *	Name (RDLY, 0x69)

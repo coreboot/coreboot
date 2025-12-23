@@ -206,6 +206,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *						Else
  *						{
  *							PRRS = CNVI_PLDR_TIMEOUT
+ *							\_SB.PCI0.BTRK (One)
  *						}
  *					}
  *					Else
@@ -364,6 +365,8 @@ static void cnvw_fill_ssdt(const struct device *dev)
 						acpigen_write_else();
 						{
 							acpigen_write_store_int_to_namestr(CNVI_PLDR_TIMEOUT, "PRRS");
+							acpigen_emit_namestring("\\_SB.PCI0.BTRK");
+							acpigen_emit_byte(1);
 						}
 						acpigen_pop_len();
 					}

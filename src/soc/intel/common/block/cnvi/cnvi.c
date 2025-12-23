@@ -120,7 +120,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	acpigen_write_name_integer("WFDL", 50);
 
 /*
- *	PowerResource (CNVP, 0x00, 0x0000)
+ *	PowerResource (CNVP, 0x05, 0x0000)
  *	{
  *		Method (_STA, 0, NotSerialized)  // _STA: Status
  *		{
@@ -220,7 +220,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *	}
  *
  */
-	acpigen_write_power_res("CNVP", 0, 0, NULL, 0);
+	acpigen_write_power_res("CNVP", 5, 0, NULL, 0);
 	{
 		acpigen_write_method("_STA", 0);
 		{

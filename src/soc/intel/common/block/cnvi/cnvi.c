@@ -205,12 +205,12 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *						}
  *						Else
  *						{
- *							PRRS = CNVI_PLDR_NOT_COMPLETE
+ *							PRRS = CNVI_PLDR_TIMEOUT
  *						}
  *					}
  *					Else
  *					{
- *						PRRS = CNVI_PLDR_TIMEOUT
+ *						PRRS = CNVI_PLDR_NOT_COMPLETE
  *					}
  *				}
  *				Release (\_SB.PCI0.CNMT)
@@ -363,13 +363,13 @@ static void cnvw_fill_ssdt(const struct device *dev)
 						}
 						acpigen_write_else();
 						{
-							acpigen_write_store_int_to_namestr(CNVI_PLDR_NOT_COMPLETE, "PRRS");
+							acpigen_write_store_int_to_namestr(CNVI_PLDR_TIMEOUT, "PRRS");
 						}
 						acpigen_pop_len();
 					}
 					acpigen_write_else();
 					{
-						acpigen_write_store_int_to_namestr(CNVI_PLDR_TIMEOUT, "PRRS");
+						acpigen_write_store_int_to_namestr(CNVI_PLDR_NOT_COMPLETE, "PRRS");
 					}
 					acpigen_pop_len();
 				}

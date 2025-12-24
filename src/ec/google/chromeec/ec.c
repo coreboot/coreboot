@@ -1860,3 +1860,27 @@ void platform_do_early_poweroff(void)
 	google_chromeec_reboot(EC_REBOOT_COLD_AP_OFF, 0);
 	halt();
 }
+
+/*
+ * Reads the current battery charge percentage.
+ *
+ * This function communicates with the Embedded Controller (EC) via a host
+ * command to retrieve the "State of Charge" (SoC) as calculated by the battery fuel gauge.
+ *
+ * Return: 0 on success, -1 on failure (communication error or EC rejection).
+ * Return Value (state): Pointer to a uint32_t where the battery state of charge
+ * (0-100) will be stored.
+ */
+int google_chromeec_read_batt_state_of_charge(uint32_t *state)
+{
+	struct ec_params_charge_state params;
+	struct ec_response_charge_state resp;
+
+	params.cmd = CHARGE_STATE_CMD_GET_STATE;
+
+	if (ec_cmd_charge_state(PLAT_EC, &params, &resp) < 0)
+		return -1;
+
+	*state = resp.get_state.batt_state_of_charge;
+	return 0;
+}

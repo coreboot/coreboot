@@ -538,4 +538,12 @@ bool chipset_emi_write_bytes(u16 port, size_t length, u8 *msg, u8 *csum);
  */
 void chipset_ioport_range(uint16_t *base, size_t *size);
 
+/*
+ * Reads the current battery charge percentage.
+ *
+ * @param state		Pointer to a uint32_t where the battery state of charge (0-100) will be
+ *			stored.
+ */
+int google_chromeec_read_batt_state_of_charge(uint32_t *state);
+
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

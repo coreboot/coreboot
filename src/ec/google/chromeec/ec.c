@@ -1862,7 +1862,7 @@ void platform_do_early_poweroff(void)
 }
 
 /*
- * Reads the current battery charge percentage.
+ * Reads the current battery charge percentage using CHARGE_STATE_CMD_GET_STATE CMD.
  *
  * This function communicates with the Embedded Controller (EC) via a host
  * command to retrieve the "State of Charge" (SoC) as calculated by the battery fuel gauge.
@@ -1871,7 +1871,7 @@ void platform_do_early_poweroff(void)
  * Return Value (state): Pointer to a uint32_t where the battery state of charge
  * (0-100) will be stored.
  */
-int google_chromeec_read_batt_state_of_charge(uint32_t *state)
+static int google_chromeec_read_batt_state_of_charge_cmd(uint32_t *state)
 {
 	struct ec_params_charge_state params;
 	struct ec_response_charge_state resp;
@@ -1895,7 +1895,7 @@ int google_chromeec_read_batt_state_of_charge(uint32_t *state)
  * Return: 0 on success, -1 on communication failure or invalid battery data.
  * Return Value (state): Pointer to store the calculated State of Charge (0-100%).
  */
-int google_chromeec_read_batt_state_of_charge_raw(uint32_t *state)
+static int google_chromeec_read_batt_state_of_charge_raw(uint32_t *state)
 {
 	struct ec_params_battery_dynamic_info params = {
 		.index = 0,
@@ -1917,4 +1917,26 @@ int google_chromeec_read_batt_state_of_charge_raw(uint32_t *state)
 	*state = soc;
 
 	return 0;
+}
+
+/*
+ * Reads the current battery charge percentage.
+ *
+ * This function communicates with the Embedded Controller (EC) via a host
+ * command to retrieve the "State of Charge" (SoC) as calculated by the battery fuel gauge.
+ *
+ * Return: 0 on success, -1 on failure (communication error or EC rejection).
+ * Return Value (state): Pointer to a uint32_t where the battery state of charge
+ * (0-100) will be stored.
+ */
+int google_chromeec_read_batt_state_of_charge(uint32_t *state)
+{
+	int ret;
+
+	if (CONFIG(EC_GOOGLE_CHROMEEC_BATTERY_SOC_DYNAMIC))
+		ret = google_chromeec_read_batt_state_of_charge_raw(state);
+	else
+		ret = google_chromeec_read_batt_state_of_charge_cmd(state);
+
+	return ret;
 }

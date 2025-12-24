@@ -234,6 +234,22 @@ config EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_SIZE
 	hex
 	default 0x10000
 
+config EC_GOOGLE_CHROMEEC_BATTERY_SOC_DYNAMIC
+	bool
+	default n
+	help
+	  Enable this option to calculate the battery State of Charge (SoC)
+	  manually using remaining and full capacity metrics.
+
+	  On certain platforms, such as Qualcomm X1P42100 (Hamoa), the AP
+	  cannot use the standard CHARGE_STATE_CMD_GET_STATE host command
+	  while in the S0 power state due to hardware arbitration or
+	  access restrictions to the battery fuel gauge.
+
+	  Selecting this option forces the use of ec_cmd_battery_get_dynamic(),
+	  which retrieves cached telemetry from the EC rather than triggering
+	  a synchronous bus transaction to the battery.
+
 endif # EC_GOOGLE_CHROMEEC
 
 source "src/ec/google/chromeec/*/Kconfig"

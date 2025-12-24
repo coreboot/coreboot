@@ -179,6 +179,8 @@ static uint32_t rest_of_keymaps[] = {
 	KEYMAP(0x3a, KEY_CAPSLOCK),
 	/* Insert Key */
 	KEYMAP(0xd2, KEY_INSERT),
+	/* Screen Lock */
+	KEYMAP(0xab, KEY_SCREENLOCK),
 };
 
 static void ssdt_generate_physmap(struct acpi_dp *dp, uint8_t num_top_row_keys,

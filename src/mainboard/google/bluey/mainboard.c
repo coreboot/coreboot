@@ -42,8 +42,15 @@ static bool is_low_power_boot(void)
 	return false;
 }
 
+static void enable_usb_camera(void)
+{
+	gpio_output(GPIO_USB_CAM_RESET_L, 1);
+	gpio_output(GPIO_USB_CAM_ENABLE, 1);
+}
+
 static void setup_usb(void)
 {
+	enable_usb_camera();
 	setup_usb_host0();
 }
 

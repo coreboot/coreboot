@@ -40,6 +40,10 @@
 #define GPIO_SD_CD_L		GPIO(71)
 #endif
 
+/* USB Camera specific GPIOs */
+#define GPIO_USB_CAM_RESET_L	GPIO(10)
+#define GPIO_USB_CAM_ENABLE	GPIO(206)
+
 void setup_chromeos_gpios(void);
 bool is_off_mode(void);
 void configure_parallel_charging(void);

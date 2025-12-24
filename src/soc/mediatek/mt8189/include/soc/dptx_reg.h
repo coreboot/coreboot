@@ -5,6 +5,7 @@
 
 #include <soc/dptx_reg_v2.h>
 
+#define BIAS_POWER_ON				(0x03 << 3)
 #define DP_PHY_DIG_TX_CTL_0			0x1444
 #define RGS_AUX_LDO_EN_READY_MASK		BIT(0)
 #define DRIVING_FORCE				0x18

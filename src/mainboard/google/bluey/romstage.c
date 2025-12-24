@@ -77,10 +77,22 @@ int qclib_mainboard_override(struct qclib_cb_if_table *table)
 	return 0;
 }
 
+static void platform_dump_battery_soc_information(void)
+{
+	uint32_t batt_pct;
+	if (google_chromeec_read_batt_state_of_charge(&batt_pct))
+		printk(BIOS_WARNING, "Failed to get battery level\n");
+	else
+		printk(BIOS_INFO, "Battery state-of-charge %d\n", batt_pct);
+}
+
 void platform_romstage_main(void)
 {
 	/* Watchdog must be checked first to avoid erasing watchdog info later. */
 	check_wdog();
+
+	if (CONFIG(EC_GOOGLE_CHROMEEC) && CONFIG(CONSOLE_SERIAL))
+		platform_dump_battery_soc_information();
 
 	shrm_fw_load_reset();
 

@@ -546,4 +546,13 @@ void chipset_ioport_range(uint16_t *base, size_t *size);
  */
 int google_chromeec_read_batt_state_of_charge(uint32_t *state);
 
+/*
+ * Reads the current battery charge percentage from EC dynamic info CMD.
+ * This is often used when the high-level "Get Charge State" command is unavailable".
+ *
+ * @param state		Pointer to a uint32_t where the battery state of charge (0-100) will be
+ *			stored.
+ */
+int google_chromeec_read_batt_state_of_charge_raw(uint32_t *state);
+
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

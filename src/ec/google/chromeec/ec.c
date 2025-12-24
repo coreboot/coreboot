@@ -1884,3 +1884,37 @@ int google_chromeec_read_batt_state_of_charge(uint32_t *state)
 	*state = resp.get_state.batt_state_of_charge;
 	return 0;
 }
+
+/*
+ * Calculates SoC from dynamic battery data.
+ *
+ * This function fetches "dynamic" battery metrics (voltage, current, and capacity)
+ * and manually calculates the percentage. This is often used when the high-level
+ * "Get Charge State" command is unavailable.
+ *
+ * Return: 0 on success, -1 on communication failure or invalid battery data.
+ * Return Value (state): Pointer to store the calculated State of Charge (0-100%).
+ */
+int google_chromeec_read_batt_state_of_charge_raw(uint32_t *state)
+{
+	struct ec_params_battery_dynamic_info params = {
+		.index = 0,
+	};
+	struct ec_response_battery_dynamic_info resp;
+
+	if (ec_cmd_battery_get_dynamic(PLAT_EC, &params, &resp) != 0)
+		return -1;
+
+	if (resp.full_capacity <= 0)
+		return -1;
+
+	uint32_t soc = (uint32_t)resp.remaining_capacity * 100 / (uint32_t)resp.full_capacity;
+
+	/* Clamp the value to 100% (some fuel gauges report slight overflows) */
+	if (soc > 100)
+		soc = 100;
+
+	*state = soc;
+
+	return 0;
+}

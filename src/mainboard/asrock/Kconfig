@@ -12,6 +12,6 @@ endchoice
 source "src/mainboard/asrock/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	default "ASROCK"
+	default "ASRock"
 
 endif # VENDOR_ASROCK

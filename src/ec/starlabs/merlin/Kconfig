@@ -1,5 +1,12 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config EC_STARLABS_MERLIN
+	bool
+	default n
+	help
+	  Use open source embedded controller firmware. Both firmwares have the
+	  same features but differ in licensing and compilers.
+
 config EC_STARLABS_NUVOTON
 	bool
 	select EC_ACPI
@@ -17,6 +24,8 @@ config EC_STARLABS_ITE
 	  CML - 1.04 or later
 	  KBL - 3.12 or later
 	  And open-source Merlin firmware version 1.00 or later
+
+if EC_STARLABS_MERLIN || EC_STARLABS_ITE || EC_STARLABS_NUVOTON
 
 config EC_STARLABS_ADD_ITE_BIN
 	bool "Add Star Labs EC binary file"
@@ -63,13 +72,6 @@ config EC_STARLABS_BATTERY_OEM
 	string
 	default "Unknown"
 
-config EC_STARLABS_MERLIN
-	bool "Use open-source Merlin EC Firmware"
-	default n
-	help
-	  Use open source embedded controller firmware. Both firmwares have the
-	  same features but differ in licensing and compilers.
-
 if EC_STARLABS_MERLIN
 
 config EC_STARLABS_MAX_CHARGE
@@ -102,4 +104,6 @@ config EC_STARLABS_CHARGE_LED
 	help
 	  Select if the mainboard supports reducing the charge LED brightness
 
-endif
+endif # EC_STARLABS_MERLIN
+
+endif # EC_STARLABS_MERLIN || EC_STARLABS_ITE || EC_STARLABS_NUVOTON

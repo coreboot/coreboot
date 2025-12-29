@@ -331,9 +331,38 @@ hostcc_has_gnat1() {
 	[ -x "$(${CC} -print-prog-name=gnat1)" ]
 }
 
+hostcc_has_gnatbind() {
+	# GCC configure requires unversioned gnatbind in PATH
+	# In GNAT 15+, tools may only be available as versioned (e.g., gnatbind-15)
+	# Check for unversioned first (required by configure)
+	if command -v gnatbind >/dev/null 2>&1; then
+		return 0
+	fi
+
+	# If only versioned tools exist, configure will fail
+	# So we return false to prevent Ada from being enabled
+	return 1
+}
+
+hostcc_has_gnatmake() {
+	# GCC configure requires unversioned gnatmake in PATH
+	# In GNAT 15+, tools may only be available as versioned (e.g., gnatmake-15)
+	# Check for unversioned first (required by configure)
+	if command -v gnatmake >/dev/null 2>&1; then
+		return 0
+	fi
+
+	# If only versioned tools exist, configure will fail
+	# So we return false to prevent Ada from being enabled
+	return 1
+}
+
 have_gnat() {
-	hostcc_has_gnat1 && \
-	searchtool gnatbind "Free Software Foundation" nofail > /dev/null
+	# Require all GNAT tools that configure needs
+	# Configure checks for gnatbind and gnatmake (unversioned names)
+	# Even though GNAT 15+ may only provide versioned tools or use gcc -b,
+	# the configure script still requires the unversioned names
+	hostcc_has_gnat1 && hostcc_has_gnatbind && hostcc_has_gnatmake
 }
 
 ada_requested() {
@@ -1235,23 +1264,51 @@ if [ -z "${LANGUAGES}" ]; then
 		printf "\nFound compatible Ada compiler, enabling Ada support by default.\n\n"
 		LANGUAGES="ada,${DEFAULT_LANGUAGES}"
 	else
+		# Check if versioned tools exist (GNAT 15+)
+		gcc_version=$(${CC} -dumpversion 2>/dev/null | cut -d. -f1)
+		gnatbind_ver=""
+		gnatmake_ver=""
+		gnatbind_path=""
+		gnatmake_path=""
+		if [ -n "$gcc_version" ]; then
+			gnatbind_ver="gnatbind-${gcc_version}"
+			gnatmake_ver="gnatmake-${gcc_version}"
+			gnatbind_path=$(command -v "$gnatbind_ver" 2>/dev/null)
+			gnatmake_path=$(command -v "$gnatmake_ver" 2>/dev/null)
+		fi
+
 		printf "\n${red}WARNING${NC}\n"
-		printf "No compatible Ada compiler (GNAT) found. You can continue without\n"
-		printf "Ada support, but this will limit the features of ${blue}coreboot${NC} (e.g.\n"
-		printf "native graphics initialization won't be available on most Intel\n"
-		printf "boards).\n\n"
+		if [ -n "$gnatbind_path" ] || [ -n "$gnatmake_path" ]; then
+			printf "GNAT tools are only available as versioned executables (e.g., %s, %s),\n" \
+				"${gnatbind_ver:-gnatbind-N}" "${gnatmake_ver:-gnatmake-N}"
+			printf "but GCC configure requires unversioned names (gnatbind, gnatmake).\n\n"
+			printf "To enable Ada support, create symlinks or install the unversioned tools:\n"
+			if [ -n "$gnatbind_path" ]; then
+				printf "    sudo ln -s %s /usr/local/bin/gnatbind\n" "$gnatbind_path"
+			fi
+			if [ -n "$gnatmake_path" ]; then
+				printf "    sudo ln -s %s /usr/local/bin/gnatmake\n" "$gnatmake_path"
+			fi
+			printf "\nAlternatively, disable Ada support by setting BUILD_LANGUAGES=c:\n"
+			printf "    make crossgcc-i386 BUILD_LANGUAGES=c\n\n"
+		else
+			printf "No compatible Ada compiler (GNAT) found. You can continue without\n"
+			printf "Ada support, but this will limit the features of ${blue}coreboot${NC} (e.g.\n"
+			printf "native graphics initialization won't be available on most Intel\n"
+			printf "boards).\n\n"
 
-		printf "Usually, you can install GNAT with your package management system\n"
-		printf "(the package is called \`gnat\` or \`gcc-ada\`). It has to match the\n"
-		printf "\`gcc\` package in version. If there are multiple versions of GCC in-\n"
-		printf "stalled, you can point this script to the matching version through\n"
-		printf "the \`CC\` and \`CXX\` environment variables.\n\n"
+			printf "Usually, you can install GNAT with your package management system\n"
+			printf "(the package is called \`gnat\` or \`gcc-ada\`). It has to match the\n"
+			printf "\`gcc\` package in version. If there are multiple versions of GCC in-\n"
+			printf "stalled, you can point this script to the matching version through\n"
+			printf "the \`CC\` and \`CXX\` environment variables.\n\n"
 
-		printf "e.g. on Ubuntu 14.04, if \`gcc\` is \`gcc-4.8\`:\n"
-		printf "    apt-get install gnat-4.8 && make crossgcc\n\n"
+			printf "e.g. on Ubuntu 14.04, if \`gcc\` is \`gcc-4.8\`:\n"
+			printf "    apt-get install gnat-4.8 && make crossgcc\n\n"
 
-		printf "on Ubuntu 16.04, if \`gcc\` is \`gcc-5\`:\n"
-		printf "    apt-get install gnat-5 && make crossgcc\n"
+			printf "on Ubuntu 16.04, if \`gcc\` is \`gcc-5\`:\n"
+			printf "    apt-get install gnat-5 && make crossgcc\n"
+		fi
 		timeout 30
 		LANGUAGES="${DEFAULT_LANGUAGES}"
 	fi

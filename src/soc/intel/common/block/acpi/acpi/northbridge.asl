@@ -24,7 +24,7 @@ Device (MCHC)
 		Offset(0x48),	/* MCHBAR (0:0:0:48) */
 		MHEN, 1,	/* Enable */
 		, 14,
-		MHBR, 17,	/* MCHBAR [31:15] */
+		MHBR, 27,	/* MCHBAR [41:15] */
 
 		Offset(0x60),	/* PCIEXBAR (0:0:0:60) */
 		PXEN, 1,	/* Enable */
@@ -246,6 +246,7 @@ Method (_CRS, 0, Serialized)
 Method (GMHB, 0, Serialized)
 {
 	Local0 = \_SB.PCI0.MCHC.MHBR << 15
+	Printf ("GMHB: %o", ToHexString(Local0))
 	Return (Local0)
 }
 

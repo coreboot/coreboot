@@ -513,10 +513,10 @@ acpi_generic_error_status_t *bert_new_event(guid_t *guid)
 {
 	size_t size;
 	acpi_generic_error_status_t *status;
-	acpi_hest_generic_data_v300_t *entry, *r;
+	acpi_hest_generic_data_v300_t *r;
 
 	size = sizeof(*status);
-	size += sizeof(*entry);
+	size += sizeof(*r);
 	size += sizeof_error_section(guid);
 
 	if (size > bert_storage_remaining()) {

@@ -5,7 +5,6 @@
 #include <soc/pci_devs.h>
 #include <ec/google/chromeec/ec.h>
 #include <sar.h>
-#include <drivers/intel/gma/opregion.h>
 #include <static.h>
 
 void variant_devtree_update(void)
@@ -44,14 +43,4 @@ const char *get_wifi_sar_cbfs_filename(void)
 	if (sku_id == 1 || sku_id == 2 || sku_id == 3 || sku_id == 4)
 		return "wifi_sar-kled.hex";
 	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
-}
-
-const char *mainboard_vbt_filename(void)
-{
-	uint32_t sku_id = google_chromeec_get_board_sku();
-
-	if (sku_id == 1 || sku_id == 2 || sku_id == 3 || sku_id == 4)
-		return "vbt-kled.bin";
-	else
-		return "vbt.bin";
 }

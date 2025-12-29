@@ -126,7 +126,7 @@ endchoice
 
 choice
 	prompt "Early (romstage) graphics initialization"
-	default MAINBOARD_USE_EARLY_LIBGFXINIT if MAINBOARD_HAS_EARLY_LIBGFXINIT
+	default MAINBOARD_USE_EARLY_LIBGFXINIT if MAINBOARD_HAS_EARLY_LIBGFXINIT && CHROMEOS
 	default NO_EARLY_GFX_INIT
 
 config NO_EARLY_GFX_INIT

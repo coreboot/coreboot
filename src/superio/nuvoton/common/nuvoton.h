@@ -7,8 +7,32 @@
 #include <device/pnp_type.h>
 #include <stdint.h>
 
-void nuvoton_pnp_enter_conf_state(pnp_devfn_t dev);
-void nuvoton_pnp_exit_conf_state(pnp_devfn_t dev);
+#if ENV_PNP_SIMPLE_DEVICE
+#include <device/pnp_ops.h>
+
+/*
+ * To toggle between `configuration mode` and `normal operation mode` as to
+ * manipulate the various LDN's in Nuvoton Super I/O's we are required to
+ * pass magic numbers `passwords keys`.
+ */
+#define NUVOTON_ENTRY_KEY 0x87
+#define NUVOTON_EXIT_KEY 0xAA
+
+static __always_inline void nuvoton_pnp_enter_conf_state(pnp_devfn_t dev)
+{
+	u16 port = dev >> 8;
+	outb(NUVOTON_ENTRY_KEY, port);
+	outb(NUVOTON_ENTRY_KEY, port);
+}
+
+static __always_inline void nuvoton_pnp_exit_conf_state(pnp_devfn_t dev)
+{
+	u16 port = dev >> 8;
+	outb(NUVOTON_EXIT_KEY, port);
+}
+
+#endif /* SIMPLE_DEVICE */
+
 void nuvoton_enable_serial(pnp_devfn_t dev, u16 iobase);
 #endif
 

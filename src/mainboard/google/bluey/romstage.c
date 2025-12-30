@@ -94,7 +94,8 @@ void platform_romstage_main(void)
 	if (CONFIG(EC_GOOGLE_CHROMEEC) && CONFIG(CONSOLE_SERIAL))
 		platform_dump_battery_soc_information();
 
-	shrm_fw_load_reset();
+	if (!qclib_check_dload_mode())
+		shrm_fw_load_reset();
 
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();

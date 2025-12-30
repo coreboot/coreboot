@@ -124,7 +124,9 @@ static void mainboard_init(struct device *dev)
 {
 	mt6359p_init_pmif_arb();
 
-	if (mainboard_get_storage_type() == STORAGE_EMMC) {
+	if (!fw_config_is_provisioned()) {
+		mtk_msdc_configure_emmc(true);
+	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_EMMC))) {
 		mtk_msdc_configure_emmc(true);
 		mtcmos_ufs_power_off();
 	}

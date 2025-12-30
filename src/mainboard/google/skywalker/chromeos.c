@@ -97,6 +97,16 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_EDP_BL_EN_1V8.id, ACTIVE_HIGH, -1, "backlight enable"},
 	};
 	lb_add_gpios(gpios, edp_pwm_backlight_gpios, ARRAY_SIZE(edp_pwm_backlight_gpios));
+
+	if (CONFIG(BOARD_GOOGLE_PADME)) {
+		/* Panel power control GPIOs for Depthcharge power-off sequence */
+		struct lb_gpio mipi_panel_gpios[] = {
+			{GPIO_EN_PP3300_EDP_X.id, ACTIVE_LOW, -1, "panel_resx"},
+			{GPIO_EN_PP6000_MIPI_DISP.id, ACTIVE_HIGH, -1, "mipi_iovcc_en"},
+			{GPIO_TCHSCR_RST_1V8_L.id, ACTIVE_LOW, -1, "mipi_tp_rstn"},
+		};
+		lb_add_gpios(gpios, mipi_panel_gpios, ARRAY_SIZE(mipi_panel_gpios));
+	}
 }
 
 int cr50_plat_irq_status(void)

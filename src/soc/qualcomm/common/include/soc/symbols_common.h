@@ -48,7 +48,6 @@ DECLARE_REGION(dram_llcc_lpi)
 DECLARE_REGION(dram_ta)
 DECLARE_REGION(dram_pdp)
 DECLARE_REGION(dram_pil)
-DECLARE_REGION(dram_display)
 
 /*
  * DDR_SPACE (2 GB) aka `_dram`:  0x80000000 - 0x100000000

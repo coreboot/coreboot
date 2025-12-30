@@ -34,8 +34,8 @@
 
 /* Maximum number of memory range definitions. */
 #define SYSINFO_MAX_MEM_RANGES 32
-/* Allow a maximum of 8 GPIOs */
-#define SYSINFO_MAX_GPIOS 8
+/* Allow a maximum of 10 GPIOs */
+#define SYSINFO_MAX_GPIOS 10
 
 /* Up to 10 MAC addresses */
 #define SYSINFO_MAX_MACS 10

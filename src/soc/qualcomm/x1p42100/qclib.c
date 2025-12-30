@@ -47,15 +47,17 @@ int qclib_soc_override(struct qclib_cb_if_table *table)
 	}
 	qclib_add_if_table_entry(QCLIB_TE_CPR_SETTINGS, _cpr_settings, data_size, 0);
 
-	/* Attempt to load shrm_meta Blob */
-	data_size = cbfs_load(qclib_file(QCLIB_CBFS_SHRM_META),
-			_qc_blob_meta, REGION_SIZE(qc_blob_meta));
-	if (!data_size) {
-		printk(BIOS_ERR, "[%s] /shrm_meta failed\n", __func__);
-		return -1;
-	}
+	if (!qclib_check_dload_mode())	{
+		/* Attempt to load shrm_meta Blob */
+		data_size = cbfs_load(qclib_file(QCLIB_CBFS_SHRM_META),
+				_qc_blob_meta, REGION_SIZE(qc_blob_meta));
+		if (!data_size) {
+			printk(BIOS_ERR, "[%s] /shrm_meta failed\n", __func__);
+			return -1;
+		}
 
-	qclib_add_if_table_entry(QCLIB_TE_SHRM_META_SETTINGS, _qc_blob_meta, data_size, 0);
+		qclib_add_if_table_entry(QCLIB_TE_SHRM_META_SETTINGS, _qc_blob_meta, data_size, 0);
+	}
 
 	/* hook for platform specific policy configuration */
 	if (qclib_mainboard_override(table)) {

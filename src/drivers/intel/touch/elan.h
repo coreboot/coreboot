@@ -32,19 +32,20 @@ static const struct drivers_intel_touch_config elan_touch_config = {
 
 /*
  * ELAN9006 is used for HID-SPI interface, while ELAN6918 is used for HID-I2C
- * interface.
+ * interface; This is Google Rex's touch device and requires a special cable
+ * in Intel's RVP and fatcat.
  */
 
-static const struct drivers_intel_touch_config google_touch_config = {
+static const struct drivers_intel_touch_config elan_rex_touch_config = {
 	.sensor_dev_name = "ELAN Touch Sensor Device",
-	.dev_hidi2c = {	/* Google's I2C-based touch */
+	.dev_hidi2c = {	/* Google Rex's I2C-based touch */
 		.hid				= "ELAN6918",
 		.cid				= "PNP0C50",
 		.intf.hidi2c.addr		= 0x10,
 		.intf.hidi2c.descriptor_address	= 0x1,
 		.intf.hidi2c.connection_speed	= I2C_SPEED_FAST, /* fast mode */
 	},
-	.dev_hidspi = { /* Google's SPI-based touch */
+	.dev_hidspi = { /* Google Rex's SPI-based touch */
 		.hid						= "ELAN9006",
 		.cid						= "PNP0C51",
 		.intf.hidspi.connection_speed			= (32 * MHz), /* unit: Hz */

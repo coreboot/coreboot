@@ -43,7 +43,7 @@ static const struct drivers_intel_touch_config *get_driver_config(const struct d
 	switch (config->connected_device) {
 	case TH_SENSOR_WACOM:    return &wacom_touch_config;
 	case TH_SENSOR_ELAN:     return &elan_touch_config;
-	case TH_SENSOR_GOOGLE:   return &google_touch_config;
+	case TH_SENSOR_ELAN_REX: return &elan_rex_touch_config;
 	case TH_SENSOR_HYNITRON: return &hynitron_touch_config;
 	case TH_SENSOR_GENERIC:  return config;
 	case TH_SENSOR_NONE:     return NULL;

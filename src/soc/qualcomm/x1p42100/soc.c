@@ -51,7 +51,6 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_wlan, REGION_SIZE(dram_wlan));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_pil, REGION_SIZE(dram_pil));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_ta, REGION_SIZE(dram_ta));
-	reserved_ram_range(dev, index++, (uintptr_t)_dram_display, REGION_SIZE(dram_display));
 
 	/* ACDB carveout region located at 0xFF800000 - (n*5.5 +1+32+3) where n is size of DDR */
 	reserved_ram_range(dev, index++, (uintptr_t)(_dram_llcc_lpi - calc_acdb_carveout_size()),

@@ -14,6 +14,9 @@ config BOARD_GOOGLE_DOOKU
 config BOARD_GOOGLE_GROGU
 	bool "->  Grogu"
 
+config BOARD_GOOGLE_MACE
+	bool "->  Mace"
+
 config BOARD_GOOGLE_OBIWAN
 	bool "->  Obiwan"
 

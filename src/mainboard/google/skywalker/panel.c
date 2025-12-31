@@ -60,7 +60,7 @@ void mipi_panel_power_on(void)
 		mdelay(10);
 	}
 	gpio_output(GPIO_EN_PP3300_EDP_X, 0);
-	mdelay(1);
+	mdelay(5);
 	gpio_output(GPIO_EN_PP3300_EDP_X, 1);
 	mdelay(1);
 	gpio_output(GPIO_TCHSCR_RST_1V8_L, 0);

@@ -423,6 +423,17 @@
             "ranksPerChannel": 2,
             "speedMbps": 6400
         }
+    },
+    {
+        "name": "RS1G32LO5D2FDB-23BT",
+        "attribs": {
+            "densityPerDieGb": 16,
+            "diesPerPackage": 2,
+            "bitWidthPerChannel": 16,
+            "ranksPerChannel": 1,
+            "speedMbps": 8533,
+            "lp5x": true
+        }
     }
     ]
 }

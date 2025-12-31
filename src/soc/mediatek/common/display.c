@@ -14,6 +14,7 @@
 #include <soc/mtcmos.h>
 #include <stdio.h>
 #include <symbols.h>
+#include <timestamp.h>
 
 static struct panel_serializable_data *get_mipi_cmd_from_cbfs(struct panel_description *desc)
 {
@@ -94,6 +95,8 @@ static void display_logo(struct panel_description *panel,
 	mtk_ddp_ovlsys_start(fb_addr, edid, path);
 
 	panel_configure_backlight(panel, true);
+
+	timestamp_add_now(TS_FIRMWARE_SPLASH_RENDERED);
 }
 
 int mtk_display_init(void)

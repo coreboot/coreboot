@@ -23,6 +23,12 @@ When chainloaded from GRUB2, the following menuentry could be used:
         module /vgaroms/seavgabios.bin
     }
 
+GRUB2 loading seabios from drive via command prompt is also possible:
+
+    multiboot (usb0,msdos1)/seabios/bios.bin.elf
+    module (usb0,msdos1)/seabios/vgabios.bin name=vgaroms/seavgabios.bin
+    boot
+
 ## edk2
 
 [edk2](https://github.com/tianocore/tianocore.github.io/wiki/Getting-Started-with-EDK-II) is an open-source modern, feature-rich,

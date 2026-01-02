@@ -85,8 +85,8 @@ chip soc/intel/alderlake
 			# Internal Bluetooth			1874 mil
 			register "usb2_ports[9]"		= "USB2_PORT_SHORT(OC_SKIP)"
 
-			# Card Reader
-			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"
+			# Card Reader				3926 mil
+			register "usb2_ports[3]"		= "USB2_PORT_SHORT(OC_SKIP)"
 
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on

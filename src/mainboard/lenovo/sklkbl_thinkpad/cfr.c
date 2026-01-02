@@ -8,6 +8,8 @@
 #include <soc/cfr.h>
 #include <static.h>
 
+WEAK_DEV_PTR(dgpu);
+
 /* Hide the dGPU CFR entry if dGPU not present */
 static void update_dgpu(struct sm_object *new)
 {

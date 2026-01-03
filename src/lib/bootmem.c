@@ -144,8 +144,7 @@ void bootmem_add_range(uint64_t start, uint64_t size,
 int bootmem_add_range_from(uint64_t start, uint64_t size, const enum bootmem_type new_tag,
 			   const enum bootmem_type from_tag)
 {
-	if (new_tag == from_tag)
-		return -1;
+	assert(new_tag != from_tag);
 
 	if (!bootmem_region_targets_type(start, size, from_tag)) {
 		printk(BIOS_ERR, "%s: Failed to add the range [%#llx, %#llx)"

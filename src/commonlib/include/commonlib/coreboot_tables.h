@@ -143,8 +143,12 @@ struct lb_memory_range {
 #define LB_MEM_NVS		 4	/* ACPI NVS Memory */
 #define LB_MEM_UNUSABLE		 5	/* Unusable address space */
 #define LB_MEM_VENDOR_RSVD	 6	/* Vendor Reserved */
-#define LB_MEM_TAG		 7	/* Armv9 tag storage for MTE */
-#define LB_MEM_TABLE		16    /* Ram configuration tables are kept in */
+/*
+ * The memory type [1 ... 16) needs to match
+ * https://uefi.org/htmlspecs/ACPI_Spec_6_4_html/15_System_Address_Map_Interfaces/Sys_Address_Map_Interfaces.html
+ */
+#define LB_MEM_TABLE		16	/* Ram configuration tables are kept in */
+#define LB_MEM_TAG		17	/* Armv9 tag storage for MTE */
 #define LB_MEM_SOFT_RESERVED	0xefffffff /* Specific purpose memory */
 };
 

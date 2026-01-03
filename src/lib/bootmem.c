@@ -14,7 +14,38 @@ static int table_written;
 static struct memranges bootmem;
 static struct memranges bootmem_os;
 
-static const char *bootmem_range_string(const enum bootmem_type tag);
+struct range_strings {
+	enum bootmem_type tag;
+	const char *str;
+};
+
+static const struct range_strings type_strings[] = {
+	{ BM_MEM_RAM, "RAM" },
+	{ BM_MEM_RESERVED, "RESERVED" },
+	{ BM_MEM_ACPI, "ACPI" },
+	{ BM_MEM_NVS, "NVS" },
+	{ BM_MEM_UNUSABLE, "UNUSABLE" },
+	{ BM_MEM_VENDOR_RSVD, "VENDOR RESERVED" },
+	{ BM_MEM_BL31, "BL31" },
+	{ BM_MEM_OPENSBI, "OPENSBI" },
+	{ BM_MEM_TABLE, "CONFIGURATION TABLES" },
+	{ BM_MEM_SOFT_RESERVED, "SOFT RESERVED" },
+	{ BM_MEM_RAMSTAGE, "RAMSTAGE" },
+	{ BM_MEM_PAYLOAD, "PAYLOAD" },
+	{ BM_MEM_TAG, "TAG STORAGE" },
+};
+
+static const char *bootmem_range_string(const enum bootmem_type tag)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(type_strings); i++) {
+		if (type_strings[i].tag == tag)
+			return type_strings[i].str;
+	}
+
+	return "UNKNOWN!";
+}
 
 static int bootmem_is_initialized(void)
 {
@@ -148,39 +179,6 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 	}
 
 	table_written = 1;
-}
-
-struct range_strings {
-	enum bootmem_type tag;
-	const char *str;
-};
-
-static const struct range_strings type_strings[] = {
-	{ BM_MEM_RAM, "RAM" },
-	{ BM_MEM_RESERVED, "RESERVED" },
-	{ BM_MEM_ACPI, "ACPI" },
-	{ BM_MEM_NVS, "NVS" },
-	{ BM_MEM_UNUSABLE, "UNUSABLE" },
-	{ BM_MEM_VENDOR_RSVD, "VENDOR RESERVED" },
-	{ BM_MEM_BL31, "BL31" },
-	{ BM_MEM_OPENSBI, "OPENSBI" },
-	{ BM_MEM_TABLE, "CONFIGURATION TABLES" },
-	{ BM_MEM_SOFT_RESERVED, "SOFT RESERVED" },
-	{ BM_MEM_RAMSTAGE, "RAMSTAGE" },
-	{ BM_MEM_PAYLOAD, "PAYLOAD" },
-	{ BM_MEM_TAG, "TAG STORAGE" },
-};
-
-static const char *bootmem_range_string(const enum bootmem_type tag)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(type_strings); i++) {
-		if (type_strings[i].tag == tag)
-			return type_strings[i].str;
-	}
-
-	return "UNKNOWN!";
 }
 
 void bootmem_dump_ranges(void)

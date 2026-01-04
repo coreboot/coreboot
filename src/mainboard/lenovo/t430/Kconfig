@@ -43,6 +43,9 @@ config VBOOT
 config VBOOT_SLOTS_RW_AB
 	default y
 
+config CBFS_SIZE
+	default 0x700000
+
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab.fmd" if VBOOT
 

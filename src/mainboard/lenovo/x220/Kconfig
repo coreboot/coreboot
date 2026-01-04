@@ -49,6 +49,9 @@ config VARIANT_DIR
 	default "x220" if BOARD_LENOVO_X220 || BOARD_LENOVO_X220I
 	default "x1" if BOARD_LENOVO_X1
 
+config CBFS_SIZE
+	default 0x300000
+
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
 

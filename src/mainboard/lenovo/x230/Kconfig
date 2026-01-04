@@ -45,6 +45,10 @@ config VBOOT
 config VBOOT_SLOTS_RW_AB
 	default y
 
+config CBFS_SIZE
+	default 0x700000 if BOARD_LENOVO_X230 || BOARD_LENOVO_X230T || BOARD_LENOVO_X230_EDP
+	default 0xB00000
+
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab.fmd" if VBOOT
 

@@ -1,15 +1,23 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
-#include <spi_flash.h>
-#include <soc/pci_devs.h>
 #include <amdblocks/lpc.h>
 #include <amdblocks/smi.h>
 #include <amdblocks/spi.h>
+#include <console/console.h>
+#include <boot_device.h>
 #include <device/pci_ops.h>
 #include <lib.h>
+#include <soc/pci_devs.h>
+#include <spi_flash.h>
 #include <timer.h>
 #include <types.h>
+
+/*
+ * Default SPI CS line. When PSP fails to boot from CS0 it will
+ * attempt to boot from other CS lines as well. Keep track of the
+ * boot source for DUAL SPI access support.
+ */
+static uint8_t default_cs;
 
 #define GRANULARITY_TEST_4k		0x0000f000		/* bits 15-12 */
 #define WORD_TO_DWORD_UPPER(x)		((x << 16) & 0xffff0000)
@@ -18,6 +26,8 @@
 #define SPI_RESTRICTED_CMD1		0x04
 #define SPI_RESTRICTED_CMD2		0x08
 #define SPI_CNTRL1			0x0c
+#define SPI_ALT_CS_REG			0x1d
+#define   SPI_ALT_CS_REG_MASK		0x03
 #define SPI_CMD_CODE			0x45
 #define SPI_CMD_TRIGGER			0x47
 #define   SPI_CMD_TRIGGER_EXECUTE	BIT(7)
@@ -114,6 +124,13 @@ static int execute_command(void)
 void spi_init(void)
 {
 	printk(BIOS_DEBUG, "%s: SPI BAR at 0x%08lx\n", __func__, spi_get_bar());
+	default_cs = spi_read8(SPI_ALT_CS_REG) & SPI_ALT_CS_REG_MASK;
+	printk(BIOS_DEBUG, "%s: Booting from SPI CS%d\n", __func__, default_cs);
+}
+
+int boot_device_spi_cs(void)
+{
+	return default_cs;
 }
 
 static uint8_t cmd_code;

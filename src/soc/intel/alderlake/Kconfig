@@ -396,6 +396,19 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 	default 0x100000 if BUILDING_WITH_DEBUG_FSP
 	default 0x40000
 
+config CHIPSETINIT_CBFS_FILE
+	string
+	depends on HAVE_CHIPSETINIT_BINARY
+	default "chipsetinit.bin"
+	help
+	  Name of the Chipset Initialization binary on the CBFS
+
+config HAVE_CHIPSETINIT_BINARY
+	bool
+	default n
+	help
+	  Select this option if you want to load the Chipset Initialization binary
+
 config FSP_TYPE_IOT
 	bool
 	default n

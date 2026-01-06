@@ -664,6 +664,22 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->Usb4CmMode = CONFIG(SOFTWARE_CONNECTION_MANAGER);
 }
 
+#if CONFIG(HAVE_CHIPSETINIT_BINARY)
+static void fill_fsps_chipsetinit_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	void *data;
+	size_t size;
+
+	data = cbfs_map(CONFIG_CHIPSETINIT_CBFS_FILE, &size);
+	if (!data || size == 0)
+		return;
+
+	s_cfg->ChipsetInitBinPtr = (uint32_t)(uintptr_t)data;
+	s_cfg->ChipsetInitBinLen = (uint32_t)size;
+}
+#endif
+
 static void fill_fsps_chipset_lockdown_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
@@ -1284,6 +1300,9 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_cpu_params,
 		fill_fsps_igd_params,
 		fill_fsps_tcss_params,
+#if CONFIG(HAVE_CHIPSETINIT_BINARY)
+		fill_fsps_chipsetinit_params,
+#endif
 		fill_fsps_chipset_lockdown_params,
 		fill_fsps_xhci_params,
 		fill_fsps_xdci_params,

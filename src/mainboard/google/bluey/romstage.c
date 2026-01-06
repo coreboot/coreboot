@@ -83,7 +83,7 @@ static void platform_dump_battery_soc_information(void)
 	if (google_chromeec_read_batt_state_of_charge(&batt_pct))
 		printk(BIOS_WARNING, "Failed to get battery level\n");
 	else
-		printk(BIOS_INFO, "Battery state-of-charge %d\n", batt_pct);
+		printk(BIOS_INFO, "Battery state-of-charge %d%%\n", batt_pct);
 }
 
 void platform_romstage_main(void)

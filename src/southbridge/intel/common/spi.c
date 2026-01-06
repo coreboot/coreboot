@@ -619,14 +619,28 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	 */
 	while (trans.bytesout || trans.bytesin) {
 		uint32_t data_length;
+		uint32_t max_length;
 
 		/* SPI addresses are 24 bit only */
 		writel_(trans.offset & 0x00FFFFFF, cntlr.addr);
 
 		if (trans.bytesout)
-			data_length = MIN(trans.bytesout, cntlr.databytes);
+			max_length = MIN(trans.bytesout, cntlr.databytes);
 		else
-			data_length = MIN(trans.bytesin, cntlr.databytes);
+			max_length = MIN(trans.bytesin, cntlr.databytes);
+
+		/*
+		 * Avoid transfers that cross 4KiB boundaries. The ICH SPI controller
+		 * has been observed to fail on some platforms when a single transfer
+		 * spans a 4KiB boundary (e.g., offset 0x...3ff0, len 0x3c crosses 0x...4000).
+		 */
+		if (with_address) {
+			uint32_t off_in_4k = trans.offset & 0xfff;
+			uint32_t max_to_boundary = 0x1000 - off_in_4k;
+			data_length = MIN(max_length, max_to_boundary);
+		} else {
+			data_length = max_length;
+		}
 
 		/* Program data into FDATA0 to N */
 		if (trans.bytesout) {

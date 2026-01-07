@@ -142,77 +142,77 @@ static inline void mca_clear_status(void)
 
 /* Helpers for interpreting MC[i]_STATUS */
 
-static inline int mca_valid(msr_t msr)
+static inline bool mca_valid(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_VAL);
 }
 
-static inline int mca_over(msr_t msr)
+static inline bool mca_over(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_OVERFLOW);
 }
 
-static inline int mca_uc(msr_t msr)
+static inline bool mca_uc(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_UC);
 }
 
-static inline int mca_en(msr_t msr)
+static inline bool mca_en(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_EN);
 }
 
-static inline int mca_miscv(msr_t msr)
+static inline bool mca_miscv(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_MISCV);
 }
 
-static inline int mca_addrv(msr_t msr)
+static inline bool mca_addrv(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_ADDRV);
 }
 
-static inline int mca_pcc(msr_t msr)
+static inline bool mca_pcc(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_PCC);
 }
 
-static inline int mca_tcc(msr_t msr)
+static inline bool mca_tcc(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_TCC);
 }
 
-static inline int mca_syndv(msr_t msr)
+static inline bool mca_syndv(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_SYNDV);
 }
 
-static inline int mca_idv(msr_t msr)
+static inline bool mca_idv(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_COREID_VAL);
 }
 
-static inline int mca_cecc(msr_t msr)
+static inline bool mca_cecc(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_CECC);
 }
 
-static inline int mca_uecc(msr_t msr)
+static inline bool mca_uecc(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_UECC);
 }
 
-static inline int mca_defd(msr_t msr)
+static inline bool mca_defd(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_DEFERRED);
 }
 
-static inline int mca_poison(msr_t msr)
+static inline bool mca_poison(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_POISON);
 }
 
-static inline int mca_sublink(msr_t msr)
+static inline bool mca_sublink(msr_t msr)
 {
 	return !!(msr.hi & MCA_STATUS_HI_SUBLINK);
 }

@@ -122,6 +122,12 @@ static void mainboard_init(struct device *dev)
 	/* ADSP I2C (Charger/Fuel gauge) */
 	qupv3_se_fw_load_and_init(QUPV3_2_SE4, SE_PROTOCOL_I2C, GSI);
 
+	/* USB-C0 Re-Timer I2C */
+	qupv3_se_fw_load_and_init(QUPV3_0_SE3, SE_PROTOCOL_I2C, MIXED);
+
+	/* USB-C1 Re-Timer I2C */
+	qupv3_se_fw_load_and_init(QUPV3_0_SE7, SE_PROTOCOL_I2C, MIXED);
+
 	if (!CONFIG(MAINBOARD_NO_USB_A_PORT))
 		qupv3_se_fw_load_and_init(QUPV3_0_SE1, SE_PROTOCOL_I2C, MIXED); /* USB-A retimer */
 	qupv3_se_fw_load_and_init(QUPV3_0_SE5, SE_PROTOCOL_I2C, MIXED); /* eUSB repeater */

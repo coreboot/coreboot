@@ -3,6 +3,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_P2SB_H
 #define SOC_INTEL_COMMON_BLOCK_P2SB_H
 
+#include <device/device.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -67,5 +68,12 @@ void p2sb_set_ioapic_bdf(union p2sb_bdf bdf);
  * count: number of element in EP mask array.
  */
 void p2sb_soc_get_sb_mask(uint32_t *ep_mask, size_t count);
+
+/*
+ * SoC might define this function to fill additional P2SB-related ACPI objects.
+ * For instance, the SoC might include the IOST ACPI interface to use P2SB and
+ * enable it via SSDT for debug purposes at the OS level.
+ */
+void soc_fill_p2sb_ssdt(const struct device *dev);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_P2SB_H */

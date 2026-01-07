@@ -130,10 +130,18 @@ static void read_resources(struct device *dev)
 	mmio_range(dev, PCI_BASE_ADDRESS_0, P2SB_BAR, P2SB_SIZE);
 }
 
+__weak void soc_fill_p2sb_ssdt(const struct device *dev)
+{
+	/* no-op */
+}
+
 const struct device_operations p2sb_ops = {
 	.read_resources		= read_resources,
 	.set_resources		= noop_set_resources,
 	.ops_pci		= &pci_dev_ops_pci,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt		= soc_fill_p2sb_ssdt,
+#endif
 };
 
 static const unsigned short pci_device_ids[] = {

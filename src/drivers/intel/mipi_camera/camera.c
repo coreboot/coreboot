@@ -1219,9 +1219,18 @@ static struct device_operations camera_ops = {
 
 static void camera_enable(struct device *dev)
 {
-	//Validate Camera Parameters
+	/* Validate Camera Parameters */
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
 	bool params_error = false;
+
+	/*
+	 * Non-sensor devices (like an aggregator) don't need
+	 * SSDB validation, just assign ops and return.
+	 */
+	if (config->device_type != INTEL_ACPI_CAMERA_SENSOR) {
+		dev->ops = &camera_ops;
+		return;
+	}
 
 	if (!config->ssdb.lanes_used) {
 		printk(BIOS_ERR, "MIPI camera: SSDB lanes_used not set\n");

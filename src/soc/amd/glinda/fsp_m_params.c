@@ -3,6 +3,7 @@
 /* TODO: Update for Glinda */
 /* TODO: See what can be moved to common */
 
+#include <amdblocks/aoac.h>
 #include <amdblocks/apob_cache.h>
 #include <amdblocks/ioapic.h>
 #include <amdblocks/memmap.h>
@@ -13,6 +14,7 @@
 #include <fsp/api.h>
 #include <soc/platform_descriptors.h>
 #include <soc/pci_devs.h>
+#include <soc/aoac_defs.h>
 #include <static.h>
 #include <string.h>
 #include <types.h>
@@ -174,6 +176,31 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		}
 	} else {
 		mcfg->usb_phy_ptr = 0;
+	}
+
+	/* Sync AOAC devices */
+	int fch_aoac_devs[] = {
+		FCH_AOAC_DEV_I2C0,
+		FCH_AOAC_DEV_I2C1,
+		FCH_AOAC_DEV_I2C2,
+		FCH_AOAC_DEV_I2C3,
+		FCH_AOAC_DEV_UART0,
+		FCH_AOAC_DEV_UART1,
+		FCH_AOAC_DEV_UART2,
+		FCH_AOAC_DEV_UART3,
+		FCH_AOAC_DEV_UART4,
+		FCH_AOAC_DEV_I3C0,
+		FCH_AOAC_DEV_I3C1,
+		FCH_AOAC_DEV_I3C2,
+		FCH_AOAC_DEV_I3C3,
+	};
+
+	for (int i = 0; i < ARRAY_SIZE(fch_aoac_devs); i++) {
+		const int mask = BIT(fch_aoac_devs[i]);
+		if (is_aoac_device_enabled(fch_aoac_devs[i]))
+			mcfg->fch_rt_device_enable_map |= mask;
+		else
+			mcfg->fch_rt_device_enable_map &= ~mask;
 	}
 
 	fsp_fill_pcie_ddi_descriptors(mcfg);

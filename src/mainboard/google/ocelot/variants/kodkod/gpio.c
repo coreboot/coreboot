@@ -125,8 +125,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C13, NONE),
 	/* GPP_C14:     NC */
 	PAD_NC(GPP_C14, NONE),
-	/* GPP_C15:     SOC_FPS_RST# */
-	PAD_CFG_GPO_LOCK(GPP_C15, 1, LOCK_CONFIG),
+	/* GPP_C15:     NC */
+	PAD_NC(GPP_C15, NONE),
 	/* GPP_C16:     NC */
 	PAD_NC(GPP_C16, NONE),
 	/* GPP_C17:     NC */
@@ -279,10 +279,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H04, NONE),
 	/* GPP_H05:     NC */
 	PAD_NC(GPP_H05, NONE),
-	/* GPP_H06:     SOC_I2C_3_SDA_iPCM */
-	PAD_CFG_NF(GPP_H06, NONE, DEEP, NF1),
-	/* GPP_H07:     SOC_I2C_3_SCL_iPCM */
-	PAD_CFG_NF(GPP_H07, NONE, DEEP, NF1),
+	/* GPP_H06:     NC */
+	PAD_NC(GPP_H06, NONE),
+	/* GPP_H07:     NC */
+	PAD_NC(GPP_H07, NONE),
 	/* GPP_H08:     UART_0_CRXD_DTXD */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
 	/* GPP_H09:     UART_0_CTXD_DRXD */
@@ -372,10 +372,6 @@ static const struct pad_config gpio_table[] = {
 static const struct pad_config early_gpio_table[] = {
 	/* GPP_B17:     SOC_SPI_TPM_INT# */
 	PAD_CFG_GPI_APIC_LOCK(GPP_B17, NONE, LEVEL, INVERT, LOCK_CONFIG),
-	/* GPP_H06: SOC_I2C_3_SDA_iPCM */
-	PAD_CFG_NF(GPP_H06, NONE, DEEP, NF1),
-	/* GPP_H07: SOC_I2C_3_SCL_iPCM */
-	PAD_CFG_NF(GPP_H07, NONE, DEEP, NF1),
 	/* GPP_H08:     UART_0_CRXD_DTXD */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
 	/* GPP_H09:     UART_0_CTXD_DRXD */
@@ -392,8 +388,6 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
 	/* GPP_C01:     SPD_SOC_SMBDATA */
 	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
-	/* GPP_C15:     FPS_RST_N */
-	PAD_CFG_GPO(GPP_C15, 0, PLTRST),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

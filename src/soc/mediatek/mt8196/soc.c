@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootmem.h>
-#include <bootstate.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/booker.h>
@@ -57,7 +56,7 @@ static void mte_setup(void)
 	booker_mte_init(mte_start);
 }
 
-static void fsp_init(void *arg)
+static void fsp_init(void)
 {
 	uint32_t storage_type = mainboard_get_storage_type();
 
@@ -68,8 +67,6 @@ static void fsp_init(void *arg)
 	mtk_fsp_load_and_run();
 }
 
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, fsp_init, NULL);
-
 static void soc_init(struct device *dev)
 {
 	mtk_mmu_disable_l2c_sram();
@@ -79,6 +76,7 @@ static void soc_init(struct device *dev)
 	if (spm_init())
 		printk(BIOS_ERR, "spm init failed, Suspend may not work\n");
 
+	fsp_init();
 	sspm_init();
 	gpueb_init();
 	mcupm_init();

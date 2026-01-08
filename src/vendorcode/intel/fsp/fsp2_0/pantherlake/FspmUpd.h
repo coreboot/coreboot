@@ -93,9 +93,11 @@ typedef struct {
 **/
   UINT32                      SerialIoUartDebugCtsPinMux;
 
-/** Offset 0x0074 - Reserved
+/** Offset 0x0074 - SerialIo Uart PowerGating
+  Select SerialIo Uart Powergating mode
+  0:Disabled, 1:Enabled, 2:Auto
 **/
-  UINT8                       Reserved1;
+  UINT8                       SerialIoUartPowerGating;
 
 /** Offset 0x0075 - DCI Enable
   Determine if to enable DCI debug from host
@@ -110,9 +112,28 @@ typedef struct {
 **/
   UINT8                       DciDbcMode;
 
-/** Offset 0x0077 - Reserved
+/** Offset 0x0077 - DCI Clock Enable
+  Enable/Disable DCI clock in lowest power state
+  $EN_DIS
 **/
-  UINT8                       Reserved2[3];
+  UINT8                       DciClkEnable;
+
+/** Offset 0x0078 - Keep Early Trace
+  Trace is activated by default. When enable, keep early trace data and keep tracing,
+  may block s0ix.\n
+  When disabled will abandon trace data and stop tracing which allows enter s0ix\n
+  \n
+  noted:enable this option will not enable TraceHub; When probe is connected, keep
+  early trace will then be configured by tool, this option will not take effect.
+  $EN_DIS
+**/
+  UINT8                       KeepEarlyTrace;
+
+/** Offset 0x0079 - Enable/Disable MemoryOverlap check
+  Enable(Default): Enable MemoryOverlap check, Disable: Disable MemoryOverlap check
+  $EN_DIS
+**/
+  UINT8                       MemMapOverlapCheckSupport;
 
 /** Offset 0x007A - Memory Test on Warm Boot
   Run Base Memory Test on Warm Boot
@@ -122,7 +143,7 @@ typedef struct {
 
 /** Offset 0x007B - Reserved
 **/
-  UINT8                       Reserved3[5];
+  UINT8                       Reserved1[5];
 
 /** Offset 0x0080 - Platform Reserved Memory Size
   The minimum platform memory size required to pass control into DXE
@@ -137,7 +158,7 @@ typedef struct {
 
 /** Offset 0x008A - Reserved
 **/
-  UINT8                       Reserved4[6];
+  UINT8                       Reserved2[6];
 
 /** Offset 0x0090 - Memory SPD Pointer Controller 0 Channel 0 Dimm 0
   Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
@@ -316,9 +337,19 @@ typedef struct {
 **/
   UINT8                       LowerBasicMemTestSize;
 
-/** Offset 0x01AD - Reserved
+/** Offset 0x01AD - EccGranularity32BEn
+  Reduce BasicMemTest size. 0: Disabled (default), regular BasicMemTest. 1: Enabled,
+  shorter BasicMemTest (faster boot)
+  $EN_DIS
 **/
-  UINT8                       Reserved5[2];
+  UINT8                       EccGranularity32BEn;
+
+/** Offset 0x01AE - EccCorrectionMode
+  Reduce BasicMemTest size. 0: Disabled (default), regular BasicMemTest. 1: Enabled,
+  shorter BasicMemTest (faster boot)
+  $EN_DIS
+**/
+  UINT8                       EccCorrectionMode;
 
 /** Offset 0x01AF - CaVrefHigh
   DDR5 CA Sweep High Vref Value for DDR5 OC
@@ -350,9 +381,13 @@ typedef struct {
 **/
   UINT8                       DFETap2StepSize;
 
-/** Offset 0x01B5 - Reserved
+/** Offset 0x01B5 - IbeccEccInjControl
+  IBECC Error Injection Control
+  0: No Error Injection, 1:Inject Correctable Error Address match, 3:Inject Correctable
+  Error on insertion counter, 5: Inject Uncorrectable Error Address match, 7:Inject
+  Uncorrectable Error on insertion counter
 **/
-  UINT8                       Reserved6;
+  UINT8                       IbeccEccInjControl;
 
 /** Offset 0x01B6 - VDD2 override
   VDD2 override for DDR5 OC; 0 - Auto
@@ -473,9 +508,17 @@ typedef struct {
 **/
   UINT16                      tCCD_L_WR;
 
-/** Offset 0x01E2 - Reserved
+/** Offset 0x01E2 - Periodic COMP
+  Enable/disable Periodic Compensation
+  $EN_DIS
 **/
-  UINT8                       Reserved7[2];
+  UINT8                       EnPeriodicComp;
+
+/** Offset 0x01E3 - LPMode4 Support
+  LPMode4 Options
+  0: Disable, 1:Enable, 2:Dynamic Threshold 2, 3:Dynamic Threshold 3
+**/
+  UINT8                       LpMode4;
 
 /** Offset 0x01E4 - LPMode Support
   Bit[0]: Enable Lpmode0p5 (Idle_enable), Bit[1]: Enable Lpmode2 (Powerdown_enable),
@@ -483,9 +526,17 @@ typedef struct {
 **/
   UINT8                       LpMode;
 
-/** Offset 0x01E5 - Reserved
+/** Offset 0x01E5 - Opportunistic Read
+  Enables/Disable Opportunistic Read (Def= Enable)
+  $EN_DIS
 **/
-  UINT8                       Reserved8[2];
+  UINT8                       OpportunisticRead;
+
+/** Offset 0x01E6 - Cycle Bypass Support
+  Enables/Disable Cycle Bypass Support(Def=Disable)
+  $EN_DIS
+**/
+  UINT8                       Disable2CycleBypass;
 
 /** Offset 0x01E7 - MRC OCSafeMode
   OverClocking Safe Mode for tCL
@@ -493,9 +544,13 @@ typedef struct {
 **/
   UINT8                       OCSafeMode;
 
-/** Offset 0x01E8 - Reserved
+/** Offset 0x01E8 - DQ Vref Ctrl Offset
+  Offset to be applied to DDRDATA7CH1_CR_DDRCRVREFADJUST1.Ch0VrefCtl
+  0xF4:-12,0xF5:-11, 0xF6:-10, 0xF7:-9, 0xF8:-8, 0xF9:-7, 0xFA:-6, 0xFB:-5, 0xFC:-4,
+  0xFD:-3, 0xFE:-2, 0xFF:-1, 0:0, 1:+1, 2:+2, 3:+3, 4:+4, 5:+5, 6:+6, 7:+7, 8:+8,
+  9:+9, 10:+10, 11:+11, 12:+12
 **/
-  UINT8                       Reserved9;
+  UINT8                       VrefCtlOffset;
 
 /** Offset 0x01E9 - Dqs Pins Interleaved Setting
   Indicates DqPinsInterleaved setting: board-dependent
@@ -536,9 +591,10 @@ typedef struct {
 **/
   UINT8                       ProbelessTrace;
 
-/** Offset 0x01EF - Reserved
+/** Offset 0x01EF - IbeccEccInjCount
+  Number of memory transactions between ECC error injection
 **/
-  UINT8                       Reserved10;
+  UINT8                       IbeccEccInjCount;
 
 /** Offset 0x01F0 - DDR Frequency Limit
   Maximum Memory Frequency Selections in Mhz. Options are 1067, 1333, 1600, 1867,
@@ -676,9 +732,11 @@ typedef struct {
 **/
   UINT8                       TXDQSDCC;
 
-/** Offset 0x0213 - Reserved
+/** Offset 0x0213 - Rx DQS Duty Cycle Correction
+  Enables/Disable Rx DQS Duty Cycle Correction
+  $EN_DIS
 **/
-  UINT8                       Reserved11;
+  UINT8                       RXDQSDCC;
 
 /** Offset 0x0214 - Ch Hash Override
   Select if Channel Hash setting values will be taken from input parameters or automatically
@@ -687,9 +745,17 @@ typedef struct {
 **/
   UINT8                       ChHashOverride;
 
-/** Offset 0x0215 - Reserved
+/** Offset 0x0215 - Voltage Readout
+  Enables/Disable Voltage Readout for VCCClk and PBias
+  $EN_DIS
 **/
-  UINT8                       Reserved12[2];
+  UINT8                       VoltageReadout;
+
+/** Offset 0x0216 - DQS Rise/Fall
+  Enables/Disable DQS Rise/Fall
+  $EN_DIS
+**/
+  UINT8                       DQSRF;
 
 /** Offset 0x0217 - DQS Rise/Fall
   Enables/Disable DQS Rise/Fall
@@ -697,9 +763,17 @@ typedef struct {
 **/
   UINT8                       RDDQSODTT;
 
-/** Offset 0x0218 - Reserved
+/** Offset 0x0218 - PreTraining
+  Enables/Disable PreTraining
+  $EN_DIS
 **/
-  UINT8                       Reserved13[2];
+  UINT8                       PRETRAIN;
+
+/** Offset 0x0219 - DUNIT Configuration
+  Enables/Disable Dunit Configuration
+  $EN_DIS
+**/
+  UINT8                       DUNITC;
 
 /** Offset 0x021A - Functional Duty Cycle Correction for DDR5 CLK
   Enable/Disable Functional Duty Cycle Correction for DDR5 CLK
@@ -729,9 +803,11 @@ typedef struct {
 **/
   UINT8                       DQDQSSWZ;
 
-/** Offset 0x021F - Reserved
+/** Offset 0x021F - LP5 Dca Training
+  Enable/Disable LP5 Dca Training
+  $EN_DIS
 **/
-  UINT8                       Reserved14;
+  UINT8                       DCCLP5READDCA;
 
 /** Offset 0x0220 - Functional Duty Cycle Correction for Data DQ
   Enable/Disable Functional Duty Cycle Correction for Data DQ
@@ -739,9 +815,39 @@ typedef struct {
 **/
   UINT8                       FUNCDCCDQ;
 
-/** Offset 0x0221 - Reserved
+/** Offset 0x0221 - SubCh Hash Override
+  Select if SubChannel Hash setting values will be taken from input parameters or
+  automatically taken from POR values depending on DRAM type detected. NOTE: ONLY
+  if Memory interleaved Mode
+  $EN_DIS
 **/
-  UINT8                       Reserved15[5];
+  UINT8                       SubChHashOverride;
+
+/** Offset 0x0222 - DDR5 Auto Precharge Enable
+  Auto Precharge Enable for DDR5: <b>O=Auto</b>, 1=Disable, 2=Enable
+  $EN_DIS
+**/
+  UINT8                       Ddr5AutoPrechargeEnable;
+
+/** Offset 0x0223 - Lp5 SplitACT Enable
+  SplitACT enable for LP5
+  0:Auto, 1:Disable, 2:Enable
+**/
+  UINT8                       Lp5SplitACTEnable;
+
+/** Offset 0x0224 - CCC Half Frequency
+  CCC Half Frequency (CccGear4) Mode: 0 = Auto (Default), 1 = Disable, 2 = GroupGv0
+  (SaGv0 only), 3 = GroupGv1 (Up to SaGv1), 4 = GroupGv2 (Up to SaGv2), 5 = GroupGv3
+  (Up to SaGv3)
+  0: Auto, 1: Disable, 2: GroupGv0, 3: GroupGv1, 4: GroupGv2, 5: GroupGv3
+**/
+  UINT8                       CccHalfFrequency;
+
+/** Offset 0x0225 - DIMM Non-Target ODT Training
+  Enables/Disable DIMM Non-Target ODT Training
+  $EN_DIS
+**/
+  UINT8                       DIMMNTODT;
 
 /** Offset 0x0226 - Unmatched Rx Calibration
   Enable/Disable Rx Unmatched Calibration
@@ -749,9 +855,60 @@ typedef struct {
 **/
   UINT8                       RXUNMATCHEDCAL;
 
-/** Offset 0x0227 - Reserved
+/** Offset 0x0227 - Hard Post Package Repair
+  Deprecated
+  $EN_DIS
 **/
-  UINT8                       Reserved16[10];
+  UINT8                       PPR;
+
+/** Offset 0x0228 - PPR Test Type
+  Deprecated
+**/
+  UINT8                       PprTestType;
+
+/** Offset 0x0229 - PPR Run Once
+  When Eanble, PPR will run only once and then is disabled at next training cycle
+  $EN_DIS
+**/
+  UINT8                       PprRunOnce;
+
+/** Offset 0x022A - PPR Run During Fastboot
+  Deprecated
+  $EN_DIS
+**/
+  UINT8                       PprRunAtFastboot;
+
+/** Offset 0x022B - PPR Repair Type
+  PPR Repair Type: 0:Do not Repair (Default), 1:Soft Repair, 2:Hard Repair
+  0:Do not Repair (Default), 1:Soft Repair, 2:Hard Repair
+**/
+  UINT8                       PprRepairType;
+
+/** Offset 0x022C - PPR Error Injection
+  When Eanble, PPR will inject bad rows during testing
+  $EN_DIS
+**/
+  UINT8                       PprErrorInjection;
+
+/** Offset 0x022D - PPR Repair Controller
+  Deprecated
+**/
+  UINT8                       PprRepairController;
+
+/** Offset 0x022E - PPR Repair Channel
+  Deprecated
+**/
+  UINT8                       PprRepairChannel;
+
+/** Offset 0x022F - PPR Repair Dimm
+  Deprecated
+**/
+  UINT8                       PprRepairDimm;
+
+/** Offset 0x0230 - PPR Repair Rank
+  Deprecated
+**/
+  UINT8                       PprRepairRank;
 
 /** Offset 0x0231 - Memory Slice Hash LSB Bit
   Memory Slice (Controller) Hash LSB bit. Valid values are 0..7 for BITS 6..13; used
@@ -766,9 +923,25 @@ typedef struct {
 **/
   UINT16                      MsHashMask;
 
-/** Offset 0x0234 - Reserved
+/** Offset 0x0234 - PPR Repair Row
+  Deprecated
 **/
-  UINT8                      Reserved17[13];
+  UINT32                      PprRepairRow;
+
+/** Offset 0x0238 - PPR Repair Physical Address Low
+  Deprecated
+**/
+  UINT32                      PprRepairPhysicalAddrLow;
+
+/** Offset 0x023C - PPR Repair Physical Address High
+  Deprecated
+**/
+  UINT32                      PprRepairPhysicalAddrHigh;
+
+/** Offset 0x0240 - PPR Repair BankGroup
+  Deprecated
+**/
+  UINT8                       PprRepairBankGroup;
 
 /** Offset 0x0241 - LVR Auto Trim
   Enable/disable LVR Auto Trim
@@ -788,9 +961,23 @@ typedef struct {
 **/
   UINT8                       WRTRETRAIN;
 
-/** Offset 0x0244 - Reserved
+/** Offset 0x0244 - DCC Phase Clk Calibration
+  Enable/disable DCC Phase Clk Calibration
+  $EN_DIS
 **/
-  UINT8                       Reserved18[3];
+  UINT8                       PHASECLKCAL;
+
+/** Offset 0x0245 - DCC Tline Clk Calibration
+  Enable/disable DCC Tline Clk Calibration
+  $EN_DIS
+**/
+  UINT8                       TLINECLKCAL;
+
+/** Offset 0x0246 - DCC Tline Serializer Calibration
+  Enable/disable DCC PI Serializer Calibratio
+  $EN_DIS
+**/
+  UINT8                       DCCPISERIALCAL;
 
 /** Offset 0x0247 - RDDQODTT
   Enable/disable Read DQ ODT Training
@@ -1000,9 +1187,11 @@ typedef struct {
 **/
   UINT8                       TAT;
 
-/** Offset 0x026A - Reserved
+/** Offset 0x026A - Rmt Even Odd
+  Enables/Disable Rmt Even Odd
+  $EN_DIS
 **/
-  UINT8                       Reserved19;
+  UINT8                       RMTEVENODD;
 
 /** Offset 0x026B - DIMM SPD Alias Test
   Enables/Disable DIMM SPD Alias Test
@@ -1028,9 +1217,17 @@ typedef struct {
 **/
   UINT8                       EccSupport;
 
-/** Offset 0x026F - Reserved
+/** Offset 0x026F - DLL DCC Calibration
+  Enables/Disable DLL DCC Calibration
+  $EN_DIS
 **/
-  UINT8                       Reserved20[2];
+  UINT8                       DLLDCC;
+
+/** Offset 0x0270 - DLL BW Select Calibration
+  Enables/Disable DLL BW Select Calibration
+  $EN_DIS
+**/
+  UINT8                       DLLBWSEL;
 
 /** Offset 0x0271 - Ibecc
   In-Band ECC Support
@@ -1044,9 +1241,11 @@ typedef struct {
 **/
   UINT8                       IbeccParity;
 
-/** Offset 0x0273 - Reserved
+/** Offset 0x0273 - MsHashEnable
+  Controller Hash Enable: 0=Disable, <b>1=Enable</b>
+  $EN_DIS
 **/
-  UINT8                       Reserved21;
+  UINT8                       MsHashEnable;
 
 /** Offset 0x0274 - IbeccOperationMode
   In-Band ECC Operation Mode
@@ -1062,7 +1261,7 @@ typedef struct {
 
 /** Offset 0x027D - Reserved
 **/
-  UINT8                       Reserved22;
+  UINT8                       Reserved3;
 
 /** Offset 0x027E - IbeccProtectedRegionBases
   IBECC Protected Region Bases per IBECC instance
@@ -1135,9 +1334,17 @@ typedef struct {
 **/
   UINT8                       ExitOnFailure;
 
-/** Offset 0x02A8 - Reserved
+/** Offset 0x02A8 - Wck Pad DCC Calibration
+  Enable/disable Wck Pad DCC Calibration
+  $EN_DIS
 **/
-  UINT8                       Reserved23[2];
+  UINT8                       WCKPADDCCCAL;
+
+/** Offset 0x02A9 - DCC PI Code LUT Calibration
+  Enable/Disable DCC PI Code LUT Calibration
+  $EN_DIS
+**/
+  UINT8                       DCCPICODELUT;
 
 /** Offset 0x02AA - Read Voltage Centering 1D
   Enable/Disable Read Voltage Centering 1D
@@ -1223,9 +1430,11 @@ typedef struct {
 **/
   UINT8                       RowPressEn;
 
-/** Offset 0x02B8 - Reserved
+/** Offset 0x02B8 - DBI feature
+  Enables/Disable DBI feature
+  $EN_DIS
 **/
-  UINT8                       Reserved24;
+  UINT8                       DBI;
 
 /** Offset 0x02B9 - DDR5 MR7 WICA support
   Enable if DDR5 DRAM Device supports MR7 WICA 0.5 tCK offset alignment
@@ -1252,9 +1461,10 @@ typedef struct {
 **/
   UINT16                      ChHashMask;
 
-/** Offset 0x02BE - Reserved
+/** Offset 0x02BE - CccPinsInterleaved
+  Interleaving mode of CCC pins which depends on board routing: <b>0=Disable</b>, 1=Enable
 **/
-  UINT8                       Reserved25;
+  UINT8                       CccPinsInterleaved;
 
 /** Offset 0x02BF - Throttler CKEMin Timer
   Timer value for CKEMin, range[255;0]. Req'd min of SC_ROUND_T + BYTE_LENGTH (4).
@@ -1333,7 +1543,12 @@ typedef struct {
 
 /** Offset 0x02CB - Reserved
 **/
-  UINT8                       Reserved26[5];
+  UINT8                       Reserved4;
+
+/** Offset 0x02CC - IbeccEccInjAddrBase
+  Address to match against for ECC error injection. Example: 1 = 32MB, 2 = 64MB
+**/
+  UINT32                      IbeccEccInjAddrBase;
 
 /** Offset 0x02D0 - DDR Phy Safe Mode Support
   DdrSafeMode[0]: Basic PM Features, DdrSafeMode[1]: Spine Gating, DdrSafeMode[2]:
@@ -1353,9 +1568,56 @@ typedef struct {
 **/
   UINT8                       CleanMemory;
 
-/** Offset 0x02D6 - Reserved
+/** Offset 0x02D6 - Tseg Retry Count
+  Tseg Retry count will increase based on TSEG Region Fail count
+  0: Default, 1:3
 **/
-  UINT8                       Reserved27[8];
+  UINT8                       RetryCount;
+
+/** Offset 0x02D7 - Mrc Ppr Status
+   Get Mrc PPR Status after PPR Recovery flow will get Trigger
+  0: PASS, 1: FAIL(Default)
+**/
+  UINT8                       MrcPprStatus;
+
+/** Offset 0x02D8 - Tseg Memory Test Status
+   If enabled, PPR Recovery flow will get Trigger
+  0: PASS, 1: FAIL(Default)
+**/
+  UINT8                       TsegMemoryTestStatus;
+
+/** Offset 0x02D9 - Ppr Recovery Status Enable
+  0: Disabled(Default), 1: Enabled.  If enabled, PPR Recovery flow will get Trigger.
+  $EN_DIS
+**/
+  UINT8                       PprRecoveryStatusEnable;
+
+/** Offset 0x02DA - Safe Loading Bios Enable State
+  0: Disabled(Default), 1: Enabled. If enabled, Memory diagnostic will perform for
+  TSEG Region.
+  $EN_DIS
+**/
+  UINT8                       SafeLoadingBiosEnableState;
+
+/** Offset 0x02DB - BDAT test type
+  When BdatEnable is set to TRUE, this option selects the type of data which will
+  be populated in the BIOS Data ACPI Tables: <b>0=RMT</b>, 1=RMT Per Bit, 2=Margin 2D.
+  0:RMT per Rank, 1:RMT per Bit, 2:Margin2D
+**/
+  UINT8                       MrcBdatTestType;
+
+/** Offset 0x02DC - MrcBdatEnable
+  0: Disabled(Default), 1: Enabled. This field enables the generation of the BIOS
+  DATA ACPI Tables: <b>0=FALSE</b>, 1=TRUE.
+  $EN_DIS
+**/
+  UINT8                       MrcBdatEnable;
+
+/** Offset 0x02DD - DisableMrcRetraining
+  0: Disabled(Default), 1: Enabled. Enable/Disable DisableMrcRetraining
+  $EN_DIS
+**/
+  UINT8                       DisableMrcRetraining;
 
 /** Offset 0x02DE - RMTLoopCount
   Specifies the Loop Count to be used during Rank Margin Tool Testing. 0 - AUTO
@@ -1391,7 +1653,7 @@ typedef struct {
 
 /** Offset 0x02E7 - Reserved
 **/
-  UINT8                       Reserved28;
+  UINT8                       Reserved5;
 
 /** Offset 0x02E8 - Margin limit check L2
   Margin limit check L2 threshold: <b>100=Default</b>
@@ -1404,9 +1666,12 @@ typedef struct {
 **/
   UINT8                       ExtendedBankHashing;
 
-/** Offset 0x02EB - Reserved
+/** Offset 0x02EB - DRFM Blast Radius Configuration
+  Row Hammer DRFM Blast Radius Configuration determines number of victim rows around
+  aggressor row targeted to send the DRFM sequence to: <b>2=BlastRadius 2</b>, 3=BlastRadius
+  3, 4=BlastRadius 4
 **/
-  UINT8                       Reserved29;
+  UINT8                       DrfmBrc;
 
 /** Offset 0x02EC - LP5 Command Pins Mapping
   BitMask where bits [3:0] are Controller 0 Channel [3:0] and bits [7:4] are Controller
@@ -1426,9 +1691,73 @@ typedef struct {
 **/
   UINT8                       MrcTimeMeasure;
 
-/** Offset 0x02EF - Reserved
+/** Offset 0x02EF - DVFSQ Enabled
+  Enable/Disable DVFSQ
+  $EN_DIS
 **/
-  UINT8                       Reserved30[43];
+  UINT8                       DvfsqEnabled;
+
+/** Offset 0x02F0 - E-DVFSC Enabled
+  Eanble/Disable DVFSC
+  $EN_DIS
+**/
+  UINT8                       DvfscEnabled;
+
+/** Offset 0x02F1 - Ddr5 Dca Training
+  Enable/Disable DDR5 Dca Training
+  $EN_DIS
+**/
+  UINT8                       DCCDDR5READDCA;
+
+/** Offset 0x02F2 - PPR Run WCHMATS8
+  Run WCHMATS8 in Post Package Repair flow
+**/
+  UINT8                       PprRunWCHMATS8;
+
+/** Offset 0x02F3 - PPR Run Retention
+  Run Data Retention in Post Package Repair flow
+**/
+  UINT8                       PprRunRetention;
+
+/** Offset 0x02F4 - PPR Run XMarch
+  Run XMarch in Post Package Repair flow
+**/
+  UINT8                       PprRunXMarch;
+
+/** Offset 0x02F5 - PPR Run XMarchG
+  Run XMarchG in Post Package Repair flow
+**/
+  UINT8                       PprRunXMarchG;
+
+/** Offset 0x02F6 - PPR Run YMarchShort
+  Run YMarchShort in Post Package Repair flow
+**/
+  UINT8                       PprRunYMarchShort;
+
+/** Offset 0x02F7 - PPR Run YMarchLong
+  Run YMarchLong in Post Package Repair flow
+**/
+  UINT8                       PprRunYMarchLong;
+
+/** Offset 0x02F8 - PPR Run Mmrw
+  Run Mmrw in Post Package Repair flow
+**/
+  UINT8                       PprRunMmrw;
+
+/** Offset 0x02F9 - PPR Test Disabled
+  Don't run any test in Post Package Repair flow
+**/
+  UINT8                       PprTestDisabled;
+
+/** Offset 0x02FA - PPR Entry Info
+  PPR Repair Info
+**/
+  UINT8                       PprEntryInfo[16];
+
+/** Offset 0x030A - PPR Entry Address
+  PPR Repair Memory Address
+**/
+  UINT8                       PprEntryAddress[16];
 
 /** Offset 0x031A - Read Vref Decap Training*
   Enable/Disable Read Timing Centering Training with SR stress*
@@ -1454,9 +1783,15 @@ typedef struct {
 **/
   UINT8                       IsWckIdleExitEnabled;
 
-/** Offset 0x031E - Reserved
+/** Offset 0x031E - LP5 Safe Speed
+  Enable / Disable LP5 Safe Speed feature
+  $EN_DIS
 **/
-  UINT8                       Reserved31[17];
+  UINT8                       Lp5SafeSpeed;
+
+/** Offset 0x031F - Reserved
+**/
+  UINT8                       Reserved6[16];
 
 /** Offset 0x032F - Board Type
   MrcBoardType, Options are 0=Mobile/Mobile Halo, 1=Desktop/DT Halo, 5=ULT/ULX/Mobile
@@ -1478,9 +1813,11 @@ typedef struct {
 **/
   UINT8                       TxtImplemented;
 
-/** Offset 0x0341 - Reserved
+/** Offset 0x0341 - PCIE Resizable BAR Support
+  Enable/Disable PCIE Resizable BAR Support.0: Disable; 1: Enable; 2: Auto(Default).
+  $EN_DIS
 **/
-  UINT8                       Reserved32;
+  UINT8                       PcieResizableBarSupport;
 
 /** Offset 0x0342 - Skip external display device scanning
   Enable: Do not scan for external display device, Disable (Default): Scan external
@@ -1608,7 +1945,7 @@ typedef struct {
 
 /** Offset 0x04D6 - Reserved
 **/
-  UINT8                       Reserved33[2];
+  UINT8                       Reserved7[2];
 
 /** Offset 0x04D8 - DMIC<N> ClkA Pin Muxing (N - DMIC number)
   Determines DMIC<N> ClkA Pin muxing. See  GPIO_*_MUXING_DMIC<N>_CLKA_*
@@ -1623,7 +1960,7 @@ typedef struct {
 
 /** Offset 0x04E1 - Reserved
 **/
-  UINT8                       Reserved34[3];
+  UINT8                       Reserved8[3];
 
 /** Offset 0x04E4 - DMIC<N> Data Pin Muxing
   Determines DMIC<N> Data Pin muxing. See GPIO_*_MUXING_DMIC<N>_DATA_*
@@ -1635,9 +1972,35 @@ typedef struct {
 **/
   UINT8                       PchHdaAudioLinkSspEnable[7];
 
-/** Offset 0x04F3 - Reserved
+/** Offset 0x04F3 - PCH Hda Disc Bt Off Enabled
+  Hda Disc Bt Off Enabled
 **/
-  UINT8                       Reserved35[117];
+  UINT8                       PchHdaDiscBtOffEnabled;
+
+/** Offset 0x04F4 - PCH HDA Discrete BT Offload Ssp Link
+  Discrete BT Offload Ssp Link
+**/
+  UINT32                      PchHdaDiscBtOffSspLink;
+
+/** Offset 0x04F8 - SSP<N> Sclk Pin Muxing (N - SSP Number)
+  Determines SSP<N> Sclk Pin muxing. See GPIOV2_*_MUXING_I2S*_SCLK
+**/
+  UINT32                      PchHdaAudioLinkSspSclkPinMux[7];
+
+/** Offset 0x0514 - SSP<N> Sfmr Pin Muxing (N - SSP Number)
+  Determines SSP<N> Sfmr Pin muxing. See GPIOV2_*_MUXING_I2S*_SFMR
+**/
+  UINT32                      PchHdaAudioLinkSspSfmrPinMux[7];
+
+/** Offset 0x0530 - SSP<N> Txd Pin Muxing (N - SSP Number)
+  Determines SSP<N> Txd Pin muxing. See GPIOV2_*_MUXING_I2S*_TXD
+**/
+  UINT32                      PchHdaAudioLinkSspTxdPinMux[7];
+
+/** Offset 0x054C - SSP<N> Rxd Pin Muxing (N - SSP Number)
+  Determines SSP<N> Rxd Pin muxing. See GPIOV2_*_MUXING_I2S*_RXD
+**/
+  UINT32                      PchHdaAudioLinkSspRxdPinMux[7];
 
 /** Offset 0x0568 - Enable HD Audio SoundWire#N Link
   Enable/disable HD Audio SNDW#N link. Muxed with HDA.
@@ -1656,9 +2019,41 @@ typedef struct {
 **/
   UINT8                       PchHdaIDispLinkTmode;
 
-/** Offset 0x056F - Reserved
+/** Offset 0x056F - Sndw Multilane enablement
+  SoundWire Multiline enablement. Default is DISABLE. 0: DISABLE, 1: Two lines enabled,
+  2: Three lines enabled, 3: Four Lines enabled.
+  $EN_DIS
 **/
-  UINT8                       Reserved36[45];
+  UINT8                       PchHdAudioSndwMultilaneEnable[2];
+
+/** Offset 0x0571 - Reserved
+**/
+  UINT8                       Reserved9[3];
+
+/** Offset 0x0574 - SoundWire<N> Clk Pin Muxing (N - SoundWire number)
+  Determines SoundWire<N> Clk Pin muxing. See  GPIOV2_*_MUXING_SNDW<N>_CLK*
+**/
+  UINT32                      PchHdaAudioLinkMultilaneClkPinMux[2];
+
+/** Offset 0x057C - SoundWire<N> Multilane Data0 Pin Muxing (N - SoundWire number)
+  Determines SoundWire<N> Multilane Clk Pin muxing. See  GPIOV2_*_MUXING_SNDW<N>_DATA0*
+**/
+  UINT32                      PchHdaAudioLinkMultilaneData0PinMux[2];
+
+/** Offset 0x0584 - SoundWire<N> Multilane Data1 Pin Muxing (N - SoundWire number)
+  Determines SoundWire<N> Multilane Clk Pin muxing. See  GPIOV2_*_MUXING_SNDW<N>_DATA1*
+**/
+  UINT32                      PchHdaAudioLinkMultilaneData1PinMux[2];
+
+/** Offset 0x058C - SoundWire<N> Multilane Data2 Pin Muxing (N - SoundWire number)
+  Determines SoundWire<N> Multilane Clk Pin muxing. See  GPIOV2_*_MUXING_SNDW<N>_DATA2*
+**/
+  UINT32                      PchHdaAudioLinkMultilaneData2PinMux[2];
+
+/** Offset 0x0594 - SoundWire<N> Multilane Data3 Pin Muxing (N - SoundWire number)
+  Determines SoundWire<N> Multilane Clk Pin muxing. See  GPIOV2_*_MUXING_SNDW<N>_DATA3*
+**/
+  UINT32                      PchHdaAudioLinkMultilaneData3PinMux[2];
 
 /** Offset 0x059C - iDisplay Audio Codec disconnection
   0: Not disconnected, enumerable, 1: Disconnected SDI, not enumerable.
@@ -1666,9 +2061,20 @@ typedef struct {
 **/
   UINT8                       PchHdaIDispCodecDisconnect;
 
-/** Offset 0x059D - Reserved
+/** Offset 0x059D - Sndw<N> Interface for Multilanes (N - SoundWire number)
+  0: Not disconnected, enumerable, 1: Disconnected SDI, not enumerable.
+  0: Sndw0, 1: Sndw1, 2: Sndw2, 3: Sndw3, 4: Sndw4, 5: Sndw5
 **/
-  UINT8                       Reserved37[5];
+  UINT8                       PchHdAudioSndwMultilaneSndwInterface[2];
+
+/** Offset 0x059F - Reserved
+**/
+  UINT8                       Reserved10;
+
+/** Offset 0x05A0 - Audio Sub System IDs
+  Set default Audio Sub System IDs. If its set to 0 then value from Strap is used.
+**/
+  UINT16                      ResetWaitTimer;
 
 /** Offset 0x05A2 - HDA Power/Clock Gating (PGD/CGD)
   Enable/Disable HD Audio Power and Clock Gating(POR: Enable). 0: PLATFORM_POR, 1:
@@ -1677,18 +2083,22 @@ typedef struct {
 **/
   UINT8                       PchHdaTestPowerClockGating;
 
-/** Offset 0x05A3 - Reserved
+/** Offset 0x05A3 - Low Frequency Link Clock Source (LFLCS)
+  0: POR (Enable), 1: Enable (XTAL), 2: Disable (Audio PLL).
+  0: POR (Enable), 1: Enable (XTAL), 2: Disable (Audio PLL)
 **/
-  UINT8                       Reserved38;
+  UINT8                       PchHdaTestLowFreqLinkClkSrc;
 
 /** Offset 0x05A4 - Audio Sub System IDs
   Set default Audio Sub System IDs. If its set to 0 then value from Strap is used.
 **/
   UINT32                      PchHdaSubSystemIds;
 
-/** Offset 0x05A8 - Reserved
+/** Offset 0x05A8 - SoundWire clock source select
+  Select clock source for the SoundWire controllers. 0: XTAL, 1: Audio PLL.
+  $EN_DIS
 **/
-  UINT8                       Reserved39;
+  UINT8                       PchHdaSndwClockSourceSelect;
 
 /** Offset 0x05A9 - PCH LPC Enhance the port 8xh decoding
   Original LPC only decodes one byte of port 80h.
@@ -1708,7 +2118,12 @@ typedef struct {
 
 /** Offset 0x05CE - Reserved
 **/
-  UINT8                       Reserved40[46];
+  UINT8                       Reserved11[14];
+
+/** Offset 0x05DC - Clk Req GPIO Pin
+  Select Clk Req Pin. Refer to GPIO_*_MUXING_SRC_CLKREQ_x* for possible values.
+**/
+  UINT32                      PcieClkReqGpioMux[8];
 
 /** Offset 0x05FC - Enable PCIE RP Mask
   Enable/disable PCIE Root Ports. 0: disable, 1: enable. One bit for each port, bit0
@@ -1724,7 +2139,7 @@ typedef struct {
 
 /** Offset 0x0601 - Reserved
 **/
-  UINT8                       Reserved41[3];
+  UINT8                       Reserved12[3];
 
 /** Offset 0x0604 - Serial Io Uart Debug Mmio Base
   Select SerialIo Uart default MMIO resource in SEC/PEI phase when PcdLpssUartMode
@@ -1799,9 +2214,13 @@ typedef struct {
 **/
   UINT8                       WdtDisableAndLock;
 
-/** Offset 0x061A - Reserved
+/** Offset 0x061A
 **/
-  UINT8                       Reserved42[2];
+  UINT8                       FabricGVDisable;
+
+/** Offset 0x061B - Reserved
+**/
+  UINT8                       Reserved13;
 
 /** Offset 0x061C - HECI Timeouts
   0: Disable, 1: Enable (Default) timeout check for HECI
@@ -1852,9 +2271,18 @@ typedef struct {
 **/
   UINT8                       SkipMbpHob;
 
-/** Offset 0x0624 - Reserved
+/** Offset 0x0624 - HECI Communication
+  Test, 0: POR, 1: enable, 2: disable, Disables HECI communication causing ME to enter
+  error state.
+  $EN_DIS
 **/
-  UINT8                       Reserved43[2];
+  UINT8                       HeciCommunication;
+
+/** Offset 0x0625 - HECI3 Interface Communication
+  Test, 0: POR, 1: enable, 2: disable, Adds or Removes HECI3 Device from PCI space.
+  $EN_DIS
+**/
+  UINT8                       HeciCommunication3;
 
 /** Offset 0x0626 - ISA Serial Base selection
   Select ISA Serial Base address. Default is 0x3F8.
@@ -1873,9 +2301,47 @@ typedef struct {
 **/
   UINT16                      PostCodeOutputPort;
 
-/** Offset 0x062A - Reserved
+/** Offset 0x062A - Enable/Disable I2cPostcode
+  Enable (Default): Postcode via I2C, Disable: Postcode via Port80
+  $EN_DIS
 **/
-  UINT8                       Reserved44[26];
+  UINT8                       I2cPostCodeEnable;
+
+/** Offset 0x062B - Reserved
+**/
+  UINT8                       Reserved14[5];
+
+/** Offset 0x0630 - FSPM Validation Pointer
+  Point to FSPM Validation configuration structure
+**/
+  UINT64                      FspmValidationPtr;
+
+/** Offset 0x0638 - Extended BIOS Support
+  Enable/Disable Extended BIOS Region Support. Default is DISABLE. 0: DISABLE, 1: ENABLE
+  $EN_DIS
+**/
+  UINT8                       ExtendedBiosDecodeRange;
+
+/** Offset 0x0639 - Extented BIOS Direct Read Decode enable
+  Enable/Disable access to bigger than 16MB BIOS Region through Direct Memory Reads.
+  0: disabled (default), 1: enabled
+  $EN_DIS
+**/
+  UINT8                       PchSpiExtendedBiosDecodeRangeEnable;
+
+/** Offset 0x063A - Reserved
+**/
+  UINT8                       Reserved15[2];
+
+/** Offset 0x063C - Extended BIOS Direct Read Decode Range base
+  Bits of 31:16 of a memory address that'll be a base for Extended BIOS Direct Read Decode.
+**/
+  UINT32                      PchSpiExtendedBiosDecodeRangeBase;
+
+/** Offset 0x0640 - Extended BIOS Direct Read Decode Range limit
+  Bits of 31:16 of a memory address that'll be a limit for Extended BIOS Direct Read Decode.
+**/
+  UINT32                      PchSpiExtendedBiosDecodeRangeLimit;
 
 /** Offset 0x0644 - Enable SMBus
   Enable/disable SMBus controller.
@@ -1896,7 +2362,7 @@ typedef struct {
 
 /** Offset 0x0647 - Reserved
 **/
-  UINT8                       Reserved45;
+  UINT8                       Reserved16;
 
 /** Offset 0x0648 - SMBUS Base Address
   SMBUS Base Address (IO space).
@@ -1911,7 +2377,7 @@ typedef struct {
 
 /** Offset 0x064B - Reserved
 **/
-  UINT8                       Reserved46[13];
+  UINT8                       Reserved17[13];
 
 /** Offset 0x0658 - Smbus dynamic power gating
   Disable or Enable Smbus dynamic power gating.
@@ -1932,9 +2398,51 @@ typedef struct {
 **/
   UINT8                       SaOcSupport;
 
-/** Offset 0x065B - Reserved
+/** Offset 0x065B - VF Point Count
+  Number of supported Voltage & Frequency Point Offset
 **/
-  UINT8                       Reserved47[18];
+  UINT8                       VfPointCount[10];
+
+/** Offset 0x0665 - ProcessVmaxLimit
+  Disabling Process Vmax Limit will allow user to set any voltage
+**/
+  UINT8                       ProcessVmaxLimit;
+
+/** Offset 0x0666 - CorePllCurrentRefTuningOffset
+  Core PLL Current Reference Tuning Offset. <b>0: No offset</b>. Range 0-15
+**/
+  UINT8                       CorePllCurrentRefTuningOffset;
+
+/** Offset 0x0667 - RingPllCurrentRefTuningOffset
+  Ring PLL Current Reference Tuning Offset. <b>0: No offset</b>. Range 0-15
+**/
+  UINT8                       RingPllCurrentRefTuningOffset;
+
+/** Offset 0x0668 - IaAtomPllCurrentRefTuningOffset
+  IaAtom PLL Current Reference Tuning Offset. <b>0: No offset</b>. Range 0-15
+**/
+  UINT8                       IaAtomPllCurrentRefTuningOffset;
+
+/** Offset 0x0669 - CoreMinRatio
+  equest Core Min Ratio. Limit Core minimum ratio for extreme overclocking. Default
+  0 indicates no request
+**/
+  UINT8                       CoreMinRatio;
+
+/** Offset 0x066A - CoreMiNegativeTemperatureReportingnRatio
+  Negative Temperature Reporting Enable. <b>0: Disable</b>, 1: enable
+**/
+  UINT8                       NegativeTemperatureReporting;
+
+/** Offset 0x066B - PcorePowerDensityThrottle
+  Power Density Throttle control allows user to disable P-core
+**/
+  UINT8                       PcorePowerDensityThrottle;
+
+/** Offset 0x066C - EcorePowerDensityThrottle
+  Power Density Throttle control allows user to disable P-core
+**/
+  UINT8                       EcorePowerDensityThrottle;
 
 /** Offset 0x066D - Over clocking support
   Over clocking support; <b>0: Disable</b>; 1: Enable
@@ -1942,9 +2450,12 @@ typedef struct {
 **/
   UINT8                       OcSupport;
 
-/** Offset 0x066E - Reserved
+/** Offset 0x066E - UnderVolt Protection
+  When UnderVolt Protection is enabled, user will be not be able to program under
+  voltage in OS runtime. 0: Disabled; <b>1: Enabled</b>
+  $EN_DIS
 **/
-  UINT8                       Reserved48;
+  UINT8                       UnderVoltProtection;
 
 /** Offset 0x066F - Realtime Memory Timing
   0(Default): Disabled, 1: Enabled. When enabled, it will allow the system to perform
@@ -2005,9 +2516,18 @@ typedef struct {
 **/
   UINT8                       Lfsr1Mask;
 
-/** Offset 0x067B - Reserved
+/** Offset 0x067B - Row Hammer DRAM Refresh Management Mode
+  Row Hammer Adaptive Refresh Management Level: 0-RFM (default), 1-ARFMLevel A, 2-ARFMLevel
+  B, 3-ARFMLevel C, 4-Disable ARFM and RFM
+  0: RFM, 1: ARFM Level A, 2: ARFM Level B, 3: ARFM Level C, 4: ARFM and RFM Disabled
 **/
-  UINT8                       Reserved49[2];
+  UINT8                       DramRfmMode;
+
+/** Offset 0x067C - Row Hammer Targeted Row Refresh Mode
+  Row Hammer Targeted Row Refresh: 0-DRFM, 1-pTRR (default), 2-Disable DRFM and pTRR
+  0: DRFM, 1: pTRR, 2: Targeted Row Refresh Disabled
+**/
+  UINT8                       TargetedRowRefreshMode;
 
 /** Offset 0x067D - TjMax Offset
   TjMax offset.Specified value here is clipped by pCode (125 - TjMax Offset) to support
@@ -2015,9 +2535,27 @@ typedef struct {
 **/
   UINT8                       TjMaxOffset;
 
-/** Offset 0x067E - Reserved
+/** Offset 0x067E - Per-Atom-Cluster VF Offset
+  Array used to specifies the selected Atom Core Cluster Offset Voltage. This voltage
+  is specified in millivolts.
 **/
-  UINT8                      Reserved50[48];
+  UINT16                      PerAtomClusterVoltageOffset[8];
+
+/** Offset 0x068E - Per-Atom-Cluster VF Offset Prefix
+  Sets the PerAtomCLusterVoltageOffset value as positive or negative for the selected
+  Core; <b>0: Positive </b>; 1: Negative.
+**/
+  UINT8                       PerAtomClusterVoltageOffsetPrefix[8];
+
+/** Offset 0x0696 - Per-Atom-Cluster Voltage Mode
+  Array used to specifies the selected Atom Core ClusterVoltage Mode.
+**/
+  UINT8                       PerAtomClusterVoltageMode[8];
+
+/** Offset 0x069E - Per-Atom-Cluster Voltage Override
+  Array used to specifies the selected Atom Core Cluster Voltage Override.
+**/
+  UINT16                      PerAtomClusterVoltageOverride[8];
 
 /** Offset 0x06AE - Core VF Point Offset
   Array used to specifies the Core Voltage Offset applied to the each selected VF
@@ -2037,9 +2575,28 @@ typedef struct {
 **/
   UINT8                       CoreVfPointRatio[15];
 
-/** Offset 0x06EA - Reserved
+/** Offset 0x06EA - Core VF Configuration Scope
+  Allows both all-core VF curve or per-core VF curve configuration; <b>0: All-core</b>;
+  1: Per-core.
+  0:All-core, 1:Per-core
 **/
-  UINT8                       Reserved51[26];
+  UINT8                       CoreVfConfigScope;
+
+/** Offset 0x06EB - Reserved
+**/
+  UINT8                       Reserved18;
+
+/** Offset 0x06EC - Per-core VF Offset
+  Array used to specifies the selected Core Offset Voltage. This voltage is specified
+  in millivolts.
+**/
+  UINT16                      PerCoreVoltageOffset[8];
+
+/** Offset 0x06FC - Per-core VF Offset Prefix
+  Sets the PerCoreVoltageOffset value as positive or negative for the selected Core;
+  <b>0: Positive </b>; 1: Negative.
+**/
+  UINT8                       PerCoreVoltageOffsetPrefix[8];
 
 /** Offset 0x0704 - Per Core Max Ratio override
   Enable or disable Per Core PState OC supported by writing OCMB 0x1D to program new
@@ -2048,18 +2605,30 @@ typedef struct {
 **/
   UINT8                       PerCoreRatioOverride;
 
-/** Offset 0x0705 - Reserved
+/** Offset 0x0705 - Per-core Voltage Mode
+  Array used to specifies the selected Core Voltage Mode.
 **/
-  UINT8                       Reserved52[25];
+  UINT8                       PerCoreVoltageMode[8];
+
+/** Offset 0x070D - Reserved
+**/
+  UINT8                       Reserved19;
+
+/** Offset 0x070E - Per-core Voltage Override
+  Array used to specifies the selected Core Voltage Override.
+**/
+  UINT16                      PerCoreVoltageOverride[8];
 
 /** Offset 0x071E - Per Core Current Max Ratio
   Array for the Per Core Max Ratio
 **/
   UINT8                       PerCoreRatio[8];
 
-/** Offset 0x0726 - Reserved
+/** Offset 0x0726 - Atom Cluster Max Ratio
+  Array for Atom Cluster Max Ratio, 4 ATOM cores are in the same Cluster and their
+  max core ratio will be aligned.
 **/
-  UINT8                       Reserved53[8];
+  UINT8                       AtomClusterRatio[8];
 
 /** Offset 0x072E - Pvd Ratio Threshold for SOC/CPU die
   Array of Pvd Ratio Threshold for SOC/CPU die is the threshold value for input ratio
@@ -2070,9 +2639,53 @@ typedef struct {
 **/
   UINT8                       PvdRatioThreshold;
 
-/** Offset 0x072F - Reserved
+/** Offset 0x072F - Pvd Mode SOC/CPU die
+  Array of PVD Mode. Value from 0 to 3 for SOC/CPU. 0x0 = div-1 (VCO = Output clock),
+  0x1 = div-2 (VCO = 2x Output clock), 0x2 = div-4 (VCO = 4x Output clock), 0x3 =
+  div-8 (VCO = 8x Output clock).
 **/
-  UINT8                       Reserved54[65];
+  UINT8                       PvdMode;
+
+/** Offset 0x0730 - FLL Overclock Mode
+  Select FLL Mode Value from 0 to 3. 0x0 = no overclocking, 0x1 = ratio overclocking
+  with nominal (0.5-1x) reference clock frequency, 0x2 = BCLK overclocking with elevated
+  (1-3x) reference clock frequency, 0x3 = BCLK overclocking with extreme elevated
+  (3-5x) reference clock frequency and ratio limited to 63.
+**/
+  UINT8                       FllOverclockMode;
+
+/** Offset 0x0731 - Reserved
+**/
+  UINT8                       Reserved20;
+
+/** Offset 0x0732 - Ring VF Point Offset
+  Array used to specifies the Ring Voltage Offset applied to the each selected VF
+  Point. This voltage is specified in millivolts.
+**/
+  UINT16                      RingVfPointOffset[15];
+
+/** Offset 0x0750 - Ring VF Point Offset Prefix
+  Sets the RingVfPointOffset value as positive or negative for corresponding core
+  VF Point; <b>0: Positive </b>; 1: Negative.
+**/
+  UINT8                       RingVfPointOffsetPrefix[15];
+
+/** Offset 0x075F - Ring VF Point Ratio
+  Array for the each selected Ring VF Point to display the ration.
+**/
+  UINT8                       RingVfPointRatio[15];
+
+/** Offset 0x076E - Soc Die SSC enable
+  Enable/Disable Soc-Die SSC Configuration. 0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       SocDieSscEnable;
+
+/** Offset 0x076F - Core Operating Point Reporting
+  Enables Core Operating point reporting. <b>0: Disable</b>; 1: Enable
+  0:Disable, 1:Enable
+**/
+  UINT8                       CoreOpPointReportingEn;
 
 /** Offset 0x0770 - CPU BCLK OC Frequency
   CPU BCLK OC Frequency in KHz units. 98000000Hz = 98MHz <b>0 - Auto</b>. Range is
@@ -2080,9 +2693,23 @@ typedef struct {
 **/
   UINT32                      CpuBclkOcFrequency;
 
-/** Offset 0x0774 - Reserved
+/** Offset 0x0774 - SOC BCLK OC Frequency
+  SOC BCLK OC Frequency in KHz units. 98000000Hz = 98MHz <b>0 - Auto</b>. Range is
+  40Mhz-1000Mhz.
 **/
-  UINT8                      Reserved55[13];
+  UINT32                      SocBclkOcFrequency;
+
+/** Offset 0x0778 - Bitmask of disable cores
+  Core mask is a bitwise indication of which core should be disabled. <b>0x00=Default</b>;
+  Bit 0 - core 0, bit 7 - core 7.
+**/
+  UINT64                      DisablePerCoreMask;
+
+/** Offset 0x0780 - Granular Ratio Override
+  Enable or disable OC Granular Ratio Override. <b>0: Disable</b>, 1: enable
+  $EN_DIS
+**/
+  UINT8                       GranularRatioOverride;
 
 /** Offset 0x0781 - Avx2 Voltage Guardband Scaling Factor
   AVX2 Voltage Guardband Scale factor applied to AVX2 workloads. Range is 0-200 in
@@ -2097,7 +2724,7 @@ typedef struct {
 
 /** Offset 0x0783 - Reserved
 **/
-  UINT8                       Reserved56[5];
+  UINT8                       Reserved21[5];
 
 /** Offset 0x0788 - Enable PCH ISH Controller
   0: Disable, 1: Enable (Default) ISH Controller
@@ -2107,7 +2734,7 @@ typedef struct {
 
 /** Offset 0x0789 - Reserved
 **/
-  UINT8                       Reserved57;
+  UINT8                       Reserved22;
 
 /** Offset 0x078A - BiosSize
   The size of the BIOS region of the IFWI. Used if FspmUpd->FspmConfig.BiosGuard !=
@@ -2140,9 +2767,24 @@ typedef struct {
 **/
   UINT8                       SkipStopPbet;
 
-/** Offset 0x0790 - Reserved
+/** Offset 0x0790 - Reset Auxiliary content
+  Reset Auxiliary content, <b>0: Disabled</b>, 1: Enabled
+  $EN_DIS
 **/
-  UINT8                       Reserved58[3];
+  UINT8                       ResetAux;
+
+/** Offset 0x0791 - TseEnable
+  Enable/Disable. 0: Disable, Enable/Disable Tse feature, 1: enable
+  $EN_DIS
+**/
+  UINT8                       TseEnable;
+
+/** Offset 0x0792 - Enable or Disable TDX
+  Configure Trust Domain Extension (TDX) to isolate VMs from Virtual-Machine Manager
+  (VMM)/hypervisor <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       TdxEnable;
 
 /** Offset 0x0793 - MKTME Key-Id Bits Override Enable
   Configure Trust Domain Extension (TDX) to isolate VMs from Virtual-Machine Manager
@@ -2153,7 +2795,7 @@ typedef struct {
 
 /** Offset 0x0794 - Reserved
 **/
-  UINT8                       Reserved59[4];
+  UINT8                       Reserved23[4];
 
 /** Offset 0x0798 - TME Exclude Base Address
   TME Exclude Base Address.
@@ -2165,9 +2807,26 @@ typedef struct {
 **/
   UINT64                      TmeExcludeSize;
 
-/** Offset 0x07A8 - Reserved
+/** Offset 0x07A8 - TdxActmModuleAddr
+  Base address of Tdx Actm module, used for launching the Actm
 **/
-  UINT8                      Reserved60[14];
+  UINT64                      TdxActmModuleAddr;
+
+/** Offset 0x07B0 - TdxActmModuleSize
+  size of Tdx Actm module, used for launching the Actm
+**/
+  UINT32                      TdxActmModuleSize;
+
+/** Offset 0x07B4 - TdxSeamldrSvn
+  TdxSeamldrSvn
+**/
+  UINT8                       TdxSeamldrSvn;
+
+/** Offset 0x07B5 - Boot max frequency
+  Enable Boot Maximum Frequency in CPU strap. 0: Disable; <b>1: Enable</b>
+  $EN_DIS
+**/
+  UINT8                       BootMaxFrequency;
 
 /** Offset 0x07B6 - BIST on Reset
   Enable/Disable BIST (Built-In Self Test) on reset. <b>0: Disable</b>; 1: Enable.
@@ -2175,9 +2834,11 @@ typedef struct {
 **/
   UINT8                       BistOnReset;
 
-/** Offset 0x07B7 - Reserved
+/** Offset 0x07B7 - Reduce XeCores
+  Enable/Disable Reduce XeCores. <b>0: Disable(strap=1) </b>; 1: Enable(strap=0.
+  $EN_DIS
 **/
-  UINT8                       Reserved61;
+  UINT8                       ReduceXecores;
 
 /** Offset 0x07B8 - Enable or Disable VMX
   Enable or Disable VMX, When enabled, a VMM can utilize the additional hardware capabilities
@@ -2245,9 +2906,29 @@ typedef struct {
 **/
   UINT8                       ActiveCoreCount;
 
-/** Offset 0x07C2 - Reserved
+/** Offset 0x07C2 - Number of active small cores
+  Number of E-cores to enable in each processor package. Note: Number of P-Cores and
+  E-Cores are looked at together. When both are {0,0
+  0:Disable all small cores, 1:1, 2:2, 3:3, 0xFF:Active all small cores
 **/
-  UINT8                       Reserved62[6];
+  UINT8                       ActiveSmallCoreCount;
+
+/** Offset 0x07C3 - Number of LP Atom cores
+  Number of LP E-cores to enable in LP. 0: Disable all LP Atom cores; 1: 1; 2: 2;
+  <b>0xFF: Active all LP Atom cores</b>
+  0:Disable all LP Atom cores, 1:1, 2:2, 0xFF:Active all cores
+**/
+  UINT8                       ActiveLpAtomCoreCount;
+
+/** Offset 0x07C4 - DFD Enable
+  Enable or Disable DFD. <b>0: Disable</b>, 1:Enable
+  $EN_DIS
+**/
+  UINT8                       DfdEnable;
+
+/** Offset 0x07C5 - Reserved
+**/
+  UINT8                       Reserved24[3];
 
 /** Offset 0x07C8 - PrmrrSize
   Enable/Disable. 0: Disable, define default value of PrmrrSize , 1: enable
@@ -2275,7 +2956,351 @@ typedef struct {
 
 /** Offset 0x07D2 - Reserved
 **/
-  UINT8                       Reserved63[98];
+  UINT8                       Reserved25[2];
+
+/** Offset 0x07D4 - Platform PL1 power
+  Platform Power Limit 1 Power in Milli Watts. BIOS will round to the nearest 1/8W
+  when programming. Value set 120 = 15W. Any value can be programmed between Max
+  and Min Power Limits. This setting will act as the new PL1 value for the Package
+  RAPL algorithm. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit. Valid Range
+  0 to 32767.
+**/
+  UINT32                      PsysPowerLimit1Power;
+
+/** Offset 0x07D8 - PlatformAtxTelemetryUnit Mode
+  Enable/Disable PlatformAtxTelemetryUnit Mode.  <b>0: Disable</b> ; 1:Enable
+  $EN_DIS
+**/
+  UINT32                      PlatformAtxTelemetryUnit;
+
+/** Offset 0x07DC - Platform PL1 power
+   Short term Power Limit value for custom cTDP level. Units are 125 milliwatt.
+**/
+  UINT16                      CustomPowerLimit1;
+
+/** Offset 0x07DE - Platform PL1 power
+   Short term Power Limit value for custom cTDP level. Units are 125 milliwatt.
+**/
+  UINT16                      CustomPowerLimit2;
+
+/** Offset 0x07E0 - Platform PL2 power
+  Platform Power Limit 2 Power in Milli Watts. BIOS will round to the nearest 1/8W
+  when programming. Value set 120 = 15W. Any value can be programmed between Max
+  and Min Power Limits. This setting will act as the new Max Turbo Power (PL2) value
+  for the Package RAPL algorithm. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.
+  Valid Range 0 to 32767.
+**/
+  UINT32                      PsysPowerLimit2Power;
+
+/** Offset 0x07E4 - Vsys Max System battery volatge
+  Vsys Max defined in 1/1000 increments. Range is 0-65535. For a 1.25 voltage, enter
+  1250. <b>Default =0xFF</b>.
+**/
+  UINT16                      VsysMax;
+
+/** Offset 0x07E6 - ThETA Ibatt Feature
+  Enable or Disable ThETA Ibatt Feature. <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       ThETAIbattEnable;
+
+/** Offset 0x07E7 - Reserved
+**/
+  UINT8                       Reserved26;
+
+/** Offset 0x07E8 - ISYS Current Limit L1
+  This field indicated the current limitiation of L1. Indicate current limit for which
+  dependency is on AC/DC mode before PSYS.Units of measurements are 1/8 A
+**/
+  UINT16                      IsysCurrentLimitL1;
+
+/** Offset 0x07EA - ISYS Current Limit L1 Tau
+  This Specifies the time window used to calculate average current for ISYS_L1. The
+  units of measuremnts are specified in PACKAGE_POWER_SKU[TIME_UNIT]
+**/
+  UINT8                       IsysCurrentL1Tau;
+
+/** Offset 0x07EB - Reserved
+**/
+  UINT8                       Reserved27;
+
+/** Offset 0x07EC - ISYS Current Limit L2
+  This bits enables disables ISYS_CURRENT_LIMIT_L2 algorithm.Indicate current limit
+  for which dependency is on AC/DC mode before PSYS. Units of measurements are 1/8 A
+**/
+  UINT16                      IsysCurrentLimitL2;
+
+/** Offset 0x07EE - ISYS Current Limit L1 Enable
+  This bits enables disables ISYS_CURRENT_LIMIT_L1 algorithm. It control loop based
+  on the system power source AC or DC mode. <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       IsysCurrentLimitL1Enable;
+
+/** Offset 0x07EF - ISYS Current Limit L2 Enable
+  This bits enables disables ISYS_CURRENT_LIMIT_L2 algorithm. It control loop based
+  on the system power source AC or DC mode. <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       IsysCurrentLimitL2Enable;
+
+/** Offset 0x07F0 - Package PL4 boost configuration
+  Configure Power Limit 4 Boost in Watts. Valid Range 0 to 63000 in step size of 125
+  mWatt. The value 0 means disable.
+**/
+  UINT16                      PowerLimit4Boost;
+
+/** Offset 0x07F2 - Skin Temperature Target
+  Target temperature is limit to which the control mechanism is regulating.It is defined
+  in 1/2 C increments.Range is 0-255. Temperature Range is 0-122.5 C.<b>0: Auto</b>.
+**/
+  UINT8                       SkinTargetTemp[3];
+
+/** Offset 0x07F5 - Skin Control Temperature Enable MMIO
+  Enables the skin temperature control for MMIO register. <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       SkinTempControlEnable[3];
+
+/** Offset 0x07F8 - Skin Temperature Loop Gain
+  Sets the aggressiveness of control loop where 0 is graceful, favors performance
+  on expense of temperature overshoots and 7 is for aggressive, favors tight regulation
+  over performance. Range is 0-7.<b>0: Auto</b>.
+**/
+  UINT8                       SkinControlLoopGain[3];
+
+/** Offset 0x07FB - Skin Temperature Override Enable
+  When set, Pcode will use TEMPERATURE_OVERRIDE values instead of reading from corresponding
+  sensor.. <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       SkinTempOverrideEnable[3];
+
+/** Offset 0x07FE - Skin Temperature Minimum Performance Level
+  Minimum Performance level below which the STC limit will not throttle. 0 - all levels
+  of throttling allowed incl. survivability actions. 256 - no throttling allowed.<b>0: Auto</b>.
+**/
+  UINT8                       SkinMinPerformanceLevel[3];
+
+/** Offset 0x0801 - Skin Temperature Override
+  Allows SW to override the input temperature. Pcode will use this value instead of
+  the sensor temperature. EC control is not impacted. Units: 0.5C. Values are 0 to
+  255 which represents 0C-122.5C range.<b>0: Auto</b>.
+**/
+  UINT8                       SkinTempOverride[3];
+
+/** Offset 0x0804 - Skin Temperature Control Enable
+  Enables Skin Temperature Control Sensors Feature. <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       SkinTempControl;
+
+/** Offset 0x0805 - AC or DC Power State
+  AC or DC power State; <b>0: DC</b>; 1: AC
+  0:DC, 1:AC
+**/
+  UINT8                       AcDcPowerState;
+
+/** Offset 0x0806 - Enable or Disable VR Thermal Alert
+  Enable or Disable VR Thermal Alert; <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       DisableVrThermalAlert;
+
+/** Offset 0x0807 - Enable or Disable Thermal Monitor
+  Enable or Disable Thermal Monitor; 0: Disable; <b>1: Enable</b>
+  $EN_DIS
+**/
+  UINT8                       ThermalMonitor;
+
+/** Offset 0x0808 - Configuration for boot TDP selection
+  Assured Power (cTDP) Mode as Nominal/Level1/Level2/Deactivate Base Power (TDP) selection.
+  Deactivate option will set MSR to Nominal and MMIO to Zero. <b>0: Base Power (TDP)
+  Nominal</b>; 1: Base Power (TDP) Down; 2: Base Power (TDP) Up;0xFF : Deactivate
+**/
+  UINT8                       ConfigTdpLevel;
+
+/** Offset 0x0809 - ConfigTdp mode settings Lock
+  Assured Power (cTDP) Mode Lock sets the Lock bits on TURBO_ACTIVATION_RATIO and
+  CONFIG_TDP_CONTROL. Note: When CTDP (Assured Power) Lock is enabled Custom ConfigTDP
+  Count will be forced to 1 and Custom ConfigTDP Boot Index will be forced to 0.
+  <b>0: Disable</b>; 1: Enable
+  $EN_DIS
+**/
+  UINT8                       ConfigTdpLock;
+
+/** Offset 0x080A - Load Configurable TDP SSDT
+  Enables Assured Power (cTDP) control via runtime ACPI BIOS methods. This 'BIOS only'
+  feature does not require EC or driver support. <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       ConfigTdpBios;
+
+/** Offset 0x080B - CustomTurboActivationRatio
+  Turbo Activation Ratio for custom cTDP level
+  $EN_DIS
+**/
+  UINT8                       CustomTurboActivationRatio;
+
+/** Offset 0x080C - CustomPowerLimit1Time
+  Short term Power Limit time window value for custom cTDP level.
+  $EN_DIS
+**/
+  UINT8                       CustomPowerLimit1Time;
+
+/** Offset 0x080D - PL1 Enable value
+  Enable/Disable Platform Power Limit 1 programming. If this option is enabled, it
+  activates the PL1 value to be used by the processor to limit the average power
+  of given time window. <b>0: Disable</b>; 1: Enable.
+  $EN_DIS
+**/
+  UINT8                       PsysPowerLimit1;
+
+/** Offset 0x080E - PL1 timewindow
+  Platform Power Limit 1 Time Window value in seconds. The value may vary from 0 to
+  128. 0 = default values. Indicates the time window over which Platform Processor
+  Base Power (TDP) value should be maintained. Valid values(Unit in seconds) 0 to
+  8 , 10 , 12 ,14 , 16 , 20 , 24 , 28 , 32 , 40 , 48 , 56 , 64 , 80 , 96 , 112 , 128
+**/
+  UINT8                       PsysPowerLimit1Time;
+
+/** Offset 0x080F - PL2 Enable Value
+  Enable/Disable Platform Power Limit 2 programming. If this option is disabled, BIOS
+  will program the default values for Platform Power Limit 2. <b>0: Disable</b>;
+  1: Enable.
+  $EN_DIS
+**/
+  UINT8                       PsysPowerLimit2;
+
+/** Offset 0x0810 - Package PL3 time window
+  Power Limit 3 Time Window value in Milli seconds. Indicates the time window over
+  which Power Limit 3 value should be maintained. If the value is 0, BIOS leaves
+  the hardware default value. Valid value: <b>0</b>, 3-8, 10, 12, 14, 16, 20, 24,
+  28, 32, 40, 48, 56, 64.
+**/
+  UINT8                       PowerLimit3Time;
+
+/** Offset 0x0811 - Package Long duration turbo mode time
+  Power Limit 1 Time Window value in seconds. The value may vary from 0 to 128. 0
+  = default value (28 sec for Mobile and 8 sec for Desktop). Defines time window
+  which Processor Base Power (TDP) value should be maintained. Valid values(Unit
+  in seconds) 0 to 8 , 10 , 12 ,14 , 16 , 20 , 24 , 28 , 32 , 40 , 48 , 56 , 64 ,
+  80 , 96 , 112 , 128
+**/
+  UINT8                       PowerLimit1Time;
+
+/** Offset 0x0812 - Reserved
+**/
+  UINT8                       Reserved28[2];
+
+/** Offset 0x0814 - Package Long duration turbo mode power limit
+  Power Limit 1 in Milli Watts. BIOS will round to the nearest 1/8W when programming.
+  Value set 120 = 15W. 0 = no custom override. Overclocking SKU: Value must be between
+  Max and Min Power Limits. Other SKUs: This value must be between Min Power Limit
+  and Processor Base Power (TDP) Limit. If value is 0, BIOS will program Processor
+  Base Power (TDP) value. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit. Valid
+  Range 0 to 32767.
+**/
+  UINT32                      PowerLimit1;
+
+/** Offset 0x0818 - Package Short duration turbo mode power limit
+  Power Limit 2 in Milli Watts. BIOS will round to the nearest 1/8W when programming.
+  Value set 120 = 15W. If the value is 0, BIOS will program this value as 1.25*Processor
+  Base Power (TDP). Processor applies control policies such that the package power
+  does not exceed this limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.
+  Valid Range 0 to 32767.
+**/
+  UINT32                      PowerLimit2Power;
+
+/** Offset 0x081C - Package PL3 power limit
+  Power Limit 3 in Milli Watts. BIOS will round to the nearest 1/8W when programming.
+  Value set 120 = 15W. XE SKU: Any value can be programmed. Overclocking SKU: Value
+  must be between Max and Min Power Limits. Other SKUs: This value must be between
+  Min Power Limit and Processor Base Power (TDP) Limit. If the value is 0, BIOS leaves
+  the hardware default value. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.
+  Valid Range 0 to 32767.
+**/
+  UINT32                      PowerLimit3;
+
+/** Offset 0x0820 - Package PL4 power limit
+  Power Limit 4 in Milli Watts. BIOS will round to the nearest 1/8W when programming.
+  Value set 120 = 15W. If the value is 0, BIOS leaves default value. Units are based
+  on POWER_MGMT_CONFIG.CustomPowerUnit. Valid Range 0 to 32767.
+**/
+  UINT32                      PowerLimit4;
+
+/** Offset 0x0824 - Short term Power Limit value for custom cTDP level 1
+  Power Limit 1 in Milli Watts. BIOS will round to the nearest 1/8W when programming.
+  Value set 120 = 15W. 0 = no custom override. Overclocking SKU: Value must be between
+  Max and Min Power Limits. Other SKUs: This value must be between Min Power Limit
+  and Processor Base Power (TDP) Limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.
+  Valid Range 0 to 32767.
+**/
+  UINT32                      Custom1PowerLimit1;
+
+/** Offset 0x0828 - Long term Power Limit value for custom cTDP level 1
+  Power Limit 2 value in Milli Watts. BIOS will round to the nearest 1/8W when programming.
+  Value set 120 = 15W. 0 = no custom override. Processor applies control policies
+  such that the package power does not exceed this limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.
+  Valid Range 0 to 32767.
+**/
+  UINT32                      Custom1PowerLimit2;
+
+/** Offset 0x082C - Enable Configurable TDP
+  Applies Assured Power (cTDP) initialization settings based on non-Assured Power
+  (cTDP) or Assured Power (cTDP). Default is 1: Applies to Assured Power (cTDP) ;
+  if 0 then applies non-Assured Power (cTDP) and BIOS will bypass Assured Power (cTDP)
+  initialization flow
+  $EN_DIS
+**/
+  UINT8                       ApplyConfigTdp;
+
+/** Offset 0x082D - Dual Tau Boost
+  Enable Dual Tau Boost feature. This is only applicable for Desktop 35W/65W/125W
+  sku. When DPTF is enabled this feature is ignored. <b>0: Disable</b>; 1: Enable
+  $EN_DIS
+**/
+  UINT8                       DualTauBoost;
+
+/** Offset 0x082E - Tcc Offset Lock
+  Tcc Offset Lock for Runtime Average Temperature Limit (RATL) to lock temperature
+  target; <b>1:Enabled </b>; 0: Disabled.
+  $EN_DIS
+**/
+  UINT8                       TccOffsetLock;
+
+/** Offset 0x082F - Package PL3 Duty Cycle
+  Specify the duty cycle in percentage that the CPU is required to maintain over the
+  configured time window. Range is 0-100.
+**/
+  UINT8                       PowerLimit3DutyCycle;
+
+/** Offset 0x0830 - Package PL3 Lock
+  Power Limit 3 Lock. When enabled PL3 configurations are locked during OS. When disabled
+  PL3 configuration can be changed during OS. <b>0: Disable</b> ; 1:Enable
+  $EN_DIS
+**/
+  UINT8                       PowerLimit3Lock;
+
+/** Offset 0x0831 - Package PL4 Lock
+  Power Limit 4 Lock. When enabled PL4 configurations are locked during OS. When disabled
+  PL4 configuration can be changed during OS. <b>0: Disable</b> ; 1:Enable
+  $EN_DIS
+**/
+  UINT8                       PowerLimit4Lock;
+
+/** Offset 0x0832 - Short Duration Turbo Mode
+  Enable/Disable Power Limit 2 override. If this option is disabled, BIOS will program
+  the default values for Power Limit 2. 0: Disable; <b>1: Enable</b>
+  $EN_DIS
+**/
+  UINT8                       PowerLimit2;
+
+/** Offset 0x0833 - Response Mode
+  Enable/Disable Response Mode.  <b>0: Disable</b> ; 1:Enable
+  $EN_DIS
+**/
+  UINT8                       ResponseMode;
 
 /** Offset 0x0834 - SinitMemorySize
   Enable/Disable. 0: Disable, define default value of SinitMemorySize , 1: enable
@@ -2340,9 +3365,18 @@ typedef struct {
 **/
   UINT8                       AcousticNoiseMitigation;
 
-/** Offset 0x086E - Reserved
+/** Offset 0x086E - RfiMitigation
+  Enable or Disable RFI Mitigation. <b>0: Disable - DCM is the IO_N default</b>; 1:
+  Enable - Enable IO_N DCM/CCM switching as RFI mitigation.
+  $EN_DIS
 **/
-  UINT8                       Reserved64[2];
+  UINT8                       RfiMitigation;
+
+/** Offset 0x086F - Platform Psys slope correction
+  PSYS Slope defined in 1/100 increments. <b>0 - Auto</b> Specified in 1/100 increment
+  values. Range is 0-200. 125 = 1.25
+**/
+  UINT8                       PsysSlope;
 
 /** Offset 0x0870 - Platform Power Pmax
   PSYS PMax power, defined in 1/8 Watt increments. <b>0 - Auto</b> Specified in 1/8
@@ -2394,7 +3428,14 @@ typedef struct {
 
 /** Offset 0x08BA - Reserved
 **/
-  UINT8                       Reserved65[26];
+  UINT8                       Reserved29[2];
+
+/** Offset 0x08BC - Imon offset correction
+  IMON Offset is an 32-bit signed value (2's complement). Units 1/1000, Range is [-128000,
+  127999]. For an offset of 25.348, enter 25348. <b>0: Auto</b>. [0] for IA, [1]
+  for GT, [2] for SA, [3] through [5] are Reserved.
+**/
+  UINT32                      ImonOffset[6];
 
 /** Offset 0x08D4 - Icc Max limit
   Voltage Regulator Current Limit (Icc Max). This value represents the Maximum instantaneous
@@ -2404,9 +3445,34 @@ typedef struct {
 **/
   UINT16                      IccMax[6];
 
-/** Offset 0x08E0 - Reserved
+/** Offset 0x08E0 - VR Fast Vmode VoltageLimit support
+  Voltage Regulator Fast VoltageLimit .
 **/
-  UINT8                      Reserved66[42];
+  UINT16                      VrVoltageLimit[6];
+
+/** Offset 0x08EC - Imon slope correction
+  IMON Slope defined in 1/100 increments. Range is 0-200. For a 1.25 slope, enter
+  125. <b>0: Auto</b>. [0] for IA, [1] for GT, [2] for SA, [3] through [5] are Reserved.
+**/
+  UINT16                      ImonSlope[6];
+
+/** Offset 0x08F8 - Power State 3 enable/disable
+  PS3 Enable/Disable. 0 - Disabled, 1 - Enabled. [0] for IA, [1] for GT, [2] for SA,
+  [3] through [5] are Reserved.
+**/
+  UINT8                       Ps3Enable[6];
+
+/** Offset 0x08FE - Power State 4 enable/disable
+  PS4 Enable/Disable. 0 - Disabled, 1 - Enabled. [0] for IA, [1] for GT, [2] for SA,
+  [3] through [5] are Reserved.
+**/
+  UINT8                       Ps4Enable[6];
+
+/** Offset 0x0904 - Enable/Disable BIOS configuration of VR
+  VR Config Enable. [0] for IA, [1] for GT, [2] for SA, [3] through [5] are Reserved.
+  <b>0: Disable</b>; 1: Enable.
+**/
+  UINT8                       VrConfigEnable[6];
 
 /** Offset 0x090A - Thermal Design Current enable/disable
   Thermal Design Current enable/disable; <b>0: Disable</b>; 1: Enable. [0] for IA,
@@ -2414,9 +3480,11 @@ typedef struct {
 **/
   UINT8                       TdcEnable[6];
 
-/** Offset 0x0910 - Reserved
+/** Offset 0x0910 - Thermal Design Current Lock
+  Thermal Design Current Lock; <b>0: Disable</b>; 1: Enable. [0] for IA, [1] for GT,
+  [2] for SA, [3] for atom, [4]-[5] are Reserved.
 **/
-  UINT8                       Reserved67[6];
+  UINT8                       TdcLock[6];
 
 /** Offset 0x0916 - Disable Fast Slew Rate for Deep Package C States for VR domains
   This option needs to be configured to reduce acoustic noise during deeper C states.
@@ -2438,7 +3506,14 @@ typedef struct {
 
 /** Offset 0x0922 - Reserved
 **/
-  UINT8                       Reserved68[6];
+  UINT8                       Reserved30[2];
+
+/** Offset 0x0924 - Platform Psys offset correction
+  PSYS Offset defined in 1/1000 increments. <b>0 - Auto</b> This is an 32-bit signed
+  value (2's complement). Units 1/1000, Range is [-128000, 127999]. For an offset
+  of 25.348, enter 25348.
+**/
+  UINT32                      PsysOffset;
 
 /** Offset 0x0928 - Thermal Design Current time window
   Auto = 0 is default. Range is from 1ms to 448s. <b>0: Auto</b>. [0] for IA, [1]
@@ -2452,9 +3527,17 @@ typedef struct {
 **/
   UINT8                       TdcMode[6];
 
-/** Offset 0x0946 - Reserved
+/** Offset 0x0946 - DLVR RFI Enable
+  Enable/Disable DLVR RFI frequency hopping. 0: Disable; <b>1: Enable</b>.
+  $EN_DIS
 **/
-  UINT8                       Reserved69[2];
+  UINT8                       FivrSpectrumEnable;
+
+/** Offset 0x0947 - DLVR RFI Spread Spectrum Percentage
+  DLVR SSC in percentage with multiple of 0.25%. 0 = 0%, 10 = 4%. 0x00: 0% , <b>0x02:
+  0.5%</b>, 0x04: 1% , 0x08: 2% ,0x10: 4%; u3.2 value from 0% - 4%.
+**/
+  UINT8                       DlvrSpreadSpectrumPercentage;
 
 /** Offset 0x0948 - DLVR RFI Enable
   Enable/Disable DLVR RFI frequency hopping. 0: Disable; <b>1: Enable</b>.
@@ -2474,7 +3557,53 @@ typedef struct {
 
 /** Offset 0x094B - Reserved
 **/
-  UINT8                       Reserved70[11];
+  UINT8                       Reserved31;
+
+/** Offset 0x094C - DLVR RFI Frequency
+  DLVR RFI Frequency in MHz. <b>0: 2227 MHz</b> , 1: 2140MHZ.
+**/
+  UINT16                      DlvrRfiFrequency;
+
+/** Offset 0x094E - DLVR PHASE_SSC Enable
+  Enable/Disable DLVR PHASE_SSC. <b>0: Disable.</b> 1:Enable.
+  $EN_DIS
+**/
+  UINT8                       VrPowerDeliveryDesign;
+
+/** Offset 0x094F - DLVR PHASE_SSC Enable
+  Enable/Disable DLVR PHASE_SSC. <b>0: Disable.</b> 1:Enable.
+  $EN_DIS
+**/
+  UINT8                       DlvrPhaseSsc;
+
+/** Offset 0x0950 - Vsys Critical
+  PCODE MMIO Mailbox: Vsys Critical. <b>0: Disable</b>; 1: Enable Range is 0-255.
+**/
+  UINT8                       EnableVsysCritical;
+
+/** Offset 0x0951 - Assertion Deglitch Mantissa
+  Assertion Deglitch Mantissa, Range is 0-255
+**/
+  UINT8                       VsysAssertionDeglitchMantissa;
+
+/** Offset 0x0952 - Assertion Deglitch Exponent
+  Assertion Deglitch Exponent, Range is 0-255
+**/
+  UINT8                       VsysAssertionDeglitchExponent;
+
+/** Offset 0x0953 - De assertion Deglitch Mantissa
+  De assertion Deglitch Mantissa, Range is 0-255
+**/
+  UINT8                       VsysDeassertionDeglitchMantissa;
+
+/** Offset 0x0954 - De assertion Deglitch Exponent
+  De assertion Deglitch Exponent, Range is 0-255
+**/
+  UINT8                       VsysDeassertionDeglitchExponent;
+
+/** Offset 0x0955 - Reserved
+**/
+  UINT8                       Reserved32;
 
 /** Offset 0x0956 - VR Fast Vmode ICC Limit support
   Voltage Regulator Fast Vmode ICC Limit. A value of 400 = 100A. A value of 0 corresponds
@@ -2499,7 +3628,44 @@ typedef struct {
 
 /** Offset 0x096E - Reserved
 **/
-  UINT8                       Reserved71[28];
+  UINT8                       Reserved33[2];
+
+/** Offset 0x0970 - Vsys Full Scale
+  Vsys Full Scale, Range is 0-255000mV
+**/
+  UINT32                      VsysFullScale;
+
+/** Offset 0x0974 - Vsys Critical Threshold
+  Vsys Critical Threshold, Range is 0-255000mV
+**/
+  UINT32                      VsysCriticalThreshold;
+
+/** Offset 0x0978 - Psys Full Scale
+  Psys Full Scale, Range is 0-255000mV
+**/
+  UINT32                      PsysFullScale;
+
+/** Offset 0x097C - Psys Critical Threshold
+  Psys Critical Threshold, Range is 0-255000mV
+**/
+  UINT32                      PsysCriticalThreshold;
+
+/** Offset 0x0980 - Reserved
+**/
+  UINT8                       Reserved34[8];
+
+/** Offset 0x0988 - IOE Debug Enable
+  Enable/Disable IOE Debug. When enabled, IOE D2D Dfx link will keep up and clock
+  is enabled
+  $EN_DIS
+**/
+  UINT8                       IoeDebugEn;
+
+/** Offset 0x0989 - Pmode Clock Enable
+  Enable/Disable PMODE clock. When enabled, Pmode clock will toggle for XDP use
+  $EN_DIS
+**/
+  UINT8                       PmodeClkEn;
 
 /** Offset 0x098A - PCH Port80 Route
   Control where the Port 80h cycles are sent, 0: LPC; 1: PCI.
@@ -2514,9 +3680,21 @@ typedef struct {
 **/
   UINT8                       GpioOverride;
 
-/** Offset 0x098C - Reserved
+/** Offset 0x098C - Pmc Privacy Consent
+  Enable/Disable Pmc Privacy Consent
+  $EN_DIS
 **/
-  UINT8                       Reserved72[4];
+  UINT8                       PmcPrivacyConsent;
+
+/** Offset 0x098D - DMI ME UMA Root Space Check
+  DMI IOSF Root Space attribute check for RS3 for cycles targeting MEUMA.
+  0: POR, 1: enable, 2: disable
+**/
+  UINT8                       PchTestDmiMeUmaRootSpaceCheck;
+
+/** Offset 0x098E - Reserved
+**/
+  UINT8                       Reserved35[2];
 
 /** Offset 0x0990 - PMR Size
   Size of PMR memory buffer. 0x400000 for normal boot and 0x200000 for S3 boot
@@ -2540,9 +3718,11 @@ typedef struct {
 **/
   UINT8                       VtdDisable;
 
-/** Offset 0x0997 - Reserved
+/** Offset 0x0997 - State of Vtd Capabilities
+  0x0=(No operation), BIT0 = 1 (Defeature Nested Support), BIT1 = 1 (Defeature Posted
+  Interrupt Support)
 **/
-  UINT8                       Reserved73;
+  UINT8                       VtdCapabilityControl;
 
 /** Offset 0x0998 - Base addresses for VT-d function MMIO access
   Base addresses for VT-d MMIO access per VT-d engine
@@ -2551,7 +3731,17 @@ typedef struct {
 
 /** Offset 0x09BC - Reserved
 **/
-  UINT8                       Reserved74[20];
+  UINT8                       Reserved36[4];
+
+/** Offset 0x09C0 - MMIO Size
+  Size of MMIO space reserved for devices. 0(Default)=Auto, non-Zero=size in MB
+**/
+  UINT64                      MchBar;
+
+/** Offset 0x09C8 - MMIO Size
+  Size of MMIO space reserved for devices. 0(Default)=Auto, non-Zero=size in MB
+**/
+  UINT64                      RegBar;
 
 /** Offset 0x09D0 - MMIO Size
   Size of MMIO space reserved for devices. 0(Default)=Auto, non-Zero=size in MB
@@ -2564,9 +3754,50 @@ typedef struct {
 **/
   UINT16                      MmioSizeAdjustment;
 
-/** Offset 0x09D4 - Reserved
+/** Offset 0x09D4 - Temporary address for ApicLocalAddress
+  The reference code will use this as Temporary address space
 **/
-  UINT8                      Reserved75[36];
+  UINT32                      ApicLocalAddress;
+
+/** Offset 0x09D8 - Temporary address for NvmeHcPeiMmioBase
+  The reference code will use this as Temporary address space
+**/
+  UINT32                      NvmeHcPeiMmioBase;
+
+/** Offset 0x09DC - Temporary address for NvmeHcPeiMmioLimit
+  The reference code will use this as Temporary address space
+**/
+  UINT32                      NvmeHcPeiMmioLimit;
+
+/** Offset 0x09E0 - Temporary address for AhciPeiMmioBase
+  The reference code will use this as Temporary address space
+**/
+  UINT32                      AhciPeiMmioBase;
+
+/** Offset 0x09E4 - Temporary address for AhciPeiMmioLimit
+  The reference code will use this as Temporary address space
+**/
+  UINT32                      AhciPeiMmioLimit;
+
+/** Offset 0x09E8 - Temporary address for EcExtraIoBase
+  The reference code will use this as Temporary address space
+**/
+  UINT16                      EcExtraIoBase;
+
+/** Offset 0x09EA - Temporary address for SioBaseAddress
+  The reference code will use this as Temporary address space
+**/
+  UINT16                      SioBaseAddress;
+
+/** Offset 0x09EC - Temporary CfgBar address for VMD
+  The reference code will use this as Temporary address space
+**/
+  UINT32                      VmdCfgBarBar;
+
+/** Offset 0x09F0 - System Agent SafBar
+  Address of System Agent SafBar
+**/
+  UINT64                      SafBar;
 
 /** Offset 0x09F8 - Enable above 4GB MMIO resource support
   Enable/disable above 4GB MMIO resource support
@@ -2582,7 +3813,20 @@ typedef struct {
 
 /** Offset 0x09FA - Reserved
 **/
-  UINT8                       Reserved76[10];
+  UINT8                       Reserved37[2];
+
+/** Offset 0x09FC - StreamTracer Mode
+  Disable: Disable StreamTracer, Advanced Tracing: StreamTracer size 512MB - Recommended
+  when all groups in high verbosity are traced in 'red', Auto: StreamTracer size
+  8MB - Recommended when using up to 8 groups red or up to 16 groups in green in
+  med verbosity, User input: Allow User to enter a size in the range of 64KB-512MB
+  0: Disable (Default), 524288: Advanced Tracing , 8192: Auto , 3: User input
+**/
+  UINT32                      StreamTracerMode;
+
+/** Offset 0x0A00
+**/
+  UINT32                      StreamTracerSize;
 
 /** Offset 0x0A04 - Enable/Disable CrashLog Device
   Enable or Disable CrashLog/Telemetry Device  0- Disable, <b>1- Enable</b>
@@ -2590,9 +3834,39 @@ typedef struct {
 **/
   UINT32                      CpuCrashLogDevice;
 
-/** Offset 0x0A08 - Reserved
+/** Offset 0x0A08 - StreamTracer physical address
+  StreamTracer physical address
 **/
-  UINT8                      Reserved77[20];
+  UINT64                      StreamTracerBase;
+
+/** Offset 0x0A10 - Temporary MemBar1 address for VMD
+  StreamTracer physical address
+**/
+  UINT32                      VmdMemBar1Bar;
+
+/** Offset 0x0A14 - Temporary MemBar2 address for VMD
+  StreamTracer physical address
+**/
+  UINT32                      VmdMemBar2Bar;
+
+/** Offset 0x0A18 - Skip override boot mode When Fw Update.
+  When set to TRUE and boot mode is BOOT_ON_FLASH_UPDATE, skip setting boot mode to
+  BOOT_WITH_FULL_CONFIGURATION in PEI memory init.
+  $EN_DIS
+**/
+  UINT8                       SiSkipOverrideBootModeWhenFwUpdate;
+
+/** Offset 0x0A19 - Reserved
+**/
+  UINT8                       Reserved38;
+
+/** Offset 0x0A1A - Static Content at 4GB Location
+  0 (Default): No Allocation, 0x20:32MB, 0x40:64MB, 0x80:128MB, 0x100:256MB, 0x200:512MB,
+  0x400:1GB, 0x800:2GB, 0xC00:3GB, 0x1000:4GB, 0x2000:8GB
+  0: No Allocation, 0x20:32MB, 0x40:64MB, 0x80:128MB, 0x100:256MB, 0x200:512MB, 0x400:1GB,
+  0x800:2GB, 0xC00:3GB, 0x1000:4GB, 0x2000:8GB
+**/
+  UINT16                      StaticContentSizeAt4Gb;
 
 /** Offset 0x0A1C - Platform Debug Option
   Enabled Trace active: TraceHub is enabled and trace is active, blocks s0ix.\n
@@ -2607,9 +3881,14 @@ typedef struct {
 **/
   UINT8                       PlatformDebugOption;
 
-/** Offset 0x0A1D - Reserved
+/** Offset 0x0A1D - TXT CMOS Offset
+  CMOS Offset for TXT policy data. Default 0x2A
 **/
-  UINT8                       Reserved78[14];
+  UINT8                       CmosTxtOffset;
+
+/** Offset 0x0A1E - Reserved
+**/
+  UINT8                       Reserved39[13];
 
 /** Offset 0x0A2B - Program GPIOs for LFP on DDI port-A device
   0=Disabled,1(Default)=eDP, 2=MIPI DSI
@@ -2617,9 +3896,10 @@ typedef struct {
 **/
   UINT8                       DdiPortAConfig;
 
-/** Offset 0x0A2C - Reserved
+/** Offset 0x0A2C - HgSubSystemId
+  Hybrid Graphics SubSystemId
 **/
-  UINT8                      Reserved79[2];
+  UINT16                      HgSubSystemId;
 
 /** Offset 0x0A2E - Program GPIOs for LFP on DDI port-B device
   0(Default)=Disabled,1=eDP, 2=MIPI DSI
@@ -2711,9 +3991,15 @@ typedef struct {
 **/
   UINT8                       DdiPort4Ddc;
 
-/** Offset 0x0A3D - Reserved
+/** Offset 0x0A3D - Oem T12 Dealy Override
+  Oem T12 Dealy Override. 0(Default)=Disable  1=Enable
+  $EN_DIS
 **/
-  UINT8                       Reserved80[3];
+  UINT8                       OemT12DelayOverride;
+
+/** Offset 0x0A3E - Reserved
+**/
+  UINT8                       Reserved40[2];
 
 /** Offset 0x0A40 - Temporary MMIO address for GMADR
   The reference code will use this as Temporary MMIO address space to access GMADR
@@ -2730,9 +4016,12 @@ typedef struct {
 **/
   UINT64                      GttMmAdr;
 
-/** Offset 0x0A50 - Reserved
+/** Offset 0x0A50 - Delta T12 Power Cycle Delay required in ms
+  Select the value for delay required. 0= No delay, 0xFFFF(Default) = Auto calculate
+  T12 Delay to max 500ms
+  0 : No Delay, 0xFFFF : Auto Calulate T12 Delay
 **/
-  UINT8                      Reserved81[2];
+  UINT16                      DeltaT12PowerCycleDelay;
 
 /** Offset 0x0A52 - Enable/Disable Memory Bandwidth Compression
   0=Disable, 1(Default)=Enable
@@ -2762,7 +4051,7 @@ typedef struct {
 
 /** Offset 0x0A56 - Reserved
 **/
-  UINT8                       Reserved82[2];
+  UINT8                       Reserved41[2];
 
 /** Offset 0x0A58 - Intel Graphics VBT (Video BIOS Table) Size
   Size of Internal Graphics VBT Image
@@ -2771,7 +4060,7 @@ typedef struct {
 
 /** Offset 0x0A5C - Reserved
 **/
-  UINT8                       Reserved83[4];
+  UINT8                       Reserved42[4];
 
 /** Offset 0x0A60 - Graphics Configuration Ptr
   Points to VBT
@@ -2831,9 +4120,11 @@ typedef struct {
 **/
   UINT8                       TcssXhciEn;
 
-/** Offset 0x0A83 - Reserved
+/** Offset 0x0A83 - IomUsbCDpConfig
+  Set IomUsbCDpConfig expect 4 values from 0 to 3
+  0:Disabled, 1:IOM_DP, 2:IOM_HDMI, 3: IOM_EDP
 **/
-  UINT8                       Reserved84[4];
+  UINT8                       IomUsbCDpConfig[4];
 
 /** Offset 0x0A87 - TCSS Type C Port 0
   Set TCSS Type C Port 0 Type, Options are 0=DISABLE, 1=DP_ONLY, 2=NO_TBT, 3=NO_PCIE,
@@ -2863,9 +4154,11 @@ typedef struct {
 **/
   UINT8                       TcssPort3;
 
-/** Offset 0x0A8B - Reserved
+/** Offset 0x0A8B - TCSS Platform Configuration
+  Set TCSS Platform Configuration - Retimer Map, TCP0 - Bits[1:0], TCP1 - Bits[3:2],
+  TCP2 - Bits[5:4], TCP3 - Bits[7:6]; 0=Retimerless, 1=Retimer
 **/
-  UINT8                       Reserved85;
+  UINT8                       TcssPlatConf;
 
 /** Offset 0x0A8C - TypeC port GPIO setting
   GPIO Pin number for Type C Aux orientation setting, use the GpioPad that is defined
@@ -2931,9 +4224,11 @@ typedef struct {
 **/
   UINT8                       InternalGraphics;
 
-/** Offset 0x0AC9 - Reserved
+/** Offset 0x0AC9 - Asynchronous ODT
+  This option configures the Memory Controler Asynchronous ODT control
+  0:Enabled, 1:Disabled
 **/
-  UINT8                       Reserved86;
+  UINT8                       AsyncOdtDis;
 
 /** Offset 0x0ACA - DLL Weak Lock Support
   Enables/Disable DLL Weak Lock Support
@@ -2943,7 +4238,7 @@ typedef struct {
 
 /** Offset 0x0ACB - Reserved
 **/
-  UINT8                       Reserved87;
+  UINT8                       Reserved43;
 
 /** Offset 0x0ACC - Rx DQS Delay Comp Support
   Enables/Disable Rx DQS Delay Comp Support
@@ -2953,7 +4248,7 @@ typedef struct {
 
 /** Offset 0x0ACD - Reserved
 **/
-  UINT8                       Reserved88[2];
+  UINT8                       Reserved44[2];
 
 /** Offset 0x0ACF - Mrc Failure On Unsupported Dimm
   Enables/Disable Mrc Failure On Unsupported Dimm
@@ -2961,9 +4256,11 @@ typedef struct {
 **/
   UINT8                       MrcFailureOnUnsupportedDimm;
 
-/** Offset 0x0AD0 - Reserved
+/** Offset 0x0AD0 - Fore Single Rank config
+  Enables/Disable Fore Single Rank config
+  $EN_DIS
 **/
-  UINT8                      Reserved89[4];
+  UINT32                      ForceSingleRank;
 
 /** Offset 0x0AD4 - DynamicMemoryBoost
   Enable/Disable Dynamic Memory Boost Feature. Only valid if SpdProfileSelected is
@@ -2979,9 +4276,55 @@ typedef struct {
 **/
   UINT32                      RealtimeMemoryFrequency;
 
-/** Offset 0x0ADC - Reserved
+/** Offset 0x0ADC - SelfRefresh IdleTimer
+  SelfRefresh IdleTimer, Default is 256
 **/
-  UINT8                      Reserved90[9];
+  UINT16                      SrefCfgIdleTmr;
+
+/** Offset 0x0ADE - MC Register Offset
+  Apply user offsets to select MC registers(Def=Disable)
+  $EN_DIS
+**/
+  UINT8                       MCREGOFFSET;
+
+/** Offset 0x0ADF - CA Vref Ctl Offset
+  Offset to be applied to DDRDATA7CH1_CR_DDRCRVREFADJUST1.CAVref
+  0xF4:-12,0xF5:-11, 0xF6:-10, 0xF7:-9, 0xF8:-8, 0xF9:-7, 0xFA:-6, 0xFB:-5, 0xFC:-4,
+  0xFD:-3, 0xFE:-2, 0xFF:-1, 0:0, 1:+1, 2:+2, 3:+3, 4:+4, 5:+5, 6:+6, 7:+7, 8:+8,
+  9:+9, 10:+10, 11:+11, 12:+12
+**/
+  UINT8                       CAVrefCtlOffset;
+
+/** Offset 0x0AE0 - Clk PI Code Offset
+  Offset to be applied to DDRCLKCH0_CR_DDRCRCLKPICODE.PiSettingRank[0-3]
+  0xFA:-6, 0xFB:-5, 0xFC:-4, 0xFD:-3, 0xFE:-2, 0xFF:-1, 0:0, 1:+1, 2:+2, 3:+3, 4:+4,
+  5:+5, 6:+6
+**/
+  UINT8                       ClkPiCodeOffset;
+
+/** Offset 0x0AE1 - RcvEn Offset
+  Offset to be applied to DDRDATACH0_CR_DDRCRDATAOFFSETTRAIN.RcvEn
+  0xFD:-3, 0xFE:-2, 0xFF:-1, 0:0, 1:+1, 2:+2, 3:+3
+**/
+  UINT8                       RcvEnOffset;
+
+/** Offset 0x0AE2 - Rx Dqs Offset
+  Offset to be applied to DDRDATACHX_CR_DDRCRDATAOFFSETTRAIN.RxDqsOffset
+  0xFD:-3, 0xFE:-2, 0xFF:-1, 0:0, 1:+1, 2:+2, 3:+3
+**/
+  UINT8                       RxDqsOffset;
+
+/** Offset 0x0AE3 - Tx Dq Offset
+  Offset to be applied to DDRDATACH0_CR_DDRCRDATAOFFSETTRAIN.TxDqOffset
+  0xFD:-3, 0xFE:-2, 0xFF:-1, 0:0, 1:+1, 2:+2, 3:+3
+**/
+  UINT8                       TxDqOffset;
+
+/** Offset 0x0AE4 - Tx Dqs Offset
+  Offset to be applied to DDRDATACH0_CR_DDRCRDATAOFFSETTRAIN.TxDqsOffset
+  0xFD:-3, 0xFE:-2, 0xFF:-1, 0:0, 1:+1, 2:+2, 3:+3
+**/
+  UINT8                       TxDqsOffset;
 
 /** Offset 0x0AE5 - Vref Offset
   Offset to be applied to DDRDATACH0_CR_DDRCRDATAOFFSETTRAIN.VrefOffset
@@ -2990,9 +4333,15 @@ typedef struct {
 **/
   UINT8                       VrefOffset;
 
-/** Offset 0x0AE6 - Reserved
+/** Offset 0x0AE6 - Controller mask
+  Controller mask to apply on parameter offset
 **/
-  UINT8                       Reserved91[2];
+  UINT8                       CntrlrMask;
+
+/** Offset 0x0AE7 - Channel  mask
+  Channel  mask to apply on parameter offset
+**/
+  UINT8                       ChMask;
 
 /** Offset 0x0AE8 - tRRSG Delta
   Delay between Read-to-Read commands in the same Bank Group. 0 - Auto. Signed TAT
@@ -3106,9 +4455,158 @@ typedef struct {
 **/
   UINT8                       tRWDD;
 
-/** Offset 0x0AF8 - Reserved
+/** Offset 0x0AF8 - MRC Interpreter
+  Select CMOS location match of DD01 or Ctrl-Break key or force entry
+  0:CMOS, 1:Break, 2:Force
 **/
-  UINT8                       Reserved92[41];
+  UINT8                       Interpreter;
+
+/** Offset 0x0AF9 - ODT mode
+  ODT mode
+  0:Default, 1:Vtt, 2:Vddq, 3:Vss, 4:Max
+**/
+  UINT8                       IoOdtMode;
+
+/** Offset 0x0AFA - PerBankRefresh
+  Control of Per Bank Refresh feature for LPDDR DRAMs
+  $EN_DIS
+**/
+  UINT8                       PerBankRefresh;
+
+/** Offset 0x0AFB - Mimic WC display pattern in IPQ
+  Using for Disable/Enable Mimic WC display pattern in IPQ: 0:Disable, 1:Enable 1
+  ACT resources usage, 3:Enable 2 ACT resources usage, 3:Enable 3 ACT resources usage,0xf:
+  Enable 4 ACT resources usage
+  1:1, 3:3, 0xf:0xf, 0:Auto
+**/
+  UINT8                       MimicWcDisaplayInIpq;
+
+/** Offset 0x0AFC - Fake SAGV
+  Fake SAGV: 0:Disabled, 1:Enabled
+  $EN_DIS
+**/
+  UINT32                      FakeSagv;
+
+/** Offset 0x0B00 - Lock DPR register
+  Lock DPR register. <b>0: Platform POR </b>; 1: Enable; 2: Disable
+  0:Platform POR, 1: Enable, 2: Disable
+**/
+  UINT32                      DprLock;
+
+/** Offset 0x0B04 - Board Stack Up
+  Board Stack Up: <b>0=Typical</b>, 1=Freq Limited
+  0:Typical, 1:Freq Limited
+**/
+  UINT8                       BoardStackUp;
+
+/** Offset 0x0B05 - PPR ForceRepair
+  When Eanble, PPR will force repair some rows many times (90)
+  $EN_DIS
+**/
+  UINT8                       PprForceRepair;
+
+/** Offset 0x0B06 - PPR Repair Bank
+  Deprecated
+**/
+  UINT8                       PprRepairBank;
+
+/** Offset 0x0B07 - Board Topology
+  Board Topology: <b>0=Daisy Chain</b>, 1=Tee.
+  0:Daisy Chain, 1:Tee
+**/
+  UINT8                       BoardTopology;
+
+/** Offset 0x0B08 - SubCh Hash Interleaved Bit
+  Select the MC Enhanced Channel interleave bit, to set different address bit for
+  sub channel selection than bit-6
+  0:BIT6, 1:BIT7, 2:BIT8, 3:BIT9, 4:BIT10, 5:BIT11, 6:BIT12, 7:BIT13
+**/
+  UINT8                       SubChHashInterleaveBit;
+
+/** Offset 0x0B09 - Reserved
+**/
+  UINT8                       Reserved45;
+
+/** Offset 0x0B0A - SubCh Hash Mask
+  Set the BIT(s) to be included in the XOR function. NOTE BIT mask corresponds to
+  BITS [19:6] Default is 0x834
+**/
+  UINT16                      SubChHashMask;
+
+/** Offset 0x0B0C - Force CKD in Bypass Mode
+  Enable/Disable Force CKD in Bypass Mode
+  $EN_DIS
+**/
+  UINT8                       ForceCkdBypass;
+
+/** Offset 0x0B0D - Reserved
+**/
+  UINT8                       Reserved46[3];
+
+/** Offset 0x0B10 - Disable Zq
+  Enable/Disable Zq Calibration: 0:Enabled, 1:Disabled
+  $EN_DIS
+**/
+  UINT32                      DisableZq;
+
+/** Offset 0x0B14 - Replicate SAGV
+  Replicate SAGV: 0:Disabled, 1:Enabled
+  $EN_DIS
+**/
+  UINT32                      ReplicateSagv;
+
+/** Offset 0x0B18 - Adjust wck mode
+  Adjust wck mode: 0:safe mode, 1:manual mode, 2:dynamic mode, 3:Default
+  0:safe mode, 1:manual mode, 2:dynamic mode, 3:Default
+**/
+  UINT8                       AdjustWckMode;
+
+/** Offset 0x0B19 - Control MC/PMA telemetry
+  Control MC/PMA telemetry: 0: Default, 1: Enable, 2: Disable
+  0: Default, 1: Enable, 2: Disable
+**/
+  UINT8                       TelemetryControl;
+
+/** Offset 0x0B1A - PHclk\Qclk SPINE gating Control
+  PHclk\Qclk SPINE gating Control: 0:Disabled, 1:Enabled
+  $EN_DIS
+**/
+  UINT8                       SpineAndPhclkGateControl;
+
+/** Offset 0x0B1B - SpineGating per lpmode
+  SpineGatePerLpmode[0]:Lpmode0.5, SpineGatePerLpmode[1]:Lpmode2, SpineGatePerLpmode[2]:Lpmode3,
+  SpineGatePerLpmode[3]:Lpmode4
+**/
+  UINT8                       SpineGatePerLpmode;
+
+/** Offset 0x0B1C - PhClkGating control per lpmode
+  PhclkGatePerLpmode[0]:Lpmode0.5, PhclkGatePerLpmode[1]:Lpmode1, PhclkGatePerLpmode[2]:Lpmode2,
+  PhclkGatePerLpmode[3]:Lpmode3, PhclkGatePerLpmode[4]:Lpmode4
+**/
+  UINT8                       PhclkGatePerLpmode;
+
+/** Offset 0x0B1D - DFI Control after cold boot
+  Disable Switch DFI Control to MC after cold boot: 0(Default)=switch DFI to MC, 1=Keep
+  with PHY/MPTU
+  $EN_DIS
+**/
+  UINT8                       DisableSwitchDfiToMc;
+
+/** Offset 0x0B1E - Enable/Disable SmbusPostcode
+  Disable (Default): Postcode via Port80, Enable: Postcode via Smbus
+  $EN_DIS
+**/
+  UINT8                       SmbusPostCodeEnable;
+
+/** Offset 0x0B1F - SmbusPostcode Address
+  Slave address for Smbus postcode device
+**/
+  UINT8                       SmbusPostCodeAddress;
+
+/** Offset 0x0B20 - SmbusPostcode Command
+  Command value for Smbus postcode device
+**/
+  UINT8                       SmbusPostCodeCommand;
 
 /** Offset 0x0B21 - Channel to CKD QCK Mapping
   Specify Channel to CKD QCK Mapping for CH0D0/CH0D1/CH1D0&CH1D1
@@ -3120,9 +4618,16 @@ typedef struct {
 **/
   UINT8                       PhyClockToCkdDimm[8];
 
-/** Offset 0x0B31 - Reserved
+/** Offset 0x0B31 - CKD Address Table
+  Specify CKD Address table for all DIMMs
 **/
-  UINT8                       Reserved93[17];
+  UINT8                       CkdAddressTable[16];
+
+/** Offset 0x0B41 - Single VDD2 Rail
+  LP5x VDD2 rail: 0: Dual rail (E-DVFSC is possible), 1: Single rail(No E-DVFSC; VDD2L == VDD2H)
+  $EN_DIS
+**/
+  UINT8                       SingleVdd2Rail;
 
 /** Offset 0x0B42 - VDD2 Voltage
   Voltage is multiple of 5mV where 0 means Auto.
@@ -3146,7 +4651,7 @@ typedef struct {
 
 /** Offset 0x0B4A - Reserved
 **/
-  UINT8                       Reserved94[30];
+  UINT8                       Reserved47[30];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

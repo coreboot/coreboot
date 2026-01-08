@@ -611,6 +611,7 @@ static void mmu_extract_ranges(struct memrange *cb_ranges,
 
 		switch (cb_ranges[i].type) {
 		case CB_MEM_TABLE:
+		case CB_MEM_TAG:
 			/* Mark this memrange as used memory */
 			if (mmu_add_memrange(&usedmem_ranges, base, size,
 					     TYPE_NORMAL_MEM) == NULL)

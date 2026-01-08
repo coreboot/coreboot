@@ -44,6 +44,12 @@
 #define GPIO_USB_CAM_RESET_L	GPIO(10)
 #define GPIO_USB_CAM_ENABLE	GPIO(206)
 
+/* USB-C1 port specific GPIOs */
+#define GPIO_USB_C1_EN_PP3300		GPIO(186)
+#define GPIO_USB_C1_EN_PP1800		GPIO(175)
+#define GPIO_USB_C1_EN_PP0900		GPIO(188)
+#define GPIO_USB_C1_RETIMER_RESET_L	GPIO(176)
+
 void setup_chromeos_gpios(void);
 bool is_off_mode(void);
 void configure_parallel_charging(void);

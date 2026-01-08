@@ -86,6 +86,19 @@ static void platform_dump_battery_soc_information(void)
 		printk(BIOS_INFO, "Battery state-of-charge %d%%\n", batt_pct);
 }
 
+static void early_setup_usb_typec(void)
+{
+	gpio_output(GPIO_USB_C1_RETIMER_RESET_L, 0);
+	gpio_output(GPIO_USB_C1_EN_PP3300, 0);
+	gpio_output(GPIO_USB_C1_EN_PP1800, 0);
+	gpio_output(GPIO_USB_C1_EN_PP0900, 0);
+}
+
+static void early_setup_usb(void)
+{
+	early_setup_usb_typec();
+}
+
 void platform_romstage_main(void)
 {
 	/* Watchdog must be checked first to avoid erasing watchdog info later. */
@@ -106,6 +119,9 @@ void platform_romstage_main(void)
 	aop_fw_load_reset();
 
 	qclib_rerun();
+
+	/* Setup early USB related config */
+	early_setup_usb();
 
 	/*
 	 * Enable this power rail now for FPMCU stability prior to

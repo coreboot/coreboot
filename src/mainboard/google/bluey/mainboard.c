@@ -6,6 +6,7 @@
 #include <commonlib/bsd/cbmem_id.h>
 #include <commonlib/coreboot_tables.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
@@ -50,8 +51,21 @@ static void enable_usb_camera(void)
 	gpio_output(GPIO_USB_CAM_ENABLE, 1);
 }
 
+static void setup_usb_typec(void)
+{
+	gpio_output(GPIO_USB_C1_EN_PP3300, 1);
+	mdelay(1);
+	gpio_output(GPIO_USB_C1_EN_PP1800, 1);
+	mdelay(1);
+	gpio_output(GPIO_USB_C1_EN_PP0900, 1);
+	mdelay(1);
+	gpio_output(GPIO_USB_C1_RETIMER_RESET_L, 1);
+}
+
 static void setup_usb(void)
 {
+	setup_usb_typec();
+
 	enable_usb_camera();
 	setup_usb_host0();
 }

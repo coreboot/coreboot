@@ -144,30 +144,32 @@ static uint8_t get_ddi1_type(void)
 	const uint8_t eeprom_i2c_bus = 2;
 	const uint8_t eeprom_i2c_address = 0x55;
 	const uint16_t eeprom_connector_type_offset = 2;
-	uint8_t eeprom_connector_type_data[2];
-	uint16_t connector_type;
+	uint16_t connector_type = 0;
 
 	if (i2c_2ba_read_bytes(eeprom_i2c_bus, eeprom_i2c_address,
-			       eeprom_connector_type_offset, eeprom_connector_type_data,
-			       sizeof(eeprom_connector_type_data))) {
+			       eeprom_connector_type_offset, (void *)&connector_type,
+			       sizeof(connector_type))) {
 		printk(BIOS_NOTICE,
 		       "Display connector type couldn't be determined. Disabling DDI1.\n");
 		return DDI_UNUSED_TYPE;
 	}
 
-	connector_type = eeprom_connector_type_data[1] | eeprom_connector_type_data[0] << 8;
-
+	/* On some NOVA cards it's LE, on some it's BE... */
 	switch (connector_type) {
-	case 0x0c:
+	case 0x0c00:
+	case 0x000c:
 		printk(BIOS_DEBUG, "Configuring DDI1 as HDMI.\n");
 		return DDI_HDMI;
-	case 0x13:
+	case 0x1300:
+	case 0x0013:
 		printk(BIOS_DEBUG, "Configuring DDI1 as DP.\n");
 		return DDI_DP;
-	case 0x14:
+	case 0x1400:
+	case 0x0014:
 		printk(BIOS_DEBUG, "Configuring DDI1 as eDP.\n");
 		return DDI_EDP;
-	case 0x17:
+	case 0x1700:
+	case 0x0017:
 		printk(BIOS_DEBUG, "Configuring DDI1 as USB-C.\n");
 		return DDI_DP_W_TYPEC;
 	default:

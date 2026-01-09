@@ -155,3 +155,5 @@ void usb_update_refclk_for_core(u32 core_num, bool enable);
 void enable_vbus_ss(const struct dwc3_controller_config *config);
 /* Reads comprehensive Type-C status from PMIC */
 void usb_typec_status_check(const struct dwc3_controller_config *config);
+/* Performs mainboard-specific USB Type-C configuration */
+void mainboard_usb_typec_configure(uint8_t port_num, bool inverse_polarity);

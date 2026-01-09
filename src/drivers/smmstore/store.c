@@ -134,7 +134,7 @@ int smmstore_lookup_region(struct region_device *rstore)
 	if (!done) {
 		done = 1;
 
-		if (fmap_locate_area_as_rdev_rw(SMMSTORE_REGION, &rdev)) {
+		if (lookup_store(&rdev)) {
 			printk(BIOS_WARNING,
 			       "smm store: Unable to find SMM store FMAP region '%s'\n",
 				SMMSTORE_REGION);

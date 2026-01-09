@@ -313,6 +313,7 @@ static void fill_fspm_thermal_params(FSP_M_CONFIG *m_cfg,
 				     const struct soc_intel_pantherlake_config *config)
 {
 	m_cfg->TccActivationOffset = config->tcc_offset;
+	m_cfg->TccOffsetLock = 0;
 }
 
 static const struct soc_intel_pantherlake_power_map *get_map(const struct soc_intel_pantherlake_config *config)

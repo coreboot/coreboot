@@ -8,15 +8,41 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
+#include <device/i2c_simple.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <soc/clock.h>
 #include <soc/pcie.h>
 #include <soc/qupv3_config_common.h>
+#include <soc/qupv3_i2c_common.h>
 #include <soc/qup_se_handlers_common.h>
 #include "board.h"
 #include <soc/rpmh_config.h>
 #include <soc/usb/usb.h>
+
+#define C0_RETIMER_I2C_BUS	0x03
+#define C1_RETIMER_I2C_BUS	0x07
+#define PS8820_SLAVE_ADDR	0x08
+
+#define PS8820_USB_PORT_CONN_STATUS_REG	0x00
+#define USB3_MODE_NORMAL_VAL	0x21
+#define USB3_MODE_FLIP_VAL	0x23
+
+void mainboard_usb_typec_configure(uint8_t port_num, bool inverse_polarity)
+{
+	if (!CONFIG(MAINBOARD_HAS_PS8820_RETIMER))
+		return;
+
+	/* There are only two ports (0 and 1) */
+	if (port_num > 1) {
+		printk(BIOS_WARNING, "Invalid USB Type-C port number (%d)!\n", port_num);
+		return;
+	}
+
+	uint8_t bus = port_num ? C1_RETIMER_I2C_BUS : C0_RETIMER_I2C_BUS;
+	uint8_t mode_value = inverse_polarity ? USB3_MODE_FLIP_VAL : USB3_MODE_NORMAL_VAL;
+	i2c_writeb(bus, PS8820_SLAVE_ADDR, PS8820_USB_PORT_CONN_STATUS_REG, mode_value);
+}
 
 /*
  * This function calls the underlying PMIC/EC function only once during the
@@ -136,11 +162,14 @@ static void mainboard_init(struct device *dev)
 	/* ADSP I2C (Charger/Fuel gauge) */
 	qupv3_se_fw_load_and_init(QUPV3_2_SE4, SE_PROTOCOL_I2C, GSI);
 
-	/* USB-C0 Re-Timer I2C */
-	qupv3_se_fw_load_and_init(QUPV3_0_SE3, SE_PROTOCOL_I2C, MIXED);
 
-	/* USB-C1 Re-Timer I2C */
-	qupv3_se_fw_load_and_init(QUPV3_0_SE7, SE_PROTOCOL_I2C, MIXED);
+	if (CONFIG(MAINBOARD_HAS_PS8820_RETIMER)) {
+		i2c_init(QUPV3_0_SE3, I2C_SPEED_FAST); /* USB-C0 Re-Timer I2C */
+		i2c_init(QUPV3_0_SE7, I2C_SPEED_FAST); /* USB-C1 Re-Timer I2C */
+	} else {
+		qupv3_se_fw_load_and_init(QUPV3_0_SE3, SE_PROTOCOL_I2C, MIXED); /* USB-C0 Re-Timer I2C */
+		qupv3_se_fw_load_and_init(QUPV3_0_SE7, SE_PROTOCOL_I2C, MIXED); /* USB-C1 Re-Timer I2C */
+	}
 
 	if (!CONFIG(MAINBOARD_NO_USB_A_PORT))
 		qupv3_se_fw_load_and_init(QUPV3_0_SE1, SE_PROTOCOL_I2C, MIXED); /* USB-A retimer */

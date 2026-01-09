@@ -91,6 +91,12 @@ config MAINBOARD_HAS_SD_CONTROLLER
 	help
 	  Enable this option if your mainboard is equipped with SD card controller.
 
+config MAINBOARD_HAS_PS8820_RETIMER
+	bool
+	default n
+	help
+	  Enable this option if your mainboard is equipped with a PS8820 retimer.
+
 config MAINBOARD_NO_USB_A_PORT
 	bool
 	default n

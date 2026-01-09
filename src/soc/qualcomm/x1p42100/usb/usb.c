@@ -581,7 +581,8 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 	clock_reset_bcr(dwc3->gcc_usb4_0_dp0_phy_prim_bcr, 0);
 	udelay(10);
 	/* Initialize USB4/USB3 EDP_DP_Con PHY Configuration */
-	int ss0_ret = qmp_usb4_dp_phy_ss_init(0, get_usb_typec_polarity(&prim_config));
+	bool polarity_prim = get_usb_typec_polarity(&prim_config);
+	int ss0_ret = qmp_usb4_dp_phy_ss_init(0, polarity_prim);
 	if (ss0_ret != CB_SUCCESS) {
 		printk(BIOS_ERR, "SS0 QMP PHY initialization failed\n");
 		high_speed_only_primary = true;
@@ -590,6 +591,7 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 	enable_vbus_ss(&prim_config);
 	udelay(50);
 	usb_typec_status_check(&prim_config);
+	mainboard_usb_typec_configure(0, polarity_prim);
 
 	/* Type C port 1 - C1 */
 	/* Reset USB secondary[C1] PHY BCRs */
@@ -610,7 +612,8 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 	clock_reset_bcr(dwc3->gcc_usb4_1_dp0_phy_sec_bcr, 0);
 	udelay(10);
 	/* Initialize USB4/USB3 EDP_DP_Con PHY Configuration (secondary) */
-	int ss1_ret = qmp_usb4_dp_phy_ss_init(1, get_usb_typec_polarity(&sec_config));
+	bool polarity_sec = get_usb_typec_polarity(&sec_config);
+	int ss1_ret = qmp_usb4_dp_phy_ss_init(1, polarity_sec);
 	if (ss1_ret != CB_SUCCESS) {
 		printk(BIOS_ERR, "SS1 QMP PHY initialization failed\n");
 		high_speed_only_secondary = true;
@@ -619,6 +622,7 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 	enable_vbus_ss(&sec_config);
 	udelay(50);
 	usb_typec_status_check(&sec_config);
+	mainboard_usb_typec_configure(1, polarity_sec);
 
 	/* Initialize USB Controller for Type A */
 	setup_dwc3(dwc3->usb_host_dwc3);

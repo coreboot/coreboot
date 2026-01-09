@@ -2166,3 +2166,32 @@ bool dt_is_overlay(struct device_tree *tree)
 
 	return false;
 }
+
+struct device_tree_node *dt_add_reserved_memory_region(struct device_tree *tree,
+		      const char *name, const char *compatible, uint64_t addr, uint64_t size,
+		      bool nomap)
+{
+	uint32_t addr_cells, size_cells;
+	const char *path[] = { "reserved-memory", name, NULL };
+
+	/* Find or create the node. Using 1 for the 'create' argument. */
+	struct device_tree_node *node = dt_find_node(tree->root, path,
+						     &addr_cells, &size_cells, 1);
+	if (!node) {
+		printk(BIOS_ERR, "Failed to create reserved-memory node: %s\n", name);
+		return NULL;
+	}
+
+	/* Add the compatible string if provided */
+	if (compatible)
+		dt_add_string_prop(node, "compatible", compatible);
+
+	/* Always add the reg property */
+	dt_add_reg_prop(node, &addr, &size, 1, addr_cells, size_cells);
+
+	/* Add no-map if requested */
+	if (nomap)
+		dt_add_bin_prop(node, "no-map", NULL, 0);
+
+	return node;
+}

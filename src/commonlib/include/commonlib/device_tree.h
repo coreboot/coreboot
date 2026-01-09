@@ -237,4 +237,19 @@ struct device_tree_node *dt_init_reserved_memory_node(struct device_tree *tree);
 /* Check whether a devicetree is an overlay device tree */
 bool dt_is_overlay(struct device_tree *tree);
 
+/*
+ * dt_add_reserved_memory_region - Helper to add a node under `/reserved-memory`
+ * @tree: The device tree structure
+ * @name: Name of the child node (e.g., "ramoops", "pkvm-drng-seed")
+ * @compatible: Compatible string (optional, pass NULL if not needed)
+ * @addr: Physical start address
+ * @size: Size of the region
+ * @nomap: Boolean, if true adds the "no-map" property
+ *
+ * Returns the created node on success, NULL on failure.
+ */
+struct device_tree_node *dt_add_reserved_memory_region(struct device_tree *tree,
+		      const char *name, const char *compatible, uint64_t addr, uint64_t size,
+		      bool nomap);
+
 #endif /* __COMMONLIB_DEVICE_TREE_H__ */

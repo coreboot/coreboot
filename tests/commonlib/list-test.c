@@ -45,7 +45,7 @@ static void test_list_one_node(void **state)
 static void test_list_insert_after(void **state)
 {
 	int i = 0;
-	struct list_node head = { .prev = NULL, .next = NULL };
+	struct list_node head = {};
 	struct test_container *c1 = (struct test_container *)malloc(sizeof(*c1));
 	struct test_container *c2 = (struct test_container *)malloc(sizeof(*c2));
 	struct test_container *c3 = (struct test_container *)malloc(sizeof(*c2));
@@ -86,7 +86,7 @@ static void test_list_insert_after(void **state)
 static void test_list_insert_before(void **state)
 {
 	int i = 0;
-	struct list_node head = { .prev = NULL, .next = NULL };
+	struct list_node head = {};
 	struct test_container *c1 = (struct test_container *)malloc(sizeof(*c1));
 	struct test_container *c2 = (struct test_container *)malloc(sizeof(*c2));
 	struct test_container *c3 = (struct test_container *)malloc(sizeof(*c2));
@@ -105,7 +105,6 @@ static void test_list_insert_before(void **state)
 	list_insert_before(&c2->list_node, &c3->list_node);
 	list_insert_before(&c1->list_node, &c2->list_node);
 
-
 	list_for_each(ptr, head, list_node) {
 		assert_int_equal(values[i], ptr->value);
 		i++;
@@ -120,9 +119,17 @@ static void test_list_insert_before(void **state)
 	free(c1);
 }
 
+static void test_list_insert_before_head(void **state)
+{
+	struct list_node head = {};
+	struct test_container c = {};
+
+	expect_assert_failure(list_insert_before(&c.list_node, &head));
+}
+
 static void test_list_remove(void **state)
 {
-	struct list_node head = { .prev = NULL, .next = NULL };
+	struct list_node head = {};
 	struct test_container *c1 = (struct test_container *)malloc(sizeof(*c1));
 	struct test_container *c2 = (struct test_container *)malloc(sizeof(*c2));
 
@@ -139,6 +146,12 @@ static void test_list_remove(void **state)
 
 	free(c2);
 	free(c1);
+}
+
+static void test_list_remove_head(void **state)
+{
+	struct list_node head = {};
+	expect_assert_failure(list_remove(&head));
 }
 
 static void test_list_append(void **state)
@@ -170,7 +183,9 @@ int main(void)
 		cmocka_unit_test(test_list_one_node),
 		cmocka_unit_test(test_list_insert_after),
 		cmocka_unit_test(test_list_insert_before),
+		cmocka_unit_test(test_list_insert_before_head),
 		cmocka_unit_test(test_list_remove),
+		cmocka_unit_test(test_list_remove_head),
 		cmocka_unit_test(test_list_append),
 	};
 

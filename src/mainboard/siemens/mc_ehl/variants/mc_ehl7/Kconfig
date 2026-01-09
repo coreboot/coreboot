@@ -36,7 +36,4 @@ config EARLY_PCI_MMIO_BASE
 	depends on NC_FPGA_POST_CODE
 	default 0xfe800000
 
-config SOC_INTEL_ELKHARTLAKE_TCO_NO_REBOOT_EN
-	default y
-
 endif # BOARD_SIEMENS_MC_EHL7

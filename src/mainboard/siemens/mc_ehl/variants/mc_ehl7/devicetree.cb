@@ -95,7 +95,7 @@ chip soc/intel/elkhartlake
 	# LPSS Serial IO (I2C/UART/GSPI) related UPDs
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C2] = PchSerialIoPci,
 		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C4] = PchSerialIoPci,
@@ -105,7 +105,6 @@ chip soc/intel/elkhartlake
 	}"
 
 	register "SerialIoI2cPadsTermination" = "{
-		[PchSerialIoIndexI2C1] = 1,
 		[PchSerialIoIndexI2C2] = 1,
 		[PchSerialIoIndexI2C4] = 1,
 		[PchSerialIoIndexI2C6] = 1,
@@ -155,26 +154,6 @@ chip soc/intel/elkhartlake
 
 		device pci 14.0 on	end # USB3.1 xHCI
 
-		device pci 15.1 on	    # I2C1
-			# Enable external RTC chip
-			chip drivers/i2c/rv3028c7
-				register "bus_speed" = "I2C_SPEED_STANDARD"
-				register "set_user_date" = "1"
-				register "user_year" = "04"
-				register "user_month" = "07"
-				register "user_day" = "01"
-				register "user_weekday" = "4"
-				register "bckup_sw_mode" = "BACKUP_SW_LEVEL"
-				register "cap_charge" = "CHARGE_OFF"
-				device i2c 0x52 on end  # RTC RV3028-C7
-			end
-			# Add dummy I2C device to limit BUS speed to 100 kHz in OS
-			chip drivers/i2c/generic
-				register "hid" = ""PRP0001""
-				register "speed" = "I2C_SPEED_STANDARD"
-				device i2c 0x7f on end
-			end
-		end
 		device pci 15.2 on	    # I2C2
 			# Add dummy I2C device to limit BUS speed to 100 kHz in OS
 			chip drivers/i2c/generic

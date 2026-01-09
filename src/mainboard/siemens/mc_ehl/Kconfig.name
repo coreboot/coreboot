@@ -19,3 +19,6 @@ config BOARD_SIEMENS_MC_EHL5
 
 config BOARD_SIEMENS_MC_EHL6
 	bool "-> MC EHL6"
+
+config BOARD_SIEMENS_MC_EHL7
+	bool "-> MC EHL7"

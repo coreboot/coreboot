@@ -1,0 +1,43 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_SIEMENS_MC_EHL7
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select DRIVER_INTEL_I210
+	select DRIVERS_ETH_PHY_M88E1512
+	select DRIVERS_I2C_RV3028C7
+	select EHL_TSN_DRIVER
+	select MAINBOARD_HAS_TPM2
+	select MEMORY_MAPPED_TPM
+	select NC_FPGA_POST_CODE
+	select SOC_INTEL_COMMON_BLOCK_LPC_COMB_ENABLE
+	select TPM_MEASURED_BOOT
+	select TPM_MEASURED_BOOT_INIT_BOOTBLOCK
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_ehl.fmd"
+
+config UART_FOR_CONSOLE
+	int
+	default 0
+
+config EARLY_PCI_BRIDGE_DEVICE
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0x1c
+
+config EARLY_PCI_BRIDGE_FUNCTION
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0x0
+
+config EARLY_PCI_MMIO_BASE
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0xfe800000
+
+config SOC_INTEL_ELKHARTLAKE_TCO_NO_REBOOT_EN
+	default y
+
+endif # BOARD_SIEMENS_MC_EHL7

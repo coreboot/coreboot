@@ -128,8 +128,9 @@ choice
 
 config EDK2_DEBUG
 	bool "Generate edk2 debug build"
+	select CONSOLE_SERIAL
 	help
-	  Generate a debug build.
+	  Generate a debug build. Select this if you want to enable serial debugging output.
 
 config EDK2_RELEASE
 	bool "Generate edk2 release build"
@@ -190,11 +191,12 @@ config EDK2_BOOT_TIMEOUT
 
 config EDK2_CBMEM_LOGGING
 	bool "Enable edk2 logging to CBMEM"
+	depends on EDK2_RELEASE
 	help
 	  Select this option if you want to enable edk2 logging to CBMEM.
-	  You may want to increase the default cbmem buffer size when selecting
-	  this option, especially if using a debug (vs release) build.
-	  Selecting this option will increase the payload size in CBFS by 0x10000.
+	  You will want to increase the default cbmem buffer size when selecting
+	  this option, as it will increase logging output significantly.
+	  Selecting this option will increase the payload size in CBFS by ~1MB.
 
 config EDK2_CPU_TIMER_LIB
 	bool
@@ -262,12 +264,14 @@ config EDK2_SD_MMC_TIMEOUT
 	  Most only require 10ms, but certain readers can take 1s.
 
 config EDK2_SERIAL_SUPPORT
-	bool "Support serial output"
+	bool "Enable serial console"
 	default y if EDK2_DEBUG
 	default n
+	depends on !EDK2_CBMEM_LOGGING
+	select CONSOLE_SERIAL
 	help
-	  Enable serial port output in edk2. Serial output limits the performance of edk2's
-	  FrontPage.
+	  Enable serial consule support in edk2. Serial output limits the performance of edk2's
+	  FrontPage. This option does not enable debugging output over serial. For that, use EDK2_DEBUG.
 
 config EDK2_SECURE_BOOT_SUPPORT
 	bool "Enable UEFI Secure Boot support"

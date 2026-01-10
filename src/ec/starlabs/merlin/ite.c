@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
@@ -17,6 +18,9 @@
 
 uint16_t ec_get_version(void)
 {
+	for (int i = 0; i < 10 && ec_read(ECRAM_MAJOR_VERSION) == 0; i++)
+		mdelay(10);
+
 	return (ec_read(ECRAM_MAJOR_VERSION) << 8) | ec_read(ECRAM_MINOR_VERSION);
 }
 

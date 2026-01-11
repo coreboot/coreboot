@@ -5,8 +5,6 @@
 
 #include <stdbool.h>
 
-#define EC_LENOVO_PMH7_INDEX 0x77
-
 #define EC_LENOVO_PMH7_BASE 0x15e0
 #define EC_LENOVO_PMH7_ADDR_L (EC_LENOVO_PMH7_BASE + 0x0c)
 #define EC_LENOVO_PMH7_ADDR_H (EC_LENOVO_PMH7_BASE + 0x0d)

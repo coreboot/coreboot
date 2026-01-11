@@ -335,3 +335,52 @@ Device(EC)
 #include "systemstatus.asl"
 #include "thinkpad.asl"
 }
+
+#if CONFIG(EC_LENOVO_H8)
+// EC SMM interface
+Device(ECMM)
+{
+	Name (_HID, EISAID("PNP0C02"))
+	Name (_UID, 10)
+
+	Name (_CRS, ResourceTemplate() {
+		IO (Decode16, 0x1600, 0x1600, 1, 1)
+		IO (Decode16, 0x1604, 0x1604, 1, 1)
+	})
+}
+
+// EC Gravity sensor interface
+Device(ECGS)
+{
+	Name (_HID, EISAID("PNP0C02"))
+	Name (_UID, 11)
+
+	Name (_CRS, ResourceTemplate() {
+		IO (Decode16, 0x1602, 0x1602, 1, 1)
+		IO (Decode16, 0x1606, 0x1606, 1, 1)
+	})
+}
+
+// Battery two wire interface
+Device(TWRI)
+{
+	Name (_HID, EISAID("PNP0C02"))
+	Name (_UID, 12)
+
+	Name (_CRS, ResourceTemplate() {
+		IO (Decode16, 0x1610, 0x1610, 16, 16)
+	})
+}
+#endif
+
+#if CONFIG(EC_LENOVO_PMH7)
+Device(PMH7)
+{
+	Name (_HID, EISAID("PNP0C02"))
+	Name (_UID, 13)
+
+	Name (_CRS, ResourceTemplate() {
+		IO (Decode16, 0x15e0, 0x15e0, 16, 16)
+	})
+}
+#endif

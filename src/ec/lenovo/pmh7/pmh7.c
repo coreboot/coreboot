@@ -101,17 +101,23 @@ void pmh7_register_write(int reg, int val)
 	outb(val, EC_LENOVO_PMH7_DATA);
 }
 
+#if ENV_RAMSTAGE
+static void pmh7_read_resources(struct device *dev)
+{
+	fixed_io_range_flags(dev, EC_LENOVO_PMH7_BASE, EC_LENOVO_PMH7_BASE,
+			     16, IORESOURCE_ASSIGNED);
+}
+
+struct device_operations pmh7_dev_ops = {
+	.read_resources	= pmh7_read_resources,
+	.set_resources	= noop_set_resources,
+};
+
 static void enable_dev(struct device *dev)
 {
 	const struct ec_lenovo_pmh7_config *conf = dev->chip_info;
-	struct resource *resource;
 
-	resource = new_resource(dev, EC_LENOVO_PMH7_INDEX);
-	resource->base = EC_LENOVO_PMH7_BASE;
-	resource->size = 16;
-	resource->align = 5;
-	resource->gran = 5;
-	resource->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
+	dev->ops = &pmh7_dev_ops;
 
 	pmh7_backlight_enable(conf->backlight_enable);
 	pmh7_dock_event_enable(conf->dock_event_enable);
@@ -129,3 +135,4 @@ struct chip_operations ec_lenovo_pmh7_ops = {
 	.name = "Lenovo Power Management Hardware Hub 7",
 	.enable_dev = enable_dev,
 };
+#endif

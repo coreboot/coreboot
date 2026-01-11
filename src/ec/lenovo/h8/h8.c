@@ -213,6 +213,15 @@ static const char *h8_acpi_name(const struct device *dev)
 }
 #endif
 
+static void h8_read_resources(struct device *dev)
+{
+	static const u16 ports[] = {0x60, 0x64, 0x62, 0x66, 0x1600, 0x1604, 0x1602, 0x1606};
+	for (int i = 0; i < ARRAY_SIZE(ports); i++)
+		fixed_io_range_flags(dev, ports[i], ports[i], 1, IORESOURCE_ASSIGNED);
+
+	fixed_io_range_flags(dev, 0x1610, 0x1610, 16, IORESOURCE_ASSIGNED);
+}
+
 struct device_operations h8_dev_ops = {
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 	.get_smbios_strings = h8_smbios_strings,
@@ -221,6 +230,8 @@ struct device_operations h8_dev_ops = {
 	.acpi_fill_ssdt = h8_ssdt_generator,
 	.acpi_name = h8_acpi_name,
 #endif
+	.read_resources	= h8_read_resources,
+	.set_resources	= noop_set_resources,
 	.init = h8_init,
 };
 

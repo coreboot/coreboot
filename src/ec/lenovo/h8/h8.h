@@ -20,7 +20,6 @@ void h8_usb_power_enable(int on);
 void h8_enable_event(int event);
 void h8_disable_event(int event);
 int h8_ultrabay_device_present(void);
-u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len);
 void h8_usb_always_on(void);
 
 int h8_get_fn_key(void);
@@ -140,5 +139,13 @@ void h8_mb_init(void);
 
 #define H8_EVENT_FN_F5			0x64
 #define H8_EVENT_FN_F6			0x65
+
+#define H8_EC_FIRMWARE_MINOR_VER	0xe8
+#define H8_EC_FIRMWARE_MAJOR_VER	0xe9
+
+#define H8_EC_FUNC_MINOR_VER		0xeb
+#define H8_EC_FUNC_MAJOR_VER		0xef
+
+#define H8_EC_BUILD_ID			0xf0
 
 #endif /* EC_LENOVO_H8_H */

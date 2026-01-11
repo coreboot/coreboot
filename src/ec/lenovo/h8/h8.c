@@ -81,6 +81,34 @@ static void f1_to_f12_as_primary(int on)
 		ec_clr_bit(0x3b, 3);
 }
 
+static u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
+{
+	static char str[16 + 1]; /* 16 ASCII chars + \0 */
+	u8 i, c;
+
+	if (!str[0]) {
+		/* Build ID */
+		for (i = 0; i < 8; i++) {
+			c = ec_read(H8_EC_BUILD_ID + i);
+			if (c < 0x20 || c > 0x7f) {
+				i = snprintf(str, sizeof(str), "*INVALID");
+				break;
+			}
+			str[i] = c;
+		}
+
+		/* Lenovo EC firmware function specification version */
+		i += snprintf(str + i, sizeof(str) - i, "-%u.%u",
+			ec_read(H8_EC_FUNC_MAJOR_VER), ec_read(H8_EC_FUNC_MINOR_VER));
+	} else
+		i = strlen(str);
+
+	i = MIN(buf_len, i);
+	memcpy(buf, str, i);
+
+	return i;
+}
+
 static void h8_log_ec_version(void)
 {
 	char ecfw[17];
@@ -90,8 +118,8 @@ static void h8_log_ec_version(void)
 	len = h8_build_id_and_function_spec_version(ecfw, sizeof(ecfw) - 1);
 	ecfw[len] = 0;
 
-	fwvh = ec_read(0xe9);
-	fwvl = ec_read(0xe8);
+	fwvh = ec_read(H8_EC_FIRMWARE_MAJOR_VER);
+	fwvl = ec_read(H8_EC_FIRMWARE_MINOR_VER);
 
 	printk(BIOS_INFO, "H8: EC Firmware ID %s, Version %d.%d%d%c\n", ecfw,
 	       fwvh >> 4, fwvh & 0x0f, fwvl >> 4, 0x41 + (fwvl & 0xf));
@@ -160,30 +188,6 @@ void h8_usb_power_enable(int onoff)
 int h8_ultrabay_device_present(void)
 {
 	return ec_read(H8_STATUS1) & 0x5 ? 0 : 1;
-}
-
-u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
-{
-	u8 i, c;
-	char str[16 + 1]; /* 16 ASCII chars + \0 */
-
-	/* Build ID */
-	for (i = 0; i < 8; i++) {
-		c = ec_read(0xf0 + i);
-		if (c < 0x20 || c > 0x7f) {
-			i = snprintf(str, sizeof(str), "*INVALID");
-			break;
-		}
-		str[i] = c;
-	}
-
-	/* EC firmware function specification version */
-	i += snprintf(str + i, sizeof(str) - i, "-%u.%u", ec_read(0xef), ec_read(0xeb));
-
-	i = MIN(buf_len, i);
-	memcpy(buf, str, i);
-
-	return i;
 }
 
 #if CONFIG(GENERATE_SMBIOS_TABLES)

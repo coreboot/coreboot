@@ -82,11 +82,11 @@ chip soc/intel/pantherlake
 	register "tdc_time_window_ms[VR_DOMAIN_IA]" = "28000"
 
 	# Set the power state thresholds according to document 813278
-	# Panther Lake H Platform - Design Guide - Rev 2.0
+	# Panther Lake H Platform - Design Guide - Draft > 2.1
 	register "ps1_threshold" = "{
-		[VR_DOMAIN_IA] = 20 * 4,
-		[VR_DOMAIN_GT] = 20 * 4,
-		[VR_DOMAIN_SA] = 20 * 4
+		[VR_DOMAIN_IA] = 15 * 4,
+		[VR_DOMAIN_GT] = 15 * 4,
+		[VR_DOMAIN_SA] = 15 * 4
 	}"
 	register "ps2_threshold" = "{
 		[VR_DOMAIN_IA] = 5 * 4,

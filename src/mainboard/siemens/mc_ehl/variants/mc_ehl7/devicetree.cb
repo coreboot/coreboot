@@ -78,13 +78,7 @@ chip soc/intel/elkhartlake
 	# Determine PCIe root port speed
 	register "PcieRpPcieSpeed[6]" = "2"
 
-	# Storage (SATA/SDCARD/EMMC) related UPDs
-	register "SataSalpSupport" = "0"
-	register "SataPortsEnable[1]" = "1"
-	register "SataPortsDevSlp[1]" = "0"
-	register "SataPortsSSD[1]" = "1"
-	register "SataSpeed" = "SATA_GEN2"
-
+	# Storage (SDCARD/EMMC) related UPDs
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsEmmcDdr50Enabled" = "1"
 	register "SdCardPowerEnableActiveHigh" = "1"
@@ -164,8 +158,6 @@ chip soc/intel/elkhartlake
 		end
 
 		device pci 16.0 hidden	end # Management Engine Interface 1
-
-		device pci 17.0 on      end # SATA
 
 		device pci 19.0 on	    # I2C4
 			# Add dummy I2C device to limit BUS speed to 100 kHz in OS

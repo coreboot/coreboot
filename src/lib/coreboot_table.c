@@ -142,13 +142,13 @@ static void lb_pcie(struct lb_header *header)
 static void lb_framebuffer(struct lb_header *header)
 {
 	struct lb_framebuffer *framebuffer;
-	struct lb_framebuffer fb = {0};
+	const struct lb_framebuffer *fb;
 
-	if (!CONFIG(LINEAR_FRAMEBUFFER) || fill_lb_framebuffer(&fb))
+	if (!CONFIG(LINEAR_FRAMEBUFFER) || !(fb = get_lb_framebuffer()))
 		return;
 
 	framebuffer = (struct lb_framebuffer *)lb_new_record(header);
-	memcpy(framebuffer, &fb, sizeof(*framebuffer));
+	memcpy(framebuffer, fb, sizeof(*framebuffer));
 	framebuffer->tag = LB_TAG_FRAMEBUFFER;
 	framebuffer->size = sizeof(*framebuffer);
 

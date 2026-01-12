@@ -181,14 +181,13 @@ struct fb_info *fb_new_framebuffer_info_from_edid(const struct edid *edid,
 		edid->bytes_per_line, edid->framebuffer_bits_per_pixel);
 }
 
-int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
+const struct lb_framebuffer *get_lb_framebuffer(void)
 {
 	struct fb_info *i;
 
 	list_for_each(i, list, node) {
 		//TODO: Add support for advertising all framebuffers in this list
-		*framebuffer = i->fb;
-		return 0;
+		return &i->fb;
 	}
-	return -1;
+	return NULL;
 }

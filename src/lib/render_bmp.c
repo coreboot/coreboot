@@ -689,16 +689,14 @@ void render_logo_to_framebuffer(struct logo_config *config)
 
 	if (config->framebuffer_base == 0) {
 		/* Try to load from already populated framebuffer information */
-		struct lb_framebuffer framebuffer;
-		memset(&framebuffer, 0, sizeof(struct lb_framebuffer));
-		fill_lb_framebuffer(&framebuffer);
+		const struct lb_framebuffer *fb = get_lb_framebuffer();
 		/* Exit if framebuffer is still not available */
-		if (framebuffer.physical_address == 0)
+		if (!fb)
 			return;
-		config->framebuffer_base = framebuffer.physical_address;
-		config->horizontal_resolution = framebuffer.x_resolution;
-		config->vertical_resolution = framebuffer.y_resolution;
-		config->bytes_per_scanline = framebuffer.bytes_per_line;
+		config->framebuffer_base = fb->physical_address;
+		config->horizontal_resolution = fb->x_resolution;
+		config->vertical_resolution = fb->y_resolution;
+		config->bytes_per_scanline = fb->bytes_per_line;
 	}
 
 	/*

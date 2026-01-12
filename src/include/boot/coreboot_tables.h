@@ -33,9 +33,9 @@ void lb_efi_fw_info(struct lb_header *header);
 /* Adds LB_TAG_CAPSULE table entries. */
 void lb_efi_capsules(struct lb_header *header);
 
-/* Define this function to fill in the frame buffer returning 0 on success and
-   < 0 on error. */
-int fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
+/* Define this function to get the frame buffer returning lb_framebuffer object
+   on success and NULL on error. */
+const struct lb_framebuffer *get_lb_framebuffer(void);
 
 /* Allow arch to add records. */
 void lb_arch_add_records(struct lb_header *header);

@@ -186,46 +186,8 @@ chip soc/intel/elkhartlake
 		device pci 1c.4 on	end # RP5 (pcie1 multi VC)
 		device pci 1c.6 on	end # RP7 (pcie3 multi VC)
 
-		device pci 1d.0 off	end # Intel PSE IPC (local host to PSE)
-		device pci 1d.1 on	    # Intel PSE Time-Sensitive Networking GbE 0
-			# Enable external Marvell PHY 88E1512
-			chip drivers/net/phy/m88e1512
-				register "configure_leds" = "true"
-				# LED[0]: On - 1000 Mbps Link, Off - Else
-				register "led_0_ctrl" = "7"
-				# LED[1]: On - 100 Mbps Link, Off - Else
-				register "led_1_ctrl" = "7"
-				# LED[2]: Blink - Activity, Off - No Activity
-				register "led_2_ctrl" = "4"
-				# INTn is not routed to LED[2] pin
-				register "enable_int" = "false"
-				register "downshift_cnt" = "2"
-				device mdio 0 on    # PHY address
-					ops m88e1512_ops
-				end
-			end
-		end
-
 		device pci 1e.0 on	end # UART0
 		device pci 1e.1 on	end # UART1
-		device pci 1e.4 on	    # PCH Time-Sensitive Networking GbE
-			# Enable external Marvell PHY 88E1512
-			chip drivers/net/phy/m88e1512
-				register "configure_leds" = "true"
-				# LED[0]: On - 1000 Mbps Link, Off - Else
-				register "led_0_ctrl" = "7"
-				# LED[1]: On - 100 Mbps Link, Off - Else
-				register "led_1_ctrl" = "7"
-				# LED[2]: Blink - Activity, Off - No Activity
-				register "led_2_ctrl" = "4"
-				# INTn is not routed to LED[2] pin
-				register "enable_int" = "false"
-				register "downshift_cnt" = "2"
-				device mdio 1 on    # PHY address
-					ops m88e1512_ops
-				end
-			end
-		end
 
 		device pci 1f.0 on	    # eSPI Interface
 			chip drivers/pc80/tpm

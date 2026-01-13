@@ -626,6 +626,10 @@ static const struct device_operations pci_thc_device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_NVL_THC0_1,
+	PCI_DID_INTEL_NVL_THC0_2,
+	PCI_DID_INTEL_NVL_THC1_1,
+	PCI_DID_INTEL_NVL_THC1_2,
 	PCI_DID_INTEL_MTL_THC0_SPI,
 	PCI_DID_INTEL_MTL_THC1_SPI,
 	PCI_DID_INTEL_PTL_U_H_THC0_I2C,

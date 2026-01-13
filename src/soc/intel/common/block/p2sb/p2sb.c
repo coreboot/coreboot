@@ -145,6 +145,7 @@ const struct device_operations p2sb_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_NVL_P2SB,
 	PCI_DID_INTEL_WCL_P2SB,
 	PCI_DID_INTEL_PTL_H_P2SB,
 	PCI_DID_INTEL_PTL_U_H_P2SB,

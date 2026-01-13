@@ -52,5 +52,6 @@ libc-srcs += $(coreboottop)/src/commonlib/bsd/string.c
 ifeq ($(CONFIG_LP_GPL),y)
 libc-srcs += $(coreboottop)/src/commonlib/device_tree.c
 libc-srcs += $(coreboottop)/src/commonlib/list.c
+libc-srcs += $(coreboottop)/src/commonlib/mipi/cmd.c
 endif
 endif

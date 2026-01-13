@@ -91,6 +91,7 @@ enum {
 	LB_TAG_CAPSULE			= 0x0046,
 	LB_TAG_CFR_ROOT			= 0x0047,
 	LB_TAG_ROOT_BRIDGE_INFO		= 0x0048,
+	LB_TAG_PANEL_POWEROFF		= 0x0049,
 	/* The following options are CMOS-related */
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,
@@ -627,6 +628,14 @@ struct lb_cfr {
 	uint32_t version;
 	uint32_t checksum;	/* Checksum of the variable payload. */
 	/* struct lb_cfr_option_form		forms[] */
+};
+
+struct lb_panel_poweroff {
+	uint32_t tag;
+	uint32_t size;
+
+	/* MIPI DSI poweroff commands from panel_serializable_data. */
+	uint8_t cmd[];
 };
 
 enum boot_mode_t {

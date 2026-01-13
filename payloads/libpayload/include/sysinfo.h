@@ -180,6 +180,7 @@ struct sysinfo_t {
 	enum boot_mode_t boot_mode;
 
 	uintptr_t memory_info;
+	uintptr_t cb_panel_poweroff;
 };
 
 extern struct sysinfo_t lib_sysinfo;

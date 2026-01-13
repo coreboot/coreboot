@@ -47,6 +47,7 @@
 #include <cbgfx.h>
 #if CONFIG(LP_GPL)
 #include <commonlib/helpers.h>
+#include <commonlib/mipi/cmd.h>
 #else
 #include <commonlib/bsd/helpers.h>
 #endif

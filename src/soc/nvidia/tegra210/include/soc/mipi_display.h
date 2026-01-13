@@ -8,7 +8,7 @@
 #ifndef __SOC_MIPI_DISPLAY_H__
 #define __SOC_MIPI_DISPLAY_H__
 
-#include <mipi/dsi.h>
+#include <commonlib/mipi/dsi.h>
 
 /* MIPI DCS pixel formats */
 #define MIPI_DCS_PIXEL_FMT_24BIT	7

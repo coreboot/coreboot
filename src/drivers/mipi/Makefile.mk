@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-ramstage-y += panel.c
-
 panel-params-y :=
 
 panel-params-$(CONFIG_MIPI_PANEL_AUO_B101UAN08_3) += panel-AUO_B101UAN08_3

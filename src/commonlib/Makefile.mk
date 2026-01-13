@@ -1,5 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+subdirs-y += mipi
 subdirs-y += storage
 subdirs-y += bsd/zstd
 

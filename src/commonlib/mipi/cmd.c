@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
+#include <commonlib/bsd/cb_err.h>
+#include <commonlib/bsd/stdlib.h>
+#include <commonlib/mipi/cmd.h>
 #include <delay.h>
-#include <mipi/panel.h>
-#include <types.h>
 
 enum cb_err mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func,
 					   void *user_data)

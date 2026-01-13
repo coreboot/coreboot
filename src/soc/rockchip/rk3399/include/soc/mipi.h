@@ -3,7 +3,7 @@
 #ifndef __RK_MIPI_H
 #define __RK_MIPI_H
 
-#include <mipi/dsi.h>
+#include <commonlib/mipi/dsi.h>
 #include <types.h>
 
 struct rk_mipi_regs {

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __MIPI_DSI_H__
-#define __MIPI_DSI_H__
+#ifndef __COMMONLIB_MIPI_DSI_H__
+#define __COMMONLIB_MIPI_DSI_H__
 
 /* MIPI DSI Processor-to-Peripheral transaction types */
 enum mipi_dsi_transaction {
@@ -109,4 +109,4 @@ enum {
 	MIPI_DCS_READ_DDB_CONTINUE	= 0xA8,
 };
 
-#endif /* __MIPI_DSI_H__ */
+#endif /* __COMMONLIB_MIPI_DSI_H__ */

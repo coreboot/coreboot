@@ -4,8 +4,8 @@
 #define SOC_MEDIATEK_DSI_COMMON_H
 
 #include <commonlib/helpers.h>
+#include <commonlib/mipi/dsi.h>
 #include <edid.h>
-#include <mipi/dsi.h>
 #include <types.h>
 #include <soc/addressmap.h>
 #include <soc/display_dsi.h>

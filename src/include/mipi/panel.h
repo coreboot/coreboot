@@ -3,27 +3,13 @@
 #ifndef __MIPI_PANEL_H__
 #define __MIPI_PANEL_H__
 
+#include <commonlib/mipi/cmd.h>
 #include <edid.h>
-#include <mipi/dsi.h>
 #include <types.h>
-
-/* Definitions for cmd in panel_init_command */
-enum panel_init_cmd {
-	PANEL_CMD_END = 0,
-	PANEL_CMD_DELAY = 1,
-	PANEL_CMD_GENERIC = 2,
-	PANEL_CMD_DCS = 3,
-};
 
 /* Definitions for flags in panel_serializable_data */
 enum panel_flag {
 	PANEL_FLAG_CPHY = BIT(0),
-};
-
-struct panel_init_command {
-	u8 cmd;
-	u8 len;
-	u8 data[];
 };
 
 /* VESA Display Stream Compression DSC 1.2 constants */
@@ -214,36 +200,5 @@ struct panel_serializable_data {
 	struct dsc_config dsc_config; /* dsc config of this panel */
 	u8 init[]; /* A packed array of panel_init_command */
 };
-
-/*
- * Callback function type for mipi_panel_parse_init_commands().
- * @param type		MIPI DSI transaction type.
- * @param data		panel_init_command data.
- * @param len		panel_init_command len.
- * @param user_data	Arbitrary user data passed from mipi_panel_parse_init_commands().
- */
-typedef enum cb_err (*mipi_cmd_func_t)(enum mipi_dsi_transaction type, const u8 *data, u8 len,
-				       void *user_data);
-
-/* Parse a command array and call cmd_func() for each entry. Delays get handled internally. */
-enum cb_err mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func,
-					   void *user_data);
-
-#define PANEL_DCS(...) \
-	PANEL_CMD_DCS, \
-	sizeof((u8[]){__VA_ARGS__}), \
-	__VA_ARGS__
-
-#define PANEL_GENERIC(...) \
-	PANEL_CMD_GENERIC, \
-	sizeof((u8[]){__VA_ARGS__}), \
-	__VA_ARGS__
-
-#define PANEL_DELAY(delay) \
-	PANEL_CMD_DELAY, \
-	delay
-
-#define PANEL_END \
-	PANEL_CMD_END
 
 #endif /* __MIPI_PANEL_H__ */

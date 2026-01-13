@@ -189,6 +189,8 @@ struct dsc_config {
 	u8 dsc_version_major;
 };
 
+#define PANEL_POWEROFF_CMD_MAX_LEN 16
+
 /*
  * The data to be serialized and put into CBFS.
  * Note some fields, for example edid.mode.name, were actually pointers and
@@ -198,7 +200,9 @@ struct panel_serializable_data {
 	u32 flags; /* flags of panel_flag */
 	struct edid edid;  /* edid info of this panel */
 	struct dsc_config dsc_config; /* dsc config of this panel */
-	u8 init[]; /* A packed array of panel_init_command */
+	/* Packed arrays of panel_command */
+	u8 poweroff[PANEL_POWEROFF_CMD_MAX_LEN];
+	u8 init[];
 };
 
 #endif /* __MIPI_PANEL_H__ */

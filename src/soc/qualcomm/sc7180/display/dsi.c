@@ -286,8 +286,7 @@ enum cb_err mdss_dsi_panel_initialize(const u8 *init_cmds)
 	/* Enable command mode before sending the commands */
 	write32(&dsi0->ctrl, ctrl_mode | 0x04);
 
-	enum cb_err ret = mipi_panel_parse_init_commands(init_cmds, mdss_dsi_send_init_cmd,
-							 NULL);
+	enum cb_err ret = mipi_panel_parse_commands(init_cmds, mdss_dsi_send_init_cmd, NULL);
 	write32(&dsi0->ctrl, ctrl_mode);
 	mdss_dsi_clear_intr();
 

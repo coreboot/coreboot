@@ -5,26 +5,26 @@
 #include <commonlib/mipi/cmd.h>
 #include <delay.h>
 
-enum cb_err mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func,
-					   void *user_data)
+enum cb_err mipi_panel_parse_commands(const void *buf, mipi_cmd_func_t cmd_func,
+				      void *user_data)
 {
-	const struct panel_init_command *init = buf;
+	const struct panel_command *command = buf;
 	enum mipi_dsi_transaction type;
 
 	/*
 	 * The given commands should be in a buffer containing a packed array of
-	 * panel_init_command and each element may be in variable size so we have
+	 * panel_command and each element may be in variable size so we have
 	 * to parse and scan.
 	 */
 
-	for (; init->cmd != PANEL_CMD_END; init = (const void *)buf) {
+	for (; command->cmd != PANEL_CMD_END; command = (const void *)buf) {
 		/*
-		 * For some commands like DELAY, the init->len should not be
+		 * For some commands like DELAY, the command->len should not be
 		 * counted for buf.
 		 */
-		buf += sizeof(*init);
+		buf += sizeof(*command);
 
-		u32 cmd = init->cmd, len = init->len;
+		u32 cmd = command->cmd, len = command->len;
 
 		if (cmd == PANEL_CMD_DELAY) {
 			mdelay(len);
@@ -70,7 +70,7 @@ enum cb_err mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_
 			return CB_ERR;
 		}
 
-		enum cb_err ret = cmd_func(type, init->data, len, user_data);
+		enum cb_err ret = cmd_func(type, command->data, len, user_data);
 		if (ret != CB_SUCCESS)
 			return ret;
 		buf += len;

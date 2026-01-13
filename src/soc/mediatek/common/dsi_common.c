@@ -494,7 +494,7 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 	}
 
 	if (init_commands)
-		mipi_panel_parse_init_commands(init_commands, mtk_dsi_cmdq, &mode_flags);
+		mipi_panel_parse_commands(init_commands, mtk_dsi_cmdq, &mode_flags);
 
 	for (unsigned int i = 0; i < num_dsi; i++)
 		mtk_dsi_set_mode(dsi_mipi_regs[i].dsi_reg, mode_flags);

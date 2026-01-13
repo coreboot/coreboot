@@ -40,4 +40,6 @@ void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path,
 void mtk_ddp_ovlsys_start(uintptr_t fb_addr, const struct edid *edid,
 			  enum disp_path_sel path);
 
+const struct panel_serializable_data *mtk_get_mipi_panel_data(void);
+
 #endif

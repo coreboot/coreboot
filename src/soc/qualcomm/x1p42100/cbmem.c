@@ -6,5 +6,5 @@
 
 uintptr_t cbmem_top_chipset(void)
 {
-	return (uintptr_t)CBMEM_TOP;
+	return (uintptr_t)_dram_xbl_log;
 }

@@ -2,6 +2,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
+#include <bootstate.h>
 #include <cbmem.h>
 #include <commonlib/bsd/cbmem_id.h>
 #include <commonlib/coreboot_tables.h>
@@ -93,8 +94,18 @@ static void setup_usb(void)
 	setup_usb_typec();
 
 	enable_usb_camera();
+}
+
+static void setup_usb_late(void *unused)
+{
+	/* Skip USB initialization if boot mode is "low-battery" or "off-mode charging"*/
+	if (is_low_power_boot())
+		return;
+
 	setup_usb_host0();
 }
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, setup_usb_late, NULL);
 
 void lb_add_boot_mode(struct lb_header *header)
 {

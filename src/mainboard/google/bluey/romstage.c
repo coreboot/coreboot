@@ -101,6 +101,9 @@ static void early_setup_usb(void)
 
 void platform_romstage_main(void)
 {
+	/* Setup early USB related config */
+	early_setup_usb();
+
 	/* Watchdog must be checked first to avoid erasing watchdog info later. */
 	check_wdog();
 
@@ -119,9 +122,6 @@ void platform_romstage_main(void)
 	aop_fw_load_reset();
 
 	qclib_rerun();
-
-	/* Setup early USB related config */
-	early_setup_usb();
 
 	/*
 	 * Enable this power rail now for FPMCU stability prior to

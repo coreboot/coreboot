@@ -758,6 +758,19 @@ struct soc_intel_pantherlake_config {
 
 	/* Disable the progress bar during MRC training operations. */
 	bool disable_progress_bar;
+
+	/*
+	 * VgaInitControl CD Clock Frequency Selection
+	 * 0: CD_CLK_NONE - No higher CD Clock required
+	 * 1: CD_CLK_442MHZ - 441 MHz
+	 * 2: CD_CLK_461MHZ - 461 MHz
+	 */
+	enum cd_clock {
+		CD_CLK_NONE = 0,
+		CD_CLK_442MHZ,
+		CD_CLK_461MHZ,
+		MAX_CD_CLOCK = CD_CLK_461MHZ
+	} vga_cd_clk_freq_sel;
 };
 
 typedef struct soc_intel_pantherlake_config config_t;

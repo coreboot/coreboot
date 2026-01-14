@@ -50,6 +50,17 @@ static void setup_vga_mode12_params(FSP_M_CONFIG *m_cfg, enum ux_locale_msg id)
 		m_cfg->VgaInitControl |= VGA_INIT_CONTROL_MODE12_MONOCHROME;
 }
 
+static void set_cd_clock(FSP_M_CONFIG *m_cfg, enum cd_clock clk)
+{
+	if (clk > MAX_CD_CLOCK) {
+		printk(BIOS_ERR, "CD Clock setting out of bounds!\n");
+		return;
+	}
+
+	m_cfg->VgaInitControl = (m_cfg->VgaInitControl & ~(0x3 << 6)) | (clk << 6);
+	printk(BIOS_DEBUG, "CD Clock: %d\n", clk);
+}
+
 static bool ux_inform_user_of_operation(const char *name, enum ux_locale_msg id,
 		 FSPM_UPD *mupd)
 {
@@ -90,6 +101,9 @@ static bool ux_inform_user_of_operation(const char *name, enum ux_locale_msg id,
 	m_cfg->VgaInitControl = VGA_INIT_CONTROL_ENABLE;
 	if (config->disable_progress_bar)
 		m_cfg->VgaInitControl |= VGA_INIT_DISABLE_ANIMATION;
+
+	set_cd_clock(m_cfg, config->vga_cd_clk_freq_sel);
+
 	m_cfg->VbtPtr = (efi_uintn_t)vbt;
 	m_cfg->VbtSize = vbt_size;
 	m_cfg->LidStatus = CONFIG(VBOOT_LID_SWITCH) ? get_lid_switch() : CONFIG(RUN_FSP_GOP);

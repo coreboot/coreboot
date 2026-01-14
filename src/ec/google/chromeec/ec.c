@@ -841,7 +841,12 @@ static int cbi_read(void *buf, size_t bufsize, uint32_t tag, bool check_size)
 
 static int cbi_get_uint32(uint32_t *id, uint32_t tag)
 {
-	return cbi_read(id, sizeof(*id), tag, true);
+	uint32_t r = 0;
+	int rv = cbi_read(&r, sizeof(r), tag, true);
+	if (rv)
+		return rv;
+	*id = r;
+	return 0;
 }
 
 int google_chromeec_cbi_get_sku_id(uint32_t *id)

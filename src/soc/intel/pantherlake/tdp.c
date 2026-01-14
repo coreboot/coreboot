@@ -21,5 +21,5 @@ enum soc_intel_pantherlake_cpu_tdps soc_get_cpu_tdp(void)
 	}
 
 	const struct soc_intel_pantherlake_config *config = config_of_soc();
-	return config->tdp || get_cpu_tdp();
+	return config->tdp ? : get_cpu_tdp();
 }

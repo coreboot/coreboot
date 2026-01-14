@@ -15,6 +15,25 @@ const char *get_wifi_sar_cbfs_filename(void)
 	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI_INTERFACE));
 }
 
+void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
+{
+	/* Touchscreen and Touchpad WOT support:
+	* +===================+==================+=================+========================+
+	* | Touchscreen       | Touchpad         | PMC_GPE0_DW0    | WOT                    |
+	* +===================+==================+=================+========================+
+	* | THC-SPI/THC-I2C   | THC-I2C          | VGPIO           | TS, TP                 |
+	* +===================+==================+=================+========================+
+	* | THC-SPI/THC-I2C   | LPSS-I2C         | GPP_F18         | TP                     |
+	* +===================+==================+=================+========================+
+	*/
+
+	config->thc_mode[0] = THC_HID_I2C_MODE;
+	config->thc_mode[1] = THC_HID_I2C_MODE;
+
+	/* touchscreen: GPP_F18: GPE0_DW0_18 */
+	config->pmc_gpe0_dw0 = GPP_F;
+}
+
 void variant_update_soc_memory_init_params(FSPM_UPD *memupd)
 {
 	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;

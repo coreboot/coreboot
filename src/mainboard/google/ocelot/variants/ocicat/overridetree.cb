@@ -246,6 +246,7 @@ chip soc/intel/pantherlake
 
 		device ref thc0 on
 			register "thc_wake_on_touch[0]" = "true"
+			register "thc_mode[0]" = "THC_HID_I2C_MODE"
 			# THC0 is function 0; hence it needs to be enabled when THC1 is to be enabled.
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC0_NAME"
@@ -265,6 +266,7 @@ chip soc/intel/pantherlake
 		end
 		device ref thc1 on
 			register "thc_wake_on_touch[1]" = "true"
+			register "thc_mode[1]" = "THC_HID_I2C_MODE"
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC1_NAME"
 				register "mode" = "THC_HID_I2C_MODE"
@@ -273,7 +275,7 @@ chip soc/intel/pantherlake
 				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC1)"
 				register "active_ltr" = "1"
 				register "idle_ltr" = "0"
-				register "connected_device" = "TH_SENSOR_HYNITRON"
+				register "connected_device" = "TH_SENSOR_ELAN"
 				register "add_acpi_dma_property" = "true"
 				device generic 0 alias touch_1_i2c_hynitron on end
 			end
@@ -434,6 +436,8 @@ chip soc/intel/pantherlake
 				register "generic.hid" = ""ELAN2513""
 				register "generic.desc" = ""ELAN Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F18_IRQ)"
+				# NOTE: pmc_gpe0_dw0 will be overridden to GPP_F in variant.c.
+				register "generic.wake" = "GPE0_DW0_18"
 				register "generic.detect" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F16)"
 				register "generic.reset_delay_ms" = "20"
@@ -454,6 +458,8 @@ chip soc/intel/pantherlake
 				register "generic.hid" = ""ELAN2513""
 				register "generic.desc" = ""ELAN Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F18_IRQ)"
+				# NOTE: pmc_gpe0_dw0 will be overridden to GPP_F in variant.c.
+				register "generic.wake" = "GPE0_DW0_18"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F16)"
 				register "generic.reset_delay_ms" = "20"
 				register "generic.reset_off_delay_ms" = "2"

@@ -42,14 +42,9 @@ checkout: fetch
 
 config: checkout
 ifeq ($(CONSOLE_SERIAL),yy)
-	cp "$(project_dir)/src/config/console.h" "$(project_dir)/src/config/console.h.cb"
-	cp "$(project_dir)/src/config/serial.h" "$(project_dir)/src/config/serial.h.cb"
 	sed -i'' 's|//#define\s*CONSOLE_SERIAL.*|#define CONSOLE_SERIAL|' "$(project_dir)/src/config/console.h"
 	sed -i'' 's|#define\s*COMCONSOLE.*|#define COMCONSOLE $(IPXE_UART)|' "$(project_dir)/src/config/serial.h"
 	sed -i'' 's|#define\s*COMSPEED.*|#define COMSPEED $(CONFIG_TTYS0_BAUD)|'  "$(project_dir)/src/config/serial.h"
-endif
-ifneq ($(filter y,$(CONFIG_HAS_SCRIPT) $(CONFIG_IPXE_NO_PROMPT)),)
-	cp "$(project_dir)/src/config/general.h" "$(project_dir)/src/config/general.h.cb"
 endif
 ifeq ($(CONFIG_HAS_SCRIPT),y)
 	sed -i'' 's|//#define\s*IMAGE_SCRIPT.*|#define IMAGE_SCRIPT|' "$(project_dir)/src/config/general.h"
@@ -73,13 +68,7 @@ else
 	$(MAKE) -C $(project_dir)/src $(IPXE_BUILD_TARGET) $(PXE_MAKE_OPTS)
 endif
 	cp $(project_dir)/src/$(IPXE_BUILD_TARGET) $(project_dir)/ipxe.rom
-ifeq ($(CONSOLE_SERIAL),yy)
-	cp "$(project_dir)/src/config/console.h.cb" "$(project_dir)/src/config/console.h"
-	cp "$(project_dir)/src/config/serial.h.cb" "$(project_dir)/src/config/serial.h"
-endif
-ifneq ($(filter y,$(CONFIG_HAS_SCRIPT) $(CONFIG_IPXE_NO_PROMPT)),)
-	cp "$(project_dir)/src/config/general.h.cb" "$(project_dir)/src/config/general.h"
-endif
+	cd $(project_dir) && git restore src/config/console.h src/config/serial.h src/config/general.h
 
 clean:
 	test -d $(project_dir) && $(MAKE) -C $(project_dir)/src veryclean || exit 0

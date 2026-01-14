@@ -53,15 +53,15 @@ if BUILD_IPXE
 
 choice
 	prompt "iPXE version"
-	default IPXE_MASTER
+	default IPXE_STABLE
 
 config IPXE_STABLE
-	bool "2022.1"
+	bool "2025.12"
 	help
 	  iPXE uses a rolling release with no stable version, for
 	  reproducibility, use the last commit of a given month as the
 	  'stable' version.
-	  This is iPXE from the end of January, 2022.
+	  This is iPXE from the end of December, 2025.
 
 config IPXE_MASTER
 	bool "master"

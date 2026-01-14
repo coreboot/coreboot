@@ -2,7 +2,7 @@
 
 # 2022.1 - Last commit of January 2022
 # When updating, change the name both here and in payloads/external/iPXE/Kconfig
-STABLE_COMMIT_ID=6ba671acd922ee046b257c5119b8a0f64d275473
+STABLE_COMMIT_ID=7c39c04a537ce29dccc6f2bae9749d1d371429c1
 
 TAG-$(CONFIG_IPXE_MASTER)=origin/master
 TAG-$(CONFIG_IPXE_STABLE)=$(STABLE_COMMIT_ID)

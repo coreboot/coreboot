@@ -27,6 +27,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_T13, NONE, DEEP, NF2),		/* SIO_UART0_TXD */
 
 	/* Community 0 - GpioGroup GPP_G */
+	PAD_CFG_NF(GPP_G5, UP_20K, DEEP, NF1),          /* SD Card Detect */
 	PAD_NC(GPP_G8, NONE),				/* Not connected */
 	PAD_NC(GPP_G9, NONE),				/* Not connected */
 	PAD_CFG_GPI(GPP_G19, UP_20K, PLTRST),		/* TPM_IRQ_N */

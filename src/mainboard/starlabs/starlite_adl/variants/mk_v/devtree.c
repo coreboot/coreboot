@@ -78,6 +78,6 @@ void devtree_update(void)
 		gna_dev->enabled = 0;
 
 	/* Enable/Disable Card Reader based on CMOS Settings */
-	if (get_uint_option("card_reader", 1) == 0)
+	if (get_uint_option("card_reader", 0) == 0)
 		cfg->usb2_ports[3].enable = 0;
 }

@@ -4,6 +4,7 @@
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <fw_config.h>
+#include <sar.h>
 
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
@@ -39,4 +40,9 @@ void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 		config->typec_aux_bias_pads[1].pad_auxp_dc = 0x00;
 		config->typec_aux_bias_pads[1].pad_auxn_dc = 0x00;
 	}
+}
+
+const char *get_wifi_sar_cbfs_filename(void)
+{
+	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WLAN));
 }

@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
+#include <boot/coreboot_tables.h>
 #include <bootmode.h>
+#include <commonlib/coreboot_tables.h>
+#include <commonlib/helpers.h>
+#include <commonlib/mipi/cmd.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <fw_config.h>
@@ -166,3 +170,23 @@ struct chip_operations mainboard_ops = {
 	.name = CONFIG_MAINBOARD_PART_NUMBER,
 	.enable_dev = mainboard_enable,
 };
+
+void lb_board(struct lb_header *header)
+{
+	const struct panel_serializable_data *mipi_data = mtk_get_mipi_panel_data();
+
+	if (!mipi_data)
+		return;
+
+	size_t cmd_len = mipi_panel_get_commands_len(mipi_data->poweroff);
+
+	if (!cmd_len)
+		return;
+
+	struct lb_panel_poweroff *panel_poweroff =
+		(struct lb_panel_poweroff *)lb_new_record(header);
+	panel_poweroff->tag = LB_TAG_PANEL_POWEROFF;
+	panel_poweroff->size = ALIGN_UP(sizeof(*panel_poweroff) + cmd_len,
+					LB_ENTRY_ALIGN);
+	memcpy(panel_poweroff->cmd, mipi_data->poweroff, cmd_len);
+}

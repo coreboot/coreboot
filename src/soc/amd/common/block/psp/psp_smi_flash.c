@@ -27,6 +27,8 @@ static const char *id_to_region_name(uint64_t target_nv_id)
 	switch (target_nv_id) {
 	case SMI_TARGET_NVRAM:
 		return "PSP_NVRAM";
+	case SMI_TARGET_VM_GUARD:
+		return "PSP_SEV_NVRAM";
 	case SMI_TARGET_RPMC_NVRAM:
 		return "PSP_RPMC_NVRAM";
 	}

@@ -8,6 +8,7 @@
 static bool is_valid_psp_spi_id(uint64_t target_nv_id)
 {
 	return target_nv_id == SMI_TARGET_NVRAM ||
+	       target_nv_id == SMI_TARGET_VM_GUARD ||
 	       target_nv_id == SMI_TARGET_RPMC_NVRAM;
 }
 

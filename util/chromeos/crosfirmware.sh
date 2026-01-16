@@ -103,7 +103,11 @@ extract_coreboot() {
 
 	echo "Extracting coreboot image"
 	if ! sh $_shellball --unpack $_unpacked >/dev/null 2>&1; then
-		sh $_shellball --sb_extract $_unpacked >/dev/null 2>&1
+		if ! sh $_shellball --sb_extract $_unpacked >$_unpacked/sb_extract.log 2>&1; then
+			echo "Failed to extract shellball image"
+			cat $_unpacked/sb_extract.log
+			exit 1
+		fi
 	fi
 
 	if [ -d $_unpacked/models/ ]; then

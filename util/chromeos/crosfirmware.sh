@@ -13,6 +13,7 @@ exit_if_dependencies_are_missing() {
 		["parted"]="parted"
 		["curl"]="curl"
 		["unzip"]="unzip"
+		["7z"]="p7zip"
 	)
 
 	# Check all dependencies at once

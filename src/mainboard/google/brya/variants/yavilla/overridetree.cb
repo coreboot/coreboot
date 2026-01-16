@@ -113,6 +113,12 @@ chip soc/intel/alderlake
 		.configure_ext_fivr = 1,
 	}"
 
+	register "power_limits_config[ADL_N_041_6W_CORE]" = "{
+		.tdp_pl1_override = 7,
+		.tdp_pl2_override = 25,
+		.tdp_pl4 = 78,
+	}"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -202,7 +208,7 @@ chip soc/intel/alderlake
 				register "controls.power_limits" = "{
 					.pl1 = {
 							.min_power = 3000,
-							.max_power = 6000,
+							.max_power = 7000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
 							.granularity = 200

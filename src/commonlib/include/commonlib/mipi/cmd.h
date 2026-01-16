@@ -5,6 +5,7 @@
 
 #include <commonlib/bsd/cb_err.h>
 #include <commonlib/mipi/dsi.h>
+#include <stddef.h>
 #include <stdint.h>
 
 /* Definitions for cmd in panel_command */
@@ -51,5 +52,11 @@ typedef enum cb_err (*mipi_cmd_func_t)(enum mipi_dsi_transaction type, const u8 
 /* Parse a command array and call cmd_func() for each entry. Delays get handled internally. */
 enum cb_err mipi_panel_parse_commands(const void *buf, mipi_cmd_func_t cmd_func,
 				      void *user_data);
+
+/*
+ * Parse a command array and calculate the array length, including the trailing
+ * PANEL_CMD_END. If the array begins with PANEL_CMD_END, 0 will be returned.
+ */
+size_t mipi_panel_get_commands_len(const void *buf);
 
 #endif /* __COMMONLIB_MIPI_CMD_H__ */

@@ -78,3 +78,36 @@ enum cb_err mipi_panel_parse_commands(const void *buf, mipi_cmd_func_t cmd_func,
 
 	return CB_SUCCESS;
 }
+
+size_t mipi_panel_get_commands_len(const void *buf)
+{
+	const void *const buf_start = buf;
+	const struct panel_command *command = buf;
+
+	if (command->cmd == PANEL_CMD_END)
+		return 0;
+
+	for (; command->cmd != PANEL_CMD_END; command = buf) {
+		buf += sizeof(*command);
+
+		switch (command->cmd) {
+		case PANEL_CMD_DELAY:
+			/*
+			 * For PANEL_CMD_DELAY, the command->len should not be
+			 * counted for buf.
+			 */
+			break;
+		case PANEL_CMD_GENERIC:
+		case PANEL_CMD_DCS:
+			buf += command->len;
+			break;
+		default:
+			printk(BIOS_ERR, "%s: Unknown command code: %d.\n",
+			       __func__, command->cmd);
+			return 0;
+		}
+	}
+
+	/* Add 1 byte for PANEL_CMD_END. */
+	return buf - buf_start + 1;
+}

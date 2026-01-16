@@ -5,27 +5,34 @@
 # On some systems, `parted` and `debugfs` are located in /sbin.
 export PATH="$PATH:/sbin"
 
-exit_if_uninstalled() {
-	local cmd_name="$1"
-	local deb_pkg_name="$2"
-
-	if type "$cmd_name" >/dev/null 2>&1; then
-		return
-	fi
-
-	printf '`%s` was not found. ' "$cmd_name" >&2
-	printf 'On Debian-based systems, it can be installed\n' >&2
-	printf 'by running `apt install %s`.\n' "$deb_pkg_name" >&2
-
-	exit 1
-}
-
 exit_if_dependencies_are_missing() {
-	exit_if_uninstalled "uudecode" "sharutils"
-	exit_if_uninstalled "debugfs" "e2fsprogs"
-	exit_if_uninstalled "parted" "parted"
-	exit_if_uninstalled "curl" "curl"
-	exit_if_uninstalled "unzip" "unzip"
+	local missing_deps=()
+	local -A deps_map=(
+		["uudecode"]="sharutils"
+		["debugfs"]="e2fsprogs"
+		["parted"]="parted"
+		["curl"]="curl"
+		["unzip"]="unzip"
+	)
+
+	# Check all dependencies at once
+	for cmd_name in "${!deps_map[@]}"; do
+		if ! type "$cmd_name" >/dev/null 2>&1; then
+			missing_deps+=("$cmd_name:${deps_map[$cmd_name]}")
+		fi
+	done
+
+	# Exit if any dependencies are missing
+	if [ ${#missing_deps[@]} -gt 0 ]; then
+		printf 'The following required commands were not found:\n' >&2
+		for dep_info in "${missing_deps[@]}"; do
+			cmd_name="${dep_info%%:*}"
+			deb_pkg_name="${dep_info##*:}"
+			printf '  - `%s`\n' "$cmd_name" >&2
+			printf '    On Debian-based systems, install with: `apt install %s`\n' "$deb_pkg_name" >&2
+		done
+		exit 1
+	fi
 }
 
 get_inventory() {

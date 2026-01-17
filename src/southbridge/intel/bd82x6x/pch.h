@@ -39,6 +39,9 @@ bool pch_is_mobile(void);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 
 void enable_usb_bar(void);
+/* Optional mainboard hook to do disable additional USB ports
+   based on SKU or user configuration. Set bit to 0 to disable port. */
+uint16_t mb_usb20_port_override(void);
 
 void early_thermal_init(void);
 void southbridge_configure_default_intmap(void);

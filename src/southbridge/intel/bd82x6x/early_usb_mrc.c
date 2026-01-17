@@ -32,6 +32,11 @@ void enable_usb_bar(void)
 	pci_or_config16(usb1, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 }
 
+__weak uint16_t mb_usb20_port_override(void)
+{
+	return 0x3fff;
+}
+
 /*
  * Translate coreboot native USB port configuration in devicetree
  * into a format reference code expects:
@@ -64,6 +69,10 @@ void southbridge_fill_pei_data(struct pei_data *pei_data)
 	const uint16_t currents[] = { 0x40, 0x80, 0x130,
 				      0, 0, 0, /* 3-5 not seen in MRC */
 				      0x40, 0x130, 0x40, 0x80};
+
+	/* Allow mainboard to disable ports based on SKU or user config */
+	u16 mb_usb20_enable = mb_usb20_port_override();
+
 	for (unsigned int port = 0; port < ARRAY_SIZE(config->usb_port_config); port++) {
 		uint16_t current = 0;
 		int ocp = config->usb_port_config[port].oc_pin;
@@ -84,7 +93,8 @@ void southbridge_fill_pei_data(struct pei_data *pei_data)
 			       __func__, port, config->usb_port_config[port].current);
 		}
 
-		pei_data->usb_port_config[port][0] = config->usb_port_config[port].enabled;
+		pei_data->usb_port_config[port][0] = config->usb_port_config[port].enabled &&
+						     (mb_usb20_enable & BIT(port));
 		pei_data->usb_port_config[port][1] = ocp;
 		pei_data->usb_port_config[port][2] = current;
 	}

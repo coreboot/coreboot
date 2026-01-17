@@ -10,6 +10,11 @@
 #include "pch.h"
 #include "chip.h"
 
+__weak uint16_t mb_usb20_port_override(void)
+{
+	return 0x3fff;
+}
+
 void early_usb_init(void)
 {
 	u32 reg32;
@@ -68,7 +73,11 @@ void early_usb_init(void)
 	for (i = 0; i < 14; i++)
 		if (!portmap[i].enabled)
 			reg32 |= (1 << i);
-	RCBA32(USBPDO) = reg32;
+
+	/* Allow mainboard to disable ports based on SKU or user config */
+	reg32 |= ~mb_usb20_port_override();
+
+	RCBA32(USBPDO) = reg32 & 0x3fff;
 	reg32 = 0;
 	for (i = 0; i < 8; i++)
 		if (portmap[i].enabled && portmap[i].oc_pin >= 0)

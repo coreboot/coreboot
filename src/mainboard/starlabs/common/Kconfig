@@ -4,6 +4,9 @@ if VENDOR_STARLABS
 
 menu "Star Labs Settings"
 
+config DRIVERS_EFI_FW_INFO
+	default y
+
 config MB_COMMON_DIR
 	string
 	default "starlabs/common"

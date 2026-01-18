@@ -51,7 +51,7 @@ static void print_guid_record(const struct generic_event_record *rec)
 static void print_string_record(const struct generic_event_record *rec)
 {
 	size_t str_len = rec->header.length - offsetof(struct generic_event_record, string);
-	printk(BIOS_INFO, "%5x\t%16llu\t\t%*s/",
+	printk(BIOS_INFO, "%5x\t%16llu\t\t%.*s/",
 	       rec->progress_id, TIMESTAMP_TO_MICRO(rec->timestamp), (int)str_len, rec->string);
 	fsp_print_guid(BIOS_INFO, rec->guid);
 	printk(BIOS_INFO, "\n");

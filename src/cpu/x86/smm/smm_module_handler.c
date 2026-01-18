@@ -226,6 +226,7 @@ void __weak southbridge_smi_handler(void) {}
 void __weak mainboard_smi_gpi(u32 gpi_sts) {}
 int __weak mainboard_smi_apmc(u8 data) { return 0; }
 void __weak mainboard_smi_sleep(u8 slp_typ) {}
+void __weak mainboard_smi_sleep_finalize(u8 slp_typ) {}
 void __weak mainboard_smi_finalize(void) {}
 
 void __weak smm_soc_early_init(void) {}

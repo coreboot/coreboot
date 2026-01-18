@@ -220,6 +220,9 @@ void smihandler_southbridge_sleep(
 		break;
 	}
 
+	/* Allow mainboard to restore wake sources (e.g. for S5 WOL). */
+	mainboard_smi_sleep_finalize(slp_typ);
+
 	/*
 	 * Write back to the SLP register to cause the originally intended
 	 * event again. We need to set BIT13 (SLP_EN) though to make the

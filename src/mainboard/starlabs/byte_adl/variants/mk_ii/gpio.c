@@ -20,6 +20,7 @@ const struct pad_config gpio_table[] = {
 	/* General Purpose I/O Deep */
 	PAD_CFG_NF(GPD0, NONE, DEEP, NF1),				/* Battery Low */
 	PAD_CFG_NF(GPD1, NONE, DEEP, NF1),				/* Charger Connected */
+	PAD_CFG_NF(GPD2, NATIVE, PWROK, NF1),				/* LAN Wake */
 	PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1),				/* Power Button */
 	PAD_CFG_NF(GPD4, NONE, DEEP, NF1),				/* Sleep S3 */
 	PAD_CFG_NF(GPD5, NONE, DEEP, NF1),				/* Sleep S4 */
@@ -99,7 +100,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_F7, 0, PLTRST),					/* MCRO LDO		[ Disabled / Bypass   ] */
 	PAD_CFG_GPO(GPD7, 0, PLTRST),					/* RTC Clock Delay	[ Disabled / 95ms     ] */
 
-	PAD_NC(GPD2, NONE),
 	PAD_NC(GPD6, NONE),
 	PAD_NC(GPD9, NONE),
 	PAD_NC(GPD11, NONE),

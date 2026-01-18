@@ -156,7 +156,7 @@ chip soc/intel/alderlake
 			}"
 			chip drivers/pcie/generic
 				register "wake_gpe" = "GPE0_LAN_WAK"
-				register "wake_deepest" = "ACPI_S3"
+				register "wake_deepest" = "ACPI_S5"
 				device generic 0 on end
 			end
 			smbios_slot_desc				"SlotTypePciExpressGen4x1"
@@ -174,7 +174,7 @@ chip soc/intel/alderlake
 			}"
 			chip drivers/pcie/generic
 				register "wake_gpe" = "GPE0_LAN_WAK"
-				register "wake_deepest" = "ACPI_S3"
+				register "wake_deepest" = "ACPI_S5"
 				device generic 0 on end
 			end
 			smbios_slot_desc				"SlotTypePciExpressGen3X4"

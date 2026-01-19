@@ -8,6 +8,10 @@ chip soc/intel/pantherlake
 		.tdp_pl4 = 93,
 	}"
 
+	register "icc_max[WCL_SKU_1]" = "{
+		[VR_DOMAIN_GT] = 36 * 4,
+	}"
+
 	# Reduce the size of BasicMemoryTests to speed up the boot time.
 	register "lower_basic_mem_test_size" = "true"
 

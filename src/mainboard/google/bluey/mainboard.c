@@ -171,7 +171,7 @@ static void mainboard_init(struct device *dev)
 	qupv3_se_fw_load_and_init(QUPV3_0_SE0, SE_PROTOCOL_I2C, MIXED); /* Trackpad I2C */
 
 	/* ADSP I2C (Charger/Fuel gauge) */
-	qupv3_se_fw_load_and_init(QUPV3_2_SE4, SE_PROTOCOL_I2C, GSI);
+	qupv3_se_fw_load_and_init(QUPV3_2_SE4, SE_PROTOCOL_I2C, MIXED);
 
 
 	if (CONFIG(MAINBOARD_HAS_PS8820_RETIMER)) {

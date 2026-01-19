@@ -191,7 +191,7 @@ static void test_ux_locales_null_terminated(void **state)
 #define UX_LOCALES_GET_TEXT_TEST(_msg_id, _lang_id, _expect)                               \
 	((struct CMUnitTest) {                                                                 \
 		.name = "test_ux_locales_get_text(msg_id=" #_msg_id ", lang_id=" #_lang_id          \
-			", expect=" #_expect ")",                                              \
+			", expect=" _expect ")",                                              \
 		.test_func = test_ux_locales_get_text,                                         \
 		.setup_func = setup_default,                                                   \
 		.teardown_func = teardown_unmap,                                               \

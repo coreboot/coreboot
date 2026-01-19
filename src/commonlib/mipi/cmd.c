@@ -17,7 +17,7 @@ enum cb_err mipi_panel_parse_commands(const void *buf, mipi_cmd_func_t cmd_func,
 	 * to parse and scan.
 	 */
 
-	for (; command->cmd != PANEL_CMD_END; command = (const void *)buf) {
+	for (; command->cmd != PANEL_CMD_END; command = buf) {
 		/*
 		 * For some commands like DELAY, the command->len should not be
 		 * counted for buf.

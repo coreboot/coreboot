@@ -12,6 +12,7 @@ static struct sm_obj_form performance_group = {
 	.ui_name = "Performance",
 	.obj_list = (const struct sm_object *[]) {
 		&bluetooth_rtd3,
+		&memory_speed,
 		&fan_mode,
 		&power_profile,
 		NULL

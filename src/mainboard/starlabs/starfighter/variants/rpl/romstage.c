@@ -40,16 +40,23 @@ static uint8_t get_memory_config_straps(void)
 	return (uint8_t)gpio_base2_value(spd_id, ARRAY_SIZE(spd_id));
 }
 
-static uint8_t strap_to_cbfs_index(uint8_t strap)
+static uint8_t strap_to_memcfg_index(uint8_t strap)
 {
 	switch (strap) {
-	case 0:	// 32GB
+	case 0: /* 32GB */
 		return 1;
-	case 8:	// 64GB
+	case 8: /* 64GB */
 		return 2;
-	default:// 16GB
+	default: /* 16GB */
 		return 0;
 	}
+}
+
+static uint8_t memcfg_and_speed_to_cbfs_index(uint8_t memcfg, unsigned int speed)
+{
+	if (speed > 2)
+		speed = 2;
+	return (uint8_t)(memcfg * 3 + speed);
 }
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
@@ -118,7 +125,9 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	const struct mem_spd lpddr5_spd_info = {
 		.topo = MEM_TOPO_MEMORY_DOWN,
-		.cbfs_index = strap_to_cbfs_index(get_memory_config_straps()),
+		.cbfs_index = memcfg_and_speed_to_cbfs_index(
+			strap_to_memcfg_index(get_memory_config_straps()),
+			get_uint_option("memory_speed", 1)),
 	};
 
 	memcfg_init(mupd, &mem_config, &lpddr5_spd_info, half_populated);

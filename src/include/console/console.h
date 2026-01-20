@@ -45,7 +45,8 @@ static inline int get_console_loglevel(void)
 	((ENV_BOOTBLOCK && CONFIG(BOOTBLOCK_CONSOLE)) || \
 	 (ENV_POSTCAR && CONFIG(POSTCAR_CONSOLE)) || \
 	 ENV_SEPARATE_VERSTAGE || ENV_SEPARATE_ROMSTAGE || ENV_RAMSTAGE || \
-	 ENV_LIBAGESA || (ENV_SMM && CONFIG(DEBUG_SMI)))
+	 ENV_LIBAGESA || (ENV_SMM && CONFIG(DEBUG_SMI)) || \
+	 ENV_TEST)
 
 #if __CONSOLE_ENABLE__
 int get_log_level(void);

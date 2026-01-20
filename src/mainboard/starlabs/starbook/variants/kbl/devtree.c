@@ -19,8 +19,6 @@ void devtree_update(void)
 
 	struct soc_power_limits_config *soc_conf = &cfg->power_limits_config;
 
-	struct device *wifi_dev = pcidev_on_root(0x1c, 5);
-
 	uint8_t performance_scale = 100;
 
 	/* Set PL4 to 1.0C */
@@ -50,7 +48,7 @@ void devtree_update(void)
 
 	/* Enable/Disable WiFi based on CMOS settings */
 	if (get_uint_option("wifi", 1) == 0)
-		wifi_dev->enabled = 0;
+		DEV_PTR(pcie_rp5)->enabled = 0;
 
 	/* Enable/Disable Bluetooth based on CMOS settings */
 	if (get_uint_option("bluetooth", 1) == 0)

@@ -20,9 +20,6 @@ void devtree_update(void)
 	struct soc_power_limits_config *soc_conf_20core =
 		&cfg->power_limits_config[MTL_P_682_482_CORE];
 
-	struct device *gna_dev = pcidev_on_root(0x08, 0);
-	struct device *vpu_dev = pcidev_on_root(0x0b, 0);
-
 	uint8_t performance_scale = 100;
 
 	/* Set PL4 to 1.0C */
@@ -64,9 +61,9 @@ void devtree_update(void)
 
 	/* Enable/Disable GNA based on CMOS settings */
 	if (get_uint_option("gna", 0) == 0)
-		gna_dev->enabled = 0;
+		DEV_PTR(gna)->enabled = 0;
 
 	/* Enable/Disable VPU based on CMOS settings */
 	if (get_uint_option("vpu", 0) == 0)
-		vpu_dev->enabled = 0;
+		DEV_PTR(vpu)->enabled = 0;
 }

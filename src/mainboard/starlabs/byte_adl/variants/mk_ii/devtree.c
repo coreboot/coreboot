@@ -22,9 +22,6 @@ void devtree_update(void)
 	struct soc_power_limits_config *soc_conf_8core =
 		&cfg->power_limits_config[ADL_N_041_15W_CORE];
 
-	struct device *wifi_dev = pcidev_on_root(0x14, 3);
-	struct device *gna_dev = pcidev_on_root(0x08, 0);
-
 	uint8_t performance_scale = 100;
 
 	/* Set PL4 to 1.0C */
@@ -59,7 +56,7 @@ void devtree_update(void)
 
 	/* Enable/Disable WiFi based on CMOS settings */
 	if (get_uint_option("wifi", 1) == 0)
-		wifi_dev->enabled = 0;
+		DEV_PTR(cnvi_wifi)->enabled = 0;
 
 	/* Enable/Disable Bluetooth based on CMOS settings */
 	if (get_uint_option("bluetooth", 1) == 0)
@@ -67,5 +64,5 @@ void devtree_update(void)
 
 	/* Enable/Disable GNA based on CMOS settings */
 	if (get_uint_option("gna", 0) == 0)
-		gna_dev->enabled = 0;
+		DEV_PTR(gna)->enabled = 0;
 }

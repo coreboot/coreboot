@@ -75,7 +75,7 @@ static const struct sm_object charging_speed = SM_DECLARE_ENUM({
 	.ui_name	= "Charging Speed",
 	.ui_helptext	= "Set the maximum speed to charge the battery. Charging faster"
 		  " will increase heat and battery wear.",
-	.default_value	= SPEED_0_5C,
+	.default_value	= SPEED_1_0C,
 	.values		= (const struct sm_enum_value[]) {
 			{ "1.0C",		SPEED_1_0C	},
 			{ "0.5C",		SPEED_0_5C	},

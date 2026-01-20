@@ -203,6 +203,8 @@ static void mainboard_init(struct device *dev)
 	setup_usb();
 
 	display_startup();
+
+	lpass_init();
 }
 
 static void mainboard_enable(struct device *dev)

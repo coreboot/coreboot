@@ -28,7 +28,7 @@ static const struct sm_object bluetooth_rtd3 = SM_DECLARE_BOOL({
 	.ui_name	= "Bluetooth Runtime-D3",
 	.ui_helptext	= "Enable or disable Bluetooth power optimization.\n"
 			  "Recommended to disable when booting Windows.",
-	.default_value	= true,
+	.default_value	= false,
 });
 
 static const struct sm_object card_reader = SM_DECLARE_BOOL({

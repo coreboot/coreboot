@@ -107,5 +107,6 @@ static struct sm_obj_form *sm_root[] = {
 
 void mb_cfr_setup_menu(struct lb_cfr *cfr_root)
 {
+	starlabs_cfr_register_overrides();
 	cfr_write_setup_menu(cfr_root, sm_root);
 }

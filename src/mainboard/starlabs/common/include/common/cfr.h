@@ -8,6 +8,7 @@
 #include <common/powercap.h>
 
 void cfr_card_reader_update(struct sm_object *new_obj);
+void starlabs_cfr_register_overrides(void);
 
 static const struct sm_object accelerometer = SM_DECLARE_BOOL({
 	.opt_name	= "accelerometer",

@@ -29,11 +29,6 @@
 #if CONFIG(USE_OPTION_TABLE)
 #include <option_table.h>
 #endif
-#if CONFIG(PLATFORM_USES_FSP2_0)
-#include <fsp/util.h>
-#else
-void lb_string_platform_blob_version(struct lb_header *header);
-#endif
 
 __weak enum cb_err fill_lb_pcie(struct lb_pcie *pcie)
 {

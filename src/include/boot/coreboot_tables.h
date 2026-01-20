@@ -24,6 +24,8 @@ void lb_add_console(uint16_t consoletype, void *data);
 
 enum cb_err fill_lb_pcie(struct lb_pcie *pcie);
 
+void lb_string_platform_blob_version(struct lb_header *header);
+
 /* Define this in mainboard.c to add board-specific table entries. */
 void lb_board(struct lb_header *header);
 

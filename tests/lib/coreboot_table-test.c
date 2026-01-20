@@ -176,6 +176,8 @@ const unsigned int coreboot_minor_revision = 13;
 const char coreboot_compile_time[] = "13:58:22";
 const char coreboot_dmi_date[] = "03/31/2021";
 
+const uint8_t platform_blob_version[] = "3.2.1";
+
 const struct bcd_date coreboot_build_date = {
 	.century = 0x20,
 	.year = 0x20,
@@ -226,6 +228,18 @@ enum cb_err fill_lb_serial(struct lb_serial *serial)
 	serial->input_hertz = 115200 * 16;
 
 	return CB_SUCCESS;
+}
+
+void lb_string_platform_blob_version(struct lb_header *header)
+{
+	struct lb_string *rec;
+	size_t len;
+
+	rec = (struct lb_string *)lb_new_record(header);
+	rec->tag = LB_TAG_PLATFORM_BLOB_VERSION;
+	len = sizeof(platform_blob_version);
+	rec->size = ALIGN_UP(sizeof(*rec) + len, 8);
+	memcpy(rec->string, platform_blob_version, len);
 }
 
 struct cbfs_boot_device cbfs_boot_dev = {
@@ -463,6 +477,11 @@ static void test_write_tables(void **state)
 
 			const struct lb_acpi_rsdp *acpi_rsdp = (struct lb_acpi_rsdp *)record;
 			assert_int_equal(ebda_base, acpi_rsdp->rsdp_pointer);
+			break;
+		case LB_TAG_PLATFORM_BLOB_VERSION:
+			uint32_t platform_blob_version_size =
+				ALIGN_UP(sizeof(struct lb_string) + sizeof(platform_blob_version), 8);
+			assert_int_equal(platform_blob_version_size, record->size);
 			break;
 		default:
 			fail_msg("Unexpected tag found in record. Tag ID: 0x%x", record->tag);

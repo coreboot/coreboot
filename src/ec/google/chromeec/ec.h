@@ -546,4 +546,20 @@ void chipset_ioport_range(uint16_t *base, size_t *size);
  */
 int google_chromeec_read_batt_state_of_charge(uint32_t *state);
 
+/*
+ * Set the RGB color of a specific LED on the Lightbar.
+ *
+ * This function communicates with the Embedded Controller (EC)
+ * to update the color of an individual LED.
+ *
+ * @param led: The index of the LED to be updated.
+ * @param red: Red intensity value (0x00 - 0xff).
+ * @param green: Green intensity value (0x00 - 0xff).
+ * @param blue: Blue intensity value (0x00 - 0xff).
+ *
+ * @return 0 on success, or a non-zero error code from the EC host command.
+ */
+int google_chromeec_set_lightbar_rgb(unsigned int led, int red, int green,
+			 int blue);
+
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

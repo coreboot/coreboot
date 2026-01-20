@@ -1945,3 +1945,39 @@ int google_chromeec_read_batt_state_of_charge(uint32_t *state)
 
 	return ret;
 }
+
+/*
+ * Set the RGB color of a specific LED on the Lightbar.
+ *
+ * This function communicates with the Embedded Controller (EC)
+ * to update the color of an individual LED.
+ *
+ * led: The index of the LED to be updated.
+ * red: Red intensity value (0x00 - 0xff).
+ * green: Green intensity value (0x00 - 0xff).
+ * blue: Blue intensity value (0x00 - 0xff).
+ * Return: 0 on success, or a non-zero error code from the EC host command.
+ */
+int google_chromeec_set_lightbar_rgb(unsigned int led, int red, int green,
+			 int blue)
+{
+	const struct ec_params_lightbar req = {
+		.cmd = LIGHTBAR_CMD_SET_RGB,
+		.set_rgb = {
+			.led   = led,
+			.red   = red,
+			.green = green,
+			.blue  = blue
+		}
+	};
+
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_LIGHTBAR_CMD,
+		.cmd_size_out = 0,
+		.cmd_data_out = NULL,
+		.cmd_size_in = sizeof(req),
+		.cmd_data_in = &req,
+	};
+
+	return google_chromeec_command(&cmd);
+}

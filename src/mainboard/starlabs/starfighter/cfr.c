@@ -77,6 +77,7 @@ static struct sm_obj_form devices_group = {
 static struct sm_obj_form security_group = {
 	.ui_name = "Security",
 	.obj_list = (const struct sm_object *[]) {
+		&bios_lock,
 		&intel_tme,
 		NULL
 	},

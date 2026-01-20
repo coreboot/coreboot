@@ -4,6 +4,12 @@ if VENDOR_STARLABS
 
 menu "Star Labs Settings"
 
+config BOOTMEDIA_SMM_BWP
+	default y
+
+config BOOTMEDIA_SMM_BWP_RUNTIME_OPTION
+	default y
+
 config DRIVERS_EFI_FW_INFO
 	default y
 

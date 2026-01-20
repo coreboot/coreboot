@@ -13,6 +13,14 @@
 	#error "FMAP must always start flash address 0"
 #endif
 
+/* This is usually the case. And it can to lead to confusion if one them is updated without the
+ * other. There is however no code that has a hard dependency on this check. So if there comes
+ * a platform at some point, which has a Flashmap which doesn't cover the whole flash, we can
+ * remove the check again. */
+#if FMAP_SECTION_FLASH_SIZE != CONFIG_ROM_SIZE
+	#error "ROM_SIZE must always be equal to FMAP flash size"
+#endif
+
 /* Return the name of the boot region. Falls back to COREBOOT, if not overridden
  * by any multi-slot mechanism (e.g Intel Top Swap, vboot). */
 const char *cbfs_fmap_region_hint(void);

@@ -8,5 +8,6 @@
  * Keeps the build tests from failing since fmap.h needs fmap_config.h
  */
 #define FMAP_SECTION_FLASH_START 0
+#define FMAP_SECTION_FLASH_SIZE 0x1000000
 
 #endif

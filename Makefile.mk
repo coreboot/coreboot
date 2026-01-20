@@ -614,12 +614,7 @@ LDFLAGS_common += -nostdlib
 LDFLAGS_common += --nmagic
 LDFLAGS_common += -static
 LDFLAGS_common += -z noexecstack
-
-# Workaround for RISC-V linker bug, merge back into above line when fixed.
-# https://sourceware.org/bugzilla/show_bug.cgi?id=27180
-ifneq ($(CONFIG_ARCH_RISCV),y)
 LDFLAGS_common += --emit-relocs
-endif
 
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS_common += -Werror

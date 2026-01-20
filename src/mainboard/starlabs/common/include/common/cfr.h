@@ -101,7 +101,7 @@ static const struct sm_object power_profile = SM_DECLARE_ENUM({
 	.opt_name	= "power_profile",
 	.ui_name	= "Power Profile",
 	.ui_helptext	= "Select whether to maximize performance, battery life or both.",
-	.default_value	= 1,
+	.default_value	= CONFIG(EC_STARLABS_FAN) ? PP_PERFORMANCE : PP_BALANCED,
 	.values		= (const struct sm_enum_value[]) {
 			{ "Power Saver",	PP_POWER_SAVER	},
 			{ "Balanced",		PP_BALANCED	},

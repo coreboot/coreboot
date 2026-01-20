@@ -53,7 +53,7 @@ int get_log_level(void);
 void console_init(void);
 int console_log_level(int msg_level);
 
-int printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
+int printk(int msg_level, const char *fmt, ...) __printf(2, 3);
 int vprintk(int msg_level, const char *fmt, va_list args);
 
 void do_putchar(unsigned char byte);
@@ -80,9 +80,7 @@ enum { CONSOLE_LOG_NONE = 0, CONSOLE_LOG_FAST, CONSOLE_LOG_ALL };
 static inline int get_log_level(void) { return -1; }
 static inline void console_init(void) {}
 static inline int console_log_level(int msg_level) { return 0; }
-static inline int
-	__attribute__((format(printf, 2, 3)))
-	printk(int LEVEL, const char *fmt, ...) { return 0; }
+static inline int __printf(2, 3) printk(int LEVEL, const char *fmt, ...) { return 0; }
 static inline int vprintk(int LEVEL, const char *fmt, va_list args) { return 0; }
 static inline void do_putchar(unsigned char byte) {}
 static inline long console_time_get_and_reset(void) { return 0; }

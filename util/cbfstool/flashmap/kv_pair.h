@@ -78,7 +78,7 @@ extern struct kv_pair *kv_pair_fmt(struct kv_pair *kv_list,
 #if defined(_WIN32) || (_WIN64)
 				   __attribute__((format(gnu_printf, 3, 4)));
 #else
-				   __attribute__((format(printf, 3, 4)));
+				   __printf(3, 4);
 #endif
 
 /*

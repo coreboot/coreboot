@@ -292,6 +292,27 @@ static const struct pad_config touchscreen_disable_pads[] = {
 	PAD_NC(GPP_VGPIO3_THC0, NONE),
 };
 
+static const struct pad_config touchscreen_lpss_i2c_enable_pads[] = {
+	/* GPP_E11:     THC0_SPI1_CLK_TCH_PNL1 */
+	PAD_NC(GPP_E11, NONE),
+	/* GPP_E12:     THC0_SPI1_IO_0_I2C4_SCL_TCH_PNL1 NF1: THC I2C0_SCL */
+	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF8),
+	/* GPP_E13:     THC0_SPI1_IO_1_I2C4_SDA_TCH_PNL1 NF1: THC I2C0 SDA */
+	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF8),
+	/* GPP_E14:     THC0_SPI1_IO_2_TCH_PNL1 */
+	PAD_NC(GPP_E14, NONE),
+	/* GPP_E15:     THC0_SPI1_IO_3_TCH_PNL1 */
+	PAD_NC(GPP_E15, NONE),
+	/* GPP_E16:     THC0_SPI1_RST_N_TCH_PNL1 */
+	PAD_CFG_GPO(GPP_E16, 1, DEEP),
+	/* GPP_E17:     THC0_SPI1_CS0_N_TCH_PNL1 */
+	PAD_NC(GPP_E17, NONE),
+	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
+	PAD_CFG_GPI_APIC(GPP_E18, NONE, PLTRST, LEVEL, NONE),
+	/* GPP_VGPIO3_THC0: THC0_WOT */
+	PAD_NC(GPP_VGPIO3_THC0, NONE),
+};
+
 static const struct pad_config touchscreen_thc_i2c_enable_pads[] = {
 	/* GPP_E11:     THC0_SPI1_CLK_TCH_PNL1 */
 	PAD_NC(GPP_E11, NONE),
@@ -572,6 +593,8 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_thc_spi_enable_pads);
 		if (config->thc_wake_on_touch[0])
 			GPIO_PADBASED_OVERRIDE(padbased_table, thc0_enable_wake);
+	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_LPSS_I2C_ELAN_REX))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_lpss_i2c_enable_pads);
 	} else {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_disable_pads);
 	}

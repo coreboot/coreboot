@@ -104,15 +104,22 @@ static struct device_operations pci_domain_ops = {
 	.enable = &mtk_pcie_domain_enable,
 };
 
+static struct device_operations noop_domain_ops = {
+	.read_resources = &noop_read_resources,
+	.set_resources = &noop_set_resources,
+};
+
 static void enable_soc_dev(struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &soc_ops;
 	} else if (dev->path.type == DEVICE_PATH_DOMAIN) {
-		if (mainboard_needs_pcie_init())
+		if (mainboard_needs_pcie_init()) {
 			dev->ops = &pci_domain_ops;
-		else
+		} else {
 			printk(BIOS_DEBUG, "Skip setting PCIe ops\n");
+			dev->ops = &noop_domain_ops;
+		}
 	}
 }
 

@@ -29,6 +29,15 @@ config DRIVERS_EFI_MAIN_FW_VERSION
 	help
 	  32-bit unsigned integer representing current firmware's version.
 
+	  If set to 0, coreboot will try to derive a version from LOCALVERSION by
+	  parsing a leading "<major>.<minor>" and encoding it as
+	  (major << 16) | minor.
+
+	  Non-digits before and after "<major>.<minor>" are ignored.
+	  Examples:
+	  - "26.01" -> 0x001A0001
+	  - "v26.01-rc1" -> 0x001A0001
+
 config DRIVERS_EFI_MAIN_FW_LSV
 	hex "Lowest supported firmware version"
 	range 0x00000000 0xFFFFFFFF
@@ -38,6 +47,8 @@ config DRIVERS_EFI_MAIN_FW_LSV
 	  32-bit unsigned integer representing lowest firmware version number
 	  that is allowed to replace the current one.  Can be used to forbid
 	  bugged versions.
+
+	  If set to 0, coreboot uses DRIVERS_EFI_MAIN_FW_VERSION.
 
 config DRIVERS_EFI_UPDATE_CAPSULES
 	bool "Include EFI update capsules driver"

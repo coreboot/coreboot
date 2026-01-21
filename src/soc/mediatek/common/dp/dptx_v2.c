@@ -41,7 +41,7 @@ static void mtk_edp_pattern(struct mtk_dp *mtk_dp, u8 lane_count, u8 pattern)
 		break;
 	case DPTX_PATTERN_UNKNOWN:
 	default:
-		printk(BIOS_ERR, "Set default or unknown pattern\n");
+		printk(BIOS_ERR, "Set default or unknown pattern %d\n", pattern);
 		mtk_dp_mask(mtk_dp, REG_3400_DP_TRANS_P0, 0x0, PATTERN_EN_DP_TRANS_4P_MASK);
 		return;
 	}

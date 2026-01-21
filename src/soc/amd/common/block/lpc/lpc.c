@@ -123,6 +123,10 @@ static void lpc_read_resources(struct device *dev)
 	/* Add a memory resource for the eSPI MMIO */
 	mmio_range(dev, idx++, SPI_BASE_ADDRESS + ESPI_OFFSET_FROM_BAR, 4 * KiB);
 
+	/* Add a memory resource for the eSPI1 MMIO */
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_HAS_ESPI1))
+		mmio_range(dev, idx++, SPI_BASE_ADDRESS + ESPI1_OFFSET_FROM_BAR, 4 * KiB);
+
 	/* FCH IOAPIC */
 	mmio_range(dev, idx++, IO_APIC_ADDR, 4 * KiB);
 

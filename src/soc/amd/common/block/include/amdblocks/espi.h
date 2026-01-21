@@ -7,6 +7,7 @@
 
 /* eSPI MMIO base lives at an offset of 0x10000 from the address in SPI BAR. */
 #define ESPI_OFFSET_FROM_BAR			0x10000
+#define ESPI1_OFFSET_FROM_BAR			0x20000
 
 #define ESPI_DECODE				0x40
 /* more bits defined in soc/common/amd/blocks/lpc/espi_def.h */

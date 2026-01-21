@@ -412,6 +412,9 @@ static int smbios_write_type0(unsigned long *current, int handle)
 		t->bios_characteristics_ext1 = BIOS_EXT1_CHARACTERISTICS_ACPI;
 
 	t->bios_characteristics_ext2 = BIOS_EXT2_CHARACTERISTICS_TARGET;
+	if (CONFIG(PAYLOAD_EDK2))
+		t->bios_characteristics_ext2 |= BIOS_EXT2_CHARACTERISTICS_UEFI_SUPPORT;
+
 	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;
 	return len;

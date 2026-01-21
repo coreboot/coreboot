@@ -456,8 +456,11 @@ struct cb_panel_poweroff {
 };
 
 enum boot_mode_t {
+	/* Regular boot scenarios */
 	CB_BOOT_MODE_NORMAL,
-	CB_BOOT_MODE_LOW_BATTERY,
+	/* Device is booting in low-batter w/ charger attached */
+	CB_BOOT_MODE_LOW_BATTERY_CHARGING,
+	/* Device is booting in due to charger insertion */
 	CB_BOOT_MODE_OFFMODE_CHARGING,
 };
 

@@ -39,8 +39,9 @@ static enum boot_mode_t set_boot_mode(void)
 	enum boot_mode_t boot_mode_new = LB_BOOT_MODE_NORMAL;
 	if (is_off_mode())
 		boot_mode_new = LB_BOOT_MODE_OFFMODE_CHARGING;
-	else if (google_chromeec_is_below_critical_threshold())
-		boot_mode_new = LB_BOOT_MODE_LOW_BATTERY;
+	else if (google_chromeec_is_below_critical_threshold() &&
+			 google_chromeec_is_charger_present())
+		boot_mode_new = LB_BOOT_MODE_LOW_BATTERY_CHARGING;
 	boot_mode = boot_mode_new;
 	return boot_mode_new;
 }

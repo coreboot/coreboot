@@ -63,13 +63,15 @@ static enum boot_mode_t get_boot_mode(void)
 	return boot_mode;
 }
 
-static bool is_low_power_boot(void)
+static bool is_low_power_boot_with_charger(void)
 {
+	bool ret = false;
 	enum boot_mode_t boot_mode = get_boot_mode();
-	if ((boot_mode == LB_BOOT_MODE_LOW_BATTERY) ||
+	if ((boot_mode == LB_BOOT_MODE_LOW_BATTERY_CHARGING) ||
 	    (boot_mode == LB_BOOT_MODE_OFFMODE_CHARGING))
-		return true;
-	return false;
+		ret = true;
+
+	return ret;
 }
 
 static void enable_usb_camera(void)
@@ -99,7 +101,7 @@ static void setup_usb(void)
 static void setup_usb_late(void *unused)
 {
 	/* Skip USB initialization if boot mode is "low-battery" or "off-mode charging"*/
-	if (is_low_power_boot())
+	if (is_low_power_boot_with_charger())
 		return;
 
 	setup_usb_host0();
@@ -119,15 +121,15 @@ void lb_add_boot_mode(struct lb_header *header)
 	mode->size = sizeof(*mode);
 	mode->boot_mode = get_boot_mode();
 
-	/* Enable charging only during off-mode or low-battery mode and charger present */
-	if (is_low_power_boot() && google_chromeec_is_charger_present())
+	/* Enable charging only during off-mode or low-battery mode with charger present */
+	if (is_low_power_boot_with_charger())
 		enable_slow_battery_charging();
 }
 
 bool mainboard_needs_pcie_init(void)
 {
 	/* Skip PCIe initialization if boot mode is "low-battery" or "off-mode charging"*/
-	if (is_low_power_boot())
+	if (is_low_power_boot_with_charger())
 		return false;
 
 	return true;
@@ -152,7 +154,7 @@ static void mainboard_init(struct device *dev)
 	configure_parallel_charging();
 
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging"*/
-	if (is_low_power_boot())
+	if (is_low_power_boot_with_charger())
 		return;
 
 	gpi_firmware_load(QUP_0_GSI_BASE);

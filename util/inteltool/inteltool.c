@@ -204,6 +204,8 @@ static const struct {
 	  "14th generation (Meteor Lake P family) Core Processor"},
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_5,
 	  "14th generation (Meteor Lake P family) Core Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_ARL_ID_H_1,
+	  "14th generation (Arrow Lake H family) Core Processor"},
 
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ELKHART_LAKE_1,
 	  "Elkhart Lake Processor" },
@@ -465,6 +467,8 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_JSL, "Jasper Lake" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_N, "Alder Lake-N"},
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_RPL_P, "Raptor Lake" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_MTL_P, "Meteor Lake-P"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ARL_H, "Arrow Lake-H"},
 
 	/* Intel GPUs */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_G35_EXPRESS,
@@ -643,6 +647,8 @@ static const struct {
 	  "Intel(R) MeteorLake-P GT2" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_MTL_P_GT2_4,
 	  "Intel(R) MeteorLake-P GT2" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ARL_H_GT2_1,
+	  "Intel(R) ArrowLake-H GT2" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_EHL_GT1_1,
 	  "Intel(R) Elkhart Lake GT1" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_EHL_GT1_2,

@@ -1133,6 +1133,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	case PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_3:
 	case PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_4:
 	case PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_5:
+	case PCI_DEVICE_ID_INTEL_CORE_ARL_ID_H_1:
 	case PCI_DEVICE_ID_INTEL_MTL_0:
 	case PCI_DEVICE_ID_INTEL_MTL_1:
 	case PCI_DEVICE_ID_INTEL_MTL_2:
@@ -1141,6 +1142,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	case PCI_DEVICE_ID_INTEL_MTL_5:
 	case PCI_DEVICE_ID_INTEL_MTL_6:
 	case PCI_DEVICE_ID_INTEL_MTL_7:
+	case PCI_DEVICE_ID_INTEL_ARL_1:
 		print_gpio_groups(sb);
 		return 0;
 	case PCI_DEVICE_ID_INTEL_82371XX:

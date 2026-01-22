@@ -258,6 +258,8 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_MTL_6		0x7e06
 #define PCI_DEVICE_ID_INTEL_MTL_7		0x7e07
 
+#define PCI_DEVICE_ID_INTEL_ARL_1		0x7702
+
 #define PCI_DEVICE_ID_INTEL_82810		0x7120
 #define PCI_DEVICE_ID_INTEL_82810_DC	0x7122
 #define PCI_DEVICE_ID_INTEL_82810E_DC	0x7124
@@ -320,6 +322,9 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_ADL_M		0x5187
 #define PCI_DEVICE_ID_INTEL_RPL_P		0x519d
 #define PCI_DEVICE_ID_INTEL_ADL_N		0x5481
+
+#define PCI_DEVICE_ID_INTEL_MTL_P		0x7e27
+#define PCI_DEVICE_ID_INTEL_ARL_H		0x7727
 
 #define PCI_DEVICE_ID_INTEL_EHL			0x4b00
 #define PCI_DEVICE_ID_INTEL_JSL			0x4d87
@@ -420,6 +425,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_MTL_ID_M	0x7D00 /* Meteorlake M */
 #define PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_1	0x7D01 /* Meteorlake P */
 #define PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_2	0x7D02 /* Meteorlake P */
+#define PCI_DEVICE_ID_INTEL_CORE_ARL_ID_H_1	0x7D06 /* Arrowlake H */
 #define PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_3	0x7d14 /* Meteorlake P */
 #define PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_4	0x7d15 /* Meteorlake P */
 #define PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_5	0x7d16 /* Meteorlake P */
@@ -521,6 +527,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_MTL_P_GT2_2		0x7d50
 #define PCI_DEVICE_ID_INTEL_MTL_P_GT2_3		0x7d55
 #define PCI_DEVICE_ID_INTEL_MTL_P_GT2_4		0x7d60
+#define PCI_DEVICE_ID_INTEL_ARL_H_GT2_1		0x7d51
 #define PCI_DEVICE_ID_INTEL_RPL_H_IRIS_XE	0xa7a0
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)

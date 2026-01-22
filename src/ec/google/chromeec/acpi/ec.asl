@@ -589,7 +589,7 @@ Device (EC0)
 				\_SB.DPTF.TEVT (Local0)
 #endif
 
-				/* Keep reaading sensor ID for event */
+				/* Keep reading sensor ID for event */
 				Local0 = ^PATI
 			}
 

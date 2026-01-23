@@ -421,8 +421,7 @@ static enum cb_err mtk_dsi_cmdq(enum mipi_dsi_transaction type, const u8 *data, 
 		}
 		buffer_to_fifo32_prefix(tx_buf, prefix, prefsz, prefsz + len, &dsi->dsi_cmdq[0],
 					4, 4);
-		write32(&dsi->dsi_cmdq_size, DIV_ROUND_UP(prefsz + len, 4));
-		setbits32(&dsi->dsi_cmdq_size, CMDQ_SIZE_SEL);
+		write32(&dsi->dsi_cmdq_size, DIV_ROUND_UP(prefsz + len, 4) | CMDQ_SIZE_SEL);
 	}
 
 	mtk_dsi_enable_and_start(is_dsi_dual_channel);

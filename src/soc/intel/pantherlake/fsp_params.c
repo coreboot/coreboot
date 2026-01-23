@@ -9,6 +9,7 @@
 #include <fsp/fsp_debug_event.h>
 #include <fsp/fsp_gop_blt.h>
 #include <fsp/ppi/mp_service_ppi.h>
+#include <intelblocks/aspm.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/pmclib.h>
@@ -58,47 +59,6 @@ static const pci_devfn_t gspi_dev[] = {
 	PCI_DEVFN_GSPI1,
 	PCI_DEVFN_GSPI2
 };
-
-/*
- * Chip config parameter PcieRpL1Substates uses (UPD value + 1)
- * because UPD value of 0 for PcieRpL1Substates means disabled for FSP.
- * In order to ensure that mainboard setting does not disable L1 substates
- * incorrectly, chip config parameter values are offset by 1 with 0 meaning
- * use FSP UPD default. get_l1_substate_control() ensures that the right UPD
- * value is set in fsp_params.
- * 0: Use FSP UPD default
- * 1: Disable L1 substates
- * 2: Use L1.1
- * 3: Use L1.2 (FSP UPD default)
- */
-static int get_l1_substate_control(enum L1_substates_control ctl)
-{
-	if (CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE))
-		ctl = L1_SS_DISABLED;
-	else if (ctl > L1_SS_L1_2 || ctl == L1_SS_FSP_DEFAULT)
-		ctl = L1_SS_L1_2;
-	return ctl - 1;
-}
-
-/*
- * Chip config parameter pcie_rp_aspm uses (UPD value + 1) because
- * a UPD value of 0 for pcie_rp_aspm means disabled. In order to ensure
- * that the mainboard setting does not disable ASPM incorrectly, chip
- * config parameter values are offset by 1 with 0 meaning use FSP UPD default.
- * get_aspm_control() ensures that the right UPD value is set in fsp_params.
- * 0: Use FSP UPD default
- * 1: Disable ASPM
- * 2: L0s only
- * 3: L1 only
- * 4: L0s and L1
- * 5: Auto configuration
- */
-static unsigned int get_aspm_control(enum ASPM_control ctl)
-{
-	if (ctl > ASPM_AUTO || ctl == ASPM_DEFAULT)
-		ctl = ASPM_AUTO;
-	return ctl - 1;
-}
 
 __weak void mainboard_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 {
@@ -629,19 +589,16 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 	uint32_t enable_mask = pcie_rp_enable_mask(get_pcie_rp_table());
 
 	for (size_t i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
-		const struct pcie_rp_config *rp_cfg = &config->pcie_rp[i];
 		if (!(enable_mask & BIT(i)))
 			continue;
-		s_cfg->PcieRpL1Substates[i] =
-			get_l1_substate_control(rp_cfg->PcieRpL1Substates);
+		const struct pcie_rp_config *rp_cfg = &config->pcie_rp[i];
 		s_cfg->PcieRpLtrEnable[i] = !!(rp_cfg->flags & PCIE_RP_LTR);
 		s_cfg->PcieRpAdvancedErrorReporting[i] = !!(rp_cfg->flags & PCIE_RP_AER);
 		s_cfg->PcieRpHotPlug[i] =
 			!!(rp_cfg->flags & PCIE_RP_HOTPLUG) || CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 		s_cfg->PcieRpClkReqDetect[i] = !!(rp_cfg->flags & PCIE_RP_CLK_REQ_DETECT);
 		s_cfg->PcieRpDetectTimeoutMs[i] = rp_cfg->pcie_rp_detect_timeout_ms;
-		if (rp_cfg->pcie_rp_aspm)
-			s_cfg->PcieRpAspm[i] = get_aspm_control(rp_cfg->pcie_rp_aspm);
+		configure_pch_rp_power_management(s_cfg, rp_cfg, i);
 	}
 
 	s_cfg->PcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);

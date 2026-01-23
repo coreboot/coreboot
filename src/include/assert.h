@@ -22,7 +22,7 @@
 #define __ASSERT_LINE__ __LINE__
 #endif
 
-#ifndef _PORTING_H_	/* TODO: Isolate AGESA properly. */
+#if !ENV_TEST && !defined(_PORTING_H_)	/* TODO: Isolate AGESA properly. */
 #define __build_time_assert(x) \
 	(__builtin_constant_p(x) ? ((x) ? 1 : dead_code_t(int)) : 0)
 #else
@@ -34,11 +34,13 @@ void mock_assert(const int result, const char *const expression,
 		const char *const file, const int line);
 
 #if ENV_TEST
-#define MOCK_ASSERT(result, expression) \
+#define _ASSERT_MSG(...)
+#define _MOCK_ASSERT(result, expression) \
 	mock_assert((result), (expression), __ASSERT_FILE__, __ASSERT_LINE__)
-#else
-#define MOCK_ASSERT(result, expression)
-#endif
+#else /* ENV_TEST */
+#define _ASSERT_MSG(...) printk(BIOS_EMERG, __VA_ARGS__)
+#define _MOCK_ASSERT(result, expression)
+#endif /* ENV_TEST */
 
 /*
  * assert() should be used to test stuff that the programmer *knows* to be true.
@@ -54,30 +56,30 @@ void mock_assert(const int result, const char *const expression,
  */
 #define ASSERT(x) {							\
 	if (!__build_time_assert(x) && !(x)) {				\
-		printk(BIOS_EMERG,					\
+		_ASSERT_MSG(						\
 			"ASSERTION ERROR: file '%s', line %d\n",	\
 			__ASSERT_FILE__, __ASSERT_LINE__);		\
-		MOCK_ASSERT(!!(x), #x);					\
+		_MOCK_ASSERT(!!(x), #x);					\
 		if (CONFIG(FATAL_ASSERTS))				\
 			hlt();						\
 	}								\
 }
 #define ASSERT_MSG(x, msg) {						\
 	if (!__build_time_assert(x) && !(x)) {				\
-		printk(BIOS_EMERG,					\
+		_ASSERT_MSG(						\
 			"ASSERTION ERROR: file '%s', line %d\n",	\
 			__ASSERT_FILE__, __ASSERT_LINE__);		\
-		printk(BIOS_EMERG, "%s", msg);				\
-		MOCK_ASSERT(!!(x), (msg));				\
+		_ASSERT_MSG("%s", msg);					\
+		_MOCK_ASSERT(!!(x), (msg));					\
 		if (CONFIG(FATAL_ASSERTS))				\
 			hlt();						\
 	}								\
 }
 #define BUG() {								\
-	printk(BIOS_EMERG,						\
+	_ASSERT_MSG(							\
 		"ERROR: BUG ENCOUNTERED at file '%s', line %d\n",	\
 		__ASSERT_FILE__, __ASSERT_LINE__);			\
-	MOCK_ASSERT(0, "BUG ENCOUNTERED");				\
+	_MOCK_ASSERT(0, "BUG ENCOUNTERED");				\
 	if (CONFIG(FATAL_ASSERTS))					\
 		hlt();							\
 }

@@ -639,6 +639,7 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->PcieRpHotPlug[i] =
 			!!(rp_cfg->flags & PCIE_RP_HOTPLUG) || CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 		s_cfg->PcieRpClkReqDetect[i] = !!(rp_cfg->flags & PCIE_RP_CLK_REQ_DETECT);
+		s_cfg->PcieRpDetectTimeoutMs[i] = rp_cfg->pcie_rp_detect_timeout_ms;
 		if (rp_cfg->pcie_rp_aspm)
 			s_cfg->PcieRpAspm[i] = get_aspm_control(rp_cfg->pcie_rp_aspm);
 	}

@@ -128,6 +128,9 @@ config UART_FOR_CONSOLE
 	int
 	default 2
 
+config CBFS_SIZE
+	default 0xe00000
+
 config CONSOLE_SERIAL
 	bool
 	default n

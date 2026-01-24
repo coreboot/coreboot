@@ -36,6 +36,9 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	default "Parrot"
 
+config CBFS_SIZE
+	default 0x600000
+
 config MAINBOARD_SMBIOS_MANUFACTURER
 	string
 	default "GOOGLE"

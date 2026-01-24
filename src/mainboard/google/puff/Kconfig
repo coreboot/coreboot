@@ -120,6 +120,10 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-16MiB.fmd" if BOARD_ROMSIZE_KB_16384 && CHROMEOS
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-32MiB.fmd" if BOARD_ROMSIZE_KB_32768 && CHROMEOS
 
+config CBFS_SIZE
+	default 0xd00000 if BOARD_ROMSIZE_KB_16384
+	default 0x1000000 if BOARD_ROMSIZE_KB_32768
+
 config POWER_OFF_ON_CR50_UPDATE
 	bool
 	default n

@@ -213,6 +213,9 @@ config HAVE_WWAN_POWER_SEQUENCE
 config HAVE_PCIE_WWAN
 	def_bool n
 
+config CBFS_SIZE
+	default 0x1000000
+
 config USE_PM_ACPI_TIMER
 	default n
 

@@ -103,6 +103,9 @@ config FMDFILE
 	  but in some cases more complex setups are required.
 	  When an fmd is specified, it overrides the default format.
 
+config CBFS_SIZE
+	default 0x1000000
+
 config MAX_CPUS
 	int
 	default 4

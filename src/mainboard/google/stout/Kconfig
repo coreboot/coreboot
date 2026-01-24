@@ -38,6 +38,9 @@ config VGA_BIOS_ID
 	string
 	default "8086,0156"
 
+config CBFS_SIZE
+	default 0x600000
+
 config MAINBOARD_SMBIOS_MANUFACTURER
 	string
 	default "GOOGLE"

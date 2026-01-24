@@ -1186,6 +1186,10 @@ config UART_FOR_CONSOLE
 	int
 	default 0
 
+config CBFS_SIZE
+	default 0xc60000 if BOARD_ROMSIZE_KB_16384
+	default 0x1000000 if BOARD_ROMSIZE_KB_32768
+
 config HAVE_WWAN_POWER_SEQUENCE
 	def_bool n
 	help

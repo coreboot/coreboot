@@ -110,4 +110,7 @@ config VBOOT
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/default.fmd" if !CHROMEOS
 
+config CBFS_SIZE
+	default 0x1000000
+
 endif # BOARD_GOOGLE_BASEBOARD_SARIEN

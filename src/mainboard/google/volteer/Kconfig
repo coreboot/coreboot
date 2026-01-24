@@ -245,6 +245,9 @@ config VARIANT_DIR
 	default "volteer2" if BOARD_GOOGLE_VOLTEER2_TI50
 	default "voxel" if BOARD_GOOGLE_VOXEL
 
+config CBFS_SIZE
+	default 0x1000000
+
 config USE_PM_ACPI_TIMER
 	default n
 

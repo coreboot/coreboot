@@ -210,6 +210,9 @@ config UART_FOR_CONSOLE
 	int
 	default 0
 
+config CBFS_SIZE
+	default 0x1000000
+
 config USE_PM_ACPI_TIMER
 	default n
 

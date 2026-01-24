@@ -71,6 +71,9 @@ config OVERRIDE_DEVICETREE
 config INTEL_GMA_VBT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
 
+config CBFS_SIZE
+	default 0x600000
+
 config MAINBOARD_SMBIOS_MANUFACTURER
 	string
 	default "GOOGLE"

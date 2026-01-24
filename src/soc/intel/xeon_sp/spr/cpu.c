@@ -17,8 +17,6 @@
 
 #include "chip.h"
 
-static const void *microcode_patch;
-
 static const config_t *chip_config = NULL;
 
 bool cpu_soc_is_in_untrusted_mode(void)
@@ -219,6 +217,9 @@ static void set_max_turbo_freq(void)
  */
 static void pre_mp_init(void)
 {
+	const void *microcode_patch = intel_microcode_find();
+	intel_microcode_load_unlocked(microcode_patch);
+
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
 }
@@ -254,9 +255,6 @@ void mp_init_cpus(struct bus *bus)
 	 * rest of the CPU devices do not have chip_info updated.
 	 */
 	chip_config = bus->dev->chip_info;
-
-	microcode_patch = intel_microcode_find();
-	intel_microcode_load_unlocked(microcode_patch);
 
 	enum cb_err ret = mp_init_with_smm(bus, &mp_ops);
 	if (ret != CB_SUCCESS)

@@ -25,8 +25,6 @@
 
 #include "chip.h"
 
-static const void *microcode_patch;
-
 static const config_t *chip_config = NULL;
 
 bool cpu_soc_is_in_untrusted_mode(void)
@@ -167,6 +165,9 @@ static void set_max_turbo_freq(void)
  */
 static void pre_mp_init(void)
 {
+	const void *microcode_patch = intel_microcode_find();
+	intel_microcode_load_unlocked(microcode_patch);
+
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
 }
@@ -195,13 +196,6 @@ static const struct mp_ops mp_ops = {
 
 void mp_init_cpus(struct bus *bus)
 {
-	microcode_patch = intel_microcode_find();
-
-	if (!microcode_patch)
-		printk(BIOS_ERR, "microcode not found in CBFS!\n");
-
-	intel_microcode_load_unlocked(microcode_patch);
-
 	/* TODO: Handle mp_init_with_smm failure? */
 	mp_init_with_smm(bus, &mp_ops);
 

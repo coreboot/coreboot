@@ -246,6 +246,9 @@ static void pre_mp_init(void)
 {
 	printk(BIOS_DEBUG, "%s: entry\n", __func__);
 
+	const void *microcode_patch = intel_microcode_find();
+	intel_microcode_load_unlocked(microcode_patch);
+
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
 }
@@ -278,13 +281,6 @@ static const struct mp_ops mp_ops = {
 void mp_init_cpus(struct bus *bus)
 {
 	FUNC_ENTER();
-
-	const void *microcode_patch = intel_microcode_find();
-
-	if (!microcode_patch)
-		printk(BIOS_ERR, "microcode not found in CBFS!\n");
-
-	intel_microcode_load_unlocked(microcode_patch);
 
 	/*
 	 * This gets used in cpu device callback. Other than cpu 0,

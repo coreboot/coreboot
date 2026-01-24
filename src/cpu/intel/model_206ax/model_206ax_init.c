@@ -486,6 +486,9 @@ static void model_206ax_init(struct device *cpu)
 /* MP initialization support. */
 static void pre_mp_init(void)
 {
+	const void *microcode_patch = intel_microcode_find();
+	intel_microcode_load_unlocked(microcode_patch);
+
 	/* Setup MTRRs based on physical address size. */
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();

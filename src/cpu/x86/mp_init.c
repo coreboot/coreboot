@@ -77,6 +77,7 @@ struct mp_params {
 	int num_cpus; /* Total cpus include BSP */
 	int parallel_microcode_load;
 	const void *microcode_pointer;
+	size_t microcode_size;
 	/* Flight plan  for APs and BSP. */
 	struct mp_flight_record *flight_plan;
 	int num_records;
@@ -1145,9 +1146,11 @@ static enum cb_err do_mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops 
 		printk(BIOS_INFO, "Will perform SMM setup.\n");
 
 	mp_params.num_cpus = mp_state.cpu_count;
+
 	/* Gather microcode information. */
 	if (mp_state.ops.get_microcode_info != NULL)
 		mp_state.ops.get_microcode_info(&mp_params.microcode_pointer,
+			&mp_params.microcode_size,
 			&mp_params.parallel_microcode_load);
 	mp_params.flight_plan = &mp_steps[0];
 	mp_params.num_records = ARRAY_SIZE(mp_steps);

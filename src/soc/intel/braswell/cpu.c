@@ -146,11 +146,15 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 	*smm_save_state_size = sizeof(em64t100_smm_state_save_area_t);
 }
 
-static void get_microcode_info(const void **microcode, int *parallel)
+static void get_microcode_info(const void **microcode, size_t *size, int *parallel)
 {
 	const struct pattrs *pattrs = pattrs_get();
+	const struct microcode *microcode_file = pattrs->microcode_patch;
 
-	*microcode = pattrs->microcode_patch;
+	if (microcode_file != NULL)
+		*size = get_microcode_size(microcode_file);
+
+	*microcode = microcode_file;
 	*parallel = !intel_ht_supported();
 }
 

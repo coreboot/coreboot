@@ -137,9 +137,13 @@ int get_cpu_count(void)
  * sets the argument *parallel to 1, which allows microcode loading in all
  * APs to occur in parallel during MP Init.
  */
-void get_microcode_info(const void **microcode, int *parallel)
+void get_microcode_info(const void **microcode, size_t *size, int *parallel)
 {
-	*microcode = intel_microcode_find();
+	const struct microcode *microcode_file = intel_microcode_find();
+	if (microcode_file != NULL)
+		*size = get_microcode_size(microcode_file);
+
+	*microcode = microcode_file;
 	*parallel = 1;
 }
 

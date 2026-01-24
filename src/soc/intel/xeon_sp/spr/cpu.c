@@ -56,9 +56,13 @@ static void xeon_configure_mca(void)
  * the BSP. Loading MCU on AP in parallel seems to fail in 10% of the cases
  * so do it serialized.
  */
-void get_microcode_info(const void **microcode, int *parallel)
+void get_microcode_info(const void **microcode, size_t *size, int *parallel)
 {
-	*microcode = intel_microcode_find();
+	const struct microcode *microcode_file = intel_microcode_find();
+	if (microcode_file != NULL)
+		*size = get_microcode_size(microcode_file);
+
+	*microcode = microcode_file;
 	*parallel = 0;
 }
 

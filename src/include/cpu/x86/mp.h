@@ -47,7 +47,7 @@ struct mp_ops {
 	 * Optionally fill in pointer to microcode and indicate if the APs
 	 * can load the microcode in parallel.
 	 */
-	void (*get_microcode_info)(const void **microcode, int *parallel);
+	void (*get_microcode_info)(const void **microcode, size_t *size, int *parallel);
 	/*
 	 * Optionally provide a callback prior to the APs starting SMM
 	 * relocation or CPU driver initialization. However, note that

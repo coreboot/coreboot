@@ -502,8 +502,6 @@ static void cpu_core_init(struct device *cpu)
 }
 
 /* MP initialization support. */
-static const void *microcode_patch;
-
 static void pre_mp_init(void)
 {
 	/* Setup MTRRs based on physical address size. */
@@ -534,10 +532,13 @@ static int get_cpu_count(void)
 	return num_threads;
 }
 
-static void get_microcode_info(const void **microcode, int *parallel)
+static void get_microcode_info(const void **microcode, size_t *size, int *parallel)
 {
-	microcode_patch = intel_microcode_find();
-	*microcode = microcode_patch;
+	const struct microcode *microcode_file = intel_microcode_find();
+	if (microcode_file != NULL)
+		*size = get_microcode_size(microcode_file);
+
+	*microcode = microcode_file;
 	*parallel = 1;
 }
 
@@ -547,6 +548,7 @@ static void per_cpu_smm_trigger(void)
 	smm_relocate();
 
 	/* After SMM relocation a 2nd microcode load is required. */
+	const void *microcode_patch = intel_microcode_find();
 	intel_microcode_load_unlocked(microcode_patch);
 }
 

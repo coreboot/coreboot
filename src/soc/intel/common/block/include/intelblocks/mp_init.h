@@ -21,7 +21,7 @@ int get_cpu_count(void);
  * sets the argument *parallel to 1, which allows microcode loading in all
  * APs to occur in parallel during MP Init.
  */
-void get_microcode_info(const void **microcode, int *parallel);
+void get_microcode_info(const void **microcode, size_t *size, int *parallel);
 
 /*
  * Perform BSP and AP initialization

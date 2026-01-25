@@ -105,6 +105,10 @@ config IFD_CHIPSET
 	string
 	default "jsl"
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/intel/jasperlake/chipset.cb"
+
 config IED_REGION_SIZE
 	hex
 	default 0x400000

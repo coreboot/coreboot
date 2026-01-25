@@ -18,7 +18,7 @@ static void ext_vr_update(void)
 
 static void update_lte_device_drawcia(void)
 {
-	struct device *lte_usb2 = DEV_PTR(lte_usb2);
+	struct device *lte_usb2 = DEV_PTR(usb2_port4);
 	struct drivers_usb_acpi_config *config;
 	struct acpi_gpio lte_reset_gpio = ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0);
 

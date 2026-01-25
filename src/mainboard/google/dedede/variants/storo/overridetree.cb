@@ -100,7 +100,7 @@ chip soc/intel/jasperlake
 	register "xhci_lfps_sampling_offtime_ms" = "0"
 
 	device domain 0 on
-		device pci 04.0 on
+		device ref dptf on
 			chip drivers/intel/dptf
 				## Passive Policy
 				register "policies.passive" = "{
@@ -135,8 +135,8 @@ chip soc/intel/jasperlake
 				}"
 				device generic 0 on end
 			end
-		end # SA Thermal device
-		device pci 05.0 on # IPU - MIPI Camera
+		end
+		device ref ipu on
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"
 				register "acpi_name" = ""IPU0""
@@ -150,9 +150,9 @@ chip soc/intel/jasperlake
 				device generic 0 on end
 			end
 		end
-		device pci 14.0 on
+		device ref south_xhci on
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""User Facing Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
@@ -179,8 +179,8 @@ chip soc/intel/jasperlake
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 15.0 on
+		end
+		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -189,8 +189,8 @@ chip soc/intel/jasperlake
 				register "detect" = "1"
 				device i2c 15 on end
 			end
-		end #I2C 0
-		device pci 15.2 on
+		end
+		device ref i2c2 on
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
 				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_C12)"
@@ -216,8 +216,8 @@ chip soc/intel/jasperlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on end
 			end
-		end # I2C 2
-		device pci 15.3 on
+		end
+		device ref i2c3 on
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = ""OVTI8856""
 				register "acpi_uid" = "0"
@@ -290,8 +290,8 @@ chip soc/intel/jasperlake
 
 				device i2c 50 on end
 			end
-		end # I2C 3
-		device pci 19.0 on
+		end
+		device ref i2c4 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -319,14 +319,14 @@ chip soc/intel/jasperlake
 					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682I_VS
 				end
 			end
-		end # I2C 4
-		device pci 1f.3 on
+		end
+		device ref hda on
 			chip drivers/generic/alc1015
 				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
 				device generic 0 on end
 			end
-		end # Intel HDA
-		device pci 19.1 on
+		end
+		device ref i2c5 on
 			chip drivers/i2c/sx9324
 				register "desc" = ""SAR Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E11_IRQ)"
@@ -379,7 +379,6 @@ chip soc/intel/jasperlake
 				register "reg_irq_cfg2" = "0x01"
 				device i2c 28 on end
 			end
-		end # I2C 5
-		device pci 1c.7 off end # PCI Express Root Port 8
+		end
 	end
 end

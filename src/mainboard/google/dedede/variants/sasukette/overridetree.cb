@@ -96,7 +96,7 @@ chip soc/intel/jasperlake
 	register "xhci_lfps_sampling_offtime_ms" = "0"
 
 	device domain 0 on
-		device pci 04.0 on
+		device ref dptf on
 			chip drivers/intel/dptf
 				## Passive Policy
 				register "policies.passive" = "{
@@ -131,8 +131,8 @@ chip soc/intel/jasperlake
 				}"
 				device generic 0 on end
 			end
-		end # SA Thermal device
-		device pci 14.0 on
+		end
+		device ref south_xhci on
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
@@ -141,7 +141,7 @@ chip soc/intel/jasperlake
 						register "has_power_resource" = "true"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D15)"
 						register "enable_delay_ms" = "20"
-						device usb 2.5 on end
+						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""LTE""
@@ -151,12 +151,12 @@ chip soc/intel/jasperlake
 						register "reset_off_delay_ms" = "20"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
 						register "enable_delay_ms" = "20"
-						device usb 3.3 on end
+						device ref usb3_port4 on end
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 15.0 on
+		end
+		device ref i2c0 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""SYNA0A00""
 				register "generic.desc" = ""SYNA Touchpad""
@@ -201,8 +201,8 @@ chip soc/intel/jasperlake
 				register "detect" = "1"
 				device i2c 15 on end
 			end
-		end #I2C 0
-		device pci 19.0 on
+		end
+		device ref i2c4 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -230,13 +230,12 @@ chip soc/intel/jasperlake
 					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682I_VS
 				end
 			end
-		end #I2C 4
-		device pci 1c.7 off end # PCI Express Root Port 8
-		device pci 1f.3 on
+		end
+		device ref hda on
 			chip drivers/generic/alc1015
 				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
 				device generic 0 on end
 			end
-		end # Intel HDA
+		end
 	end
 end

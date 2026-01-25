@@ -82,7 +82,7 @@ chip soc/intel/jasperlake
 	register "FastPkgCRampDisable" = "1"
 
 	device domain 0 on
-		device pci 05.0 on # IPU - MIPI Camera
+		device ref ipu on
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"
 				register "acpi_name" = ""IPU0""
@@ -97,7 +97,7 @@ chip soc/intel/jasperlake
 			end
 		end
 
-		device pci 04.0 on
+		device ref dptf on
 			chip drivers/intel/dptf
 				# Default DPTF Policy for all drawcia boards if not overridden
 				register "options.tsr[0].desc" = ""Memory""
@@ -150,10 +150,10 @@ chip soc/intel/jasperlake
 
 				device generic 0 on end
 			end
-		end # SA Thermal device
-		device pci 14.0 on
+		end
+		device ref south_xhci on
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""LTE""
 						register "type" = "UPC_TYPE_INTERNAL"
@@ -163,7 +163,7 @@ chip soc/intel/jasperlake
 						register "reset_off_delay_ms" = "20"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
 						register "enable_delay_ms" = "20"
-						device usb 2.3 on
+						device ref usb2_port4 on
 							probe DB_PORTS DB_PORTS_1A_HDMI_LTE
 						end
 					end
@@ -171,7 +171,7 @@ chip soc/intel/jasperlake
 						register "desc" = ""Right Type-A Port""
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
-						device usb 2.3 on
+						device ref usb2_port4 on
 							probe DB_PORTS DB_PORTS_1A_HDMI
 							probe DB_PORTS DB_PORTS_1C_1A
 						end
@@ -179,13 +179,13 @@ chip soc/intel/jasperlake
 					chip drivers/usb/acpi
 						register "desc" = ""Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device usb 2.5 on end
+						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""LTE""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
-						device usb 3.3 on
+						device ref usb3_port4 on
 							probe DB_PORTS DB_PORTS_1A_HDMI_LTE
 						end
 					end
@@ -193,15 +193,15 @@ chip soc/intel/jasperlake
 						register "desc" = ""Right Type-A Port""
 						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
-						device usb 3.3 on
+						device ref usb3_port4 on
 							probe DB_PORTS DB_PORTS_1A_HDMI
 							probe DB_PORTS DB_PORTS_1C_1A
 						end
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 15.0 on
+		end
+		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -220,8 +220,8 @@ chip soc/intel/jasperlake
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 0x2c on end
 			end
-		end #I2C 0
-		device pci 15.2 on
+		end
+		device ref i2c2 on
                         chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
 				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_C12)"
@@ -296,8 +296,8 @@ chip soc/intel/jasperlake
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 2c alias wdht0002 on end
 			end
-		end # I2C 2
-		device pci 15.3 on
+		end
+		device ref i2c3 on
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = ""OVTI8856""
 				register "acpi_uid" = "0"
@@ -395,8 +395,8 @@ chip soc/intel/jasperlake
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 				device i2c 50 on end
 			end
-		end # I2C 3
-		device pci 19.0 on
+		end
+		device ref i2c4 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -426,19 +426,19 @@ chip soc/intel/jasperlake
 					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682I_VS
 				end
 			end
-		end #I2C 4
-		device pci 1c.7 on
+		end
+		device ref pcie_rp8 on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW2_03"
 				device pci 00.0 on end
 			end
 		end
-		device pci 1f.3 on
+		device ref hda on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98360A""
 				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
 				device generic 0 on end
 			end
-		end # Intel HDA
+		end
 	end
 end

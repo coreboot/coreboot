@@ -84,7 +84,7 @@ chip soc/intel/jasperlake
 	register "SdCardPowerEnableActiveHigh" = "0"
 
 	device domain 0 on
-		device pci 04.0 on
+		device ref dptf on
 			chip drivers/intel/dptf
 				## sensor information
 				register "options.tsr[0].desc" = ""Ambient""
@@ -134,48 +134,30 @@ chip soc/intel/jasperlake
 				}"
 				device generic 0 on end
 			end
-		end # SA Thermal device
-		device pci 14.0 on
+		end
+		device ref south_xhci on
 			chip drivers/usb/acpi
-				device usb 0.0 on
-					chip drivers/usb/acpi
-						device usb 2.1 off end
-					end
-					chip drivers/usb/acpi
-						device usb 2.3 off end
-					end
-					chip drivers/usb/acpi
-						device usb 2.4 off end
-					end
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""User Facing Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "has_power_resource" = "true"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D15)"
 						register "enable_delay_ms" = "20"
-						device usb 2.5 on end
-					end
-					chip drivers/usb/acpi
-						device usb 2.6 off end
-					end
-					chip drivers/usb/acpi
-						device usb 3.1 off end
-					end
-					chip drivers/usb/acpi
-						device usb 3.3 off end
+						device ref usb2_port6 on end
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 14.3 on
+		end
+		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
 				register "enable_cnvi_ddr_rfim" = "true"
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
-		end # CNVi wifi
-		device pci 15.0 on
+		end
+		device ref i2c0 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""PNP0C50""
 				register "generic.desc" = ""PIXART Touchpad""
@@ -185,8 +167,8 @@ chip soc/intel/jasperlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 15 on end
 			end
-		end # I2C 0
-		device pci 15.2 on
+		end
+		device ref i2c2 on
 			probe TOUCHSCREEN TOUCHSCREEN_PRESENT
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
@@ -206,8 +188,8 @@ chip soc/intel/jasperlake
 				register "has_power_resource" = "true"
 				device i2c 10 on end
 			end
-		end # I2C 2
-		device pci 19.0 on
+		end
+		device ref i2c4 on
 			chip drivers/i2c/rt5645
 				register "hid" = ""10EC5650""
 				register "name" = ""RT58""
@@ -217,20 +199,20 @@ chip soc/intel/jasperlake
 				register "jd_mode" = "2"
 				device i2c 1a on end
 			end
-		end # I2C 4
-		device pci 1c.7 on
+		end
+		device ref pcie_rp8 on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW2_03"
 				device pci 00.0 on end
 			end
-		end # PCI Express Root Port 8 - WLAN
-		device pci 1f.3 on
+		end
+		device ref hda on
 			chip drivers/sof
 				register "spkr_tplg" = "rt5650_sp"
 				register "jack_tplg" = "rt5650_hp"
 				register "mic_tplg" = "_2ch_pdm0"
 				device generic 0 on end
 			end
-		end # Intel HDA/cAVS
+		end
 	end
 end

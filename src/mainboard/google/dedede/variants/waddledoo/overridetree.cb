@@ -57,7 +57,7 @@ chip soc/intel/jasperlake
 	register "SerialIoI2cMode[PchSerialIoIndexI2C4]" = "PchSerialIoPci"
 
 	device domain 0 on
-		device pci 05.0 on # IPU - MIPI Camera
+		device ref ipu on
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"
 				register "acpi_name" = ""IPU0""
@@ -72,9 +72,9 @@ chip soc/intel/jasperlake
 				device generic 0 on end
 			end
 		end
-		device pci 14.0 on
+		device ref south_xhci on
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""Discrete Bluetooth""
 						register "type" = "UPC_TYPE_INTERNAL"
@@ -94,8 +94,8 @@ chip soc/intel/jasperlake
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 15.0 on
+		end
+		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -104,8 +104,8 @@ chip soc/intel/jasperlake
 				register "detect" = "1"
 				device i2c 15 on end
 			end
-		end #I2C 0
-		device pci 15.2 on
+		end
+		device ref i2c2 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""SIS6496""
 				register "generic.desc" = ""SIS Touchscreen""
@@ -143,8 +143,8 @@ chip soc/intel/jasperlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on end
 			end
-		end # I2C 2
-		device pci 15.3 on #I2C #3 CAM0 CAM1 and VCM0
+		end
+		device ref i2c3 on
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = ""OVTI8856""
 				register "acpi_uid" = "0"
@@ -259,13 +259,13 @@ chip soc/intel/jasperlake
 				device i2c 36 on end
 			end
 		end
-		device pci 1c.7 on
+		device ref pcie_rp8 on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW2_03"
 				device pci 00.0 on  end
 			end
-		end # PCI Express Root Port 8 - WLAN
-		device pci 19.0 on
+		end
+		device ref i2c4 on
 			chip drivers/i2c/da7219
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
 				register "btn_cfg" = "50"
@@ -283,13 +283,13 @@ chip soc/intel/jasperlake
 				register "mic_amp_in_sel" = ""diff""
 				device i2c 1a on end
 			end
-		end #I2C 4
-		device pci 1f.3 on
+		end
+		device ref hda on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98360A""
 				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
 				device generic 0 on end
 			end
-		end # Intel HDA
+		end
 	end
 end

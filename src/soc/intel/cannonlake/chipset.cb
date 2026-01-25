@@ -97,22 +97,22 @@ chip soc/intel/cannonlake
 		device pci 19.1 alias i2c5         off	end	# I2C #5
 		device pci 19.2 alias uart2        off	end	# UART #2
 		device pci 1a.0 alias emmc         off	end	# eMMC
-		device pci 1c.0 alias pcie_rp1     off	end	# PCI Express Port 1
-		device pci 1c.1 alias pcie_rp2     off	end	# PCI Express Port 2
-		device pci 1c.2 alias pcie_rp3     off	end	# PCI Express Port 3
-		device pci 1c.3 alias pcie_rp4     off	end	# PCI Express Port 4
-		device pci 1c.4 alias pcie_rp5     off	end	# PCI Express Port 5
-		device pci 1c.5 alias pcie_rp6     off	end	# PCI Express Port 6
-		device pci 1c.6 alias pcie_rp7     off	end	# PCI Express Port 7
-		device pci 1c.7 alias pcie_rp8     off	end	# PCI Express Port 8
-		device pci 1d.0 alias pcie_rp9     off	end	# PCI Express Port 9
-		device pci 1d.1 alias pcie_rp10    off	end	# PCI Express Port 10
-		device pci 1d.2 alias pcie_rp11    off	end	# PCI Express Port 11
-		device pci 1d.3 alias pcie_rp12    off	end	# PCI Express Port 12
-		device pci 1d.4 alias pcie_rp13    off	end	# PCI Express Port 13
-		device pci 1d.5 alias pcie_rp14    off	end	# PCI Express Port 14
-		device pci 1d.6 alias pcie_rp15    off	end	# PCI Express Port 15
-		device pci 1d.7 alias pcie_rp16    off	end	# PCI Express Port 16
+		device pci 1c.0 alias pcie_rp1     off ops pcie_rp_ops	end	# PCI Express Port 1
+		device pci 1c.1 alias pcie_rp2     off ops pcie_rp_ops	end	# PCI Express Port 2
+		device pci 1c.2 alias pcie_rp3     off ops pcie_rp_ops	end	# PCI Express Port 3
+		device pci 1c.3 alias pcie_rp4     off ops pcie_rp_ops	end	# PCI Express Port 4
+		device pci 1c.4 alias pcie_rp5     off ops pcie_rp_ops	end	# PCI Express Port 5
+		device pci 1c.5 alias pcie_rp6     off ops pcie_rp_ops	end	# PCI Express Port 6
+		device pci 1c.6 alias pcie_rp7     off ops pcie_rp_ops	end	# PCI Express Port 7
+		device pci 1c.7 alias pcie_rp8     off ops pcie_rp_ops	end	# PCI Express Port 8
+		device pci 1d.0 alias pcie_rp9     off ops pcie_rp_ops	end	# PCI Express Port 9
+		device pci 1d.1 alias pcie_rp10    off ops pcie_rp_ops	end	# PCI Express Port 10
+		device pci 1d.2 alias pcie_rp11    off ops pcie_rp_ops	end	# PCI Express Port 11
+		device pci 1d.3 alias pcie_rp12    off ops pcie_rp_ops	end	# PCI Express Port 12
+		device pci 1d.4 alias pcie_rp13    off ops pcie_rp_ops	end	# PCI Express Port 13
+		device pci 1d.5 alias pcie_rp14    off ops pcie_rp_ops	end	# PCI Express Port 14
+		device pci 1d.6 alias pcie_rp15    off ops pcie_rp_ops	end	# PCI Express Port 15
+		device pci 1d.7 alias pcie_rp16    off ops pcie_rp_ops	end	# PCI Express Port 16
 		device pci 1e.0 alias uart0        off	end	# UART #0
 		device pci 1e.1 alias uart1        off	end	# UART #1
 		device pci 1e.2 alias gspi0        off	end	# GSPI #0

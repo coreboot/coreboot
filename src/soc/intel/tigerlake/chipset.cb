@@ -129,18 +129,18 @@ chip soc/intel/tigerlake
 		device pci 19.0 alias i2c4 off end
 		device pci 19.1 alias i2c5 off end
 		device pci 19.2 alias uart2 off end
-		device pci 1c.0 alias pcie_rp1 off end
-		device pci 1c.1 alias pcie_rp2 off end
-		device pci 1c.2 alias pcie_rp3 off end
-		device pci 1c.3 alias pcie_rp4 off end
-		device pci 1c.4 alias pcie_rp5 off end
-		device pci 1c.5 alias pcie_rp6 off end
-		device pci 1c.6 alias pcie_rp7 off end
-		device pci 1c.7 alias pcie_rp8 off end
-		device pci 1d.0 alias pcie_rp9 off end
-		device pci 1d.1 alias pcie_rp10 off end
-		device pci 1d.2 alias pcie_rp11 off end
-		device pci 1d.3 alias pcie_rp12 off end
+		device pci 1c.0 alias pcie_rp1 off ops pcie_rp_ops end
+		device pci 1c.1 alias pcie_rp2 off ops pcie_rp_ops end
+		device pci 1c.2 alias pcie_rp3 off ops pcie_rp_ops end
+		device pci 1c.3 alias pcie_rp4 off ops pcie_rp_ops end
+		device pci 1c.4 alias pcie_rp5 off ops pcie_rp_ops end
+		device pci 1c.5 alias pcie_rp6 off ops pcie_rp_ops end
+		device pci 1c.6 alias pcie_rp7 off ops pcie_rp_ops end
+		device pci 1c.7 alias pcie_rp8 off ops pcie_rp_ops end
+		device pci 1d.0 alias pcie_rp9 off ops pcie_rp_ops end
+		device pci 1d.1 alias pcie_rp10 off ops pcie_rp_ops end
+		device pci 1d.2 alias pcie_rp11 off ops pcie_rp_ops end
+		device pci 1d.3 alias pcie_rp12 off ops pcie_rp_ops end
 		device pci 1e.0 alias uart0 off end
 		device pci 1e.1 alias uart1 off end
 		device pci 1e.2 alias gspi0 off end

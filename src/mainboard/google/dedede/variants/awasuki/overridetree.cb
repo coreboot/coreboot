@@ -53,14 +53,9 @@ chip soc/intel/jasperlake
 	}"
 
 	# SerialIO device mode selection
-	register "SerialIoI2cMode" = "{
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
-	}"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C2]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C4]" = "PchSerialIoPci"
 
 	# Power limit config
 	register "power_limits_config[JSL_N4500_6W_CORE]" = "{
@@ -191,7 +186,6 @@ chip soc/intel/jasperlake
 				device i2c 15 on end
 			end
 		end # I2C 0
-		device pci 15.1 off end # I2C 1
 		device pci 15.2 on
 			probe TOUCHSCREEN TOUCHSCREEN_PRESENT
 			chip drivers/i2c/generic
@@ -213,7 +207,6 @@ chip soc/intel/jasperlake
 				device i2c 10 on end
 			end
 		end # I2C 2
-		device pci 15.3 off end # I2C 3
 		device pci 19.0 on
 			chip drivers/i2c/rt5645
 				register "hid" = ""10EC5650""

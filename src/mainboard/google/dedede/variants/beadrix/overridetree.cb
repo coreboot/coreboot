@@ -54,14 +54,10 @@ chip soc/intel/jasperlake
 		},
 	}"
 
-	register "SerialIoI2cMode" = "{
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
-	}"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C2]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C4]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C5]" = "PchSerialIoPci"
 
 	device domain 0 on
 		device pci 04.0 on

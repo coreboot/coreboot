@@ -77,6 +77,13 @@ chip soc/intel/jasperlake
 			.fall_time_ns = 8,
 		},
 	}"
+
+	register "SerialIoI2cMode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C2]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C3]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C4]" = "PchSerialIoPci"
+
 	device domain 0 on
 		device pci 04.0 on
 			chip drivers/intel/dptf

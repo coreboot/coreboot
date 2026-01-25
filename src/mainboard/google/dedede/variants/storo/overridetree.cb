@@ -73,14 +73,11 @@ chip soc/intel/jasperlake
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
 	}" # WWAN
 
-	register "SerialIoI2cMode" = "{
-		[PchSerialIoIndexI2C0] = PchSerialIoPci,
-		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C2] = PchSerialIoPci,
-		[PchSerialIoIndexI2C3] = PchSerialIoPci,
-		[PchSerialIoIndexI2C4] = PchSerialIoPci,
-		[PchSerialIoIndexI2C5] = PchSerialIoPci,
-	}"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C2]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C3]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C4]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C5]" = "PchSerialIoPci"
 
 	# Power limit config
 	register "power_limits_config[JSL_N4500_6W_CORE]" = "{

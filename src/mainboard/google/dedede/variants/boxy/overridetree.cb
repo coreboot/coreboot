@@ -33,6 +33,8 @@ chip soc/intel/jasperlake
 		},
 	}"
 
+	register "SerialIoI2cMode[PchSerialIoIndexI2C4]" = "PchSerialIoPci"
+
 	# Power limit config
 	register "power_limits_config[JSL_N4500_6W_CORE]" = "{
 		.tdp_pl1_override = 6,
@@ -192,10 +194,6 @@ chip soc/intel/jasperlake
 				end
 			end
 		end # USB xHCI
-		device pci 15.0 off end # I2C 0
-		device pci 15.1 off end # I2C 1
-		device pci 15.2 off end # I2C 2
-		device pci 15.3 off end # I2C 3
 		device pci 19.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

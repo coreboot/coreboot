@@ -41,6 +41,12 @@ chip soc/intel/jasperlake
 		},
 	}"
 
+	register "SerialIoI2cMode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C2]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C3]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C4]" = "PchSerialIoPci"
+
 	register "disable_external_bypass_vr" = "1"    # Does not support external vnn power rail
 	register "tcc_offset" = "10"    # TCC of 95C
 

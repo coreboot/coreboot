@@ -35,6 +35,12 @@ chip soc/intel/jasperlake
 		},
 	}"
 
+	register "SerialIoI2cMode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C2]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C3]" = "PchSerialIoPci"
+	register "SerialIoI2cMode[PchSerialIoIndexI2C4]" = "PchSerialIoPci"
+
 	register "tcc_offset" = "20"	# TCC of 85C
 
 	register "SerialIoGSpiMode[PchSerialIoIndexGSPI0]" = "PchSerialIoDisabled" # Disable GSPI0

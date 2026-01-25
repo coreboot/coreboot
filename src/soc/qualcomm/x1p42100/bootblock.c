@@ -5,7 +5,7 @@
 #include <soc/qspi_common.h>
 #include <soc/qupv3_config_common.h>
 
-#define SPI_BUS_CLOCK_FREQ (50 * MHz)
+#define SPI_BUS_CLOCK_FREQ (75 * MHz)
 
 void bootblock_soc_early_init(void)
 {

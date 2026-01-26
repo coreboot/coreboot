@@ -569,7 +569,7 @@ static int pciexp_aspm_latency(struct device *root, unsigned int root_cap,
 static void pciexp_enable_aspm(struct device *root, unsigned int root_cap,
 					 struct device *endp, unsigned int endp_cap)
 {
-	const char *aspm_type_str[] = { "None", "L0s", "L1", "L0s and L1" };
+	static const char * const aspm_type_str[] = { "None", "L0s", "L1", "L0s and L1" };
 	enum aspm_type apmc = PCIE_ASPM_NONE;
 	int exit_latency, ok_latency;
 	u16 lnkctl;

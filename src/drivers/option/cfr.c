@@ -123,6 +123,21 @@ static uint32_t sm_write_enum_value(char *current, const struct sm_enum_value *e
 	return enum_val->size;
 }
 
+
+static bool override_matches_numeric_tag(enum sm_object_kind override_kind, uint32_t tag)
+{
+	switch (tag) {
+	case CFR_TAG_OPTION_ENUM:
+		return override_kind == SM_OBJ_ENUM;
+	case CFR_TAG_OPTION_NUMBER:
+		return override_kind == SM_OBJ_NUMBER;
+	case CFR_TAG_OPTION_BOOL:
+		return override_kind == SM_OBJ_BOOL;
+	default:
+		return false;
+	}
+}
+
 static uint32_t write_numeric_option(char *current, uint32_t tag, const uint64_t object_id,
 		const char *opt_name, const char *ui_name, const char *ui_helptext,
 		uint32_t flags, uint32_t default_value, uint32_t min, uint32_t max, uint32_t step,
@@ -135,10 +150,8 @@ static uint32_t write_numeric_option(char *current, uint32_t tag, const uint64_t
 	/* Check for mainboard override of default value */
 	const struct cfr_default_override *ovr = find_override(opt_name);
 	if (ovr) {
-		if (ovr->kind != tag)
+		if (!override_matches_numeric_tag(ovr->kind, tag))
 			printk(BIOS_WARNING, "CFR: override for option '%s' has mismatched type; skipping.\n", opt_name);
-		else if (tag == CFR_TAG_OPTION_BOOL)
-			default_value = ovr->bool_value;
 		else
 			default_value = ovr->uint_value;
 	}

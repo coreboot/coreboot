@@ -132,7 +132,12 @@ uint32_t get_microcode_rev(const void *microcode)
 
 uint32_t get_microcode_size(const void *microcode)
 {
-	return ((struct microcode *)microcode)->total_size;
+	u32 size = ((struct microcode *)microcode)->total_size;
+
+	/* Newer microcode updates include a size field, whereas older
+	 * containers set it at 0 and are exactly 2048 bytes long */
+
+	return size ? size : 2048;
 }
 
 uint32_t get_microcode_checksum(const void *microcode)

@@ -1,0 +1,113 @@
+chip soc/intel/apollolake
+	# Intel Common SoC Config
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 44,
+			.fall_time_ns = 22,
+		},
+		.i2c[2] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 40,
+			.fall_time_ns = 20,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 70,
+			.fall_time_ns = 164,
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 20,
+			.fall_time_ns = 164,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 152,
+			.fall_time_ns = 30,
+		},
+	}"
+
+	# Override USB2 PER PORT register (PORT 1)
+	register "usb2eye[1]" = "{
+		.Usb20PerPortPeTxiSet = 7,
+		.Usb20PerPortTxiSet = 0,
+	}"
+
+	device domain 0 on
+		device ref i2c3		on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0001""
+				register "desc" = ""ELAN Touchscreen""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_21_IRQ)"
+				register "detect" = "1"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
+				register "reset_delay_ms" = "20"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+				register "enable_delay_ms" = "1"
+				register "has_power_resource" = "true"
+				device i2c 10 on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""MLFS0000""
+				register "desc" = ""Melfas Touchscreen""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_21_IRQ)"
+				register "detect" = "1"
+				# Melfas TS IC doesn't have reset pin design, current FW also not
+				# declare "ce-gpios" in ACPI _DSD to let Melfas TS driver to know
+				# "enable gpio#152 (VTSP) but because of kernel bug & Melfas TS driver
+				# is unable to separate clear power sequence path for certain
+				# TS IC (ex: MIT-410) and kernel will still obstain GPIO from _CRS
+				# by index "0" since no matched "gpio" in ACPI _DSD.
+				# coreboot needs to have "dummy pin" as workaround  in order to let
+				# kernel driver grab "useless" GPIO to prevent Melfas TS driver cut
+				# power by driver itself.
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
+				register "reset_delay_ms" = "1"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+				register "enable_delay_ms" = "5"
+				register "has_power_resource" = "true"
+				device i2c 34 on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""RAYD0001""
+				register "desc" = ""Raydium Touchscreen""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_21_IRQ)"
+				register "detect" = "1"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
+				register "reset_delay_ms" = "1"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+				register "enable_delay_ms" = "50"
+				register "has_power_resource" = "true"
+				device i2c 39 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WDHT0002""
+				register "generic.desc" = ""WDT Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_21_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
+				register "generic.reset_delay_ms" = "130"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GTCH7503""
+				register "generic.desc" = ""G2TOUCH Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_21_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
+				register "generic.reset_delay_ms" = "50"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 40 on end
+			end
+		end
+	end
+end

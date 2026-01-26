@@ -1,0 +1,48 @@
+chip soc/intel/apollolake
+	# Intel Common SoC Config (i2c[4] without data_hold_time_ns)
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 104,
+			.fall_time_ns = 52,
+		},
+		.i2c[2] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 57,
+			.fall_time_ns = 28,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 76,
+			.fall_time_ns = 164,
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 114,
+			.fall_time_ns = 164,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 152,
+			.fall_time_ns = 30,
+		},
+	}"
+
+	device domain 0 on
+		device ref i2c3		on
+			chip drivers/i2c/generic
+				register "hid" = ""RAYD0001""
+				register "desc" = ""Raydium Touchscreen""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_21_IRQ)"
+				register "detect" = "1"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
+				register "reset_delay_ms" = "20"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"
+				register "enable_delay_ms" = "1"
+				register "has_power_resource" = "true"
+				device i2c 39 on end
+			end
+		end
+	end
+end

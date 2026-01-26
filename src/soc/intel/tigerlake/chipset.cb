@@ -149,7 +149,7 @@ chip soc/intel/tigerlake
 		device pci 1f.1 alias p2sb off end
 		device pci 1f.2 alias pmc hidden end
 		device pci 1f.3 alias hda off end
-		device pci 1f.4 alias smbus off end
+		device pci 1f.4 alias smbus off ops smbus_ops end
 		device pci 1f.5 alias fast_spi on end
 		device pci 1f.6 alias gbe off end
 		device pci 1f.7 alias tracehub off end

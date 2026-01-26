@@ -44,6 +44,6 @@ chip soc/intel/apollolake
 		device pci 1c.0 alias emmc		off	end # eMMC
 		device pci 1e.0 alias sdio		off	end # SDIO
 		device pci 1f.0 alias lpc_espi		on	end # LPC
-		device pci 1f.1 alias smbus		off	end # SMBUS
+		device pci 1f.1 alias smbus		off ops smbus_ops end # SMBUS
 	end
 end

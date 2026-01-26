@@ -15,7 +15,7 @@ chip soc/intel/cannonlake
 		device pci 08.0 alias gna          off	end	# Gaussian mixture model, Neural network accelerator
 		device pci 12.0 alias thermal      off	end	# Thermal Subsystem
 		device pci 12.5 alias ufs          off	end	# UFS SCS
-		device pci 12.6 alias gspi2        off	end	# GSPI #2
+		device pci 12.6 alias gspi2        off ops spi_dev_ops end	# GSPI #2
 		device pci 13.0 alias ish          off	end	# ISH
 		device pci 14.0 alias xhci         off		# USB xHCI
 			chip drivers/usb/acpi
@@ -115,8 +115,8 @@ chip soc/intel/cannonlake
 		device pci 1d.7 alias pcie_rp16    off ops pcie_rp_ops	end	# PCI Express Port 16
 		device pci 1e.0 alias uart0        off ops uart_ops end	# UART #0
 		device pci 1e.1 alias uart1        off ops uart_ops end	# UART #1
-		device pci 1e.2 alias gspi0        off	end	# GSPI #0
-		device pci 1e.3 alias gspi1        off	end	# GSPI #1
+		device pci 1e.2 alias gspi0        off ops spi_dev_ops end	# GSPI #0
+		device pci 1e.3 alias gspi1        off ops spi_dev_ops end	# GSPI #1
 		device pci 1f.0 alias lpc_espi     on	end	# LPC Interface
 		device pci 1f.1 alias p2sb      hidden	end	# P2SB
 		device pci 1f.2 alias pmc       hidden	end	# Power Management Controller

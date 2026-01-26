@@ -94,7 +94,7 @@ chip soc/intel/meteorlake
 		device pci 10.0 alias thc0 off end
 		device pci 10.1 alias thc1 off end
 		device pci 12.0 alias ish off end
-		device pci 12.6 alias gspi2 off end
+		device pci 12.6 alias gspi2 off ops spi_dev_ops end
 		device pci 12.7 alias ufs off end
 		device pci 13.0 alias ioe_p2sb hidden end
 		device pci 13.1 alias ieh2 off end
@@ -179,8 +179,8 @@ chip soc/intel/meteorlake
 		device pci 1c.7 alias pcie_rp8 off ops pcie_rp_ops end
 		device pci 1e.0 alias uart0 off ops uart_ops end
 		device pci 1e.1 alias uart1 off ops uart_ops end
-		device pci 1e.2 alias gspi0 off end
-		device pci 1e.3 alias gspi1 off end
+		device pci 1e.2 alias gspi0 off ops spi_dev_ops end
+		device pci 1e.3 alias gspi1 off ops spi_dev_ops end
 		device pci 1e.4 alias tsn_gbe1 off end
 		device pci 1e.5 alias tsn_gbe2 off end
 		device pci 1f.0 alias soc_espi on end

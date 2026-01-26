@@ -49,14 +49,8 @@ struct device_operations sd_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DID_INTEL_APL_SD,
-	PCI_DID_INTEL_CNL_SD,
 	PCI_DID_INTEL_GLK_SD,
-	PCI_DID_INTEL_CNP_H_SD,
-	PCI_DID_INTEL_CMP_SD,
-	PCI_DID_INTEL_CMP_H_SD,
 	PCI_DID_INTEL_MCC_SD,
-	PCI_DID_INTEL_JSP_SD,
 	0
 };
 

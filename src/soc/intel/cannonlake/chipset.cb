@@ -120,7 +120,7 @@ chip soc/intel/cannonlake
 		device pci 1f.0 alias lpc_espi     on	end	# LPC Interface
 		device pci 1f.1 alias p2sb      hidden	end	# P2SB
 		device pci 1f.2 alias pmc       hidden	end	# Power Management Controller
-		device pci 1f.3 alias hda          off	end	# Intel HDA
+		device pci 1f.3 alias hda          off ops hda_ops end	# Intel HDA
 		device pci 1f.4 alias smbus        off ops smbus_ops end	# SMBus
 		device pci 1f.5 alias fast_spi     on	end	# PCH SPI
 		device pci 1f.6 alias gbe          off	end	# GbE

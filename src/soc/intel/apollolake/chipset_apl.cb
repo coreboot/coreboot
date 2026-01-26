@@ -10,7 +10,7 @@ chip soc/intel/apollolake
 		device pci 0d.1 alias pmc		off	end # PMC
 		device pci 0d.2 alias fast_spi		off	end # SPI
 		device pci 0d.3 alias sram		off	end # Shared SRAM
-		device pci 0e.0 alias hda		off	end # HDA
+		device pci 0e.0 alias hda		off ops hda_ops end # HDA
 		device pci 0f.0 alias heci1		off	end # HECI1
 		device pci 0f.1 alias heci2		off	end # HECI2
 		device pci 0f.2 alias heci3		off	end # HECI3

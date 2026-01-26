@@ -180,7 +180,7 @@ chip soc/intel/alderlake
 		device pci 12.6 alias gspi2 off ops spi_dev_ops end
 		device pci 12.7 alias ufs off end
 		device pci 13.0 alias gspi3 off ops spi_dev_ops end
-		device pci 14.0 alias xhci off
+		device pci 14.0 alias xhci off ops usb_xhci_ops
 			chip drivers/usb/acpi
 				register "type" = "UPC_TYPE_HUB"
 				device usb 0.0 alias xhci_root_hub off

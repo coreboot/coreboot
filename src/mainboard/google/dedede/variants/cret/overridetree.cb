@@ -234,7 +234,6 @@ chip soc/intel/jasperlake
 				device i2c 40 on end
 			end
 		end
-		device ref pcie_rp8 on end
 		device ref i2c4 on
 			chip drivers/i2c/da7219
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"

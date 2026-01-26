@@ -153,10 +153,10 @@ chip soc/intel/meteorlake
 		device pci 14.2 alias pmc_shared_sram off end
 		device pci 14.3 alias cnvi_wifi off end
 		device pci 14.5 alias ieh off end
-		device pci 15.0 alias i2c0 off end
-		device pci 15.1 alias i2c1 off end
-		device pci 15.2 alias i2c2 off end
-		device pci 15.3 alias i2c3 off end
+		device pci 15.0 alias i2c0 off ops i2c_dev_ops end
+		device pci 15.1 alias i2c1 off ops i2c_dev_ops end
+		device pci 15.2 alias i2c2 off ops i2c_dev_ops end
+		device pci 15.3 alias i2c3 off ops i2c_dev_ops end
 		device pci 15.4 alias i3c off end
 		device pci 16.0 alias heci1 on end
 		device pci 16.1 alias heci2 off end
@@ -166,8 +166,8 @@ chip soc/intel/meteorlake
 		device pci 18.0 alias eheci1 off end
 		device pci 18.1 alias eheci2 off end
 		device pci 18.2 alias eheci3 off end
-		device pci 19.0 alias i2c4 off end
-		device pci 19.1 alias i2c5 off end
+		device pci 19.0 alias i2c4 off ops i2c_dev_ops end
+		device pci 19.1 alias i2c5 off ops i2c_dev_ops end
 		device pci 19.2 alias uart2 off end
 		device pci 1c.0 alias pcie_rp1 off ops pcie_rp_ops end
 		device pci 1c.1 alias pcie_rp2 off ops pcie_rp_ops end

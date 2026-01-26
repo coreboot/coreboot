@@ -209,8 +209,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E16, NONE),
 	/* GPP_E17:     NC */
 	PAD_NC(GPP_E17, NONE),
-	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
-	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF3),
+	/* GPP_E18:     TCHPAD_INT_ODL */
+	PAD_CFG_GPI_IRQ_WAKE(GPP_E18, NONE, PWROK, LEVEL, INVERT),
 	/* GPP_E19:     NC */
 	PAD_NC(GPP_E19, NONE),
 	/* GPP_E20:     NC */

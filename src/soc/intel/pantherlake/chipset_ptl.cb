@@ -162,7 +162,7 @@ chip soc/intel/pantherlake
 				end
 			end
 		end
-		device pci 0d.1 alias tcss_xdci off end
+		device pci 0d.1 alias tcss_xdci off ops usb_xdci_ops end
 		device pci 0d.2 alias tcss_dma0 off end
 		device pci 0d.3 alias tcss_dma1 off end
 		device pci 0e.0 alias vmd off end

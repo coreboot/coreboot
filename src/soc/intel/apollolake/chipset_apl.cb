@@ -23,7 +23,7 @@ chip soc/intel/apollolake
 		device pci 14.0 alias pcie_rp05		off ops pcie_rp_ops	end # PCIE Express Root Port 5
 		device pci 14.1 alias pcie_rp06		off ops pcie_rp_ops	end # PCIE Express Root Port 6
 		device pci 15.0 alias xhci		off ops usb_xhci_ops end # XHCI
-		device pci 15.1 alias xdci		off	end # XDCI
+		device pci 15.1 alias xdci		off ops usb_xdci_ops end # XDCI
 		device pci 16.0 alias i2c0		off ops i2c_dev_ops end # I2C0
 		device pci 16.1 alias i2c1		off ops i2c_dev_ops end # I2C1
 		device pci 16.2 alias i2c2		off ops i2c_dev_ops end # I2C2

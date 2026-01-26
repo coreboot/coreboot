@@ -83,33 +83,33 @@ chip soc/intel/apollolake
 	}"
 
 	device domain 0 on
-		device pci 15.0 on
+		device ref xhci		on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""Right Type-A Port""
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
-						device usb 2.1 on end
+						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
-						device usb 2.3 off end
+						device ref usb2_port4 off end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""Right Type-A Port""
 						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
-						device usb 3.1 on end
+						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
-						device usb 3.3 off end
+						device ref usb3_port4 off end
 					end
 				end
 			end
-		end	# - XHCI
-		device pci 17.1 on
+		end
+		device ref i2c5		on
 			chip drivers/i2c/da7219
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_137_IRQ)"
 				register "btn_cfg" = "50"
@@ -127,8 +127,8 @@ chip soc/intel/apollolake
 				register "mic_amp_in_sel" = ""diff""
 				device i2c 1a on end
 			end
-		end	# - I2C 5
-		device pci 17.2 on
+		end
+		device ref i2c6		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -146,7 +146,7 @@ chip soc/intel/apollolake
 				register "hid_desc_reg_offset" = "0xE"
 				device i2c 40 on end
 			end
-		end	# - I2C 6
+		end
 	end
 
 	# Disable compliance mode

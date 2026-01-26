@@ -71,7 +71,7 @@ chip soc/intel/apollolake
 		},
 	}"
 	device domain 0 on
-		device pci 16.0 on
+		device ref i2c0		on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WCOM50C1""
 				register "generic.desc" = ""WCOM Digitizer""
@@ -83,8 +83,8 @@ chip soc/intel/apollolake
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0x9 on end
 			end
-		end	# - I2C 0
-		device pci 17.1 on
+		end
+		device ref i2c5		on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -98,8 +98,8 @@ chip soc/intel/apollolake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on end
 			end
-		end	# - I2C 5
-		device pci 17.2 on
+		end
+		device ref i2c6		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -108,8 +108,8 @@ chip soc/intel/apollolake
 				register "detect" = "1"
 				device i2c 15 on end
 			end
-		end	# - I2C 6
-		device pci 17.3 on
+		end
+		device ref i2c7		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
@@ -135,6 +135,6 @@ chip soc/intel/apollolake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 40 on end
 			end
-		end	# - I2C 7
+		end
 	end
 end

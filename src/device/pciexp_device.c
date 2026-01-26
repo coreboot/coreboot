@@ -564,6 +564,42 @@ static int pciexp_aspm_latency(struct device *root, unsigned int root_cap,
 }
 
 /*
+ * Enable ASPM on PCIe root port when no endpoint is connected.
+ * This programs ASPM based on the root port's own capabilities.
+ */
+static void pciexp_enable_aspm_root_port_only(struct device *root, unsigned int root_cap)
+{
+	static const char * const aspm_type_str[] = { "None", "L0s", "L1", "L0s and L1" };
+	enum aspm_type apmc = PCIE_ASPM_NONE;
+	u16 lnkctl;
+	u32 lnkcap;
+
+	/* Read root port's ASPM support from Link Capabilities */
+	lnkcap = pci_read_config32(root, root_cap + PCI_EXP_LNKCAP);
+
+	/* Extract ASPM support bits (11:10) */
+	u32 aspm_support = (lnkcap & PCI_EXP_LNKCAP_ASPMS) >> 10;
+
+	/* Map ASPM support to control value:
+	 * 00 = No ASPM -> apmc = 0 (NONE)
+	 * 01 = L0s supported -> apmc = 1 (L0S)
+	 * 10 = L1 supported -> apmc = 2 (L1)
+	 * 11 = L0s and L1 supported -> apmc = 3 (BOTH)
+	 */
+	apmc = (enum aspm_type)aspm_support;
+
+	if (apmc != PCIE_ASPM_NONE) {
+		/* Set ASPM control in root port's Link Control register */
+		lnkctl = pci_read_config16(root, root_cap + PCI_EXP_LNKCTL);
+		/* Clear existing ASPM bits (0:1) and set new value */
+		lnkctl = (lnkctl & ~0x3) | apmc;
+		pci_write_config16(root, root_cap + PCI_EXP_LNKCTL, lnkctl);
+		printk(BIOS_INFO, "%s: ASPM enabled %s (no endpoint)\n",
+		       dev_path(root), aspm_type_str[apmc]);
+	}
+}
+
+/*
  * Enable ASPM on PCIe root port and endpoint.
  */
 static void pciexp_enable_aspm(struct device *root, unsigned int root_cap,
@@ -843,6 +879,8 @@ void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 {
 	struct device *child;
 	unsigned int max_payload;
+	bool has_children = false;
+	unsigned int root_cap;
 
 	pciexp_enable_ltr(bus->dev);
 
@@ -862,7 +900,18 @@ void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 		    (child->path.pci.devfn > max_devfn)) {
 			continue;
 		}
+		has_children = true;
 		pciexp_tune_dev(child);
+	}
+
+	/*
+	 * If no endpoint is connected and this is a root port, program ASPM
+	 * based on the root port's own capabilities.
+	 */
+	if (!has_children && pcie_is_root_port(bus->dev) && CONFIG(PCIEXP_ASPM)) {
+		root_cap = pci_find_capability(bus->dev, PCI_CAP_ID_PCIE);
+		if (root_cap)
+			pciexp_enable_aspm_root_port_only(bus->dev, root_cap);
 	}
 
 	/*

@@ -16,7 +16,7 @@ chip soc/intel/apollolake
 		device pci 0f.1 alias heci2		off	end # HECI2
 		device pci 0f.2 alias heci3		off	end # HECI3
 		device pci 11.0 alias ish		off	end # SensorHub
-		device pci 12.0 alias sata		off	end # SATA
+		device pci 12.0 alias sata		off ops sata_ops end # SATA
 		device pci 13.0 alias pcie_rp01		off ops pcie_rp_ops	end # PCIE Express Root Port 1
 		device pci 13.1 alias pcie_rp02		off ops pcie_rp_ops	end # PCIE Express Root Port 2
 		device pci 13.2 alias pcie_rp03		off ops pcie_rp_ops	end # PCIE Express Root Port 3

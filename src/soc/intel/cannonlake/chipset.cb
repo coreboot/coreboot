@@ -92,7 +92,7 @@ chip soc/intel/cannonlake
 		device pci 16.3 alias csme_ktr     off	end	# Management Engine KT Redirection
 		device pci 16.4 alias heci3        off	end	# Management Engine Interface 3
 		device pci 16.5 alias heci4        off	end	# Management Engine Interface 4
-		device pci 17.0 alias sata         off	end	# SATA
+		device pci 17.0 alias sata         off ops sata_ops end	# SATA
 		device pci 19.0 alias i2c4         off ops i2c_dev_ops end	# I2C #4
 		device pci 19.1 alias i2c5         off ops i2c_dev_ops end	# I2C #5
 		device pci 19.2 alias uart2        off	end	# UART #2

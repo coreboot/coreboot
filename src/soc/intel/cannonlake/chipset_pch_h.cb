@@ -147,8 +147,8 @@ chip soc/intel/cannonlake
 		device pci 1d.5 alias pcie_rp14    off ops pcie_rp_ops	end	# PCI Express Port 14
 		device pci 1d.6 alias pcie_rp15    off ops pcie_rp_ops	end	# PCI Express Port 15
 		device pci 1d.7 alias pcie_rp16    off ops pcie_rp_ops	end	# PCI Express Port 16
-		device pci 1e.0 alias uart0        off	end	# UART #0
-		device pci 1e.1 alias uart1        off	end	# UART #1
+		device pci 1e.0 alias uart0        off ops uart_ops end	# UART #0
+		device pci 1e.1 alias uart1        off ops uart_ops end	# UART #1
 		device pci 1e.2 alias gspi0        off	end	# GSPI #0
 		device pci 1e.3 alias gspi1        off	end	# GSPI #1
 		device pci 1f.0 alias lpc_espi     on	end	# LPC Interface

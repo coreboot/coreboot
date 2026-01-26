@@ -168,7 +168,7 @@ chip soc/intel/meteorlake
 		device pci 18.2 alias eheci3 off end
 		device pci 19.0 alias i2c4 off ops i2c_dev_ops end
 		device pci 19.1 alias i2c5 off ops i2c_dev_ops end
-		device pci 19.2 alias uart2 off end
+		device pci 19.2 alias uart2 off ops uart_ops end
 		device pci 1c.0 alias pcie_rp1 off ops pcie_rp_ops end
 		device pci 1c.1 alias pcie_rp2 off ops pcie_rp_ops end
 		device pci 1c.2 alias pcie_rp3 off ops pcie_rp_ops end
@@ -177,8 +177,8 @@ chip soc/intel/meteorlake
 		device pci 1c.5 alias pcie_rp6 off ops pcie_rp_ops end
 		device pci 1c.6 alias pcie_rp7 off ops pcie_rp_ops end
 		device pci 1c.7 alias pcie_rp8 off ops pcie_rp_ops end
-		device pci 1e.0 alias uart0 off end
-		device pci 1e.1 alias uart1 off end
+		device pci 1e.0 alias uart0 off ops uart_ops end
+		device pci 1e.1 alias uart1 off ops uart_ops end
 		device pci 1e.2 alias gspi0 off end
 		device pci 1e.3 alias gspi1 off end
 		device pci 1e.4 alias tsn_gbe1 off end

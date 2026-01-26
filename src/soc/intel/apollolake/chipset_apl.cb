@@ -32,10 +32,10 @@ chip soc/intel/apollolake
 		device pci 17.1 alias i2c5		off ops i2c_dev_ops end # I2C5
 		device pci 17.2 alias i2c6		off ops i2c_dev_ops end # I2C6
 		device pci 17.3 alias i2c7		off ops i2c_dev_ops end # I2C7
-		device pci 18.0 alias uart0		off	end # UART0
-		device pci 18.1 alias uart1		off	end # UART1
-		device pci 18.2 alias uart2		off	end # UART2
-		device pci 18.3 alias uart3		off	end # UART3
+		device pci 18.0 alias uart0		off ops uart_ops end # UART0
+		device pci 18.1 alias uart1		off ops uart_ops end # UART1
+		device pci 18.2 alias uart2		off ops uart_ops end # UART2
+		device pci 18.3 alias uart3		off ops uart_ops end # UART3
 		device pci 19.0 alias spi0		off	end # SPI0
 		device pci 19.1 alias spi1		off	end # SPI1
 		device pci 19.2 alias spi2		off	end # SPI3

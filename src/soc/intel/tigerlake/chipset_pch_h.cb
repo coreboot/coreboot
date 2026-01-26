@@ -62,7 +62,7 @@ chip soc/intel/tigerlake
 		device pci 0e.0 alias vmd off end
 		device pci 10.6 alias thc0 off end
 		device pci 10.7 alias thc1 off end
-		device pci 11.0 alias uart3 off end
+		device pci 11.0 alias uart3 off ops uart_ops end
 		device pci 11.3 alias i2c6 off ops i2c_dev_ops end
 		device pci 12.0 alias ish off end
 		device pci 12.6 alias gspi2 off end
@@ -150,7 +150,7 @@ chip soc/intel/tigerlake
 		device pci 17.0 alias sata off ops sata_ops end
 		device pci 19.0 alias i2c4 off ops i2c_dev_ops end
 		device pci 19.1 alias i2c5 off ops i2c_dev_ops end
-		device pci 19.2 alias uart2 off end
+		device pci 19.2 alias uart2 off ops uart_ops end
 		device pci 1b.0 alias pcie_rp17 off ops pcie_rp_ops end
 		device pci 1b.1 alias pcie_rp18 off ops pcie_rp_ops end
 		device pci 1b.2 alias pcie_rp19 off ops pcie_rp_ops end
@@ -175,8 +175,8 @@ chip soc/intel/tigerlake
 		device pci 1d.5 alias pcie_rp14 off ops pcie_rp_ops end
 		device pci 1d.6 alias pcie_rp15 off ops pcie_rp_ops end
 		device pci 1d.7 alias pcie_rp16 off ops pcie_rp_ops end
-		device pci 1e.0 alias uart0 off end
-		device pci 1e.1 alias uart1 off end
+		device pci 1e.0 alias uart0 off ops uart_ops end
+		device pci 1e.1 alias uart1 off ops uart_ops end
 		device pci 1e.2 alias gspi0 off end
 		device pci 1e.3 alias gspi1 off end
 		device pci 1f.0 alias pch_espi on end

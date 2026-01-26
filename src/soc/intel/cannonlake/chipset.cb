@@ -95,7 +95,7 @@ chip soc/intel/cannonlake
 		device pci 17.0 alias sata         off ops sata_ops end	# SATA
 		device pci 19.0 alias i2c4         off ops i2c_dev_ops end	# I2C #4
 		device pci 19.1 alias i2c5         off ops i2c_dev_ops end	# I2C #5
-		device pci 19.2 alias uart2        off	end	# UART #2
+		device pci 19.2 alias uart2        off ops uart_ops end	# UART #2
 		device pci 1a.0 alias emmc         off	end	# eMMC
 		device pci 1c.0 alias pcie_rp1     off ops pcie_rp_ops	end	# PCI Express Port 1
 		device pci 1c.1 alias pcie_rp2     off ops pcie_rp_ops	end	# PCI Express Port 2
@@ -113,8 +113,8 @@ chip soc/intel/cannonlake
 		device pci 1d.5 alias pcie_rp14    off ops pcie_rp_ops	end	# PCI Express Port 14
 		device pci 1d.6 alias pcie_rp15    off ops pcie_rp_ops	end	# PCI Express Port 15
 		device pci 1d.7 alias pcie_rp16    off ops pcie_rp_ops	end	# PCI Express Port 16
-		device pci 1e.0 alias uart0        off	end	# UART #0
-		device pci 1e.1 alias uart1        off	end	# UART #1
+		device pci 1e.0 alias uart0        off ops uart_ops end	# UART #0
+		device pci 1e.1 alias uart1        off ops uart_ops end	# UART #1
 		device pci 1e.2 alias gspi0        off	end	# GSPI #0
 		device pci 1e.3 alias gspi1        off	end	# GSPI #1
 		device pci 1f.0 alias lpc_espi     on	end	# LPC Interface

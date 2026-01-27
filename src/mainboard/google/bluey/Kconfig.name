@@ -16,3 +16,6 @@ config BOARD_GOOGLE_QUENBIH
 
 config BOARD_GOOGLE_QUARTZ
 	bool "->  Quartz"
+
+config BOARD_GOOGLE_MICA
+	bool "->  Mica"

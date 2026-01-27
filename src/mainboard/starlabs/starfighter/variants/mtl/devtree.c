@@ -15,6 +15,10 @@ void devtree_update(void)
 	config_t *cfg = config_of_soc();
 	update_power_limits(cfg);
 
+	/* Enable/Disable Bluetooth based on CMOS settings */
+	if (get_uint_option("bluetooth", 1) == 0)
+		cfg->usb2_ports[9].enable = 0;
+
 	/* Enable/Disable Webcam based on CMOS settings */
 	if (get_uint_option("webcam", 1) == 0)
 		cfg->usb2_ports[CONFIG_CCD_PORT].enable = 0;

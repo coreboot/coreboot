@@ -62,6 +62,11 @@ chip soc/intel/elkhartlake
 	register "PcieRpLtrDisable[1]" = "true"
 	register "PcieRpLtrDisable[6]" = "true"
 
+	# Adjust TX Output De-Emphasis for PCIe RP7 to -0.137 dB
+	register "pcie_mp_cfg[6]" = "{
+		.tx_gen1_de_emph = 0x3f,
+	}"
+
 	# Storage (SDCARD/EMMC) related UPDs
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsEmmcDdr50Enabled" = "1"

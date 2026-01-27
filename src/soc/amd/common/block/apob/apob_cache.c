@@ -17,6 +17,7 @@
 #include <thread.h>
 #include <timestamp.h>
 #include <types.h>
+#include <pc80/mc146818rtc.h>
 
 #define DEFAULT_MRC_CACHE	"RW_MRC_CACHE"
 #define DEFAULT_MRC_CACHE_SIZE	FMAP_SECTION_RW_MRC_CACHE_SIZE
@@ -271,6 +272,10 @@ static void soc_update_apob_cache(void *unused)
 
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_APOB_HASH))
 		update_apob_nv_hash(ram_hash, &write_rdev);
+
+	// update the signature in CMOS to indicate APOB updated.
+	cmos_write(0x5A, 0x86);
+	cmos_write(0xA5, 0x87);
 
 	timestamp_add_now(TS_AMD_APOB_END);
 

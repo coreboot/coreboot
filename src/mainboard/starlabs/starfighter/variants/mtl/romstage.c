@@ -100,7 +100,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mupd->FspmConfig.VtdDisable = !vtd;
 
 	/* Enable/Disable Wireless (RP09) based on CMOS settings */
-	if (get_uint_option("wireless", 1) == 0)
+	if (get_uint_option("wifi", 1) == 0)
 		mupd->FspmConfig.PcieRpEnableMask &= ~(1 << 8);
 
 	/* Enable/Disable Thunderbolt based on CMOS settings */

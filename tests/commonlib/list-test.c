@@ -1,10 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <commonlib/list.h>
+#include <tests/test.h>
 #include <stdlib.h>
 #include <string.h>
-#include <tests/test.h>
-#include <types.h>
+#include <commonlib/list.h>
 
 struct test_container {
 	int value;
@@ -12,20 +11,10 @@ struct test_container {
 	struct list_node list_node;
 };
 
-static void test_list_empty(void **state)
-{
-	struct list_node head = {};
-	struct test_container *node;
-
-	list_for_each(node, head, list_node) {
-		assert_true(false);
-	}
-}
-
-static void test_list_insert_after(void **state)
+void test_list_insert_after(void **state)
 {
 	int i = 0;
-	struct list_node head = {};
+	struct list_node root = { .prev = NULL, .next = NULL };
 	struct test_container *c1 = (struct test_container *)malloc(sizeof(*c1));
 	struct test_container *c2 = (struct test_container *)malloc(sizeof(*c2));
 	struct test_container *c3 = (struct test_container *)malloc(sizeof(*c2));
@@ -40,11 +29,11 @@ static void test_list_insert_after(void **state)
 	c2->value = values[1];
 	c3->value = values[2];
 
-	list_insert_after(&c1->list_node, &head);
+	list_insert_after(&c1->list_node, &root);
 	list_insert_after(&c2->list_node, &c1->list_node);
 	list_insert_after(&c3->list_node, &c2->list_node);
 
-	list_for_each(ptr, head, list_node) {
+	list_for_each(ptr, root, list_node) {
 		assert_int_equal(values[i], ptr->value);
 		i++;
 	}
@@ -56,10 +45,10 @@ static void test_list_insert_after(void **state)
 	free(c1);
 }
 
-static void test_list_insert_before(void **state)
+void test_list_insert_before(void **state)
 {
 	int i = 0;
-	struct list_node head = {};
+	struct list_node root = { .prev = NULL, .next = NULL };
 	struct test_container *c1 = (struct test_container *)malloc(sizeof(*c1));
 	struct test_container *c2 = (struct test_container *)malloc(sizeof(*c2));
 	struct test_container *c3 = (struct test_container *)malloc(sizeof(*c2));
@@ -74,11 +63,12 @@ static void test_list_insert_before(void **state)
 	c2->value = values[1];
 	c3->value = values[2];
 
-	list_insert_after(&c3->list_node, &head);
+	list_insert_after(&c3->list_node, &root);
 	list_insert_before(&c2->list_node, &c3->list_node);
 	list_insert_before(&c1->list_node, &c2->list_node);
 
-	list_for_each(ptr, head, list_node) {
+
+	list_for_each(ptr, root, list_node) {
 		assert_int_equal(values[i], ptr->value);
 		i++;
 	}
@@ -90,27 +80,19 @@ static void test_list_insert_before(void **state)
 	free(c1);
 }
 
-static void test_list_insert_before_head(void **state)
+void test_list_remove(void **state)
 {
-	struct list_node head = {};
-	struct test_container c = {};
-
-	expect_assert_failure(list_insert_before(&c.list_node, &head));
-}
-
-static void test_list_remove(void **state)
-{
-	struct list_node head = {};
+	struct list_node root = { .prev = NULL, .next = NULL };
 	struct test_container *c1 = (struct test_container *)malloc(sizeof(*c1));
 	struct test_container *c2 = (struct test_container *)malloc(sizeof(*c2));
 	struct test_container *ptr;
 	int len;
 
-	list_insert_after(&c1->list_node, &head);
+	list_insert_after(&c1->list_node, &root);
 	list_insert_after(&c2->list_node, &c1->list_node);
 
 	len = 0;
-	list_for_each(ptr, head, list_node) {
+	list_for_each(ptr, root, list_node) {
 		len++;
 	}
 	assert_int_equal(2, len);
@@ -118,14 +100,14 @@ static void test_list_remove(void **state)
 	list_remove(&c1->list_node);
 
 	len = 0;
-	list_for_each(ptr, head, list_node) {
+	list_for_each(ptr, root, list_node) {
 		len++;
 	}
 	assert_int_equal(1, len);
 
 	list_remove(&c2->list_node);
 	len = 0;
-	list_for_each(ptr, head, list_node) {
+	list_for_each(ptr, root, list_node) {
 		len++;
 	}
 	assert_int_equal(0, len);
@@ -134,26 +116,20 @@ static void test_list_remove(void **state)
 	free(c1);
 }
 
-static void test_list_remove_head(void **state)
-{
-	struct list_node head = {};
-	expect_assert_failure(list_remove(&head));
-}
-
-static void test_list_append(void **state)
+void test_list_append(void **state)
 {
 	size_t idx;
 	struct test_container *node;
-	struct list_node head = {};
+	struct list_node root = {};
 	struct test_container nodes[] = {
 		{1}, {2}, {3}
 	};
 
 	for (idx = 0; idx < ARRAY_SIZE(nodes); ++idx)
-		list_append(&nodes[idx].list_node, &head);
+		list_append(&nodes[idx].list_node, &root);
 
 	idx = 0;
-	list_for_each(node, head, list_node) {
+	list_for_each(node, root, list_node) {
 		assert_ptr_equal(node, &nodes[idx]);
 		idx++;
 	}
@@ -162,14 +138,12 @@ static void test_list_append(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(test_list_empty),
 		cmocka_unit_test(test_list_insert_after),
 		cmocka_unit_test(test_list_insert_before),
-		cmocka_unit_test(test_list_insert_before_head),
 		cmocka_unit_test(test_list_remove),
-		cmocka_unit_test(test_list_remove_head),
 		cmocka_unit_test(test_list_append),
 	};
+
 
 	return cb_run_group_tests(tests, NULL, NULL);
 }

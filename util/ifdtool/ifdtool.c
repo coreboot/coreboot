@@ -2094,7 +2094,18 @@ static void new_layout(const char *filename, char *image, int size,
 
 		for (j = i + 1; j < max_regions; j++) {
 			if (regions_collide(&new_regions[i], &new_regions[j])) {
-				fprintf(stderr, "Regions would overlap.\n");
+				fprintf(stderr, "Regions would overlap:\n");
+
+				/* See which string is longer and make sure we pad the shorter one */
+				int region_name_len_i = strlen(region_name(i));
+				int region_name_len_j = strlen(region_name(j));
+				int padding = MAX(region_name_len_i, region_name_len_j);
+
+				/* Print the regions that overlap, and where each region is */
+				fprintf(stderr, "  %*s : %x-%x\n", padding, region_name(i),
+					new_regions[i].base, new_regions[i].limit);
+				fprintf(stderr, "  %*s : %x-%x\n", padding, region_name(j),
+					new_regions[j].base, new_regions[j].limit);
 				exit(EXIT_FAILURE);
 			}
 		}

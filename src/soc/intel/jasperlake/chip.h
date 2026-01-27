@@ -15,7 +15,6 @@
 #include <soc/gpe.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
-#include <soc/pcie_modphy.h>
 #include <soc/pmc.h>
 #include <soc/serialio.h>
 #include <soc/usb.h>

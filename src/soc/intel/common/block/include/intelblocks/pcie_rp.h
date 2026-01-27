@@ -3,7 +3,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_PCIE_RP_H
 #define SOC_INTEL_COMMON_BLOCK_PCIE_RP_H
 
-#include <stdint.h>
+#include <types.h>
 
 /*
  * In schematic PCIe root port numbers are 1-based, but FSP use 0-based indexes for
@@ -83,6 +83,24 @@ struct pcie_rp_config {
 	uint32_t pcie_rp_detect_timeout_ms;
 	/* PCIe RP PCIe Speed */
 	enum PCIE_SPEED_control pcie_rp_pcie_speed;
+};
+
+struct pcie_modphy_config {
+	/* TX Output Downscale Amplitude Adjustment */
+	bool tx_gen1_downscale_amp_override;
+	uint8_t tx_gen1_downscale_amp;
+	/* TX Output Downscale Amplitude Adjustment */
+	bool tx_gen2_downscale_amp_override;
+	uint8_t tx_gen2_downscale_amp;
+	/* TX Output Downscale Amplitude Adjustment */
+	bool tx_gen3_downscale_amp_override;
+	uint8_t tx_gen3_downscale_amp;
+	/* TX Output -3.5dB Mode De-Emphasis Adjustment Setting */
+	uint8_t tx_gen1_de_emph;
+	/* TX Output -3.5dB Mode De-Emphasis Adjustment Setting */
+	uint8_t tx_gen2_de_emph_3p5;
+	/* TX Output -6.0dB Mode De-Emphasis Adjustment Setting */
+	uint8_t tx_gen2_de_emph_6p0;
 };
 
 /*

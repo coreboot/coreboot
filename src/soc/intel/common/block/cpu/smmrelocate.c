@@ -78,6 +78,15 @@ static int bsp_setup_msr_save_state(struct smm_relocation_params *relo_params)
 {
 	msr_t smm_mca_cap;
 
+	/*
+	 * FIXME: On Xeon-SP the MSR SMM_FEATURE_CONTROL_MSR is not implemented.
+	 *        SMM feature control resides on the UBOX PCI device.
+	 * FIXME: Need to enable save state in MSRs on all sockets, however BSP
+	 *        runs on a single socket only.
+	 */
+	if (CONFIG(XEON_SP_COMMON_BASE) || CONFIG(SOC_INTEL_SNOWRIDGE))
+		return 0;
+
 	smm_mca_cap = rdmsr(SMM_MCA_CAP_MSR);
 	if (smm_mca_cap.hi & SMM_CPU_SVRSTR_MASK) {
 		msr_t smm_feature_control;

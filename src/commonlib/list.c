@@ -36,3 +36,24 @@ void list_append(struct list_node *node, struct list_node *head)
 
 	list_insert_after(node, head);
 }
+
+const struct list_node *list_last(const struct list_node *head)
+{
+	const struct list_node *ptr = head;
+	while (ptr->next)
+		ptr = ptr->next;
+	return ptr == head ? NULL : ptr;
+}
+
+size_t list_length(const struct list_node *head)
+{
+	struct {
+		struct list_node node;
+	} const *ptr;
+	size_t len = 0;
+
+	list_for_each(ptr, *head, node)
+		len++;
+
+	return len;
+}

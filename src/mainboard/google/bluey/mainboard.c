@@ -153,6 +153,8 @@ static void mainboard_init(struct device *dev)
 {
 	configure_parallel_charging();
 
+	display_startup();
+
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging"*/
 	if (is_low_power_boot_with_charger())
 		return;
@@ -203,8 +205,6 @@ static void mainboard_init(struct device *dev)
 
 	/* Setup USB related initial config */
 	setup_usb();
-
-	display_startup();
 
 	lpass_init();
 }

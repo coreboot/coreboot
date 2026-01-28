@@ -1981,3 +1981,14 @@ int google_chromeec_set_lightbar_rgb(unsigned int led, int red, int green,
 
 	return google_chromeec_command(&cmd);
 }
+
+/*
+ * Check if the battery is critically low and not currently charging.
+ *
+ * Return true if battery is below threshold and AC is not present.
+ */
+bool google_chromeec_is_critically_low_on_battery(void)
+{
+	return google_chromeec_is_below_critical_threshold() &&
+	       !google_chromeec_is_charger_present();
+}

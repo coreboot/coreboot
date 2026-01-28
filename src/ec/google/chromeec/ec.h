@@ -562,4 +562,11 @@ int google_chromeec_read_batt_state_of_charge(uint32_t *state);
 int google_chromeec_set_lightbar_rgb(unsigned int led, int red, int green,
 			 int blue);
 
+/*
+ * Check if the battery is critically low and AC is not present.
+ *
+ * Return true if battery is below threshold and AC is not present.
+ */
+bool google_chromeec_is_critically_low_on_battery(void);
+
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

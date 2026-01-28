@@ -1,8 +1,42 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <variants.h>
+#include <common/nvme_seq.h>
+
+#if ENV_RAMSTAGE
+static const struct pad_config nvme_pads[] = {
+	PAD_CFG_GPO(GPP_H07, 1, DEEP),
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D20, NONE, PLTRST, NF1),
+	PAD_CFG_GPO(GPP_A20, 0, PLTRST),
+	PAD_CFG_GPO(GPP_D22, 1, DEEP),
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_C10, NONE, PLTRST, NF1),
+	PAD_CFG_GPO(GPP_H00, 0, PLTRST),
+	PAD_CFG_GPO(GPP_B19, 1, DEEP),
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D21, NONE, PLTRST, NF2),
+	PAD_CFG_GPO(GPP_H02, 0, PLTRST),
+};
+
+static const struct pad_config post_nvme_pads[] = {
+	PAD_CFG_GPO(GPP_A20, 1, PLTRST),
+	PAD_CFG_GPO(GPP_H00, 1, PLTRST),
+	PAD_CFG_GPO(GPP_H02, 1, PLTRST),
+};
+
+const struct pad_config *variant_nvme_power_sequence_pads(size_t *num)
+{
+	*num = ARRAY_SIZE(nvme_pads);
+	return nvme_pads;
+}
+
+const struct pad_config *variant_nvme_power_sequence_post_pads(size_t *num)
+{
+	*num = ARRAY_SIZE(post_nvme_pads);
+	return post_nvme_pads;
+}
+#endif
 
 /* Early pad configuration in bootblock */
+/* clang-format off */
 const struct pad_config early_gpio_table[] = {
 	/* Debug Connector */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),				/* RXD */
@@ -17,7 +51,18 @@ const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_LOCK(GPP_B06, NONE, LOCK_CONFIG),
 	PAD_CFG_GPI_LOCK(GPP_B07, NONE, LOCK_CONFIG),
 	PAD_CFG_GPI_LOCK(GPP_B08, NONE, LOCK_CONFIG),
+
+	PAD_CFG_GPI(GPP_D20, NONE, PLTRST),					/* Clock Request 8 */
+	PAD_CFG_GPO(GPP_A20, 0, PLTRST),					/* Reset (PERST# asserted) */
+	PAD_CFG_GPO(GPP_H07, 0, DEEP),						/* Enable (PWREN off) */
+	PAD_CFG_GPI(GPP_C10, NONE, PLTRST),					/* Clock Request 1 */
+	PAD_CFG_GPO(GPP_H00, 0, PLTRST),					/* Reset (PERST# asserted) */
+	PAD_CFG_GPO(GPP_D22, 0, DEEP),						/* Enable (PWREN off) */
+	PAD_CFG_GPI(GPP_D21, NONE, PLTRST),					/* Clock Request 5 */
+	PAD_CFG_GPO(GPP_H02, 0, PLTRST),					/* Reset asserted */
+	PAD_CFG_GPO(GPP_B19, 0, DEEP),						/* WiFi disabled */
 };
+/* clang-format on */
 
 const struct pad_config *variant_early_gpio_table(size_t *num)
 {
@@ -26,6 +71,7 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 }
 
 /* Pad configuration in ramstage. */
+/* clang-format off */
 const struct pad_config gpio_table[] = {
 	/* General Purpose I/O Deep */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_V00, NONE, DEEP, NF1),		/* Battery Low */
@@ -50,19 +96,19 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_B00, NONE, DEEP, LEVEL, INVERT),		/* Interrupt */
 
 	/* SSD (CPU)*/
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D20, NONE, PLTRST, NF1),	/* Clock Request 8 */
-	PAD_CFG_GPO(GPP_A20, 1, PLTRST),				/* Reset */
-	PAD_CFG_GPO(GPP_H07, 1, DEEP),					/* Enable */
+	PAD_NC(GPP_D20, NONE),						/* Clock Request 8 */
+	PAD_CFG_GPO(GPP_A20, 0, PLTRST),				/* Reset (PERST# asserted) */
+	PAD_CFG_GPO(GPP_H07, 0, DEEP),					/* Enable (PWREN off) */
 
 	/* SSD (PCH) */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_C10, NONE, PLTRST, NF1),	/* Clock Request 1 */
-	PAD_CFG_GPO(GPP_H00, 1, PLTRST),				/* Reset */
-	PAD_CFG_GPO(GPP_D22, 1, DEEP),					/* Enable */
+	PAD_NC(GPP_C10, NONE),						/* Clock Request 1 */
+	PAD_CFG_GPO(GPP_H00, 0, PLTRST),				/* Reset (PERST# asserted) */
+	PAD_CFG_GPO(GPP_D22, 0, DEEP),					/* Enable (PWREN off) */
 
 	/* Wireless */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D21, NONE, PLTRST, NF2),	/* Clock Request 5 */
-	PAD_CFG_GPO(GPP_H02, 1, PLTRST),				/* Reset */
-	PAD_CFG_GPO(GPP_B19, 1, DEEP),					/* WiFi RF Kill */
+	PAD_NC(GPP_D21, NONE),						/* Clock Request 5 */
+	PAD_CFG_GPO(GPP_H02, 0, PLTRST),				/* Reset asserted */
+	PAD_CFG_GPO(GPP_B19, 0, DEEP),					/* WiFi disabled */
 	PAD_CFG_GPO(GPP_B18, 1, DEEP),					/* Bluetooth RF Kill */
 
 	/* Display */
@@ -252,6 +298,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D19, NONE),
 	PAD_NC(GPP_D23, NONE),
 };
+/* clang-format on */
 
 const struct pad_config *variant_gpio_table(size_t *num)
 {

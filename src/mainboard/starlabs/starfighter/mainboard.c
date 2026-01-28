@@ -1,10 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <bootstate.h>
 #include <device/device.h>
 #include <soc/ramstage.h>
 #include <variants.h>
 
-static void init_mainboard(void *chip_info)
+static void starlabs_configure_gpios(void *unused)
 {
 	const struct pad_config *pads;
 	size_t num;
@@ -13,6 +14,6 @@ static void init_mainboard(void *chip_info)
 	gpio_configure_pads(pads, num);
 }
 
-struct chip_operations mainboard_ops = {
-	.init = init_mainboard,
-};
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, starlabs_configure_gpios, NULL);
+
+struct chip_operations mainboard_ops = {};

@@ -11,6 +11,7 @@
 #include <device/device.h>
 #include <device/i2c_simple.h>
 #include <ec/google/chromeec/ec.h>
+#include <elog.h>
 #include <gpio.h>
 #include <soc/clock.h>
 #include <soc/pcie.h>
@@ -28,6 +29,8 @@
 #define PS8820_USB_PORT_CONN_STATUS_REG	0x00
 #define USB3_MODE_NORMAL_VAL	0x21
 #define USB3_MODE_FLIP_VAL	0x23
+
+#define LOW_BATTERY_SHUTDOWN_DELAY_SEC 5
 
 void mainboard_usb_typec_configure(uint8_t port_num, bool inverse_polarity)
 {
@@ -149,11 +152,37 @@ static void display_startup(void)
 	enable_mdss_clk();
 }
 
+static void trigger_critical_battery_shutdown(void)
+{
+	printk(BIOS_WARNING, "Critical battery level detected without charger! Shutting down.\n");
+
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return;
+
+	/* Set LED to Red to alert the user visually */
+	google_chromeec_set_lightbar_rgb(0xff, 0xff, 0x00, 0x00);
+
+	/* Log the event to CMOS/Flash for post-mortem analysis */
+	elog_add_event_byte(ELOG_TYPE_LOW_BATTERY_INDICATOR, ELOG_FW_ISSUE_SHUTDOWN);
+
+	/* Allow time for the log to flush and the user to see the LED change */
+	delay(LOW_BATTERY_SHUTDOWN_DELAY_SEC);
+
+	google_chromeec_ap_poweroff();
+}
+
 static void mainboard_init(struct device *dev)
 {
 	configure_parallel_charging();
 
 	display_startup();
+
+	/*
+	 * Low-battery boot indicator is done. Therefore, power off if battery
+	 * is critical and not charging
+	 */
+	if (get_boot_mode() == LB_BOOT_MODE_LOW_BATTERY)
+		trigger_critical_battery_shutdown();
 
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging"*/
 	if (is_low_power_boot_with_charger())

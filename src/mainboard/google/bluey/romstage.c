@@ -109,6 +109,10 @@ static void early_setup_usb(void)
 
 void platform_romstage_main(void)
 {
+	/* Set LED to Red to alert the user visually */
+	if (CONFIG(EC_GOOGLE_CHROMEEC) && google_chromeec_is_critically_low_on_battery())
+		google_chromeec_set_lightbar_rgb(0xff, 0xff, 0x00, 0x00);
+
 	/* Setup early USB related config */
 	early_setup_usb();
 

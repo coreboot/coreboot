@@ -150,15 +150,17 @@ chip soc/intel/jasperlake
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_B3_IRQ)"
 				register "wake" = "GPE0_DW0_03"
-				device i2c 15 alias elan0000 on end
+				register "detect" = "1"
+				device i2c 15 on end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN2702""
 				register "generic.desc" = ""ELAN Touchpad""
 				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
 				register "generic.wake" = "GPE0_DW0_03"
+				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 15 alias elan2702 on end
+				device i2c 15 on end
 			end
 		end
 		device ref i2c2 on

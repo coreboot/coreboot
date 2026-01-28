@@ -24,21 +24,6 @@ static const struct sm_object touchscreen = SM_DECLARE_ENUM({
 #endif
 });
 
-static const struct sm_object touchpad = SM_DECLARE_ENUM({
-	.opt_name	= "touchpad",
-	.ui_name	= "Touchpad Type",
-	.ui_helptext	= "Select the model of the integrated touchpad device",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-		{ "Auto-select",	0		},
-		{ "ELAN0000",		1		},
-		{ "ELAN2702",		2		},
-		SM_ENUM_VALUE_END			},
-#if !CONFIG(BOARD_GOOGLE_GALTIC)
-	.flags		= CFR_OPTFLAG_SUPPRESS,
-#endif
-});
-
 static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]) {
@@ -69,7 +54,6 @@ static struct sm_obj_form devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
 		&touchscreen,
-		&touchpad,
 		NULL
 	},
 };

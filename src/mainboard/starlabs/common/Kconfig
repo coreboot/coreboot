@@ -13,6 +13,27 @@ config BOOTMEDIA_SMM_BWP_RUNTIME_OPTION
 config DRIVERS_EFI_FW_INFO
 	def_bool y
 
+config STARLABS_NVME_POWER_SEQUENCE
+	bool "Enable NVMe/M.2 slot power sequence"
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO
+	default n
+	help
+	  Enable Fatcat-style 3-stage NVMe/M.2 slot sequencing using PWREN, PERST#
+	  and CLKREQ# pads.
+
+	  The sequencing is:
+	    1) pre-mem: PERST# asserted; PWREN=0; CLKREQ# disabled
+	    2) BS_PRE_DEVICE exit: PERST# still asserted; PWREN=1; CLKREQ# native
+	    3) BS_DEV_INIT_CHIPS entry: PERST# deasserted
+
+	  Boards selecting this option must provide their own pad configs and
+	  implement stage 1 (pre-mem) in their early pad configuration.
+
+	  For stage 2 and stage 3, boards must either implement the
+	  `variant_nvme_power_sequence_*()` helpers or provide pad tables via
+	  `variant_nvme_power_sequence_pads()` and
+	  `variant_nvme_power_sequence_post_pads()`.
+
 config MB_COMMON_DIR
 	string
 	default "starlabs/common"

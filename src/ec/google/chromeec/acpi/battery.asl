@@ -414,8 +414,9 @@ Device (BAT0)
 	})
 	Name (BSTP, 0)
 
-	// Workaround for full battery status, disabled by default
-	Name (BFWK, 0)
+	// Workaround for full battery status, disabled by default,
+	// enabled via Kconfig for older boards lacking EC compensation.
+	Name (BFWK, CONFIG(EC_GOOGLE_CHROMEEC_NEEDS_BATTERY_WORKAROUND))
 
 	// Method to enable full battery workaround
 	Method (BFWE)
@@ -504,8 +505,9 @@ Device (BAT1)
 	})
 	Name (BSTP, 0)
 
-	// Workaround for full battery status, disabled by default
-	Name (BFWK, 0)
+	// Workaround for full battery status, disabled by default,
+	// enabled via Kconfig for older boards lacking EC compensation.
+	Name (BFWK, CONFIG(EC_GOOGLE_CHROMEEC_NEEDS_BATTERY_WORKAROUND))
 
 	// Method to enable full battery workaround
 	Method (BFWE)

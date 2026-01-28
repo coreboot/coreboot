@@ -220,6 +220,17 @@ config EC_GOOGLE_CHROMEEC_READ_BATTERY_LONG_STRING
 
 	  If unsure, say N.
 
+config EC_GOOGLE_CHROMEEC_NEEDS_BATTERY_WORKAROUND
+	bool
+	help
+	  Enable the ACPI "full battery" workaround (BFWK) for remaining capacity.
+	  When enabled, remaining charge near full is reported as full capacity to
+	  hide 93-100% charge-discharge cycles and to handle batteries that don't report
+	  full capacity timely.
+	  Select this for older boards whose EC firmware lacks battery_compensate_params
+	  logic.
+	  If unsure, say N.
+
 config EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE
 	def_bool n
 	help

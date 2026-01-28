@@ -79,4 +79,7 @@ void qc_mmu_dram_config_post_dram_init(size_t ddr_size)
 
 	if (REGION_SIZE(dram_aop_cmd_db) != 0)
 		mmu_config_range((void *)_dram_aop_cmd_db, REGION_SIZE(dram_aop_cmd_db), UNCACHED_RAM);
+
+	if (REGION_SIZE(framebuffer))
+		mmu_config_range((void *)_framebuffer, REGION_SIZE(framebuffer), UNCACHED_RAM);
 }

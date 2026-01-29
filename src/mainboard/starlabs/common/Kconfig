@@ -5,13 +5,13 @@ if VENDOR_STARLABS
 menu "Star Labs Settings"
 
 config BOOTMEDIA_SMM_BWP
-	default y
+	def_bool y
 
 config BOOTMEDIA_SMM_BWP_RUNTIME_OPTION
-	default y
+	def_bool y
 
 config DRIVERS_EFI_FW_INFO
-	default y
+	def_bool y
 
 config MB_COMMON_DIR
 	string

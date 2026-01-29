@@ -273,6 +273,7 @@ chip soc/intel/tigerlake
 			register "PcieRpHotPlug[4]" = "1"
 			register "PcieClkSrcUsage[5]" = "4"
 			register "PcieClkSrcClkReq[5]" = "5"
+			register "PcieRpSlotImplemented[4]" = "false"
 		end
 		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the

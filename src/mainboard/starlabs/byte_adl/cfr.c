@@ -8,41 +8,38 @@
 #include <variants.h>
 #include <common/cfr.h>
 
-static struct sm_obj_form performance_group = {
-	.ui_name = "Performance",
-	.obj_list = (const struct sm_object *[]) {
-		&bluetooth_rtd3,
-		&fan_mode,
-		&power_profile,
-		NULL
-	},
-};
-
-static struct sm_obj_form processor_group = {
-	.ui_name = "Processor",
-	.obj_list = (const struct sm_object *[]) {
-		&me_state,
-		&me_state_counter,
-		&s0ix_enable,
-		&vtd,
-		NULL
-	},
-};
-
-static struct sm_obj_form power_group = {
-	.ui_name = "Power",
+static struct sm_obj_form battery_group = {
+	.ui_name = "Battery",
 	.obj_list = (const struct sm_object *[]) {
 		&power_on_after_fail_bool,
 		NULL
 	},
 };
 
-static struct sm_obj_form devices_group = {
-	.ui_name = "Devices",
+static struct sm_obj_form debug_group = {
+	.ui_name = "Debug",
 	.obj_list = (const struct sm_object *[]) {
-		&bluetooth,
+		&debug_level,
+		NULL
+	},
+};
+
+static struct sm_obj_form pcie_power_management_group = {
+	.ui_name = "PCIe Power Management",
+	.obj_list = (const struct sm_object *[]) {
+		&pciexp_aspm,
+		&pciexp_clk_pm,
+		&pciexp_l1ss,
+		NULL
+	},
+};
+
+static struct sm_obj_form performance_group = {
+	.ui_name = "Performance",
+	.obj_list = (const struct sm_object *[]) {
+		&fan_mode,
 		&gna,
-		&wifi,
+		&power_profile,
 		NULL
 	},
 };
@@ -52,37 +49,47 @@ static struct sm_obj_form security_group = {
 	.obj_list = (const struct sm_object *[]) {
 		&bios_lock,
 		&intel_tme,
+		&me_state,
+		&me_state_counter,
 		NULL
 	},
 };
 
-
-static struct sm_obj_form pci_group = {
-	.ui_name = "PCI",
+static struct sm_obj_form suspend_lid_group = {
+	.ui_name = "Suspend & Lid",
 	.obj_list = (const struct sm_object *[]) {
-		&pciexp_clk_pm,
-		&pciexp_aspm,
-		&pciexp_l1ss,
+		&s0ix_enable,
 		NULL
 	},
 };
 
-static struct sm_obj_form coreboot_group = {
-	.ui_name = "coreboot",
+static struct sm_obj_form virtualization_group = {
+	.ui_name = "Virtualization",
 	.obj_list = (const struct sm_object *[]) {
-		&debug_level,
+		&vtd,
+		NULL
+	},
+};
+
+static struct sm_obj_form wireless_group = {
+	.ui_name = "Wireless",
+	.obj_list = (const struct sm_object *[]) {
+		&bluetooth,
+		&bluetooth_rtd3,
+		&wifi,
 		NULL
 	},
 };
 
 static struct sm_obj_form *sm_root[] = {
+	&battery_group,
+	&debug_group,
+	&pcie_power_management_group,
 	&performance_group,
-	&processor_group,
-	&power_group,
-	&devices_group,
 	&security_group,
-	&pci_group,
-	&coreboot_group,
+	&suspend_lid_group,
+	&virtualization_group,
+	&wireless_group,
 	NULL
 };
 

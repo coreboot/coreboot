@@ -8,27 +8,35 @@
 #include <variants.h>
 #include <common/cfr.h>
 
-static struct sm_obj_form performance_group = {
-	.ui_name = "Performance",
+static struct sm_obj_form audio_video_group = {
+	.ui_name = "Audio/Video",
 	.obj_list = (const struct sm_object *[]) {
-		&power_profile,
+		&microphone,
+		&webcam,
 		NULL
 	},
 };
 
-static struct sm_obj_form processor_group = {
-	.ui_name = "Processor",
-	.obj_list = (const struct sm_object *[]) {
-		&s0ix_enable,
-		&vtd,
-		NULL
-	},
-};
-
-static struct sm_obj_form power_group = {
-	.ui_name = "Power",
+static struct sm_obj_form battery_group = {
+	.ui_name = "Battery",
 	.obj_list = (const struct sm_object *[]) {
 		&power_on_after_fail_bool,
+		NULL
+	},
+};
+
+static struct sm_obj_form debug_group = {
+	.ui_name = "Debug",
+	.obj_list = (const struct sm_object *[]) {
+		&debug_level,
+		NULL
+	},
+};
+
+static struct sm_obj_form io_expansion_group = {
+	.ui_name = "I/O / Expansion",
+	.obj_list = (const struct sm_object *[]) {
+		&card_reader,
 		NULL
 	},
 };
@@ -36,20 +44,8 @@ static struct sm_obj_form power_group = {
 static struct sm_obj_form keyboard_group = {
 	.ui_name = "Keyboard",
 	.obj_list = (const struct sm_object *[]) {
-		&kbl_timeout,
 		&fn_ctrl_swap,
-		NULL
-	},
-};
-
-static struct sm_obj_form devices_group = {
-	.ui_name = "Devices",
-	.obj_list = (const struct sm_object *[]) {
-		&bluetooth,
-		&card_reader,
-		&microphone,
-		&webcam,
-		&wifi,
+		&kbl_timeout,
 		NULL
 	},
 };
@@ -63,36 +59,63 @@ static struct sm_obj_form security_group = {
 	},
 };
 
-
-static struct sm_obj_form pci_group = {
-	.ui_name = "PCI",
+static struct sm_obj_form pcie_power_management_group = {
+	.ui_name = "PCIe Power Management",
 	.obj_list = (const struct sm_object *[]) {
 		#if CONFIG(SOC_INTEL_ALDERLAKE)
-		&pciexp_clk_pm,
 		&pciexp_aspm,
+		&pciexp_clk_pm,
 		&pciexp_l1ss,
 		#endif
 		NULL
 	},
 };
 
-static struct sm_obj_form coreboot_group = {
-	.ui_name = "coreboot",
+static struct sm_obj_form performance_group = {
+	.ui_name = "Performance",
 	.obj_list = (const struct sm_object *[]) {
-		&debug_level,
+		&power_profile,
+		NULL
+	},
+};
+
+static struct sm_obj_form suspend_lid_group = {
+	.ui_name = "Suspend & Lid",
+	.obj_list = (const struct sm_object *[]) {
+		&s0ix_enable,
+		NULL
+	},
+};
+
+static struct sm_obj_form virtualization_group = {
+	.ui_name = "Virtualization",
+	.obj_list = (const struct sm_object *[]) {
+		&vtd,
+		NULL
+	},
+};
+
+static struct sm_obj_form wireless_group = {
+	.ui_name = "Wireless",
+	.obj_list = (const struct sm_object *[]) {
+		&bluetooth,
+		&wifi,
 		NULL
 	},
 };
 
 static struct sm_obj_form *sm_root[] = {
-	&performance_group,
-	&processor_group,
-	&power_group,
+	&audio_video_group,
+	&battery_group,
+	&debug_group,
+	&io_expansion_group,
 	&keyboard_group,
-	&devices_group,
+	&pcie_power_management_group,
+	&performance_group,
 	&security_group,
-	&pci_group,
-	&coreboot_group,
+	&suspend_lid_group,
+	&virtualization_group,
+	&wireless_group,
 	NULL
 };
 

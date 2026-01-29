@@ -8,65 +8,87 @@
 #include <variants.h>
 #include <common/cfr.h>
 
-static struct sm_obj_form performance_group = {
-	.ui_name = "Performance",
+static struct sm_obj_form battery_group = {
+	.ui_name = "Battery",
 	.obj_list = (const struct sm_object *[]) {
-		&bluetooth_rtd3,
-		&memory_speed,
-		&fan_mode,
-		&power_profile,
-		NULL
-	},
-};
-
-static struct sm_obj_form processor_group = {
-	.ui_name = "Processor",
-	.obj_list = (const struct sm_object *[]) {
-		&me_state,
-		&me_state_counter,
-		&hyper_threading,
-		&s0ix_enable,
-		&vtd,
-		NULL
-	},
-};
-
-static struct sm_obj_form power_group = {
-	.ui_name = "Power",
-	.obj_list = (const struct sm_object *[]) {
-		&max_charge,
 		#if CONFIG(EC_STARLABS_CHARGING_SPEED)
 		&charging_speed,
 		#endif
-		&power_led,
-		&charge_led,
+		&max_charge,
 		&power_on_after_fail_bool,
 		NULL
 	},
 };
 
-static struct sm_obj_form keyboard_group = {
-	.ui_name = "Keyboard",
+static struct sm_obj_form debug_group = {
+	.ui_name = "Debug",
 	.obj_list = (const struct sm_object *[]) {
-		&kbl_timeout,
-		&fn_ctrl_swap,
+		&debug_level,
 		NULL
 	},
 };
 
-static struct sm_obj_form devices_group = {
-	.ui_name = "Devices",
+static struct sm_obj_form display_group = {
+	.ui_name = "Display",
 	.obj_list = (const struct sm_object *[]) {
+		&display_native_res,
+		NULL
+	},
+};
+
+#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
+static struct sm_obj_form io_expansion_group = {
+	.ui_name = "I/O / Expansion",
+	.obj_list = (const struct sm_object *[]) {
+		&thunderbolt,
+		NULL
+	},
+};
+#endif
+
+static struct sm_obj_form keyboard_group = {
+	.ui_name = "Keyboard",
+	.obj_list = (const struct sm_object *[]) {
+		&fn_ctrl_swap,
+		&kbl_timeout,
+		NULL
+	},
+};
+
+static struct sm_obj_form leds_group = {
+	.ui_name = "LEDs",
+	.obj_list = (const struct sm_object *[]) {
+		&charge_led,
+		&power_led,
+		NULL
+	},
+};
+
+static struct sm_obj_form pcie_power_management_group = {
+	.ui_name = "PCIe Power Management",
+	.obj_list = (const struct sm_object *[]) {
+		#if CONFIG(SOC_INTEL_COMMON_BLOCK_ASPM)
+		&pciexp_aspm,
+		#if CONFIG(HAS_INTEL_CPU_ROOT_PORTS)
+		&pciexp_aspm_cpu,
+		#endif
+		&pciexp_clk_pm,
+		&pciexp_l1ss,
+		#endif
+		NULL
+	},
+};
+
+static struct sm_obj_form performance_group = {
+	.ui_name = "Performance",
+	.obj_list = (const struct sm_object *[]) {
+		&fan_mode,
 		#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
 		&gna,
 		#endif
-		&display_native_res,
-		#if CONFIG(EC_STARLABS_LID_SWITCH)
-		&lid_switch,
-		#endif
-		#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
-		&thunderbolt,
-		#endif
+		&hyper_threading,
+		&memory_speed,
+		&power_profile,
 		#if CONFIG(SOC_INTEL_METEORLAKE)
 		&vpu,
 		#endif
@@ -79,42 +101,54 @@ static struct sm_obj_form security_group = {
 	.obj_list = (const struct sm_object *[]) {
 		&bios_lock,
 		&intel_tme,
+		&me_state,
+		&me_state_counter,
 		NULL
 	},
 };
 
-static struct sm_obj_form pci_group = {
-	.ui_name = "PCI",
+static struct sm_obj_form suspend_lid_group = {
+	.ui_name = "Suspend & Lid",
 	.obj_list = (const struct sm_object *[]) {
-		#if CONFIG(SOC_INTEL_COMMON_BLOCK_ASPM)
-		&pciexp_clk_pm,
-		&pciexp_aspm,
-		#if CONFIG(HAS_INTEL_CPU_ROOT_PORTS)
-		&pciexp_aspm_cpu,
+		#if CONFIG(EC_STARLABS_LID_SWITCH)
+		&lid_switch,
 		#endif
-		&pciexp_l1ss,
-		#endif
+		&s0ix_enable,
 		NULL
 	},
 };
 
-static struct sm_obj_form coreboot_group = {
-	.ui_name = "coreboot",
+static struct sm_obj_form virtualization_group = {
+	.ui_name = "Virtualization",
 	.obj_list = (const struct sm_object *[]) {
-		&debug_level,
+		&vtd,
+		NULL
+	},
+};
+
+static struct sm_obj_form wireless_group = {
+	.ui_name = "Wireless",
+	.obj_list = (const struct sm_object *[]) {
+		&bluetooth_rtd3,
 		NULL
 	},
 };
 
 static struct sm_obj_form *sm_root[] = {
-	&performance_group,
-	&processor_group,
-	&power_group,
+	&battery_group,
+	&debug_group,
+	&display_group,
+	#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
+	&io_expansion_group,
+	#endif
 	&keyboard_group,
-	&devices_group,
+	&leds_group,
+	&pcie_power_management_group,
+	&performance_group,
 	&security_group,
-	&pci_group,
-	&coreboot_group,
+	&suspend_lid_group,
+	&virtualization_group,
+	&wireless_group,
 	NULL
 };
 

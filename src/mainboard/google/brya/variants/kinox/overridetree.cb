@@ -261,7 +261,7 @@ chip soc/intel/alderlake
 			register "pch_pcie_rp[PCH_RP(6)]" = "{
 				.clk_src = 1,
 				.clk_req = 1,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_BUILT_IN,
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"

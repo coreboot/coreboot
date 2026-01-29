@@ -565,7 +565,7 @@ chip soc/intel/alderlake
 			register "pch_pcie_rp[PCH_RP(9)]" = "{
 				.clk_src = 0,
 				.clk_req = 0,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_BUILT_IN,
 				.pcie_rp_aspm = ASPM_L1,
 			}"
 			probe BOOT_EMMC_MASK BOOT_EMMC_ENABLED

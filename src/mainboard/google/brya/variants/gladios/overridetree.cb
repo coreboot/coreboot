@@ -213,7 +213,7 @@ chip soc/intel/alderlake
 			register "pch_pcie_rp[PCH_RP(12)]" = "{
 				.clk_src = 4,
 				.clk_req = 4,
-				.flags = PCIE_RP_HOTPLUG | PCIE_RP_AER,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_AER | PCIE_RP_BUILT_IN,
 			}"
 			probe STORAGE STORAGE_EMMC
 		end     #PCIE12 EMMC

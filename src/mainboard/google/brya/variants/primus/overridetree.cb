@@ -183,7 +183,7 @@ chip soc/intel/alderlake
 			register "pch_pcie_rp[PCH_RP(3)]" = "{
 				.clk_src = 6,
 				.clk_req = 6,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_BUILT_IN,
 			}"
 		end	#PCIE3 BH799BB
 		device ref tcss_dma0 on

@@ -202,7 +202,7 @@ chip soc/intel/alderlake
 			register "pch_pcie_rp[PCH_RP(7)]" = "{
 				.clk_src = 6,
 				.clk_req = 6,
-				.flags = PCIE_RP_HOTPLUG | PCIE_RP_AER,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_AER | PCIE_RP_BUILT_IN,
 			}"
 		end     #PCIE7 EMMC
 		device ref tcss_dma0 on

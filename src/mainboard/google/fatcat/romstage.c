@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <arch/romstage.h>
 #include <baseboard/variants.h>
+#include <ec/google/chromeec/ec.h>
 #include <fsp/api.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
@@ -42,4 +44,11 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	/* Override FSP-M UPD per board if required. */
 	variant_update_soc_memory_init_params(memupd);
+}
+
+void platform_romstage_pre_mem(void)
+{
+	/* Set LED to Red to alert the user visually */
+	if (CONFIG(EC_GOOGLE_CHROMEEC) && google_chromeec_is_critically_low_on_battery())
+		google_chromeec_set_lightbar_rgb(0xff, 0xff, 0x00, 0x00);
 }

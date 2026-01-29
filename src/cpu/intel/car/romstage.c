@@ -16,6 +16,19 @@
    following as a guideline for acceptable stack usage. */
 #define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x2000
 
+/*
+ * Platform-specific hooks for logic surrounding memory initialization.
+ *
+ * platform_romstage_pre_mem() is invoked before memory training.
+ *
+ * platform_romstage_post_mem() is invoked after DRAM is initialized but
+ * before the transition to the RAM-based stack (Post-CAR).
+ *
+ * Default: No-op. These are weak symbols to be overridden by SoC or mainboard.
+ */
+__weak void platform_romstage_pre_mem(void) { /* no-op */ }
+__weak void platform_romstage_post_mem(void) { /* no-op */ }
+
 void __noreturn romstage_main(void)
 {
 	int i;
@@ -71,7 +84,9 @@ void __noreturn romstage_main(void)
 	 */
 	romstage_adainit();
 
+	platform_romstage_pre_mem();
 	mainboard_romstage_entry();
+	platform_romstage_post_mem();
 
 	/* Check the stack. */
 	for (i = 0; i < num_guards; i++) {

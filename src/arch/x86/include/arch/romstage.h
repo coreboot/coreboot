@@ -7,6 +7,19 @@
 #include <stdint.h>
 #include <cpu/x86/mtrr.h>
 
+/*
+ * Platform-specific hooks for logic surrounding memory initialization.
+ *
+ * platform_romstage_pre_mem() is invoked before memory training.
+ *
+ * platform_romstage_post_mem() is invoked after DRAM is initialized but
+ * before the transition to the RAM-based stack (Post-CAR).
+ *
+ * Default: No-op. These are weak symbols to be overridden by SoC or mainboard.
+ */
+void platform_romstage_pre_mem(void);
+void platform_romstage_post_mem(void);
+
 void mainboard_romstage_entry(void);
 
 /*

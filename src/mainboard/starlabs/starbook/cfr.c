@@ -50,9 +50,6 @@ static struct sm_obj_form io_expansion_group = {
 	.ui_name = "I/O / Expansion",
 	.obj_list = (const struct sm_object *[]) {
 		&card_reader,
-		#if CONFIG(BOARD_STARLABS_STARBOOK_ADL)
-		&pci_hot_plug,
-		#endif
 		#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
 		&thunderbolt,
 		#endif

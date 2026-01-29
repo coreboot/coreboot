@@ -91,14 +91,6 @@ static const struct sm_object microphone = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
-static const struct sm_object pci_hot_plug = SM_DECLARE_BOOL({
-	.opt_name	= "pci_hot_plug",
-	.ui_name	= "Third-Party SSD Support",
-	.ui_helptext	= "Enables PCI Hot Plug, which slows down the SSD initialization. It"
-			  " is required for certain third-party SSDs to be detected.",
-	.default_value	= false,
-});
-
 static const struct sm_object power_profile = SM_DECLARE_ENUM({
 	.opt_name	= "power_profile",
 	.ui_name	= "Power Profile",

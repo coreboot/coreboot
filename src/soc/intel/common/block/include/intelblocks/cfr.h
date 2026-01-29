@@ -60,6 +60,35 @@ static const struct sm_object power_on_after_fail_bool = SM_DECLARE_BOOL({
 });
 
 /* PCIe PCH RP ASPM */
+static void update_pcie_aspm(struct sm_object *new)
+{
+	if (!CONFIG(PCIEXP_ASPM))
+		new->sm_enum.flags |= CFR_OPTFLAG_SUPPRESS;
+}
+
+static void update_pcie_aspm_cpu(struct sm_object *new)
+{
+	if (!CONFIG(PCIEXP_ASPM) || !CONFIG(HAS_INTEL_CPU_ROOT_PORTS))
+		new->sm_enum.flags |= CFR_OPTFLAG_SUPPRESS;
+}
+
+static void update_pcie_l1ss(struct sm_object *new)
+{
+	if (!CONFIG(PCIEXP_ASPM) || !CONFIG(PCIEXP_L1_SUB_STATE))
+		new->sm_enum.flags |= CFR_OPTFLAG_SUPPRESS;
+}
+
+/* PCIe Clock PM */
+static const struct sm_object pciexp_clk_pm = SM_DECLARE_BOOL({
+	.opt_name	= "pciexp_clk_pm",
+	.ui_name	= "PCIe Clock Power Management",
+	.ui_helptext	= "Enables or disables power management for the PCIe clock. When"
+			  " enabled, it reduces power consumption during idle states."
+			  " This can help lower overall energy use but may impact"
+			  " performance in power-sensitive tasks.",
+	.default_value	= true,
+});
+
 static const struct sm_object pciexp_aspm = SM_DECLARE_ENUM({
 	.opt_name	= "pciexp_aspm",
 	.ui_name	= "PCIe PCH RP ASPM",
@@ -74,7 +103,7 @@ static const struct sm_object pciexp_aspm = SM_DECLARE_ENUM({
 				{ "L0sL1",	ASPM_L0S_L1	},
 				{ "Auto",	ASPM_AUTO	},
 				SM_ENUM_VALUE_END		},
-});
+}, WITH_DEP_VALUES(&pciexp_clk_pm, 1), WITH_CALLBACK(update_pcie_aspm));
 
 /* PCIe CPU RP ASPM */
 static const struct sm_object pciexp_aspm_cpu = SM_DECLARE_ENUM({
@@ -90,18 +119,7 @@ static const struct sm_object pciexp_aspm_cpu = SM_DECLARE_ENUM({
 				{ "L1",		ASPM_L1		},
 				{ "L0sL1",	ASPM_L0S_L1	},
 				SM_ENUM_VALUE_END		},
-});
-
-/* PCIe Clock PM */
-static const struct sm_object pciexp_clk_pm = SM_DECLARE_BOOL({
-	.opt_name	= "pciexp_clk_pm",
-	.ui_name	= "PCIe Clock Power Management",
-	.ui_helptext	= "Enables or disables power management for the PCIe clock. When"
-			  " enabled, it reduces power consumption during idle states."
-			  " This can help lower overall energy use but may impact"
-			  " performance in power-sensitive tasks.",
-	.default_value	= true,
-});
+}, WITH_DEP_VALUES(&pciexp_clk_pm, 1), WITH_CALLBACK(update_pcie_aspm_cpu));
 
 /* PCIe L1 Substates */
 static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
@@ -117,7 +135,7 @@ static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
 				{ "L1.1",	L1_SS_L1_1	},
 				{ "L1.2",	L1_SS_L1_2	},
 				SM_ENUM_VALUE_END		},
-});
+}, WITH_DEP_VALUES(&pciexp_clk_pm, 1), WITH_CALLBACK(update_pcie_l1ss));
 
 /* PCIe PCH Root Port Speed */
 static const struct sm_object pciexp_speed = SM_DECLARE_ENUM({

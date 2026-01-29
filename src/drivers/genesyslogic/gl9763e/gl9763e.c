@@ -8,6 +8,9 @@
 #include <device/pciexp.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
+#include <acpi/acpi.h>
+#include <acpi/acpi_device.h>
+#include <acpi/acpigen.h>
 #include "gl9763e.h"
 
 static void gl9763e_init(struct device *dev)
@@ -54,12 +57,59 @@ static void gl9763e_init(struct device *dev)
 	pci_update_config32(dev, VHS, ~VHS_REV_MASK, VHS_REV_R);
 }
 
+/*
+ * Generate ACPI device for on-board eMMC (SD Host Controller + fixed CARD) under the
+ * root port so the OS sees non-removable storage. Scope is the parent root port
+ * (e.g. \_SB.PCI0.RP09).
+ *
+ * Generated ASL:
+ * Scope (\_SB.PCI0.RPxx) {
+ *     Device (EMMC) {
+ *         Name (_ADR, 0x00000000)
+ *         Device (CARD) {
+ *             Name (_ADR, 0x00000008)
+ *             Method (_RMV, 0, NotSerialized) {
+ *                 Return (0)  // Fixed (not removable)
+ *             }
+ *         }
+ *     }
+ * }
+ */
+static void gl9763e_fill_ssdt(const struct device *dev)
+{
+	const char *scope;
+
+	if (!is_dev_enabled(dev))
+		return;
+
+	scope = acpi_device_scope(dev);
+	if (!scope)
+		return;
+
+	/* Emit EMMC device under root port so OS sees fixed (non-removable) storage */
+	acpigen_write_scope(scope);
+	acpigen_write_device("EMMC");
+	acpigen_write_name_integer("_ADR", 0x0);
+
+	/* CARD child: slot at address 0x08, not removable */
+	acpigen_write_device("CARD");
+	acpigen_write_name_integer("_ADR", 0x8);
+	acpigen_write_method_serialized("_RMV", 0);
+	acpigen_write_return_integer(0);  /* Fixed (not removable) */
+	acpigen_write_method_end();
+	acpigen_write_device_end();  /* CARD */
+
+	acpigen_write_device_end();  /* EMMC */
+	acpigen_write_scope_end();
+}
+
 static struct device_operations gl9763e_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.ops_pci		= &pci_dev_ops_pci,
 	.init			= gl9763e_init,
+	.acpi_fill_ssdt		= gl9763e_fill_ssdt,
 };
 
 static const unsigned short pci_device_ids[] = {

@@ -227,7 +227,7 @@ static const struct sm_object s0ix_enable = SM_DECLARE_BOOL({
 			  "Disabled: Use ACPI S3 for device sleep.\n"
 			  "Requires Intel ME to be enabled.",
 	.default_value	= false,
-});
+}, WITH_DEP_VALUES(&me_state, 0));
 
 static const struct sm_object thunderbolt = SM_DECLARE_BOOL({
 	.opt_name	= "thunderbolt",

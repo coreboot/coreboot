@@ -8,6 +8,7 @@
 #include <common/powercap.h>
 
 void cfr_card_reader_update(struct sm_object *new_obj);
+void cfr_touchscreen_update(struct sm_object *new_obj);
 void starlabs_cfr_register_overrides(void);
 
 static const struct sm_object accelerometer = SM_DECLARE_BOOL({
@@ -131,7 +132,7 @@ static const struct sm_object touchscreen = SM_DECLARE_BOOL({
 	.ui_name	= "Touchscreen",
 	.ui_helptext	= "Enable or disable the built-in touch-screen",
 	.default_value	= true,
-});
+}, WITH_CALLBACK(cfr_touchscreen_update));
 
 static const struct sm_object vpu = SM_DECLARE_BOOL({
 	.opt_name	= "vpu",

@@ -9,6 +9,11 @@ void __weak cfr_card_reader_update(struct sm_object *new_obj)
 	(void)new_obj;
 }
 
+void __weak cfr_touchscreen_update(struct sm_object *new_obj)
+{
+	(void)new_obj;
+}
+
 static const struct cfr_default_override starlabs_cfr_overrides[] = {
 	CFR_OVERRIDE_ENUM("pciexp_aspm", ASPM_L0S_L1),
 	CFR_OVERRIDE_END

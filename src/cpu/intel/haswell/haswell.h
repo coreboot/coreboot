@@ -103,10 +103,6 @@
 #define SMBASE_MSR			0xc20
 #define IEDBASE_MSR			0xc22
 
-/* MTRR_CAP_MSR bit definitions */
-#define SMRR_SUPPORTED			(1 << 11)
-#define PRMRR_SUPPORTED			(1 << 12)
-
 /* Intel suggested latency times in units of 1024ns. */
 #define C_STATE_LATENCY_CONTROL_0_LIMIT 0x42
 #define C_STATE_LATENCY_CONTROL_1_LIMIT 0x73

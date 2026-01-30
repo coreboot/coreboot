@@ -124,10 +124,10 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 
 	/* Write PRMRR and SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);
-	if (mtrr_cap.lo & SMRR_SUPPORTED)
+	if (mtrr_cap.lo & MTRR_CAP_SMRR)
 		write_smrr(relo_params);
 
-	if (mtrr_cap.lo & PRMRR_SUPPORTED) {
+	if (mtrr_cap.lo & MTRR_CAP_PRMRR) {
 		write_prmrr(relo_params);
 		/* UNCORE_PRMRR msrs are package level. Therefore, only
 		 * configure these MSRs on the BSP. */

@@ -164,7 +164,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 		relo_params->smrr_mask.lo |= SMRR_PHYS_MASK_LOCK;
 
 	/* Write SMRRs if supported */
-	if (mtrr_cap.lo & SMRR_SUPPORTED)
+	if (mtrr_cap.lo & MTRR_CAP_SMRR)
 		write_smrr(relo_params);
 }
 

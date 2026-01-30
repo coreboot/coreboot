@@ -17,8 +17,6 @@
 #include <console/console.h>
 #include <smp/node.h>
 
-#define SMRR_SUPPORTED (1 << 11)
-
 #define  D_OPEN		(1 << 6)
 #define  D_CLS		(1 << 5)
 #define  D_LCK		(1 << 4)
@@ -180,7 +178,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 
 	/* Write EMRR and SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);
-	if (!(mtrr_cap.lo & SMRR_SUPPORTED))
+	if (!(mtrr_cap.lo & MTRR_CAP_SMRR))
 		return;
 
 	if (cpu_has_alternative_smrr())

@@ -2,6 +2,7 @@
 
 #include <arch/romstage.h>
 #include <baseboard/variants.h>
+#include <bootmode.h>
 #include <ec/google/chromeec/ec.h>
 #include <fsp/api.h>
 #include <soc/romstage.h>
@@ -48,7 +49,11 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 void platform_romstage_pre_mem(void)
 {
-	/* Set LED to Red to alert the user visually */
-	if (CONFIG(EC_GOOGLE_CHROMEEC) && google_chromeec_is_critically_low_on_battery())
+	/*
+	 * Only alert the user (set LED to red in color) if the lid is closed and the battery
+	 * is critically low without AC power.
+	 */
+	if (CONFIG(EC_GOOGLE_CHROMEEC) && CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch() &&
+			 google_chromeec_is_critically_low_on_battery())
 		google_chromeec_set_lightbar_rgb(0xff, 0xff, 0x00, 0x00);
 }

@@ -95,6 +95,9 @@ config BOARD_GOOGLE_KINOX
 config BOARD_GOOGLE_KULDAX
 	bool "->  Kuldax (ASUS Chromebox 5/5a (CN67))"
 
+config BOARD_GOOGLE_KULNEX
+	bool "->  Kulnex"
+
 config BOARD_GOOGLE_JOXER
 	bool "->  Joxer (HP Chromebook x360 14b)"
 

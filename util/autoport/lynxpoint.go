@@ -163,8 +163,7 @@ func (b lynxpoint) Scan(ctx Context, addr PCIDevData) {
 	}
 
 	if (b.variant == LYNX_POINT_REFRESH) {
-		KconfigBool["USE_BROADWELL_MRC"] = true
-		KconfigComment["USE_BROADWELL_MRC"] = "if !USE_NATIVE_RAMINIT # FIXME: Uncomment the if"
+		KconfigSelect["USE_BROADWELL_MRC"] = "!USE_NATIVE_RAMINIT"
 	}
 
 	FADT := ctx.InfoSource.GetACPI()["FACP"]

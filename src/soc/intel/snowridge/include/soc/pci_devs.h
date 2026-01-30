@@ -68,6 +68,12 @@
 
 /* Stack U0. */
 #define UBOX_DEV_RACU   _UBOX0_DEV(0x00, 1)
+
+#define SMM_FEATURE_CONTROL		0x8c
+#define  SMM_CODE_CHK_EN		BIT(2)
+#define  SMM_FC_CPU_SAVE_EN		BIT(1)
+#define  SMM_FEATURE_CONTROL_LOCK	BIT(0)
+
 #define UBOX_DEV_NCDECS _UBOX0_DEV(0x00, 2)
 
 /* Stack U1. */

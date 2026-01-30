@@ -8,10 +8,6 @@
 #include <soc/pm.h>
 #include <soc/pmc.h>
 
-#define SMM_FEATURE_CONTROL      0x8c
-#define SMM_CODE_CHK_EN          (1 << 2)
-#define SMM_FEATURE_CONTROL_LOCK (1 << 0)
-
 static void pmc_lockdown_cfg(int chipset_lockdown)
 {
 	pmc_or_mmio32(PMSYNC_TPR_CFG, PCH2CPU_TPR_CFG_LOCK);

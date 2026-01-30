@@ -140,7 +140,7 @@ bool mainboard_needs_pcie_init(void)
 
 static void display_startup(void)
 {
-	if (!display_init_required()) {
+	if (!display_init_required() || (CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch())) {
 		printk(BIOS_INFO, "Skipping display init.\n");
 		return;
 	}

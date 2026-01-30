@@ -145,10 +145,7 @@ void smm_initialize(void)
 	/* Clear the SMM state in the southbridge. */
 	smm_southbridge_clear_state();
 
-	/*
-	 * Run the relocation handler for on the BSP to check and set up
-	 * parallel SMM relocation.
-	 */
+	/* Run the relocation handler on the BSP. */
 	smm_initiate_relocation();
 }
 
@@ -195,20 +192,11 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 		write_smrr(relo_params);
 }
 
-/*
- * The default SMM entry can happen in parallel or serially. If the
- * default SMM entry is done in parallel the BSP has already setup
- * the saving state to each CPU's MSRs. At least one save state size
- * is required for the initial SMM entry for the BSP to determine if
- * parallel SMM relocation is even feasible.
- */
 void smm_relocate(void)
 {
 	/*
-	 * If smm_save_state_in_msrs is non-zero then parallel SMM relocation
-	 * shall take place. Run the relocation handler a second time on the
-	 * BSP to do the final move. For APs, a relocation handler always
-	 * needs to be run.
+	 * The BSP had already run SMM relocation in smm_initialize(),
+	 * so skip it for the BSP and only run it on the APs.
 	 */
 	if (!boot_cpu())
 		smm_initiate_relocation();

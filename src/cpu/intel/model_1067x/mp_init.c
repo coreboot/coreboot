@@ -48,7 +48,7 @@ static void pre_mp_smm_init(void)
 static void per_cpu_smm_trigger(void)
 {
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
-	if (cpu_has_alternative_smrr() && mtrr_cap.lo & SMRR_SUPPORTED) {
+	if (mtrr_cap.lo & SMRR_SUPPORTED) {
 		set_feature_ctrl_vmx();
 		msr_t ia32_ft_ctrl = rdmsr(IA32_FEATURE_CONTROL);
 		/* We don't care if the lock is already setting

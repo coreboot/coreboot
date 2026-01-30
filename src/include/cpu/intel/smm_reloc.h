@@ -51,8 +51,6 @@ void smm_initialize(void);
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize, size_t *smm_save_state_size);
 void smm_relocation_handler(int cpu, uintptr_t curr_smbase, uintptr_t staggered_smbase);
 
-bool cpu_has_alternative_smrr(void);
-
 #define MSR_PRMRR_PHYS_BASE 0x1f4
 #define MSR_PRMRR_PHYS_MASK 0x1f5
 #define MSR_UNCORE_PRMRR_PHYS_BASE 0x2f4

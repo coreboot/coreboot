@@ -4,7 +4,6 @@
 #include <baseboard/variants.h>
 #include <bootmode.h>
 #include <ec/google/chromeec/ec.h>
-#include <fsp/api.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 #include <string.h>

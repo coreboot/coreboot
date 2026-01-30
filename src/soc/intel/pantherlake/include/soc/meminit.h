@@ -3,6 +3,7 @@
 #ifndef _SOC_PANTHERLAKE_MEMINIT_H_
 #define _SOC_PANTHERLAKE_MEMINIT_H_
 
+#include <fsp/api.h>
 #include <fsp/soc_binding.h>
 #include <intelblocks/meminit.h>
 #include <types.h>

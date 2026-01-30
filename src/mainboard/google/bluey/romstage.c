@@ -2,6 +2,7 @@
 
 #include <arch/stages.h>
 #include "board.h"
+#include <bootmode.h>
 #include <cbmem.h>
 #include <commonlib/bsd/cbmem_id.h>
 #include <commonlib/coreboot_tables.h>
@@ -109,8 +110,12 @@ static void early_setup_usb(void)
 
 void platform_romstage_main(void)
 {
-	/* Set LED to Red to alert the user visually */
-	if (CONFIG(EC_GOOGLE_CHROMEEC) && google_chromeec_is_critically_low_on_battery())
+	/*
+	 * Only alert the user (set LED to red in color) if the lid is closed and the battery
+	 * is critically low without AC power.
+	 */
+	if (CONFIG(EC_GOOGLE_CHROMEEC) && CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch() &&
+			 google_chromeec_is_critically_low_on_battery())
 		google_chromeec_set_lightbar_rgb(0xff, 0xff, 0x00, 0x00);
 
 	/* Setup early USB related config */

@@ -1992,3 +1992,37 @@ bool google_chromeec_is_critically_low_on_battery(void)
 	return google_chromeec_is_below_critical_threshold() &&
 	       !google_chromeec_is_charger_present();
 }
+
+#if !CONFIG(EC_GOOGLE_CHROMEEC_LPC)
+static int google_chromeec_read_memmap(uint8_t offset, uint8_t size, void *dest)
+{
+	struct ec_params_read_memmap params;
+
+	params.offset = offset;
+	params.size = size;
+
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_READ_MEMMAP,
+		.cmd_version = 0,
+		.cmd_data_in = &params,
+		.cmd_data_out = dest,
+		.cmd_size_in = sizeof(params),
+		.cmd_size_out = size,
+	};
+
+	return google_chromeec_command(&cmd);
+}
+
+/*
+ * Return the byte of EC switch states e.g. lid state
+ */
+uint8_t google_chromeec_get_switches(void)
+{
+	uint8_t flags;
+
+	if (google_chromeec_read_memmap(EC_MEMMAP_SWITCHES, sizeof(flags), &flags))
+		return 0;
+
+	return flags;
+}
+#endif

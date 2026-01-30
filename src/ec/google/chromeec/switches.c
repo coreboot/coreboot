@@ -5,7 +5,6 @@
 #include <elog.h>
 #include <security/vboot/misc.h>
 
-#if CONFIG(EC_GOOGLE_CHROMEEC_LPC)
 /*
  * Retrieves the state of the lid switch.
  *
@@ -32,7 +31,6 @@ int get_lid_switch(void)
 
 	return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);
 }
-#endif
 
 int get_recovery_mode_switch(void)
 {

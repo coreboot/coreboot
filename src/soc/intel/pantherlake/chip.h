@@ -378,18 +378,18 @@ struct soc_intel_pantherlake_config {
 	 * Fast Vmode I_TRIP Thresholds for VR Domains
 	 *
 	 * This two-dimensional array represents the Fast Vmode I_TRIP thresholds
-	 * for various Voltage Regulator (VR) domains across different power limit
-	 * configurations in Panther Lake SoCs.
+	 * for various Voltage Regulator (VR) domains across different SKUs
+	 * in Panther Lake SoCs.
 	 *
 	 * The Fast Vmode I_TRIP threshold is used to override the default current
 	 * threshold settings, ensuring optimal power management by adapting to
-	 * specific VR domain requirements under different power limit scenarios.
+	 * specific VR domain requirements for each SKU's hardware capabilities.
 	 *
 	 * 0-255A in 1/4 A units. Example: 400 = 100A
 	 * This setting overrides the default value set by FSPs when Fast VMode
 	 * is enabled.
 	 */
-	uint16_t fast_vmode_i_trip[PTL_POWER_LIMITS_COUNT][NUM_VR_DOMAINS];
+	uint16_t fast_vmode_i_trip[MAX_PTL_SKUS][NUM_VR_DOMAINS];
 
 	/*
 	 * Power state current threshold 1.

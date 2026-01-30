@@ -396,7 +396,7 @@ static int fit_update_compat(struct fit_config_node *config)
 		}
 
 		/* FDT overlays are not supported in legacy FIT images. */
-		if (config->overlays.next) {
+		if (!list_is_empty(&config->overlays)) {
 			printk(BIOS_ERR, "config %s has overlay but no compat!\n",
 			       config->name);
 			return -1;

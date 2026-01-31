@@ -2,8 +2,10 @@
 
 #include <device/pci_ops.h>
 #include <console/console.h>
+#include <drivers/i2c/at24rf08c/lenovo.h>
 #include <gpio.h>
 #include <northbridge/intel/sandybridge/raminit.h>
+#include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include "ec.h"
 
@@ -55,4 +57,9 @@ void mb_get_spd_map(struct spd_info *spdi)
 	/* C0S0 is a soldered RAM with no real SPD. Use stored SPD. */
 	spdi->addresses[0] = SPD_MEMORY_DOWN;
 	spdi->spd_index = spd_index;
+}
+
+void mainboard_early_init(bool s3resume)
+{
+	lenovo_mainboard_eeprom_lock();
 }

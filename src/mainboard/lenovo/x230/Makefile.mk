@@ -4,6 +4,8 @@ bootblock-y += variants/$(VARIANT_DIR)/gpio.c
 romstage-y += variants/$(VARIANT_DIR)/gpio.c
 ramstage-y += variants/$(VARIANT_DIR)/hda_verb.c
 
+romstage-y += early_init.c
+
 ifeq ($(CONFIG_BOARD_LENOVO_X230_EDP),y)
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += variants/x230_edp/gma-mainboard.ads
 else

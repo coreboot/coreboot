@@ -3,6 +3,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <ec/lenovo/pmh7/pmh7.h>
+#include <drivers/i2c/at24rf08c/lenovo.h>
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 
@@ -35,4 +36,5 @@ static void hybrid_graphics_init(void)
 void mainboard_early_init(bool s3resume)
 {
 	hybrid_graphics_init();
+	lenovo_mainboard_eeprom_lock();
 }

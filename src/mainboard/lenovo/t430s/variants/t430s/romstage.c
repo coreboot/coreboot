@@ -3,6 +3,7 @@
 #include <option.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
+#include <drivers/i2c/at24rf08c/lenovo.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <types.h>
@@ -20,4 +21,6 @@ void mainboard_early_init(bool s3resume)
 		// Hide disabled dGPU device
 		pci_and_config32(HOST_BRIDGE, DEVEN, ~DEVEN_PEG10);
 	}
+
+	lenovo_mainboard_eeprom_lock();
 }

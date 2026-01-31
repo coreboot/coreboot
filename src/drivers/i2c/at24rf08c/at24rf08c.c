@@ -11,6 +11,9 @@ static void at24rf08c_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
+	if (CONFIG(DRIVER_LENOVO_SERIALS_EARLY_LOCK))
+		return;
+
 	/* Ensure that EEPROM/RFID chip is not accessible through RFID.
 	   Need to do it only on 5c. */
 	if (dev->path.type != DEVICE_PATH_I2C || dev->path.i2c.device != 0x5c)

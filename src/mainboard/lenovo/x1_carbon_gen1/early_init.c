@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <drivers/i2c/at24rf08c/lenovo.h>
 #include <gpio.h>
 #include <northbridge/intel/sandybridge/raminit.h>
+#include <northbridge/intel/sandybridge/sandybridge.h>
 
 static unsigned int get_spd_index(void)
 {
@@ -39,4 +41,9 @@ void mb_get_spd_map(struct spd_info *spdi)
 	spdi->addresses[0] = SPD_MEMORY_DOWN;
 	spdi->addresses[2] = SPD_MEMORY_DOWN;
 	spdi->spd_index = get_spd_index();
+}
+
+void mainboard_early_init(bool s3resume)
+{
+	lenovo_mainboard_eeprom_lock();
 }

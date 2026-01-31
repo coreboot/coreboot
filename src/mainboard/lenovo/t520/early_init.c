@@ -1,12 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdint.h>
+#include <device/device.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
+#include <drivers/i2c/at24rf08c/lenovo.h>
+#include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
-#include <device/device.h>
 
 static void hybrid_graphics_init(void)
 {
@@ -37,4 +38,5 @@ static void hybrid_graphics_init(void)
 void mainboard_early_init(bool s3resume)
 {
 	hybrid_graphics_init();
+	lenovo_mainboard_eeprom_lock();
 }

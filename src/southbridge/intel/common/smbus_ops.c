@@ -56,11 +56,24 @@ static int lsmbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buf)
 	return do_smbus_block_read(res->base, device, cmd, bytes, buf);
 }
 
+static int lsmbus_i2c_eeprom_read(struct device *dev, u8 offset, u8 bytes, u8 *buf)
+{
+	u16 device;
+	struct resource *res;
+	struct bus *pbus;
+
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
+	return do_i2c_eeprom_read(res->base, device, offset, bytes, buf);
+}
+
 struct smbus_bus_operations lops_smbus_bus = {
-	.read_byte	= lsmbus_read_byte,
-	.write_byte	= lsmbus_write_byte,
-	.block_read	= lsmbus_block_read,
-	.block_write	= lsmbus_block_write,
+	.read_byte		= lsmbus_read_byte,
+	.write_byte		= lsmbus_write_byte,
+	.block_read		= lsmbus_block_read,
+	.block_write		= lsmbus_block_write,
+	.i2c_eeprom_read	= lsmbus_i2c_eeprom_read,
 };
 
 void smbus_read_resources(struct device *dev)

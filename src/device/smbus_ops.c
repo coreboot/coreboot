@@ -35,3 +35,11 @@ int smbus_block_write(struct device *dev, u8 cmd, u8 bytes, const u8 *buffer)
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_write(dev, cmd,
 							       bytes, buffer);
 }
+
+int smbus_i2c_eeprom_read(struct device *dev, u8 cmd, u8 bytes, u8 *buffer)
+{
+	CHECK_PRESENCE(i2c_eeprom_read);
+
+	return ops_smbus_bus(get_pbus_smbus(dev))->i2c_eeprom_read(dev, cmd,
+								   bytes, buffer);
+}

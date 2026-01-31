@@ -350,6 +350,8 @@ DefinitionBlock (
 			})                                                  \
 			Method(_SRS, 1, NotSerialized) {                    \
 			}                                                   \
+			Method(_DIS, 0, NotSerialized) {                    \
+			}                                                   \
 		}
 
 		define_gsi_link(GSIA, 0, 0x10)

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <build.h>
 #include <types.h>
 #include <string.h>
@@ -38,18 +39,22 @@ static int at24rf08c_read_byte(struct device *dev, u8 addr)
 	return t;
 }
 
-static void at24rf08c_read_string_dev(struct device *dev, u8 start,
-				      u8 len, char *result)
+static void at24rf08c_read_string_dev(struct device *dev, const u8 start,
+				      const u8 len, char *result)
 {
-	int i;
-	for (i = 0; i < len; i++) {
-		int t = at24rf08c_read_byte(dev, start + i);
+	assert(start + len <= 128);
 
-		if (t < 0x20 || t > 0x7f) {
+	int ret = smbus_i2c_eeprom_read(dev, start, len, (u8 *)result);
+	if (ret != len) {
+		for (int i = 0; i < len; i++)
+			result[i] = at24rf08c_read_byte(dev, start + i);
+	}
+
+	for (int i = 0; i < len; i++) {
+		if (result[i] < 0x20) {
 			memcpy(result, ERROR_STRING, sizeof(ERROR_STRING));
 			return;
 		}
-		result[i] = t;
 	}
 	result[len] = '\0';
 }
@@ -106,7 +111,7 @@ const char *smbios_mainboard_product_name(void)
 void smbios_system_set_uuid(u8 *uuid)
 {
 	static char result[16];
-	unsigned int i;
+	u8 buf[16];
 	static int already_read;
 	struct device *dev;
 	const int remap[16] = {
@@ -119,33 +124,29 @@ void smbios_system_set_uuid(u8 *uuid)
 		return;
 	}
 
-	memset(result, 0, sizeof(result));
+	memset(uuid, 0, 16);
 
 	dev = dev_find_slot_on_smbus(1, 0x56);
 	if (dev == NULL) {
 		printk(BIOS_WARNING, "EEPROM not found\n");
 		already_read = 1;
-		memset(uuid, 0, 16);
 		return;
 	}
 
-	for (i = 0; i < 16; i++) {
-		int t;
-		int j;
-		/* After a register write AT24RF08C (which we issued in init function) sometimes stops responding.
-		   Retry several times in case of failure.
-		*/
-		for (j = 0; j < 100; j++) {
-			t = smbus_read_byte(dev, 0x12 + i);
-			if (t >= 0)
-				break;
+	int ret = smbus_i2c_eeprom_read(dev, 0x12, 16, buf);
+	if (ret != 16) {
+		for (int i = 0; i < 16; i++) {
+			int c = at24rf08c_read_byte(dev, 0x12 + i);
+			if (c < 0) {
+				already_read = 1;
+				return;
+			}
+			buf[i] = c;
 		}
-		if (t < 0) {
-			memset(result, 0, sizeof(result));
-			break;
-		}
-		result[remap[i]] = t;
 	}
+
+	for (int i = 0; i < 16; i++)
+		result[remap[i]] = buf[i];
 
 	already_read = 1;
 

@@ -291,14 +291,15 @@ DefinitionBlock (
 			}
 			Return (0x0B)
 		}
+
 		Method(IQCR, 1, Serialized) {
 			// _CRS method - get current settings
-			Name(PRR0, ResourceTemplate() {
-				Interrupt(, Level, ActiveHigh, Shared) { 0 }
-			})
-			CreateDWordField(PRR0, 0x05, PRRI)
-			PRRI = Arg0 & 0x0F
-			Return (PRR0)
+			Local0 = ResourceTemplate() {
+				Interrupt(, Level, ActiveHigh, Shared,,, IRQ0) { 0 }
+			}
+			CreateDWordField(Local0, IRQ0._INT, IRQV)
+			IRQV = Arg0 & 0x0F
+			Return (Local0)
 		}
 
 #define define_link(link, uid, reg)                             \

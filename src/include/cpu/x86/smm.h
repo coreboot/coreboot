@@ -96,6 +96,10 @@ struct smm_runtime {
 	int smm_log_level;
 	uintptr_t smmstore_com_buffer_base;
 	size_t smmstore_com_buffer_size;
+#if CONFIG(SMM_OPAL_S3_SCRATCH_CBMEM)
+	uintptr_t opal_s3_scratch_base;
+	size_t opal_s3_scratch_size;
+#endif
 } __packed;
 
 struct smm_module_params {
@@ -238,5 +242,8 @@ bool smm_pci_resource_store_fill_resources(struct smm_pci_resource_info *slots, 
 void smm_pci_resource_store_init(struct smm_runtime *smm_runtime);
 
 void smm_get_smmstore_com_buffer(uintptr_t *base, size_t *size);
+#if CONFIG(SMM_OPAL_S3_SCRATCH_CBMEM)
+void smm_get_opal_s3_scratch_buffer(uintptr_t *base, size_t *size);
+#endif
 
 #endif /* CPU_X86_SMM_H */

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -560,19 +561,66 @@ static void pch_lpc_read_resources(struct device *dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
+	res = new_resource(dev, 2);
 	res->base = 0xff000000;
 	/* Some systems (e.g. X230) have 12 MiB flash.
 	   SPI controller supports up to 2 x 16 MiB of flash but
 	   address map limits this to 16MiB.  */
 	res->size = 0x01000000; /* 16 MB for flash */
-	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+		     IORESOURCE_FIXED | IORESOURCE_RESERVE;
 
 	res = new_resource(dev, 3); /* IOAPIC */
 	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+		     IORESOURCE_FIXED | IORESOURCE_RESERVE;
+
+	/* HPET */
+	res = new_resource(dev, 4);
+	res->base = (resource_t)HPET_BASE_ADDRESS;
+	res->size = 4 * KiB;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+		     IORESOURCE_FIXED | IORESOURCE_RESERVE;
+
+	/* TXT_PRIVATE_SPACE */
+	res = new_resource(dev, 5);
+	res->base = (resource_t)0xfed20000;
+	res->size = 0x20000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+		     IORESOURCE_FIXED | IORESOURCE_RESERVE;
+
+	/* Misc ICH + TXT_RESERVED_SPACE */
+	res = new_resource(dev, 6);
+	res->base = (resource_t)0xfed45000;
+	res->size = 0x4b000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+			IORESOURCE_FIXED | IORESOURCE_RESERVE;
+
+	/* RCBA */
+	res = new_resource(dev, RCBA);
+	res->base = (resource_t)CONFIG_FIXED_RCBA_MMIO_BASE;
+	res->size = CONFIG_RCBA_LENGTH;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+			IORESOURCE_FIXED | IORESOURCE_RESERVE;
+
+	/* LPC TPM TIS */
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
+	res->base = 0xfed40000;
+	res->size = 0x00005000;
+	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* Check LPC Memory Decode register. */
+	u32 reg = pci_read_config32(dev, LGMR);
+	if (reg & 1) {
+		reg &= ~0xffff;
+		res = new_resource(dev, LGMR);
+		res->base = reg;
+		res->size = 64 * 1024;
+		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+			     IORESOURCE_FIXED | IORESOURCE_RESERVE;
+	}
 
 	/* Set PCH IO decode ranges if required.*/
 	if ((config->gen1_dec & 0xFFFC) > 0x1000) {

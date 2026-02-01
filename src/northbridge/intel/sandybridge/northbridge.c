@@ -201,6 +201,20 @@ static void mc_read_resources(struct device *dev)
 		printk(BIOS_DEBUG, "DPR base 0x%08x size %uM\n", dpr_base_k * KiB, dpr.size);
 	}
 
+	/* Non standard BARs */
+	u64 bar = pci_read_config32(dev, MCHBAR);
+	bar |= ((u64)pci_read_config32(dev, MCHBAR + 4) << 32);
+	if (bar & 1)
+		mmio_range(dev, index++, bar & ~0xf, 0x8000);
+	bar = pci_read_config32(dev, DMIBAR);
+	bar |= ((u64)pci_read_config32(dev, DMIBAR + 4) << 32);
+	if (bar & 1)
+		mmio_range(dev, index++, bar & ~0xf, 0x1000);
+	bar = pci_read_config32(dev, EPBAR);
+	bar |= ((u64)pci_read_config32(dev, EPBAR + 4) << 32);
+	if (bar & 1)
+		mmio_range(dev, index++, bar & ~0xf, 0x1000);
+
 	printk(BIOS_INFO, "Available memory below 4GB: %lluM\n", tomk >> 10);
 
 	/* Report the memory regions */

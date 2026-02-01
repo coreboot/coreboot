@@ -1098,6 +1098,16 @@ extra:
 			for (i = 0; i < 10; i++)
 				dump_data(iobase + 5, i);
 			break;
+		case 0xc800:	/* NCT6791D */
+			printf("HWM banked registers:\n");
+			for (i = 0; i <= 0xa; i++)
+				dump_data(iobase + 5, i);
+			break;
+		case 0xd420:	/* NCT6796D */
+			printf("HWM banked registers:\n");
+			for (i = 0; i <= 0xb; i++)
+				dump_data(iobase + 5, i);
+			break;
 		case 0xd590: /* NCT6687D-W */
 			dump_nct6687d_gpios(port);
 			/* One can use the APCI/BIOS register set, although the

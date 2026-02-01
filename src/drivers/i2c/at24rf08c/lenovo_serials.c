@@ -154,7 +154,7 @@ void smbios_system_set_uuid(u8 *uuid)
 
 const char *smbios_mainboard_version(void)
 {
-	static char result[100];
+	static char result[90];
 	static int already_read;
 	struct device *dev;
 	int len;

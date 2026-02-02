@@ -61,6 +61,17 @@ chip soc/intel/jasperlake
 	register "SerialIoI2cMode[PchSerialIoIndexI2C4]" = "PchSerialIoPci"
 
 	device domain 0 on
+		device ref igpu on
+			chip drivers/gfx/generic
+				register "device_count" = "1"
+				# DDIA for eDP
+				register "device[0].name" = ""LCD0""
+				# Internal panel on the first port of the graphics chip
+				register "device[0].type" = "panel"
+
+				device generic 0 on end
+			end
+		end
 		device ref ipu on end
 		device ref south_xhci on
 			chip drivers/usb/acpi

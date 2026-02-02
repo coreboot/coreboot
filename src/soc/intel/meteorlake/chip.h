@@ -52,7 +52,8 @@ enum soc_intel_meteorlake_power_limits {
 /* TDP values for different SKUs */
 enum soc_intel_meteorlake_cpu_tdps {
 	TDP_15W = 15,
-	TDP_28W = 28
+	TDP_28W = 28,
+	TDP_45W = 45,
 };
 
 /* Mapping of different SKUs based on CPU ID and TDP values */
@@ -66,6 +67,7 @@ static const struct {
 	{ PCI_DID_INTEL_MTL_P_ID_3, MTL_P_682_482_CORE, TDP_28W },
 	{ PCI_DID_INTEL_MTL_P_ID_1, MTL_P_682_482_CORE, TDP_28W },
 	{ PCI_DID_INTEL_ARL_H_ID_1, MTL_P_682_482_CORE, TDP_28W },
+	{ PCI_DID_INTEL_ARL_H_ID_1, MTL_P_682_482_CORE, TDP_45W },
 	{ PCI_DID_INTEL_ARL_H_ID_2, MTL_P_682_482_CORE, TDP_28W },
 };
 

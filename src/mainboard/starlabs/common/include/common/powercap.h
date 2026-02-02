@@ -5,8 +5,6 @@
 
 #include <soc/soc_chip.h>
 
-#define TCC(temp)	(CONFIG_TJ_MAX - temp)
-
 enum cmos_power_profile {
 	PP_POWER_SAVER	= 0,
 	PP_BALANCED	= 1,

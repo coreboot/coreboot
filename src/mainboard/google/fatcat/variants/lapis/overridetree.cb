@@ -76,7 +76,7 @@ chip soc/intel/pantherlake
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # LED
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)" # Type-A Port A0 (MB)
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)" # Type-A Port A1 (DB)
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # USB HUB (USB2 Camera)
+	register "usb2_ports[5]" = "USB2_PORT_LONG(OC_SKIP)" # USB HUB (USB2 Camera)
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Discrete Bluetooth
 

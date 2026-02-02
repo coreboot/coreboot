@@ -381,7 +381,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_V16:     GPP_V16_VCCST_EN */
 	PAD_CFG_NF(GPP_V16, NONE, DEEP, NF1),
 	/* GPP_V17:     SLP_S0_GATE_R */
-	PAD_CFG_GPO(GPP_V17, 1, PLTRST),
+	PAD_CFG_GPO(GPP_V17, 1, DEEP),
 };
 
 /* Early pad configuration in bootblock */

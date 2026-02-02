@@ -62,12 +62,12 @@ chip soc/intel/pantherlake
 		.tdp_pl4 = 150,
 	}"
 
-	register "fast_vmode_i_trip[PTL_CORE_1]" = "{
+	register "fast_vmode_i_trip[PTL_SKU_1]" = "{
 		[VR_DOMAIN_IA] = 74 * 4,
 		[VR_DOMAIN_GT] = 38 * 4,
 		[VR_DOMAIN_SA] = 38 * 4
 	}"
-	register "fast_vmode_i_trip[PTL_CORE_2]" = "{
+	register "fast_vmode_i_trip[PTL_SKU_5]" = "{
 		[VR_DOMAIN_IA] = 74 * 4,
 		[VR_DOMAIN_GT] = 38 * 4,
 		[VR_DOMAIN_SA] = 38 * 4

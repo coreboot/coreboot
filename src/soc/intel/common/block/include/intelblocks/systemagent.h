@@ -91,8 +91,6 @@ uintptr_t sa_get_tolud_base(void);
 uintptr_t sa_get_gsm_base(void);
 /* API to get TSEG base address */
 uintptr_t sa_get_tseg_base(void);
-/* API to get TSEG size */
-size_t sa_get_tseg_size(void);
 /* API to lock PAM registers */
 void sa_lock_pam(void);
 /* API to get MMIO config size */

@@ -54,7 +54,7 @@
 void smm_region(uintptr_t *start, size_t *size)
 {
 	*start = sa_get_tseg_base();
-	*size = sa_get_tseg_size();
+	*size = CONFIG_SMM_TSEG_SIZE;
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

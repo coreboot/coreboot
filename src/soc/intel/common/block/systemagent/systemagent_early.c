@@ -146,11 +146,6 @@ uintptr_t sa_get_tseg_base(void)
 	return ALIGN_DOWN(pci_read_config32(SA_DEV_ROOT, TSEG), 1*MiB);
 }
 
-size_t sa_get_tseg_size(void)
-{
-	return sa_get_gsm_base() - sa_get_tseg_base();
-}
-
 union dpr_register txt_get_chipset_dpr(void)
 {
 	return (union dpr_register) { .raw = pci_read_config32(SA_DEV_ROOT, DPR) };

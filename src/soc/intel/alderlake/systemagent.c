@@ -116,7 +116,7 @@ void soc_add_configurable_mmio_resources(struct device *dev, int *resource_cnt)
 	}
 
 	/* TSEG */
-	size = sa_get_tseg_size();
+	size = CONFIG_SMM_TSEG_SIZE;
 	tseg_base = sa_get_tseg_base();
 	if (size > 0)
 		set_mmio_resource(&(cfg_rsrc[count++]), tseg_base, size, "TSEG");

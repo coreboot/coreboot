@@ -84,11 +84,15 @@ chip soc/intel/jasperlake
 	device domain 0 on
 		device ref igpu on
 			chip drivers/gfx/generic
-				register "device_count" = "1"
+				register "device_count" = "2"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD0""
 				# Internal panel on the first port of the graphics chip
 				register "device[0].type" = "panel"
+				# IPUA for IPUs
+				register "device[1].name" = ""IPUA""
+				register "device[1].non_vga_device" = "true"
+				register "device[1].addr" = "0x3480"
 
 				device generic 0 on end
 			end
@@ -317,13 +321,11 @@ chip soc/intel/jasperlake
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 
 				register "ssdb.lanes_used" = "4"
-				register "ssdb.link_used" = "1"
+				register "ssdb.link_used" = "2"
 				register "ssdb.platform" = "PLAT_JSL"
 				register "ssdb.vcm_type" = "VCM_DW9714"
 				register "vcm_address" = "0x0C"
 				register "vcm_name" = ""VCM0""
-				register "ssdb.rom_type" = "ROM_EEPROM_CAT24C08"
-				register "rom_address" = "0x50"
 				register "num_freq_entries" = "2"
 				register "link_freq[0]" = "360000000"
 				register "link_freq[1]" = "180000000"

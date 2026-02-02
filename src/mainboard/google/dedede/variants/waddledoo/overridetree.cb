@@ -59,11 +59,15 @@ chip soc/intel/jasperlake
 	device domain 0 on
 		device ref igpu on
 			chip drivers/gfx/generic
-				register "device_count" = "1"
+				register "device_count" = "2"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD0""
 				# Internal panel on the first port of the graphics chip
 				register "device[0].type" = "panel"
+				# IPUA for IPUs
+				register "device[1].name" = ""IPUA""
+				register "device[1].non_vga_device" = "true"
+				register "device[1].addr" = "0x3480"
 
 				device generic 0 on end
 			end
@@ -162,6 +166,7 @@ chip soc/intel/jasperlake
 				register "acpi_name" = ""CAM1""
 				register "chip_name" = ""Ov 8856 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+				register "sensor_name" = ""CJAJ813""
 
 				register "ssdb.lanes_used" = "4"
 				register "ssdb.link_used" = "2"
@@ -169,9 +174,6 @@ chip soc/intel/jasperlake
 				register "ssdb.vcm_type" = "VCM_DW9808"
 				register "vcm_address" = "0x0C"
 				register "vcm_name" = ""VCM0""
-				# placeholder; ROM type 24C1024 currently unsupported
-				# register "ssdb.rom_type" = "ROM_EEPROM_24C1024"
-				# register "rom_address" = "0x50"
 				register "num_freq_entries" = "2"
 				register "link_freq[0]" = "360000000"
 				register "link_freq[1]" = "180000000"
@@ -236,6 +238,7 @@ chip soc/intel/jasperlake
 				register "acpi_name" = ""CAM0""
 				register "chip_name" = ""Ov 9734 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+				register "sensor_name" = ""CJAJ813""
 				register "has_power_resource" = "true"
 
 				register "ssdb.lanes_used" = "1"

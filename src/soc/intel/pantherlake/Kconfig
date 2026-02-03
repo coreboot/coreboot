@@ -253,8 +253,8 @@ config MAX_TBT_ROOT_PORTS
 config MAX_ROOT_PORTS
 	int
 	default 6 if SOC_INTEL_WILDCATLAKE
-	default 12 if SOC_INTEL_PANTHERLAKE_H
-	default 10
+	default 10 if SOC_INTEL_PANTHERLAKE_H
+	default 12
 
 config MAX_PCIE_CLOCK_SRC
 	int

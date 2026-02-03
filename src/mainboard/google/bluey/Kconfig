@@ -123,6 +123,12 @@ config MAINBOARD_SUPPORTS_PARALLEL_CHARGING
 	help
 	  Enable this option if your mainboard supports parallel charging.
 
+config HAVE_CHARGING_DEBUG_ACCESS_PORT
+	bool
+	default n
+	help
+	  Enable this option to allow charging on the debug access port.
+
 config MAINBOARD_HAS_GOOGLE_TPM
 	bool
 	default n

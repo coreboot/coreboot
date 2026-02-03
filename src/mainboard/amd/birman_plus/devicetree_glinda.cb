@@ -21,6 +21,11 @@ chip soc/amd/glinda
 		.flash_ch_en = 0,
 	}"
 
+	register "system_configuration" = "2"
+
+	register "slow_ppt_limit_mW" = "45000"
+	register "fast_ppt_limit_mW" = "45000"
+
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
 					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 	register "i2c[2].early_init" = "1"

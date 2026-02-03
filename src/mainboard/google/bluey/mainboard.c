@@ -234,8 +234,6 @@ static void mainboard_init(struct device *dev)
 
 	/* Setup USB related initial config */
 	setup_usb();
-
-	lpass_init();
 }
 
 static void mainboard_enable(struct device *dev)

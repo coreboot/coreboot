@@ -147,6 +147,8 @@ void convert_bmp_to_blt(uintptr_t logo, size_t logo_size,
 	uintptr_t *blt, size_t *blt_size, uint32_t *pixel_height, uint32_t *pixel_width,
 	enum lb_fb_orientation orientation);
 
+/* Mainboard-specific override for logo filenames */
+const char *mainboard_bmp_logo_filename(void);
 /*
  * Allow platform-specific BMP logo overrides via HAVE_CUSTOM_BMP_LOGO config.
  * For example: Introduce configurable BMP logo for customization on platforms like ChromeOS

@@ -111,6 +111,12 @@ chip soc/intel/elkhartlake
 		[PchSerialIoIndexI2C6] = 1,
         }"
 
+	register "common_soc_config" = "{
+		.i2c[1] = {
+			.speed = I2C_SPEED_STANDARD,
+		},
+	}"
+
 	register "SerialIoUartMode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoPci,
 		[PchSerialIoIndexUART1] = PchSerialIoPci,

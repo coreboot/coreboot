@@ -72,7 +72,6 @@ chip soc/intel/jasperlake
 				device generic 0 on end
 			end
 		end
-		device ref ipu on end
 		device ref south_xhci on
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on

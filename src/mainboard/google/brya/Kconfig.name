@@ -118,6 +118,9 @@ config BOARD_GOOGLE_MOLI
 config BOARD_GOOGLE_MOXIE
 	bool "->  Moxie (Acer Chromebox CXI6)"
 
+config BOARD_GOOGLE_MOXOE
+	bool "->  Moxoe"
+
 config BOARD_GOOGLE_NIVVIKS
 	bool "->  Nivviks"
 

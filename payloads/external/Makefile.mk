@@ -510,6 +510,22 @@ payloads/external/leanefi/leanefi/build/leanefi.elf: FORCE $(DOTCONFIG)
 	$(MAKE) -C payloads/external/leanefi
 FORCE: ;
 
+# CrabEFI
+
+payloads/external/CrabEFI/CrabEFI/target/x86_64-unknown-none/release/crabefi: $(DOTCONFIG)
+	$(MAKE) -C payloads/external/CrabEFI \
+		CRABEFI_REPO=$(CONFIG_CRABEFI_REPOSITORY) \
+		CRABEFI_TAG_OR_REV=$(CONFIG_CRABEFI_TAG_OR_REV) \
+		CONFIG_CRABEFI_DEBUG= \
+		CONFIG_CRABEFI_UI=$(CONFIG_CRABEFI_UI)
+
+payloads/external/CrabEFI/CrabEFI/target/x86_64-unknown-none/debug/crabefi: $(DOTCONFIG)
+	$(MAKE) -C payloads/external/CrabEFI \
+		CRABEFI_REPO=$(CONFIG_CRABEFI_REPOSITORY) \
+		CRABEFI_TAG_OR_REV=$(CONFIG_CRABEFI_TAG_OR_REV) \
+		CONFIG_CRABEFI_DEBUG=y \
+		CONFIG_CRABEFI_UI=$(CONFIG_CRABEFI_UI)
+
 # COREDOOM
 
 payloads/external/coreDOOM/coredoom/doomgeneric/coredoom.elf coredoom:

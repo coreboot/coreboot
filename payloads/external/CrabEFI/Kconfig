@@ -1,0 +1,65 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if PAYLOAD_CRABEFI
+
+config PAYLOAD_FILE
+	string "CrabEFI ELF binary"
+	default "payloads/external/CrabEFI/CrabEFI/target/x86_64-unknown-none/debug/crabefi" if CRABEFI_DEBUG
+	default "payloads/external/CrabEFI/CrabEFI/target/x86_64-unknown-none/release/crabefi"
+	help
+	  The path to the CrabEFI ELF binary.
+
+choice
+	prompt "CrabEFI version"
+	default CRABEFI_MASTER
+
+config CRABEFI_MASTER
+	bool "master"
+	help
+	  Use the latest master branch of CrabEFI.
+
+config CRABEFI_REVISION
+	bool "git revision"
+	help
+	  Use a specific git revision of CrabEFI.
+
+endchoice
+
+config CRABEFI_REPOSITORY
+	string "CrabEFI git repository URL"
+	default "https://github.com/ArthurHeymans/CrabEFI"
+	help
+	  The git repository URL for CrabEFI.
+
+config CRABEFI_TAG_OR_REV
+	string "CrabEFI git tag or revision"
+	default "origin/master" if CRABEFI_MASTER
+	default "" if CRABEFI_REVISION
+	help
+	  The git tag, branch name, or commit SHA-1 to use.
+	  For branch names, prefix with "origin/" (e.g., "origin/master").
+
+choice
+	prompt "CrabEFI build type"
+	default CRABEFI_RELEASE
+
+config CRABEFI_DEBUG
+	bool "Debug"
+	help
+	  Build CrabEFI with debug symbols and without optimizations.
+
+config CRABEFI_RELEASE
+	bool "Release"
+	help
+	  Build CrabEFI with optimizations.
+
+endchoice
+
+config CRABEFI_UI
+	bool "Enable CrabEFI graphical UI"
+	default y
+	help
+	  Enable CrabEFI's graphical UI, including mouse support and the
+	  setup utility.
+
+endif # PAYLOAD_CRABEFI

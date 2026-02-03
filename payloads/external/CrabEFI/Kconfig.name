@@ -1,0 +1,16 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config PAYLOAD_CRABEFI
+	bool "CrabEFI"
+	depends on ARCH_X86
+	help
+	  Select this option if you want to build a coreboot image
+	  with a CrabEFI payload.
+
+	  CrabEFI is a minimal UEFI implementation written in Rust,
+	  designed to run as a coreboot payload. It implements just
+	  enough UEFI to boot Linux via shim/GRUB2 or systemd-boot.
+
+	  This requires cargo to be installed.
+
+	  See https://github.com/ArthurHeymans/CrabEFI for more information.

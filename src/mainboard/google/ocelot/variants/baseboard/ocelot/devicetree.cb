@@ -29,6 +29,12 @@ chip soc/intel/pantherlake
 	register "tcss_ports[0]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 0
 	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 1
 
+	# Acoustic Noise settings and slew rate configuration:
+	# Slew rate for GT Domain: Fast/4
+	register "enable_acoustic_noise_mitigation" = "true"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_GT]" = "true"
+	register "slow_slew_rate_config[VR_DOMAIN_GT]" = "SLEW_FAST_4"
+
 	# Enable SAGv
 	register "sagv" = "SAGV_ENABLED"
 
@@ -61,15 +67,14 @@ chip soc/intel/pantherlake
 	# Enable Energy Reporting
 	register "pch_pm_energy_report_enable" = "true"
 
-	# Reference: 858124 Power Delivery Guide Rev1p0, 830097 Powermap Rev1p1
+	# Reference: 844458 MOW WW03
 	# fast_vmode_i_trip values are derived from ICCMax with a safety margin.
 	# ITRIP_NOM is approximately 0.70 of ICCMax
 	# TODO: Update with actual i_trip values.
-
+	register "enable_fast_vmode[VR_DOMAIN_GT]" = "true"
+	register "cep_enable[VR_DOMAIN_GT]" = "true"
 	register "fast_vmode_i_trip[WCL_CORE]" = "{
-		[VR_DOMAIN_IA] = 35 * 4,
-		[VR_DOMAIN_GT] = 35 * 4,
-		[VR_DOMAIN_SA] = 24 * 4
+		[VR_DOMAIN_GT] = 25 * 4,
 	}"
 
 	register "serial_io_uart_mode" = "{

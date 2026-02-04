@@ -10,6 +10,8 @@
 
 #include "render_bmp.h"
 
+#define MAX_SPLASH_TEXT_WIDTH 32
+
 static bool is_bmp_image_valid(struct bmp_image_header *header)
 {
 	/* Check if the BMP Header Signature is valid */
@@ -708,6 +710,13 @@ void render_logo_to_framebuffer(struct logo_config *config)
 		if (load_and_render_logo_to_framebuffer(BOOTSPLASH_LOW_BATTERY, config) != 0) {
 			printk(BIOS_ERR, "%s: Failed to render low-battery logo.\n", __func__);
 		}
+
+		/* Display Text message at the footer of splash screen if supported */
+		if (CONFIG(FRAMEBUFFER_SPLASH_TEXT)) {
+			char msg[MAX_SPLASH_TEXT_WIDTH];
+			if (platform_get_splash_text(BOOTSPLASH_LOW_BATTERY, msg, MAX_SPLASH_TEXT_WIDTH))
+				render_text_to_framebuffer(config, msg, BOOTSPLASH_TEXT_FOOTER);
+		}
 		return;
 	}
 
@@ -718,6 +727,14 @@ void render_logo_to_framebuffer(struct logo_config *config)
 	if (platform_is_off_mode_charging_active()) {
 		if (load_and_render_logo_to_framebuffer(BOOTSPLASH_OFF_MODE_CHARGING, config) != 0)
 			printk(BIOS_ERR, "%s: Failed to render off-mode charging logo.\n", __func__);
+
+		/* Display Text message at the footer of splash screen if supported */
+		if (CONFIG(FRAMEBUFFER_SPLASH_TEXT)) {
+			char msg[MAX_SPLASH_TEXT_WIDTH];
+			if (platform_get_splash_text(BOOTSPLASH_OFF_MODE_CHARGING, msg,
+					 MAX_SPLASH_TEXT_WIDTH))
+				render_text_to_framebuffer(config, msg, BOOTSPLASH_TEXT_FOOTER);
+		}
 		return;
 	}
 

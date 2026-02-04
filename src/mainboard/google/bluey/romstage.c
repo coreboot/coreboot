@@ -8,6 +8,7 @@
 #include <commonlib/coreboot_tables.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/aop_common.h>
 #include <soc/pmic.h>
 #include <soc/qclib_common.h>
@@ -74,12 +75,27 @@ static bool is_pd_sync_required(void)
 	return false;
 }
 
+/* Check if it is okay to enable PD sync. */
+static bool vboot_can_enable_pd_sync(void)
+{
+	if (!CONFIG(VBOOT))
+		return false;
+
+	/* Always enable if in developer or recovery mode */
+	if (vboot_developer_mode_enabled() || vboot_recovery_mode_enabled() ||
+			 vboot_check_recovery_request())
+		return true;
+
+	/* Otherwise disable */
+	return false;
+}
+
 int qclib_mainboard_override(struct qclib_cb_if_table *table)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
 		return 0;
 
-	if (is_pd_sync_required())
+	if (is_pd_sync_required() || vboot_can_enable_pd_sync())
 		table->global_attributes |= QCLIB_GA_ENABLE_PD_NEGOTIATION;
 	else
 		table->global_attributes &= ~QCLIB_GA_ENABLE_PD_NEGOTIATION;

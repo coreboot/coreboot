@@ -98,6 +98,14 @@ config BOARD_GOOGLE_JUBILANT
 	select MAINBOARD_HAS_GOOGLE_STRAUSS_KEYBOARD
 	select USE_UNIFIED_AP_FIRMWARE_FOR_UFS_AND_NON_UFS
 
+config BOARD_GOOGLE_JUCHI
+	select BOARD_GOOGLE_BASEBOARD_BROX
+	select CHROMEOS_WIFI_SAR if CHROMEOS
+	select DRIVERS_GENERIC_ALC1015
+	select DRIVERS_I2C_SX9324
+	select MAINBOARD_HAS_GOOGLE_STRAUSS_KEYBOARD
+	select USE_UNIFIED_AP_FIRMWARE_FOR_UFS_AND_NON_UFS
+
 config BOARD_GOOGLE_CABOC
 	select BOARD_GOOGLE_BASEBOARD_BROX
 	select CHROMEOS_WIFI_SAR if CHROMEOS
@@ -141,6 +149,7 @@ config PL4_LIMIT_FOR_CRITICAL_BAT_BOOT
 	default 9 if BOARD_GOOGLE_BROX_RTK_EC
 	default 14 if BOARD_GOOGLE_CABOC
 	default 14 if BOARD_GOOGLE_JUBILANT
+	default 14 if BOARD_GOOGLE_JUCHI
 	default 40 if BOARD_GOOGLE_LOTSO
 	help
 	  Select this if the variant has to boot even with low battery, critical battery
@@ -181,6 +190,7 @@ config MAINBOARD_PART_NUMBER
 	default "Caboc" if BOARD_GOOGLE_CABOC
 	default "Greenbayupoc" if BOARD_GOOGLE_GREENBAYUPOC
 	default "Jubilant" if BOARD_GOOGLE_JUBILANT
+	default "Juchi" if BOARD_GOOGLE_JUCHI
 	default "Lotso" if BOARD_GOOGLE_LOTSO
 
 config VARIANT_DIR
@@ -193,6 +203,7 @@ config VARIANT_DIR
 	default "lotso" if BOARD_GOOGLE_LOTSO
 	default "greenbayupoc" if BOARD_GOOGLE_GREENBAYUPOC
 	default "jubilant" if BOARD_GOOGLE_JUBILANT
+	default "juchi" if BOARD_GOOGLE_JUCHI
 
 config VBOOT
 	select VBOOT_LID_SWITCH

@@ -27,5 +27,8 @@ config BOARD_GOOGLE_JUBILANT
 	  - Acer Chromebook Plus 514
 	  - Acer Chromebook Plus 516 (CB516-1H,CB516-1HT)
 
+config BOARD_GOOGLE_JUCHI
+	bool "->  Juchi"
+
 config BOARD_GOOGLE_LOTSO
 	bool "->  Lotso (Lenovo Chromebook Plus 2-in-1)"

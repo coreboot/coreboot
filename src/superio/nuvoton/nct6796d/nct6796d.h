@@ -17,7 +17,10 @@
 #define NCT6796D_BCLK_WDT2_WDTMEM	0x0D /* BCLK, WDT2, WDT_MEM */
 #define NCT6796D_CIRWUP			0x0E /* CIR Wake-Up */
 #define NCT6796D_GPIO_PP_OD		0x0F /* GPIO Push-Pull/Open-Drain */
+#define NCT6796D_PGPIO_RI_PSOUT		0x11 /* PGPIO, RI PSOUT Wake-Up */
+#define NCT6796D_LED			0x12 /* LED control */
 #define NCT6796D_PORT80			0x14 /* Port 80 UART */
+#define NCT6796D_LED2			0x15 /* LED Control 2 */
 #define NCT6796D_DS			0x16 /* Deep Sleep */
 
 /* Virtual LDNs */

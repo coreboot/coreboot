@@ -287,6 +287,46 @@ config PLATFORM_OFF_MODE_CHARGING_INDICATOR_LOGO_PATH
 	string "Path to off-mode charging logo file"
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/off_mode_charging.bmp"
 
+config FRAMEBUFFER_SPLASH_TEXT
+	bool "Enable splash screen text"
+	default n
+	help
+	  Enable logic to render bitmapped text strings directly into
+	  the linear framebuffer during the splash screen stage. This
+	  method uses a bitmapped font table to display system
+	  status messages, such as battery charging levels.
+
+if FRAMEBUFFER_SPLASH_TEXT
+
+choice
+	prompt "Font Selection"
+	default FONT_GOOGLE_SANS_FLEX_MEDIUM_24X32
+
+config FONT_GOOGLE_SANS_FLEX_MEDIUM_24X32
+	bool "Google Sans Flex Medium 24x32"
+	help
+	  Use the Google Sans Medium font table generated from
+	  GoogleSansFlex_24pt-Medium.ttf using `generate_font.py` script.
+	  Dimensions: 24x32 pixels.
+
+endchoice
+
+config FONT_WIDTH
+	int
+	default 24 if FONT_GOOGLE_SANS_FLEX_MEDIUM_24X32
+	default 16
+	help
+	  The width of the font canvas in pixels.
+
+config FONT_HEIGHT
+	int
+	default 32 if FONT_GOOGLE_SANS_FLEX_MEDIUM_24X32
+	default 24
+	help
+	  The height of the font canvas in pixels.
+
+endif # FRAMEBUFFER_SPLASH_TEXT
+
 endmenu
 
 config HAVE_EARLY_POWEROFF_SUPPORT

@@ -20,6 +20,16 @@ enum bootsplash_type {
 	BOOTSPLASH_MAX_NUM,
 };
 
+enum bootsplash_text_type {
+	/* Indicates a bootsplash text message appear at the center of the screen. */
+	BOOTSPLASH_TEXT_CENTER,
+	/* Indicates a bootsplash text message appear at the footer of the screen. */
+	BOOTSPLASH_TEXT_FOOTER,
+
+	/* It's used to determine the total number of bootsplash types. */
+	BOOTSPLASH_TEXT_MAX_NUM,
+};
+
 /**
  * Sets up the framebuffer with the bootsplash.jpg from cbfs.
  * Returns 0 on success
@@ -157,6 +167,9 @@ void load_and_convert_bmp_to_blt(uintptr_t *logo, size_t *logo_size,
 void convert_bmp_to_blt(uintptr_t logo, size_t logo_size,
 	uintptr_t *blt, size_t *blt_size, uint32_t *pixel_height, uint32_t *pixel_width,
 	enum lb_fb_orientation orientation);
+void render_text_to_framebuffer(struct logo_config *config, const char *str,
+	enum bootsplash_text_type type);
+bool platform_get_splash_text(enum bootsplash_type logo_type, char *msg, size_t msg_max);
 
 /* Mainboard-specific override for logo filenames */
 const char *mainboard_bmp_logo_filename(void);

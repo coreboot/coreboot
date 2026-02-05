@@ -280,7 +280,7 @@ chip soc/intel/alderlake
 		end
 		device ref i2c2 on
 			chip drivers/intel/mipi_camera
-				register "acpi_hid" = ""OVTIDB10""
+				register "acpi_hid" = ""OVTI13B1""
 				register "acpi_uid" = "0"
 				register "acpi_name" = ""CAM0""
 				register "chip_name" = ""Ov 13b10 Camera""

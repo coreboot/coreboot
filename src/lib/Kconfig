@@ -229,16 +229,17 @@ config PLATFORM_HAS_LOW_BATTERY_INDICATOR
 	  This option requires that the system have a display and that the BMP_LOGO option is
 	  enabled.
 
-if PLATFORM_HAS_LOW_BATTERY_INDICATOR
-
-config PLATFORM_LOW_BATTERY_SHUTDOWN_DELAY_SEC
+config PLATFORM_POST_RENDER_DELAY_SEC
 	int
 	default 5
 	help
-	  Delay, in seconds, before system shutdown due to low battery.
-	  This delay allows the user to observe the low-battery indicator.
-	  The default value of 5 seconds aligns with standard user experience (UX) practices.
-	  Platforms may override this value based on specific product requirements.
+	  Delay, in seconds, after rendering a splash screen element.
+	  In low-battery mode, this ensures the warning is visible before shutdown.
+	  In normal modes, this can be used to ensure the display has finished
+	  teardown/synchronization after user notification before passing control
+	  to the OS.
+
+if PLATFORM_HAS_LOW_BATTERY_INDICATOR
 
 config PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR
 	bool "Display low battery indicator in romstage"

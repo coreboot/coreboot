@@ -122,6 +122,16 @@ static int filter_vga_wrcomb(struct device *dev, struct resource *res)
 	if (((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA))
 		return 0;
 
+	/*
+	 * Only mark 32-bit BARs as WC. Some platforms expose additional large
+	 * prefetchable BARs above 4GiB for the iGPU, and tagging those as WC
+	 * can fragment the address space enough to exhaust variable MTRRs.
+	 * Keeping the below-4GiB framebuffer WC is the priority for payload UI
+	 * performance.
+	 */
+	if (res->size != 0 && res->base >= 0x100000000ULL)
+		return 0;
+
 	/* Add resource as write-combining in the address space. */
 	return 1;
 }

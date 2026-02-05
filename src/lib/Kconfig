@@ -270,6 +270,23 @@ config SPLASH_SCREEN_FOOTER_LOGO_PATH
 	depends on SPLASH_SCREEN_FOOTER
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"
 
+config PLATFORM_HAS_OFF_MODE_CHARGING_INDICATOR
+	bool "Display off-mode charging indicator"
+	default n
+	depends on BMP_LOGO
+	help
+	  Enable an off-mode charging splash screen to notify the user that
+	  the device is charging. This prevents user confusion when a
+	  device autoboots into a charging state upon the
+	  insertion of a power cable, rather than performing a full OS boot.
+
+	  This feature requires a functional display and depends on the
+	  BMP_LOGO infrastructure to render the charging assets.
+
+config PLATFORM_OFF_MODE_CHARGING_INDICATOR_LOGO_PATH
+	string "Path to off-mode charging logo file"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/off_mode_charging.bmp"
+
 endmenu
 
 config HAVE_EARLY_POWEROFF_SUPPORT

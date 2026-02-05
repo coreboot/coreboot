@@ -449,3 +449,5 @@ $(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_PLATFORM_HAS_LOW_BATTERY_INDICATO
 	      low_battery.bmp,CONFIG_PLATFORM_LOW_BATTERY_INDICATOR_LOGO_PATH))
 $(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_SPLASH_SCREEN_FOOTER, \
 	      footer_logo.bmp,CONFIG_SPLASH_SCREEN_FOOTER_LOGO_PATH))
+$(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_PLATFORM_HAS_OFF_MODE_CHARGING_INDICATOR, \
+	      off_mode_charging.bmp,CONFIG_PLATFORM_OFF_MODE_CHARGING_INDICATOR_LOGO_PATH))

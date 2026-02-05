@@ -13,7 +13,8 @@ static const struct cbmem_entry *logo_entry;
 static const char *bootsplash_list[BOOTSPLASH_MAX_NUM] = {
 	[BOOTSPLASH_LOW_BATTERY] = "low_battery.bmp",
 	[BOOTSPLASH_CENTER] = "logo.bmp",
-	[BOOTSPLASH_FOOTER] = "footer_logo.bmp"
+	[BOOTSPLASH_FOOTER] = "footer_logo.bmp",
+	[BOOTSPLASH_OFF_MODE_CHARGING] = "off_mode_charging.bmp"
 };
 
 /*
@@ -59,6 +60,9 @@ void *bmp_load_logo(size_t *logo_size)
 
 	if (platform_is_low_battery_shutdown_needed())
 		type = BOOTSPLASH_LOW_BATTERY;
+
+	if (platform_is_off_mode_charging_active())
+		type = BOOTSPLASH_OFF_MODE_CHARGING;
 
 	return bmp_load_logo_by_type(type, logo_size);
 }

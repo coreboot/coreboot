@@ -13,6 +13,8 @@ enum bootsplash_type {
 	BOOTSPLASH_CENTER,
 	/* Indicates an optional OEM defined bootsplash logo for footer of the splash screen. */
 	BOOTSPLASH_FOOTER,
+	/* Indicates a off-mode charging bootsplash logo. */
+	BOOTSPLASH_OFF_MODE_CHARGING,
 
 	/* It's used to determine the total number of bootsplash types. */
 	BOOTSPLASH_MAX_NUM,
@@ -169,6 +171,29 @@ void bmp_release_logo(void);
 bool platform_is_low_battery_shutdown_needed(void);
 #else
 static inline bool platform_is_low_battery_shutdown_needed(void) { return false; }
+#endif
+
+/*
+ * Platform specific callbacks for off-mode bootsplash handling.
+ *
+ * These callbacks allow the platform to determine if the device
+ * has booted in off-mode charging to render the appropriate user
+ * notification.
+ */
+#if CONFIG(PLATFORM_HAS_OFF_MODE_CHARGING_INDICATOR)
+/*
+ * platform_is_off_mode_charging_active - Check if off-mode charging is required.
+ *
+ * Returns true if the system should stay in a "charging splash" state
+ * instead of performing a full OS boot or a complete power-off.
+ */
+bool platform_is_off_mode_charging_active(void);
+#else
+/* Inline fallback for platforms without off-mode charging support */
+static inline bool platform_is_off_mode_charging_active(void)
+{
+	return false;
+}
 #endif
 
 /*

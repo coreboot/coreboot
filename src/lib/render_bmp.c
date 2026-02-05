@@ -576,7 +576,8 @@ static void get_logo_layout(
 	if (!config || !logo_halignment || !logo_valignment || !logo_bottom_margin)
 		return;
 
-	if (logo_type == BOOTSPLASH_LOW_BATTERY || logo_type == BOOTSPLASH_CENTER) {
+	if (logo_type == BOOTSPLASH_LOW_BATTERY || logo_type == BOOTSPLASH_CENTER ||
+			logo_type == BOOTSPLASH_OFF_MODE_CHARGING) {
 		*logo_halignment = config->halignment;
 		*logo_valignment = config->valignment;
 		/* Override logo alignment if the default screen orientation is not normal */
@@ -707,6 +708,16 @@ void render_logo_to_framebuffer(struct logo_config *config)
 		if (load_and_render_logo_to_framebuffer(BOOTSPLASH_LOW_BATTERY, config) != 0) {
 			printk(BIOS_ERR, "%s: Failed to render low-battery logo.\n", __func__);
 		}
+		return;
+	}
+
+	/*
+	 * If the device has booted due to cable power insertion aka off-mode then display
+	 * off-mode charging user notification and bail out early.
+	 */
+	if (platform_is_off_mode_charging_active()) {
+		if (load_and_render_logo_to_framebuffer(BOOTSPLASH_OFF_MODE_CHARGING, config) != 0)
+			printk(BIOS_ERR, "%s: Failed to render off-mode charging logo.\n", __func__);
 		return;
 	}
 

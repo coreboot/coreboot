@@ -66,6 +66,7 @@ enum clk_ctl_lpass_aon_cc_pll_user_ctl_x1p42100 {
 	AON_CC_PLL_PLLOUT_ODD_SHFT_X1P42100 = 2,
 	AON_CC_PLL_POST_DIV_EVEN_SHFT_X1P42100 = 10,
 	AON_CC_PLL_POST_DIV_ODD_SHFT_X1P42100 = 14,
+	AON_CC_PLL_ENABLE_VOTE_RUN = 25
 };
 
 enum clk_pll_src {
@@ -280,16 +281,19 @@ struct x1p42100_lpass_aon_cc {
 	u32 va_mem0_cbcr;
 	u8 _res1[0x2c];
 	u32 lpass_audio_hm_gdscr;
-	u8 _res2[0x8F78];
+	u8 _res2[0x2f6c];
+	u32 lpass_hm_collapse_vote_for_q6;
+	u8 _res3[0x6008];
 	u32 va_2x_cbcr;
-	u8 _res3[0x4];
+	u8 _res4[0x4];
 	u32 va_cbcr;
-	u8 _res4[0xffc];
+	u8 _res5[0xffc];
 	u32 tx_mclk_cbcr;
 };
 
 check_member(x1p42100_lpass_aon_cc, va_mem0_cbcr, 0x9060);
 check_member(x1p42100_lpass_aon_cc, lpass_audio_hm_gdscr, 0x9090);
+check_member(x1p42100_lpass_aon_cc, lpass_hm_collapse_vote_for_q6, 0xc000);
 check_member(x1p42100_lpass_aon_cc, va_2x_cbcr, 0x1200C);
 check_member(x1p42100_lpass_aon_cc, va_cbcr, 0x12014);
 check_member(x1p42100_lpass_aon_cc, tx_mclk_cbcr, 0x13014);

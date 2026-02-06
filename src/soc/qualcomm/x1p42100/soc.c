@@ -5,6 +5,7 @@
 #include <soc/mmu_common.h>
 #include <soc/symbols_common.h>
 #include <soc/pcie.h>
+#include <soc/clock.h>
 #include <soc/cpucp.h>
 #include <program_loading.h>
 
@@ -89,6 +90,7 @@ static void soc_init(struct device *dev)
 {
 	cpucp_fw_load_reset();
 	qtee_fw_config_load();
+	lpass_init();
 }
 
 static struct device_operations soc_ops = {

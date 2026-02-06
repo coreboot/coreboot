@@ -13,13 +13,14 @@ static enum cb_err lpass_aon_cc_pll_enable(void)
 
 	pll_cfg.reg_mode = &lpass_aon_cc_pll->pll_mode;
 	pll_cfg.reg_l = &lpass_aon_cc_pll->pll_l_val;
-	pll_cfg.l_val = HAL_CLK_LPASS_AON_CC_PLL_L_VALUE;
+	pll_cfg.l_val = HAL_CLK_LPASS_AON_CC_PLL_L_VALUE |
+		HAL_CLK_LPASS_AON_CC_PLL_PROC_CAL_L_VALUE |
+			HAL_CLK_LPASS_AON_CC_PLL_RING_CAL_L_VALUE;
 
 	pll_cfg.reg_alpha = &lpass_aon_cc_pll->pll_alpha_val;
 	pll_cfg.alpha_val = HAL_CLK_LPASS_AON_CC_PLL_ALPHA_VALUE;
 
 	pll_cfg.reg_cal_l = &lpass_aon_cc_pll->pll_l_val;
-	pll_cfg.cal_l_val = HAL_CLK_LPASS_AON_CC_PLL_CAL_L_VALUE;
 
 	pll_cfg.reg_config_ctl = &lpass_aon_cc_pll->pll_config_ctl;
 	pll_cfg.config_ctl_val = HAL_CLK_LPASS_AON_CC_PLL_CONFIG_CTL;
@@ -45,10 +46,8 @@ static enum cb_err lpass_aon_cc_pll_enable(void)
 	write32(&lpass_aon_cc_pll->pll_test_ctl_u1, HAL_CLK_LPASS_AON_CC_PLL_TEST_CTL_U1);
 	write32(&lpass_aon_cc_pll->pll_test_ctl_u2, HAL_CLK_LPASS_AON_CC_PLL_TEST_CTL_U2);
 
-	if (lucidole_pll_enable(&pll_cfg) != CB_SUCCESS) {
-		printk(BIOS_ERR, "LPASS: AON CC PLL enable failed\n");
-		return CB_ERR;
-	}
+	setbits32(&lpass_aon_cc_pll->pll_user_ctl, BIT(AON_CC_PLL_ENABLE_VOTE_RUN));
+	setbits32(&lpass_aon_cc_pll->pll_mode, BIT(PLL_RESET_SHFT));
 
 	setbits32(&lpass_aon_cc_pll->pll_user_ctl, (BIT(AON_CC_PLL_PLLOUT_EVEN_SHFT_X1P42100) |
 				BIT(AON_CC_PLL_PLLOUT_ODD_SHFT_X1P42100)));
@@ -66,8 +65,10 @@ static enum cb_err lpass_setup_core_infrastructure(void)
 
 	setbits32(&lpass_core_gdsc->lpass_top_cc_lpass_core_sway_ahb_ls_cbcr, HW_CTL);
 
-	if (enable_and_poll_gdsc_status(&lpass_core_gdsc->core_hm_gdscr) != CB_SUCCESS) {
-		printk(BIOS_ERR, "LPASS: Failed to enable Core HM GDSC\n");
+	write32(&lpass_aon_cc->lpass_hm_collapse_vote_for_q6, LPASS_CORE_HM_VOTE_POWER_ON);
+
+	if (!wait_us(150000, !(read32(&lpass_core_gdsc->core_hm_gdscr) & GDSC_PWR_ON))) {
+		printk(BIOS_ERR, "LPASS: Core HM GDSC PWR_ON timeout after vote\n");
 		return CB_ERR;
 	}
 

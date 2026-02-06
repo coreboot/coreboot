@@ -15,6 +15,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D8  : SRCCLKREQ3# ==> NC */
 	PAD_NC(GPP_D8, NONE),
+	/* E5  : NC ==> GPP_E5_STRAP */
+	PAD_CFG_GPI_LOCK(GPP_E5, DN_20K, LOCK_CONFIG),
 	/* F12 : WWAN_RST_L */
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H12 : UART0_RTS# ==> NC */
@@ -71,6 +73,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+	/* E5  : NC ==> GPP_E5_STRAP */
+	PAD_CFG_GPI(GPP_E5, DN_20K, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {

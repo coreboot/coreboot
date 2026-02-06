@@ -30,8 +30,6 @@
 #define USB3_MODE_NORMAL_VAL	0x21
 #define USB3_MODE_FLIP_VAL	0x23
 
-#define LOW_BATTERY_SHUTDOWN_DELAY_SEC 5
-
 void mainboard_usb_typec_configure(uint8_t port_num, bool inverse_polarity)
 {
 	if (!CONFIG(MAINBOARD_HAS_PS8820_RETIMER))
@@ -166,7 +164,7 @@ static void trigger_critical_battery_shutdown(void)
 	elog_add_event_byte(ELOG_TYPE_LOW_BATTERY_INDICATOR, ELOG_FW_ISSUE_SHUTDOWN);
 
 	/* Allow time for the log to flush and the user to see the LED change */
-	delay(LOW_BATTERY_SHUTDOWN_DELAY_SEC);
+	delay(CONFIG_PLATFORM_POST_RENDER_DELAY_SEC);
 
 	google_chromeec_ap_poweroff();
 }

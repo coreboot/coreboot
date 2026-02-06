@@ -29,27 +29,27 @@ static inline bool list_is_empty(const struct list_node *head)
 }
 
 // Get next node.
-static inline const struct list_node *list_next(const struct list_node *node,
-						const struct list_node *head)
+static inline struct list_node *list_next(const struct list_node *node,
+					  const struct list_node *head)
 {
 	return node->next;
 };
 
 // Get prev node.
-static inline const struct list_node *list_prev(const struct list_node *node,
-						const struct list_node *head)
+static inline struct list_node *list_prev(const struct list_node *node,
+					  const struct list_node *head)
 {
 	return node->prev == head ? NULL : node->prev;
 };
 
 // Get first node.
-static inline const struct list_node *list_first(const struct list_node *head)
+static inline struct list_node *list_first(const struct list_node *head)
 {
 	return list_is_empty(head) ? NULL : head->next;
 }
 
 // Get last node.
-const struct list_node *list_last(const struct list_node *head);
+struct list_node *list_last(const struct list_node *head);
 
 // Get the number of list elements.
 size_t list_length(const struct list_node *head);

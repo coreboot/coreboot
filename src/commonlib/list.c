@@ -37,12 +37,15 @@ void list_append(struct list_node *node, struct list_node *head)
 	list_insert_after(node, head);
 }
 
-const struct list_node *list_last(const struct list_node *head)
+struct list_node *list_last(const struct list_node *head)
 {
-	const struct list_node *ptr = head;
+	if (!head->next)
+		return NULL;
+
+	struct list_node *ptr = head->next;
 	while (ptr->next)
 		ptr = ptr->next;
-	return ptr == head ? NULL : ptr;
+	return ptr;
 }
 
 size_t list_length(const struct list_node *head)

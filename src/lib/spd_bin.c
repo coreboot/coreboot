@@ -4,10 +4,17 @@
 #include <console/console.h>
 #include <device/dram/ddr3.h>
 #include <device/dram/ddr4.h>
+#include <device/dram/ddr5.h>
 #include <memory_info.h>
 #include <spd.h>
 #include <spd_bin.h>
+#include <stdbool.h>
 #include <string.h>
+
+static bool is_ddr5(int dram_type)
+{
+	return dram_type == SPD_MEMORY_TYPE_DDR5_SDRAM;
+}
 
 void dump_spd_info(struct spd_block *blk)
 {
@@ -76,8 +83,14 @@ static int spd_get_banks(const uint8_t spd[], int dram_type)
 {
 	static const int ddr3_banks[4] = { 8, 16, 32, 64 };
 	static const int ddr4_banks[10] = { 4, 8, -1, -1, 8, 16, -1, -1, 16, 32 };
-	int index = (spd[SPD_DENSITY_BANKS] >> 4) & 0xf;
 
+	if (is_ddr5(dram_type)) {
+		/* DDR5 byte 7: BanksPerBG (bits 2:0) * BankGroups (bits 5:3) */
+		int banks_per_bg = 1 << (spd[DDR5_SPD_BANKS] & 7);
+		int bank_groups = 1 << ((spd[DDR5_SPD_BANKS] >> 3) & 7);
+		return banks_per_bg * bank_groups;
+	}
+	int index = (spd[SPD_DENSITY_BANKS] >> 4) & 0xf;
 	if (use_ddr4_params(dram_type)) {
 		if (index >= ARRAY_SIZE(ddr4_banks))
 			return -1;
@@ -89,8 +102,24 @@ static int spd_get_banks(const uint8_t spd[], int dram_type)
 	}
 }
 
-static int spd_get_capmb(const uint8_t spd[])
+static int spd_get_capmb(const uint8_t spd[], int dram_type)
 {
+	/*
+	 * DDR5: byte 4 = Density (5 bits, Gb per die) + DiePerPkg (3 bits).
+	 * Capacity in Mb per package.
+	 */
+	if (is_ddr5(dram_type)) {
+		static const uint8_t ddr5_density_gb[32] = {
+			0, 4, 8, 12, 16, 24, 32, 48, 64, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+		};
+		static const uint8_t ddr5_die_per_pkg[8] = { 1, 0, 2, 4, 8, 16, 0, 0 };
+		uint8_t density_gb = ddr5_density_gb[spd[DDR5_SPD_DENSITY_PACKAGE] & 0x1f];
+		uint8_t dies = ddr5_die_per_pkg[(spd[DDR5_SPD_DENSITY_PACKAGE] >> 5) & 7];
+		if (density_gb == 0 || dies == 0)
+			return -1;
+		return (int)density_gb * dies * 1024; /* Mb per package */
+	}
 	static const int spd_capmb[13] = { 1, 2, 4, 8, 16, 32, 64,
 					   128, 48, 96, 12, 24, 72 };
 	int index = spd[SPD_DENSITY_BANKS] & 0xf;
@@ -99,8 +128,12 @@ static int spd_get_capmb(const uint8_t spd[])
 	return spd_capmb[index] * 256;
 }
 
-static int spd_get_rows(const uint8_t spd[])
+static int spd_get_rows(const uint8_t spd[], int dram_type)
 {
+	if (is_ddr5(dram_type)) {
+		/* DDR5 byte 5 bits 7:3 = row address count; rows = 16 + value */
+		return 16 + ((spd[DDR5_SPD_ADDRESSING] >> 3) & 0x1f);
+	}
 	static const int spd_rows[7]  = { 12, 13, 14, 15, 16, 17, 18 };
 	int index = (spd[SPD_ADDRESSING] >> 3) & 7;
 	if (index >= ARRAY_SIZE(spd_rows))
@@ -108,8 +141,12 @@ static int spd_get_rows(const uint8_t spd[])
 	return spd_rows[index];
 }
 
-static int spd_get_cols(const uint8_t spd[])
+static int spd_get_cols(const uint8_t spd[], int dram_type)
 {
+	if (is_ddr5(dram_type)) {
+		/* DDR5 byte 5 bits 2:0 = column address count; cols = 10 + value */
+		return 10 + (spd[DDR5_SPD_ADDRESSING] & 7);
+	}
 	static const int spd_cols[4]  = { 9, 10, 11, 12 };
 	int index = spd[SPD_ADDRESSING] & 7;
 	if (index >= ARRAY_SIZE(spd_cols))
@@ -119,6 +156,10 @@ static int spd_get_cols(const uint8_t spd[])
 
 static int spd_get_ranks(const uint8_t spd[], int dram_type)
 {
+	if (is_ddr5(dram_type)) {
+		/* DDR5 byte 234 bits 5:3 = package ranks per channel; ranks = 1 + value */
+		return 1 + ((spd[DDR5_SPD_MODULE_ORG] >> 3) & 7);
+	}
 	static const int spd_ranks[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
 	int organ_offset = use_ddr4_params(dram_type) ? DDR4_ORGANIZATION
 						      : DDR3_ORGANIZATION;
@@ -130,6 +171,10 @@ static int spd_get_ranks(const uint8_t spd[], int dram_type)
 
 static int spd_get_devw(const uint8_t spd[], int dram_type)
 {
+	if (is_ddr5(dram_type)) {
+		/* DDR5 byte 6 bits 2:0 = SDRAM I/O width; 4 << value */
+		return 4 << (spd[DDR5_SPD_IO_WIDTH] & 7);
+	}
 	static const int spd_devw[4]  = { 4, 8, 16, 32 };
 	int organ_offset = use_ddr4_params(dram_type) ? DDR4_ORGANIZATION
 						      : DDR3_ORGANIZATION;
@@ -141,6 +186,10 @@ static int spd_get_devw(const uint8_t spd[], int dram_type)
 
 static int spd_get_busw(const uint8_t spd[], int dram_type)
 {
+	if (is_ddr5(dram_type)) {
+		/* DDR5 byte 235 bits 2:0 = primary bus width; 8 << value */
+		return 8 << (spd[DDR5_SPD_CHANNEL_BUS_WIDTH] & 7);
+	}
 	static const int spd_busw[4]  = { 8, 16, 32, 64 };
 	int busw_offset = use_ddr4_params(dram_type) ? DDR4_BUS_DEV_WIDTH
 						     : DDR3_BUS_DEV_WIDTH;
@@ -188,12 +237,14 @@ void print_spd_info(uint8_t spd[])
 	size_t len;
 	int type  = spd[SPD_MEMORY_TYPE];
 	int banks = spd_get_banks(spd, type);
-	int capmb = spd_get_capmb(spd);
-	int rows  = spd_get_rows(spd);
-	int cols  = spd_get_cols(spd);
+	int capmb = spd_get_capmb(spd, type);
+	int rows  = spd_get_rows(spd, type);
+	int cols  = spd_get_cols(spd, type);
 	int ranks = spd_get_ranks(spd, type);
 	int devw  = spd_get_devw(spd, type);
 	int busw  = spd_get_busw(spd, type);
+	int channels;
+	u32 size_mb;
 
 	/* Module type */
 	printk(BIOS_INFO, "SPD: module type is %s\n",
@@ -211,8 +262,16 @@ void print_spd_info(uint8_t spd[])
 
 	if (capmb > 0 && busw > 0 && devw > 0 && ranks > 0) {
 		/* SIZE = DENSITY / 8 * BUS_WIDTH / SDRAM_WIDTH * RANKS */
-		printk(BIOS_INFO, "SPD: module size is %u MB (per channel)\n",
-			capmb / 8 * busw / devw * ranks);
+		size_mb = (u32)capmb / 8 * busw / devw * ranks;
+		if (size_mb > 0) {
+			channels = 1 + (is_ddr5(type) ? ((spd[DDR5_SPD_CHANNEL_BUS_WIDTH] >> 5) & 3) : 0);
+			if (channels > 1) {
+				printk(BIOS_INFO, "SPD: module size is %u MB (%u MB per channel)\n",
+				       size_mb, size_mb / channels);
+				return;
+			}
+			printk(BIOS_INFO, "SPD: module size is %u MB\n", size_mb);
+		}
 	}
 }
 

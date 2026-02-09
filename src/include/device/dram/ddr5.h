@@ -15,6 +15,15 @@
 /** Maximum SPD size supported */
 #define SPD_SIZE_MAX_DDR5	1024
 
+/* DDR5 SPD byte offsets */
+#define DDR5_SPD_DENSITY_PACKAGE	4
+#define DDR5_SPD_ADDRESSING		5
+#define DDR5_SPD_IO_WIDTH		6
+#define DDR5_SPD_BANKS			7
+#define DDR5_SPD_MODULE_ORG		234
+#define DDR5_SPD_CHANNEL_BUS_WIDTH	235
+#define DDR5_SPD_MIN_LEN		236
+
 enum spd_dimm_type_ddr5 {
 	SPD_DDR5_DIMM_TYPE_RDIMM = 0x01,
 	SPD_DDR5_DIMM_TYPE_UDIMM = 0x02,

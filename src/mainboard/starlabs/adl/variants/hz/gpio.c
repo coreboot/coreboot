@@ -59,6 +59,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),				/* HDMI Hot Plug */
 	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),				/* HDMI Clock */
 	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),				/* HDMI Data */
+	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),				/* TCP0 Hot Plug */
 	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1),				/* TCP1 Hot Plug */
 
 	/* High-Definition Audio */
@@ -113,7 +114,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A15, NONE),
 	PAD_NC(GPP_A16, NONE),
 	PAD_NC(GPP_A17, NONE),
-	PAD_NC(GPP_A19, NONE),
 	PAD_NC(GPP_A21, NONE),
 	PAD_NC(GPP_A22, NONE),
 	PAD_NC(GPP_A23, NONE),

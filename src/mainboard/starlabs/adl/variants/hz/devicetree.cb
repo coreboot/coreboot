@@ -38,6 +38,8 @@ chip soc/intel/alderlake
 				register "device[1].name"	= ""DD01""
 				# [TCP0] Type-C
 				register "device[2].name"	= ""DD02""
+				register "device[2].use_pld"	= "true"
+				register "device[2].pld"	= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 0))"
 				# [TCP1] Type-C
 				register "device[3].name"	= ""DD03""
 				register "device[3].use_pld"	= "true"
@@ -59,6 +61,7 @@ chip soc/intel/alderlake
 		device ref xhci		on
 			# Left Rear USB 2.0 Type-C		3289 mil
 			register "usb2_ports[0]"		= "USB2_PORT_SHORT(OC_SKIP)"
+			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Left Front USB 3.0 Type C
 			register "usb2_ports[1]"		= "USB2_PORT_SHORT(OC_SKIP)"
@@ -78,9 +81,17 @@ chip soc/intel/alderlake
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc"			= ""Left Back USB Type-C""
-						register "type"			= "UPC_TYPE_C_USB2_ONLY"
-						register "group"		= "ACPI_PLD_GROUP(0, 0)"
+						register "type"			= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld"	= "true"
+						register "custom_pld"		= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 0))"
 						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"			= ""Left Back USB Type-C""
+						register "type"			= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld"	= "true"
+						register "custom_pld"		= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 0))"
+						device ref usb3_port2 on end
 					end
 
 					chip drivers/usb/acpi

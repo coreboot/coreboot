@@ -487,7 +487,7 @@ void convert_bmp_to_blt(uintptr_t logo, size_t logo_size,
  * Returning `struct logo_coordinates` that contains the calculated x and y coordinates
  * for rendering the logo.
  */
-static struct logo_coordinates calculate_logo_coordinates(
+struct logo_coordinates calculate_logo_coordinates(
 	uint32_t horizontal_resolution, uint32_t vertical_resolution,
 	uint32_t logo_width, uint32_t logo_height,
 	enum fw_splash_horizontal_alignment halignment,

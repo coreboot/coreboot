@@ -141,6 +141,15 @@ struct logo_config {
 	uint8_t logo_bottom_margin;
 };
 
+/*
+ * Calculates the destination coordinates for the logo based on both horizontal and
+ * vertical alignment settings.
+ */
+struct logo_coordinates calculate_logo_coordinates(
+	uint32_t horizontal_resolution, uint32_t vertical_resolution,
+	uint32_t logo_width, uint32_t logo_height,
+	enum fw_splash_horizontal_alignment halignment,
+	enum fw_splash_vertical_alignment valignment);
 void render_logo_to_framebuffer(struct logo_config *config);
 void load_and_convert_bmp_to_blt(uintptr_t *logo, size_t *logo_size,
 	uintptr_t *blt, size_t *blt_size, uint32_t *pixel_height, uint32_t *pixel_width,

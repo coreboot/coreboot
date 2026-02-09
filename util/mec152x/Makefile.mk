@@ -8,6 +8,7 @@ MEC152XCFLAGS := -Wno-array-bounds -Wextra -O3 -Wshadow $(WERROR)
 MEC152XCFLAGS += -I $(top)/util/cbfstool/flashmap/
 MEC152XCFLAGS += -I $(top)/util/mec152x
 MEC152XCFLAGS += -I $(top)/src/commonlib/bsd/include
+MEC152XCFLAGS += -include $(top)/src/commonlib/bsd/include/commonlib/bsd/compiler.h
 
 additional-dirs += $(objutil)/mec152x
 

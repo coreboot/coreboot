@@ -336,7 +336,9 @@ chip soc/intel/skylake
 			end
 		end # I2C #4
 		device ref pcie_rp1	on
-			register "PcieRpClkReqSupport[0]" = "true"
+			# Disable CLKREQ# to keep PCIe clock active during L1
+			# (Erratum 47, Intel 100 Series Chipset Spec Update)
+			register "PcieRpClkReqSupport[0]" = "false"
 			register "PcieRpClkReqNumber[0]" = "1"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
 			register "PcieRpLtrEnable[0]" = "true"

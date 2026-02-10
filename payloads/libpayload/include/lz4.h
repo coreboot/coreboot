@@ -34,6 +34,9 @@
 
 #include <stddef.h>
 
+#define LZ4F_MAGICNUMBER 0x184D2204
+#define LZ4_LEGACY_MAGICNUMBER 0x184C2102
+
 /* Decompresses an LZ4F image (multiple LZ4 blocks with frame header) from src
  * to dst, ensuring that it doesn't read more than srcn bytes and doesn't write
  * more than dstn. Buffer sizes must stay below 2GB. Can decompress files loaded

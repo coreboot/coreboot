@@ -73,9 +73,6 @@ typedef uint64_t U64;
 /* Unaltered (just removed unrelated code) from github.com/Cyan4973/lz4/dev. */
 #include "lz4.c.inc"	/* #include for inlining, do not link! */
 
-#define LZ4F_MAGICNUMBER 0x184D2204
-#define LEGACY_MAGICNUMBER 0x184C2102
-
 struct lz4_frame_header {
 	uint32_t magic;
 	union {
@@ -198,7 +195,7 @@ size_t ulz4ln(const void *src, size_t srcn, void *dst, size_t dstn)
 	void *out = dst;
 	size_t out_size = 0;
 
-	if (le32toh(*((const uint32_t *)in)) != LEGACY_MAGICNUMBER)
+	if (le32toh(*((const uint32_t *)in)) != LZ4_LEGACY_MAGICNUMBER)
 		return 0;
 
 	in += sizeof(uint32_t);

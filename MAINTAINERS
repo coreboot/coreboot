@@ -435,6 +435,11 @@ M:	Vanessa Eusebio <vanessa.f.eusebio@intel.com>
 S:	Maintained
 F:	src/mainboard/intel/harcuvar/
 
+INTEL PANTHERLAKE_CRB MAINBOARD
+M:	Alicja Michalska <alicja.michalska@9elements.com>
+S:	Supported
+F:	src/mainboard/intel/pantherlake_crb/
+
 
 
 INVENTEC MAINBOARDS

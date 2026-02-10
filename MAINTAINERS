@@ -927,12 +927,14 @@ M:	Pranava Y N <pranavayn@google.com>
 M:	Jayvik Desai <jayvik@google.com>
 M:	Avi Uday <aviuday@google.com>
 M:	Dinesh Gehlot <digehlot@google.com>
+M:	Alicja Michalska <alicja.michalska@9elements.com>
 S:	Maintained
 F:	src/soc/intel/pantherlake/
 
 INTEL TIGERLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
 M:	Nick Vaccaro <nvaccaro@chromium.org>
+M:	Alicja Michalska <alicja.michalska@9elements.com>
 S:	Maintained
 F:	src/soc/intel/tigerlake/
 

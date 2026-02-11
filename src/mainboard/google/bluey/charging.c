@@ -34,6 +34,8 @@ enum charging_status {
 #define OUTPUT_INVERT		0x80
 #define PERPH_EN		0x80
 
+#define GPIO_PARALLEL_CHARGING_CFG GPIO(71)
+
 /*
  * Enable PMC8380F GPIO07 & GPIO09 for parallel charging.
  */
@@ -43,12 +45,23 @@ void configure_parallel_charging(void)
 		return;
 
 	printk(BIOS_INFO, "Configure parallel charging support\n");
-	spmi_write8(SPMI_ADDR(PMC8380F_SLAVE_ID, GPIO07_MODE_CTL), MODE_OUTPUT);
 	spmi_write8(SPMI_ADDR(PMC8380F_SLAVE_ID, GPIO07_DIG_OUT_SOURCE_CTL), OUTPUT_INVERT);
 	spmi_write8(SPMI_ADDR(PMC8380F_SLAVE_ID, GPIO07_EN_CTL), PERPH_EN);
-	spmi_write8(SPMI_ADDR(PMC8380F_SLAVE_ID, GPIO09_MODE_CTL), MODE_OUTPUT);
+	spmi_write8(SPMI_ADDR(PMC8380F_SLAVE_ID, GPIO07_MODE_CTL), MODE_OUTPUT);
 	spmi_write8(SPMI_ADDR(PMC8380F_SLAVE_ID, GPIO09_DIG_OUT_SOURCE_CTL), OUTPUT_INVERT);
 	spmi_write8(SPMI_ADDR(PMC8380F_SLAVE_ID, GPIO09_EN_CTL), PERPH_EN);
+	spmi_write8(SPMI_ADDR(PMC8380F_SLAVE_ID, GPIO09_MODE_CTL), MODE_OUTPUT);
+}
+
+/*
+ * Late configuration for parallel charging.
+ */
+void configure_parallel_charging_late(void)
+{
+	if (!CONFIG(MAINBOARD_SUPPORTS_PARALLEL_CHARGING))
+		return;
+
+	gpio_output(GPIO_PARALLEL_CHARGING_CFG, 1);
 }
 
 /*

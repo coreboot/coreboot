@@ -122,6 +122,8 @@ void lb_add_boot_mode(struct lb_header *header)
 	mode->size = sizeof(*mode);
 	mode->boot_mode = get_boot_mode();
 
+	configure_parallel_charging_late();
+
 	/* Enable charging only during off-mode or low-battery mode with charger present */
 	if (is_low_power_boot_with_charger())
 		enable_slow_battery_charging();

@@ -38,6 +38,8 @@ Scope(\_SB) { /* Start \_SB scope */
 	/* Describe the MMIO devices in the FCH */
 	#include "mmio.asl"
 
+	#include "acp.asl"
+
 	/* Add GPIO library */
 	#include <soc/amd/common/acpi/gpio_bank_lib.asl>
 

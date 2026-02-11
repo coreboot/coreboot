@@ -24,6 +24,8 @@ Scope(\_SB) {
 
 		#include "pci.asl"
 	} /* End PCI0 scope */
+
+	#include "acp.asl"
 } /* End \_SB scope */
 
 #include <soc/amd/common/acpi/alib.asl>

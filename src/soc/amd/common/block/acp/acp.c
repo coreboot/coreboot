@@ -22,23 +22,30 @@ static const char *acp_acpi_name(const struct device *dev)
 static void acp_fill_wov_method(const struct device *dev)
 {
 	const struct soc_amd_common_config *cfg = soc_get_common_config();
-	const char *scope = acpi_device_path(dev);
 
-	if (!cfg->acp_config.dmic_present || !scope)
+	if (!cfg->acp_config.dmic_present)
 		return;
 
 	/* For ACP DMIC hardware runtime detection on the platform, _WOV method is populated. */
-	acpigen_write_scope(scope); /* Scope */
 	acpigen_write_method("_WOV", 0);
 	acpigen_write_return_integer(1);
 	acpigen_write_method_end();
-	acpigen_write_scope_end();
 }
 
 static void acp_fill_ssdt(const struct device *dev)
 {
-	acpi_device_write_pci_dev(dev);
+	const char *scope = acpi_device_path(dev);
+	assert(scope);
+	if (!scope)
+		return;
+
+	acpigen_write_scope(scope);
+
+	acpigen_write_store_int_to_namestr(acpi_device_status(dev), "STAT");
 	acp_fill_wov_method(dev);
+
+	acpigen_pop_len(); /* Scope */
+
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_ACP_SOC_SPECIFIC_SSDT_ENTRY))
 		acp_soc_write_ssdt_entry(dev);
 }

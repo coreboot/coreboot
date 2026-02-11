@@ -112,6 +112,8 @@ chip soc/intel/pantherlake
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		/* Render OEM footer logo 200px above from the edge */
+		.logo_bottom_margin = 200,
 		.i2c[3] = {
 			.early_init=1,
 			.speed = I2C_SPEED_FAST,

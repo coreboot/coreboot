@@ -419,6 +419,21 @@ chip soc/intel/alderlake
 					probe PANEL TOUCH_G2TOUCH_HID_I2C
 				end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""LXST2024""
+				register "generic.desc" = ""LGD Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F18_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F17)"
+				register "generic.reset_delay_ms" = "150"
+				register "generic.reset_off_delay_ms" = "2"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F7)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "generic.use_gpio_for_status" = "true"
+				register "hid_desc_reg_offset" = "0x00"
+				device i2c 34 on end
+			end
 		end
 		device ref gspi1 on
 			chip drivers/spi/acpi

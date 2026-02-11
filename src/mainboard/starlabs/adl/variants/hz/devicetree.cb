@@ -40,8 +40,8 @@ chip soc/intel/alderlake
 				register "device[2].name"	= ""DD02""
 				# [TCP1] Type-C
 				register "device[3].name"	= ""DD03""
-				register "device[2].use_pld"	= "true"
-				register "device[2].pld"	= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 1))"
+				register "device[3].use_pld"	= "true"
+				register "device[3].pld"	= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 1))"
 				# [TCP2] N/A
 				register "device[4].name"	= ""DD04""
 				# [TCP3] N/A

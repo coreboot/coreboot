@@ -13,4 +13,5 @@ DefinitionBlock (
 	#include <acpi/dsdt_top.asl>
 
 	#include <soc.asl>
+	#include "acpi/acp.asl"
 }

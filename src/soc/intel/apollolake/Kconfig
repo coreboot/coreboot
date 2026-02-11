@@ -327,6 +327,10 @@ config SMM_RESERVED_SIZE
 	hex
 	default 0x100000
 
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000
+
 config CHIPSET_DEVICETREE
 	string
 	default "soc/intel/apollolake/chipset_glk.cb" if SOC_INTEL_GEMINILAKE

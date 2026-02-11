@@ -45,9 +45,6 @@ static void acp_fill_ssdt(const struct device *dev)
 	acp_fill_wov_method(dev);
 
 	acpigen_pop_len(); /* Scope */
-
-	if (CONFIG(SOC_AMD_COMMON_BLOCK_ACP_SOC_SPECIFIC_SSDT_ENTRY))
-		acp_soc_write_ssdt_entry(dev);
 }
 
 struct device_operations amd_acp_ops = {

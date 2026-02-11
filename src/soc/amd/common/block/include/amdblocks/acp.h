@@ -45,6 +45,4 @@ struct acp_config {
 	bool dmic_present;
 };
 
-void acp_soc_write_ssdt_entry(const struct device *dev);
-
 #endif /* AMD_COMMON_ACP_H */

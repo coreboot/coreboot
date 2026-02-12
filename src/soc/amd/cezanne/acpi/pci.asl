@@ -7,6 +7,16 @@
  * Currently the name is hex representation of dev->path.pci.devfn.
  */
 
+/* Root complex */
+Device (GNB)
+{
+	Name (_ADR, 0)
+	Method (_STA, 0, NotSerialized)
+	{
+		Return (0x0F)
+	}
+}
+
 /* PCIe GPP */
 ACPI_PCI_DEV(GP09, 1, 1)
 ACPI_PCI_DEV(GP0A, 1, 2)

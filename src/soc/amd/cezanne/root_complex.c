@@ -93,7 +93,6 @@ static void root_complex_fill_ssdt(const struct device *device)
 	 *		}
 	 *	}
 	 */
-	acpi_device_write_pci_dev(device);
 	acpigen_write_scope(acpi_device_path(device));
 	struct opregion opreg = OPREGION("SMN", SYSTEMMEMORY,
 					 CONFIG_ECAM_MMCONF_BASE_ADDRESS + 0xb8, 0x8);

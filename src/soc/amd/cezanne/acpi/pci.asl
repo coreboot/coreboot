@@ -15,6 +15,26 @@ Device (GNB)
 	{
 		Return (0x0F)
 	}
+
+	/* Add opregion to host bridge needed for ACP driver.
+	 *
+	 * This is used by an ACPI method in the ACP's ACPI code to access different mailbox
+	 * interfaces in the hardware. Some ACP drivers will use that to both notify the PSP
+	 * that the DSP firmware has been loaded, so that the PSP can validate the firmware
+	 * and set the qualifier bit to enable running it, and to configure the ACP's clock
+	 * source.
+	 *
+	 * As this SMN access is not arbitrated and there may be other drivers or parts of
+	 * the firmware attempting to use the SMN access register pair, there is a risk of
+	 * conflict / incorrect data, but given the frequency and duration of accesses, the
+	 * risk is deemed to be quite low.
+	 */
+	OperationRegion (PSMN, PCI_Config, 0x00, 0x100)
+	Field(PSMN, AnyAcc, NoLock, Preserve) {
+		Offset (0xB8),
+		SMNA,   32,
+		SMND,   32,
+	}
 }
 
 /* PCIe GPP */

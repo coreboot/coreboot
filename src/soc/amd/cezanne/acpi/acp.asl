@@ -11,9 +11,6 @@ Scope (\_SB.PCI0.GP41) {
 			Return (STAT)
 		}
 
-		External (\_SB.PCI0.GNB.SMNA, FieldUnitObj)
-		External (\_SB.PCI0.GNB.SMND, FieldUnitObj)
-
 		/* Read SMN register and store value into ACPI variable */
 		Method (SMNR, 1, Serialized)
 		{

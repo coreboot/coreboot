@@ -176,8 +176,16 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size)
 			const u32 reg32 = pci_read_config32(PCH_DEV_LPC, LPC_GENERIC_IO_RANGE(i));
 			if (!(reg32 & LPC_LGIR_EN))
 				continue;
-			const struct region exist = region_create(reg32 & LPC_LGIR_ADDR_MASK,
-							1 + ((reg32 & LPC_LGIR_AMASK_MASK) >> 16));
+
+			/* The AMASK field stores bits [7:2] of the address mask.
+			 * Bits [1:0] are always set (4-byte granularity).
+			 * To decode: mask = (amask_raw & 0xfc) | 0x3
+			 *            size = mask + 1
+			 */
+			const u32 exist_base = reg32 & LPC_LGIR_ADDR_MASK;
+			const u32 amask_raw = (reg32 & LPC_LGIR_AMASK_MASK) >> 16;
+			const u32 exist_size = ((amask_raw & 0xfc) | 0x3) + 1;
+			const struct region exist = region_create(exist_base, exist_size);
 
 			if (region_is_subregion(&exist, &win))
 				return;

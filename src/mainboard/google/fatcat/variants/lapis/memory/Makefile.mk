@@ -4,6 +4,6 @@
 # util/spd_tools/bin/part_id_gen PTL lp5 src/mainboard/google/fatcat/variants/lapis/memory src/mainboard/google/fatcat/variants/lapis/memory/mem_parts_used.txt
 
 SPD_SOURCES =
-SPD_SOURCES += spd/lp5/set-0/spd-10.hex      # ID = 0(0b0000)  Parts = H58G66CK8BX147, K3KL9L90EM-MGCU, MT62F2G32D4DS-023 WT:C
-SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 1(0b0001)  Parts = H58G56CK8BX146, K3KL8L80EM-MGCU, MT62F1G32D2DS-023 WT:C
+SPD_SOURCES += spd/lp5/set-0/spd-10.hex      # ID = 0(0b0000)  Parts = H58G66CK8BX147, K3KL9L90EM-MGCU, MT62F2G32D4DS-023 WT:C, MT62F2G32D4DS-020 WT:D
+SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 1(0b0001)  Parts = H58G56CK8BX146, K3KL8L80EM-MGCU, MT62F1G32D2DS-023 WT:C, MT62F1G32D2DS-020 WT:D
 SPD_SOURCES += spd/lp5/set-0/spd-13.hex      # ID = 2(0b0010)  Parts = K3KLALA0EM-MGCU

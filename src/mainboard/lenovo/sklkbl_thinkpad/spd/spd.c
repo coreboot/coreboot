@@ -28,8 +28,7 @@ uint8_t *mainboard_find_spd_data(uint8_t spd_index)
 		die("Missing SPD data (spd.bin size %zu smaller than SPD size %u).", spd_file_len, SPD_SIZE_MAX_DDR4);
 
 	/* Assume same memory in both channels */
-	spd_index *= SPD_SIZE_MAX_DDR4;
-	spd_data = (uint8_t *)(spd_file + spd_index);
+	spd_data = (uint8_t *)(spd_file + spd_index * SPD_SIZE_MAX_DDR4);
 
 	/* Make sure a valid SPD was found */
 	if (spd_data[0] == 0)

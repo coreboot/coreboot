@@ -517,6 +517,7 @@ chip soc/intel/pantherlake
 				end
 			end
 		end # SNDW
+		device ref smbus on end
 		device ref i2c0 on end
 		device ref i2c3 on
 			chip drivers/i2c/tpm

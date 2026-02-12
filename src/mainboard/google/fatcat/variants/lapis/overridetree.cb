@@ -111,6 +111,7 @@ chip soc/intel/pantherlake
 	#| I2C3              | cr50 TPM.                 |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[3] = {
 			.early_init=1,
 			.speed = I2C_SPEED_FAST,

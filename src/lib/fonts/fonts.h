@@ -10,7 +10,7 @@
 #define FONT_END_CHAR    126  /* ASCII ~ */
 #define FONT_NUM_CHARS  (FONT_END_CHAR - FONT_START_CHAR + 1)
 
-extern const uint32_t font_table[FONT_NUM_CHARS][CONFIG_FONT_HEIGHT];
-extern const uint8_t font_widths[];
+extern const uint8_t font_table[FONT_NUM_CHARS][CONFIG_FONT_WIDTH * CONFIG_FONT_HEIGHT];
+extern const uint8_t font_widths[FONT_NUM_CHARS];
 
 #endif // __FONTS_H__

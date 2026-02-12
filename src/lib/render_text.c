@@ -3,9 +3,29 @@
 #include <bootsplash.h>
 #include <console/console.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "fonts/fonts.h"
 #include "render_bmp.h"
+
+/* Major dimension for panel */
+#define PANEL_4K 3840
+#define PANEL_2K_QHD 2560
+
+/* Determine scaling factor based on display resolution */
+static uint32_t get_resolution_scale(struct logo_config *config)
+{
+	uint32_t width = config->horizontal_resolution;
+	uint32_t height = config->vertical_resolution;
+	uint32_t major_dim = (width > height) ? width : height;
+
+	if (major_dim >= PANEL_4K)
+		return 3;
+	else if (major_dim >= PANEL_2K_QHD)
+		return 2;
+	else /* HD / FHD Panels */
+		return 1;
+}
 
 /* Maps an unsigned character to the 8-bit alpha map (smoothing data) */
 static const uint8_t *get_glyph_data(unsigned char c)
@@ -61,7 +81,7 @@ static inline void get_rotated_text_coords(struct logo_config *config,
  * @color:  Primary text color.
  */
 static void draw_char(struct logo_config *config, unsigned char c, uint32_t x, uint32_t y,
-		struct blt_pixel color)
+		struct blt_pixel color, uint32_t scale)
 {
 	size_t pixel_size = sizeof(struct blt_pixel);
 	uint8_t *fb = (uint8_t *)config->framebuffer_base;
@@ -77,23 +97,31 @@ static void draw_char(struct logo_config *config, unsigned char c, uint32_t x, u
 			if (alpha == 0)
 				continue;
 
-			uint32_t fb_x, fb_y;
-			get_rotated_text_coords(config, x, y, row, col, &fb_x, &fb_y);
+			/* Fill a scale x scale block for each font pixel */
+			for (uint32_t sy = 0; sy < scale; sy++) {
+				for (uint32_t sx = 0; sx < scale; sx++) {
+					uint32_t fb_x, fb_y;
+					get_rotated_text_coords(config, x, y,
+						(row * scale) + sy,
+						(col * scale) + sx,
+						&fb_x, &fb_y);
 
-			if (fb_x < config->horizontal_resolution &&
-				fb_y < config->vertical_resolution) {
+					if (fb_x < config->horizontal_resolution &&
+					    fb_y < config->vertical_resolution) {
+						struct blt_pixel *bg = (struct blt_pixel *)
+							(fb + (fb_y * config->bytes_per_scanline) + (fb_x * pixel_size));
 
-				struct blt_pixel *bg = (struct blt_pixel *)
-						(fb + (fb_y * config->bytes_per_scanline) + (fb_x * pixel_size));
-
-				if (alpha == 255) {
-					/* Fully opaque: just overwrite */
-					*bg = color;
-				} else {
-					/* Perform Alpha Blending */
-					bg->Red = (uint8_t)((color.Red * alpha + bg->Red * (255 - alpha)) / 255);
-					bg->Green = (uint8_t)((color.Green * alpha + bg->Green * (255 - alpha)) / 255);
-					bg->Blue = (uint8_t)((color.Blue * alpha + bg->Blue * (255 - alpha)) / 255);
+						if (alpha == 255) {
+							*bg = color;
+						} else {
+							bg->Red = (uint8_t)((color.Red * alpha + bg->Red *
+										 (255 - alpha)) / 255);
+							bg->Green = (uint8_t)((color.Green * alpha + bg->Green *
+										 (255 - alpha)) / 255);
+							bg->Blue = (uint8_t)((color.Blue * alpha + bg->Blue *
+										 (255 - alpha)) / 255);
+						}
+					}
 				}
 			}
 		}
@@ -157,11 +185,12 @@ void render_text_to_framebuffer(struct logo_config *config, const char *str,
 	if (len == 0)
 		return;
 
-	const uint32_t kerning = 1;
+	uint32_t scale = get_resolution_scale(config);
+	const uint32_t kerning = 1 * scale;
 	uint32_t total_width = 0;
 
 	for (size_t i = 0; i < len; i++)
-		total_width += get_glyph_width((unsigned char)str[i]) + kerning;
+		total_width += (get_glyph_width((unsigned char)str[i]) * scale) + kerning;
 
 	uint32_t text_w, text_h;
 	enum fw_splash_horizontal_alignment halign;
@@ -173,11 +202,11 @@ void render_text_to_framebuffer(struct logo_config *config, const char *str,
 
 	if (config->panel_orientation == LB_FB_ORIENTATION_LEFT_UP ||
 			 config->panel_orientation == LB_FB_ORIENTATION_RIGHT_UP) {
-		text_w = CONFIG_FONT_HEIGHT;
+		text_w = CONFIG_FONT_HEIGHT * scale;
 		text_h = total_width;
 	} else {
 		text_w = total_width;
-		text_h = CONFIG_FONT_HEIGHT;
+		text_h = CONFIG_FONT_HEIGHT * scale;
 	}
 
 	struct logo_coordinates coords = calculate_logo_coordinates(config->horizontal_resolution,
@@ -207,9 +236,9 @@ void render_text_to_framebuffer(struct logo_config *config, const char *str,
 	/* Loop through characters and draw them */
 	for (size_t i = 0; i < len; i++) {
 		unsigned char c = (unsigned char)str[i];
-		draw_char(config, c, cur_x, cur_y, text_color);
+		draw_char(config, c, cur_x, cur_y, text_color, scale);
 
-		uint32_t advance = get_glyph_width(c) + kerning;
+		uint32_t advance = (get_glyph_width(c) * scale) + kerning;
 		if (config->panel_orientation == LB_FB_ORIENTATION_RIGHT_UP)
 			cur_y += advance;
 		else if (config->panel_orientation == LB_FB_ORIENTATION_LEFT_UP)

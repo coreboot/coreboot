@@ -282,7 +282,7 @@ chip soc/intel/pantherlake
 				device generic 0 on end
 			end
 		end
-		device ref ipu on end
+		device ref ipu off end
 		device ref iaa off end
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp2 on end

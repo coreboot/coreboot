@@ -8,6 +8,8 @@ chip soc/intel/skylake
         register "PmConfigSlpSusMinAssert" = "3"        # 500ms
         register "PmConfigSlpAMinAssert" = "3"          # 2s
 
+	# Generate ACPI P-State table
+	register "eist_enable" = "true"
 	device domain 0 on
 		subsystemid 0x17aa 0x225d inherit
 		device ref igpu on

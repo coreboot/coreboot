@@ -70,7 +70,8 @@ static const struct soc_mem_cfg soc_mem_cfg[] = {
 	},
 };
 
-static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_data *data)
+static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_data *data,
+				bool expand_channels)
 {
 	uint64_t *spd_upds[MRC_CHANNELS][CONFIG_DIMMS_PER_CHANNEL] = {
 		[0] = { &mem_cfg->MemorySpdPtr000, &mem_cfg->MemorySpdPtr001, },
@@ -103,7 +104,19 @@ static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 		for (dimm = 0; dimm < CONFIG_DIMMS_PER_CHANNEL; dimm++) {
 			uint64_t *spd_ptr = spd_upds[ch][dimm];
 
-			*spd_ptr = data->spd[ch][dimm];
+			/*
+			 * In DDR5 systems, since each DIMM has 2 channels,
+			 * we need to copy the SPD data such that:
+			 * Channel 0 data is used by channel 0 and 1
+			 * Channel 2 data is used by channel 2 and 3
+			 * Channel 4 data is used by channel 4 and 5
+			 * Channel 6 data is used by channel 6 and 7
+			 */
+			if (expand_channels)
+				*spd_ptr = data->spd[ch & ~1][dimm];
+			else
+				*spd_ptr = data->spd[ch][dimm];
+
 			if (*spd_ptr)
 				enable_channel = 1;
 		}
@@ -184,6 +197,7 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 {
 	struct mem_channel_data data;
 	bool dq_dqs_auto_detect = false;
+	bool expand_channels = false;
 	FSP_M_CONFIG *mem_cfg = &memupd->FspmConfig;
 
 	mem_cfg->ECT = mb_cfg->ect;
@@ -195,16 +209,7 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 		printk(BIOS_DEBUG, "%s: module type is DDR5\n", __func__);
 		meminit_ddr(mem_cfg, &mb_cfg->ddr_config);
 		dq_dqs_auto_detect = true;
-		/*
-		 * TODO: Drop this workaround once SMBus driver in coreboot is
-		 * updated to support DDR5 EEPROM reading.
-		 */
-		if (spd_info->topo == MEM_TOPO_DIMM_MODULE) {
-			fill_dimm_module_info(mem_cfg, mb_cfg, spd_info);
-			mem_init_dq_upds(mem_cfg, NULL, mb_cfg, true);
-			mem_init_dqs_upds(mem_cfg, NULL, mb_cfg, true);
-			return;
-		}
+		expand_channels = true;
 		break;
 	case MEM_TYPE_LP5X:
 		meminit_lp5x(mem_cfg, &mb_cfg->lp5x_config);
@@ -218,7 +223,7 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 
 	mem_populate_channel_data(memupd, &soc_mem_cfg[mb_cfg->type], spd_info,
 				  half_populated, &data);
-	mem_init_spd_upds(mem_cfg, &data);
+	mem_init_spd_upds(mem_cfg, &data, expand_channels);
 	mem_init_dq_upds(mem_cfg, &data, mb_cfg, dq_dqs_auto_detect);
 	mem_init_dqs_upds(mem_cfg, &data, mb_cfg, dq_dqs_auto_detect);
 }

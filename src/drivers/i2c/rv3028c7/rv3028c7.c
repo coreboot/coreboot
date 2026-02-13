@@ -86,29 +86,37 @@ static void rtc_set_time_date(struct device *dev)
 		buf[6] = coreboot_build_date.year;
 		printk(BIOS_DEBUG, "%s: Set to coreboot build date\n", dev->chip_ops->name);
 	}
-	/* According to the datasheet, date and time should be transferred in "one go"
-	   in order to avoid value corruption. */
-	if (i2c_dev_write_at(dev, buf, sizeof(buf), 0) != sizeof(buf)) {
-		printk(BIOS_ERR, "%s: Not able to set date and time!\n", dev->chip_ops->name);
+	for (size_t i = 0; i < ARRAY_SIZE(buf); i++) {
+		if (i2c_dev_writeb_at(dev, i, buf[i]) < 0) {
+			printk(BIOS_ERR, "%s: Failed to write register 0x%02zx!\n",
+				dev->chip_ops->name, i);
+			return;
+		}
 	}
 }
 
 static void rtc_final(struct device *dev)
 {
 	uint8_t buf[7];
+	int val;
+	/* Read back current RTC date and time byte by byte */
+	printk(BIOS_DEBUG, "%s: Reading current date and time...\n", dev->chip_ops->name);
 
-	/* Read back current RTC date and time and print it to the console.
-	   Date and time are read in "one go", the buffer contains seconds (byte 0)
-	   through years (byte 6) after this read. */
-	if (i2c_dev_read_at(dev, buf, sizeof(buf), 0) != sizeof(buf)) {
-		printk(BIOS_ERR, "%s: Not able to read current date and time!\n",
-			dev->chip_ops->name);
-	} else {
-		printk(BIOS_INFO, "%s: Current date %02d.%02d.%02d %02d:%02d:%02d\n",
-				dev->chip_ops->name, bcd2bin(buf[5]), bcd2bin(buf[4]),
-				bcd2bin(buf[6]), bcd2bin(buf[2]), bcd2bin(buf[1]),
-				bcd2bin(buf[0]));
+	for (size_t i = 0; i < ARRAY_SIZE(buf); i++) {
+		val = i2c_dev_readb_at(dev, i);
+		if (val < 0) {
+			printk(BIOS_ERR, "%s: Failed to read register 0x%02zx!\n",
+			       dev->chip_ops->name, i);
+			return;
+		}
+		buf[i] = (uint8_t)val;
 	}
+
+	printk(BIOS_INFO, "%s: Current date %02d.%02d.%02d %02d:%02d:%02d\n",
+			dev->chip_ops->name, bcd2bin(buf[5]), bcd2bin(buf[4]),
+			bcd2bin(buf[6]), bcd2bin(buf[2]), bcd2bin(buf[1]),
+			bcd2bin(buf[0]));
+
 	/* Make sure the EEPROM automatic refresh is enabled. */
 	if (rtc_eep_auto_refresh(dev, EEP_REFRESH_EN) != CB_SUCCESS) {
 		printk(BIOS_ERR, "%s: Not able to enable EEPROM auto refresh!\n",

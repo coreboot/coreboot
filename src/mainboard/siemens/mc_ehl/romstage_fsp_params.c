@@ -38,8 +38,10 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	/* Enable Row-Hammer prevention */
 	memupd->FspmConfig.RhPrevention = 1;
-	if (CONFIG(BOARD_SIEMENS_MC_EHL1)) {
-		/* Allow writes to EEPROM addresses 0x50..0x57. */
+	if (CONFIG(BOARD_SIEMENS_MC_EHL1) || CONFIG(BOARD_SIEMENS_MC_EHL8)) {
+		/* Disable write protection for SMBus addresses 0x50-0x57.
+		* mc_ehl1: Writable SPD EEPROM
+		* mc_ehl8: RTC at address 0x52 */
 		memupd->FspmConfig.SmbusSpdWriteDisable = 0;
 	}
 }

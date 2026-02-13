@@ -61,8 +61,8 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),				/* HDMI Clock */
 	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),				/* HDMI Data */
 	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF1),				/* PMC Interrupt */
-	PAD_CFG_NF(GPP_C6, NONE, PWROK, NF1),				/* SML Clock */
-	PAD_CFG_NF(GPP_C7, NONE, PWROK, NF1),				/* SML Data */
+	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),				/* SML Clock */
+	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),				/* SML Data */
 
 	/* Webcam */
 	PAD_CFG_TERM_GPO(GPP_D19, 1, UP_20K, DEEP),			/* Power */

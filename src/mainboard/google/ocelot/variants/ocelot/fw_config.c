@@ -605,7 +605,21 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, ish_disable_pads);
 	}
 
-	if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT))) {
+	/*
+	 * *=========================================================================*
+	 * |             Usage                     |           GPP_E17               |
+	 * *=========================================================================*
+	 * | Touchscreen in THC-SPI (with rework)  | NF3: THC HID-SPI CS0            |
+	 * *---------------------------------------*---------------------------------*
+	 * | FPS present         (without rework)  | NF5: GSPI0 CS0                  |
+	 * *---------------------------------------*---------------------------------*
+	 *
+	 * NOTE: 1. CBI selecting TS THC-SPI or implies TS rework is applied for the board.
+	 *       2. CBI selecting TS THC-SPI with FPS present is invalid case.
+	 */
+	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
+		/*  Board has TS THC-SPI rework and does not support FPS*/
+	} else if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, fp_enable_pads);
 	} else {
 		GPIO_PADBASED_OVERRIDE(padbased_table, fp_disable_pads);

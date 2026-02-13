@@ -444,6 +444,11 @@ static void mtk_dsi_reset_phy(struct dsi_regs *const dsi_reg)
 	clrbits32(&dsi_reg->dsi_con_ctrl, DPHY_RESET);
 }
 
+static void mtk_dsi_stop(struct dsi_regs *dsi)
+{
+	write32(&dsi->dsi_start, 0);
+}
+
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 		 const u8 *init_commands)
 {
@@ -501,4 +506,46 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 	mtk_dsi_enable_and_start(is_dsi_dual_channel);
 
 	return 0;
+}
+
+int mtk_dsi_panel_poweroff(u32 mode_flags, const u8 *poweroff_cmds)
+{
+	int ret;
+	unsigned int num_dsi = (mode_flags & MIPI_DSI_DUAL_CHANNEL) ? 2 : 1;
+
+	/* Stop DSI-0 engine */
+	mtk_dsi_stop(dsi_mipi_regs[0].dsi_reg);
+
+	/* Wait for DSI engines to become idle */
+	for (unsigned int i = 0; i < num_dsi; i++) {
+		struct dsi_regs *dsi = dsi_mipi_regs[i].dsi_reg;
+
+		if (!wait_ms(20, !(read32(&dsi->dsi_intsta) & DSI_BUSY))) {
+			u32 intsta = read32(&dsi->dsi_intsta);
+
+			printk(BIOS_ERR, "%s: Timeout (20ms) waiting for DSI-%d idle "
+			       "and the panel may not power-off properly. "
+			       "DSI_INTSTA=0x%08x.\n",
+			       __func__, i, intsta);
+			return -1;
+		}
+
+		write32(&dsi->dsi_intsta, 0);
+		write32(&dsi->dsi_mode_ctrl, CMD_MODE);
+	}
+
+	/* Send panel poweroff commands */
+	ret = mipi_panel_parse_commands(poweroff_cmds, mtk_dsi_cmdq,
+					&mode_flags);
+
+	/* Final shutdown: stop + disable PHY */
+	mtk_dsi_stop(dsi_mipi_regs[0].dsi_reg);
+
+	for (unsigned int i = 0; i < num_dsi; i++) {
+		struct dsi_regs *dsi = dsi_mipi_regs[i].dsi_reg;
+
+		write32(&dsi->dsi_phy_lccon, 0x0);
+	}
+
+	return ret;
 }

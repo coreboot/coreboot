@@ -16,6 +16,7 @@
 #include <symbols.h>
 #include <timestamp.h>
 
+static u32 dsi_mode_flags;
 static struct panel_serializable_data *mipi_data;
 
 static struct panel_serializable_data *get_mipi_cmd_from_cbfs(struct panel_description *desc)
@@ -172,6 +173,8 @@ int mtk_display_init(void)
 			lanes = 4;
 		}
 
+		dsi_mode_flags = mipi_dsi_flags;
+
 		if (mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, lanes, &edid,
 				 mipi_data ? mipi_data->init : NULL) < 0) {
 			printk(BIOS_ERR, "%s: Failed in DSI init\n", __func__);
@@ -217,6 +220,14 @@ int mtk_display_init(void)
 		display_logo(panel, fb_addr, &edid, panel->disp_path);
 
 	return 0;
+}
+
+int mtk_mipi_panel_poweroff(void)
+{
+	if (!mipi_data)
+		return 0;
+
+	return mtk_dsi_panel_poweroff(dsi_mode_flags, mipi_data->poweroff);
 }
 
 u32 mtk_get_vrefresh(const struct edid *edid)

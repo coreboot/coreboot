@@ -18,7 +18,6 @@ romstage-y += cnl_memcfg_init.c
 romstage-y += lpc.c
 romstage-y += pcie_rp.c
 romstage-y += pmutil.c
-romstage-y += reset.c
 romstage-y += spi.c
 
 ramstage-y += acpi.c
@@ -35,7 +34,6 @@ ramstage-y += p2sb.c
 ramstage-y += pcie_rp.c
 ramstage-y += pmc.c
 ramstage-y += pmutil.c
-ramstage-y += reset.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
 ramstage-y += vr_config.c

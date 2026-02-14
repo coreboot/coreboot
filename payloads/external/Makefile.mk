@@ -161,6 +161,21 @@ ifeq ($(CONFIG_EDK2_ENABLE_IPXE),y)
 IPXE_EFI := payloads/external/iPXE/ipxe/ipxe.rom
 endif
 
+ifeq ($(CONFIG_PAYLOAD_EDK2)$(CONFIG_SMMSTORE_V2)$(CONFIG_DRIVERS_OPTION_CFR),yyy)
+ifeq ($(CONFIG_DRIVERS_EFI_VARIABLE_STORE),)
+show_notices:: warn_no_option_cfr_enabled
+
+PHONY+=warn_no_option_cfr_enabled
+warn_no_option_cfr_enabled:
+	printf "\n\t** WARNING **\n"
+	printf "edk2 has been configured to store non-volatile variables in the 'SMMSTORE'\n"
+	printf "flash area, and to show coreboot's setup option menu, but coreboot is not\n"
+	printf "configured to use variables stored by edk2 in the 'SMMSTORE' flash area.\n"
+	printf "coreboot-related changes made in edk2's setup menu will have no effect.\n"
+	printf "To fix this, select CONFIG_DRIVERS_EFI_VARIABLE_STORE.\n\n"
+endif
+endif
+
 $(obj)/UEFIPAYLOAD.fd: $(DOTCONFIG) $(IPXE_EFI)
 	$(MAKE) -C payloads/external/edk2 UefiPayloadPkg \
 		HOSTCC="$(HOSTCC)" \

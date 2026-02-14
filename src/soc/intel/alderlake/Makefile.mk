@@ -15,7 +15,6 @@ bootblock-$(CONFIG_ALDERLAKE_CONFIGURE_DESCRIPTOR) += bootblock/update_descripto
 romstage-$(CONFIG_SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY) += cse_telemetry.c
 romstage-y += meminit.c
 romstage-y += pcie_rp.c
-romstage-y += reset.c
 
 ramstage-y += acpi.c
 ramstage-y += chip.c
@@ -28,7 +27,6 @@ ramstage-y += hsphy.c
 ramstage-y += p2sb.c
 ramstage-y += pcie_rp.c
 ramstage-y += pmc.c
-ramstage-y += reset.c
 ramstage-$(CONFIG_SOC_INTEL_ALDERLAKE_TCSS_USB4_SUPPORT) += retimer.c
 ramstage-y += systemagent.c
 ramstage-y += tcss.c

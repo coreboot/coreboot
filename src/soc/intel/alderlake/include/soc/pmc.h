@@ -168,6 +168,9 @@ extern struct device_operations pmc_ops;
 #define ST_PG_FDIS1			0x1e20
 #define   ST_FDIS_LOCK			(1 << 31)
 
+/* PMC lockdown configuration register for ST_FDIS_LOCK */
+#define PMC_FDIS_LOCK_REG		ST_PG_FDIS1
+
 #define  SCIS_IRQ9			0
 #define  SCIS_IRQ10			1
 #define  SCIS_IRQ11			2

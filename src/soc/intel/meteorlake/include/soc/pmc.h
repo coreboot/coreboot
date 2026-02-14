@@ -62,6 +62,9 @@ extern struct device_operations ioe_pmc_ops;
 #define   SMI_LOCK			(1 << 4)
 #define   RTC_BATTERY_DEAD		(1 << 2)
 
+/* PMC lockdown configuration register for ST_FDIS_LOCK */
+#define PMC_FDIS_LOCK_REG		GEN_PMCON_B
+
 #define ETR				0x1048
 #define   CF9_LOCK			(1 << 31)
 #define   CF9_GLB_RST			(1 << 20)

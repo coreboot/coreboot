@@ -1,0 +1,9 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_GLOBAL_RESET_CSE_PMC
+	bool
+	help
+	  Include common implementation of do_global_reset() that uses CSE
+	  (Converged Security Engine) with PMC (Power Management Controller)
+	  fallback. This implementation is identical across multiple Intel
+	  client platforms.

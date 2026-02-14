@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_LOCKDOWN
+	bool
+	help
+	  Include common PMC lockdown driver for Intel SoCs. This driver
+	  consolidates the nearly identical PMC lockdown implementations
+	  across multiple Intel platform generations.

@@ -8,6 +8,26 @@
 #include <northbridge/intel/sandybridge/cfr.h>
 #include <southbridge/intel/bd82x6x/cfr.h>
 
+GEN_RP_ENUM(1, "Wifi")
+#if CONFIG(BOARD_LENOVO_X220)
+GEN_RP_ENUM(3, "ExpressCard")
+#endif
+GEN_RP_ENUM(4, "SD Card Reader")
+GEN_RP_ENUM(6, "xHCI")
+
+static struct sm_obj_form pcie = {
+	.ui_name = "PCH PCIe",
+	.obj_list = (const struct sm_object *[]) {
+		&pcie_rp1,
+#if CONFIG(BOARD_LENOVO_X220)
+		&pcie_rp3,
+#endif
+		&pcie_rp4,
+		&pcie_rp6,
+		NULL
+	},
+};
+
 static struct sm_obj_form ec = {
 	.ui_name = "Embedded Controller",
 	.obj_list = (const struct sm_object *[]) {
@@ -49,6 +69,7 @@ static struct sm_obj_form *sm_root[] = {
 	&system,
 	&power,
 	&ec,
+	&pcie,
 	NULL
 };
 

@@ -359,7 +359,7 @@ StarBook Mk VI <starlabs/starbook_adl.md>
 StarBook Mk VII (N200) <starlabs/starbook_adl_n.md>
 StarBook Mk VII (165H) <starlabs/starbook_mtl.md>
 StarBook Horizon <starlabs/adl_horizon.md>
-Byte Mk II <starlabs/byte_adl.md>
+Byte Mk II <starlabs/byte.md>
 StarFighter Mk I <starlabs/starfighter_rpl.md>
 StarFighter Mk II <starlabs/starfighter_mtl.md>
 

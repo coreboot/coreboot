@@ -1,4 +1,10 @@
-comment "Star Labs StarLite Series"
+comment "Star Labs ADL Series"
 
 config BOARD_STARLABS_ADL_HORIZON
 	bool "Star Labs StarBook Horizon (N305)"
+
+config BOARD_STARLABS_BYTE_ADL
+	bool "Star Labs Byte Mk II (N200)"
+
+config BOARD_STARLABS_BYTE_TWL
+	bool "Star Labs Byte Mk III (N355)"

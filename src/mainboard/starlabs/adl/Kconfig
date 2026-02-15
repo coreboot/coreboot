@@ -1,23 +1,17 @@
 config BOARD_STARLABS_ADL_SERIES
 	def_bool n
 	select AZALIA_USE_LEGACY_VERB_TABLE
+	select BOARD_ROMSIZE_KB_16384
 	select CSE_DEFAULT_CFR_OPTION_STATE_DISABLED
 	select DRIVERS_EFI_VARIABLE_STORE
-	select DRIVERS_GFX_GENERIC
-	select DRIVERS_I2C_HID
 	select DRIVERS_INTEL_PMC
 	select DRIVERS_OPTION_CFR_ENABLED
 	select EC_STARLABS_MERLIN
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
-	select HAVE_CMOS_DEFAULT
-	select HAVE_HDA_DMIC
 	select HAVE_OPTION_TABLE
-	select HAVE_SPD_IN_CBFS
 	select INTEL_GMA_HAVE_VBT
 	select INTEL_LPSS_UART_FOR_CONSOLE
-	select MAINBOARD_HAS_TPM2
-	select MEMORY_MAPPED_TPM
 	select NO_UART_ON_SUPERIO
 	select PMC_IPC_ACPI_INTERFACE
 	select SOC_INTEL_ALDERLAKE
@@ -26,21 +20,43 @@ config BOARD_STARLABS_ADL_SERIES
 	select SOC_INTEL_CRASHLOG
 	select SPD_READ_BY_WORD
 	select SPI_FLASH_WINBOND
-	select SYSTEM_TYPE_LAPTOP
 	select TPM2
-	select TPM_MEASURED_BOOT
 	select VALIDATE_INTEL_DESCRIPTOR
 
 config BOARD_STARLABS_ADL_HORIZON
-	select BOARD_ROMSIZE_KB_16384
 	select BOARD_STARLABS_ADL_SERIES
+	select DRIVERS_GFX_GENERIC
+	select DRIVERS_I2C_HID
+	select HAVE_CMOS_DEFAULT
+	select HAVE_HDA_DMIC
+	select HAVE_SPD_IN_CBFS
+	select MAINBOARD_HAS_TPM2
+	select MEMORY_MAPPED_TPM
 	select SOC_INTEL_ALDERLAKE_PCH_N
+	select SYSTEM_TYPE_LAPTOP
+	select TPM_MEASURED_BOOT
 
-if BOARD_STARLABS_ADL_HORIZON
+config BOARD_STARLABS_BYTE_ADL
+	select BOARD_STARLABS_ADL_SERIES
+	select CRB_TPM
+	select DRIVERS_PCIE_GENERIC
+	select EC_STARLABS_FAN
+	select HAVE_INTEL_PTT
+	select SOC_INTEL_ALDERLAKE_PCH_N
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	select SYSTEM_TYPE_MINIPC
 
-config CCD_PORT
-	int
-	default 4
+config BOARD_STARLABS_BYTE_TWL
+	select BOARD_STARLABS_ADL_SERIES
+	select CRB_TPM
+	select DRIVERS_PCIE_GENERIC
+	select EC_STARLABS_FAN
+	select HAVE_INTEL_PTT
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	select SOC_INTEL_TWINLAKE
+	select SYSTEM_TYPE_MINIPC
+
+if BOARD_STARLABS_ADL_SERIES
 
 config CONSOLE_SERIAL
 	default n if !EDK2_DEBUG
@@ -58,20 +74,12 @@ config EDK2_BOOTSPLASH_FILE
 	string
 	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
 
-config EC_STARLABS_BATTERY_MODEL
-	default "U5266122PV-2S1P"
-
-config EC_STARLABS_BATTERY_TYPE
-	default "LION"
-
-config EC_STARLABS_BATTERY_OEM
-	default "Shenzhen Utility Energy Co., Ltd"
-
 config EC_STARLABS_ITE_BIN_PATH
 	string
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"
 
 config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/vboot.fmd" if VBOOT
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
 
 config IFD_BIN_PATH
@@ -83,13 +91,18 @@ config MAINBOARD_DIR
 
 config MAINBOARD_FAMILY
 	string
-	default "HZ"
+	default "HZ" if BOARD_STARLABS_ADL_HORIZON
+	default "Y3" if BOARD_STARLABS_BYTE_TWL
+	default "Y2" if BOARD_STARLABS_BYTE_ADL
 
 config MAINBOARD_PART_NUMBER
-	default "StarBook Horizon"
+	default "StarBook Horizon" if BOARD_STARLABS_ADL_HORIZON
+	default "Byte Mk III" if BOARD_STARLABS_BYTE_TWL
+	default "Byte Mk II" if BOARD_STARLABS_BYTE_ADL
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
-	default "StarBook Horizon"
+	default "StarBook Horizon" if BOARD_STARLABS_ADL_HORIZON
+	default "Byte" if BOARD_STARLABS_BYTE_ADL || BOARD_STARLABS_BYTE_TWL
 
 config ME_BIN_PATH
 	string
@@ -101,10 +114,6 @@ config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 config SOC_INTEL_CSE_SEND_EOP_EARLY
 	default n
 
-config TPM_PIRQ
-	depends on MAINBOARD_HAS_TPM2
-	default 0x28
-
 config UART_FOR_CONSOLE
 	default 0
 
@@ -112,6 +121,42 @@ config USE_PM_ACPI_TIMER
 	default n
 
 config VARIANT_DIR
-	default "hz"
+	default "hz" if BOARD_STARLABS_ADL_HORIZON
+	default "y2" if BOARD_STARLABS_BYTE_ADL || BOARD_STARLABS_BYTE_TWL
 
-endif
+config CMOS_LAYOUT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.layout"
+
+if BOARD_STARLABS_ADL_HORIZON
+
+config CCD_PORT
+	int
+	default 4
+
+config EC_STARLABS_BATTERY_MODEL
+	default "U5266122PV-2S1P"
+
+config EC_STARLABS_BATTERY_TYPE
+	default "LION"
+
+config EC_STARLABS_BATTERY_OEM
+	default "Shenzhen Utility Energy Co., Ltd"
+
+config TPM_PIRQ
+	depends on MAINBOARD_HAS_TPM2
+	default 0x28
+
+endif # BOARD_STARLABS_ADL_HORIZON
+
+if BOARD_STARLABS_BYTE_ADL || BOARD_STARLABS_BYTE_TWL
+
+config PL4_WATTS
+	int
+	default 65
+
+config VBOOT
+	select VBOOT_VBNV_FLASH
+
+endif # BOARD_STARLABS_BYTE_ADL || BOARD_STARLABS_BYTE_TWL
+
+endif # BOARD_STARLABS_ADL_SERIES

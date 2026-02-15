@@ -10,8 +10,10 @@
 static struct sm_obj_form battery_group = {
 	.ui_name = "Battery",
 	.obj_list = (const struct sm_object *[]) {
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
 		&charging_speed,
 		&max_charge,
+#endif
 		&power_on_after_fail_bool,
 		NULL
 	},
@@ -25,6 +27,7 @@ static struct sm_obj_form debug_group = {
 	},
 };
 
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
 static struct sm_obj_form leds_group = {
 	.ui_name = "LEDs",
 	.obj_list = (const struct sm_object *[]) {
@@ -59,6 +62,7 @@ static struct sm_obj_form display_group = {
 		NULL
 	},
 };
+#endif
 
 static struct sm_obj_form pcie_power_management_group = {
 	.ui_name = "PCIe Power Management",
@@ -75,7 +79,9 @@ static struct sm_obj_form performance_group = {
 	.obj_list = (const struct sm_object *[]) {
 		&fan_mode,
 		&gna,
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
 		&memory_speed,
+#endif
 		&power_profile,
 		NULL
 	},
@@ -95,7 +101,9 @@ static struct sm_obj_form security_group = {
 static struct sm_obj_form suspend_lid_group = {
 	.ui_name = "Suspend & Lid",
 	.obj_list = (const struct sm_object *[]) {
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
 		&lid_switch,
+#endif
 		&s0ix_enable,
 		NULL
 	},
@@ -120,12 +128,16 @@ static struct sm_obj_form wireless_group = {
 };
 
 static struct sm_obj_form *sm_root[] = {
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
 	&audio_video_group,
+#endif
 	&battery_group,
 	&debug_group,
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
 	&display_group,
 	&keyboard_group,
 	&leds_group,
+#endif
 	&pcie_power_management_group,
 	&performance_group,
 	&security_group,

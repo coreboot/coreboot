@@ -2,6 +2,8 @@
 
 bootblock-y += gpio.c
 
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+
 romstage-y += romstage.c
 
 ramstage-y += devtree.c

@@ -86,7 +86,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),				/* Data */
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),					/* DRAM Sleep */
 
-	/* Config Straps 									[ Low      / High     ] */
+	/* Config Straps [ Low / High ] */
 	PAD_CFG_GPO(GPP_B14, 0, PLTRST),				/* Top Swap		[ Disabled / Enabled  ] */
 	PAD_CFG_GPO(GPP_B18, 0, PLTRST),				/* Reboot Support	[ Enabled  / Disabled ] */
 	PAD_CFG_GPO(GPP_C2, 1, PLTRST),					/* TLS Confidentiality	[ Disabled / Enabled  ] */

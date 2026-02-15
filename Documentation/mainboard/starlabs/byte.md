@@ -34,7 +34,7 @@
 
 ## Building coreboot
 
-Please follow the [Star Labs build instructions](common/building.md) to build coreboot, using `config.starlabs_byte_adl` as config file.
+Please follow the [Star Labs build instructions](common/building.md) to build coreboot, using `config.starlabs_byte_adl` (Byte Mk II) or `config.starlabs_byte_twl` (Byte Mk III) as config file.
 
 ### Preliminaries
 
@@ -46,6 +46,10 @@ Prior to building coreboot the following files are required:
 The files listed below are optional:
 - Splash screen image in Windows 3.1 BMP format (Logo.bmp)
 
+coreboot expects these binaries under
+`3rdparty/blobs/mainboard/starlabs/adl/<variant>/`, where `<variant>`
+matches `CONFIG_VARIANT_DIR` (default: `y2`).
+
 These files exist in the correct location in the StarLabsLtd/blobs repo on GitHub which is used in place of the standard 3rdparty/blobs repo.
 
 ### Build
@@ -55,6 +59,8 @@ The following commands will build a working image:
 ```bash
 make distclean
 make defconfig KBUILD_DEFCONFIG=configs/config.starlabs_byte_adl
+# or
+make defconfig KBUILD_DEFCONFIG=configs/config.starlabs_byte_twl
 make
 ```
 

@@ -21,12 +21,13 @@ DefinitionBlock(
 		#include <soc/intel/alderlake/acpi/southbridge.asl>
 		#include <soc/intel/alderlake/acpi/tcss.asl>
 
-		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
-
 		#include <soc/intel/common/block/acpi/acpi/gna.asl>
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
+		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 
 		/* PS/2 Keyboard */
 		#include <drivers/pc80/pc/ps2_controller.asl>
+#endif
 	}
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>

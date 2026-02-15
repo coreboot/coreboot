@@ -310,8 +310,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 * all the enabled PCIe root ports, invalid(0x1F) is set for
 	 * disabled PCIe root ports.
 	 */
+	u32 enable_mask = pcie_rp_enable_mask(get_pch_pcie_rp_table());
 	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
-		if (config->PcieRpClkReqSupport[i])
+		if (enable_mask & BIT(i))
 			params->PcieRpClkSrcNumber[i] =
 				config->PcieRpClkSrcNumber[i];
 		else

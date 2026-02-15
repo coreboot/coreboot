@@ -87,6 +87,9 @@ chip northbridge/intel/sandybridge
 					register "dock_event_enable" = "true"
 					device pnp ff.1 on end # dummy
 				end
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
 				chip ec/lenovo/h8
 					device pnp ff.2 on # dummy
 						io 0x60 = 0x62
@@ -137,9 +140,6 @@ chip northbridge/intel/sandybridge
 					register "has_dgpu_power_gpio" = "false"
 
 					register "has_thinker1" = "true"
-				end
-				chip drivers/pc80/tpm
-					device pnp 0c31.0 on end
 				end
 			end
 			device ref sata1 on end # SATA Controller 1

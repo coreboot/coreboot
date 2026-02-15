@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_FINALIZE
+	bool
+	help
+	  Include common finalize implementation for Intel SoCs. This driver
+	  consolidates the nearly identical finalize implementations across
+	  Meteor Lake and Panther Lake platforms.

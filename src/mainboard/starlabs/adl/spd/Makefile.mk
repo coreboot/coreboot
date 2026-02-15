@@ -1,5 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+SPD_GEN_MEM_TECH := lp5
+
 ifeq ($(VARIANT_DIR),hz)
 SPD_SOURCES = rs4g32l05d8fdb-5500
 SPD_SOURCES += rs4g32l05d8fdb-6400

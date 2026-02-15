@@ -2,20 +2,20 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "usb_port_config" = "{
-				{1, 0, 0 },
-				{1, 1, 1 },
-				{1, 1, 3 },
-				{1, 1, 3 },
-				{1, 1, -1},
-				{1, 1, -1},
-				{1, 0, 2 },
-				{1, 0, 2 },
-				{1, 1, 6 },
-				{1, 1, 5 },
-				{1, 1, 6 },
-				{1, 1, 6 },
-				{1, 1, 7 },
-				{1, 1, 6 },
+				{1, 0, 0 },  /* P00: System Port (near VGA) */
+				{1, 1, 1 },  /* P01: System Port (near ExpressCard) */
+				{1, 1, -1 }, /* P02: WLAN */
+				{1, 1, -1 }, /* P03: WWAN */
+				{0, 0, -1},  /* P04: Reserved */
+				{1, 1, -1},  /* P05: ExpressCard */
+				{0, 0, -1},  /* P06: Reserved */
+				{0, 0, -1 }, /* P07: Reserved */
+				{1, 1, -1 }, /* P08: Docking */
+				{1, 1, 5 },  /* P09: Always On System Port */
+				{1, 1, -1 }, /* P10: FPR */
+				{1, 1, -1 }, /* P11: BDC */
+				{1, 1, 7 },  /* P12: Docking */
+				{1, 1, -1 }, /* P13: Camera */
 			}"
 
 			device ref lpc on

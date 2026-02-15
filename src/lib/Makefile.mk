@@ -155,6 +155,7 @@ ramstage-$(CONFIG_BOOTSPLASH) += bootsplash.c
 ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 ramstage-$(CONFIG_COVERAGE) += libgcov.c
+ramstage-y += devtree_update.c
 ramstage-y += dp_aux.c
 ramstage-y += framebuffer_info.c
 ramstage-y += edid.c

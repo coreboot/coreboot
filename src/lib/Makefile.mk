@@ -375,17 +375,43 @@ romstage-y += spd_bin.c
 ifeq ($(CONFIG_HAVE_SPD_IN_CBFS),y)
 LIB_SPD_BIN = $(obj)/spd.bin
 
-LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
+SPD_SRC_DIR := src/mainboard/$(MAINBOARDDIR)/spd
+SPD_OBJ_DIR := $(obj)/spd
+SPD_GEN_TOOL := util/spd_tools/bin/spd_gen
+
+SPD_GEN_MEM_TECH ?=
+SPD_GEN_SET ?= 0
+
+# Some boards set SPD_SOURCES to the sentinel value "placeholder" to request
+# a minimal spd.bin without any dependencies.
+SPD_SOURCES_IS_PLACEHOLDER = \
+	$(if $(filter placeholder,$(SPD_SOURCES)), \
+		$(if $(filter-out placeholder,$(SPD_SOURCES)),,y))
+
+define spd_hex_dep
+$(if $(wildcard $(SPD_SRC_DIR)/$(1).spd.hex),$(SPD_SRC_DIR)/$(1).spd.hex,$(SPD_OBJ_DIR)/$(1).spd.hex)
+endef
+
+LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), $(call spd_hex_dep,$(f)))
+
+$(SPD_GEN_TOOL):
+	$(MAKE) -C util/spd_tools bin/spd_gen
+
+$(SPD_OBJ_DIR)/%.spd.hex: $(SPD_SRC_DIR)/%.spd.json | $(SPD_GEN_TOOL)
+	test -n "$(SPD_GEN_MEM_TECH)" || \
+	    (echo "SPD_GEN_MEM_TECH must be set to generate SPD hex from JSON" >&2 && exit 1)
+	mkdir -p $(SPD_OBJ_DIR)
+	$(SPD_GEN_TOOL) --set $(SPD_GEN_SET) $< $(SPD_GEN_MEM_TECH) $@
 
 # Include spd ROM data
-$(LIB_SPD_BIN): $(LIB_SPD_DEPS)
+$(LIB_SPD_BIN): $$(if $$(SPD_SOURCES_IS_PLACEHOLDER),,$$(LIB_SPD_DEPS))
 	test -n "$(SPD_SOURCES)" || \
 	    (echo "HAVE_SPD_IN_CBFS is set but SPD_SOURCES is empty" && exit 1)
-	test -n "$(LIB_SPD_DEPS)" || \
-	    (echo "SPD_SOURCES is set but no SPD file was found" && exit 1)
 	if [ "$(SPD_SOURCES)" = "placeholder" ]; then \
 	    printf '\0'; \
 	else \
+	    test -n "$(LIB_SPD_DEPS)" || \
+	        (echo "SPD_SOURCES is set but no SPD file was found" && exit 1); \
 	    for f in $(LIB_SPD_DEPS); do \
 	        if [ ! -f $$f ]; then \
 	            echo "File not found: $$f" >&2; \

@@ -41,6 +41,7 @@ entries
 # coreboot config options: northbridge
 432	3	e	11	gfx_uma_size
 435	2	e	12	hybrid_graphics_mode
+
 440	8	h	0	volume
 
 # VBOOT

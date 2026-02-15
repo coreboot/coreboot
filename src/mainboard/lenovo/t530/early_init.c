@@ -1,12 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
-#include <device/device.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
+#include <ec/lenovo/pmh7/pmh7.h>
 #include <drivers/i2c/at24rf08c/lenovo.h>
-#include <northbridge/intel/sandybridge/sandybridge.h>
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
+#include <northbridge/intel/sandybridge/sandybridge.h>
 
 static void hybrid_graphics_init(void)
 {

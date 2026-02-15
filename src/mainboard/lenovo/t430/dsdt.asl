@@ -11,24 +11,29 @@ DefinitionBlock(
 	ACPI_DSDT_REV_2,
 	OEM_ID,
 	ACPI_TABLE_CREATOR,
-	0x20141018	// OEM revision
+	0x20110725	// OEM revision
 )
 {
 	#include <acpi/dsdt_top.asl>
-	#include "acpi/platform.asl"
-	#include <cpu/intel/common/acpi/cpu.asl>
 	#include <southbridge/intel/common/acpi/platform.asl>
-	/* global NVS and variables. */
+
+	#include "acpi/platform.asl"
+
+	// global NVS and variables
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
-	#include <southbridge/intel/common/acpi/sleepstates.asl>
+
+	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)
 		{
 			#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
-			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
+
+			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}
+
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 	#include <ec/lenovo/h8/acpi/thinklight.asl>
 }

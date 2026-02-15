@@ -2,7 +2,6 @@
 
 #include <device/device.h>
 #include <soc/ramstage.h>
-#include <option.h>
 #include <variants.h>
 
 static void init_mainboard(void *chip_info)
@@ -12,8 +11,6 @@ static void init_mainboard(void *chip_info)
 
 	pads = variant_gpio_table(&num);
 	gpio_configure_pads(pads, num);
-
-	devtree_update();
 }
 
 struct chip_operations mainboard_ops = {

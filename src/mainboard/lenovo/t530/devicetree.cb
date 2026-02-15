@@ -35,9 +35,9 @@ chip northbridge/intel/sandybridge
 			# Set max SATA speed to 6.0 Gb/s
 			register "sata_interface_speed_support" = "0x3"
 
-			register "gen1_dec" = "0x7c1601"
-			register "gen2_dec" = "0x0c15e1"
-			register "gen4_dec" = "0x0c06a1"
+			register "gen1_dec" = "0x00c15e1"
+			register "gen2_dec" = "0x07c1601"
+			register "gen3_dec" = "0x00c06a1"
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "true"

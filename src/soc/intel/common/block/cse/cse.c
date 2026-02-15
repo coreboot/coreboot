@@ -315,6 +315,24 @@ bool cse_is_me_enabled(void)
 {
 	return cse_is_me_state_requested_enabled() && cse_is_me_operational();
 }
+
+bool cse_get_s0ix_enable_state(bool fallback)
+{
+	const bool enable = get_uint_option("s0ix_enable", fallback);
+
+	if (!enable)
+		return false;
+
+	if (cse_is_me_enabled())
+		return true;
+
+	printk(BIOS_WARNING, "S0ix requested but ME is disabled/unavailable.\n");
+	printk(BIOS_WARNING, "Falling back to S%c.\n", CONFIG(HAVE_ACPI_RESUME) ? '3' : '4');
+
+	set_uint_option("s0ix_enable", 0);
+
+	return false;
+}
 #endif
 
 /*

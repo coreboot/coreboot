@@ -20,6 +20,7 @@
 #include <fsp/util.h>
 #include <gpio.h>
 #include <intelblocks/aspm.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/mp_init.h>
@@ -1292,7 +1293,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 	mainboard_update_soc_chip_config(config);
 
 	/* Runtime configuration of S0ix */
-	config->s0ix_enable = get_uint_option("s0ix_enable", config->s0ix_enable);
+	config->s0ix_enable = cse_get_s0ix_enable_state(config->s0ix_enable);
 
 	void (*const fill_fsps_params[])(FSP_S_CONFIG *s_cfg,
 			const struct soc_intel_alderlake_config *config) = {

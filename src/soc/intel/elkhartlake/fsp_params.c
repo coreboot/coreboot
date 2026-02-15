@@ -7,6 +7,7 @@
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
 #include <option.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/xdci.h>
@@ -530,7 +531,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	mainboard_silicon_init_params(params);
 
 	/* Runtime configuration of S0ix */
-	config->s0ix_enable = get_uint_option("s0ix_enable", config->s0ix_enable);
+	config->s0ix_enable = cse_get_s0ix_enable_state(config->s0ix_enable);
 }
 
 /* Mainboard GPIO Configuration */

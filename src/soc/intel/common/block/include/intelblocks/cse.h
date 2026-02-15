@@ -518,8 +518,17 @@ bool cse_is_me_state_requested_enabled(void);
  * Check whether ME/CSME is both requested enabled and operational.
  */
 bool cse_is_me_enabled(void);
+
+/*
+ * Get runtime `s0ix_enable` state while ensuring ME/CSME is enabled and
+ * operational. Returns false if S0ix is requested but ME/CSME is disabled or
+ * unavailable.
+ */
+bool cse_get_s0ix_enable_state(bool fallback);
 #else
 static inline bool cse_is_me_state_requested_enabled(void) { return true; }
+static inline bool cse_is_me_enabled(void) { return true; }
+static inline bool cse_get_s0ix_enable_state(bool fallback) { return fallback; }
 #endif
 
 /*

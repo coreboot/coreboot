@@ -683,7 +683,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	mainboard_silicon_init_params(params);
 
 	/* Runtime configuration of S0ix */
-	config->s0ix_enable = get_uint_option("s0ix_enable", config->s0ix_enable);
+	config->s0ix_enable = cse_get_s0ix_enable_state(config->s0ix_enable);
 }
 
 /*

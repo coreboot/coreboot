@@ -8,6 +8,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <option.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/power_limit.h>
@@ -382,7 +383,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	s_cfg->PchPmSlpS0Vm075VSupport = config->PchPmSlpS0Vm075VSupport;
 
 	/* S0ix */
-	config->s0ix_enable = get_uint_option("s0ix_enable", config->s0ix_enable);
+	config->s0ix_enable = cse_get_s0ix_enable_state(config->s0ix_enable);
 	s_cfg->PchPmSlpS0Enable = config->s0ix_enable;
 
 	/* Lan */

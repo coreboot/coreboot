@@ -1,4 +1,4 @@
-# StarBook Mk V
+# StarLite Mk V
 
 ## Specs
 
@@ -33,7 +33,8 @@
 
 ## Building coreboot
 
-Please follow the [Star Labs build instructions](common/building.md) to build coreboot, using `config.starlabs_starbook_adl` as config file.
+Please follow the [Star Labs build instructions](common/building.md) to build
+coreboot, using `config.starlabs_lite_adl` as config file.
 
 ### Preliminaries
 
@@ -45,6 +46,10 @@ Prior to building coreboot the following files are required:
 The files listed below are optional:
 - Splash screen image in Windows 3.1 BMP format (Logo.bmp)
 
+coreboot expects these binaries under
+`3rdparty/blobs/mainboard/starlabs/adl/<variant>/`, where `<variant>`
+matches `CONFIG_VARIANT_DIR` (default: `i5`).
+
 These files exist in the correct location in the StarLabsLtd/blobs repo on GitHub which is used in place of the standard 3rdparty/blobs repo.
 
 ### Build
@@ -53,7 +58,7 @@ The following commands will build a working image:
 
 ```bash
 make distclean
-make defconfig KBUILD_DEFCONFIG=configs/config.starlabs_byte_adl
+make defconfig KBUILD_DEFCONFIG=configs/config.starlabs_lite_adl
 make
 ```
 

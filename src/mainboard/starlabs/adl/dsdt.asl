@@ -22,7 +22,7 @@ DefinitionBlock(
 		#include <soc/intel/alderlake/acpi/tcss.asl>
 
 		#include <soc/intel/common/block/acpi/acpi/gna.asl>
-#if CONFIG(SYSTEM_TYPE_LAPTOP)
+#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
 		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 
 		/* PS/2 Keyboard */

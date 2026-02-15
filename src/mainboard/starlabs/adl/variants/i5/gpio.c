@@ -5,8 +5,8 @@
 /* Early pad configuration in bootblock */
 const struct pad_config early_gpio_table[] = {
 	/* Debug Connector */
-	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),				/* RXD */
-	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),				/* TXD */
+	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2), /* RXD */
+	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2), /* TXD */
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)
@@ -18,12 +18,12 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 /* Pad configuration in ramstage. */
 const struct pad_config gpio_table[] = {
 	/* General Purpose I/O Deep */
-	PAD_CFG_NF(GPD0, NONE, DEEP, NF1),				/* Battery Low */
-	PAD_CFG_NF(GPD1, NONE, DEEP, NF1),				/* Charger Connected */
-	PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1),				/* Power Button */
-	PAD_CFG_NF(GPD4, NONE, DEEP, NF1),				/* Sleep S3 */
-	PAD_CFG_NF(GPD5, NONE, DEEP, NF1),				/* Sleep S4 */
-	PAD_CFG_NF(GPD8, NONE, DEEP, NF1),				/* Bluetooth Suspend */
+	PAD_CFG_NF(GPD0, NONE, DEEP, NF1),   /* Battery Low */
+	PAD_CFG_NF(GPD1, NONE, DEEP, NF1),   /* Charger Connected */
+	PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1), /* Power Button */
+	PAD_CFG_NF(GPD4, NONE, DEEP, NF1),   /* Sleep S3 */
+	PAD_CFG_NF(GPD5, NONE, DEEP, NF1),   /* Sleep S4 */
+	PAD_CFG_NF(GPD8, NONE, DEEP, NF1),   /* Bluetooth Suspend */
 
 	/* eSPI - Configure automatically on reset */
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A0, UP_20K, DEEP, NF1),	/* eSPI IO 0 */
@@ -35,74 +35,75 @@ const struct pad_config gpio_table[] = {
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A10, NONE, DEEP, NF1),	/* eSPI Reset */
 
 	/* Touchpanel */
-	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF2),				/* Data */
-	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF2),				/* Clock */
-	PAD_CFG_GPI_APIC_LOW(GPP_E12, NONE, PLTRST),			/* Interrupt */
-	PAD_CFG_GPO(GPP_F17, 1, PLTRST),				/* Reset */
-	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),		/* Interrupt */
+	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF2),                    /* Data */
+	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF2),                    /* Clock */
+	PAD_CFG_GPI_APIC_LOW(GPP_E12, NONE, PLTRST),            /* Interrupt */
+	PAD_CFG_GPO(GPP_F17, 1, PLTRST),                        /* Reset */
+	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT), /* Interrupt */
 
 	/* Accelerometer */
-	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),				/* Data */
-	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),				/* Clock */
+	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1), /* Data */
+	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1), /* Clock */
 
 	/* Keyboard */
-	PAD_CFG_GPI_SMI_LOW(GPP_F15, NONE, DEEP, EDGE_BOTH),		/* Detect */
+	PAD_CFG_GPI_SMI_LOW(GPP_F15, NONE, DEEP, EDGE_BOTH), /* Detect */
 
 	/* SSD */
-	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),				/* Clock Request 0 */
-	PAD_CFG_GPO(GPP_H0, 1, PLTRST),					/* Reset */
-	PAD_CFG_GPO(GPP_D16, 1, DEEP),					/* Enable */
+	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1), /* Clock Request 0 */
+	PAD_CFG_GPO(GPP_H0, 1, PLTRST),      /* Reset */
+	PAD_CFG_GPO(GPP_D16, 1, DEEP),       /* Enable */
 
 	/* Wireless */
-	PAD_CFG_NF(GPP_F0, NONE, DEEP, NF1),				/* BRI Data */
-	PAD_CFG_NF(GPP_F1, UP_20K, DEEP, NF1),				/* BRI Response */
-	PAD_CFG_NF(GPP_F2, NONE, DEEP, NF1),				/* RGI Data */
-	PAD_CFG_NF(GPP_F3, UP_20K, DEEP, NF1),				/* RGI Response */
-	PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),				/* RF Reset */
-	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF2),				/* Modem Clock Request */
-	PAD_CFG_GPO(GPP_E3, 1, DEEP),					/* WiFi RF Kill */
-	PAD_CFG_GPO(GPP_A13, 1, DEEP),					/* Bluetooth RF Kill */
+	PAD_CFG_NF(GPP_F0, NONE, DEEP, NF1),   /* BRI Data */
+	PAD_CFG_NF(GPP_F1, UP_20K, DEEP, NF1), /* BRI Response */
+	PAD_CFG_NF(GPP_F2, NONE, DEEP, NF1),   /* RGI Data */
+	PAD_CFG_NF(GPP_F3, UP_20K, DEEP, NF1), /* RGI Response */
+	PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),   /* RF Reset */
+	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF2),   /* Modem Clock Request */
+	PAD_CFG_GPO(GPP_E3, 1, DEEP),          /* WiFi RF Kill */
+	PAD_CFG_GPO(GPP_A13, 1, DEEP),         /* Bluetooth RF Kill */
 
 	/* Display */
-	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* eDP Hot Plug */
-	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),				/* HDMI Hot Plug */
-	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),				/* HDMI Clock */
-	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),				/* HDMI Data */
-	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),				/* TCP0 Hot Plug */
-	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1),				/* TCP0 Hot Plug */
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1), /* eDP Hot Plug */
+	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1), /* HDMI Hot Plug */
+	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1), /* HDMI Clock */
+	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1), /* HDMI Data */
+	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1), /* TCP0 Hot Plug */
+	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1), /* TCP0 Hot Plug */
 
 	/* High-Definition Audio */
-	PAD_CFG_NF(GPP_R0, NATIVE, DEEP, NF1),				/* Clock */
-	PAD_CFG_NF(GPP_R1, NATIVE, DEEP, NF1),				/* Sync */
-	PAD_CFG_NF(GPP_R2, NATIVE, DEEP, NF1),				/* Data Output */
-	PAD_CFG_NF(GPP_R3, NATIVE, DEEP, NF1),				/* Data Input */
-	PAD_CFG_NF(GPP_R4, NATIVE, DEEP, NF1),				/* Reset */
+	PAD_CFG_NF(GPP_R0, NATIVE, DEEP, NF1), /* Clock */
+	PAD_CFG_NF(GPP_R1, NATIVE, DEEP, NF1), /* Sync */
+	PAD_CFG_NF(GPP_R2, NATIVE, DEEP, NF1), /* Data Output */
+	PAD_CFG_NF(GPP_R3, NATIVE, DEEP, NF1), /* Data Input */
+	PAD_CFG_NF(GPP_R4, NATIVE, DEEP, NF1), /* Reset */
 
 	/* PCH */
-	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),				/* C10 Gate */
-	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
-	PAD_CFG_NF(GPP_B0, NONE, DEEP, NF1),				/* Vendor ID 0 */
-	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),				/* Vendor ID 1 */
-	PAD_CFG_GPI_SCI(GPP_B2, NONE, PLTRST, EDGE_SINGLE, INVERT),	/* Processor Hot */
+	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),                       /* C10 Gate */
+	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),                       /* Platform Reset */
+	PAD_CFG_NF(GPP_B0, NONE, DEEP, NF1),                        /* Vendor ID 0 */
+	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),                        /* Vendor ID 1 */
+	PAD_CFG_GPI_SCI(GPP_B2, NONE, PLTRST, EDGE_SINGLE, INVERT), /* Processor Hot */
 
 	/* SMBus */
-	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),				/* Clock */
-	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),				/* Data */
-	PAD_CFG_GPO(GPP_E8, 1, DEEP),					/* DRAM Sleep */
+	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1), /* Clock */
+	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1), /* Data */
+	PAD_CFG_GPO(GPP_E8, 1, DEEP),        /* DRAM Sleep */
 
 	/* Config Straps 									[ Low      / High     ] */
-	PAD_CFG_GPO(GPP_B14, 0, PLTRST),				/* Top Swap		[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_B18, 0, PLTRST),				/* Reboot Support	[ Enabled  / Disabled ] */
-	PAD_CFG_GPO(GPP_C2, 1, PLTRST),					/* TLS Confidentiality	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_C5, 0, PLTRST),					/* eSPI			[ Enabled  / Disabled ] */
-	PAD_CFG_GPO(GPP_E6, 0, PLTRST),					/* JTAG ODT		[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_H1, 0, PLTRST),					/* BFX Strap 2 Bit 3	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_E19, 0, PLTRST),				/* TBT LSX #0		[ 1.8V     / 3.3V     ] */
-	PAD_CFG_GPO(GPP_E21, 0, PLTRST),				/* TBT LSX #1           [ 1.8V     / 3.3V     ] */
-	PAD_CFG_GPO(GPP_D10, 0, PLTRST),				/* TBT LSX #2		[ 1.8V     / 3.3V     ] */
-	PAD_CFG_GPO(GPP_D12, 0, PLTRST),				/* TBT LSX #3		[ 1.8V     / 3.3V     ] */
-	PAD_CFG_GPO(GPP_F7, 0, PLTRST),					/* MCRO LDO		[ Disabled / Bypass   ] */
-	PAD_CFG_GPO(GPD7, 0, PLTRST),					/* RTC Clock Delay	[ Disabled / 95ms     ] */
+	PAD_CFG_GPO(GPP_B14, 0, PLTRST), /* Top Swap		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_B18, 0, PLTRST), /* Reboot Support	[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_C2, 1, PLTRST),  /* TLS Confidentiality	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_C5, 0,
+		    PLTRST),             /* eSPI			[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_E6, 0, PLTRST),  /* JTAG ODT		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_H1, 0, PLTRST),  /* BFX Strap 2 Bit 3	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_E19, 0, PLTRST), /* TBT LSX #0		[ 1.8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_E21, 0, PLTRST), /* TBT LSX #1           [ 1.8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_D10, 0, PLTRST), /* TBT LSX #2		[ 1.8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_D12, 0, PLTRST), /* TBT LSX #3		[ 1.8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_F7, 0, PLTRST),  /* MCRO LDO		[ Disabled / Bypass   ] */
+	PAD_CFG_GPO(GPD7, 0, PLTRST),    /* RTC Clock Delay	[ Disabled / 95ms     ] */
 
 	PAD_NC(GPD2, NONE),
 	PAD_NC(GPD6, NONE),

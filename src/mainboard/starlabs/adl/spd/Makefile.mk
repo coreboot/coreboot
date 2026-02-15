@@ -1,5 +1,11 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+ifeq ($(VARIANT_DIR),hz)
 SPD_SOURCES = rs4g32l05d8fdb-5500
 SPD_SOURCES += rs4g32l05d8fdb-6400
 SPD_SOURCES += rs4g32l05d8fdb-7500
+else ifeq ($(VARIANT_DIR),i5)
+SPD_SOURCES = mt62f2g64d8-5500
+SPD_SOURCES += mt62f2g64d8-6400
+SPD_SOURCES += mt62f2g64d8-7500
+endif

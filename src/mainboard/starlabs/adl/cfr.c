@@ -5,137 +5,176 @@
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <intelblocks/cfr.h>
+#if CONFIG(BOARD_STARLABS_LITE_ADL)
+#include <device/i2c_bus.h>
+#include <device/i2c_simple.h>
+#include <option.h>
+#include <static.h>
+#include <variants.h>
+#endif
 #include <common/cfr.h>
+
+#if CONFIG(BOARD_STARLABS_LITE_ADL)
+void cfr_card_reader_update(struct sm_object *new_obj)
+{
+	struct device *mxc_accel = DEV_PTR(mxc6655);
+
+	if (!i2c_dev_detect(i2c_busdev(mxc_accel), mxc_accel->path.i2c.device))
+		new_obj->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+}
+
+void cfr_touchscreen_update(struct sm_object *new_obj)
+{
+	if (get_uint_option("accelerometer", 1) == 0)
+		new_obj->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+}
+#endif
+
+#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
+static struct sm_obj_form audio_video_group = {
+	.ui_name = "Audio/Video",
+	.obj_list = (const struct sm_object *[]){
+		&microphone,
+		&webcam,
+		NULL,
+	},
+};
+#endif
 
 static struct sm_obj_form battery_group = {
 	.ui_name = "Battery",
-	.obj_list = (const struct sm_object *[]) {
-#if CONFIG(SYSTEM_TYPE_LAPTOP)
-		&charging_speed,
-		&max_charge,
+	.obj_list =
+		(const struct sm_object *[]){
+#if CONFIG(EC_STARLABS_CHARGING_SPEED)
+					     &charging_speed,
 #endif
-		&power_on_after_fail_bool,
-		NULL
-	},
+#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
+					     &max_charge,
+#endif
+					     &power_on_after_fail_bool, NULL},
 };
 
 static struct sm_obj_form debug_group = {
 	.ui_name = "Debug",
-	.obj_list = (const struct sm_object *[]) {
-		&debug_level,
-		NULL
-	},
+	.obj_list = (const struct sm_object *[]){&debug_level, NULL},
 };
 
-#if CONFIG(SYSTEM_TYPE_LAPTOP)
+#if CONFIG(EC_STARLABS_POWER_LED) || CONFIG(EC_STARLABS_CHARGE_LED)
 static struct sm_obj_form leds_group = {
 	.ui_name = "LEDs",
-	.obj_list = (const struct sm_object *[]) {
-		&charge_led,
-		&power_led,
-		NULL
-	},
+	.obj_list =
+		(const struct sm_object *[]){
+#if CONFIG(EC_STARLABS_CHARGE_LED)
+					     &charge_led,
+#endif
+#if CONFIG(EC_STARLABS_POWER_LED)
+					     &power_led,
+#endif
+					     NULL, },
 };
+#endif
 
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
 static struct sm_obj_form keyboard_group = {
 	.ui_name = "Keyboard",
-	.obj_list = (const struct sm_object *[]) {
-		&fn_ctrl_swap,
-		&kbl_timeout,
-		NULL
-	},
+	.obj_list = (const struct sm_object *[]){&fn_ctrl_swap, &kbl_timeout, NULL},
 };
+#endif
 
-static struct sm_obj_form audio_video_group = {
-	.ui_name = "Audio/Video",
-	.obj_list = (const struct sm_object *[]) {
-		&microphone,
-		&webcam,
-		NULL
-	},
-};
-
+#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
 static struct sm_obj_form display_group = {
 	.ui_name = "Display",
-	.obj_list = (const struct sm_object *[]) {
-		&display_native_res,
-		NULL
-	},
+	.obj_list =
+		(const struct sm_object *[]){
+#if CONFIG(BOARD_STARLABS_LITE_ADL)
+					     &accelerometer,
+#endif
+					     &display_native_res,
+#if CONFIG(BOARD_STARLABS_LITE_ADL)
+					     &touchscreen,
+#endif
+					     NULL, },
+};
+#endif
+
+#if CONFIG(BOARD_STARLABS_LITE_ADL)
+static struct sm_obj_form io_expansion_group = {
+	.ui_name = "I/O / Expansion",
+	.obj_list =
+		(const struct sm_object *[]){
+					     &card_reader,
+					     NULL, },
 };
 #endif
 
 static struct sm_obj_form pcie_power_management_group = {
 	.ui_name = "PCIe Power Management",
-	.obj_list = (const struct sm_object *[]) {
-		&pciexp_aspm,
-		&pciexp_clk_pm,
-		&pciexp_l1ss,
-		NULL
-	},
+	.obj_list =
+		(const struct sm_object *[]){
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_ASPM)
+					     &pciexp_aspm,
+					     &pciexp_clk_pm,
+					     &pciexp_l1ss,
+#endif
+					     NULL, },
 };
 
 static struct sm_obj_form performance_group = {
 	.ui_name = "Performance",
-	.obj_list = (const struct sm_object *[]) {
-		&fan_mode,
-		&gna,
-#if CONFIG(SYSTEM_TYPE_LAPTOP)
-		&memory_speed,
+	.obj_list =
+		(const struct sm_object *[]){
+#if CONFIG(EC_STARLABS_FAN)
+					     &fan_mode,
 #endif
-		&power_profile,
-		NULL
-	},
+					     &gna,
+#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
+					     &memory_speed,
+#endif
+					     &power_profile, NULL},
 };
 
 static struct sm_obj_form security_group = {
 	.ui_name = "Security",
-	.obj_list = (const struct sm_object *[]) {
-		&bios_lock,
-		&intel_tme,
-		&me_state,
-		&me_state_counter,
-		NULL
-	},
+	.obj_list = (const struct sm_object *[]){&bios_lock, &intel_tme, &me_state,
+						 &me_state_counter, NULL},
 };
 
 static struct sm_obj_form suspend_lid_group = {
 	.ui_name = "Suspend & Lid",
-	.obj_list = (const struct sm_object *[]) {
-#if CONFIG(SYSTEM_TYPE_LAPTOP)
-		&lid_switch,
+	.obj_list =
+		(const struct sm_object *[]){
+#if CONFIG(EC_STARLABS_LID_SWITCH)
+					     &lid_switch,
 #endif
-		&s0ix_enable,
-		NULL
-	},
+					     &s0ix_enable, NULL},
 };
 
 static struct sm_obj_form virtualization_group = {
 	.ui_name = "Virtualization",
-	.obj_list = (const struct sm_object *[]) {
-		&vtd,
-		NULL
-	},
+	.obj_list = (const struct sm_object *[]){&vtd, NULL},
 };
 
 static struct sm_obj_form wireless_group = {
 	.ui_name = "Wireless",
-	.obj_list = (const struct sm_object *[]) {
-		&bluetooth,
-		&bluetooth_rtd3,
-		&wifi,
-		NULL
-	},
+	.obj_list = (const struct sm_object *[]){&bluetooth, &bluetooth_rtd3, &wifi, NULL},
 };
 
 static struct sm_obj_form *sm_root[] = {
-#if CONFIG(SYSTEM_TYPE_LAPTOP)
+#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
 	&audio_video_group,
 #endif
 	&battery_group,
 	&debug_group,
-#if CONFIG(SYSTEM_TYPE_LAPTOP)
+#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
 	&display_group,
+#endif
+#if CONFIG(BOARD_STARLABS_LITE_ADL)
+	&io_expansion_group,
+#endif
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
 	&keyboard_group,
+#endif
+#if CONFIG(EC_STARLABS_POWER_LED) || CONFIG(EC_STARLABS_CHARGE_LED)
 	&leds_group,
 #endif
 	&pcie_power_management_group,
@@ -144,8 +183,7 @@ static struct sm_obj_form *sm_root[] = {
 	&suspend_lid_group,
 	&virtualization_group,
 	&wireless_group,
-	NULL
-};
+	NULL};
 
 void mb_cfr_setup_menu(struct lb_cfr *cfr_root)
 {

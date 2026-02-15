@@ -290,6 +290,26 @@ bool cse_is_hfs1_com_soft_temp_disable(void)
 	return cse_check_hfs1_com(ME_HFS1_COM_SOFT_TEMP_DISABLE);
 }
 
+bool cse_is_me_operational(void)
+{
+	return cse_is_hfs1_cws_normal() && cse_is_hfs1_com_normal();
+}
+
+#if ENV_RAMSTAGE
+bool cse_is_me_state_requested_enabled(void)
+{
+	const unsigned int me_state_default = CONFIG(CSE_DEFAULT_CFR_OPTION_STATE_DISABLED);
+	const unsigned int me_state = get_uint_option("me_state", me_state_default);
+
+	return me_state == 0;
+}
+
+bool cse_is_me_enabled(void)
+{
+	return cse_is_me_state_requested_enabled() && cse_is_me_operational();
+}
+#endif
+
 /*
  * Starting from TGL platform, HFSTS1.spi_protection_mode replaces mfg_mode to indicate
  * SPI protection status as well as end-of-manufacturing(EOM) status where EOM flow is

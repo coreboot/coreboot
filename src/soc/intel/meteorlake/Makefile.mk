@@ -25,7 +25,6 @@ ramstage-y += cpu.c
 ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog.c
 ramstage-y += ioe_pmc.c
 ramstage-y += elog.c
-ramstage-y += finalize.c
 ramstage-y += fsp_params.c
 ramstage-y += graphics.c
 ramstage-y += p2sb.c

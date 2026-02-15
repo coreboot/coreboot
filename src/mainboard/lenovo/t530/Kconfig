@@ -38,6 +38,10 @@ config BOARD_LENOVO_W530
 	select BOARD_LENOVO_BASEBOARD_T530
 	select DRIVERS_RICOH_RCE822
 
+config BOARD_LENOVO_T430
+	select BOARD_LENOVO_BASEBOARD_T530
+	select DRIVERS_RICOH_RCE822
+
 if BOARD_LENOVO_BASEBOARD_T530
 
 config VBOOT
@@ -60,6 +64,7 @@ config FMDFILE
 config VARIANT_DIR
 	default "t530" if BOARD_LENOVO_T530
 	default "w530" if BOARD_LENOVO_W530
+	default "t430" if BOARD_LENOVO_T430
 
 config MAINBOARD_DIR
 	default "lenovo/t530"
@@ -70,6 +75,7 @@ config OVERRIDE_DEVICETREE
 config MAINBOARD_PART_NUMBER
 	default "ThinkPad T530" if BOARD_LENOVO_T530
 	default "ThinkPad W530" if BOARD_LENOVO_W530
+	default "ThinkPad T430" if BOARD_LENOVO_T430
 
 config USBDEBUG_HCD_INDEX
 	int
@@ -84,6 +90,7 @@ config VGA_BIOS_ID
 	default "8086,0166"
 
 config PS2K_EISAID
+	default "PNP0303" if BOARD_LENOVO_T430
 	default "LEN0071"
 
 config PS2M_EISAID

@@ -17,8 +17,15 @@ config MB_COMMON_DIR
 	string
 	default "starlabs/common"
 
-config SOC_INTEL_COMMON_BLOCK_SMM_TCO_INTRUDER_SMI_ENABLE
-	default n
+config STARLABS_ACPI_EFI_OPTION_SMI
+	bool "Expose coreboot options to ACPI via SMI (UEFI var store)"
+	depends on USE_UEFI_VARIABLE_STORE
+	depends on HAVE_ACPI_TABLES
+	default y
+	help
+	  Provide ACPI methods that proxy a restricted set of coreboot options
+	  (e.g. keyboard backlight and trackpad state) to the UEFI variable
+	  store via an SMM APMC SMI handler.
 
 source "src/mainboard/starlabs/common/hda/Kconfig"
 

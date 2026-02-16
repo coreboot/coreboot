@@ -7,3 +7,6 @@ subdirs-$(CONFIG_VENDOR_STARLABS) += pin_mux
 subdirs-$(CONFIG_VENDOR_STARLABS) += smbios
 
 CPPFLAGS_common += -I$(src)/mainboard/starlabs/common/include
+
+ramstage-$(CONFIG_STARLABS_ACPI_EFI_OPTION_SMI) += gnvs.c
+smm-$(CONFIG_STARLABS_ACPI_EFI_OPTION_SMI) += smihandler.c

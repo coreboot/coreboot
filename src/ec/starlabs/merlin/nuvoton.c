@@ -12,7 +12,6 @@
 #include "option_table.h"
 #include "ec.h"
 
-
 uint16_t ec_get_version(void)
 {
 	return (ec_read(ECRAM_MAJOR_VERSION) << 8) | ec_read(ECRAM_MINOR_VERSION);
@@ -23,32 +22,43 @@ static uint8_t get_cmos_value(uint32_t bit, uint32_t length)
 	uint32_t byte, byte_bit;
 	uint8_t uchar;
 
-	byte = bit / 8; // find the byte where the data starts
+	byte = bit / 8;     // find the byte where the data starts
 	byte_bit = bit % 8; // find the bit in the byte where the data starts
 
 	uchar = cmos_read(byte); // load the byte
-	uchar >>= byte_bit;     // shift the bits to byte align
+	uchar >>= byte_bit;      // shift the bits to byte align
 	// clear unspecified bits
 	return uchar & ((1U << length) - 1);
 }
 
-static uint8_t get_ec_value_from_option(const char *name,
-					uint32_t fallback,
-					const uint8_t *lut,
-					size_t lut_size,
-					uint32_t cmos_start_bit,
+static uint8_t get_ec_value_from_option(const char *name, uint32_t fallback, const uint8_t *lut,
+					size_t lut_size, uint32_t cmos_start_bit,
 					uint32_t cmos_length)
 {
-	unsigned int index;
+	/*
+	 * CMOS-backed EC options store an index (see cmos.layout and ACPI
+	 * RPTS/RWAK mappings), while the option backend stores the EC's raw
+	 * values (e.g. 0xaa/0xbb/0xdd).
+	 */
+	if (cmos_start_bit != UINT_MAX) {
+		unsigned int index = get_cmos_value(cmos_start_bit, cmos_length);
 
-	if (cmos_start_bit != UINT_MAX)
-		index = get_cmos_value(cmos_start_bit, cmos_length);
-	else
-		index = get_uint_option(name, fallback);
+		if (index >= lut_size)
+			index = fallback;
+		if (index >= lut_size)
+			index = 0;
 
-	if (index >= lut_size)
-		index = fallback;
-	return lut[index];
+		return lut[index];
+	}
+
+	const uint8_t value = get_uint_option(name, fallback);
+
+	/* Check if the value exists in the LUT array */
+	for (size_t i = 0; i < lut_size; i++)
+		if (lut[i] == value)
+			return value;
+
+	return fallback;
 }
 
 static uint16_t ec_get_chip_id(unsigned int port)
@@ -77,7 +87,7 @@ static void merlin_init(struct device *dev)
 
 	if (chip_id != NUVOTON_CHIPID_VAL) {
 		printk(BIOS_ERR, "NUVOTON: Expected chip ID 0x%04x, but got 0x%04x instead.\n",
-			NUVOTON_CHIPID_VAL, chip_id);
+		       NUVOTON_CHIPID_VAL, chip_id);
 		return;
 	}
 
@@ -103,21 +113,11 @@ static void merlin_init(struct device *dev)
 	 * Default:	30 Seconds
 	 *
 	 */
-	const uint8_t kbl_timeout[] = {
-		SEC_30,
-		MIN_1,
-		MIN_3,
-		MIN_5,
-		NEVER
-	};
+	const uint8_t kbl_timeout[] = {SEC_30, MIN_1, MIN_3, MIN_5, NEVER};
 
 	ec_write(ECRAM_KBL_TIMEOUT,
-		get_ec_value_from_option("kbl_timeout",
-					 0,
-					 kbl_timeout,
-					 ARRAY_SIZE(kbl_timeout),
-					 UINT_MAX,
-					 UINT_MAX));
+		 get_ec_value_from_option("kbl_timeout", 0, kbl_timeout,
+					  ARRAY_SIZE(kbl_timeout), UINT_MAX, UINT_MAX));
 
 	/*
 	 * Fn Ctrl Reverse
@@ -128,18 +128,11 @@ static void merlin_init(struct device *dev)
 	 * Default:	Disabled
 	 *
 	 */
-	const uint8_t fn_ctrl_swap[] = {
-		FN_CTRL,
-		CTRL_FN
-	};
+	const uint8_t fn_ctrl_swap[] = {FN_CTRL, CTRL_FN};
 
 	ec_write(ECRAM_FN_CTRL_REVERSE,
-		get_ec_value_from_option("fn_ctrl_swap",
-					 0,
-					 fn_ctrl_swap,
-					 ARRAY_SIZE(fn_ctrl_swap),
-					 UINT_MAX,
-					 UINT_MAX));
+		 get_ec_value_from_option("fn_ctrl_swap", 0, fn_ctrl_swap,
+					  ARRAY_SIZE(fn_ctrl_swap), UINT_MAX, UINT_MAX));
 
 	/*
 	 * Maximum Charge Level
@@ -150,20 +143,12 @@ static void merlin_init(struct device *dev)
 	 * Default:	100%
 	 *
 	 */
-	const uint8_t max_charge[] = {
-		CHARGE_100,
-		CHARGE_80,
-		CHARGE_60
-	};
+	const uint8_t max_charge[] = {CHARGE_100, CHARGE_80, CHARGE_60};
 
 	if (CONFIG(EC_STARLABS_MAX_CHARGE))
 		ec_write(ECRAM_MAX_CHARGE,
-			get_ec_value_from_option("max_charge",
-						 0,
-						 max_charge,
-						 ARRAY_SIZE(max_charge),
-						 UINT_MAX,
-						 UINT_MAX));
+			 get_ec_value_from_option("max_charge", 0, max_charge,
+						  ARRAY_SIZE(max_charge), UINT_MAX, UINT_MAX));
 
 	/*
 	 * Fan Mode
@@ -174,20 +159,12 @@ static void merlin_init(struct device *dev)
 	 * Default:	Normal
 	 *
 	 */
-	const uint8_t fan_mode[] = {
-		FAN_NORMAL,
-		FAN_AGGRESSIVE,
-		FAN_QUIET
-	};
+	const uint8_t fan_mode[] = {FAN_NORMAL, FAN_AGGRESSIVE, FAN_QUIET};
 
 	if (CONFIG(EC_STARLABS_FAN))
 		ec_write(ECRAM_FAN_MODE,
-			get_ec_value_from_option("fan_mode",
-						 0,
-						 fan_mode,
-						 ARRAY_SIZE(fan_mode),
-						 UINT_MAX,
-						 UINT_MAX));
+			 get_ec_value_from_option("fan_mode", 0, fan_mode, ARRAY_SIZE(fan_mode),
+						  UINT_MAX, UINT_MAX));
 
 	/*
 	 * Function Lock
@@ -199,18 +176,13 @@ static void merlin_init(struct device *dev)
 	 *
 	 */
 #ifdef CMOS_VLEN_fn_lock_state
-	const uint8_t fn_lock_state[] = {
-		UNLOCKED,
-		LOCKED
-	};
+	const uint8_t fn_lock_state[] = {UNLOCKED, LOCKED};
 
 	ec_write(ECRAM_FN_LOCK_STATE,
-		get_ec_value_from_option("fn_lock_state",
-					 1,
-					 fn_lock_state,
-					 ARRAY_SIZE(fn_lock_state),
-					 CMOS_VSTART_fn_lock_state,
-					 CMOS_VLEN_fn_lock_state));
+		 get_ec_value_from_option(
+			 "fn_lock_state", 1, fn_lock_state, ARRAY_SIZE(fn_lock_state),
+			 CONFIG(USE_OPTION_TABLE) ? CMOS_VSTART_fn_lock_state : UINT_MAX,
+			 CONFIG(USE_OPTION_TABLE) ? CMOS_VLEN_fn_lock_state : UINT_MAX));
 #endif
 
 	/*
@@ -223,18 +195,13 @@ static void merlin_init(struct device *dev)
 	 *
 	 */
 #ifdef CMOS_VSTART_trackpad_state
-	const uint8_t trackpad_state[] = {
-		TRACKPAD_ENABLED,
-		TRACKPAD_DISABLED
-	};
+	const uint8_t trackpad_state[] = {TRACKPAD_ENABLED, TRACKPAD_DISABLED};
 
 	ec_write(ECRAM_TRACKPAD_STATE,
-		get_ec_value_from_option("trackpad_state",
-					 0,
-					 trackpad_state,
-					 ARRAY_SIZE(trackpad_state),
-					 CMOS_VSTART_trackpad_state,
-					 CMOS_VLEN_trackpad_state));
+		 get_ec_value_from_option(
+			 "trackpad_state", 0, trackpad_state, ARRAY_SIZE(trackpad_state),
+			 CONFIG(USE_OPTION_TABLE) ? CMOS_VSTART_trackpad_state : UINT_MAX,
+			 CONFIG(USE_OPTION_TABLE) ? CMOS_VLEN_trackpad_state : UINT_MAX));
 #endif
 
 	/*
@@ -247,23 +214,19 @@ static void merlin_init(struct device *dev)
 	 *
 	 */
 #ifdef CMOS_VSTART_kbl_brightness
-	const uint8_t kbl_brightness[] = {
-		KBL_ON,
-		KBL_OFF,
-		KBL_LOW,
-		KBL_HIGH
-	};
+	const uint8_t kbl_brightness[] = {KBL_ON, KBL_OFF, KBL_LOW, KBL_HIGH};
 
 	ec_write(ECRAM_KBL_BRIGHTNESS,
-		get_ec_value_from_option("kbl_brightness",
-			CONFIG(EC_STARLABS_KBL_LEVELS) ? 2 : 0,
-			kbl_brightness,
-			ARRAY_SIZE(kbl_brightness),
-			CMOS_VSTART_kbl_brightness,
-			CMOS_VLEN_kbl_brightness));
+		 get_ec_value_from_option(
+			 "kbl_brightness",
+			 CONFIG(USE_OPTION_TABLE) ?
+				 (CONFIG(EC_STARLABS_KBL_LEVELS) ? 2 : 0) :
+				 (CONFIG(EC_STARLABS_KBL_LEVELS) ? KBL_LOW : KBL_ON),
+			 kbl_brightness, ARRAY_SIZE(kbl_brightness),
+			 CONFIG(USE_OPTION_TABLE) ? CMOS_VSTART_kbl_brightness : UINT_MAX,
+			 CONFIG(USE_OPTION_TABLE) ? CMOS_VLEN_kbl_brightness : UINT_MAX));
 
 #endif
-
 
 	/*
 	 * Keyboard Backlight State
@@ -281,9 +244,9 @@ static void merlin_init(struct device *dev)
 }
 
 static struct device_operations ops = {
-	.init		= merlin_init,
-	.read_resources	= noop_read_resources,
-	.set_resources	= noop_set_resources,
+	.init = merlin_init,
+	.read_resources = noop_read_resources,
+	.set_resources = noop_set_resources,
 };
 
 static struct pnp_info pnp_dev_info[] = {
@@ -299,7 +262,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ NULL, NUVOTON_PM1,	PNP_IO0 | PNP_IO1 | PNP_IRQ0,	0x07ff,	0x07ff,	},
 	/* Power Management I/F Channel 2 (PMC2) */
 	{ NULL, NUVOTON_PM2,	PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IRQ0,	0x07fc,
-				0x07fc, 0xfff0,					},
+					0x07fc, 0xfff0,					},
 	/* Power Management I/F Channel 3 (PMC3) */
 	{ NULL, NUVOTON_PM3,	PNP_IO0 | PNP_IO1 | PNP_IRQ0,	0x07ff,	0x07ff,	},
 	/* Extended Shared Memory (ESHM) */

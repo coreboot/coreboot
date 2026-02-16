@@ -41,15 +41,26 @@ static uint8_t get_ec_value_from_option(const char *name,
 					uint32_t cmos_start_bit,
 					uint32_t cmos_length)
 {
-	uint8_t value;
+	/*
+	 * CMOS-backed EC options store an index (see cmos.layout and ACPI
+	 * RPTS/RWAK mappings), while the option backend stores the EC's raw
+	 * values (e.g. 0xaa/0xbb/0xdd).
+	 */
+	if (cmos_start_bit != UINT_MAX) {
+		unsigned int index = get_cmos_value(cmos_start_bit, cmos_length);
 
-	if (cmos_start_bit != UINT_MAX)
-		value = get_cmos_value(cmos_start_bit, cmos_length);
-	else
-		value = get_uint_option(name, fallback);
+		if (index >= lut_size)
+			index = fallback;
+		if (index >= lut_size)
+			index = 0;
+
+		return lut[index];
+	}
+
+	const uint8_t value = get_uint_option(name, fallback);
 
 	/* Check if the value exists in the LUT array */
-	for (int i = 0; i < lut_size; i++)
+	for (size_t i = 0; i < lut_size; i++)
 		if (lut[i] == value)
 			return value;
 
@@ -265,7 +276,7 @@ static void merlin_init(struct device *dev)
 
 	ec_write(ECRAM_KBL_BRIGHTNESS,
 		get_ec_value_from_option("kbl_brightness",
-			CONFIG(EC_STARLABS_KBL_LEVELS) ? KBL_LOW : KBL_ON,
+			CONFIG(EC_STARLABS_KBL_LEVELS) ? 2 : 0,
 			kbl_brightness,
 			ARRAY_SIZE(kbl_brightness),
 			CMOS_VSTART_kbl_brightness,

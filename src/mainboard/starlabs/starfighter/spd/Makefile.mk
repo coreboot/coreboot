@@ -1,5 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+SPD_GEN_MEM_TECH := lp5
+
 ifeq ($(CONFIG_BOARD_STARLABS_STARFIGHTER_RPL),y)
 # RPL memory configs (selected by straps) with runtime speed selection.
 # CBFS index order is (per config): 5500, 6400, 7500.

@@ -37,7 +37,7 @@ static const struct sm_object card_reader = SM_DECLARE_BOOL({
 	.opt_name	= "card_reader",
 	.ui_name	= "Card Reader",
 	.ui_helptext	= "Enable or disable the built-in card reader",
-	.default_value	= true,
+	.default_value	= !CONFIG(BOARD_STARLABS_LITE_ADL),
 }, WITH_CALLBACK(cfr_card_reader_update));
 
 static const struct sm_object display_native_res = SM_DECLARE_BOOL({

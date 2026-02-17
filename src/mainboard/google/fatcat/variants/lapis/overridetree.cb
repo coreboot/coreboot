@@ -405,11 +405,6 @@ chip soc/intel/pantherlake
 			.clk_req = 0,
 			.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "is_storage" = "true"
-				register "srcclk_pin" = "0"
-				device generic 0 on end
-			end
 		end # Gen4 SSD
 
 		device ref cnvi_wifi on

@@ -23,7 +23,6 @@ chip northbridge/intel/sandybridge
 				{ 1, 0xa53, 5 },
 				{ 1, 0xa53, 6 }
 			}"
-			register "gen1_dec" = "0x000c0291" # NCT6779 HWM
 			register "gen4_dec" = "0x0000ff29" # Could be for KB3722 EC
 
 			device ref pcie_rp1 on	# PCIEX_16_3 (electrical x2 or x4)

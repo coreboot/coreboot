@@ -21,7 +21,6 @@ chip northbridge/intel/sandybridge
 				{ 1, 2, 5 },
 				{ 1, 2, 6 }
 			}"
-			register "gen1_dec" = "0x000c0291"
 
 			device ref gbe on  end
 			device ref pcie_rp1 on  end	# PCIEX_16_3 (electrical x1 or x4)

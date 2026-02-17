@@ -20,7 +20,6 @@ chip northbridge/intel/sandybridge
 				{ 1, 0, 5 },
 				{ 1, 0, 6 }
 			}"
-			register "gen1_dec" = "0x000c0291"
 			device ref pcie_rp1 on  end	# PCIEX16_2 (electrical x4)
 			device ref pcie_rp5 on  end	# AR8161 GbE NIC
 			device ref pcie_rp6 on  end	# ASM1083 PCI Bridge

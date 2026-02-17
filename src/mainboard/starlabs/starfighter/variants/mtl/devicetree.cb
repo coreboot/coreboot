@@ -160,6 +160,9 @@ chip soc/intel/meteorlake
 			register "usb2_ports[6]"		= "USB2_PORT_SHORT(OC_SKIP)"
 			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
+			# Card Reader
+			register "usb2_ports[3]"		= "USB2_PORT_SHORT(OC_SKIP)"
+
 			# Internal Webcam			9070 mil
 			register "usb2_ports[CONFIG_CCD_PORT]"	= "USB2_PORT_MID(OC_SKIP)"
 
@@ -207,9 +210,15 @@ chip soc/intel/meteorlake
 						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"			= ""Internal Webcam""
+						register "desc"			= ""Card Reader""
 						register "type"			= "UPC_TYPE_INTERNAL"
 						register "group"		= "ACPI_PLD_GROUP(0, 4)"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"			= ""Internal Webcam""
+						register "type"			= "UPC_TYPE_INTERNAL"
+						register "group"		= "ACPI_PLD_GROUP(0, 5)"
 						device ref usb2_port5 on end
 					end
 					chip drivers/usb/acpi

@@ -172,6 +172,9 @@ static void mainboard_init(struct device *dev)
 	if (get_boot_mode() == LB_BOOT_MODE_LOW_BATTERY)
 		trigger_critical_battery_shutdown();
 
+	/* ADSP I2C (Charger/Fuel gauge) */
+	qupv3_se_fw_load_and_init(QUPV3_2_SE4, SE_PROTOCOL_I2C, MIXED);
+
 	configure_parallel_charging_late();
 
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging" */
@@ -205,10 +208,6 @@ static void mainboard_init(struct device *dev)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE0, SE_PROTOCOL_I2C, MIXED); /* Touch I2C */
 	qupv3_se_fw_load_and_init(QUPV3_1_SE6, SE_PROTOCOL_UART, FIFO); /* BT UART */
 	qupv3_se_fw_load_and_init(QUPV3_0_SE0, SE_PROTOCOL_I2C, MIXED); /* Trackpad I2C */
-
-	/* ADSP I2C (Charger/Fuel gauge) */
-	qupv3_se_fw_load_and_init(QUPV3_2_SE4, SE_PROTOCOL_I2C, MIXED);
-
 
 	if (CONFIG(MAINBOARD_HAS_PS8820_RETIMER)) {
 		i2c_init(QUPV3_0_SE3, I2C_SPEED_FAST); /* USB-C0 Re-Timer I2C */

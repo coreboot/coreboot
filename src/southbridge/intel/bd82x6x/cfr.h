@@ -11,17 +11,13 @@
 #include <southbridge/intel/common/pmutil.h>
 #include "me.h"
 
-#define GEN_RP_ENUM(x, y)					\
-static const struct sm_object pcie_rp##x = SM_DECLARE_ENUM({	\
-	.opt_name	= "pch_pcie_enable_rp"#x,		\
-	.ui_name	= y,					\
-	.ui_helptext	= "Enable or disable "#y,		\
-	.default_value	= 1,					\
-	.values		= (const struct sm_enum_value[]) {	\
-		{ "Disabled",	0	},			\
-		{ "Enabled",	1	},			\
-		SM_ENUM_VALUE_END	},			\
-});
+#define DEFINE_RP_ENABLE_OPTION(_rp, _name)			\
+static const struct sm_object pcie_rp##_rp = SM_DECLARE_BOOL({	\
+	.opt_name	= "pch_pcie_enable_rp"#_rp,		\
+	.ui_name	= _name,				\
+	.ui_helptext	= "Enable or disable "#_name,		\
+	.default_value	= true,					\
+})
 
 /* Power state after power loss */
 static const struct sm_object power_on_after_fail = SM_DECLARE_ENUM({

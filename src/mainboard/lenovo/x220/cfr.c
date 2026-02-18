@@ -1,4 +1,3 @@
-
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
@@ -8,12 +7,12 @@
 #include <northbridge/intel/sandybridge/cfr.h>
 #include <southbridge/intel/bd82x6x/cfr.h>
 
-GEN_RP_ENUM(1, "Wifi")
+DEFINE_RP_ENABLE_OPTION(1, "Wi-Fi");
 #if CONFIG(BOARD_LENOVO_X220)
-GEN_RP_ENUM(3, "ExpressCard")
+DEFINE_RP_ENABLE_OPTION(3, "ExpressCard");
 #endif
-GEN_RP_ENUM(4, "SD Card Reader")
-GEN_RP_ENUM(6, "xHCI")
+DEFINE_RP_ENABLE_OPTION(4, "SD Card Reader");
+DEFINE_RP_ENABLE_OPTION(6, "xHCI");
 
 static struct sm_obj_form pcie = {
 	.ui_name = "PCH PCIe",

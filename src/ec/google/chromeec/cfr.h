@@ -14,20 +14,15 @@ static void update_fan_control(struct sm_object *new)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC_AUTO_FAN_CTRL) && !google_chromeec_has_fan()) {
 		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
-		new->sm_bool.default_value = 0;
+		new->sm_bool.default_value = false;
 	}
 }
 
-static const struct sm_object auto_fan_control = SM_DECLARE_ENUM({
+static const struct sm_object auto_fan_control = SM_DECLARE_BOOL({
 	.opt_name       = "auto_fan_control",
 	.ui_name        = "Automatic Fan Control",
 	.ui_helptext    = "Enable or disable automatic fan control.",
 	.default_value  = CONFIG(EC_GOOGLE_CHROMEEC_AUTO_FAN_CTRL),
-	.values         = (struct sm_enum_value[]) {
-		{ "Enabled", 1 },
-		{ "Disabled", 0 },
-		SM_ENUM_VALUE_END,
-	},
 }, WITH_CALLBACK(update_fan_control));
 
 static const struct sm_enum_value ec_backlight_values[] = {

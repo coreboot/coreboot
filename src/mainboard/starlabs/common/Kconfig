@@ -17,6 +17,9 @@ config MB_COMMON_DIR
 	string
 	default "starlabs/common"
 
+config SOC_INTEL_COMMON_BLOCK_SMM_TCO_INTRUDER_SMI_ENABLE
+	default n
+
 source "src/mainboard/starlabs/common/hda/Kconfig"
 
 endmenu

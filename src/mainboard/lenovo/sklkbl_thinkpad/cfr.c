@@ -24,11 +24,7 @@ static const struct sm_object dgpu = SM_DECLARE_ENUM({
 	.opt_name	= "dgpu_enable",
 	.ui_name	= "dGPU",
 	.ui_helptext	= "Enable or disable the dGPU",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",	0	},
-				{ "Enabled",	1	},
-				SM_ENUM_VALUE_END	},
+	.default_value	= false,
 }, WITH_CALLBACK(update_dgpu));
 
 static struct sm_obj_form system = {

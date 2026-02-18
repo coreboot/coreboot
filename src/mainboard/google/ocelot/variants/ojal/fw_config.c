@@ -142,6 +142,36 @@ static const struct pad_config cnvi_disable_pads[] = {
 	PAD_NC(GPP_F05, NONE),
 };
 
+static const struct pad_config ish_disable_pads[] = {
+	/* GPP_B06:     C_EC_ISH_ALRT */
+	PAD_NC(GPP_B06, NONE),
+	/* GPP_B07:     SLATEMODE_HALLOUT_SNSR_R */
+	PAD_NC(GPP_B07, NONE),
+	/* GPP_B18:     ISH_I2C2_SDA_SNSR_HDR */
+	PAD_NC(GPP_B18, NONE),
+	/* GPP_B19:     ISH_I2C2_SCL_SNSR_HDR */
+	PAD_NC(GPP_B19, NONE),
+	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
+	PAD_NC(GPP_B23, NONE),
+	/* GPP_D06:     ISH_UART0_ECAIC_TXD */
+	PAD_NC(GPP_D06, NONE),
+};
+
+static const struct pad_config ish_enable_pads[] = {
+	/* GPP_B06:     C_EC_ISH_ALRT */
+	PAD_CFG_NF(GPP_B06, NONE, DEEP, NF4),
+	/* GPP_B07:     SLATEMODE_HALLOUT_SNSR_R */
+	PAD_CFG_NF(GPP_B07, NONE, DEEP, NF4),
+	/* GPP_B18:     ISH_I2C2_SDA_SNSR_HDR */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B18, NONE, DEEP, NF1),
+	/* GPP_B19:     ISH_I2C2_SCL_SNSR_HDR */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B19, NONE, DEEP, NF1),
+	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
+	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF4),
+	/* GPP_D06:     ISH_UART0_ECAIC_TXD */
+	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF2),
+};
+
 static const struct pad_config touchpad_lpss_i2c_enable_pads[] = {
 	/* GPP_H20:     SOC_I2C_0_SCL */
 	PAD_CFG_NF(GPP_H20, NONE, DEEP, NF1),
@@ -263,6 +293,12 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_lpss_i2c_enable_pads);
 	} else {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_i2c_disable_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(ISH, ISH_ENABLE))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, ish_enable_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, ish_disable_pads);
 	}
 
 	if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT))) {

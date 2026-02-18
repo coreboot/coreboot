@@ -38,6 +38,11 @@ end
 
 chip soc/intel/pantherlake
 
+	register "power_limits_config[WCL_CORE]" = "{
+                .tdp_pl1_override = 10,
+                .tdp_pl2_override = 35,
+        }"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP1
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)" # USB3.2 Gen2x1 Type-A Port
@@ -129,6 +134,132 @@ chip soc/intel/pantherlake
 
 		device ref iaa off end
 
+		device ref dtt on
+                        chip drivers/intel/dptf
+                                ## sensor information
+                                register "options.tsr[0].desc" = ""DDR_SOC""
+                                register "options.tsr[1].desc" = ""Ambient""
+                                register "options.tsr[2].desc" = ""Charger""
+                                register "options.tsr[3].desc" = ""wwan""
+
+				 ## Active Policy
+                                # FIXME: below values are initial reference values only
+                                register "policies.active" = "{
+                                                [0] = {
+                                                        .target = DPTF_TEMP_SENSOR_0,
+                                                        .thresholds = {
+                                                                        TEMP_PCT(70, 97),
+                                                                        TEMP_PCT(65, 90),
+                                                                        TEMP_PCT(60, 80),
+                                                                        TEMP_PCT(55, 75),
+                                                                        TEMP_PCT(50, 65),
+                                                                        TEMP_PCT(45, 45),
+                                                                        TEMP_PCT(43, 30),
+                                                                }
+                                                        },
+                                                [1] = {
+                                                        .target = DPTF_TEMP_SENSOR_1,
+                                                        .thresholds = {
+                                                                        TEMP_PCT(70, 97),
+                                                                        TEMP_PCT(65, 90),
+                                                                        TEMP_PCT(60, 80),
+                                                                        TEMP_PCT(55, 75),
+                                                                        TEMP_PCT(50, 65),
+                                                                        TEMP_PCT(45, 45),
+                                                                        TEMP_PCT(43, 30),
+                                                                }
+                                                        },
+                                                [2] = {
+                                                        .target = DPTF_TEMP_SENSOR_2,
+                                                        .thresholds = {
+                                                                        TEMP_PCT(75, 90),
+                                                                        TEMP_PCT(70, 80),
+                                                                        TEMP_PCT(65, 70),
+                                                                        TEMP_PCT(60, 50),
+                                                                }
+                                                        },
+                                                [3] = {
+                                                        .target = DPTF_TEMP_SENSOR_3,
+                                                        .thresholds = {
+                                                                        TEMP_PCT(75, 90),
+                                                                        TEMP_PCT(70, 80),
+                                                                        TEMP_PCT(65, 70),
+                                                                        TEMP_PCT(60, 60),
+                                                                        TEMP_PCT(55, 50),
+                                                                        TEMP_PCT(50, 40),
+                                                                        TEMP_PCT(45, 30),
+                                                                }
+                                                        }
+                                }"
+
+				 ## Passive Policy
+				 # TODO: below values are initial reference values only
+                                register "policies.passive" = "{
+                                                [0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+                                                [1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 80, 5000),
+                                                [2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 80, 5000),
+                                                [3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 75, 5000),
+                                                [4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 80, 5000),
+                                }"
+
+                                ## Critical Policy
+                                # TODO: below values are initial reference values only
+                                register "policies.critical" = "{
+                                                [0] = DPTF_CRITICAL(CPU,          105, SHUTDOWN),
+                                                [1] = DPTF_CRITICAL(TEMP_SENSOR_0, 85, SHUTDOWN),
+                                                [2] = DPTF_CRITICAL(TEMP_SENSOR_1, 85, SHUTDOWN),
+                                                [3] = DPTF_CRITICAL(TEMP_SENSOR_2, 85, SHUTDOWN),
+                                                [4] = DPTF_CRITICAL(TEMP_SENSOR_3, 85, SHUTDOWN),
+                                }"
+
+                                ## Power Limits Control
+                                register "controls.power_limits" = "{
+                                                .pl1 = {
+                                                        .min_power = 25000,
+                                                        .max_power = 25000,
+                                                        .time_window_min = 28 * MSECS_PER_SEC,
+                                                        .time_window_max = 32 * MSECS_PER_SEC,
+                                                        .granularity = 200,
+                                                },
+                                                .pl2 = {
+                                                        .min_power = 95000,
+                                                        .max_power = 95000,
+                                                        .time_window_min = 28 * MSECS_PER_SEC,
+                                                        .time_window_max = 32 * MSECS_PER_SEC,
+                                                        .granularity = 1000,
+                                                }
+                                }"
+
+                                ## Charger Performance Control (Control, mA)
+                                register "controls.charger_perf" = "{
+                                                [0] = { 255, 3000 },
+                                                [1] = {  24, 1500 },
+                                                [2] = {  16, 1000 },
+                                                [3] = {   8,  500 }
+                                }"
+
+                                ## Fan Performance Control (Percent, Speed, Noise, Power)
+                                register "controls.fan_perf" = "{
+                                                [0] = {  90, 6700, 220, 2200, },
+                                                [1] = {  80, 5800, 180, 1800, },
+                                                [2] = {  70, 5000, 145, 1450, },
+                                                [3] = {  60, 4900, 115, 1150, },
+                                                [4] = {  50, 3838,  90,  900, },
+                                                [5] = {  40, 2904,  55,  550, },
+                                                [6] = {  30, 2337,  30,  300, },
+                                                [7] = {  20, 1608,  15,  150, },
+                                                [8] = {  10,  800,  10,  100, },
+                                                [9] = {   0,    0,   0,   50, }
+                                }"
+
+                                ## Fan options
+                                register "options.fan.fine_grained_control" = "true"
+                                register "options.fan.step_size" = "2"
+
+                                device generic 0 alias dptf_policy on end
+                        end
+                end
+
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp1 on end
 		device ref tcss_xhci on
@@ -159,6 +290,14 @@ chip soc/intel/pantherlake
 			chip drivers/intel/usb4/retimer
 				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
 				use tcss_usb3_port1 as dfp[1].typec_port
+				device generic 0 on end
+			end
+		end
+
+		 device ref ish on
+			probe ISH ISH_ENABLE
+			chip drivers/intel/ish
+				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
 		end

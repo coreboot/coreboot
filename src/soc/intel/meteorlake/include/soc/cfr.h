@@ -11,27 +11,19 @@
 #include <soc/soc_chip.h>
 
 /* FSP hyperthreading */
-static const struct sm_object hyper_threading = SM_DECLARE_ENUM({
+static const struct sm_object hyper_threading = SM_DECLARE_BOOL({
 	.opt_name	= "hyper_threading",
 	.ui_name	= "Hyper-Threading",
 	.ui_helptext	= "Enable or disable Hyper-Threading",
 	.default_value	= CONFIG(FSP_HYPERTHREADING),
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",		0	},
-				{ "Enabled",		1	},
-				SM_ENUM_VALUE_END		},
 });
 
 /* IGD Enabled */
-static const struct sm_object igd_enabled = SM_DECLARE_ENUM({
+static const struct sm_object igd_enabled = SM_DECLARE_BOOL({
 	.opt_name	= "igd_enabled",
 	.ui_name	= "Enable the Intel iGPU",
 	.ui_helptext	= "Enable or disable the Intel iGPU",
 	.default_value	= !CONFIG(SOC_INTEL_DISABLE_IGD),
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",		0	},
-				{ "Enabled",		1	},
-				SM_ENUM_VALUE_END		},
 });
 
 /* IGD DVMT pre-allocated memory */
@@ -47,42 +39,30 @@ static const struct sm_object igd_dvmt = SM_DECLARE_ENUM({
 				{ "128 MB",		IGD_SM_128MB	},
 				{ "160 MB",		IGD_SM_160MB	},
 				SM_ENUM_VALUE_END			},
-}, WITH_DEP_VALUES(&igd_enabled, 1));
+}, WITH_DEP_VALUES(&igd_enabled, true));
 
 /* Legacy 8254 Timer */
-static const struct sm_object legacy_8254_timer = SM_DECLARE_ENUM({
+static const struct sm_object legacy_8254_timer = SM_DECLARE_BOOL({
 	.opt_name	= "legacy_8254_timer",
 	.ui_name	= "Legacy 8254 Timer",
 	.ui_helptext	= "Enable the legacy 8254 timer by disabling clock gating.",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",		0	},
-				{ "Enabled",		1	},
-				SM_ENUM_VALUE_END		},
+	.default_value	= false,
 });
 
 /* S0ix Enable */
-static const struct sm_object s0ix_enable = SM_DECLARE_ENUM({
+static const struct sm_object s0ix_enable = SM_DECLARE_BOOL({
 	.opt_name	= "s0ix_enable",
 	.ui_name	= "Modern Standby (S0ix)",
 	.ui_helptext	= "Enabled: use Modern Standby / S0ix. Disabled: use ACPI S3 sleep",
-	.default_value	= 1,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",		0	},
-				{ "Enabled",		1	},
-				SM_ENUM_VALUE_END		},
+	.default_value	= true,
 });
 
 /* VT-d */
-static const struct sm_object vtd = SM_DECLARE_ENUM({
+static const struct sm_object vtd = SM_DECLARE_BOOL({
 	.opt_name	= "vtd",
 	.ui_name	= "VT-d",
 	.ui_helptext	= "Enable or disable Intel VT-d (virtualization)",
-	.default_value	= 1,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",		0	},
-				{ "Enabled",		1	},
-				SM_ENUM_VALUE_END		},
+	.default_value	= true,
 });
 
 #endif /* _METEORLAKE_CFR_H_ */

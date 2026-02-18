@@ -9,6 +9,24 @@
 	REGION(ttb, addr, size, 4K) \
 	_ = ASSERT(size % 4K == 0, "TTB size must be divisible by 4K!");
 
+#if ENV_ROMSTAGE_OR_BEFORE
+	#define PRERAM_TTB(addr, size) \
+		REGION(preram_ttb, addr, size, 4K) \
+		_ = ASSERT(size % 4K == 0, "preram_ttb size must be divisible by 4K!"); \
+		ALIAS_REGION(preram_ttb, ttb)
+	#define POSTRAM_TTB(addr, size) \
+		REGION(postram_ttb, addr, size, 4K) \
+		_ = ASSERT(size >= _preram_ttb_size, "The postram_ttb size cannot be smaller than the preram_ttb size.");
+#else
+	#define PRERAM_TTB(addr, size) \
+		REGION(preram_ttb, addr, size, 4K)
+	#define POSTRAM_TTB(addr, size) \
+		REGION(postram_ttb, addr, size, 4K) \
+		_ = ASSERT(size % 4K == 0, "postram_ttb size must be divisible by 4K!"); \
+		_ = ASSERT(size >= _preram_ttb_size, "The postram_ttb size cannot be smaller than the preram_ttb size."); \
+		ALIAS_REGION(postram_ttb, ttb)
+#endif
+
 #define FRAMEBUFFER(addr, size) \
 	REGION(framebuffer, addr, size, 1M) \
 	_ = ASSERT(size % 1M == 0, \

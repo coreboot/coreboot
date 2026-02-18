@@ -103,7 +103,7 @@ static const struct sm_object pciexp_aspm = SM_DECLARE_ENUM({
 				{ "L0sL1",	ASPM_L0S_L1	},
 				{ "Auto",	ASPM_AUTO	},
 				SM_ENUM_VALUE_END		},
-}, WITH_DEP_VALUES(&pciexp_clk_pm, 1), WITH_CALLBACK(update_pcie_aspm));
+}, WITH_DEP_VALUES(&pciexp_clk_pm, true), WITH_CALLBACK(update_pcie_aspm));
 
 /* PCIe CPU RP ASPM */
 static const struct sm_object pciexp_aspm_cpu = SM_DECLARE_ENUM({
@@ -119,7 +119,7 @@ static const struct sm_object pciexp_aspm_cpu = SM_DECLARE_ENUM({
 				{ "L1",		ASPM_L1		},
 				{ "L0sL1",	ASPM_L0S_L1	},
 				SM_ENUM_VALUE_END		},
-}, WITH_DEP_VALUES(&pciexp_clk_pm, 1), WITH_CALLBACK(update_pcie_aspm_cpu));
+}, WITH_DEP_VALUES(&pciexp_clk_pm, true), WITH_CALLBACK(update_pcie_aspm_cpu));
 
 /* PCIe L1 Substates */
 static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
@@ -135,7 +135,7 @@ static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
 				{ "L1.1",	L1_SS_L1_1	},
 				{ "L1.2",	L1_SS_L1_2	},
 				SM_ENUM_VALUE_END		},
-}, WITH_DEP_VALUES(&pciexp_clk_pm, 1), WITH_CALLBACK(update_pcie_l1ss));
+}, WITH_DEP_VALUES(&pciexp_clk_pm, true), WITH_CALLBACK(update_pcie_l1ss));
 
 /* PCIe PCH Root Port Speed */
 static const struct sm_object pciexp_speed = SM_DECLARE_ENUM({
@@ -175,17 +175,13 @@ static void update_smm_bwp(struct sm_object *new)
 		new->sm_bool.flags |= CFR_OPTFLAG_SUPPRESS;
 }
 
-static const struct sm_object bios_lock = SM_DECLARE_ENUM({
+static const struct sm_object bios_lock = SM_DECLARE_BOOL({
 	.opt_name	= "bios_lock",
 	.ui_name	= "BIOS Lock",
 	.ui_helptext	= "Enable BIOS write protection in SMM. When enabled, the boot media"
 			  " (SPI flash) is only writable in System Management Mode, preventing"
 			  " unauthorized writes through the internal controller.",
 	.default_value	= CONFIG(BOOTMEDIA_SMM_BWP),
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",	false	},
-				{ "Enabled",	true	},
-				SM_ENUM_VALUE_END	},
 }, WITH_CALLBACK(update_smm_bwp));
 
 #endif /* SOC_INTEL_CMN_CFR_H */

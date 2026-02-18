@@ -5,15 +5,11 @@
 #include <ec/google/chromeec/cfr.h>
 #include <soc/cfr.h>
 
-static const struct sm_object touchscreen = SM_DECLARE_ENUM({
+static const struct sm_object touchscreen = SM_DECLARE_BOOL({
 	.opt_name	= "touchscreen",
 	.ui_name	= "Touchscreen",
 	.ui_helptext	= "Enable or disable the integrated touchscreen device",
-	.default_value	= 1,
-	.values		= (const struct sm_enum_value[]) {
-		{ "Disabled",		0		},
-		{ "Enabled",		1		},
-		SM_ENUM_VALUE_END			},
+	.default_value	= true,
 #if !CONFIG(BOARD_GOOGLE_LULU)
 	.flags		= CFR_OPTFLAG_SUPPRESS,
 #endif

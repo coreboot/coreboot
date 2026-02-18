@@ -102,15 +102,15 @@ static void tco_timer_disable(void)
 	tco_write_reg(TCO1_CNT, tcocnt);
 }
 
-/* Enable and initialize TCO intruder SMI */
-static void tco_intruder_smi_enable(void)
+/* Configure TCO intruder routing */
+static void tco_intruder_smi_configure(void)
 {
 	uint16_t tcocnt;
 
-	/* Make TCO issue an SMI on INTRD_DET assertion */
 	tcocnt = tco_read_reg(TCO2_CNT);
 	tcocnt &= ~TCO2_INTRD_SEL_MASK;
-	tcocnt |= TCO2_INTRD_SEL_SMI;
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_TCO_INTRUDER_SMI_ENABLE))
+		tcocnt |= TCO2_INTRD_SEL_SMI;
 	tco_write_reg(TCO2_CNT, tcocnt);
 }
 
@@ -148,9 +148,8 @@ void tco_configure(void)
 
 	tco_timer_disable();
 
-	/* Enable intruder interrupt if TCO interrupts are enabled*/
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE))
-		tco_intruder_smi_enable();
+		tco_intruder_smi_configure();
 }
 
 uint32_t tco_get_timer_period(void)

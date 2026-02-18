@@ -30,6 +30,15 @@ config SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE
 	help
 	  Enable TCO SMI source to e.g. handle case instrusion.
 
+config SOC_INTEL_COMMON_BLOCK_SMM_TCO_INTRUDER_SMI_ENABLE
+	bool "Enable TCO INTRUDER# SMI"
+	depends on SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE
+	default y
+	help
+	  When enabled, route the TCO INTRUDER# event to SMI.
+	  Some boards may see INTRUDER# asserted continuously. Routing it to
+	  SMI would then cause an SMI storm and prevent boot.
+
 config SOC_INTEL_COMMON_BLOCK_SMM_S5_DELAY_MS
 	int
 	default 100 if CHROMEOS

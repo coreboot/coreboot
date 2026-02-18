@@ -224,20 +224,28 @@ static void qclib_prepare_and_run(void)
 	printk(BIOS_DEBUG, "Jumping to QCLib code at %p(%p)\n",
 		prog_entry(&qclib), prog_entry_arg(&qclib));
 
-	/* back-up mmu context before disabling mmu and executing qclib */
-	mmu_save_context(&pre_qclib_mmu_context);
-	/* disable mmu before jumping to qclib. mmu_disable also
-	   flushes and invalidates caches before disabling mmu. */
-	mmu_disable();
+	/*
+	 * Backup MMU context and disable the MMU before executing QCLib,
+	 * unless the platform handles QCLib with the MMU enabled.
+	 * mmu_disable() also handles required cache maintenance.
+	 */
+	if (!CONFIG(SOC_QUALCOMM_QCLIB_SKIP_MMU_TOGGLE)) {
+		mmu_save_context(&pre_qclib_mmu_context);
+		mmu_disable();
+	}
 
 	prog_run(&qclib);
 
-	/* Before returning, QCLib flushes cache and disables mmu.
-	   Explicitly disable mmu (flush, invalidate and disable mmu)
-	   before re-enabling mmu with backed-up mmu context */
-	mmu_disable();
-	mmu_restore_context(&pre_qclib_mmu_context);
-	mmu_enable();
+	/*
+	 * Post-QCLib execution: If the MMU was toggled off, ensure it is
+	 * cleanly disabled (flushed/invalidated) before restoring the
+	 * previous context and re-enabling. Otherwise, just restore context.
+	 */
+	if (!CONFIG(SOC_QUALCOMM_QCLIB_SKIP_MMU_TOGGLE)) {
+		mmu_disable();
+		mmu_restore_context(&pre_qclib_mmu_context);
+		mmu_enable();
+	}
 
 	if (qclib_cb_if_table.global_attributes & QCLIB_GA_FORCE_COLD_REBOOT) {
 		printk(BIOS_NOTICE, "QcLib requested cold reboot\n");

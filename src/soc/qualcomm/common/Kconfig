@@ -41,4 +41,17 @@ config QC_RAMDUMP_ENABLE
 	  Ramdump is a debug image that is loaded during a system crash to capture
 	  memory contents for post-crash analysis.
 
+config SOC_QUALCOMM_QCLIB_SKIP_MMU_TOGGLE
+	bool
+	default n
+	help
+	  Avoid disabling and re-enabling the MMU during QCLib execution.
+
+	  Select this option if the platform's QCLib version supports running
+	  within the existing coreboot MMU configuration without modification.
+
+	  Enabling this reduces boot latency by eliminating redundant cache
+	  flushes and TLB invalidations associated with mmu_disable() and
+	  mmu_enable() calls.
+
 endif

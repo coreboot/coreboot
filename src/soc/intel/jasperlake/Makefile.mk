@@ -10,7 +10,6 @@ all-y += gspi.c
 all-y += i2c.c
 all-y += pmutil.c
 all-y += spi.c
-all-y += uart.c
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/pch.c
@@ -47,7 +46,6 @@ smm-y += gpio.c
 smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c
-smm-y += uart.c
 smm-y += elog.c
 smm-y += xhci.c
 

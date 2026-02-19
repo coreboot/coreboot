@@ -94,6 +94,9 @@ if SOC_INTEL_COMMON
 comment "Intel SoC Common Code for IP blocks"
 source "src/soc/intel/common/block/Kconfig"
 
+comment "Intel SoC Common Code for features"
+source "src/soc/intel/common/feature/Kconfig"
+
 comment "Intel SoC Common PCH Code"
 source "src/soc/intel/common/pch/Kconfig"
 

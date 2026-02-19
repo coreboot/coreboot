@@ -3,6 +3,7 @@ ifeq ($(CONFIG_SOC_INTEL_COMMON),y)
 
 subdirs-y += basecode/
 subdirs-y += block/
+subdirs-y += feature/
 subdirs-y += pch/
 
 verstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c

@@ -87,9 +87,13 @@ Code design after common code in coreboot will look as follows:
 
 [coreboot_common_code_design]: coreboot_common_code_design.png
 
-There will be still some duplicated files left in each SOC folder and we may
-copy across a SOC as a base but these files are subject to change as
-development continues.
+There will be still some duplicated files left in each SOC folder and we
+may copy across a SOC as a base but these files are subject to change as
+development continues. Some of those files, presenting strong similarities
+from generation to generation, can be consolidated into the common feature
+directory to reduce code duplication and improve
+maintenance. Platform-specific differences are handled through
+configuration options or platform-specific macros.
 
 ## Benefits
 

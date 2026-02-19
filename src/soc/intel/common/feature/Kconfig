@@ -1,0 +1,18 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE
+	bool
+	help
+	  Intel SoC common feature code. This option enables sharing of
+	  SoC-specific code across Intel SoC generations to reduce code
+	  duplication. Unlike the common block code which is intended for
+	  reusable IP blocks, the feature code is for SoC-specific
+	  functionality that is similar across multiple generations but
+	  may have minor platform-specific differences handled through
+	  configuration options or platform-specific macros.
+
+if SOC_INTEL_COMMON_FEATURE
+
+source "src/soc/intel/common/feature/*/Kconfig"
+
+endif

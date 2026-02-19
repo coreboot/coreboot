@@ -204,4 +204,9 @@
 #define  PCH_DEV_GBE		_PCH_DEV(LPC, 6)
 #define  PCH_DEV_TRACEHUB	_PCH_DEV(LPC, 7)
 
+/* for common code */
+#define PCI_DEVFN_UART0		PCH_DEVFN_UART0
+#define PCI_DEVFN_UART1		PCH_DEVFN_UART1
+#define PCI_DEVFN_UART2		PCH_DEVFN_UART2
+
 #endif

@@ -17,14 +17,12 @@ bootblock-y += p2sb.c
 bootblock-y += pmutil.c
 bootblock-y += spi.c
 bootblock-y += lpc.c
-bootblock-y += uart.c
 
 verstage-y += gpio.c
 verstage-y += gspi.c
 verstage-y += pmutil.c
 verstage-y += i2c.c
 verstage-y += spi.c
-verstage-y += uart.c
 
 romstage-y += gpio.c
 romstage-y += gspi.c
@@ -34,7 +32,6 @@ romstage-y += pcie_rp.c
 romstage-y += pmutil.c
 romstage-y += reset.c
 romstage-y += spi.c
-romstage-y += uart.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += chip.c
@@ -58,7 +55,6 @@ ramstage-y += reset.c
 ramstage-y += sd.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
-ramstage-y += uart.c
 ramstage-y += vr_config.c
 ramstage-y += xhci.c
 
@@ -67,13 +63,11 @@ smm-y += gpio.c
 smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c
-smm-y += uart.c
 smm-y += xhci.c
 
 postcar-y += gspi.c
 postcar-y += spi.c
 postcar-y += i2c.c
-postcar-y += uart.c
 
 ifeq ($(CONFIG_SKYLAKE_SOC_PCH_H),y)
 ifeq ($(CONFIG_MAINBOARD_SUPPORTS_SKYLAKE_CPU),y)

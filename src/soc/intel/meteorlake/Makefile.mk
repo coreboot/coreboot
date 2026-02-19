@@ -10,7 +10,6 @@ all-y += gspi.c
 all-y += i2c.c
 all-y += pmutil.c
 all-y += spi.c
-all-y += uart.c
 all-y += gpio.c
 
 bootblock-y += bootblock/bootblock.c
@@ -55,7 +54,6 @@ smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += soc_info.c
-smm-y += uart.c
 smm-y += xhci.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/meteorlake

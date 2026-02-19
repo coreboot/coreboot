@@ -1,0 +1,9 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_UART_DEVICES
+	bool
+	help
+	  Include common UART device list support. This option eliminates
+	  per-platform duplication of uart.c files by providing a common
+	  implementation. Platforms must define PCI_UART_DEVFN* macro in
+	  their soc/pci_devs.h header.

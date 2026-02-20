@@ -366,6 +366,11 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H07, NONE, DEEP, NF1),
 	/* GPP_D15: SPI_TPM_INT_N */
 	PAD_CFG_GPI_APIC(GPP_D15, NONE, PLTRST, LEVEL, INVERT),
+
+	/* GPP_B10:     GEN4_SSD_PWREN */
+	PAD_CFG_GPO(GPP_B10, 0, PLTRST),
+	/* GPP_B16:     GEN5_SSD_PWREN */
+	PAD_CFG_GPO(GPP_B16, 0, PLTRST),
 };
 
 /* Pad configuration in romstage */

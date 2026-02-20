@@ -1,0 +1,20 @@
+FLASH 32M {
+	SI_DESC 4K
+	SI_ME 4824K
+	SI_DEVICEEXP2 11556K
+	SI_BIOS@16M 16M {
+		# PD Firmware for use in updates
+		PD1(PRESERVE) 256K
+		PD2(PRESERVE) 256K
+		# Factory-programmed serial numbers
+		RW_FACTORY(PRESERVE) 16K
+		# Pad so that RW_MRC_CACHE and SMMSTORE start 64K-aligned
+		RW_UNUSED 48K
+		RW_MRC_CACHE 64K
+		SMMSTORE(PRESERVE) 256K
+		WP_RO {
+			FMAP 4K
+			COREBOOT(CBFS)
+		}
+	}
+}

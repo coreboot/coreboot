@@ -1,0 +1,58 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_FRAMEWORK_SUNFLOWER_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select CRB_TPM
+	select DRIVERS_I2C_HID
+	select DRIVERS_INTEL_WIFI
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_ESPI
+	select EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_INTEL_PTT
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MEMORY_MAPPED_TPM
+	select MAINBOARD_HAS_TPM2
+	select NO_UART_ON_SUPERIO
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SYSTEM_TYPE_CONVERTIBLE
+	select TPM_MEASURED_BOOT
+
+config BOARD_FRAMEWORK_SUNFLOWER
+	select BOARD_FRAMEWORK_SUNFLOWER_COMMON
+	select SOC_INTEL_ALDERLAKE_PCH_P
+	select SOC_INTEL_RAPTORLAKE
+
+if BOARD_FRAMEWORK_SUNFLOWER_COMMON
+
+config MAINBOARD_DIR
+	default "framework/sunflower"
+
+config MAINBOARD_PART_NUMBER
+	default "Framework Laptop 12 (13th Gen Intel Core)"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "Laptop 12 (13th Gen Intel Core)"
+
+config MAINBOARD_FAMILY
+	default "Laptop 12"
+
+config CONSOLE_POST
+	default y
+
+config DIMM_MAX
+	default 1
+
+config POST_DEVICE
+	default n
+
+config UART_FOR_CONSOLE
+	default 0
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+endif

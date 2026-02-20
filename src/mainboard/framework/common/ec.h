@@ -34,11 +34,21 @@
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_SHUTDOWN) | \
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_PANIC))
 
-/* ACPI feature toggles to enable EC eSPI, lid and wake */
+/*
+ * ACPI feature toggles to enable EC SCI, lid and wake.
+ *
+ * On sunflower SCI is signaled through GPIO instead of eSPI virtual wire.
+ * That has been shown to be more reliable to wake the system from suspend.
+ */
+#if CONFIG(BOARD_FRAMEWORK_SUNFLOWER)
+#define EC_SCI_GPI GPE0_DW1_19
+#define EC_ENABLE_WAKE_PIN GPE0_DW1_19
+#else
 #define EC_SCI_GPI GPE0_ESPI
+#define EC_ENABLE_WAKE_PIN GPE0_ESPI
+#endif
 #define EC_ENABLE_LID_SWITCH
 #define EC_ENABLE_POWER_BUTTON
-#define EC_ENABLE_WAKE_PIN GPE0_ESPI
 
 /*
  * Enable standard PS2 keyboard (not e.g. Chrome Vivaldi)

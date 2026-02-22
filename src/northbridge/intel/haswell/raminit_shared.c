@@ -36,7 +36,7 @@ void report_memory_config(void)
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
 	       DIV_ROUND_CLOSEST(mchbar_read32(MC_BIOS_DATA) * 13333 * 2, 100));
 
-	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
+	printk(BIOS_DEBUG, "memcfg channel assignment: A: %u, B: %u, C: %u\n",
 	       (addr_decoder_common >> 0) & 3,
 	       (addr_decoder_common >> 2) & 3,
 	       (addr_decoder_common >> 4) & 3);
@@ -44,7 +44,7 @@ void report_memory_config(void)
 	for (unsigned int i = 0; i < NUM_CHANNELS; i++) {
 		const uint32_t ch_conf = mchbar_read32(MAD_DIMM(i));
 
-		printk(BIOS_DEBUG, "memcfg channel[%d] config (%8.8x):\n", i, ch_conf);
+		printk(BIOS_DEBUG, "memcfg channel[%u] config (%8.8x):\n", i, ch_conf);
 		printk(BIOS_DEBUG, "   ECC %s\n", ecc_decoder[(ch_conf >> 24) & 3]);
 		printk(BIOS_DEBUG, "   enhanced interleave mode %s\n",
 		       ((ch_conf >> 22) & 1) ? "on" : "off");
@@ -52,13 +52,13 @@ void report_memory_config(void)
 		printk(BIOS_DEBUG, "   rank interleave %s\n",
 		       ((ch_conf >> 21) & 1) ? "on" : "off");
 
-		printk(BIOS_DEBUG, "   DIMMA %d MB width %s %s rank%s\n",
+		printk(BIOS_DEBUG, "   DIMMA %u MB width %s %s rank%s\n",
 		       ((ch_conf >> 0) & 0xff) * 256,
 		       ((ch_conf >> 19) & 1) ? "x16" : "x8 or x32",
 		       ((ch_conf >> 17) & 1) ? "dual" : "single",
 		       ((ch_conf >> 16) & 1) ? "" : ", selected");
 
-		printk(BIOS_DEBUG, "   DIMMB %d MB width %s %s rank%s\n",
+		printk(BIOS_DEBUG, "   DIMMB %u MB width %s %s rank%s\n",
 		       ((ch_conf >> 8) & 0xff) * 256,
 		       ((ch_conf >> 20) & 1) ? "x16" : "x8 or x32",
 		       ((ch_conf >> 18) & 1) ? "dual" : "single",

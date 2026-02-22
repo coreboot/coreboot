@@ -159,9 +159,6 @@ int intel_early_me_init_done(u8 status)
 	printk(BIOS_NOTICE, "ME: Requested BIOS Action: %s\n",
 	       me_ack_values[hfs.ack_data]);
 
-	/* Check status after acknowledgement */
-	intel_early_me_status();
-
 	reset = 0;
 	switch (hfs.ack_data) {
 	case ME_HFS_ACK_CONTINUE:
@@ -190,6 +187,9 @@ int intel_early_me_init_done(u8 status)
 
 	/* Perform the requested reset */
 	if (reset) {
+		/* Show ME status before resetting */
+		intel_early_me_status();
+
 		outb(reset, 0xcf9);
 		halt();
 	}

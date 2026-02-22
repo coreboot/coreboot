@@ -28,13 +28,28 @@ static const char *const ecc_decoder[] = {
 	"active",
 };
 
+static bool is_100_mhz_refclk(void)
+{
+	return mchbar_read32(MC_BIOS_REQ) & (1 << 4);
+}
+
+static unsigned int get_ddr_freq_mhz(void)
+{
+	/* Use KHz to minimise rounding errors */
+	const unsigned int refclk_khz = is_100_mhz_refclk() ? 100000 : 133333;
+	const unsigned int multiplier = mchbar_read32(MC_BIOS_DATA) & 0xf;
+
+	return DIV_ROUND_CLOSEST(multiplier * refclk_khz, 1000);
+}
+
 /* Print out the memory controller configuration, as per the values in its registers. */
 void report_memory_config(void)
 {
 	const uint32_t addr_decoder_common = mchbar_read32(MAD_CHNL);
 
-	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       DIV_ROUND_CLOSEST(mchbar_read32(MC_BIOS_DATA) * 13333 * 2, 100));
+	const unsigned int refclk_mhz = is_100_mhz_refclk() ? 100 : 133;
+	printk(BIOS_DEBUG, "memcfg DDR3 ref clock %u MHz\n", refclk_mhz);
+	printk(BIOS_DEBUG, "memcfg DDR3 clock %u MHz\n", get_ddr_freq_mhz());
 
 	printk(BIOS_DEBUG, "memcfg channel assignment: A: %u, B: %u, C: %u\n",
 	       (addr_decoder_common >> 0) & 3,
@@ -113,8 +128,7 @@ void setup_sdram_meminfo(const uint8_t *spd_data[NUM_CHANNELS][NUM_SLOTS])
 
 	memset(mem_info, 0, sizeof(struct memory_info));
 
-	/* TODO: This looks like an open-coded DIV_ROUND_CLOSEST() */
-	const uint32_t ddr_freq_mhz = (mchbar_read32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100;
+	const uint32_t ddr_freq_mhz = get_ddr_freq_mhz();
 
 	unsigned int dimm_cnt = 0;
 	for (unsigned int channel = 0; channel < NUM_CHANNELS; channel++) {

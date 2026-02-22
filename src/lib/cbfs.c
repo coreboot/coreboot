@@ -137,6 +137,9 @@ static inline bool cbfs_lz4_enabled(void)
 	if (ENV_SMM)
 		return false;
 
+	if (ENV_RAMSTAGE_LOADER && !CONFIG(COMPRESS_RAMSTAGE_LZ4))
+		return false;
+
 	return true;
 }
 

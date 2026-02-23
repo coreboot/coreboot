@@ -184,9 +184,16 @@ static void mainboard_init(struct device *dev)
 	if (get_boot_mode() == LB_BOOT_MODE_LOW_BATTERY)
 		trigger_critical_battery_shutdown();
 
-	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging"*/
-	if (is_low_power_boot_with_charger())
+	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging" */
+	if (is_low_power_boot_with_charger()) {
+		/* Disable the lightbar for Low-Battery or Off-Mode charging sequences.
+		 * This maintains visual consistency between the built-in display
+		 * indicators and the external lightbar.
+		 */
+		if (CONFIG(EC_GOOGLE_CHROMEEC))
+			google_chromeec_lightbar_off();
 		return;
+	}
 
 	gpi_firmware_load(QUP_0_GSI_BASE);
 	gpi_firmware_load(QUP_1_GSI_BASE);

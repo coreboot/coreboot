@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <northbridge/intel/broadwell/acpi/device_nvs.asl>
+#include <southbridge/intel/wildcatpoint/acpi/device_nvs.asl>
 #include <southbridge/intel/common/acpi/platform.asl>
 
 /*

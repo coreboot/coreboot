@@ -18,7 +18,7 @@ DefinitionBlock(
 	#include <soc/intel/common/acpi/acpi_wake_source.asl>
 
 	#include <southbridge/intel/wildcatpoint/acpi/globalnvs.asl>
-	#include <northbridge/intel/broadwell/acpi/device_nvs.asl>
+	#include <southbridge/intel/wildcatpoint/acpi/device_nvs.asl>
 	#include <cpu/intel/common/acpi/cpu.asl>
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 

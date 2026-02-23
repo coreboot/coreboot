@@ -2,23 +2,15 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
-#include <acpi/acpigen.h>
 #include <arch/ioapic.h>
-#include <arch/smp/mpspec.h>
-#include <cpu/intel/haswell/haswell.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <types.h>
-#include <cpu/intel/turbo.h>
+#include <device/pci_ops.h>
 #include <soc/acpi.h>
 #include <soc/device_nvs.h>
-#include <soc/iomap.h>
-#include <soc/lpc.h>
 #include <soc/pci_devs.h>
-#include <soc/pm.h>
 #include <soc/systemagent.h>
-#include <northbridge/intel/broadwell/chip.h>
+#include <types.h>
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {

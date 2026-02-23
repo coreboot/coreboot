@@ -1,13 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <soc/acpi.h>
-#include <soc/device_nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
 #include <types.h>
@@ -86,9 +84,4 @@ unsigned long northbridge_write_acpi_tables(const struct device *const dev,
 	acpi_add_table(rsdp, dmar);
 
 	return current;
-}
-
-size_t size_of_dnvs(void)
-{
-	return sizeof(struct device_nvs);
 }

@@ -5,7 +5,7 @@
 
 #include <types.h>
 
-struct soc_intel_broadwell_pch_config {
+struct southbridge_intel_wildcatpoint_config {
 	/* GPE configuration */
 	uint32_t gpe0_en_1;
 	uint32_t gpe0_en_2;

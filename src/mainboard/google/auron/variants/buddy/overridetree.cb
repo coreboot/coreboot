@@ -18,7 +18,7 @@ chip soc/intel/broadwell
 	end
 
 	device domain 0 on
-		chip soc/intel/broadwell/pch
+		chip southbridge/intel/wildcatpoint
 			register "sata_devslp_disable" = "0x1"
 
 			register "sio_i2c0_voltage" = "1" # 1.8V

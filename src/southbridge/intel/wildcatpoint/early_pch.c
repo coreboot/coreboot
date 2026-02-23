@@ -11,7 +11,7 @@
 #include <soc/pm.h>
 #include <soc/rcba.h>
 #include <soc/romstage.h>
-#include <soc/intel/broadwell/pch/chip.h>
+#include <southbridge/intel/wildcatpoint/chip.h>
 
 static void pch_route_interrupts(void)
 {
@@ -56,7 +56,7 @@ static void pch_enable_lpc(void)
 	if (!dev || !dev->chip_info)
 		return;
 
-	const struct soc_intel_broadwell_pch_config *config = dev->chip_info;
+	const struct southbridge_intel_wildcatpoint_config *config = dev->chip_info;
 
 	pci_write_config32(PCH_DEV_LPC, LPC_GEN1_DEC, config->gen1_dec);
 	pci_write_config32(PCH_DEV_LPC, LPC_GEN2_DEC, config->gen2_dec);

@@ -12,14 +12,14 @@ DefinitionBlock(
 {
 	#include <acpi/dsdt_top.asl>
 	#include <soc/intel/broadwell/acpi/platform.asl>
-	#include <soc/intel/broadwell/pch/acpi/globalnvs.asl>
+	#include <southbridge/intel/wildcatpoint/acpi/globalnvs.asl>
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)
 		{
 			#include <northbridge/intel/haswell/acpi/hostbridge.asl>
-			#include <soc/intel/broadwell/pch/acpi/pch.asl>
+			#include <southbridge/intel/wildcatpoint/acpi/pch.asl>
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}

@@ -11,13 +11,13 @@
 #include <soc/device_nvs.h>
 #include <soc/pch.h>
 #include <soc/rcba.h>
-#include <soc/intel/broadwell/pch/chip.h>
+#include <southbridge/intel/wildcatpoint/chip.h>
 #include <southbridge/intel/lynxpoint/iobp.h>
 #include <stdbool.h>
 
 static void adsp_init(struct device *dev)
 {
-	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
+	const struct southbridge_intel_wildcatpoint_config *config = config_of(dev);
 	struct resource *bar0, *bar1;
 	u32 tmp32;
 

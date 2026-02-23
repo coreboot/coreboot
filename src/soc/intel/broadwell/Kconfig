@@ -10,7 +10,7 @@ config SOC_INTEL_BROADWELL
 	select MRC_SETTINGS_PROTECT
 	select REG_SCRIPT
 	select TCO_SPACE_NOT_YET_SPLIT
-	select INTEL_LYNXPOINT_LP
+	select SOUTHBRIDGE_INTEL_WILDCATPOINT
 	help
 	  Intel Broadwell and Haswell ULT support.
 
@@ -116,7 +116,5 @@ config REFCODE_BLOB_FILE
 	 The path and filename to the file to be added to cbfs.
 
 endif # HAVE_REFCODE_BLOB
-
-source "src/soc/intel/broadwell/pch/Kconfig"
 
 endif

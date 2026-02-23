@@ -17,7 +17,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/rcba.h>
-#include <soc/intel/broadwell/pch/chip.h>
+#include <southbridge/intel/wildcatpoint/chip.h>
 #include <acpi/acpigen.h>
 #include <southbridge/intel/common/rtc.h>
 #include <southbridge/intel/lynxpoint/iobp.h>
@@ -162,7 +162,7 @@ static void pch_power_options(struct device *dev)
 	printk(BIOS_INFO, "Set power %s after power failure.\n", state);
 
 	if (dev->chip_info) {
-		const struct soc_intel_broadwell_pch_config *config = dev->chip_info;
+		const struct southbridge_intel_wildcatpoint_config *config = dev->chip_info;
 
 		/* GPE setup based on device tree configuration */
 		enable_all_gpe(config->gpe0_en_1, config->gpe0_en_2,
@@ -326,7 +326,7 @@ static void pch_enable_mphy(void)
 
 static void pch_init_deep_sx(struct device *dev)
 {
-	const struct soc_intel_broadwell_pch_config *config = dev->chip_info;
+	const struct southbridge_intel_wildcatpoint_config *config = dev->chip_info;
 
 	if (!config)
 		return;
@@ -575,7 +575,7 @@ static void pch_lpc_add_io_resources(struct device *dev)
 
 	/* LPC Generic IO Decode range. */
 	if (dev->chip_info) {
-		const struct soc_intel_broadwell_pch_config *config = dev->chip_info;
+		const struct southbridge_intel_wildcatpoint_config *config = dev->chip_info;
 		pch_lpc_add_gen_io_resources(dev, config->gen1_dec, LPC_GEN1_DEC);
 		pch_lpc_add_gen_io_resources(dev, config->gen2_dec, LPC_GEN2_DEC);
 		pch_lpc_add_gen_io_resources(dev, config->gen3_dec, LPC_GEN3_DEC);

@@ -12,7 +12,7 @@
 #include <soc/pch.h>
 #include <soc/rcba.h>
 #include <soc/serialio.h>
-#include <soc/intel/broadwell/pch/chip.h>
+#include <southbridge/intel/wildcatpoint/chip.h>
 #include <southbridge/intel/lynxpoint/iobp.h>
 #include <types.h>
 
@@ -156,7 +156,7 @@ static void serialio_init_once(int acpi_mode)
 
 static void serialio_init(struct device *dev)
 {
-	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
+	const struct southbridge_intel_wildcatpoint_config *config = config_of(dev);
 	struct resource *bar0, *bar1;
 	int sio_index = -1;
 

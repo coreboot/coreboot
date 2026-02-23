@@ -26,7 +26,7 @@ chip soc/intel/broadwell
 		device pci 02.0 on  end # vga controller
 		device pci 03.0 on  end # mini-hd audio
 
-		chip soc/intel/broadwell/pch
+		chip southbridge/intel/wildcatpoint
 			# EC range is 0x800-0x9ff
 			register "gen1_dec" = "0x00fc0801"
 			register "gen2_dec" = "0x00fc0901"

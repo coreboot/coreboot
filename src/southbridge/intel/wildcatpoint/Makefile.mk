@@ -1,0 +1,50 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_WILDCATPOINT),y)
+
+bootblock-y += bootblock.c
+
+ramstage-y += adsp.c
+romstage-y += early_pch.c
+ramstage-$(CONFIG_ELOG) += elog.c
+ramstage-y += finalize.c
+ramstage-y += ../lynxpoint/lp_gpio.c
+romstage-y += ../lynxpoint/lp_gpio.c
+verstage-y += ../lynxpoint/lp_gpio.c
+smm-y      += ../lynxpoint/lp_gpio.c
+ramstage-y += hda.c
+ramstage-y += ../lynxpoint/hda_verb.c
+ramstage-y += ../lynxpoint/iobp.c
+romstage-y += ../lynxpoint/iobp.c
+ramstage-y += fadt.c
+ramstage-y += lpc.c
+ramstage-y += me.c
+ramstage-y += me_status.c
+romstage-y += me_status.c
+ramstage-y += pch.c
+romstage-y += pch.c
+ramstage-y += pcie.c
+ramstage-y += pmutil.c
+romstage-y += pmutil.c
+smm-y      += pmutil.c
+verstage-y += pmutil.c
+romstage-y += power_state.c
+ramstage-y += ramstage.c
+ramstage-y += sata.c
+ramstage-y += serialio.c
+ramstage-y += ../lynxpoint/smbus.c
+ramstage-y += smi.c
+smm-y      += smihandler.c
+bootblock-y += usb_debug.c
+romstage-y += usb_debug.c
+ramstage-y += usb_debug.c
+ramstage-y += usb_ehci.c
+ramstage-y += usb_xhci.c
+smm-y      += usb_xhci.c
+
+bootblock-$(CONFIG_SERIALIO_UART_CONSOLE) += ../lynxpoint/iobp.c
+bootblock-$(CONFIG_SERIALIO_UART_CONSOLE) += ../lynxpoint/uart_init.c
+all-$(CONFIG_SERIALIO_UART_CONSOLE) += ../lynxpoint/uart.c
+smm-$(CONFIG_SERIALIO_UART_CONSOLE) += ../lynxpoint/uart.c
+
+endif

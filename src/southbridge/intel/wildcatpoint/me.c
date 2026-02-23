@@ -25,7 +25,7 @@
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/rcba.h>
-#include <soc/intel/broadwell/pch/chip.h>
+#include <southbridge/intel/wildcatpoint/chip.h>
 
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -948,7 +948,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 /* Check whether ME is present and do basic init */
 static void intel_me_init(struct device *dev)
 {
-	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
+	const struct southbridge_intel_wildcatpoint_config *config = config_of(dev);
 	me_bios_path path = intel_me_path(dev);
 	me_bios_payload mbp_data;
 	int mbp_ret;

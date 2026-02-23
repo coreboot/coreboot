@@ -12,7 +12,7 @@
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/rcba.h>
-#include <soc/intel/broadwell/pch/chip.h>
+#include <southbridge/intel/wildcatpoint/chip.h>
 #include <southbridge/intel/lynxpoint/iobp.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <types.h>
@@ -121,7 +121,7 @@ static void root_port_init_config(struct device *dev)
 		root_port_config_update_gbe_port();
 
 		pci_or_config8(dev, 0xe2, 3 << 4);
-		const struct soc_intel_broadwell_pch_config *config = config_of(dev);
+		const struct southbridge_intel_wildcatpoint_config *config = config_of(dev);
 		rpc.coalesce = config->pcie_port_coalesce;
 	}
 
@@ -435,7 +435,7 @@ static void pcie_add_0x0202000_iobp(u32 reg)
 
 static void pch_pcie_early(struct device *dev)
 {
-	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
+	const struct southbridge_intel_wildcatpoint_config *config = config_of(dev);
 	int do_aspm = 0;
 	int rp = root_port_number(dev);
 

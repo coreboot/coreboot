@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-config INTEL_LYNXPOINT_LP
+config SOUTHBRIDGE_INTEL_WILDCATPOINT
 	bool
 	select ACPI_COMMON_MADT_IOAPIC
 	select ACPI_COMMON_MADT_LAPIC
@@ -14,6 +14,7 @@ config INTEL_LYNXPOINT_LP
 	select HAVE_SMI_HANDLER
 	select HAVE_USBDEBUG
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
+	select INTEL_LYNXPOINT_LP
 	select RTC
 	select SOUTHBRIDGE_INTEL_COMMON_EARLY_SMBUS
 	select SOUTHBRIDGE_INTEL_COMMON_RESET
@@ -22,6 +23,12 @@ config INTEL_LYNXPOINT_LP
 	select SOUTHBRIDGE_INTEL_COMMON_SPI_ICH9
 	select SPI_FLASH
 	select TCO_SPACE_NOT_YET_SPLIT
+
+if SOUTHBRIDGE_INTEL_WILDCATPOINT
+
+# Placeholder
+config INTEL_LYNXPOINT_LP
+	bool
 
 config EHCI_BAR
 	hex
@@ -72,3 +79,5 @@ config DISABLE_ME_PCI
 	  Disable and hide the ME PCI interface during finalize stage of boot.
 	  This will prevent the OS (and userspace apps) from interacting with
 	  the ME via the PCI interface after boot.
+
+endif

@@ -21,7 +21,7 @@ chip soc/intel/broadwell
 		device pci 02.0 on end # vga controller
 		device pci 03.0 on end # mini-hd audio
 
-		chip soc/intel/broadwell/pch
+		chip southbridge/intel/wildcatpoint
 			# SuperIO range is 0x700-0x73f
 			register "gen2_dec" = "0x003c0701"
 

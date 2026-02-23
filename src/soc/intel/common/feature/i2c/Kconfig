@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_I2C_DEVFN
+	bool
+	help
+	  Common I2C device function to bus mapping implementation.
+	  SoCs using this must define SOC_I2C_DEVFN(n) macro in their
+	  pci_devs.h and CONFIG_SOC_INTEL_I2C_DEV_MAX in their Kconfig.

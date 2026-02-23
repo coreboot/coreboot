@@ -284,3 +284,6 @@
 #define PCI_DEVFN_UART2		PCH_DEVFN_UART2
 
 #endif
+
+/* for common code */
+#define SOC_I2C_DEVFN(n)	PCH_DEVFN_I2C##n

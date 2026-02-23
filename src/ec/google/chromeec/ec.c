@@ -2008,6 +2008,32 @@ int google_chromeec_lightbar_off(void)
 }
 
 /*
+ * Sends a command to enable the Chrome EC lightbar.
+ *
+ * This function wraps the LIGHTBAR_CMD_ON sub-command into a standard
+ * EC_CMD_LIGHTBAR_CMD host command.
+ *
+ * @return 0 on success, or a non-zero EC transport error code on failure.
+ */
+int google_chromeec_lightbar_on(void)
+{
+	const struct ec_params_lightbar req = {
+		.cmd = LIGHTBAR_CMD_ON,
+	};
+
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_LIGHTBAR_CMD,
+		.cmd_size_out = 0,
+		.cmd_data_out = NULL,
+		.cmd_size_in = sizeof(req),
+		.cmd_data_in = &req,
+	};
+
+	return google_chromeec_command(&cmd);
+}
+
+
+/*
  * Check if the battery is critically low and not currently charging.
  *
  * Return true if battery is below threshold and AC is not present.

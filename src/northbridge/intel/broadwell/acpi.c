@@ -12,7 +12,7 @@
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
-	struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
+	struct device *const igfx_dev = pcidev_on_root(2, 0);
 	const u32 gfxvtbar = mchbar_read32(GFXVTBAR) & ~0xfff;
 	const u32 vtvc0bar = mchbar_read32(VTVC0BAR) & ~0xfff;
 	const bool gfxvten = mchbar_read32(GFXVTBAR) & 0x1;

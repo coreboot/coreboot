@@ -47,4 +47,6 @@ bootblock-$(CONFIG_SERIALIO_UART_CONSOLE) += ../lynxpoint/uart_init.c
 all-$(CONFIG_SERIALIO_UART_CONSOLE) += ../lynxpoint/uart.c
 smm-$(CONFIG_SERIALIO_UART_CONSOLE) += ../lynxpoint/uart.c
 
+CPPFLAGS_common += -Isrc/southbridge/intel/wildcatpoint/include
+
 endif

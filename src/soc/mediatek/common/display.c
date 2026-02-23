@@ -90,7 +90,7 @@ static void display_logo(struct panel_description *panel,
 		.panel_orientation = panel->orientation,
 		.halignment = FW_SPLASH_HALIGNMENT_CENTER,
 		.valignment = FW_SPLASH_VALIGNMENT_CENTER,
-		.logo_bottom_margin = 100,
+		.logo_bottom_margin = CONFIG(FRAMEBUFFER_SPLASH_TEXT) ? 200 : 100,
 	};
 	render_logo_to_framebuffer(&config);
 

@@ -23,6 +23,7 @@ fw_config
 		option TOUCH_UNKNOWN		0
 		option TOUCH_ELAN_HID_I2C	1
 		option TOUCH_G2TOUCH_HID_I2C	2
+		option TOUCH_LGD_HID_I2C	3
 	end
 end
 
@@ -432,7 +433,9 @@ chip soc/intel/alderlake
 				register "generic.has_power_resource" = "1"
 				register "generic.use_gpio_for_status" = "true"
 				register "hid_desc_reg_offset" = "0x00"
-				device i2c 34 on end
+				device i2c 10 on
+					probe PANEL TOUCH_LGD_HID_I2C
+				end
 			end
 		end
 		device ref gspi1 on

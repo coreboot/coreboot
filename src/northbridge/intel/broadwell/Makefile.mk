@@ -2,7 +2,7 @@
 
 ifeq ($(CONFIG_SOC_INTEL_BROADWELL),y)
 
-bootblock-y += bootblock.c
+bootblock-y += ../haswell/bootblock.c
 
 romstage-y += early_init.c
 romstage-y += raminit.c

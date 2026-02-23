@@ -10,7 +10,7 @@ romstage-y += report_platform.c
 romstage-y += romstage.c
 romstage-$(CONFIG_HAVE_SPD_IN_CBFS) += spd.c
 
-ramstage-y += acpi.c
+ramstage-y += ../haswell/acpi.c
 ramstage-y += finalize.c
 ramstage-y += gma.c
 ramstage-y += memmap.c

@@ -38,6 +38,7 @@ Device (XHCI)
 		PR3M, 32,  // USB3PRM
 	}
 
+#if CONFIG(INTEL_LYNXPOINT_LP)
 	// Clear status bits
 	Method (LPCL, 0, Serialized)
 	{
@@ -181,6 +182,7 @@ Device (XHCI)
 		// Clear status bits in all ports
 		LPCL ()
 	}
+#endif
 
 	Method (_PSC, 0, NotSerialized)
 	{

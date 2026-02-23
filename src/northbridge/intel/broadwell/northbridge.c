@@ -411,7 +411,7 @@ static void broadwell_init_pre_device(void *chip_info)
 	broadwell_run_reference_code();
 }
 
-struct chip_operations soc_intel_broadwell_ops = {
+struct chip_operations northbridge_intel_broadwell_ops = {
 	.name = "Intel Broadwell",
 	.init       = &broadwell_init_pre_device,
 };

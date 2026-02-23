@@ -18,7 +18,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/systemagent.h>
-#include <soc/intel/broadwell/chip.h>
+#include <northbridge/intel/broadwell/chip.h>
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {

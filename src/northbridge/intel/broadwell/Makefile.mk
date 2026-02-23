@@ -1,7 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
-ifeq ($(CONFIG_SOC_INTEL_BROADWELL),y)
 
-subdirs-y += pch
+ifeq ($(CONFIG_SOC_INTEL_BROADWELL),y)
 
 bootblock-y += bootblock.c
 
@@ -23,7 +22,7 @@ ramstage-y += pei_data.c
 romstage-y += pei_data.c
 ramstage-$(CONFIG_HAVE_REFCODE_BLOB) += refcode.c
 
-CPPFLAGS_common += -Isrc/soc/intel/broadwell/include
+CPPFLAGS_common += -Isrc/northbridge/intel/broadwell/include
 
 # If an MRC file is an ELF file determine the entry address and first loadable
 # section offset in the file. Subtract the offset from the entry address to

@@ -1,4 +1,4 @@
-chip soc/intel/broadwell
+chip northbridge/intel/broadwell
 
 	register "panel_cfg" = "{
 		.up_delay_ms		=  40,

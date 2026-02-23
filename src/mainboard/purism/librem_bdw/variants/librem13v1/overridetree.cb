@@ -1,4 +1,4 @@
-chip soc/intel/broadwell
+chip northbridge/intel/broadwell
 
 	device domain 0 on
 		chip southbridge/intel/wildcatpoint

@@ -5,7 +5,7 @@
 #include <soc/iomap.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
-#include <soc/intel/broadwell/chip.h>
+#include <northbridge/intel/broadwell/chip.h>
 #include <static.h>
 
 static void ABI_X86 send_to_console(unsigned char b)
@@ -15,7 +15,7 @@ static void ABI_X86 send_to_console(unsigned char b)
 
 void broadwell_fill_pei_data(struct pei_data *pei_data)
 {
-	const struct soc_intel_broadwell_config *cfg = config_of_soc();
+	const struct northbridge_intel_broadwell_config *cfg = config_of_soc();
 
 	pei_data->pei_version = PEI_VERSION;
 	pei_data->board_type = BOARD_TYPE_ULT;

@@ -1,4 +1,4 @@
-chip soc/intel/broadwell
+chip northbridge/intel/broadwell
 
 	# Enable DDI2 Hotplug with 6ms pulse
 	register "gpu_dp_c_hotplug" = "0x06"

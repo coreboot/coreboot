@@ -7,7 +7,7 @@
 #include <device/device.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
-#include <soc/intel/broadwell/chip.h>
+#include <northbridge/intel/broadwell/chip.h>
 
 /* Save bit index for PM1_STS and GPE_STS for ACPI _SWS */
 static void pm_fill_gnvs(struct global_nvs *gnvs, const struct chipset_power_state *ps)

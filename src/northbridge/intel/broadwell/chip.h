@@ -6,7 +6,7 @@
 #include <drivers/intel/gma/gma.h>
 #include <stdint.h>
 
-struct soc_intel_broadwell_config {
+struct northbridge_intel_broadwell_config {
 	/*
 	 * Digital Port Hotplug Enable:
 	 *  0x04 = Enabled, 2ms short pulse

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /*
- * CFR enums and structs for soc/intel/broadwell
+ * CFR enums and structs for northbridge/intel/broadwell
  */
 
 #ifndef _BROADWELL_CFR_H_

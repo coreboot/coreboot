@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-chip soc/intel/broadwell
+chip northbridge/intel/broadwell
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
 	end

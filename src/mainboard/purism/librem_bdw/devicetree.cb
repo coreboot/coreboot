@@ -1,4 +1,4 @@
-chip soc/intel/broadwell
+chip northbridge/intel/broadwell
 
 	# IGD Displays
 	register "gfx" = "GMA_STATIC_DISPLAYS(0)"

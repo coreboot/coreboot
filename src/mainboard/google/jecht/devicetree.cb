@@ -1,4 +1,4 @@
-chip soc/intel/broadwell
+chip northbridge/intel/broadwell
 
 	# Disable eDP Hotplug
 	register "gpu_dp_d_hotplug" = "0x00"

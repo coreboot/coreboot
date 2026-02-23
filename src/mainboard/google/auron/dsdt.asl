@@ -11,7 +11,7 @@ DefinitionBlock(
 )
 {
 	#include <acpi/dsdt_top.asl>
-	#include <soc/intel/broadwell/acpi/platform.asl>
+	#include <northbridge/intel/broadwell/acpi/platform.asl>
 
 	// Thermal handler
 	#include "acpi/thermal.asl"

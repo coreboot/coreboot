@@ -256,12 +256,6 @@ Device (XHCI)
 		^SAIP = 0
 #endif
 
-		// Clear PCI CFG offset 0x40[11]
-		^SWAI = 0
-
-		// Clear PCI CFG offset 0x44[13:12]
-		^SAIP = 0
-
 		Return ()
 	}
 
@@ -331,12 +325,6 @@ Device (XHCI)
 		// Set PCI CFG offset 0x44[13:12]
 		^SAIP = 1
 #endif
-
-		// Set PCI CFG offset 0x40[11]
-		^SWAI = 1
-
-		// Set PCI CFG offset 0x44[13:12]
-		^SAIP = 1
 
 		// Put device in D3
 		^D0D3 = 3

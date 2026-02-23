@@ -330,18 +330,18 @@ Device (XHCI)
 
 		// GPLD: Generate Port Location Data (PLD)
 		Method (GPLD, 1, Serialized) {
-			Name (PCKG, Package () {
+			Local0 = Package () {
 				Buffer (0x10) {}
-			})
+			}
 
 			// REV: Revision 2 for ACPI 5.0
-			CreateField (DerefOf (PCKG [0]), 0, 7, REV)
+			CreateField (DerefOf (Local0[0]), 0, 7, REV)
 			REV = 2
 
 			// VISI: Port visibility to user per port
-			CreateField (DerefOf (PCKG [0]), 0x40, 1, VISI)
+			CreateField (DerefOf (Local0[0]), 0x40, 1, VISI)
 			VISI = Arg0
-			Return (PCKG)
+			Return (Local0)
 		}
 
 		Device (PRT1) { Name (_ADR, 1) } // USB Port 0

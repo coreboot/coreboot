@@ -159,23 +159,19 @@ Device (XHCI)
 		Name (_ADR, 0)
 
 		// GPLD: Generate Port Location Data (PLD)
-		Method (GPLD, 1, Serialized)
-		 {
-
-			Name (PCKG, Package (0x01)
-			{
+		Method (GPLD, 1, Serialized) {
+			Local0 = Package () {
 				Buffer (0x10) {}
-			})
+			}
 
-			// REV: Revision 0x02 for ACPI 5.0
-			CreateField (DerefOf (PCKG[0]), 0, 0x07, REV)
-			REV = 0x02
+			// REV: Revision 2 for ACPI 5.0
+			CreateField (DerefOf (Local0[0]), 0, 7, REV)
+			REV = 2
 
 			// VISI: Port visibility to user per port
-			CreateField (DerefOf (PCKG[0]), 0x40, 1, VISI)
+			CreateField (DerefOf (Local0[0]), 0x40, 1, VISI)
 			VISI = Arg0
-
-			Return (PCKG)
+			Return (Local0)
 		}
 
 		/* USB2 */

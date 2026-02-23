@@ -563,6 +563,16 @@ int google_chromeec_set_lightbar_rgb(unsigned int led, int red, int green,
 			 int blue);
 
 /*
+ * Sends a command to turn off the Chrome EC lightbar.
+ *
+ * This function packages a LIGHTBAR_CMD_OFF sub-command into a standard
+ * EC_CMD_LIGHTBAR_CMD packet.
+ *
+ * @return 0 on success, non-zero error code from the EC transport on failure.
+ */
+int google_chromeec_lightbar_off(void);
+
+/*
  * Check if the battery is critically low and AC is not present.
  *
  * Return true if battery is below threshold and AC is not present.

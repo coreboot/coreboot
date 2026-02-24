@@ -2,6 +2,8 @@
 
 #include <ec/google/chromeec/ec.h>
 #include <bootsplash.h>
+#include <elog.h>
+#include <delay.h>
 
 /*
  * Check if low battery shutdown is needed
@@ -31,4 +33,26 @@ bool platform_is_low_battery_shutdown_needed(void)
 	}
 
 	return result;
+}
+
+/*
+ * Platform hooks for system shutdown due to critical battery levels.
+ * Provides visual feedback via the Lightbar/LEDs and logs the event
+ * to non-volatile storage before signaling to cut power.
+ */
+void platform_handle_emergency_low_battery(void)
+{
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return;
+
+	/* Visual alert: Set Lightbar to solid Red */
+	google_chromeec_set_lightbar_rgb(0xff, 0xff, 0x00, 0x00);
+
+	/* Record the event for post-mortem diagnostics (stored in CMOS/Flash) */
+	elog_add_event_byte(ELOG_TYPE_LOW_BATTERY_INDICATOR, ELOG_FW_ISSUE_SHUTDOWN);
+
+	/* * Pause briefly to ensure the user perceives the LED change and
+	 * the event log is safely committed to storage.
+	 */
+	delay(CONFIG_PLATFORM_POST_RENDER_DELAY_SEC);
 }

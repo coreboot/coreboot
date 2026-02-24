@@ -191,8 +191,15 @@ void bmp_release_logo(void);
  */
 #if CONFIG(PLATFORM_HAS_LOW_BATTERY_INDICATOR)
 bool platform_is_low_battery_shutdown_needed(void);
+/*
+ * Platform hooks for system shutdown due to critical battery levels.
+ * Provides visual feedback via the Lightbar/LEDs and logs the event
+ * to non-volatile storage before signaling to cut power.
+ */
+void platform_handle_emergency_low_battery(void);
 #else
 static inline bool platform_is_low_battery_shutdown_needed(void) { return false; }
+static inline void platform_handle_emergency_low_battery(void) { /* nop */ }
 #endif
 
 /*

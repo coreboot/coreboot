@@ -73,6 +73,20 @@ chip soc/intel/pantherlake
 		[VR_DOMAIN_SA] = 38 * 4
 	}"
 
+	# Acoustic Noise settings and slew rate configuration:
+	register "enable_acoustic_noise_mitigation" = "true"
+	# Slew rate for IA Domain: Fast/4
+	register "slow_slew_rate_config[VR_DOMAIN_IA]" = "SLEW_FAST_4"
+	# Slew rate for GT Domain: Fast/2
+	register "slow_slew_rate_config[VR_DOMAIN_GT]" = "SLEW_FAST_2"
+	# Slew rate for ATOM Domain: Fast/4
+	register "slow_slew_rate_config[VR_DOMAIN_ATOM]" = "SLEW_FAST_4"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_IA]" = "true"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_GT]" = "true"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_ATOM]" = "true"
+	register "pcore_hysteresis_window_ms" = "3"
+	register "ecore_hysteresis_window_ms" = "3"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C1
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # USB HUB (USB2 Camera)

@@ -127,6 +127,14 @@ static void early_setup_usb(void)
 void platform_romstage_main(void)
 {
 	/*
+	 * Early initialization of the Chrome EC lightbar.
+	 * Ensures visual continuity if the AP firmware disabled the lightbar
+	 * in a previous boot without a subsequent EC reset.
+	 */
+	if (CONFIG(EC_GOOGLE_CHROMEEC))
+		google_chromeec_lightbar_on();
+
+	/*
 	 * Only alert the user (set LED to red in color) if the lid is closed and the battery
 	 * is critically low without AC power.
 	 */

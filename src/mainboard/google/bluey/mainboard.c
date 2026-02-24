@@ -2,6 +2,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
+#include <bootsplash.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <commonlib/bsd/cbmem_id.h>
@@ -11,7 +12,6 @@
 #include <device/device.h>
 #include <device/i2c_simple.h>
 #include <ec/google/chromeec/ec.h>
-#include <elog.h>
 #include <gpio.h>
 #include <soc/clock.h>
 #include <soc/pcie.h>
@@ -159,14 +159,7 @@ static void trigger_critical_battery_shutdown(void)
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
 		return;
 
-	/* Set LED to Red to alert the user visually */
-	google_chromeec_set_lightbar_rgb(0xff, 0xff, 0x00, 0x00);
-
-	/* Log the event to CMOS/Flash for post-mortem analysis */
-	elog_add_event_byte(ELOG_TYPE_LOW_BATTERY_INDICATOR, ELOG_FW_ISSUE_SHUTDOWN);
-
-	/* Allow time for the log to flush and the user to see the LED change */
-	delay(CONFIG_PLATFORM_POST_RENDER_DELAY_SEC);
+	platform_handle_emergency_low_battery();
 
 	google_chromeec_ap_poweroff();
 }

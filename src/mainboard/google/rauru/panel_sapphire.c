@@ -1,19 +1,27 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <soc/tps65132s.h>
+#include <delay.h>
+#include <gpio.h>
+#include <soc/mt6363.h>
 
 #include "gpio.h"
 #include "panel.h"
 
 static void mipi_panel_power_on(void)
 {
-	struct tps65132s_cfg config = {
-		.i2c_bus = PMIC_I2C_BUS,
-		.en = GPIO_EN_PP3300_EDP_X,
-		.sync = GPIO_EN_PPVAR_MIPI_DISP,
-	};
-	tps65132s_power_on(&config);
+	mt6363_enable_vrf18(true); /* VDD */
+	mdelay(3); /* tsVSP */
+	gpio_output(GPIO_EN_PP3300_EDP_X, 1); /* AVDD */
+	mdelay(2); /* tPON1 */
+	gpio_output(GPIO_EN_PPVAR_MIPI_DISP, 1); /* AVEE */
+	mdelay(2);
+	mdelay(10); /* tRW */
+	gpio_output(GPIO_LCM_RST_1V8_L, 1); /* RESX */
+	mdelay(5);
+	gpio_output(GPIO_LCM_RST_1V8_L, 0);
+	mdelay(5);
+	gpio_output(GPIO_LCM_RST_1V8_L, 1);
 }
 
 static struct panel_description sapphire_panels[] = {

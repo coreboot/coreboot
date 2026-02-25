@@ -11,19 +11,16 @@ bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += gpio.c
-bootblock-y += gspi.c
 bootblock-y += p2sb.c
 bootblock-y += pmutil.c
 bootblock-y += spi.c
 bootblock-y += lpc.c
 
 verstage-y += gpio.c
-verstage-y += gspi.c
 verstage-y += pmutil.c
 verstage-y += spi.c
 
 romstage-y += gpio.c
-romstage-y += gspi.c
 romstage-y += me.c
 romstage-y += pcie_rp.c
 romstage-y += pmutil.c
@@ -37,7 +34,6 @@ ramstage-y += elog.c
 ramstage-y += fadt.c
 ramstage-y += finalize.c
 ramstage-y += gpio.c
-ramstage-y += gspi.c
 ramstage-y += graphics.c
 ramstage-y += irq.c
 ramstage-y += lockdown.c
@@ -61,7 +57,6 @@ smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += xhci.c
 
-postcar-y += gspi.c
 postcar-y += spi.c
 
 ifeq ($(CONFIG_SKYLAKE_SOC_PCH_H),y)

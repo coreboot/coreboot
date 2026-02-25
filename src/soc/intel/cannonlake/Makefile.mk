@@ -10,13 +10,11 @@ bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/pch.c
 bootblock-y += pmutil.c
 bootblock-y += bootblock/report_platform.c
-bootblock-y += gspi.c
 bootblock-y += spi.c
 bootblock-y += lpc.c
 bootblock-y += p2sb.c
 
 romstage-y += cnl_memcfg_init.c
-romstage-y += gspi.c
 romstage-y += lpc.c
 romstage-y += pcie_rp.c
 romstage-y += pmutil.c
@@ -30,7 +28,6 @@ ramstage-y += elog.c
 ramstage-y += finalize.c
 ramstage-y += fsp_params.c
 ramstage-y += graphics.c
-ramstage-y += gspi.c
 ramstage-y += lockdown.c
 ramstage-y += lpc.c
 ramstage-y += nhlt.c
@@ -52,10 +49,8 @@ smm-y += smihandler.c
 smm-y += xhci.c
 
 postcar-y += pmutil.c
-postcar-y += gspi.c
 postcar-y += spi.c
 
-verstage-y += gspi.c
 verstage-y += pmutil.c
 verstage-y += spi.c
 

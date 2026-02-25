@@ -87,18 +87,20 @@ void flashconsole_tx_flush(void)
 {
 	size_t len = line_offset;
 	size_t region_size;
-	static int busy;
 
 	/* Prevent any recursive loops in case the spi flash driver
 	 * calls printk (in case of transaction timeout or
 	 * any other error while writing) */
-	if (busy)
+	static bool busy;
+
+	/* In addition to being an obvious runtime optimization, checking for
+	 * len = 0 also prevents false disabling of the driver, as rdev_writeat
+	 * seems to return -1 if len is zero even though this should be a
+	 * recoverable condition. */
+	if (busy || !rdev_ptr || len == 0)
 		return;
 
-	if (!rdev_ptr)
-		return;
-
-	busy = 1;
+	busy = true;
 	region_size = region_device_sz(rdev_ptr);
 	if (offset + len >= region_size)
 		len = region_size - offset;
@@ -113,5 +115,5 @@ void flashconsole_tx_flush(void)
 	offset += len;
 	line_offset = 0;
 
-	busy = 0;
+	busy = false;
 }

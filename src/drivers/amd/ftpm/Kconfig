@@ -5,9 +5,9 @@ config AMD_CRB_FTPM
 	default n
 	depends on !CRB_TPM
 	depends on SOC_AMD_COMMON_BLOCK_PSP_GEN2
-	# The fTPM needs to access the SPI flash when ROM Armor
-	# is not being used, thus select SOC_AMD_COMMON_BLOCK_PSP_SMI.
-	select SOC_AMD_COMMON_BLOCK_PSP_SMI
+	# The fTPM needs to access the SPI flash, either directly when
+	# ROM Armor is used, or via PSP SMI when ROM Armor is not used.
+	depends on SOC_AMD_COMMON_BLOCK_PSP_SMI || SOC_AMD_COMMON_BLOCK_PSP_ROM_ARMOR3
 	help
 	  Mainboard has AMD fTPM with Command Response Buffer support.
 	  The fTPM is based on the CRB interface as defined by TCG,

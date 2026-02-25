@@ -57,6 +57,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B03, NONE, DEEP, NF3),
 	/* GPP_B09:     M2_GEN4_SSD_RESET_N */
 	PAD_CFG_GPO(GPP_B09, 1, PLTRST),
+	/* GPP_B10:     GEN4_SSD_PWREN */
+	PAD_CFG_GPO(GPP_B10, 1, PLTRST),
 	/* GPP_B11:     MOD_TCSS1_DISP_HPD3 */
 	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF2),
 	/* GPP_B12:     PM_SLP_S0_N */

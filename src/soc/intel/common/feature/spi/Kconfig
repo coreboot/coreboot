@@ -1,0 +1,36 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_SPI_DEVFN
+	bool
+	default n
+	depends on SOC_INTEL_COMMON_BLOCK_SPI
+	help
+	  Use common SPI device function to bus mapping. SoCs must define
+	  CONFIG_SOC_INTEL_SPI_DEV_MAX and SOC_GSPI_DEVFN(n) macro in
+	  soc/pci_devs.h.
+
+config SOC_INTEL_SPI_DEV_MAX
+	int
+	default 0
+	depends on SOC_INTEL_COMMON_FEATURE_SPI_DEVFN
+	help
+	  Number of SPI controllers available on the platform. This is used
+	  for SPI device function to bus number mapping. Platforms should
+	  override this with the actual count of SPI controllers.
+
+config SOC_INTEL_COMMON_FEATURE_SPI_DEVFN_PSF
+	bool
+	default n
+	depends on SOC_INTEL_COMMON_FEATURE_SPI_DEVFN
+	help
+	  SoC provides soc_get_spi_psf_destination_id() via common driver.
+	  Platforms must define CONFIG_SOC_INTEL_SPI_PSF_DESTINATION_ID.
+
+config SOC_INTEL_SPI_PSF_DESTINATION_ID
+	hex
+	default 0x0
+	depends on SOC_INTEL_COMMON_FEATURE_SPI_DEVFN_PSF
+	help
+	  PSF destination ID for SPI controller. This value is platform-specific
+	  and is used for PSF programming. Platforms should override this with
+	  the correct value from their hardware specification.

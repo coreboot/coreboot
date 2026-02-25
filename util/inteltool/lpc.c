@@ -9,6 +9,47 @@
 
 #define SUNRISE_LPC_BC	0xdc
 
+static const io_register_t c610_lpc_cfg_registers[] = {
+	{0x00, 2, "VID"},          // Vendor Identification
+	{0x02, 2, "DID"},          // Device Identification
+	{0x04, 2, "PCICMD"},       // PCI Command
+	{0x06, 2, "PCISTS"},       // PCI Status
+	{0x08, 1, "RID"},          // Revision Identification
+	{0x09, 1, "PI"},           // Programming Interface
+	{0x0A, 1, "SCC"},          // Sub Class Code
+	{0x0B, 1, "BCC"},          // Base Class Code
+	{0x0D, 1, "PLT"},          // Primary Latency Timer
+	{0x0E, 1, "HEADTYP"},      // Header Type
+	{0x2C, 4, "SS"},           // Sub System Identifiers
+	{0x40, 4, "PMBASE"},       // ACPI Base Address
+	{0x44, 1, "ACPI_CNTL"},    // ACPI Control
+	{0x48, 4, "GPIOBASE"},     // ACPI Base Address
+	{0x4C, 1, "GC"},           // GPIO Control
+	{0x60, 4, "PIRQ[n]_ROUT"}, // PIRQ[A-D] Routing Control
+	{0x64, 1, "SIRQ_CNTL"},    // Serial IRQ Control
+	{0x68, 4, "PIRQ[n]_ROUT"}, // PIRQ[E-H] Routing Control
+	{0x6C, 2, "LPC_IBDF"},     // IOxAPIC Bus:Device:Function
+	{0x70, 8, "LPC_HnBDF"},    // HPET Configuration
+	{0x80, 1, "LPC_I/O_DEC"},  // I/O Decode
+	{0x82, 2, "LPC_EN"},       // LPC I/F Enables
+	{0x84, 4, "GEN1_DEC"},     // LPC I/F Generic Decode Range 1
+	{0x88, 4, "GEN2_DEC"},     // LPC I/F Generic Decode Range 2
+	{0x8C, 4, "GEN3_DEC"},     // LPC I/F Generic Decode Range 3
+	{0x90, 4, "GEN4_DEC"},     // LPC I/F Generic Decode Range 4 00000000h R/W
+	{0x94, 4, "ULKMC"},        // USB Legacy Keyboard / Mouse Control 00000000h RO, R/WC, R/W, RW1L
+	{0x98, 4, "LGMR LPC"},     // I/F Generic Memory Range 00000000h R/W
+	{0xD0, 4, "BIOS_SEL1"},    // BIOS Select
+	{0xD4, 2, "BIOS_SEL2"},    // BIOS Select
+	{0xD8, 2, "BIOS_DEC_EN1"}, // BIOS Decode Enable
+	{0xDC, 1, "BIOS_CNTL"},    // BIOS Control
+	{0xE0, 2, "FDCAP"},        // Feature Detection Capability ID
+	{0xE2, 1, "FDLEN"},        // Feature Detection Capability Length
+	{0xE3, 1, "FDVER"},        // Feature Detection Version
+	{0xE4, 4, "FVECIDX"},      // Feature Vector Index
+	{0xE8, 4, "FVECD"},        // Feature Vector Data
+	{0xF0, 4, "RCBA"},         // Root Complex Base Address
+};
+
 static const io_register_t sunrise_lpc_cfg_registers[] = {
 	{0x00, 4, "ID"},
 	{0x04, 2, "CMD"},
@@ -109,6 +150,17 @@ int print_lpc(struct pci_dev *sb, struct pci_access *pacc)
 	printf("\n========== LPC/eSPI =========\n\n");
 
 	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_WELLSBURG_SUPER:
+	case PCI_DEVICE_ID_INTEL_WELLSBURG_C612:
+	case PCI_DEVICE_ID_INTEL_WELLSBURG_X99:
+		dev = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, 0);
+		if (!dev) {
+			printf("LPC interface not found.\n");
+			return 1;
+		}
+		cfg_registers = c610_lpc_cfg_registers;
+		cfg_registers_size = ARRAY_SIZE(c610_lpc_cfg_registers);
+		break;
 	case PCI_DEVICE_ID_INTEL_H110:
 	case PCI_DEVICE_ID_INTEL_H170:
 	case PCI_DEVICE_ID_INTEL_Z170:
@@ -210,6 +262,13 @@ int print_lpc(struct pci_dev *sb, struct pci_access *pacc)
 			printf("0x%04x: 0x%08x (%s)\n",
 				cfg_registers[i].addr,
 				pci_read_long(dev, cfg_registers[i].addr),
+				cfg_registers[i].name);
+			break;
+		case 3:
+			printf("0x%04x: 0x%04x%02x   (%s)\n",
+				cfg_registers[i].addr,
+				pci_read_word(dev, cfg_registers[i].addr),
+				pci_read_byte(dev, cfg_registers[i].addr + 2),
 				cfg_registers[i].name);
 			break;
 		case 2:

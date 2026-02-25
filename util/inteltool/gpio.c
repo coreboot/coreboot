@@ -228,7 +228,7 @@ static const io_register_t pch_gpio_registers[] = {
 	{ 0x40, 4, "GPIO_USE_SEL3" },
 	{ 0x44, 4, "GP_IO_SEL3" },
 	{ 0x48, 4, "GP_LVL3" },
-	{ 0x4c, 4, "RESERVED" },
+	{ 0x4c, 4, "GPI_INV2" }, // GPIO Signal Invert 2
 	{ 0x50, 4, "RESERVED" },
 	{ 0x54, 4, "RESERVED" },
 	{ 0x58, 4, "RESERVED" },
@@ -861,6 +861,9 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	case PCI_DEVICE_ID_INTEL_HM97:
 	case PCI_DEVICE_ID_INTEL_Z97:
 	case PCI_DEVICE_ID_INTEL_H97:
+	case PCI_DEVICE_ID_INTEL_WELLSBURG_SUPER:
+	case PCI_DEVICE_ID_INTEL_WELLSBURG_C612:
+	case PCI_DEVICE_ID_INTEL_WELLSBURG_X99:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = pch_gpio_registers;
 		size = ARRAY_SIZE(pch_gpio_registers);

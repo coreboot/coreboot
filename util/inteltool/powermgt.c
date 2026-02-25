@@ -97,7 +97,8 @@ static const io_register_t pch_pm_registers[] = {
 	{ 0x52, 2, "RESERVED" },
 	{ 0x54, 4, "RESERVED" },
 	{ 0x58, 4, "RESERVED" },
-	{ 0x5c, 4, "RESERVED" },
+	{ 0x5c, 2, "ALT_GPI_SMI_EN2" }, // Alternate GPI SMI Enable 2 Register
+	{ 0x5e, 2, "ALT_GPI_SMI_STS2" }, // Alternate GPI SMI Status 2 Register
 	/* The TCO registers start here. */
 	{ 0x60, 2, "TCO_RLD" },
 	{ 0x62, 1, "TCO_DAT_IN" },
@@ -771,6 +772,9 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_HM97:
 	case PCI_DEVICE_ID_INTEL_Z97:
 	case PCI_DEVICE_ID_INTEL_H97:
+	case PCI_DEVICE_ID_INTEL_WELLSBURG_SUPER:
+	case PCI_DEVICE_ID_INTEL_WELLSBURG_C612:
+	case PCI_DEVICE_ID_INTEL_WELLSBURG_X99:
 		pmbase = pci_read_word(sb, 0x40) & 0xff80;
 		pm_registers = pch_pm_registers;
 		pm_registers_size = ARRAY_SIZE(pch_pm_registers);

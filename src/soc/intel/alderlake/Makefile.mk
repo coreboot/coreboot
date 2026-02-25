@@ -6,7 +6,6 @@ subdirs-y += ../../../cpu/intel/turbo
 
 # all (bootblock, verstage, romstage, postcar, ramstage)
 all-y += pmutil.c
-all-y += spi.c
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/pch.c

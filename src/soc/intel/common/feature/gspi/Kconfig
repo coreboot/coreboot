@@ -1,0 +1,9 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_GSPI_DEVFN
+	bool
+	help
+	  Common GSPI device function to bus mapping implementation.
+	  SoCs using this must define SOC_GSPI_DEVFN(n) macro in their
+	  pci_devs.h and CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX in their
+	  Kconfig.

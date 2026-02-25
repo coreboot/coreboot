@@ -69,6 +69,7 @@ ramstage-y += ../common/early_init.c
 ramstage-y += ../common/emi.c
 ramstage-y += gpueb.c
 ramstage-y += l2c_ops.c
+ramstage-y += ../common/low_battery.c
 ramstage-y += ../common/mcu.c mcupm.c
 ramstage-y += ../common/mmu_operations.c
 ramstage-y += ../common/mtk_mipi_dphy.c mtk_mipi_dphy.c

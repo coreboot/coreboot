@@ -431,7 +431,7 @@ int print_ambs(struct pci_dev *dev, struct pci_access *pacc)
 		break;
 
 	default:
-		fprintf(stderr, "Error: Dumping AMBs on this MCH is not (yet) supported.\n");
+		printf("Error: Dumping AMBs on this MCH is not (yet) supported.\n");
 		return 1;
 	}
 

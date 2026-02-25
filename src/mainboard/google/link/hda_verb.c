@@ -78,7 +78,7 @@ const u32 cim_verb_data[] = {
 		AZALIA_SPEAKER,
 		AZALIA_OTHER_ANALOG,
 		AZALIA_COLOR_UNKNOWN,
-		AZALIA_JACK_PRESENCE_DETECT,
+		AZALIA_NO_JACK_PRESENCE_DETECT,
 		15, 0)),
 
 	/* Pin Complex (NID 0x0C)  N/C */
@@ -110,7 +110,7 @@ const u32 cim_verb_data[] = {
 		AZALIA_MIC_IN,
 		AZALIA_OTHER_ANALOG,
 		AZALIA_COLOR_UNKNOWN,
-		AZALIA_JACK_PRESENCE_DETECT,
+		AZALIA_NO_JACK_PRESENCE_DETECT,
 		15, 0)),
 
 	/* Pin Complex (NID 0x12) Port-C Combo Jack Mic or D-Mic */

@@ -99,19 +99,6 @@ bool variant_is_half_populated(void)
 	return gpio_get(GPP_S0);
 }
 
-uint8_t mb_get_channel_disable_mask(void)
-{
-	/*
-	 * GPP_S0 High -> One RAM Chip
-	 * GPP_S0 Low  -> Two RAM Chip
-	 * Disable all other channels except first two on each controller
-	 */
-	if (gpio_get(GPP_S0))
-		return (BIT(2) | BIT(3));
-
-	return 0;
-}
-
 void variant_get_spd_info(struct mem_spd *spd_info)
 {
 	spd_info->topo = MEM_TOPO_MEMORY_DOWN;

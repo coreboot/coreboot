@@ -5,10 +5,13 @@
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <option.h>
 #include <gpio.h>
+#include <static.h>
 #include <types.h>
 
 #include "hybrid_graphics.h"
 #include "chip.h"
+
+WEAK_DEV_PTR(hg_mux);
 
 /*
  * Returns the hybrid graphics presence and user's card preferences.
@@ -19,9 +22,7 @@ void early_hybrid_graphics(bool *enable_igd, bool *enable_peg)
 	const struct device *dev;
 	enum hybrid_graphics_req mode;
 
-	/* TODO: Use generic device instead of dummy PNP device */
-	dev = dev_find_slot_pnp(HYBRID_GRAPHICS_PORT, HYBRID_GRAPHICS_DEVICE);
-
+	dev = DEV_PTR(hg_mux);
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "Hybrid graphics: ERROR\n");
 		*enable_igd = true;

@@ -153,7 +153,7 @@ chip northbridge/intel/sandybridge
 					register "bdc_gpio_lvl" = "0"
 				end
 				chip drivers/lenovo/hybrid_graphics
-					device pnp ff.f on end # dummy
+					device generic 0 alias hg_mux on end # dummy
 
 					register "detect_gpio" = "21"
 

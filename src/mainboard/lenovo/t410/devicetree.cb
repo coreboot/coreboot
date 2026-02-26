@@ -134,7 +134,7 @@ chip northbridge/intel/ironlake
 					register "evente_enable" = "0x2d"
 				end
 				chip drivers/lenovo/hybrid_graphics
-					device pnp ff.f on end # dummy
+					device generic 0 alias hg_mux on end # dummy
 
 					register "detect_gpio" = "21"
 

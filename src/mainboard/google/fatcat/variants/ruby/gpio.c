@@ -55,7 +55,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B02, NONE),
 	/* GPP_B03:     NC */
 	PAD_NC(GPP_B03, NONE),
-
+	/* GPP_B05:     NONE */
+	PAD_NC(GPP_B05, NONE),
 	/* GPP_B06:     NC */
 	PAD_NC(GPP_B06, NONE),
 	/* GPP_B07:     NC */

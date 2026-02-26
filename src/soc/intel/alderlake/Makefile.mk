@@ -5,7 +5,6 @@ subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 
 # all (bootblock, verstage, romstage, postcar, ramstage)
-all-y += pmutil.c
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/pch.c
@@ -40,7 +39,6 @@ ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog.c
 
 smm-y += elog.c
 smm-y += p2sb.c
-smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += xhci.c
 

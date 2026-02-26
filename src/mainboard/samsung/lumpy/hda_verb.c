@@ -56,7 +56,7 @@ const u32 cim_verb_data[] = {
 					)),
 
 	/* Pin Complex (NID 0x08) - Unused (NC) */
-	AZALIA_PIN_CFG_NC(0),
+	AZALIA_PIN_CFG(0, 0x08, AZALIA_PIN_CFG_NC(0)),
 
 	/* Pin Complex (NID 0x09) - Internal Digital Mic */
 	AZALIA_PIN_CFG(0, 0x09, AZALIA_PIN_DESC(

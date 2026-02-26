@@ -35,7 +35,6 @@ ramstage-y += pcie_rp.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
 ramstage-$(CONFIG_SOC_INTEL_ALDERLAKE_TCSS_USB4_SUPPORT) += retimer.c
-ramstage-y += soundwire.c
 ramstage-y += systemagent.c
 ramstage-y += tcss.c
 ramstage-y += vr_config.c

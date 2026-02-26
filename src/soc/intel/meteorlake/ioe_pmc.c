@@ -5,6 +5,11 @@
 #include <soc/iomap.h>
 #include <soc/pm.h>
 
+static uint8_t *ioe_pmc_mmio_regs(void)
+{
+	return (void *)(uintptr_t)IOE_PWRM_BASE_ADDRESS;
+}
+
 static void ioe_pmc_read_resources(struct device *dev)
 {
 	/* Add the fixed MMIO resource */

@@ -1,0 +1,24 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_SOUNDWIRE
+	bool
+	help
+	  Intel Processor Common SoundWire support. This provides a common
+	  implementation of soc_fill_soundwire_controller() for platforms
+	  that use the same SoundWire link configuration. The platform must
+	  define SOC_SOUNDWIRE_ACPI_ADDRESS and SOC_SOUNDWIRE_MASTER_COUNT
+	  in their Kconfig.
+
+config SOC_SOUNDWIRE_ACPI_ADDRESS
+	hex
+	default 0x40000000
+	depends on SOC_INTEL_COMMON_FEATURE_SOUNDWIRE
+	help
+	  ACPI address for the SoundWire controller.
+
+config SOC_SOUNDWIRE_MASTER_COUNT
+	int
+	default 4
+	depends on SOC_INTEL_COMMON_FEATURE_SOUNDWIRE
+	help
+	  Number of SoundWire master interfaces supported by the platform.

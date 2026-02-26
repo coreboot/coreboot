@@ -42,6 +42,7 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 	const char *path = acpi_device_path(dev);
 	struct acpi_pld pld;
 	struct dsm_usb_config usb_cfg;
+	struct acpi_dp *dsd = NULL;
 
 	if (!path || !config)
 		return;
@@ -67,11 +68,11 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 
 	/* Resources */
 	if (usb_acpi_add_gpios_to_crs(config) == true) {
-		struct acpi_dp *dsd;
 		int idx = 0;
 		int reset_gpio_index = -1;
 		int privacy_gpio_index;
 
+		dsd = acpi_dp_new_table("_DSD");
 		acpigen_write_name("_CRS");
 		acpigen_write_resourcetemplate_header();
 		if (!config->has_power_resource) {
@@ -82,7 +83,6 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 							 &idx);
 		acpigen_write_resourcetemplate_footer();
 
-		dsd = acpi_dp_new_table("_DSD");
 		if (reset_gpio_index >= 0)
 			acpi_dp_add_gpio(dsd, "reset-gpio", path,
 					 reset_gpio_index, 0,
@@ -91,8 +91,14 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 			acpi_dp_add_gpio(dsd, "privacy-gpio", path,
 					 privacy_gpio_index, 0,
 					 config->privacy_gpio.active_low);
-		acpi_dp_write(dsd);
 	}
+	if (config->is_intel_bluetooth) {
+		if (!dsd)
+			dsd = acpi_dp_new_table("_DSD");
+		acpi_device_add_hotplug_support_in_d3(dsd);
+	}
+	if (dsd)
+		acpi_dp_write(dsd);
 
 	if (config->has_power_resource) {
 		const struct acpi_power_res_params power_res_params = {

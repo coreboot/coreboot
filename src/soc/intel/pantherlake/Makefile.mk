@@ -42,7 +42,6 @@ ramstage-$(CONFIG_DRIVERS_INTEL_TOUCH) += touch.c
 smm-y += elog.c
 smm-y += gpio.c
 smm-y += p2sb.c
-smm-y += smihandler.c
 smm-y += xhci.c
 CPPFLAGS_common += -I$(src)/soc/intel/pantherlake
 CPPFLAGS_common += -I$(src)/soc/intel/pantherlake/include

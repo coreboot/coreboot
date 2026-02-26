@@ -99,6 +99,8 @@ struct tlmm_gpio {
 
 void gpio_configure(gpio_t gpio, uint32_t func, uint32_t pull,
 				uint32_t drive_str, uint32_t enable);
+void gpio_configure_no_egpio(gpio_t gpio, uint32_t func, uint32_t pull,
+				uint32_t drive_str, uint32_t enable);
 void gpio_input_irq(gpio_t gpio, enum gpio_irq_type type, uint32_t pull);
 int gpio_irq_status(gpio_t gpio);
 

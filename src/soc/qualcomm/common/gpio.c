@@ -23,6 +23,20 @@ void gpio_configure(gpio_t gpio, uint32_t func, uint32_t pull,
 	write32(&regs->cfg, reg_val);
 }
 
+void gpio_configure_no_egpio(gpio_t gpio, uint32_t func, uint32_t pull,
+				uint32_t drive_str, uint32_t enable)
+{
+	struct tlmm_gpio *regs = (void *)(uintptr_t)gpio.addr;
+	uint32_t reg_val;
+
+	reg_val = ((enable & GPIO_BMSK) << GPIO_CFG_OE_SHFT) |
+		  ((drive_str & GPIO_CFG_DRV_BMSK) << GPIO_CFG_DRV_SHFT) |
+		  ((func & GPIO_CFG_FUNC_BMSK) << GPIO_CFG_FUNC_SHFT) |
+		  ((pull & GPIO_CFG_PULL_BMSK) << GPIO_CFG_PULL_SHFT);
+
+	write32(&regs->cfg, reg_val);
+}
+
 void gpio_set(gpio_t gpio, int value)
 {
 	struct tlmm_gpio *regs = (void *)(uintptr_t)gpio.addr;

@@ -21,9 +21,6 @@ void setup_chromeos_gpios(void)
 			gpio_input_irq(GPIO_FPMCU_INT, IRQ_TYPE_LEVEL, GPIO_PULL_UP);
 		}
 	}
-
-	gpio_output(GPIO_SNDW_AMP_0_ENABLE, 0);
-	gpio_output(GPIO_SNDW_AMP_1_ENABLE, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

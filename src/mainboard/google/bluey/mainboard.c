@@ -92,6 +92,25 @@ static void setup_usb_typec(void)
 	gpio_output(GPIO_USB_C1_RETIMER_RESET_L, 1);
 }
 
+static void setup_audio_gpios(void)
+{
+	gpio_configure_no_egpio(GPIO_SNDW_AMP_0_ENABLE, GPIO_FUNC_GPIO,
+				GPIO_NO_PULL, GPIO_2MA, GPIO_OUTPUT);
+	gpio_set(GPIO_SNDW_AMP_0_ENABLE, 0);
+	gpio_configure_no_egpio(GPIO_SNDW_AMP_1_ENABLE, GPIO_FUNC_GPIO,
+				GPIO_NO_PULL, GPIO_2MA, GPIO_OUTPUT);
+	gpio_set(GPIO_SNDW_AMP_1_ENABLE, 0);
+	gpio_configure_no_egpio(GPIO_SNDW_0_SCL, GPIO_FUN_SNDW_0_SCL,
+		GPIO_NO_PULL, GPIO_16MA, GPIO_OUTPUT);
+	gpio_configure_no_egpio(GPIO_SNDW_0_SDA, GPIO_FUN_SNDW_0_SDA,
+		GPIO_NO_PULL, GPIO_16MA, GPIO_OUTPUT);
+}
+
+static void setup_audio(void)
+{
+	setup_audio_gpios();
+}
+
 static void setup_usb(void)
 {
 	setup_usb_typec();
@@ -236,6 +255,9 @@ static void mainboard_init(struct device *dev)
 
 	/* Setup USB related initial config */
 	setup_usb();
+
+	/* Setup audio related initial config */
+	setup_audio();
 }
 
 static void mainboard_enable(struct device *dev)

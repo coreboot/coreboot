@@ -12,16 +12,68 @@
 static u8 transfer_buffer[4 * KiB] __aligned(32);
 
 /*
- * Read data from the SPI flash via ROM Armor.
- * Rom Armor 2 only.
+ * Read data from the SPI flash via PSP RomArmor.
+ * ROM Armor 2 only.
  *
- * On Rom Armor 3, reads can be done directly through ROM2/ROM3 MMIO,
+ * On ROM Armor 3, reads can be done directly through ROM2/ROM3 MMIO,
  * so this function is not used.
+ *
+ * This bypasses direct SPI controller access and uses PSP firmware
+ * to perform the read operation through RomArmor protocol.
  */
 static ssize_t psp_rom_armor_spi_readat(const struct region_device *rd, void *buf,
 					size_t offset, size_t len)
 {
-	return -1;
+	struct mbox_rom_armor_flash_command cmd;
+	uint32_t byte_counter;
+	int ret;
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_ROM_ARMOR3))
+		return -1;
+
+	printk(BIOS_DEBUG, "PSP RomArmor rdev_ops: read offset=0x%zx, len=0x%zx\n",
+	       offset, len);
+
+	if (!buf || !len) {
+		printk(BIOS_ERR, "PSP RomArmor rdev_ops: Invalid read parameters\n");
+		return -1;
+	}
+	if (len > region_device_sz(&rom_armor_smm_rw) ||
+	    offset > region_device_sz(&rom_armor_smm_rw) ||
+	    (offset + len) > region_device_sz(&rom_armor_smm_rw)) {
+		printk(BIOS_ERR, "PSP RomArmor rdev_ops: read range exceeds flash size\n");
+		return -1;
+	}
+
+	cmd.transaction = READ_ACCESS;
+	cmd.buffer_ptr = (uintptr_t)transfer_buffer;
+	cmd.read_back = 0;
+	cmd.offset = offset;
+
+	/* Process read in 4KB chunks */
+	for (byte_counter = 0; byte_counter < len; ) {
+		cmd.size = len - byte_counter;
+
+		if (cmd.size > sizeof(transfer_buffer))
+			cmd.size = sizeof(transfer_buffer);
+
+		printk(BIOS_SPEW, "  Read chunk: addr=0x%x, len=0x%x\n",
+		       cmd.offset, cmd.size);
+
+		ret = psp_rom_armor_spi_transaction(&cmd);
+		if (ret < 0) {
+			printk(BIOS_ERR, "PSP RomArmor rdev_ops: Read transaction failed\n");
+			return -1;
+		}
+		/* Copy data from mailbox buffer */
+		memcpy(buf, transfer_buffer, cmd.size);
+		buf += cmd.size;
+		cmd.offset += cmd.size;
+		byte_counter += cmd.size;
+	}
+
+	printk(BIOS_DEBUG, "PSP RomArmor rdev_ops: Read complete\n");
+	return len;
 }
 
 /*

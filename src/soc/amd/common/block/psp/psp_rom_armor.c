@@ -13,15 +13,37 @@
 
 /*
  * Read data from the SPI flash via PSP ROM Armor.
- * Rom Armor 2 only.
+ * ROM Armor 2 only.
  *
- * On Rom Armor 3, reads can be done directly through ROM2/ROM3 MMIO,
+ * On ROM Armor 3, reads can be done directly through ROM2/ROM3 MMIO,
  * so this function is not used.
  */
 static ssize_t rom_armor_ramstage_readat(const struct region_device *rd, void *buf,
 					 size_t offset, size_t len)
 {
-	return -1;
+	struct rom_armor_params_read params = {
+		.buf = buf,
+		.offset = offset,
+		.size = len,
+	};
+	u32 ret;
+
+	printk(BIOS_DEBUG, "PSP RomArmor (ramstage): Read offset=0x%zx, len=0x%zx\n",
+	       offset, len);
+
+	if (!buf) {
+		printk(BIOS_ERR, "PSP RomArmor (ramstage): Invalid read parameters\n");
+		return -1;
+	}
+
+	ret = call_smm(APM_CNT_ROM_ARMOR, ROM_ARMOR_APM_CMD_READ, &params);
+
+	if (ret != ROM_ARMOR_RET_SUCCESS) {
+		printk(BIOS_ERR, "PSP RomArmor (ramstage): Read failed, ret=%u\n", ret);
+		return -1;
+	}
+
+	return len;
 }
 
 static ssize_t rom_armor_ramstage_writeat(const struct region_device *rd, const void *buf,
@@ -79,7 +101,7 @@ static ssize_t rom_armor_ramstage_eraseat(const struct region_device *rd,
 const struct region_device_ops rom_armor_apm_ops = {
 	.mmap = NULL,
 	.munmap = NULL,
-	.readat = rom_armor_ramstage_readat,
+	.readat = rom_armor_ramstage_readat,	/* Only used by ROM Armor 2 */
 	.writeat = rom_armor_ramstage_writeat,
 	.eraseat = rom_armor_ramstage_eraseat,
 };

@@ -1,0 +1,10 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_PMUTIL
+	bool
+	help
+	  Select this if the platform supports common PMC utility driver
+	  for modern Intel platforms that share consistent PM register
+	  layouts. This consolidates power management utility functions
+	  including SMI/TCO/GPE status handling, PMC MMIO access, RTC
+	  failure detection, sleep state management, and GPE configuration.

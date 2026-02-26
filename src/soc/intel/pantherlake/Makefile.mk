@@ -7,7 +7,6 @@ subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 
 # all (bootblock, verstage, romstage, postcar, ramstage)
-all-y += pmutil.c
 all-y += gpio.c
 
 bootblock-y += bootblock/bootblock.c
@@ -43,7 +42,6 @@ ramstage-$(CONFIG_DRIVERS_INTEL_TOUCH) += touch.c
 smm-y += elog.c
 smm-y += gpio.c
 smm-y += p2sb.c
-smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += xhci.c
 CPPFLAGS_common += -I$(src)/soc/intel/pantherlake

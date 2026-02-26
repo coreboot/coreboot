@@ -43,7 +43,6 @@ ramstage-y += soc_info.c
 smm-y += elog.c
 smm-y += gpio.c
 smm-y += p2sb.c
-smm-y += smihandler.c
 smm-y += soc_info.c
 smm-y += xhci.c
 

@@ -14,16 +14,20 @@
  *
  * Arg2 == 1:	Set the reset delay based on Arg3
  *
- * Arg2 == 3:	Set the reset method based on Arg3 (Not supported by this driver)
- * WDISABLE2 (BT_RF_KILL_N)
- * VSEC (PCI Config Space)
+ * Arg2 == 2:	Reserved
+ *
+ * Arg2 == 3:	Set the reset method based on Arg3 (required by Linux driver)
+ * Arg3 is a 4-byte buffer: [0x01, 0x00, type, 0x00]
+ *   type 0 = WDISABLE2 (BT_RF_KILL_N) - supported by this driver
+ *   type 1 = VSEC (PCI Config Space) - not supported
  */
 
 static void check_reset_delay(void *arg)
 {
 	acpigen_write_if_lequal_op_int(ARG1_OP, 0);
 	{
-		acpigen_write_return_singleton_buffer(0x03);
+		/* Bits 0, 1, 3: other funcs, reset timing, set reset method (Linux) */
+		acpigen_write_return_singleton_buffer(0x0b);
 	}
 	acpigen_write_else();
 	{
@@ -37,12 +41,26 @@ static void set_reset_delay(void *arg)
 	acpigen_write_store_op_to_namestr(ARG3_OP, "RDLY");
 }
 
+static void set_reset_method(void *arg)
+{
+	/*
+	 * coreboot only supports WDISABLE2 (GPIO). Linux sends type in Arg3[2].
+	 * Accept and return success - _RST already implements GPIO toggle.
+	 */
+	acpigen_write_return_singleton_buffer(0x01);
+}
+
 static void not_supported(void *arg)
 {
 	acpigen_write_return_singleton_buffer(0x00);
 }
 
-void (*reset_supported[])(void *) = { check_reset_delay, set_reset_delay };
+void (*reset_supported[])(void *) = {
+	check_reset_delay,	/* 0: capability query */
+	set_reset_delay,	/* 1: set delay */
+	not_supported,		/* 2: reserved */
+	set_reset_method,	/* 3: set reset method (required by Linux) */
+};
 void (*reset_unsupported[])(void *) = { not_supported };
 
 void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
@@ -55,9 +73,9 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 	acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D2);
 
 /*
- *	Name (RDLY, 0x69)
+ *	Name (RDLY, 160)  // ms, matches Linux driver default
  */
-	acpigen_write_name_integer("RDLY", 0x69);
+	acpigen_write_name_integer("RDLY", 160);
 
 /*
  *	Method (_DSM, 4, Serialized)

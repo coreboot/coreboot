@@ -38,7 +38,6 @@ ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog_lib.c
 
 smm-y += p2sb.c
 smm-y += pmutil.c
-smm-y += smihandler.c
 smm-y += elog.c
 smm-y += xhci.c
 

@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_ESPI
+	bool
+	help
+	  Select this if the platform supports common eSPI/LPC initialization
+	  with generic IO decode range configuration and standard interrupt
+	  setup. This is applicable for most modern Intel client platforms.

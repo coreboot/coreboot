@@ -1,0 +1,9 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_FEATURE_SMIHANDLER
+	bool
+	help
+	  Select this if the platform supports common PCH client SMI handler
+	  implementation. This consolidates SMI handler code for PCH client
+	  platforms including PMC bus master control and standard SMI handler
+	  mappings. The platform must define SOC_PMC_DEV in soc/pci_devs.h.

@@ -39,7 +39,6 @@ ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog.c
 
 smm-y += elog.c
 smm-y += p2sb.c
-smm-y += smihandler.c
 smm-y += xhci.c
 
 ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_S),y)

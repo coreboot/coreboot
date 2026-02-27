@@ -132,6 +132,29 @@ static void update_num_ports(void)
 	       rpc.num_ports);
 }
 
+static u16 get_port_grant(u32 strpfusecfg)
+{
+	switch ((strpfusecfg >> 14) & 0x3) {
+	case 1: /* 2+1+1 */
+	case 3: /* 4 */
+		return 0x02;
+	case 2: /* 2+2 */
+		return 0x22;
+	case 0: /* 1+1+1+1 */
+	default:
+		return 0x00;
+	}
+}
+
+static void set_iosf_port_grant_count(void)
+{
+	u16 reg16 = get_port_grant(rpc.strpfusecfg1) << 0;
+	if (!pch_is_lp())
+		reg16 |= get_port_grant(rpc.strpfusecfg2) << 8;
+
+	RCBA16(0x103c) = reg16;
+}
+
 static void root_port_init_config(struct device *dev)
 {
 	int rp;
@@ -307,6 +330,9 @@ static void root_port_commit_config(void)
 
 	/* Perform clock gating configuration. */
 	pcie_enable_clock_gating();
+
+	/* 8.13 IOSF Port Configuration and Grant Count Programming */
+	set_iosf_port_grant_count();
 
 	for (i = 0; i < rpc.num_ports; i++) {
 		struct device *dev;

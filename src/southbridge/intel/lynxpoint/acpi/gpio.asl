@@ -3,7 +3,15 @@
 Device (GPIO)
 {
 	// GPIO Controller
-	Name (_HID, "INT33C7")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3437")
+		}
+		// LynxPoint-LP
+		Return ("INT33C7")
+	}
 	Name (_CID, "INT33C7")
 	Name (_UID, 1)
 

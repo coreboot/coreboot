@@ -167,7 +167,15 @@ Device (SDMA)
 Device (I2C0)
 {
 	// Serial IO I2C0 Controller
-	Name (_HID, "INT33C2")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3432")
+		}
+		// LynxPoint-LP
+		Return ("INT33C2")
+	}
 	Name (_CID, "INT33C2")
 	Name (_UID, 1)
 
@@ -235,7 +243,15 @@ Device (I2C0)
 Device (I2C1)
 {
 	// Serial IO I2C1 Controller
-	Name (_HID, "INT33C3")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3433")
+		}
+		// LynxPoint-LP
+		Return ("INT33C3")
+	}
 	Name (_CID, "INT33C3")
 	Name (_UID, 1)
 
@@ -303,7 +319,15 @@ Device (I2C1)
 Device (SPI0)
 {
 	// Serial IO SPI0 Controller
-	Name (_HID, "INT33C0")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3430")
+		}
+		// LynxPoint-LP
+		Return ("INT33C0")
+	}
 	Name (_CID, "INT33C0")
 	Name (_UID, 1)
 
@@ -356,7 +380,15 @@ Device (SPI0)
 Device (SPI1)
 {
 	// Serial IO SPI1 Controller
-	Name (_HID, "INT33C1")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3431")
+		}
+		// LynxPoint-LP
+		Return ("INT33C1")
+	}
 	Name (_CID, "INT33C1")
 	Name (_UID, 1)
 
@@ -421,7 +453,15 @@ Device (SPI1)
 Device (UAR0)
 {
 	// Serial IO UART0 Controller
-	Name (_HID, "INT33C4")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3434")
+		}
+		// LynxPoint-LP
+		Return ("INT33C4")
+	}
 	Name (_CID, "INT33C4")
 	Name (_UID, 1)
 
@@ -486,7 +526,15 @@ Device (UAR0)
 Device (UAR1)
 {
 	// Serial IO UART1 Controller
-	Name (_HID, "INT33C5")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3435")
+		}
+		// LynxPoint-LP
+		Return ("INT33C5")
+	}
 	Name (_CID, "INT33C5")
 	Name (_UID, 1)
 
@@ -539,7 +587,15 @@ Device (UAR1)
 Device (SDIO)
 {
 	// Serial IO SDIO Controller
-	Name (_HID, "INT33C6")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3436")
+		}
+		// LynxPoint-LP
+		Return ("INT33C6")
+	}
 	Name (_CID, "PNP0D40")
 	Name (_UID, 1)
 

@@ -87,7 +87,7 @@ config TJ_MAX
 	int
 	default 100
 
-config PL4_WATTS
+config MB_STARLABS_PL4_WATTS
 	int
 	default 45
 

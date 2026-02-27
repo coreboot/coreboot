@@ -45,7 +45,7 @@ void update_power_limits(config_t *cfg)
 		struct soc_power_limits_config *entry = &limits[i];
 		uint16_t tdp, pl1, pl2;
 
-		entry->tdp_pl4 = (uint16_t)CONFIG_PL4_WATTS;
+		entry->tdp_pl4 = (uint16_t)CONFIG_MB_STARLABS_PL4_WATTS;
 
 		tdp = entry->tdp_pl1_override;
 		if (!tdp)

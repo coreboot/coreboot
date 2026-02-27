@@ -11,7 +11,9 @@ DefinitionBlock(
 )
 {
 	#include <acpi/dsdt_top.asl>
-	#include <southbridge/intel/wildcatpoint/acpi/platform.asl>
+	#include <southbridge/intel/wildcatpoint/acpi/device_nvs.asl>
+	#include <southbridge/intel/common/acpi/platform.asl>
+	#include "acpi/platform.asl"
 	#include <southbridge/intel/wildcatpoint/acpi/globalnvs.asl>
 	#include <cpu/intel/common/acpi/cpu.asl>
 

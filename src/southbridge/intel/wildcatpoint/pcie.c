@@ -120,7 +120,6 @@ static void root_port_init_config(struct device *dev)
 		rpc.pin_ownership = pci_read_config32(dev, 0x410);
 		root_port_config_update_gbe_port();
 
-		pci_or_config8(dev, 0xe2, 3 << 4);
 		const struct southbridge_intel_wildcatpoint_config *config = config_of(dev);
 		rpc.coalesce = config->pcie_port_coalesce;
 	}

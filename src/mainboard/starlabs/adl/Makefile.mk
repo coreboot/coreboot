@@ -7,4 +7,5 @@ subdirs-y += variants/$(VARIANT_DIR)
 bootblock-y += bootblock.c
 
 ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += $(wildcard variants/$(VARIANT_DIR)/cfr.c)
 ramstage-y += mainboard.c

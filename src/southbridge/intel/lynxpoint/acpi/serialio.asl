@@ -16,6 +16,28 @@ External (\S5EN)
 External (\S6EN)
 External (\S7EN)
 
+// Put SerialIO device in D0 state
+// Arg0 - Ref to offset 0x84 of device's PCI config space
+Method (LPD0, 1, Serialized)
+{
+	Arg0 = DeRefOf (Arg0) & 0xFFFFFFFC
+	Local0 = DeRefOf (Arg0) // Read back after writing
+
+	// Use Local0 to avoid iasl warning: Method Local is set but never used
+	Local0 &= Ones
+}
+
+// Put SerialIO device in D3 state
+// Arg0 - Ref to offset 0x84 of device's PCI config space
+Method (LPD3, 1, Serialized)
+{
+	Arg0 = DeRefOf (Arg0) | 0x3
+	Local0 = DeRefOf (Arg0) // Read back after writing
+
+	// Use Local0 to avoid iasl warning: Method Local is set but never used
+	Local0 &= Ones
+}
+
 // Serial IO Resource Consumption for BAR1
 Device (SIOR)
 {
@@ -193,32 +215,20 @@ Device (I2C0)
 		}
 	}
 
-	// Access to PCI Config in ACPI mode
-	OperationRegion (KEYS, SystemMemory, \S1B1, 0x100)
-	Field (KEYS, DWordAcc, NoLock, Preserve)
+	OperationRegion (SPRT, SystemMemory, \S1B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
 	{
-		Offset (0x84),
-		PSAT, 32,
+		SPCS, 32
 	}
 
-	// Put controller in D0 state
 	Method (_PS0, 0, Serialized)
 	{
-		^PSAT &= 0xfffffffc
-		Local0 = ^PSAT // Read back after writing
-
-		// Use Local0 to avoid iasl warning: Method Local is set but never used
-		Local0 &= Ones
+		^^LPD0 (RefOf (SPCS))
 	}
 
-	// Put controller in D3Hot state
 	Method (_PS3, 0, Serialized)
 	{
-		^PSAT |= 0x00000003
-		Local0 = ^PSAT // Read back after writing
-
-		// Use Local0 to avoid iasl warning: Method Local is set but never used
-		Local0 &= Ones
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -273,32 +283,20 @@ Device (I2C1)
 		}
 	}
 
-	// Access to PCI Config in ACPI mode
-	OperationRegion (KEYS, SystemMemory, \S2B1, 0x100)
-	Field (KEYS, DWordAcc, NoLock, Preserve)
+	OperationRegion (SPRT, SystemMemory, \S2B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
 	{
-		Offset (0x84),
-		PSAT, 32,
+		SPCS, 32
 	}
 
-	// Put controller in D0 state
 	Method (_PS0, 0, Serialized)
 	{
-		^PSAT &= 0xfffffffc
-		Local0 = ^PSAT // Read back after writing
-
-		// Use Local0 to avoid iasl warning: Method Local is set but never used
-		Local0 &= Ones
+		^^LPD0 (RefOf (SPCS))
 	}
 
-	// Put controller in D3Hot state
 	Method (_PS3, 0, Serialized)
 	{
-		^PSAT |= 0x00000003
-		Local0 = ^PSAT // Read back after writing
-
-		// Use Local0 to avoid iasl warning: Method Local is set but never used
-		Local0 &= Ones
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -336,6 +334,22 @@ Device (SPI0)
 		} Else {
 			Return (0xF)
 		}
+	}
+
+	OperationRegion (SPRT, SystemMemory, \S3B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (RefOf (SPCS))
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -386,6 +400,22 @@ Device (SPI1)
 			Return (0xF)
 		}
 	}
+
+	OperationRegion (SPRT, SystemMemory, \S4B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (RefOf (SPCS))
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (RefOf (SPCS))
+	}
 }
 
 Device (UAR0)
@@ -435,6 +465,22 @@ Device (UAR0)
 			Return (0xF)
 		}
 	}
+
+	OperationRegion (SPRT, SystemMemory, \S5B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (RefOf (SPCS))
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (RefOf (SPCS))
+	}
 }
 
 Device (UAR1)
@@ -471,6 +517,22 @@ Device (UAR1)
 		} Else {
 			Return (0xF)
 		}
+	}
+
+	OperationRegion (SPRT, SystemMemory, \S6B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (RefOf (SPCS))
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 

@@ -538,6 +538,12 @@ static void pch_pcie_early(struct device *dev)
 
 	pci_and_config8(dev, 0xf5, 0x0f);
 
+	if (rp == 1 || rp == 5 || rp == 6)
+		pci_and_config8(dev, 0xf7, ~0x0c);
+
+	/* Set EOI forwarding disable. */
+	pci_or_config32(dev, 0xd4, 1 << 1);
+
 	/* Set AER Extended Cap ID to 01h and Next Cap Pointer to 200h. */
 	if (CONFIG(PCIEXP_AER))
 		pci_update_config32(dev, 0x100, ~0xfffff, (1 << 29) | 0x10001);
@@ -554,12 +560,6 @@ static void pch_pcie_early(struct device *dev)
 
 	/* Enable Relaxed Order from Root Port. */
 	pci_or_config32(dev, 0x320, 3 << 23);
-
-	if (rp == 1 || rp == 5 || rp == 6)
-		pci_update_config8(dev, 0xf7, ~0xc, 0);
-
-	/* Set EOI forwarding disable. */
-	pci_update_config32(dev, 0xd4, ~0, (1 << 1));
 
 	/* Read and write back write-once capability registers. */
 	pci_update_config32(dev, 0x34, ~0, 0);

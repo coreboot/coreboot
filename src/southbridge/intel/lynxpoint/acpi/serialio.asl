@@ -5,6 +5,8 @@
 // Serial IO Device BAR0 and BAR1 is 4KB
 #define SIO_BAR_LEN 0x1000
 
+// TODO: Replace this with some HAVE_DEVICE_NVS Kconfig
+#if !CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
 // This is defined in SSDT2 which is generated at boot based
 // on whether or not the device is enabled in ACPI mode.
 External (\S0EN)
@@ -15,6 +17,7 @@ External (\S4EN)
 External (\S5EN)
 External (\S6EN)
 External (\S7EN)
+#endif
 
 // Put SerialIO device in D0 state
 // Arg0 - Ref to offset 0x84 of device's PCI config space

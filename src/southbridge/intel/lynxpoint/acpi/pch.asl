@@ -1,6 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Intel Lynx Point PCH support */
+/* Intel Lynx Point and Wildcat Point PCH support */
+
+/* TODO: Replace static routing info with runtime-generated SSDT */
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+/* PCI IRQ assignment */
+#include "wpt_lp_pci_irqs.asl"
+#endif
 
 #if CONFIG(INTEL_LYNXPOINT_LP)
 #define DEFAULT_PRW_VALUE	0x6d
@@ -42,6 +48,14 @@ Scope (\)
 
 // High Definition Audio (Azalia) 0:1b.0
 #include "audio.asl"
+
+// TODO: Check if this also applies to Lynx Point-LP
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+#if CONFIG(INTEL_LYNXPOINT_LP)
+// ADSP/SST 0:13.0
+#include "adsp.asl"
+#endif
+#endif
 
 // PCI Express Ports 0:1c.x
 #include <southbridge/intel/common/acpi/pcie.asl>

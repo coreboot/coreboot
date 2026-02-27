@@ -28,7 +28,7 @@ DefinitionBlock(
 		Device (PCI0)
 		{
 			#include <northbridge/intel/haswell/acpi/hostbridge.asl>
-			#include <southbridge/intel/wildcatpoint/acpi/pch.asl>
+			#include <southbridge/intel/lynxpoint/acpi/pch.asl>
 		}
 	}
 

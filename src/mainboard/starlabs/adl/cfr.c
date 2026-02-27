@@ -88,11 +88,9 @@ static struct sm_obj_form pcie_power_management_group = {
 	.ui_name = "PCIe Power Management",
 	.obj_list =
 		(const struct sm_object *[]){
-#if CONFIG(SOC_INTEL_COMMON_BLOCK_ASPM)
 					     &pciexp_aspm,
 					     &pciexp_clk_pm,
 					     &pciexp_l1ss,
-#endif
 					     NULL, },
 };
 

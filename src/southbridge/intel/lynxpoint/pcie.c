@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pciexp.h>
@@ -325,6 +326,26 @@ static void root_port_commit_config(void)
 		/* Ensure memory, io, and bus master are all disabled */
 		pci_and_config16(dev, PCI_COMMAND,
 				~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO));
+
+		/* 8.2 Configuration of PCI Express Root Ports */
+		/* TODO: This should not be done if a card is detected */
+		pci_or_config32(dev, 0x338, 1 << 26);
+
+		/* TODO: BWG specifies 50 ms timeout */
+		int n = 0;
+		do {
+			u32 reg32 = pci_read_config32(dev, 0x328);
+			n++;
+			if (((reg32 & 0xff000000) == 0x01000000) || (n > 50))
+				break;
+			udelay(100);
+		} while (1);
+
+		if (n > 50)
+			printk(BIOS_DEBUG, "%s: Timeout waiting for 328h\n",
+				dev_path(dev));
+
+		pci_or_config32(dev, 0x408, 1 << 27);
 
 		/* Disable this device if possible */
 		pch_disable_devfn(dev);

@@ -9,7 +9,10 @@ chip soc/intel/pantherlake
 	}"
 
 	register "icc_max[WCL_SKU_1]" = "{
+		[VR_DOMAIN_IA] = 50 * 4,
 		[VR_DOMAIN_GT] = 36 * 4,
+		[VR_DOMAIN_SA] = 35 * 4,
+		[VR_DOMAIN_ATOM] = 28 * 4
 	}"
 
 	register "tdc_mode[VR_DOMAIN_IA]" = "TDC_IRMS"

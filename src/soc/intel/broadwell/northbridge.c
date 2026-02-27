@@ -406,13 +406,6 @@ struct device_operations broadwell_pci_domain_ops = {
 #endif
 };
 
-struct device_operations broadwell_cpu_bus_ops = {
-	.read_resources   = noop_read_resources,
-	.set_resources    = noop_set_resources,
-	.init             = mp_cpu_bus_init,
-	.acpi_fill_ssdt   = generate_cpu_entries,
-};
-
 static void broadwell_init_pre_device(void *chip_info)
 {
 	broadwell_run_reference_code();

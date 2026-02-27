@@ -534,13 +534,6 @@ static const struct pci_driver mc_driver_hsw __pci_driver = {
 	.devices = mc_pci_device_ids,
 };
 
-struct device_operations haswell_cpu_bus_ops = {
-	.read_resources   = noop_read_resources,
-	.set_resources    = noop_set_resources,
-	.init             = mp_cpu_bus_init,
-	.acpi_fill_ssdt   = generate_cpu_entries,
-};
-
 struct chip_operations northbridge_intel_haswell_ops = {
 	.name = "Intel Haswell integrated Northbridge",
 };

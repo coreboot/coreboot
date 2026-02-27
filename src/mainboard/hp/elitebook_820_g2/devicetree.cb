@@ -2,7 +2,7 @@
 
 chip soc/intel/broadwell
 	chip cpu/intel/haswell
-		device cpu_cluster 0 on ops broadwell_cpu_bus_ops end
+		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
 	end
 	device domain 0 on
 		ops broadwell_pci_domain_ops

@@ -606,6 +606,13 @@ static const struct cpu_device_id cpu_table[] = {
 	CPU_TABLE_END
 };
 
+struct device_operations haswell_cpu_bus_ops = {
+	.read_resources   = noop_read_resources,
+	.set_resources    = noop_set_resources,
+	.init             = mp_cpu_bus_init,
+	.acpi_fill_ssdt   = generate_cpu_entries,
+};
+
 static const struct cpu_driver driver __cpu_driver = {
 	.ops      = &cpu_dev_ops,
 	.id_table = cpu_table,

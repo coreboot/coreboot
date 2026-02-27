@@ -67,13 +67,14 @@ chip soc/intel/pantherlake
 	# Enable Energy Reporting
 	register "pch_pm_energy_report_enable" = "true"
 
-	# Reference: 844458 MOW WW03
+	# Reference: 844458 MOW WW03, 8300097
 	# fast_vmode_i_trip values are derived from ICCMax with a safety margin.
-	# ITRIP_NOM is approximately 0.70 of ICCMax
-	# TODO: Update with actual i_trip values.
+	register "enable_fast_vmode[VR_DOMAIN_IA]" = "true"
+	register "cep_enable[VR_DOMAIN_IA]" = "true"
 	register "enable_fast_vmode[VR_DOMAIN_GT]" = "true"
 	register "cep_enable[VR_DOMAIN_GT]" = "true"
 	register "fast_vmode_i_trip[WCL_SKU_1]" = "{
+		[VR_DOMAIN_IA] = 38 * 4,
 		[VR_DOMAIN_GT] = 25 * 4,
 	}"
 

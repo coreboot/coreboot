@@ -13,6 +13,7 @@ Device (GPIO)
 		// LynxPoint-LP
 		Return ("INT33C7")
 	}
+	Name (_CID, "INT33C7")
 	Name (_UID, 1)
 
 	Name (RBUF, ResourceTemplate ()

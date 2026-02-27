@@ -83,10 +83,6 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	default n
 
-config TJ_MAX
-	int
-	default 100
-
 config MB_STARLABS_PL4_WATTS
 	int
 	default 45

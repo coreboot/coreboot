@@ -122,10 +122,6 @@ config SOC_INTEL_CSE_SEND_EOP_EARLY
 config TME_KEY_REGENERATION_ON_WARM_BOOT
 	default n
 
-config TJ_MAX
-	int
-	default 110
-
 config MB_STARLABS_PL4_WATTS
 	int
 	default 80

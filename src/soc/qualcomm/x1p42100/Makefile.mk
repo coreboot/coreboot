@@ -67,8 +67,13 @@ CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 # look for QC blobs if QC SoC blobs are only available in upstream else ignore
 ifeq ($(CONFIG_QC_BLOBS_UPSTREAM),y)
 ifeq ($(CONFIG_USE_QC_BLOBS),y)
-# TODO: Upload X1P42100 SoC blobs
 X1P42100_BLOB := $(top)/3rdparty/qc_blobs/x1p42100
+
+ifeq ($(CONFIG_QC_SECURE_BOOT_BLOBS),y)
+BLOB_VARIANT := secure
+else
+BLOB_VARIANT := non_secure
+endif
 
 ifeq ($(CONFIG_SOC_QUALCOMM_HAMOA),y)
 DTB_DCB_BLOB_PATH := hamoa
@@ -94,9 +99,9 @@ cbfs-files-y += $(QCSDI_CBFS)
 endif
 
 ################################################################################
-QC_SEC_FILE := $(X1P42100_BLOB)/qc_sec/qc_sec.mbn
-TME_SEQ_FILE := $(X1P42100_BLOB)/tme/sequencer_ram.elf
-TME_FW_FILE := $(X1P42100_BLOB)/tme/signed_firmware_soc_view.elf
+QC_SEC_FILE := $(X1P42100_BLOB)/$(BLOB_VARIANT)/qc_sec/qc_sec.mbn
+TME_SEQ_FILE := $(X1P42100_BLOB)/$(BLOB_VARIANT)/tme/sequencer_ram.elf
+TME_FW_FILE := $(X1P42100_BLOB)/$(BLOB_VARIANT)/tme/signed_firmware_soc_view.elf
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.elf
 	@util/qualcomm/createxbl.py --mbn_version 7 -f $(objcbfs)/bootblock.raw.elf \
@@ -165,7 +170,7 @@ $(I2C_FW_CBFS)-compression := none
 cbfs-files-y += $(I2C_FW_CBFS)
 
 ################################################################################
-AOP_FILE := $(X1P42100_BLOB)/aop/aop.mbn
+AOP_FILE := $(X1P42100_BLOB)/$(BLOB_VARIANT)/aop/aop.mbn
 AOP_CBFS := $(CONFIG_CBFS_PREFIX)/aop
 $(AOP_CBFS)-file := $(AOP_FILE)
 $(AOP_CBFS)-type := payload
@@ -175,7 +180,7 @@ cbfs-files-y += $(AOP_CBFS)
 ################################################################################
 # Rule to create aop_meta from aop.mbn
 # This rule depends on aop.mbn built and the extractor script existing.
-$(obj)/mainboard/$(MAINBOARDDIR)/aop_meta: $(X1P42100_BLOB)/aop/aop.mbn util/qualcomm/elf_segment_extractor.py
+$(obj)/mainboard/$(MAINBOARDDIR)/aop_meta: $(X1P42100_BLOB)/$(BLOB_VARIANT)/aop/aop.mbn util/qualcomm/elf_segment_extractor.py
 	@echo "Extracting ELF headers and hash table segment from $< to $@"
 	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
 
@@ -187,7 +192,7 @@ $(AOP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(AOP_META_CBFS)
 
 ################################################################################
-AOP_CFG_FILE := $(X1P42100_BLOB)/aop/aop_devcfg.mbn
+AOP_CFG_FILE := $(X1P42100_BLOB)/$(BLOB_VARIANT)/aop/aop_devcfg.mbn
 AOP_CFG_CBFS := $(CONFIG_CBFS_PREFIX)/aop_cfg
 $(AOP_CFG_CBFS)-file := $(AOP_CFG_FILE)
 $(AOP_CFG_CBFS)-type := payload
@@ -197,7 +202,7 @@ cbfs-files-y += $(AOP_CFG_CBFS)
 ################################################################################
 # Rule to create aop_meta from aop_devcfg.mbn
 # This rule depends on aop_devcfg.mbn built and the extractor script existing.
-$(obj)/mainboard/$(MAINBOARDDIR)/aop_devcfg_meta: $(X1P42100_BLOB)/aop/aop_devcfg.mbn util/qualcomm/elf_segment_extractor.py
+$(obj)/mainboard/$(MAINBOARDDIR)/aop_devcfg_meta: $(X1P42100_BLOB)/$(BLOB_VARIANT)/aop/aop_devcfg.mbn util/qualcomm/elf_segment_extractor.py
 	@echo "Extracting ELF headers and hash table segment from $< to $@"
 	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
 
@@ -239,7 +244,7 @@ $(CPUCP_DTBS_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(CPUCP_DTBS_CBFS)
 
 ################################################################################
-SHRM_FILE := $(X1P42100_BLOB)/shrm/shrm.elf
+SHRM_FILE := $(X1P42100_BLOB)/$(BLOB_VARIANT)/shrm/shrm.elf
 SHRM_CBFS := $(CONFIG_CBFS_PREFIX)/shrm
 $(SHRM_CBFS)-file := $(SHRM_FILE)
 $(SHRM_CBFS)-type := payload
@@ -249,7 +254,7 @@ cbfs-files-y += $(SHRM_CBFS)
 ################################################################################
 # Rule to create shrm_meta from shrm.elf
 # This rule depends on shrm.elf being built and the extractor script existing.
-$(obj)/mainboard/$(MAINBOARDDIR)/shrm_meta: $(X1P42100_BLOB)/shrm/shrm.elf util/qualcomm/elf_segment_extractor.py
+$(obj)/mainboard/$(MAINBOARDDIR)/shrm_meta: $(X1P42100_BLOB)/$(BLOB_VARIANT)/shrm/shrm.elf util/qualcomm/elf_segment_extractor.py
 	@echo "Extracting ELF headers and hash table segment from $< to $@"
 	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
 

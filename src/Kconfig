@@ -360,6 +360,25 @@ config USE_QC_BLOBS
 	  mainboards cannot be built and will be hidden from the "Mainboards"
 	  section.
 
+config QC_SECURE_BOOT_BLOBS
+	bool "Enable Qualcomm secure/signed blobs for fused SoCs"
+	depends on USE_QC_BLOBS
+	help
+	  This option enables the inclusion of OEM-signed binaries and
+	  secure-world components required for booting fused Qualcomm SoCs.
+
+	  When enabled, the build system will look for signed versions of
+	  QcLib, QC-SEC, and secondary bootloader stages that match the
+	  Root of Trust (RoT) fused into the SoC.
+
+	  Select this if you are building firmware for production hardware
+	  or "fused" development units that enforce OEM signature
+	  verification at the hardware level.
+
+	  Note: Using this option without the correct signing keys or
+	  signed blobs will result in a bricked boot process on fused
+	  hardware.
+
 config COVERAGE
 	bool "Code coverage support"
 	depends on COMPILER_GCC

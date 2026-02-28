@@ -3,6 +3,65 @@
 #ifndef HASWELL_RAMINIT_REG_STRUCTS_H
 #define HASWELL_RAMINIT_REG_STRUCTS_H
 
+union pci_capid0_a_reg {
+	struct __packed {
+		uint32_t DDR3L_EN        : 1; // Bits  0:0
+		uint32_t DDR_WRTVREF     : 1; // Bits  1:1
+		uint32_t OC_ENABLED_DSKU : 1; // Bits  2:2
+		uint32_t DDR_OVERCLOCK   : 1; // Bits  3:3
+		uint32_t CRID            : 4; // Bits  7:4
+		uint32_t CDID            : 2; // Bits  9:8
+		uint32_t DIDOE           : 1; // Bits 10:10
+		uint32_t IGD             : 1; // Bits 11:11
+		uint32_t PDCD            : 1; // Bits 12:12
+		uint32_t X2APIC_EN       : 1; // Bits 13:13
+		uint32_t DDPCD           : 1; // Bits 14:14
+		uint32_t CDD             : 1; // Bits 15:15
+		uint32_t FUFRD           : 1; // Bits 16:16
+		uint32_t D1NM            : 1; // Bits 17:17
+		uint32_t PCIE_RATIO_DIS  : 1; // Bits 18:18
+		uint32_t DDRSZ           : 2; // Bits 20:19
+		uint32_t PEGG2DIS        : 1; // Bits 21:21
+		uint32_t DMIG2DIS        : 1; // Bits 22:22
+		uint32_t VTDD            : 1; // Bits 23:23
+		uint32_t FDEE            : 1; // Bits 24:24
+		uint32_t ECCDIS          : 1; // Bits 25:25
+		uint32_t DW              : 1; // Bits 26:26
+		uint32_t PELWUD          : 1; // Bits 27:27
+		uint32_t PEG10D          : 1; // Bits 28:28
+		uint32_t PEG11D          : 1; // Bits 29:29
+		uint32_t PEG12D          : 1; // Bits 30:30
+		uint32_t DHDAD           : 1; // Bits 31:31
+	};
+	uint32_t raw;
+};
+
+union pci_capid0_b_reg {
+	struct __packed {
+		uint32_t SPEGFX1         : 1; // Bits  0:0
+		uint32_t DPEGFX1         : 1; // Bits  1:1
+		uint32_t                 : 2; // Bits  3:2
+		uint32_t DMFC            : 3; // Bits  6:4
+		uint32_t DDD             : 1; // Bits  7:7
+		uint32_t                 : 3; // Bits 10:8
+		uint32_t HDCPD           : 1; // Bits 11:11
+		uint32_t                 : 4; // Bits 15:12
+		uint32_t PEGX16D         : 1; // Bits 16:16
+		uint32_t ADDGFXCAP       : 1; // Bits 17:17
+		uint32_t ADDGFXEN        : 1; // Bits 18:18
+		uint32_t PKGTYP          : 1; // Bits 19:19
+		uint32_t PEGG3_DIS       : 1; // Bits 20:20
+		uint32_t PLL_REF100_CFG  : 3; // Bits 23:21
+		uint32_t SOFTBIN         : 1; // Bits 24:24
+		uint32_t CACHESZ         : 3; // Bits 27:25
+		uint32_t SMT             : 1; // Bits 28:28
+		uint32_t OC_ENABLED_SSKU : 1; // Bits 29:29
+		uint32_t OC_CTL_DSKU_DIS : 1; // Bits 30:30
+		uint32_t                 : 1; // Bits 31:31
+	};
+	uint32_t raw;
+};
+
 union ddr_data_rx_train_rank_reg {
 	struct __packed {
 		uint32_t rcven : 9; // Bits  8:0

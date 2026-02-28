@@ -171,6 +171,11 @@ void perform_raminit(const bool s3resume)
 	 */
 	const enum raminit_boot_mode orig_bootmode = get_boot_mode();
 
+	if (CONFIG(DEBUG_RAM_SETUP)) {
+		/* Log CAPID values before dynamic fusing takes place */
+		dump_capid_values();
+	}
+
 	const bool cpu_replaced = early_init_native(s3resume ? BOOTMODE_S3 : orig_bootmode);
 
 	wait_txt_clear();

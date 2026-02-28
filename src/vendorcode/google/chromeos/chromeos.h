@@ -34,6 +34,8 @@ void chromeos_set_ramoops(void *ram_oops, size_t size);
  * Return "UNDEFINED_FACTORY_CONFIG" in case of error.
  */
 uint64_t chromeos_get_factory_config(void);
+
+#if CONFIG(TPM_GOOGLE)
 /*
  * Determines whether a ChromeOS device is branded as a Chromebook-Plus
  * based on specific bit flags:
@@ -57,6 +59,18 @@ bool chromeos_device_branded_plus_hard(void);
  * To be considered a soft-branded Chromebook-Plus, both of these conditions need to be met.
  */
 bool chromeos_device_branded_plus_soft(void);
+#else
+/* Inline fallback for platforms without Google TPM */
+static inline bool chromeos_device_branded_plus_hard(void)
+{
+	return false;
+}
+
+static inline bool chromeos_device_branded_plus_soft(void)
+{
+	return false;
+}
+#endif
 
 /*
  * Declaration for mainboards to use to generate ACPI-specific ChromeOS needs.

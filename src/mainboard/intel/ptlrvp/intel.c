@@ -23,13 +23,3 @@ int get_recovery_mode_switch(void)
 {
 	return 0;
 }
-
-bool chromeos_device_branded_plus_hard(void)
-{
-	return false;
-}
-
-bool chromeos_device_branded_plus_soft(void)
-{
-	return false;
-}

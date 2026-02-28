@@ -53,7 +53,7 @@ void platform_romstage_pre_mem(void)
 	 * Ensures visual continuity if the AP firmware disabled the lightbar
 	 * in a previous boot without a subsequent EC reset.
 	 */
-	if (CONFIG(EC_GOOGLE_CHROMEEC))
+	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
 		google_chromeec_lightbar_on();
 
 	/*

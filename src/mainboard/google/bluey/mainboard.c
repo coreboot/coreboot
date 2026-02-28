@@ -182,7 +182,7 @@ static void mainboard_init(struct device *dev)
 		 * This maintains visual consistency between the built-in display
 		 * indicators and the external lightbar.
 		 */
-		if (CONFIG(EC_GOOGLE_CHROMEEC))
+		if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
 			google_chromeec_lightbar_off();
 
 		/* Boot to charging applet */

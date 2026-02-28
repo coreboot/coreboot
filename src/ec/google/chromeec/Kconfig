@@ -261,6 +261,12 @@ config EC_GOOGLE_CHROMEEC_BATTERY_SOC_DYNAMIC
 	  which retrieves cached telemetry from the EC rather than triggering
 	  a synchronous bus transaction to the battery.
 
+config EC_GOOGLE_CHROMEEC_LED_CONTROL
+	bool
+	help
+	  Enable manual AP control over ChromeEC LEDs/lightbars to ensure
+	  visual continuity with AP-side boot animations.
+
 endif # EC_GOOGLE_CHROMEEC
 
 source "src/ec/google/chromeec/*/Kconfig"

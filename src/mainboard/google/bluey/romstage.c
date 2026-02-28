@@ -124,23 +124,30 @@ static void early_setup_usb(void)
 	early_setup_usb_typec();
 }
 
-void platform_romstage_main(void)
+static void platform_init_lightbar(void)
 {
+	if (!CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
+		return;
+
 	/*
 	 * Early initialization of the Chrome EC lightbar.
 	 * Ensures visual continuity if the AP firmware disabled the lightbar
 	 * in a previous boot without a subsequent EC reset.
 	 */
-	if (CONFIG(EC_GOOGLE_CHROMEEC))
-		google_chromeec_lightbar_on();
+	google_chromeec_lightbar_on();
 
 	/*
 	 * Only alert the user (set LED to red in color) if the lid is closed and the battery
 	 * is critically low without AC power.
 	 */
-	if (CONFIG(EC_GOOGLE_CHROMEEC) && CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch() &&
-			 google_chromeec_is_critically_low_on_battery())
+	if (CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch() &&
+	    google_chromeec_is_critically_low_on_battery())
 		google_chromeec_set_lightbar_rgb(0xff, 0xff, 0x00, 0x00);
+}
+
+void platform_romstage_main(void)
+{
+	platform_init_lightbar();
 
 	/* Setup early USB related config */
 	early_setup_usb();

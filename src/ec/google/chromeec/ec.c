@@ -795,6 +795,15 @@ int rtc_get(struct rtc_time *time)
 }
 #endif
 
+int google_chromeec_offmode_heartbeat(void)
+{
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_ENABLE_OFFMODE_HEARTBEAT,
+	};
+
+	return google_chromeec_command(&cmd);
+}
+
 int google_chromeec_reboot(enum ec_reboot_cmd type, uint8_t flags)
 {
 	const struct ec_params_reboot_ec params = {

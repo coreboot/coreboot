@@ -110,6 +110,8 @@ int google_chromeec_reboot(enum ec_reboot_cmd type, uint8_t flags);
 
 void google_chromeec_ap_poweroff(void);
 
+int google_chromeec_offmode_heartbeat(void);
+
 /**
  * Get data from Cros Board Info
  *

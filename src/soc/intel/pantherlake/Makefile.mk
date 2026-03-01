@@ -8,6 +8,7 @@ subdirs-y += ../../../cpu/intel/turbo
 
 # all (bootblock, verstage, romstage, postcar, ramstage)
 all-y += gpio.c
+all-y += isclk.c
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/pcd.c

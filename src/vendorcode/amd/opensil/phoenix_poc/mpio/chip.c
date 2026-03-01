@@ -4,8 +4,8 @@
 #include <device/pci_def.h>
 #include <Mpio/Common/MpioStructs.h>
 #include <Mpio/MpioClass-api.h>
-#include <NBIO/NbioClass-api.h>
-#include <RcMgr/DfX/RcManager4-api.h>
+#include <Nbio/NbioClass-api.h>
+#include <RcMgr/DfX/RcManager-api.h>
 #include <vendorcode/amd/opensil/opensil.h>
 #include <xSIM-api.h>
 

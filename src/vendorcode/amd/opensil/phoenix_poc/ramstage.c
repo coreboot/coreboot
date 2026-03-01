@@ -1,14 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <FCH/Common/FchCommonCfg.h>
-#include <FCH/Common/FchCore/FchSata/FchSata.h>
-#include <RcMgr/DfX/RcManager4-api.h>
+#include <FCH/Common/FchCommon.h>
+#include <RcMgr/DfX/RcManager-api.h>
 #include <amdblocks/reset.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
-#include <soc/soc_chip.h>
+#include <soc/amd/phoenix/chip.h>
 #include <static.h>
 #include <stdio.h>
 #include <xSIM-api.h>

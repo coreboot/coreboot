@@ -4,7 +4,7 @@
 #include <Sil-api.h>
 #include <SilCommon.h>
 #include <xSIM-api.h>
-#include <FCH/Common/FchCommonCfg.h>
+#include <FCH/Common/FchCommon.h>
 
 #include "../opensil.h"
 

@@ -2,7 +2,7 @@
 
 #include <SilCommon.h>
 #include <Sil-api.h> // needed above ApobCmn.h
-#include <ApobCmn.h>
+#include <APOB/Common/ApobCmn.h>
 #include <xPRF-api.h>
 
 #include "../opensil.h"
@@ -32,7 +32,6 @@ const char *opensil_get_hole_info_type(uint32_t type)
 		{ReservedCxl, "ReservedCxl"},
 		{ReservedCxlAlignment, "ReservedCxlAlignment"},
 		{ReservedCpuTmr, "ReservedCpuTmr"},
-		{ReservedRasEinj, "ReservedRasEinj"},
 		{MaxMemoryHoleTypes, "MaxMemoryHoleTypes"},
 	};
 

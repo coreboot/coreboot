@@ -1040,6 +1040,11 @@ M:	Martin Roth <gaumless@gmail.com>
 S:	Supported
 F:	util/abuild/
 
+AUTOPORT
+M:	Nicholas Chin <nic.c3.14@gmail.com>
+S:	Maintained
+F:	util/autoport/
+
 BOARD STATUS
 F:	util/board_status/
 

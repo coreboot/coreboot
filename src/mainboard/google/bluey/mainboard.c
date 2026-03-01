@@ -121,12 +121,6 @@ void lb_add_boot_mode(struct lb_header *header)
 	mode->tag = LB_TAG_BOOT_MODE;
 	mode->size = sizeof(*mode);
 	mode->boot_mode = get_boot_mode();
-
-	configure_parallel_charging_late();
-
-	/* Enable charging only during off-mode or low-battery mode with charger present */
-	if (is_low_power_boot_with_charger())
-		enable_slow_battery_charging();
 }
 
 bool mainboard_needs_pcie_init(void)
@@ -177,14 +171,22 @@ static void mainboard_init(struct device *dev)
 	if (get_boot_mode() == LB_BOOT_MODE_LOW_BATTERY)
 		trigger_critical_battery_shutdown();
 
+	configure_parallel_charging_late();
+
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging" */
 	if (is_low_power_boot_with_charger()) {
+		/* TODO: enable fast charging */
+		enable_slow_battery_charging();
+
 		/* Disable the lightbar for Low-Battery or Off-Mode charging sequences.
 		 * This maintains visual consistency between the built-in display
 		 * indicators and the external lightbar.
 		 */
 		if (CONFIG(EC_GOOGLE_CHROMEEC))
 			google_chromeec_lightbar_off();
+
+		/* Boot to charging applet */
+		launch_charger_applet();
 		return;
 	}
 

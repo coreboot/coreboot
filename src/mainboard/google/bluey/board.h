@@ -35,6 +35,9 @@
 #define GPIO_PANEL_POWER_ON	GPIO(70)
 #define GPIO_PANEL_HPD		GPIO(119)
 
+/* Charging GPIOs */
+#define GPIO_PARALLEL_CHARGING_CFG GPIO(71)
+
 /* SD card specific GPIOs. Only for SD-enabled devices. */
 #if CONFIG(MAINBOARD_HAS_SD_CONTROLLER)
 #define GPIO_SD_CD_L		GPIO(71)
@@ -56,5 +59,6 @@ void configure_parallel_charging(void);
 void configure_parallel_charging_late(void);
 void enable_slow_battery_charging(void);
 void disable_slow_battery_charging(void);
+void launch_charger_applet(void);
 
 #endif /* MAINBOARD_GOOGLE_BLUEY_BOARD_H */

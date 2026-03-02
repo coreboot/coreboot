@@ -1,0 +1,10 @@
+chip northbridge/intel/sandybridge
+	device domain 0x0 on
+		subsystemid 0x1025 0x0738 inherit
+		chip southbridge/intel/bd82x6x
+			device ref me_ide_r	on end # Management Engine IDE-R
+			device ref me_kt	on end # Management Engine KT
+			device ref gbe		on end # Intel Corporation 82579LM Gigabit Network Connection (Lewisville)
+		end
+	end
+end

@@ -1,0 +1,73 @@
+chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
+	device domain 0x0 on
+		device ref igd on
+			register "gfx" = "GMA_STATIC_DISPLAYS(1)"
+			register "gpu_cpu_backlight" = "0x0000022a"
+			register "gpu_dp_b_hotplug" = "4"
+			register "gpu_dp_c_hotplug" = "4"
+			register "gpu_panel_power_backlight_off_delay" = "3000"
+			register "gpu_panel_power_backlight_on_delay" = "3000"
+			register "gpu_panel_power_cycle_delay" = "6"
+			register "gpu_panel_power_down_delay" = "350"
+			register "gpu_panel_power_up_delay" = "350"
+			register "gpu_pch_backlight" = "0x03d003d0"
+		end
+		chip southbridge/intel/bd82x6x # Intel 7 Series Panther Point PCH
+			register "docking_supported" = "1"
+			register "gpi7_routing" = "2"
+			register "spi_lvscc" = "0x2005"
+			register "spi_uvscc" = "0x2005"
+			register "usb_port_config" = "{
+				{1, 1, 0},
+				{1, 1, 0},
+				{1, 1, 1},
+				{1, 0, 1},
+				{1, 1, 2},
+				{1, 1, 2},
+				{1, 1, 3},
+				{0, 1, 3},
+				{1, 0, 4},
+				{1, 1, 4},
+				{1, 1, 5},
+				{1, 1, 5},
+				{1, 1, 6},
+				{1, 1, 6},
+			}"
+			device ref xhci     on
+				register "superspeed_capable_ports" = "0x0000000f"
+				register "xhci_switchable_ports" = "0x0000000f"
+			end
+			device ref ehci2    on	end
+			device ref hda      on	end
+			device ref pcie_rp2 on		# WWLAN1
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+					"SlotLengthLong" "Mini PCIe" "SlotDataBusWidth1X"
+			end
+			device ref pcie_rp3 on		# Realtek Semiconductor Co., Ltd. RTS5209 PCI Express Card Reader
+			end
+			device ref pcie_rp4 on		# WLAN1
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+					"SlotLengthShort" "Mini PCIe" "SlotDataBusWidth1X"
+			end
+			device ref pcie_rp7 on		# ExpressCard/34
+	                        register "pcie_hotplug_map[6]" = "1"
+				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
+			end
+			device ref ehci1    on	end
+			device ref lpc      on
+				#SIO / EC Nuvoton NPCE885PA0DX (id=0x02, rev=0x18) at 0x4e
+				register "gen1_dec" = "LPC_IO(0x68, 0x8)"
+				register "gen4_dec" = "LPC_IO(0x6a0, 0x10)"
+				chip drivers/pc80/tpm	# Nuvoton NPCT420RA0WX
+					device pnp 0c31.0 on end
+				end
+			end
+			device ref sata1    on
+				register "sata_interface_speed_support" = "0x3"
+				register "sata_port_map" = "0x23"
+				register "sata_hotplug_map" = "0x20"
+			end
+		end
+	end
+end

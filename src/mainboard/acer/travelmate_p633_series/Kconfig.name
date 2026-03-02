@@ -1,0 +1,7 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_ACER_TRAVELMATE_P633_M
+	bool "TravelMate P633-M"
+
+config BOARD_ACER_TRAVELMATE_P633_V
+	bool "TravelMate P633-V"

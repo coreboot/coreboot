@@ -1,0 +1,10 @@
+chip northbridge/intel/sandybridge
+	device domain 0x0 on
+		subsystemid 0x1025 0x0737 inherit
+		chip southbridge/intel/bd82x6x
+			device ref pcie_rp6 on # Broadcom Inc. and subsidiaries NetXtreme BCM57761 Gigabit Ethernet PCIe
+				device pci 00.0 on end
+			end
+		end
+	end
+end

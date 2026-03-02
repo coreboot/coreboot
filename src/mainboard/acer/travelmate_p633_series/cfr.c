@@ -1,0 +1,35 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <boot/coreboot_tables.h>
+#include <console/cfr.h>
+#include <drivers/option/cfr_frontend.h>
+#include <northbridge/intel/sandybridge/cfr.h>
+#include <southbridge/intel/bd82x6x/cfr.h>
+
+static const struct sm_object hyper_threading = SM_DECLARE_BOOL({
+	.opt_name	= "hyper_threading",
+	.ui_name	= "Hyper-Threading",
+	.ui_helptext	= "Enable or disable Hyper-Threading",
+	.default_value	= true,
+});
+
+static struct sm_obj_form system = {
+	.ui_name = "System",
+	.obj_list = (const struct sm_object *[]){&debug_level, &gfx_uma_size,
+						 &me_state,
+						 &me_state_prev, &nmi,
+						 &hyper_threading, &sata_mode,
+						 NULL},
+};
+
+static struct sm_obj_form power = {
+	.ui_name = "Power",
+	.obj_list = (const struct sm_object *[]){&power_on_after_fail, NULL},
+};
+
+static struct sm_obj_form *sm_root[] = {&system, &power, NULL};
+
+void mb_cfr_setup_menu(struct lb_cfr *cfr_root)
+{
+	cfr_write_setup_menu(cfr_root, sm_root);
+}

@@ -1,0 +1,10 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+boot_option=Fallback
+debug_level=Debug
+gfx_uma_size=32M
+hyper_threading=Enable
+me_state=Normal
+nmi=Enable
+power_on_after_fail=Disable
+sata_mode=AHCI

@@ -1,0 +1,8 @@
+Category: laptop
+Board URL: https://www.acer.com/us-en/support/product-support/TravelMate_P633-M
+ROM IC: MXIC MX 25L6406E & 25L3206E 8+4=12MB
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y
+Release year: 2012

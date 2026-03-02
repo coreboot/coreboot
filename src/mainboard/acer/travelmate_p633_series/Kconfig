@@ -1,0 +1,57 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_ACER_TRAVELMATE_P633_SERIES
+	bool
+	select BOARD_ROMSIZE_KB_12288
+	select DRIVERS_OPTION_CFR_ENABLED if PAYLOAD_EDK2 && SMMSTORE
+	select EC_ACPI
+	select GFX_GMA_PANEL_1_ON_LVDS
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_INT15
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_HAS_TPM1
+	select MEMORY_MAPPED_TPM
+	select NO_UART_ON_SUPERIO
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_C216
+	select SYSTEM_TYPE_LAPTOP
+	select USE_NATIVE_RAMINIT
+
+config BOARD_ACER_TRAVELMATE_P633_M
+	bool
+	select BOARD_ACER_TRAVELMATE_P633_SERIES
+
+config BOARD_ACER_TRAVELMATE_P633_V
+	bool
+	select BOARD_ACER_TRAVELMATE_P633_SERIES
+	select MAINBOARD_USES_IFD_GBE_REGION
+
+if BOARD_ACER_TRAVELMATE_P633_SERIES
+
+config MAINBOARD_DIR
+	default "acer/travelmate_p633_series"
+
+config MAINBOARD_PART_NUMBER
+	default "TravelMate P633-M" if BOARD_ACER_TRAVELMATE_P633_M
+	default "TravelMate P633-V" if BOARD_ACER_TRAVELMATE_P633_V
+
+config VARIANT_DIR
+	default "p633_m" if BOARD_ACER_TRAVELMATE_P633_M
+	default "p633_v" if BOARD_ACER_TRAVELMATE_P633_V
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+# Override the default variant behavior, since the data.vbt is probably the same
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
+
+config CBFS_SIZE
+	default 0x600000
+
+endif

@@ -16,6 +16,7 @@ X210 <51nb/x210.md>
 :maxdepth: 1
 
 G43T-AM3 <acer/g43t-am3.md>
+TravelMate P633 series <acer/travelmate_p633_series.md>
 ```
 
 ## AMD

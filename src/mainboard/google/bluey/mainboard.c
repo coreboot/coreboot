@@ -161,6 +161,7 @@ static void trigger_critical_battery_shutdown(void)
 static void mainboard_init(struct device *dev)
 {
 	configure_parallel_charging();
+	configure_charging_debug_access();
 
 	display_startup();
 

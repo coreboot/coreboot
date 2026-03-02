@@ -140,6 +140,18 @@ void configure_parallel_charging(void)
 }
 
 /*
+ * Enable SMB1 charging debug access port.
+ */
+void configure_charging_debug_access(void)
+{
+	if (!CONFIG(HAVE_CHARGING_DEBUG_ACCESS_PORT))
+		return;
+
+	printk(BIOS_INFO, "Enable charging debug access port support\n");
+	spmi_write8(SMB1_SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SNK_CFG, EN_DEBUG_ACCESS_SNK);
+}
+
+/*
  * Late configuration for parallel charging.
  */
 void configure_parallel_charging_late(void)
@@ -161,9 +173,6 @@ void enable_slow_battery_charging(void)
 	spmi_write8(SMB2_CHGR_MAX_FCC_CFG, FCC_1A_STEP_50MA);
 	spmi_write8(SMB1_CHGR_CHRG_EN_CMD, CHRG_ENABLE);
 	spmi_write8(SMB2_CHGR_CHRG_EN_CMD, CHRG_ENABLE);
-
-	if (CONFIG(HAVE_CHARGING_DEBUG_ACCESS_PORT))
-		spmi_write8(SMB1_SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SNK_CFG, EN_DEBUG_ACCESS_SNK);
 }
 
 /*

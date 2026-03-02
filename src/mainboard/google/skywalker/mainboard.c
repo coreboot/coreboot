@@ -19,6 +19,7 @@
 #include <soc/spm_common.h>
 #include <soc/storage.h>
 #include <soc/usb.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "gpio.h"
 #include "panel.h"
@@ -105,6 +106,13 @@ static void power_on_fpmcu(void)
 	/* Power on the fingerprint MCU */
 	gpio_output(GPIO_EN_PWR_FP, 1);
 	gpio_output(GPIO_FP_RST_1V8_S3_L, 1);
+}
+
+void mainboard_prepare_cr50_reset(void)
+{
+	printk(BIOS_INFO, "%s: Powering MIPI panel off\n", __func__);
+	if (mtk_mipi_panel_poweroff() < 0)
+		printk(BIOS_ERR, "%s: Failed to power off MIPI panel\n", __func__);
 }
 
 enum mtk_storage_type mainboard_get_storage_type(void)

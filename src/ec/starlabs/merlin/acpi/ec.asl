@@ -2,8 +2,6 @@
 
 Scope (\_SB.PCI0.LPCB)
 {
-	#include "cmos.asl"
-
 	Device (EC)
 	{
 		Name (_HID, EisaId ("PNP0C09"))

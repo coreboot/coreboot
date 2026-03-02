@@ -179,7 +179,7 @@ int edp_read_edid(struct edid *out)
 	}
 
 	if (edid[EDID_EXTENSION_FLAG]) {
-		printk(BIOS_ERR, " read EDID ext block.\n");
+		printk(BIOS_INFO, " read EDID ext block.\n");
 		edid_size += EDID_LENGTH;
 		reg_addr = EDID_LENGTH;
 		err = edp_aux_transfer(EDID_I2C_ADDR, DP_AUX_I2C_WRITE, &reg_addr, 1);

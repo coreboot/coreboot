@@ -466,4 +466,16 @@ config SOC_BERT_SIZEOF_ERROR_SECTION
 	help
 	  SoC selects this if it implements soc_bert_sizeof_error_section.
 
+config IOAPIC
+	bool
+	default y if SMP
+	default n
+
+config IOAPIC_8BIT_ID
+	bool
+	default n
+	depends on IOAPIC
+	help
+	  Select this option if the hardware support 8bit long IOAPIC IDs.
+
 endif

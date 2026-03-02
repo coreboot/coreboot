@@ -366,8 +366,10 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 	}
 
 	for (size_t i = 0; i < ARRAY_SIZE(config->tdc_mode); i++) {
-		m_cfg->TdcMode[i] = config->tdc_mode[i];
-		m_cfg->TdcTimeWindow[i] = config->tdc_time_window_ms[i];
+		if (config->tdc_mode[i])
+			m_cfg->TdcMode[i] = config->tdc_mode[i];
+		if (config->tdc_time_window_ms[i])
+			m_cfg->TdcTimeWindow[i] = config->tdc_time_window_ms[i];
 	}
 
 	for (size_t i = 0; i < ARRAY_SIZE(config->ps1_threshold); i++) {

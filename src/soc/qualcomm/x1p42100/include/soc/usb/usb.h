@@ -114,6 +114,7 @@
 #define OTG_STATE_ENABLED 0x02
 #define OTG_STATUS_TIMEOUT_MS 20
 #define OTG_STATUS_POLL_DELAY_MS 2
+#define OTG_BUCK_CFG 0x26
 
 /* Type-C register offsets */
 #define SCHG_TYPE_C_TYPE_C_MISC_STATUS 0x2B0B

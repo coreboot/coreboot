@@ -495,6 +495,15 @@ static bool get_usb_typec_polarity(const struct dwc3_controller_config *config)
 	return (misc_status & CCOUT_INVERT_POLARITY) == CCOUT_INVERT_POLARITY;
 }
 
+/*
+ * Configures OTG buck for host mode
+ * @config: Controller configuration containing SMB slave address
+ */
+static void usb_configure_otg_buck(const struct dwc3_controller_config *config)
+{
+	spmi_write8(SPMI_ADDR(config->smb_slave_addr, SCHG_DCDC_OTG_CFG), OTG_BUCK_CFG);
+}
+
 /* Initialization of DWC3 Core and PHY */
 static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 {
@@ -587,6 +596,8 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 		printk(BIOS_ERR, "SS0 QMP PHY initialization failed\n");
 		high_speed_only_primary = true;
 	}
+	/* Configure OTG buck */
+	usb_configure_otg_buck(&prim_config);
 	/* Enable VBUS for C0 */
 	enable_vbus_ss(&prim_config);
 	udelay(50);
@@ -618,6 +629,8 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 		printk(BIOS_ERR, "SS1 QMP PHY initialization failed\n");
 		high_speed_only_secondary = true;
 	}
+	/* Configure OTG buck */
+	usb_configure_otg_buck(&sec_config);
 	/* Enable VBUS for C1 */
 	enable_vbus_ss(&sec_config);
 	udelay(50);

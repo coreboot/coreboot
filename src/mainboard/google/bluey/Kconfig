@@ -175,6 +175,7 @@ config DRIVER_TPM_I2C_BUS
 	hex
 	default 0xa if BOARD_GOOGLE_MODEL_QUENBI
 	default 0xa if BOARD_GOOGLE_MODEL_QUARTZ
+	default 0xa if BOARD_GOOGLE_MODEL_MICA
 	default 0x10
 
 config DRIVER_TPM_I2C_ADDR
@@ -185,6 +186,7 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0xd if BOARD_GOOGLE_MODEL_QUENBI
 	default 0xd if BOARD_GOOGLE_MODEL_QUARTZ
+	default 0xd if BOARD_GOOGLE_MODEL_MICA
 	default 0xb
 
 config MAINBOARD_GPIO_PIN_FOR_TOUCHPAD_POWER
@@ -200,6 +202,7 @@ config MAINBOARD_GPIO_PIN_FOR_GSC_AP_INTERRUPT
 	int
 	default 91 if BOARD_GOOGLE_MODEL_QUENBI
 	default 91 if BOARD_GOOGLE_MODEL_QUARTZ
+	default 91 if BOARD_GOOGLE_MODEL_MICA
 	default 34
 	help
 	  This option specifies the GPIO pin number on the mainboard that is

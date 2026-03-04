@@ -169,6 +169,7 @@ config MAINBOARD_PART_NUMBER
 	default "Quenbi" if BOARD_GOOGLE_QUENBI
 	default "QuenbiH" if BOARD_GOOGLE_QUENBIH
 	default "Quartz" if BOARD_GOOGLE_MODEL_QUARTZ
+	default "Mica" if BOARD_GOOGLE_MODEL_MICA
 
 config DRIVER_TPM_I2C_BUS
 	depends on I2C_TPM

@@ -73,6 +73,17 @@ static inline struct list_node *list_last(const struct list_node *head)
 size_t list_length(const struct list_node *head);
 
 /*
+ * Move all elements from list src_head to list dst_head.
+ *
+ * @param dst_head	Destination list to fill. This MUST be empty.
+ * @param src_head	Source list to be moved. This will be cleared after the call.
+ *
+ * After the call, the ownership of the src list elements passes to the dst list.
+ * Callers must NOT free the src list elements afterwards.
+ */
+void list_move(struct list_node *dst_head, struct list_node *src_head);
+
+/*
  * Explanation of `ptr` initialization:
  * 1. head.next != NULL: This means the list isn't empty. As the implementation ensures that
  *    _list_init() is called when the very first element is added, we can safely assume that

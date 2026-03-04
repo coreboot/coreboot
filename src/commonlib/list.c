@@ -7,11 +7,16 @@
 #define NEXT(ptr) ((ptr)->_internal_do_not_access.next)
 #define PREV(ptr) ((ptr)->_internal_do_not_access.prev)
 
+static inline void list_clear(struct list_node *head)
+{
+	PREV(head) = NEXT(head) = head;
+}
+
 void _list_init(struct list_node *head)
 {
 	if (!NEXT(head)) {
 		assert(!PREV(head));
-		PREV(head) = NEXT(head) = head;
+		list_clear(head);
 	}
 }
 
@@ -55,6 +60,24 @@ size_t list_length(const struct list_node *head)
 		len++;
 
 	return len;
+}
+
+void list_move(struct list_node *dst_head, struct list_node *src_head)
+{
+	assert(list_is_empty(dst_head));
+
+	if (list_is_empty(src_head))
+		return;
+
+	NEXT(dst_head) = NEXT(src_head);
+	PREV(dst_head) = PREV(src_head);
+
+	/* The elements formerly in src_head's list must now point back to dst_head. */
+	NEXT(PREV(dst_head)) = dst_head;
+	PREV(NEXT(dst_head)) = dst_head;
+
+	/* Clear src_head to be empty. */
+	list_clear(src_head);
 }
 
 #undef NEXT

@@ -176,6 +176,57 @@ static void test_list_append(void **state)
 	assert_int_equal(3, list_length(&head));
 }
 
+static void test_list_move(void **state)
+{
+	size_t idx;
+	struct test_container *node;
+	struct list_node src_head = {};
+	struct list_node dst_head = {};
+	struct test_container nodes[] = {
+		{1}, {2}, {3}
+	};
+
+	for (idx = 0; idx < ARRAY_SIZE(nodes); ++idx)
+		list_append(&nodes[idx].list_node, &src_head);
+
+	list_move(&dst_head, &src_head);
+
+	/* Check src_head is cleared. */
+	assert_true(list_is_empty(&src_head));
+
+	/* Check dst_head has all elements */
+	idx = 0;
+	list_for_each(node, dst_head, list_node) {
+		assert_true(idx < ARRAY_SIZE(nodes));
+		assert_ptr_equal(node, &nodes[idx]);
+		idx++;
+	}
+}
+
+static void test_list_move_empty(void **state)
+{
+	struct list_node src_head = {};
+	struct list_node dst_head = {};
+
+	/* Test moving an empty list. */
+	list_move(&dst_head, &src_head);
+
+	assert_true(list_is_empty(&src_head));
+	assert_true(list_is_empty(&dst_head));
+}
+
+static void test_list_move_invalid(void **state)
+{
+	struct list_node src_head = {};
+	struct list_node dst_head = {};
+	struct test_container c = { .value = 1 };
+
+	list_append(&c.list_node, &dst_head);
+
+	/* Test moving to a non-empty dst. */
+	expect_assert_failure(list_move(&dst_head, &src_head));
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -187,6 +238,9 @@ int main(void)
 		cmocka_unit_test(test_list_remove),
 		cmocka_unit_test(test_list_remove_head),
 		cmocka_unit_test(test_list_append),
+		cmocka_unit_test(test_list_move),
+		cmocka_unit_test(test_list_move_empty),
+		cmocka_unit_test(test_list_move_invalid),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);

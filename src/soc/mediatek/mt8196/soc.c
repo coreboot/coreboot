@@ -70,10 +70,15 @@ static void fsp_init(void *arg)
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, fsp_init, NULL);
 
-static void soc_init(struct device *dev)
+static void mmu_disable_l2c_sram(void *unused)
 {
 	mtk_mmu_disable_l2c_sram();
+}
 
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, mmu_disable_l2c_sram, NULL);
+
+static void soc_init(struct device *dev)
+{
 	if (dpm_init())
 		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");
 	if (spm_init())

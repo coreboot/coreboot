@@ -4,7 +4,6 @@
 #include <device/device.h>
 #include <drivers/intel/gma/opregion.h>
 #include <soc/ramstage.h>
-#include <option.h>
 #include <variants.h>
 
 static void starlabs_configure_gpios(void *unused)
@@ -22,8 +21,5 @@ struct chip_operations mainboard_ops = {};
 
 const char *mainboard_vbt_filename(void)
 {
-	if (CONFIG(BOARD_USES_FIXED_MODE_VBT) && get_uint_option("display_native_res", 0) == 1)
-		return "vbt_native_res.bin";
-
 	return "vbt.bin";
 }

@@ -36,16 +36,6 @@ static struct sm_obj_form debug_group = {
 	},
 };
 
-#if CONFIG(BOARD_USES_FIXED_MODE_VBT)
-static struct sm_obj_form display_group = {
-	.ui_name = "Display",
-	.obj_list = (const struct sm_object *[]) {
-		&display_native_res,
-		NULL
-	},
-};
-#endif
-
 static struct sm_obj_form io_expansion_group = {
 	.ui_name = "I/O / Expansion",
 	.obj_list = (const struct sm_object *[]) {
@@ -156,9 +146,6 @@ static struct sm_obj_form *sm_root[] = {
 	&audio_video_group,
 	&battery_group,
 	&debug_group,
-	#if CONFIG(BOARD_USES_FIXED_MODE_VBT)
-	&display_group,
-	#endif
 	&io_expansion_group,
 	&keyboard_group,
 	&leds_group,

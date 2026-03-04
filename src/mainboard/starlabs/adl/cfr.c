@@ -58,23 +58,16 @@ static struct sm_obj_form keyboard_group = {
 };
 #endif
 
-#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
+#if CONFIG(BOARD_STARLABS_LITE_ADL)
 static struct sm_obj_form display_group = {
 	.ui_name = "Display",
 	.obj_list =
 		(const struct sm_object *[]){
-#if CONFIG(BOARD_STARLABS_LITE_ADL)
 					     &accelerometer,
-#endif
-					     &display_native_res,
-#if CONFIG(BOARD_STARLABS_LITE_ADL)
 					     &touchscreen,
-#endif
 					     NULL, },
 };
-#endif
 
-#if CONFIG(BOARD_STARLABS_LITE_ADL)
 static struct sm_obj_form io_expansion_group = {
 	.ui_name = "I/O / Expansion",
 	.obj_list =
@@ -140,10 +133,8 @@ static struct sm_obj_form *sm_root[] = {
 #endif
 	&battery_group,
 	&debug_group,
-#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
-	&display_group,
-#endif
 #if CONFIG(BOARD_STARLABS_LITE_ADL)
+	&display_group,
 	&io_expansion_group,
 #endif
 #if CONFIG(SYSTEM_TYPE_LAPTOP)

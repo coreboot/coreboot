@@ -28,14 +28,6 @@ static struct sm_obj_form debug_group = {
 	},
 };
 
-static struct sm_obj_form display_group = {
-	.ui_name = "Display",
-	.obj_list = (const struct sm_object *[]) {
-		&display_native_res,
-		NULL
-	},
-};
-
 #if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
 static struct sm_obj_form io_expansion_group = {
 	.ui_name = "I/O / Expansion",
@@ -138,7 +130,6 @@ static struct sm_obj_form wireless_group = {
 static struct sm_obj_form *sm_root[] = {
 	&battery_group,
 	&debug_group,
-	&display_group,
 	#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
 	&io_expansion_group,
 	#endif

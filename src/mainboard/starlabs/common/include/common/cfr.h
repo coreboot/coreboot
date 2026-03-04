@@ -40,14 +40,6 @@ static const struct sm_object card_reader = SM_DECLARE_BOOL({
 	.default_value	= !CONFIG(BOARD_STARLABS_LITE_ADL),
 }, WITH_CALLBACK(cfr_card_reader_update));
 
-static const struct sm_object display_native_res = SM_DECLARE_BOOL({
-	.opt_name	= "display_native_res",
-	.ui_name	= "Display: Use Native Resolution",
-	.ui_helptext	= "Enabled: use the native panel resolution at boot.\n"
-			  "Disabled: use a fixed/scaled video mode at boot.",
-	.default_value	= false,
-});
-
 static const struct sm_object fingerprint_reader = SM_DECLARE_BOOL({
 	.opt_name	= "fingerprint_reader",
 	.ui_name	= "Fingerprint Reader",

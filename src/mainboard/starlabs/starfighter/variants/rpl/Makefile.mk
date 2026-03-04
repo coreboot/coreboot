@@ -8,5 +8,3 @@ ramstage-y += devtree.c
 ramstage-y += gpio.c
 ramstage-y += hda_verb.c
 ramstage-y += ramstage.c
-
-$(call add_vbt_to_cbfs, vbt_native_res.bin, data_native_res.vbt)

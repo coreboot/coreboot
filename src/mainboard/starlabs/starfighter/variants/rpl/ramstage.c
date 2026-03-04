@@ -15,8 +15,5 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *supd)
 
 const char *mainboard_vbt_filename(void)
 {
-	if (get_uint_option("display_native_res", 0) == 1)
-		return "vbt_native_res.bin";
-
 	return "vbt.bin";
 }

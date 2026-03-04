@@ -432,7 +432,7 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "generic.use_gpio_for_status" = "true"
-				register "hid_desc_reg_offset" = "0x00"
+				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on
 					probe PANEL TOUCH_LGD_HID_I2C
 				end

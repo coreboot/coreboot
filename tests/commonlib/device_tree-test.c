@@ -10,6 +10,21 @@
 #include <string.h>
 #include <tests/test.h>
 
+static struct device_tree *new_device_tree(void)
+{
+	struct device_tree *tree = xzalloc(sizeof(*tree));
+	tree->root = xzalloc(sizeof(*tree->root));
+	tree->root->name = "root";
+	return tree;
+}
+
+static void free_device_tree(struct device_tree *tree)
+{
+	assert_non_null(tree);
+	free(tree->root);
+	free(tree);
+}
+
 static int setup_device_tree_test_group(void **state)
 {
 	/*
@@ -117,6 +132,112 @@ static void test_fdt_read_reg_prop(void **state)
 	assert_int_equal(0x00010000, regions[0].size);
 }
 
+static void test_dt_apply_overlay(void **state)
+{
+	struct device_tree *base = new_device_tree();
+	struct device_tree *overlay = new_device_tree();
+	assert_non_null(base);
+	assert_non_null(overlay);
+
+	/* Add content to base tree BEFORE overlay */
+	struct device_tree_node *base_existing = dt_find_node_by_path(
+		base, "/preexisting", NULL, NULL, 1);
+	assert_non_null(base_existing);
+	dt_add_string_prop(base_existing, "base_prop", "base_val");
+
+	/*
+	 * Overlay:
+	 *
+	 * /fragment@0 {
+	 *   target-path = "/";
+	 *   __overlay__ {
+	 *     new_parent {
+	 *       parent_prop = "parent_val";
+	 *       new_child {
+	 *         child_prop = "child_val";
+	 *       };
+	 *     };
+	 *   };
+	 * };
+	 */
+	struct device_tree_node *frag = dt_find_node_by_path(
+		overlay, "/fragment@0", NULL, NULL, 1);
+	assert_non_null(frag);
+	dt_add_string_prop(frag, "target-path", "/");
+
+	/* Path to new_parent in overlay. */
+	static const char *const parent_path[] = {
+		"fragment@0",
+		"__overlay__",
+		"new_parent",
+		NULL,
+	};
+	struct device_tree_node *ovl_parent = dt_find_node(
+		overlay->root, parent_path, NULL, NULL, 1);
+	assert_non_null(ovl_parent);
+	dt_add_string_prop(ovl_parent, "parent_prop", "parent_val");
+
+	/* Path to new_child in overlay. */
+	static const char *const child_path[] = {
+		"fragment@0",
+		"__overlay__",
+		"new_parent",
+		"new_child",
+		NULL,
+	};
+	struct device_tree_node *ovl_child = dt_find_node(
+		overlay->root, child_path, NULL, NULL, 1);
+	assert_non_null(ovl_child);
+	dt_add_string_prop(ovl_child, "child_prop", "child_val");
+
+	int ret = dt_apply_overlay(base, overlay);
+	assert_int_equal(ret, 0);
+
+	/* Check base tree for the preexisting node. */
+	struct device_tree_node *check_preexisting = dt_find_node_by_path(
+		base, "/preexisting", NULL, NULL, 0);
+	assert_non_null(check_preexisting);
+	const char *preexisting_val = dt_find_string_prop(check_preexisting, "base_prop");
+	assert_string_equal(preexisting_val, "base_val");
+
+	/* Check base tree for the new structure. */
+	struct device_tree_node *new_parent = dt_find_node_by_path(
+		base, "/new_parent", NULL, NULL, 0);
+	assert_non_null(new_parent);
+	const char *parent_val = dt_find_string_prop(new_parent, "parent_prop");
+	assert_string_equal(parent_val, "parent_val");
+
+	struct device_tree_node *new_child = dt_find_node_by_path(
+		base, "/new_parent/new_child", NULL, NULL, 0);
+	assert_non_null(new_child);
+	const char *child_val = dt_find_string_prop(new_child, "child_prop");
+	assert_string_equal(child_val, "child_val");
+
+	/* Check that list_for_each works on the new nodes. */
+	struct device_tree_node *node;
+	int child_count = 0;
+	list_for_each(node, new_parent->children, list_node) {
+		child_count++;
+		assert_ptr_equal(node, new_child);
+	}
+	assert_int_equal(child_count, 1);
+
+	struct device_tree_property *prop_iter;
+	int parent_prop_count = 0;
+	list_for_each(prop_iter, new_parent->properties, list_node) {
+		parent_prop_count++;
+	}
+	assert_int_equal(parent_prop_count, 1);
+
+	int child_prop_count = 0;
+	list_for_each(prop_iter, new_child->properties, list_node) {
+		child_prop_count++;
+	}
+	assert_int_equal(child_prop_count, 1);
+
+	free_device_tree(base);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -125,6 +246,7 @@ int main(void)
 		cmocka_unit_test(test_fdt_find_node_by_alias),
 		cmocka_unit_test(test_fdt_find_prop_in_node),
 		cmocka_unit_test(test_fdt_read_reg_prop),
+		cmocka_unit_test(test_dt_apply_overlay),
 	};
 
 	return cb_run_group_tests(tests, setup_device_tree_test_group,

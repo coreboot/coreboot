@@ -2001,7 +2001,10 @@ static void dt_copy_subtree(struct device_tree_node *dst,
 
 		if (!dst_node) {
 			dst_node = alloc_node();
-			*dst_node = *src_node;
+			dst_node->name = src_node->name;
+			dst_node->phandle = src_node->phandle;
+			list_move(&dst_node->properties, &src_node->properties);
+			list_move(&dst_node->children, &src_node->children);
 			list_insert_after(&dst_node->list_node, &dst->children);
 		} else {
 			dt_copy_subtree(dst_node, src_node, upd);

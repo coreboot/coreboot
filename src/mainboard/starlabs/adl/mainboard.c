@@ -13,8 +13,6 @@ static void starlabs_configure_mainboard(void *unused)
 
 	pads = variant_gpio_table(&num);
 	gpio_configure_pads(pads, num);
-
-	devtree_update();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, starlabs_configure_mainboard, NULL);

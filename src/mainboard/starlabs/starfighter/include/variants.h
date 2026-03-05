@@ -14,6 +14,4 @@ uint8_t get_memory_config_straps(void);
 const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 
-void devtree_update(void);
-
 #endif /* _BASEBOARD_VARIANTS_H_ */

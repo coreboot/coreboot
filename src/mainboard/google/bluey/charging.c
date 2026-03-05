@@ -7,6 +7,7 @@
 #include <reset.h>
 #include <soc/pmic.h>
 #include <soc/qcom_spmi.h>
+#include <timer.h>
 #include <types.h>
 
 #define SMB1_SLAVE_ID 0x07
@@ -41,6 +42,7 @@
 #define PERPH_EN		0x80
 
 #define DELAY_CHARGING_APPLET_MS 2000 /* 2sec */
+#define CHARGING_RAIL_STABILIZATION_DELAY_MS 3000 /* 3sec */
 
 enum charging_status {
 	CHRG_DISABLE,
@@ -86,10 +88,24 @@ void launch_charger_applet(void)
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
 		return;
 
+	static const long charging_enable_timeout_ms = CHARGING_RAIL_STABILIZATION_DELAY_MS;
+	struct stopwatch sw;
+
 	printk(BIOS_INFO, "Inside %s. Initiating charging\n", __func__);
 
 	/* clear any pending power button press and lid open event */
 	clear_ec_manual_poweron_event();
+
+	stopwatch_init_msecs_expire(&sw, charging_enable_timeout_ms);
+	while (!get_battery_icurr_ma()) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_WARNING, "Charging not enabled %ld ms. Abort.\n",
+					charging_enable_timeout_ms);
+			return;
+		}
+		mdelay(200);
+	}
+	printk(BIOS_INFO, "Charging ready after %lld ms\n", stopwatch_duration_msecs(&sw));
 
 	do {
 		/* Add static delay before reading the charging applet pre-requisites */

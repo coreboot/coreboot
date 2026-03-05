@@ -64,21 +64,6 @@ chip soc/intel/pantherlake
 	register "pmc_gpe0_dw1" = "GPP_F"
 	register "pmc_gpe0_dw2" = "GPP_E"
 
-	register "power_limits_config[PTL_CORE_1]" = "{
-		.tdp_pl1_override = 15,
-		.tdp_pl2_override = 25,
-	}"
-
-	register "power_limits_config[PTL_CORE_3]" = "{
-		.tdp_pl1_override = 25,
-		.tdp_pl2_override = 25,
-	}"
-
-	register "power_limits_config[PTL_CORE_4]" = "{
-		.tdp_pl1_override = 25,
-		.tdp_pl2_override = 25,
-	}"
-
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # LED
@@ -127,6 +112,28 @@ chip soc/intel/pantherlake
 			.speed = I2C_SPEED_FAST,
 		},
 	}"
+
+	# As per document 813278, the following PTL SoC supports Fast
+	# V-Mode (FVM) on cores (IA), Graphics (GT), and System Agent
+	# (SA). The ICC Limit is represented in 1/4 A increments,
+	# i.e., a value of 400 = 100A.
+	register "enable_fast_vmode[VR_DOMAIN_IA]" = "false"
+	register "cep_enable[VR_DOMAIN_IA]" = "false"
+	register "enable_fast_vmode[VR_DOMAIN_GT]" = "false"
+	register "cep_enable[VR_DOMAIN_GT]" = "false"
+	register "enable_fast_vmode[VR_DOMAIN_SA]" = "false"
+	register "cep_enable[VR_DOMAIN_SA]" = "false"
+
+	# Acoustic Noise settings and slew rate configuration:
+	register "enable_acoustic_noise_mitigation" = "true"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_IA]" = "false"
+	register "slow_slew_rate_config[VR_DOMAIN_IA]" = "SLEW_FAST_4"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_GT]" = "true"
+	register "slow_slew_rate_config[VR_DOMAIN_GT]" = "SLEW_FAST_8"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_SA]" = "false"
+	register "slow_slew_rate_config[VR_DOMAIN_SA]" = "SLEW_FAST_4"
+	register "pcore_hysteresis_window_ms" = "50"	#ms
+	register "ecore_hysteresis_window_ms" = "50"	#ms
 
 	device domain 0 on
 		subsystemid 0x1043 0x15e4 inherit

@@ -9,6 +9,6 @@
  *
  * This function is called early in ramstage at BS_PRE_DEVICE.
  */
-void devtree_update(void);
+void mb_devtree_update(void);
 
 #endif /* __DEVTREE_UPDATE_H__ */

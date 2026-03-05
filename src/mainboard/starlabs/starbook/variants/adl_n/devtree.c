@@ -11,7 +11,7 @@
 #include <variants.h>
 #include <common/powercap.h>
 
-void devtree_update(void)
+void mb_devtree_update(void)
 {
 	config_t *cfg = config_of_soc();
 	update_power_limits(cfg);

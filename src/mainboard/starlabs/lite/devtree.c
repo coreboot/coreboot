@@ -12,7 +12,7 @@
 
 #include "soc/intel/apollolake/chip.h"
 
-void devtree_update(void)
+void mb_devtree_update(void)
 {
 	config_t *cfg = config_of_soc();
 

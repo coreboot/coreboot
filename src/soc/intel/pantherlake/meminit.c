@@ -35,16 +35,18 @@ static const struct soc_mem_cfg soc_mem_cfg[] = {
 		.num_phys_channels = DDR5_CHANNELS,
 		.phys_to_mrc_map = {
 			[0] = 0,
-			[1] = 4,
+			[1] = 1,
+			[2] = 4,
+			[3] = 5,
 		},
 		.md_phy_masks = {
 			/*
-			 * Only channel 0 is populated in case of half-populated
-			 * configuration.
+			 * Physical channels 0 and 1 are populated in case of
+			 * half-populated configurations.
 			 */
-			.half_channel = BIT(0),
-			/* In mixed topologies, either channel 0 or 1 can be memory-down. */
-			.mixed_topo = BIT(0) | BIT(1),
+			.half_channel = BIT(0) | BIT(1),
+			/* In mixed topology, channels 2 and 3 are always memory-down. */
+			.mixed_topo = BIT(2) | BIT(3),
 		},
 	},
 	[MEM_TYPE_LP5X] = {

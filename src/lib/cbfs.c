@@ -131,8 +131,8 @@ static inline bool cbfs_lz4_enabled(void)
 	if (fspm_env() && CONFIG(FSP_COMPRESS_FSP_M_LZ4))
 		return true;
 
-	if ((ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE) && !CONFIG(COMPRESS_PRERAM_STAGES))
-		return false;
+	if (ENV_ROMSTAGE_OR_BEFORE && CONFIG(COMPRESS_PRERAM_STAGES))
+		return true;
 
 	if (ENV_SMM)
 		return false;

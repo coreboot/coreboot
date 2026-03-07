@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_QOTOM_Q535G6
+	bool "Q535G6"

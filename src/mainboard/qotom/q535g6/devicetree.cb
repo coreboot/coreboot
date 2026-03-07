@@ -1,0 +1,209 @@
+chip soc/intel/skylake
+
+	# Enable deep Sx states
+	register "deep_s5_enable_ac" = "true"
+	register "deep_s5_enable_dc" = "true"
+	register "deep_sx_config" = "DSX_EN_WAKE_PIN | DSX_DIS_AC_PRESENT_PD"
+
+	register "gpe0_dw0" = "GPP_B"
+	register "gpe0_dw1" = "GPP_D"
+	register "gpe0_dw2" = "GPP_E"
+
+	register "eist_enable" = "true"
+
+	register "tcc_offset" = "5" # TCC of 95C
+
+	# FSP Configuration
+	register "SkipExtGfxScan" = "1"
+
+	# Only PCH SerialIO UART0 is wired up (internal header);
+	# I2C0/I2C1 are left disabled as nothing is connected to them.
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexUart0] = PchSerialIoPci,
+	}"
+	register "SaGv" = "SaGv_Enabled"
+	register "IslVrCmd" = "2"
+	register "PmConfigSlpS3MinAssert" = "2"		# 50ms
+	register "PmConfigSlpS4MinAssert" = "4"		# 4s
+	register "PmConfigSlpSusMinAssert" = "1"	# 500ms
+	register "PmConfigSlpAMinAssert" = "3"		# 2s
+
+	# VR Settings Configuration for 4 Domains
+	#+----------------+-------+-------+-------+-------+
+	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
+	#+----------------+-------+-------+-------+-------+
+	#| Psi1Threshold  | 20A   | 20A   | 20A   | 20A   |
+	#| Psi2Threshold  | 4A    | 5A    | 5A    | 5A    |
+	#| Psi3Threshold  | 1A    | 1A    | 1A    | 1A    |
+	#| Psi3Enable     | 1     | 1     | 1     | 1     |
+	#| Psi4Enable     | 1     | 1     | 1     | 1     |
+	#| ImonSlope      | 0     | 0     | 0     | 0     |
+	#| ImonOffset     | 0     | 0     | 0     | 0     |
+	#| IccMax         | 7A    | 34A   | 35A   | 35A   |
+	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
+	#| AcLoadline(ohm)| 10.3m | 2.4m  | 3.1m  | 3.1m  |
+	#| DcLoadline(ohm)| 10.3m | 2.4m  | 3.1m  | 3.1m  |
+	#+----------------+-------+-------+-------+-------+
+	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(4),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.voltage_limit = 1520,
+	}"
+
+	register "domain_vr_config[VR_IA_CORE]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.voltage_limit = 1520,
+	}"
+
+	register "domain_vr_config[VR_GT_UNSLICED]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.voltage_limit = 1520,
+	}"
+
+	register "domain_vr_config[VR_GT_SLICED]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.voltage_limit = 1520,
+	}"
+
+	device domain 0 on
+		device ref igpu		on  end
+		device ref sa_thermal	on  end
+		device ref south_xhci	on
+			subsystemid 0x8086 0x9d2f
+			# USB2 port 0-1: rear USB3 (companion)
+			# USB2 port 2-3: rear USB2
+			# USB2 port 4: internal header
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_SHORT(OC_SKIP),
+				[1] = USB2_PORT_SHORT(OC_SKIP),
+				[2] = USB2_PORT_SHORT(OC_SKIP),
+				[3] = USB2_PORT_SHORT(OC_SKIP),
+				[4] = USB2_PORT_SHORT(OC_SKIP),
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),
+			}"
+		end
+		device ref thermal	on  end
+		device ref heci1	on  end
+		device ref sata		on
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+			}"
+		end
+		# PCIe root ports 1-6: one Intel I211 GbE each (6x rear-panel NICs)
+		device ref pcie_rp1	on
+			register "PcieRpAdvancedErrorReporting[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "true"
+			register "PcieRpClkSrcNumber[0]" = "0"
+			device pci 00.0 on end
+		end
+		device ref pcie_rp2	on
+			register "PcieRpAdvancedErrorReporting[1]" = "1"
+			register "PcieRpLtrEnable[1]" = "true"
+			register "PcieRpClkSrcNumber[1]" = "1"
+			device pci 00.0 on end
+		end
+		device ref pcie_rp3	on
+			register "PcieRpAdvancedErrorReporting[2]" = "1"
+			register "PcieRpLtrEnable[2]" = "true"
+			register "PcieRpClkSrcNumber[2]" = "2"
+			device pci 00.0 on end
+		end
+		device ref pcie_rp4	on
+			register "PcieRpAdvancedErrorReporting[3]" = "1"
+			register "PcieRpLtrEnable[3]" = "true"
+			register "PcieRpClkSrcNumber[3]" = "3"
+			device pci 00.0 on end
+		end
+		device ref pcie_rp5	on
+			register "PcieRpAdvancedErrorReporting[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "true"
+			register "PcieRpClkSrcNumber[4]" = "4"
+			device pci 00.0 on end
+		end
+		device ref pcie_rp6	on
+			register "PcieRpAdvancedErrorReporting[5]" = "1"
+			register "PcieRpLtrEnable[5]" = "true"
+			register "PcieRpClkSrcNumber[5]" = "5"
+			device pci 00.0 on end
+		end
+		device ref uart0	on  end	# PCH SerialIO UART0 (internal header)
+		device ref lpc_espi	on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
+			register "gen1_dec" = "0x007c0a01"
+
+			chip superio/ite/it8786e
+				register "TMPIN1.mode" = "THERMAL_RESISTOR"
+				register "TMPIN1.min"  = "0"
+				register "TMPIN1.max"  = "85"
+				register "TMPIN2.mode" = "THERMAL_RESISTOR"
+				register "TMPIN2.min"  = "0"
+				register "TMPIN2.max"  = "85"
+				register "TMPIN3.mode" = "THERMAL_MODE_DISABLED"
+
+				register "ec.vin_mask" = "VIN_ALL"
+
+				register "FAN1.mode" = "FAN_MODE_ON"
+				register "FAN2.mode" = "FAN_IGNORE"
+				register "FAN3.mode" = "FAN_IGNORE"
+
+				device pnp 2e.1 on	# COM1 - rear panel DB-9
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+				end
+				device pnp 2e.2 on	# COM2 - internal header
+					io 0x60 = 0x2f8
+					irq 0x70 = 3
+				end
+				device pnp 2e.3 off end	# Parallel Port
+				device pnp 2e.4 on	# Environment Controller
+					io 0x60 = 0xa40
+					io 0x62 = 0xa30
+					irq 0x70 = 9
+				end
+				device pnp 2e.5 off end	# Keyboard
+				device pnp 2e.6 off end	# Mouse
+				device pnp 2e.7 off end	# GPIO
+				device pnp 2e.8 off end	# COM3
+				device pnp 2e.9 off end	# COM4
+				device pnp 2e.a off end	# CIR
+				device pnp 2e.b off end	# COM5
+				device pnp 2e.c off end	# COM6
+			end
+		end
+		device ref smbus	on  end
+		device ref fast_spi	on  end
+	end
+end

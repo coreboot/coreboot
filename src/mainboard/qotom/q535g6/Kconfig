@@ -1,0 +1,34 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_QOTOM_Q535G6
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select SEABIOS_ADD_SERCON_PORT_FILE if PAYLOAD_SEABIOS
+	select SOC_INTEL_KABYLAKE
+	select SUPERIO_ITE_IT8786E
+
+config MAINBOARD_DIR
+	default "qotom/q535g6"
+
+config MAINBOARD_PART_NUMBER
+	default "Q535G6"
+
+config DIMM_MAX
+	default 1
+
+config DIMM_SPD_SIZE
+	default 512
+
+config CBFS_SIZE
+	default 0x600000
+
+config USE_PM_ACPI_TIMER
+	default n
+
+endif

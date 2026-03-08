@@ -101,7 +101,14 @@ void launch_charger_applet(void)
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_WARNING, "Charging not enabled %ld ms. Abort.\n",
 					charging_enable_timeout_ms);
-			return;
+			/*
+			 * If firmware-based charging fails to enable within the timeout,
+			 * do not simply return, as this leaves IPs uninitialized and
+			 * causes a boot hang. Instead, issue a shutdown if not charging.
+			 */
+			printk(BIOS_INFO, "Issuing power-off.\n");
+			google_chromeec_offmode_heartbeat();
+			google_chromeec_ap_poweroff();
 		}
 		mdelay(200);
 	}

@@ -13,6 +13,7 @@
 #include <device/i2c_simple.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
+#include <halt.h>
 #include <soc/clock.h>
 #include <soc/pcie.h>
 #include <soc/qupv3_config_common.h>
@@ -177,6 +178,28 @@ static void trigger_critical_battery_shutdown(void)
 	google_chromeec_ap_poweroff();
 }
 
+/*
+ * Handle charging and UI states for low-power or off-mode boot scenarios.
+ * This function handles the transitions needed when the device is powered
+ * solely to show a charging status rather than a full OS boot.
+ */
+static void handle_low_power_charging_boot(void)
+{
+	/* TODO: enable fast charging */
+	enable_slow_battery_charging();
+
+	/*
+	 * Disable the lightbar for Low-Battery or Off-Mode charging sequences.
+	 * This maintains visual consistency between the built-in display
+	 * indicators and the external lightbar.
+	 */
+	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
+		google_chromeec_lightbar_off();
+
+	/* Boot to charging applet; if this fails, the applet should trigger a reset */
+	launch_charger_applet();
+}
+
 static void mainboard_init(struct device *dev)
 {
 	configure_parallel_charging();
@@ -198,19 +221,8 @@ static void mainboard_init(struct device *dev)
 
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging" */
 	if (is_low_power_boot_with_charger()) {
-		/* TODO: enable fast charging */
-		enable_slow_battery_charging();
-
-		/* Disable the lightbar for Low-Battery or Off-Mode charging sequences.
-		 * This maintains visual consistency between the built-in display
-		 * indicators and the external lightbar.
-		 */
-		if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
-			google_chromeec_lightbar_off();
-
-		/* Boot to charging applet */
-		launch_charger_applet();
-		return;
+		handle_low_power_charging_boot();
+		halt();
 	}
 
 	gpi_firmware_load(QUP_0_GSI_BASE);

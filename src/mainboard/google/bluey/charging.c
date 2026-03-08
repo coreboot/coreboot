@@ -43,6 +43,7 @@
 
 #define DELAY_CHARGING_APPLET_MS 2000 /* 2sec */
 #define CHARGING_RAIL_STABILIZATION_DELAY_MS 3000 /* 3sec */
+#define DELAY_CHARGING_ACTIVE_LB_MS 4000 /* 4sec */
 
 enum charging_status {
 	CHRG_DISABLE,
@@ -83,6 +84,41 @@ static int detect_ec_manual_poweron_event(void)
 	return 0;
 }
 
+static void clear_ac_unplug_event(void)
+{
+	const uint64_t ac_unplug_event =
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED);
+	google_chromeec_clear_events_b(ac_unplug_event);
+}
+
+static int detect_ac_unplug_event(void)
+{
+	const uint64_t ac_unplug_event_mask =
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED);
+	uint64_t events = google_chromeec_get_events_b();
+
+	if (!!(events & ac_unplug_event_mask))
+		return 1;
+
+	return 0;
+}
+
+/*
+ * Provides visual feedback via the LEDs and clears the AC unplug
+ * event to acknowledge the transition into a charging state.
+ */
+static void indicate_charging_status(void)
+{
+	/* Turn on LEDs to alert user of power state change */
+	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL)) {
+		google_chromeec_lightbar_on();
+		mdelay(DELAY_CHARGING_ACTIVE_LB_MS);
+	}
+
+	/* Clear the event to prevent re-triggering in the next iteration */
+	clear_ac_unplug_event();
+}
+
 void launch_charger_applet(void)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
@@ -93,6 +129,8 @@ void launch_charger_applet(void)
 
 	printk(BIOS_INFO, "Inside %s. Initiating charging\n", __func__);
 
+	/* Reset AC-unplug detection state and lightbar status before entering loop */
+	clear_ac_unplug_event();
 	/* clear any pending power button press and lid open event */
 	clear_ec_manual_poweron_event();
 
@@ -107,6 +145,8 @@ void launch_charger_applet(void)
 			 * causes a boot hang. Instead, issue a shutdown if not charging.
 			 */
 			printk(BIOS_INFO, "Issuing power-off.\n");
+			if (detect_ac_unplug_event())
+				indicate_charging_status();
 			google_chromeec_offmode_heartbeat();
 			google_chromeec_ap_poweroff();
 		}
@@ -123,6 +163,8 @@ void launch_charger_applet(void)
 		 */
 		if (!get_battery_icurr_ma()) {
 			printk(BIOS_INFO, "Issuing power-off due to change in charging state.\n");
+			if (detect_ac_unplug_event())
+				indicate_charging_status();
 			google_chromeec_offmode_heartbeat();
 			google_chromeec_ap_poweroff();
 		}

@@ -520,7 +520,11 @@ static const unsigned short mc_pci_device_ids[] = {
 	0x0d00, /* Crystal Well Desktop */
 	0x0d04, /* Crystal Well Mobile */
 	0x0d08, /* Crystal Well Server (by extrapolation) */
-	0
+	0x1604, /* Broadwell ULT */
+	0x1610, /* Broadwell Trad Desktop */
+	0x1614, /* Broadwell Trad Mobile */
+	0x1618, /* Broadwell Trad Server (by extrapolation) */
+	0,
 };
 
 static const struct pci_driver mc_driver_hsw __pci_driver = {

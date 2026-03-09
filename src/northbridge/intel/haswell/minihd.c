@@ -140,7 +140,7 @@ static struct device_operations minihd_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 };
 
-static const unsigned short pci_device_ids[] = { 0x0a0c, 0x0c0c, 0x0d0c, 0 };
+static const unsigned short pci_device_ids[] = { 0x0a0c, 0x0c0c, 0x0d0c, 0x160c, 0 };
 
 static const struct pci_driver haswell_minihd __pci_driver = {
 	.ops	 = &minihd_ops,

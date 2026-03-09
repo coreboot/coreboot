@@ -1,5 +1,6 @@
 chip soc/intel/alderlake
 	# FSP UPDs
+	register "cnvi_bt_core"			= "true"
 	register "eist_enable"			= "true"
 	register "enable_c6dram"		= "true"
 	register "energy_efficient_turbo"	= "true"

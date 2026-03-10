@@ -218,6 +218,10 @@ static void mainboard_init(struct device *dev)
 	/* ADSP I2C (Charger/Fuel gauge) */
 	qupv3_se_fw_load_and_init(QUPV3_2_SE4, SE_PROTOCOL_I2C, MIXED);
 
+	gpi_firmware_load(QUP_0_GSI_BASE);
+	gpi_firmware_load(QUP_1_GSI_BASE);
+	gpi_firmware_load(QUP_2_GSI_BASE);
+
 	configure_parallel_charging_late();
 
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging" */
@@ -225,10 +229,6 @@ static void mainboard_init(struct device *dev)
 		handle_low_power_charging_boot();
 		halt();
 	}
-
-	gpi_firmware_load(QUP_0_GSI_BASE);
-	gpi_firmware_load(QUP_1_GSI_BASE);
-	gpi_firmware_load(QUP_2_GSI_BASE);
 
 	/*
 	 * Load console UART QUP firmware.

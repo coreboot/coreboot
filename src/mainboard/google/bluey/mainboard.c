@@ -76,12 +76,6 @@ static bool is_low_power_boot_with_charger(void)
 	return ret;
 }
 
-static void enable_usb_camera(void)
-{
-	gpio_output(GPIO_USB_CAM_RESET_L, 1);
-	gpio_output(GPIO_USB_CAM_ENABLE, 1);
-}
-
 static void setup_usb_typec(void)
 {
 	gpio_output(GPIO_USB_C1_EN_PP3300, 1);
@@ -115,8 +109,6 @@ static void setup_audio(void)
 static void setup_usb(void)
 {
 	setup_usb_typec();
-
-	enable_usb_camera();
 }
 
 static void setup_usb_late(void *unused)

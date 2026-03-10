@@ -47,10 +47,6 @@
 #define GPIO_SD_CD_L		GPIO(71)
 #endif
 
-/* USB Camera specific GPIOs */
-#define GPIO_USB_CAM_RESET_L	GPIO(10)
-#define GPIO_USB_CAM_ENABLE	GPIO(206)
-
 /* USB-C1 port specific GPIOs */
 #define GPIO_USB_C1_EN_PP3300		GPIO(186)
 #define GPIO_USB_C1_EN_PP1800		GPIO(175)

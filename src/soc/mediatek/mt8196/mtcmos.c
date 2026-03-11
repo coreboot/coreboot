@@ -30,9 +30,12 @@
 #define SPM_PBUS_BUS_MSB_PROTECT_EN_CLR		((void *)(SPM_PBUS_BASE + 0x00EC))
 #define SPM_PBUS_BUS_MSB_PROTECT_RDY_STA	((void *)(SPM_PBUS_BASE + 0x020C))
 
+#define MMPC_MTCMOS_SEL_GP0		((void *)(MMPC_BASE + 0x00BC))
 #define MM_BUCK_ISO_CON_CLR		((void *)(MMPC_BASE + 0x00C8))
 #define DISP_AO_PWR_CON			((void *)(MMPC_BASE + 0x00E8))
 #define MMPC_BUS_PROTECT_EN_1_CLR	((void *)(MMPC_BASE + 0x0188))
+#define MMPC_DSI1_PWR_CON		((void *)(MMPC_BASE + 0x00F4))
+#define MMPC_DSI2_PWR_CON		((void *)(MMPC_BASE + 0x00F8))
 
 #define MMVOTE_MTCMOS_0_SET		((void *)(MMVOTE_BASE + 0x0218))
 #define MMVOTE_MTCMOS_0_CLR		((void *)(MMVOTE_BASE + 0x021C))
@@ -291,6 +294,12 @@ static struct mtcmos_data mds[MTCMOS_ID_NUM] = {
 	[MTCMOS_ID_SSRSYS] = {
 		ssrsys_bp, &mtk_spm_mtcmos->ssrsys_pwr_con, 0, 1
 	},
+	[MTCMOS_ID_DSI_PHY1] = {
+		NULL, MMPC_DSI1_PWR_CON, MTK_SCPD_NO_SRAM, 0
+	},
+	[MTCMOS_ID_DSI_PHY2] = {
+		NULL, MMPC_DSI2_PWR_CON, MTK_SCPD_NO_SRAM, 0
+	},
 };
 
 static struct mtcmos_vote_data vote_mds[MTCMOS_ID_NUM] = {
@@ -338,15 +347,13 @@ static struct mtcmos_vote_data vote_mds[MTCMOS_ID_NUM] = {
 		MMVOTE_MTCMOS_1_SET, MMVOTE_MTCMOS_1_CLR, MMVOTE_MTCMOS_1_DONE,
 		MMVOTE_MTCMOS_1_PM_ACK, DSI_PHY0_VOTE_BIT
 	},
-	[MTCMOS_ID_DSI_PHY1] = {
-		MMVOTE_MTCMOS_1_SET, MMVOTE_MTCMOS_1_CLR, MMVOTE_MTCMOS_1_DONE,
-		MMVOTE_MTCMOS_1_PM_ACK, DSI_PHY1_VOTE_BIT
-	},
-	[MTCMOS_ID_DSI_PHY2] = {
-		MMVOTE_MTCMOS_1_SET, MMVOTE_MTCMOS_1_CLR, MMVOTE_MTCMOS_1_DONE,
-		MMVOTE_MTCMOS_1_PM_ACK, DSI_PHY2_VOTE_BIT
-	},
 };
+
+static inline bool use_voting(enum mtcmos_id id)
+{
+	return id > MTCMOS_ID_SSRSYS &&
+	       id != MTCMOS_ID_DSI_PHY1 && id != MTCMOS_ID_DSI_PHY2;
+}
 
 int mtcmos_cb_register(enum mtcmos_id id, const struct mtcmos_cb *cb)
 {
@@ -355,7 +362,7 @@ int mtcmos_cb_register(enum mtcmos_id id, const struct mtcmos_cb *cb)
 		return -1;
 	}
 
-	if (id <= MTCMOS_ID_SSRSYS)
+	if (!use_voting(id))
 		mds[id].cb = cb;
 	else
 		vote_mds[id].cb = cb;
@@ -692,7 +699,7 @@ void mtcmos_ctrl(enum mtcmos_id id, enum mtcmos_state state)
 		return;
 	}
 
-	if (id <= MTCMOS_ID_SSRSYS)
+	if (!use_voting(id))
 		ret = mtcmos_onoff(id, state);
 	else
 		ret = mtcmos_vote_onoff(id, state);
@@ -734,6 +741,8 @@ void mtcmos_init(void)
 
 void mtcmos_post_init(void)
 {
+	write32(MMPC_MTCMOS_SEL_GP0, 0xFFFFE7FF);
+
 	if (mtcmos_cb_register(MTCMOS_ID_DISP_VCORE, &disp_vcore_cb))
 		printk(BIOS_ERR, "register disp_vcore failed\n");
 

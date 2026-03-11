@@ -1,12 +1,19 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#define LINK_DEVICE(Uid, LinkName, Irq)                                                    \
-	Device (LinkName) {                                                                \
-		Name (_HID, EISAID("PNP0C0F"))                                             \
-		Name (_UID, Uid)                                                           \
-		Name (_CRS, ResourceTemplate() {                                           \
-			Interrupt (ResourceProducer, Level, ActiveHigh, Exclusive) { Irq } \
-		})                                                                         \
+#define LINK_DEVICE(Uid, LinkName, Irq)                                                     \
+	Device (LinkName) {                                                                 \
+		Name (_HID, EISAID("PNP0C0F"))                                              \
+		Name (_UID, Uid)                                                            \
+		Name (_PRS, ResourceTemplate() {                                            \
+			Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { Irq }  \
+		})                                                                          \
+		Name (_CRS, ResourceTemplate() {                                            \
+			Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { Irq }  \
+		})                                                                          \
+		Method (_SRS, 1, NotSerialized) {                                           \
+		}                                                                           \
+		Method (_DIS, 0, NotSerialized) {                                           \
+		}                                                                           \
 	}
 
 #define USB_PORT(PortName, Adr)                                                 \

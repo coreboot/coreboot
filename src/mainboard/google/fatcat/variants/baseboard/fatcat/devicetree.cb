@@ -62,6 +62,9 @@ chip soc/intel/pantherlake
 	# Setting TCC of 100C = Tj max (110) - TCC_Offset (10)
 	register "tcc_offset" = "10"
 
+	# CPU Ratio Override
+	register "cpu_ratio_override" = "0x20"
+
 	# Enable Energy Reporting
 	register "pch_pm_energy_report_enable" = "true"
 

@@ -15,19 +15,19 @@
 /* Register definitions */
 
 /* DDR DATA per-channel per-bytelane */
-#define RX_TRAIN_ch_r_b(ch, rank, byte)		_DDRIO_C_R_B(0x0000, ch, rank, byte)
-#define RX_PER_BIT(ch, rank, byte)		_DDRIO_C_R_B(0x0010, ch, rank, byte)
-#define TX_TRAIN_ch_r_b(ch, rank, byte)		_DDRIO_C_R_B(0x0020, ch, rank, byte)
-#define TX_PER_BIT(ch, rank, byte)		_DDRIO_C_R_B(0x0030, ch, rank, byte)
+#define RX_TRAIN_RANK(ch, rank, byte)		_DDRIO_C_R_B(0x0000, ch, rank, byte)
+#define RX_PER_BIT_RANK(ch, rank, byte)		_DDRIO_C_R_B(0x0010, ch, rank, byte)
+#define TX_TRAIN_RANK(ch, rank, byte)		_DDRIO_C_R_B(0x0020, ch, rank, byte)
+#define TX_PER_BIT_RANK(ch, rank, byte)		_DDRIO_C_R_B(0x0030, ch, rank, byte)
 
 #define RX_OFFSET_VDQ(ch, byte)			_DDRIO_C_R_B(0x004c, ch, 0, byte)
 
-#define DDR_DATA_TRAIN_FEEDBACK(ch, byte)	_DDRIO_C_R_B(0x0054, ch, 0, byte)
+#define DATA_TRAIN_FEEDBACK(ch, byte)		_DDRIO_C_R_B(0x0054, ch, 0, byte)
 
-#define DDR_DATA_OFFSET_COMP_ch_b(ch, byte)	_DDRIO_C_R_B(0x005c, ch, 0, byte)
+#define DATA_OFFSET_COMP(ch, byte)		_DDRIO_C_R_B(0x005c, ch, 0, byte)
 #define DQ_CONTROL_1(ch, byte)			_DDRIO_C_R_B(0x0060, ch, 0, byte)
 #define DQ_CONTROL_2(ch, byte)			_DDRIO_C_R_B(0x0064, ch, 0, byte)
-#define DDR_DATA_OFFSET_TRAIN_ch_b(ch, byte)	_DDRIO_C_R_B(0x0070, ch, 0, byte)
+#define DATA_OFFSET_TRAIN(ch, byte)		_DDRIO_C_R_B(0x0070, ch, 0, byte)
 #define DQ_CONTROL_0(ch, byte)			_DDRIO_C_R_B(0x0074, ch, 0, byte)
 
 /* DDR CKE per-channel */

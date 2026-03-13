@@ -535,7 +535,7 @@ static inline void reut_disable_cadb_deselects(void)
 
 static inline uint32_t get_data_train_feedback(const uint8_t channel, const uint8_t byte)
 {
-	return mchbar_read32(DDR_DATA_TRAIN_FEEDBACK(channel, byte));
+	return mchbar_read32(DATA_TRAIN_FEEDBACK(channel, byte));
 }
 
 static inline uint16_t get_byte_group_errors(const uint8_t channel)

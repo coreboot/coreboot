@@ -62,7 +62,7 @@ void update_rxt(
 		printk(BIOS_ERR, "%s: Overflow for subfield %u: %d ---> %d\n",
 			__func__, subfield, value, new_value);
 	}
-	mchbar_write32(RX_TRAIN_ch_r_b(channel, rank, byte), rxt.raw);
+	mchbar_write32(RX_TRAIN_RANK(channel, rank, byte), rxt.raw);
 	download_regfile(ctrl, channel, false, rank, REG_FILE_USE_RANK, byte, true, false);
 }
 
@@ -108,7 +108,7 @@ void update_txt(
 		printk(BIOS_ERR, "%s: Overflow for subfield %u: %d ---> %d\n",
 			__func__, subfield, value, new_value);
 	}
-	mchbar_write32(TX_TRAIN_ch_r_b(channel, rank, byte), txt.raw);
+	mchbar_write32(TX_TRAIN_RANK(channel, rank, byte), txt.raw);
 	download_regfile(ctrl, channel, false, rank, REG_FILE_USE_RANK, byte, false, true);
 }
 
@@ -193,7 +193,7 @@ static void update_data_offset_train(
 			}
 		}
 	} else {
-		mchbar_write32(DDR_DATA_OFFSET_TRAIN_ch_b(channel_in, byte_in), value);
+		mchbar_write32(DATA_OFFSET_TRAIN(channel_in, byte_in), value);
 		download_regfile(ctrl, channel_in, false, rank, regfile, byte_in, is_rd, is_wr);
 		if (update_ctrl)
 			ctrl->data_offset_train[channel_in][byte_in] = value;
@@ -212,13 +212,13 @@ static uint16_t get_per_bit_reg(
 		if (multicast) {
 			return DDR_DATA_RX_PER_BIT_RANK(rank);
 		} else {
-			return RX_PER_BIT(channel, rank, byte);
+			return RX_PER_BIT_RANK(channel, rank, byte);
 		}
 	case WrTBit:
 		if (multicast) {
 			return DDR_DATA_TX_PER_BIT_RANK(rank);
 		} else {
-			return TX_PER_BIT(channel, rank, byte);
+			return TX_PER_BIT_RANK(channel, rank, byte);
 		}
 	case RdVBit:
 		/** TODO: Broadwell has per-rank RX_OFFSET_VDQ registers **/
@@ -629,7 +629,7 @@ void update_opt_param_offset(
 	const uint8_t rankmask = ranks_in & ctrl->rankmap[channel];
 	union ddr_data_offset_comp_reg data_offset_comp = ctrl->data_offset_comp[channel][byte];
 	if (optparam == OptDefault) {
-		mchbar_write32(DDR_DATA_OFFSET_COMP_ch_b(channel, byte), data_offset_comp.raw);
+		mchbar_write32(DATA_OFFSET_COMP(channel, byte), data_offset_comp.raw);
 		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
 			if (!rank_in_mask(rank, rankmask)) {
 				continue;
@@ -658,7 +658,7 @@ void update_opt_param_offset(
 		} else if (optparam == OptSComp) {
 			data_offset_comp.slew_rate = off;
 		}
-		mchbar_write32(DDR_DATA_OFFSET_COMP_ch_b(channel, byte), data_offset_comp.raw);
+		mchbar_write32(DATA_OFFSET_COMP(channel, byte), data_offset_comp.raw);
 		if (update_ctrl) {
 			ctrl->data_offset_comp[channel][byte] = data_offset_comp;
 		}

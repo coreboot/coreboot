@@ -12,6 +12,9 @@
 #define _MCMAIN_C_X(r, ch, x)		((r) + 0x400 * (ch) + 0x4 * (x))
 #define _MCMAIN_C(r, ch)		((r) + 0x400 * (ch))
 
+#define _PER_CH_BASE			0x3000
+#define _BROADCAST_BASE			0x3600
+
 /* Register definitions */
 
 /* DDR DATA per-channel per-bytelane */
@@ -20,6 +23,8 @@
 #define TX_TRAIN_RANK(ch, rank, byte)		_DDRIO_C_R_B(0x0020, ch, rank, byte)
 #define TX_PER_BIT_RANK(ch, rank, byte)		_DDRIO_C_R_B(0x0030, ch, rank, byte)
 
+#define RCOMP_DATA_1(ch, byte)			_DDRIO_C_R_B(0x0044, ch, 0, byte)
+#define DATA_TX_XTALK(ch, byte)			_DDRIO_C_R_B(0x0048, ch, 0, byte)
 #define RX_OFFSET_VDQ(ch, byte)			_DDRIO_C_R_B(0x004c, ch, 0, byte)
 
 #define DATA_TRAIN_FEEDBACK(ch, byte)		_DDRIO_C_R_B(0x0054, ch, 0, byte)
@@ -29,6 +34,7 @@
 #define DQ_CONTROL_2(ch, byte)			_DDRIO_C_R_B(0x0064, ch, 0, byte)
 #define DATA_OFFSET_TRAIN(ch, byte)		_DDRIO_C_R_B(0x0070, ch, 0, byte)
 #define DQ_CONTROL_0(ch, byte)			_DDRIO_C_R_B(0x0074, ch, 0, byte)
+#define VREF_ADJUST(ch, byte)			_DDRIO_C_R_B(0x0078, ch, 0, byte)
 
 /* DDR CKE per-channel */
 #define DDR_CKE_ch_CMD_COMP(ch)			_DDRIO_C_R_B(0x1200, ch, 0, 0)
@@ -71,7 +77,7 @@
 #define DDR_SCRAM_MISC_CONTROL			0x2008
 
 /* DDR DATA per-channel multicast */
-#define DDR_DATA_ch_CONTROL_0(ch)		_DDRIO_C_R_B(0x3074, ch, 0, 0)
+#define DDR_DATA_ch_CONTROL_0(ch)		(_PER_CH_BASE + DQ_CONTROL_0(ch, 0))
 
 /* DDR CMDN/CMDS per-channel (writes go to both CMDN and CMDS FUBs) */
 #define DDR_CMD_ch_COMP(ch)			_DDRIO_C_R_B(0x3200, ch, 0, 0)
@@ -85,20 +91,20 @@
 #define DDR_CKE_CTL_ch_CTL_PI_CODING(ch)	_DDRIO_C_R_B(0x3418, ch, 0, 0)
 
 /* DDR DATA broadcast */
-#define DDR_DATA_RX_TRAIN_RANK(rank)		_DDRIO_C_R_B(0x3600, 0, rank, 0)
-#define DDR_DATA_RX_PER_BIT_RANK(rank)		_DDRIO_C_R_B(0x3610, 0, rank, 0)
-#define DDR_DATA_TX_TRAIN_RANK(rank)		_DDRIO_C_R_B(0x3620, 0, rank, 0)
-#define DDR_DATA_TX_PER_BIT_RANK(rank)		_DDRIO_C_R_B(0x3630, 0, rank, 0)
+#define DDR_DATA_RX_TRAIN_RANK(rank)		(_BROADCAST_BASE + RX_TRAIN_RANK(0, rank, 0))
+#define DDR_DATA_RX_PER_BIT_RANK(rank)		(_BROADCAST_BASE + RX_PER_BIT_RANK(0, rank, 0))
+#define DDR_DATA_TX_TRAIN_RANK(rank)		(_BROADCAST_BASE + TX_TRAIN_RANK(0, rank, 0))
+#define DDR_DATA_TX_PER_BIT_RANK(rank)		(_BROADCAST_BASE + TX_PER_BIT_RANK(0, rank, 0))
 
-#define DDR_DATA_RCOMP_DATA_1			0x3644
-#define DDR_DATA_TX_XTALK			0x3648
-#define DDR_DATA_RX_OFFSET_VDQ			0x364c
-#define DDR_DATA_OFFSET_COMP			0x365c
-#define DDR_DATA_CONTROL_1			0x3660
+#define DDR_DATA_RCOMP_DATA_1			(_BROADCAST_BASE + RCOMP_DATA_1(0, 0))
+#define DDR_DATA_TX_XTALK			(_BROADCAST_BASE + DATA_TX_XTALK(0, 0))
+#define DDR_DATA_RX_OFFSET_VDQ			(_BROADCAST_BASE + RX_OFFSET_VDQ(0, 0))
+#define DDR_DATA_OFFSET_COMP			(_BROADCAST_BASE + DATA_OFFSET_COMP(0, 0))
+#define DDR_DATA_CONTROL_1			(_BROADCAST_BASE + DQ_CONTROL_1(0, 0))
 
-#define DDR_DATA_OFFSET_TRAIN			0x3670
-#define DDR_DATA_CONTROL_0			0x3674
-#define DDR_DATA_VREF_ADJUST			0x3678
+#define DDR_DATA_OFFSET_TRAIN			(_BROADCAST_BASE + DATA_OFFSET_TRAIN(0, 0))
+#define DDR_DATA_CONTROL_0			(_BROADCAST_BASE + DQ_CONTROL_0(0, 0))
+#define DDR_DATA_VREF_ADJUST			(_BROADCAST_BASE + VREF_ADJUST(0, 0))
 
 /* DDR CMD broadcast */
 #define DDR_CMD_COMP				0x3700

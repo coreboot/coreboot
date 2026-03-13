@@ -61,7 +61,7 @@ void setup_chromeos_gpios(void);
 bool is_off_mode(void);
 void configure_parallel_charging(void);
 void configure_parallel_charging_late(void);
-void configure_charging_debug_access(void);
+void configure_debug_access_port(void);
 void enable_slow_battery_charging(void);
 void disable_slow_battery_charging(void);
 void launch_charger_applet(void);

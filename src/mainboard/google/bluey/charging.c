@@ -21,6 +21,9 @@
 #define SMB2_CHGR_CHRG_EN_CMD ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_ENABLE_CMD)
 #define SMB1_SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SNK_CFG \
 ((SMB1_SLAVE_ID << 16) | SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SNK_CFG)
+#define SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SRC_CFG 0x2B4C
+#define SMB1_SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SRC_CFG \
+((SMB1_SLAVE_ID << 16) | SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SRC_CFG)
 #define SCHG_CHGR_CHARGING_FCC 0x260A
 #define SMB1_CHGR_CHARGING_FCC ((SMB1_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_FCC)
 #define SMB2_CHGR_CHARGING_FCC ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_FCC)
@@ -28,6 +31,7 @@
 #define FCC_1A_STEP_50MA 0x14
 #define FCC_DISABLE 0x8c
 #define EN_DEBUG_ACCESS_SNK 0x1B
+#define EN_DEBUG_ACCESS_SRC 0x01
 
 #define PMC8380F_SLAVE_ID	0x05
 #define GPIO07_MODE_CTL			0x8E40
@@ -205,14 +209,15 @@ void configure_parallel_charging(void)
 }
 
 /*
- * Enable SMB1 charging debug access port.
+ * Configure debug access port to support source and sink modes.
  */
-void configure_charging_debug_access(void)
+void configure_debug_access_port(void)
 {
-	if (!CONFIG(HAVE_CHARGING_DEBUG_ACCESS_PORT))
+	if (!CONFIG(HAVE_DEBUG_ACCESS_PORT_SOURCE_SINK))
 		return;
 
-	printk(BIOS_INFO, "Enable charging debug access port support\n");
+	printk(BIOS_INFO, "Enable support of source and sink modes for debug access port\n");
+	spmi_write8(SMB1_SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SRC_CFG, EN_DEBUG_ACCESS_SRC);
 	spmi_write8(SMB1_SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SNK_CFG, EN_DEBUG_ACCESS_SNK);
 }
 

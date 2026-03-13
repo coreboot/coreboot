@@ -204,7 +204,7 @@ static void handle_low_power_charging_boot(void)
 static void mainboard_init(struct device *dev)
 {
 	configure_parallel_charging();
-	configure_charging_debug_access();
+	configure_debug_access_port();
 
 	display_startup();
 

@@ -262,7 +262,7 @@ static void change_per_bit_margin(
 	struct sysinfo *ctrl,
 	const enum margin_parameter param,
 	const bool multicast,
-	const uint8_t in_channel,
+	const uint8_t channel_in,
 	const uint8_t rank,
 	const uint8_t in_byte,
 	const bool update_ctrl,
@@ -271,7 +271,7 @@ static void change_per_bit_margin(
 {
 	const bool is_rd = param == RdTBit || param == RdVBit;
 	const bool is_wr = param == WrTBit;
-	const uint16_t reg = get_per_bit_reg(param, multicast, in_channel, rank, in_byte);
+	const uint16_t reg = get_per_bit_reg(param, multicast, channel_in, rank, in_byte);
 	mchbar_write32(reg, value);
 	if (multicast) {
 		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
@@ -287,11 +287,11 @@ static void change_per_bit_margin(
 			}
 		}
 	} else {
-		download_regfile(ctrl, in_channel, false, rank, regfile, in_byte, is_rd, is_wr);
+		download_regfile(ctrl, channel_in, false, rank, regfile, in_byte, is_rd, is_wr);
 		if (!update_ctrl)
 			return;
 
-		update_per_bit_margin(ctrl, param, in_channel, rank, in_byte, value);
+		update_per_bit_margin(ctrl, param, channel_in, rank, in_byte, value);
 	}
 }
 

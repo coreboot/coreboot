@@ -4,6 +4,7 @@
 :maxdepth: 1
 
 coreboot architecture <architecture.md>
+Customizing Module Behavior <customizing.md>
 Build System <build_system.md>
 Submodules <submodules.md>
 Kconfig <kconfig.md>

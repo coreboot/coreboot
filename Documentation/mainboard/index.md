@@ -125,6 +125,7 @@ Monolith <facebook/monolith.md>
 :maxdepth: 1
 
 Laptop 13 Intel Core Ultra Series 1 (Marigold) <framework/marigold.md>
+Laptop 13 Intel Core Ultra Series 3 (Sakura) <framework/sakura.md>
 ```
 ## Foxconn
 

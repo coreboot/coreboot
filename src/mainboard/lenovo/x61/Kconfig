@@ -1,0 +1,54 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_LENOVO_X61
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SYSTEM_TYPE_LAPTOP
+	select CPU_INTEL_SOCKET_M
+	select NORTHBRIDGE_INTEL_GM965
+	select SOUTHBRIDGE_INTEL_I82801HX
+	select DRIVERS_I2C_CK505
+	select SOUTHBRIDGE_RICOH_RL5C476
+	select SUPERIO_NSC_PC87382
+	select SUPERIO_NSC_PC87392
+	select EC_LENOVO_PMH7
+	select EC_LENOVO_H8
+	select DRIVER_LENOVO_SERIALS
+	select H8_HAS_2ND_THERMAL_ZONE
+	select H8_HAS_BDC_GPIO_DETECTION
+	#select HAVE_OPTION_TABLE
+	select INTEL_INT15
+	#select HAVE_CMOS_DEFAULT
+	select BOARD_ROMSIZE_KB_4096
+	select HAVE_ACPI_TABLES
+	select HAVE_ACPI_RESUME
+	select DRIVERS_LENOVO_WACOM
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_TPM1
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select MEMORY_MAPPED_TPM
+
+config CBFS_SIZE
+	default 0x180000 # size of the BIOS region
+
+config VBOOT_SLOTS_RW_A
+	default y
+
+config MAINBOARD_DIR
+	default "lenovo/x61"
+
+config MAINBOARD_PART_NUMBER
+	default "ThinkPad X61"
+
+config MAX_CPUS
+	int
+	default 2
+
+config PS2K_EISAID
+	default "PNP0303"
+
+config PS2M_EISAID
+	default "IBM3780"
+
+endif

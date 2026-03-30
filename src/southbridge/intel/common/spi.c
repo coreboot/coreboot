@@ -270,7 +270,7 @@ static void *get_spi_bar(pci_devfn_t dev)
 	uintptr_t rcba; /* Root Complex Register Block */
 	uintptr_t sbase;
 
-	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX)) {
+	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX) || CONFIG(SOUTHBRIDGE_INTEL_I82801HX)) {
 		rcba = pci_read_config32(dev, RCBA);
 		return (void *)((rcba & 0xffffc000) + 0x3020);
 	}

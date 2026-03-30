@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config NORTHBRIDGE_INTEL_GM965
+	bool
+	select HAVE_DEBUG_RAM_SETUP
+	select VGA
+	select INTEL_EDID
+	select INTEL_GMA_ACPI
+	select INTEL_GMA_SSC_ALTERNATE_REF
+	select DRAM_SUPPORT_DDR2
+	select HAVE_X86_64_SUPPORT
+	select NEED_SMALL_2MB_PAGE_TABLES
+
+if NORTHBRIDGE_INTEL_GM965
+
+config VBOOT
+	select VBOOT_STARTS_IN_BOOTBLOCK
+
+config CBFS_SIZE
+	default 0x100000
+
+config VGA_BIOS_ID
+	string
+	default "8086,2a02"
+
+config ECAM_MMCONF_BASE_ADDRESS
+	default 0xe0000000
+
+config ECAM_MMCONF_BUS_NUMBER
+	default 64
+
+config DOMAIN_RESOURCE_32BIT_LIMIT
+	default 0xfec00000
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x100000
+
+config MAX_CPUS
+	int
+	default 4
+
+config INTEL_GMA_BCLV_OFFSET
+	default 0x61254
+
+config INTEL_GMA_BCLM_OFFSET
+	default 0x61256
+
+config FIXED_MCHBAR_MMIO_BASE
+	default 0xfed14000
+
+config FIXED_DMIBAR_MMIO_BASE
+	default 0xfed18000
+
+config FIXED_EPBAR_MMIO_BASE
+	default 0xfed19000
+
+endif

@@ -3,6 +3,12 @@
 chip northbridge/intel/gm965
 	# IGD Displays
 	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+	register "gpu_panel_power_up_delay" = "250"			# T1+T2: 25ms
+	register "gpu_panel_power_backlight_on_delay" = "2500"		# T5: 250ms
+	register "gpu_panel_power_down_delay" = "250"			# T3: 25ms
+	register "gpu_panel_power_backlight_off_delay" = "2500"		# Tx: 250ms
+	register "gpu_panel_power_cycle_delay" = "3"			# T4: 200ms
+	register "default_pwm_freq" = "165"				# vendor BIOS value
 
 	device cpu_cluster 0 on ops gm965_cpu_bus_ops end	# APIC cluster
 

@@ -777,7 +777,8 @@ static void program_gcfgc(const sysinfo_t *si)
 		 */
 		if (pci_read_config8(D0F0, PCI_REVISION_ID) == 0) {
 			mchbar_setbits16(IOSCHED_190, 0x4000);
-			mchbar_clrsetbits16(IOSCHED_19E, 0xe000, 0x9000);
+			mchbar_clrsetbits16(IOSCHED_19E, 0xe000, 0x8000);
+			mchbar_setbits16(IOSCHED_19E, 0x1000);
 		}
 		return;
 	}
@@ -791,7 +792,8 @@ static void program_gcfgc(const sysinfo_t *si)
 	 *   FSB=667: always 5
 	 *   HPLLVCO_field==3 override: 4
 	 *
-	 * GCFGC byte 0 bits [3:0] = render clock, byte 1 bits [4:0] = sampler (fixed 2)
+	 * GCFGC byte 0 bits [3:0] = render clock, byte 1 bits [4:0] = display clock
+	 * (fixed 2 for 320/333 MHz)
 	 */
 	uint8_t gcfgc_render = 5;  /* default for FSB 667 */
 
@@ -810,9 +812,20 @@ static void program_gcfgc(const sysinfo_t *si)
 	if (vco_field == 3)
 		gcfgc_render = 4;
 
-	/* Write render clock to GCFGC byte 0, sampler to byte 1 */
-	pci_update_config8(D2F0, GCFGC_OFFSET, 0xd0, gcfgc_render);
-	pci_update_config8(D2F0, GCFGC_OFFSET + 1, 0xe0, 2);
+	/*
+	 * Vendor BIOS sequence:
+	 *   GCFGC[0] = (GCFGC[0] & 0xd0) | render
+	 *   GCFGC[0] |= 0x20
+	 *   GCFGC[0] &= 0xdf
+	 *   GCFGC[1] = (GCFGC[1] & 0xe0) | 2
+	 *
+	 * The bit 5 pulse on GCFGC[0] is required to latch the render
+	 * clock change before programming the display clock.
+	 */
+	pci_update_config8(D2F0, GCFGC_OFFSET, ~0x2f, gcfgc_render);
+	pci_or_config8(D2F0, GCFGC_OFFSET, 0x20);
+	pci_update_config8(D2F0, GCFGC_OFFSET, ~0x20, 0);
+	pci_update_config8(D2F0, GCFGC_OFFSET + 1, ~0x1f, 2); /* cdclk of 320/333 MHz */
 }
 
 /* ================================================================== */

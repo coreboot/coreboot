@@ -2,12 +2,15 @@
 
 #include <static_devices.h>
 #include <device/mmio.h>
+#include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <drivers/intel/gma/libgfxinit.h>
 #include <drivers/intel/gma/opregion.h>
+#include <string.h>
 #include <commonlib/helpers.h>
 #include <types.h>
 
@@ -17,6 +20,9 @@
 
 #define GDRST 0xc0
 #define MSAC  0x62 /* Multi Size Aperture Control */
+
+#define PGETBL_CTL     0x2020
+#define PGETBL_ENABLED 0x00000001
 
 /* Lenovo X61 vendor BIOS programs a 165 Hz backlight PWM frequency. */
 #define GM965_DEFAULT_PWM_FREQ 165
@@ -140,8 +146,49 @@ static void gma_init_panel_power_and_backlight(struct device *const dev)
 	gtt_write(BLC_PWM_CTL, freq_to_blc_pwm_ctl(dev, pwm_freq, reg8));
 }
 
+/*
+ * On i965/GM965, the GTT page table lives in stolen memory.  The
+ * hardware needs PGETBL_CTL (MMIO 0x2020) programmed with the physical
+ * base of the GTT and the enable bit set, otherwise GTT address
+ * translation doesn't work and the display engine can't resolve
+ * framebuffer addresses.
+ *
+ * We place the GTT at the top of stolen memory (TOLUD - 512KB),
+ * matching what the vendor BIOS does and what Linux's GMCH layer
+ * expects (it reads PGETBL_CTL and carves the GTT out of stolen).
+ *
+ * Reference: i945/gma.c gtt_setup(), Linux drivers/char/agp/intel-gtt.c
+ */
+static void gtt_setup(u8 *mmiobase)
+{
+	u32 tolud, gtt_base;
+
+	tolud = (pci_read_config16(pcidev_on_root(0, 0), D0F0_TOLUD) & 0xfff0) << 16;
+	gtt_base = tolud - 512 * KiB;
+
+	printk(BIOS_DEBUG, "GM965 GTT setup: TOLUD=0x%08x, GTT base=0x%08x\n", tolud, gtt_base);
+
+	/* Flush before writing PGETBL_CTL */
+	write32(mmiobase + GFX_FLSH_CNTL, 0);
+
+	/* Program GTT physical base + enable */
+	write32(mmiobase + PGETBL_CTL, gtt_base | PGETBL_ENABLED);
+
+	if (read32(mmiobase + PGETBL_CTL) & PGETBL_ENABLED) {
+		printk(BIOS_DEBUG, "GM965 GTT enabled: PGETBL_CTL=0x%08x\n",
+		       read32(mmiobase + PGETBL_CTL));
+	} else {
+		printk(BIOS_ERR, "GM965 GTT enable FAILED!\n");
+	}
+
+	/* Flush after writing PGETBL_CTL */
+	write32(mmiobase + GFX_FLSH_CNTL, 0);
+}
+
 static void gma_func0_init(struct device *dev)
 {
+	const struct northbridge_intel_gm965_config *const conf = dev->chip_info;
+
 	/* Probe MMIO resource first. It's needed even for
 	   intel_gma_init_igd_opregion() which may call back. */
 	gtt_res = probe_resource(dev, PCI_BASE_ADDRESS_0);
@@ -158,12 +205,42 @@ static void gma_func0_init(struct device *dev)
 	while (pci_read_config8(dev, GDRST) & 1)
 		;
 
-	if (!CONFIG(NO_GFX_INIT))
-		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
+	/*
+	 * GTTMMADR BAR is 1MB total: 512KB MMIO + 512KB GTT.
+	 * GTT base is at a 512K offset within the BAR.
+	 */
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
+	memset(res2mmio(gtt_res, 512 * KiB, 0), 0, 512 * KiB);
 
-	/* PCI Init, will run VBIOS */
-	pci_dev_init(dev);
-	gma_init_panel_power_and_backlight(dev);
+	if (CONFIG(NO_GFX_INIT))
+		pci_and_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MASTER);
+
+	if (!CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
+		/* PCI Init, will run VBIOS */
+		printk(BIOS_DEBUG, "Initialising IGD using VBIOS\n");
+		pci_dev_init(dev);
+		gma_init_panel_power_and_backlight(dev);
+	}
+
+	if (CONFIG(MAINBOARD_USE_LIBGFXINIT) && !acpi_is_wakeup_s3()) {
+		/*
+		 * Enable GTT address translation. VBIOS handles this
+		 * itself, but libgfxinit needs it set up beforehand.
+		 */
+		gtt_setup(res2mmio(gtt_res, 0, 0));
+		gma_init_panel_power_and_backlight(dev);
+
+		int vga_disable = (pci_read_config16(dev, D0F0_GGC) & 2) >> 1;
+		if (vga_disable) {
+			printk(BIOS_INFO,
+			       "IGD is not decoding legacy VGA MEM and IO: skipping NATIVE graphic init\n");
+		} else {
+			int lightup_ok;
+			gma_gfxinit(&lightup_ok);
+			/* Linux relies on VBT for panel info. */
+			generate_fake_intel_oprom(&conf->gfx, dev, "$VBT CRESTLINE");
+		}
+	}
 }
 
 /* This doesn't reclaim stolen UMA memory, but IGD could still

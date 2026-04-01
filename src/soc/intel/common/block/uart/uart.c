@@ -363,9 +363,6 @@ struct device_operations uart_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DID_INTEL_NVL_UART0,
-	PCI_DID_INTEL_NVL_UART1,
-	PCI_DID_INTEL_NVL_UART2,
 	PCI_DID_INTEL_LNL_UART0,
 	PCI_DID_INTEL_LNL_UART1,
 	PCI_DID_INTEL_LNL_UART2,

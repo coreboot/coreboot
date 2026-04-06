@@ -5,8 +5,20 @@
 
 static const struct cnl_mb_cfg baseboard_mem_cfg = {
 	/* Access memory info through SMBUS. */
-	.spd[0] = {.read_type = READ_SMBUS, .spd_spec = {.spd_smbus_address = 0xa0}},
-	.spd[1] = {.read_type = READ_SMBUS, .spd_spec = {.spd_smbus_address = 0xa4}},
+	.spd[0] = {
+		.read_type = READ_SMBUS,
+		.spd_spec = {.spd_smbus_address = 0xA0}
+	},
+	.spd[1] = {
+		.read_type = NOT_EXISTING,
+	},
+	.spd[2] = {
+		.read_type = READ_SMBUS,
+		.spd_spec = {.spd_smbus_address = 0xA4}
+	},
+	.spd[3] = {
+		.read_type = NOT_EXISTING,
+	},
 
 	/* Rcomp resistors on CFL-S are located on the CPU itself */
 	.rcomp_resistor = {121, 75, 100},
@@ -20,8 +32,8 @@ static const struct cnl_mb_cfg baseboard_mem_cfg = {
 	/* Baseboard is using config 2 for vref_ca */
 	.vref_ca_config = 2,
 
-	/* Disable Early Command Training */
-	.ect = 0,
+	/* Enable Early Command Training */
+	.ect = 1,
 };
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)

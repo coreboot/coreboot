@@ -5,6 +5,8 @@
 #include <drivers/intel/gma/int15.h>
 #include <ec/acpi/ec.h>
 
+#if !CONFIG(BOARD_APPLE_IMAC41)
+
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
 static void mainboard_init(struct device *dev)
@@ -17,12 +19,16 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->init = mainboard_init;
 }
 
+#endif
+
 static void mainboard_final(void *chip_info)
 {
 	ec_set_bit(0x10, 2); /* switch off led */
 }
 
 struct chip_operations mainboard_ops = {
+#if !CONFIG(BOARD_APPLE_IMAC41)
 	.enable_dev = mainboard_enable,
+#endif
 	.final = mainboard_final,
 };

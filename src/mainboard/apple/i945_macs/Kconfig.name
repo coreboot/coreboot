@@ -6,5 +6,8 @@ config BOARD_APPLE_MACBOOK11
 config BOARD_APPLE_MACBOOK21
 	bool "Macbook2,1"
 
+config BOARD_APPLE_IMAC41
+	bool "iMac4,1"
+
 config BOARD_APPLE_IMAC52
 	bool "iMac5,2"

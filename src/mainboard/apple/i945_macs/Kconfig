@@ -26,6 +26,11 @@ config BOARD_APPLE_MACBOOK21
 	select BOARD_APPLE_I945_MACS_COMMON
 	select SYSTEM_TYPE_LAPTOP
 
+config BOARD_APPLE_IMAC41
+	bool
+	select BOARD_APPLE_I945_MACS_COMMON
+#	select VGA_BIOS
+
 config BOARD_APPLE_IMAC52
 	bool
 	select BOARD_APPLE_I945_MACS_COMMON
@@ -38,11 +43,13 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	default "Macbook1,1" if BOARD_APPLE_MACBOOK11
 	default "MacBook2,1" if BOARD_APPLE_MACBOOK21
+	default "iMac4,1" if BOARD_APPLE_IMAC41
 	default "iMac5,2" if BOARD_APPLE_IMAC52
 
 config VARIANT_DIR
 	default "macbook1_1" if BOARD_APPLE_MACBOOK11
 	default "macbook2_1" if BOARD_APPLE_MACBOOK21
+	default "imac4_1" if BOARD_APPLE_IMAC41
 	default "imac5_2" if BOARD_APPLE_IMAC52
 
 config OVERRIDE_DEVICETREE
@@ -53,5 +60,13 @@ config MAX_CPUS
 
 config MAINBOARD_SMBIOS_MANUFACTURER
 	default "Apple Inc."
+
+endif
+
+if BOARD_APPLE_IMAC41
+
+config VGA_BIOS_ID
+	string
+	default "1002,71c5"
 
 endif

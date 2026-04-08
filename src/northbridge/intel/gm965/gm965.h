@@ -13,6 +13,7 @@
 #define _GM965_H_
 
 #include <stdint.h>
+#include <device/dram/ddr2.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/common/fixed_bars.h>
 
@@ -554,6 +555,12 @@ typedef struct {
 	uint8_t    rec_coarse[NUM_CHANNELS];     /* per-channel coarse_high delay */
 	uint8_t    rec_coarse_low[NUM_CHANNELS]; /* per-channel sub-coarse delay */
 	uint8_t    rec_fine[NUM_CHANNELS];       /* per-channel fine delay */
+
+	/* SPD I2C addresses for each slot (0 if empty) */
+	uint8_t    spd_addr_map[4];
+
+	/* Raw SPD data (full 128 bytes) for identification fields */
+	u8         raw_spd[4][SPD_SIZE_MAX_DDR2];
 } sysinfo_t;
 
 /* ================================================================== */
@@ -569,6 +576,9 @@ void raminit(sysinfo_t *si);
 /* northbridge/intel/gm965/raminit_receive_enable_calibration.c */
 void receive_enable_training(sysinfo_t *si);
 void raminit_program_training(sysinfo_t *si);
+
+/* northbridge/intel/gm965/raminit_meminfo.c */
+void setup_sdram_meminfo(const sysinfo_t *sysinfo);
 
 /* northbridge/intel/gm965/dmi.c */
 void gm965_dmi_init(void);

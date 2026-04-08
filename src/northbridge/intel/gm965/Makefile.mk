@@ -7,6 +7,7 @@ bootblock-y += bootblock.c
 romstage-y += early_init.c
 romstage-y += raminit.c
 romstage-y += raminit_receive_enable_calibration.c
+romstage-y += raminit_meminfo.c
 romstage-y += dmi.c
 romstage-y += thermal.c
 romstage-y += pm.c

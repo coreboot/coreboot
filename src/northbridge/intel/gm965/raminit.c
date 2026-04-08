@@ -67,12 +67,13 @@
  */
 
 /*
- * SPD slave addresses populated at runtime by mainboard_get_spd_map().
+ * SPD slave addresses are stored in sysinfo_t.spd_addr_map, populated by
+ * mainboard_get_spd_map() at the start of raminit().
  * Index maps to logical DIMM slots: 0 = ch0 DIMM0, 2 = ch1 DIMM0.
  * Slots 1 and 3 are kept unused on GM965. A zero entry means the slot is
  * unpopulated and will be skipped.
  */
-static uint8_t spd_addr_map[4];
+
 
 /* ================================================================== */
 /* Timing lookup tables                                               */
@@ -178,37 +179,33 @@ static void detect_dimms(sysinfo_t *si)
 		struct dimm_attr_ddr2_st decoded;
 
 		/* Skip slots not wired to an SPD device on this board */
-		if (!spd_addr_map[slot]) {
+		if (!si->spd_addr_map[slot]) {
 			d->present = 0;
 			continue;
 		}
 
 		/* Quick presence check: read memory type byte first */
-		if (smbus_read_byte(spd_addr_map[slot], SPD_MEMORY_TYPE)
+		if (smbus_read_byte(si->spd_addr_map[slot], SPD_MEMORY_TYPE)
 		    != SPD_MEMORY_TYPE_SDRAM_DDR2) {
 			printk(BIOS_DEBUG, "SPD slot %d addr 0x%02x: "
 			       "not DDR2, skipping\n",
-			       slot, spd_addr_map[slot]);
+			       slot, si->spd_addr_map[slot]);
 			d->present = 0;
 			continue;
 		}
 
 		/*
-		 * Read first 64 bytes of SPD -- sufficient for all
-		 * timing and geometry data.  spd_decode_ddr2() accepts
-		 * a 128-byte array but only accesses bytes 0-63 for
-		 * raminit-relevant fields (manufacturer info at 64+
-		 * is skipped).  Block read via i2c_eeprom_read() is
-		 * significantly faster than 64 individual byte reads
-		 * on the 100 kHz SMBus.
+		 * Read full 128 bytes of SPD. The timing/geometry data
+		 * is in bytes 0-63, but we'll need identification fields
+		 * from bytes 64-98 later for SMBIOS.
 		 */
-		if (i2c_eeprom_read(spd_addr_map[slot], 0, 64,
-				    raw_spd) != 64) {
+		if (i2c_eeprom_read(si->spd_addr_map[slot], 0, SPD_SIZE_MAX_DDR2,
+				    raw_spd) != SPD_SIZE_MAX_DDR2) {
 			printk(BIOS_DEBUG, "SPD slot %d: i2c block read "
 			       "failed, falling back to byte reads\n", slot);
-			for (j = 0; j < 64; j++)
+			for (j = 0; j < SPD_SIZE_MAX_DDR2; j++)
 				raw_spd[j] = smbus_read_byte(
-					spd_addr_map[slot], j);
+					si->spd_addr_map[slot], j);
 		}
 
 		if (spd_decode_ddr2(&decoded, raw_spd) != SPD_STATUS_OK) {
@@ -266,6 +263,9 @@ static void detect_dimms(sysinfo_t *si)
 		       d->rows, d->cols, d->banks,
 		       d->cas_supported,
 		       d->cycle_time[spd_get_msbs(d->cas_supported)]);
+
+		/* Save raw SPD for later SMBIOS extraction */
+		memcpy(si->raw_spd[slot], raw_spd, SPD_SIZE_MAX_DDR2);
 	}
 
 	if (si->dimm_count == 0)
@@ -3261,7 +3261,7 @@ void raminit(sysinfo_t *si)
 	int cached = 0;
 
 	/* Get board-specific SPD address -> DIMM slot mapping */
-	mainboard_get_spd_map(spd_addr_map);
+	mainboard_get_spd_map(si->spd_addr_map);
 
 	/* Check for warm boot / S3 resume */
 	si->s3_resume = check_warm_boot();

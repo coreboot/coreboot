@@ -154,6 +154,9 @@ void mainboard_romstage_entry(void)
 	printk(BIOS_DEBUG, "romstage: cbmem_recovery\n");
 	cbmem_initted = !cbmem_recovery(s3resume);
 	printk(BIOS_DEBUG, "romstage: cbmem_initted=%d\n", cbmem_initted);
+
+	setup_sdram_meminfo(&sysinfo);
+
 	mb_post_raminit_setup();
 
 	southbridge_configure_default_intmap();

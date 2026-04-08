@@ -155,6 +155,9 @@ void mainboard_romstage_entry(void)
 	cbmem_initted = !cbmem_recovery(s3resume);
 	printk(BIOS_DEBUG, "romstage: cbmem_initted=%d\n", cbmem_initted);
 
+	if (!sysinfo.fast_boot)
+		raminit_stash_mrc_cache(&sysinfo);
+
 	setup_sdram_meminfo(&sysinfo);
 
 	mb_post_raminit_setup();

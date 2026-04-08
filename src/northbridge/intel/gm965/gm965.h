@@ -457,41 +457,6 @@ typedef enum {
 } channel_mode_t;
 
 /* ================================================================== */
-/* CMOS Raminit Config Cache                                          */
-/* ================================================================== */
-
-/*
- * 16-byte config buffer at CMOS 0x80-0x8F, matching the Phoenix BIOS
- * 9-byte SPD cache (FFFF35D7/FFFF36E4) but extended with training results.
- *
- * On cold boot: SPD is read, timings computed, training runs, then the
- * results are packed into CMOS.  On warm boot / S3 resume: CMOS is read
- * to skip SPD reads and receive-enable training.
- *
- * Byte  Contents
- * ----  --------
- *  0    Magic (0x96 = valid GM965 raminit cache)
- *  1    fsb_clock[1:0] | mem_clock[3:2] | channel_mode[5:4]
- *  2    CAS
- *  3    tRAS
- *  4    tRP[3:0] | tRCD[7:4]
- *  5    tRFC
- *  6    tWR[3:0] | tRRD[7:4]
- *  7    tRTP
- *  8    Flags: ch0_present[0] ch0_dual[1] ch0_banks8[2]
- *              ch1_present[3] ch1_dual[4] ch1_banks8[5]
- *  9    ch0 geometry: cols[3:0] | rank_cap_log2[7:4]
- * 10    ch1 geometry: cols[3:0] | rank_cap_log2[7:4]
- * 11    ch0 training: coarse_high[3:0] | coarse_low[5:4]
- * 12    ch0 training: fine[3:0] | ch1 fine[7:4]
- * 13    ch1 training: coarse_high[3:0] | coarse_low[5:4]
- * 14    checksum (XOR of bytes 0-13)
- */
-#define CMOS_RAMINIT_BASE     0x80
-#define CMOS_RAMINIT_SIZE     15   /* bytes 0-14 */
-#define CMOS_RAMINIT_MAGIC    0x96
-
-/* ================================================================== */
 /* Data Structures                                                    */
 /* ================================================================== */
 
@@ -561,6 +526,9 @@ typedef struct {
 
 	/* Raw SPD data (full 128 bytes) for identification fields */
 	u8         raw_spd[4][SPD_SIZE_MAX_DDR2];
+
+	/* Set by raminit() when using cached training data (skip MRC save) */
+	int        fast_boot;
 } sysinfo_t;
 
 /* ================================================================== */
@@ -572,6 +540,7 @@ void gm965_early_init(void);
 
 /* northbridge/intel/gm965/raminit.c */
 void raminit(sysinfo_t *si);
+void raminit_stash_mrc_cache(const sysinfo_t *si);
 
 /* northbridge/intel/gm965/raminit_receive_enable_calibration.c */
 void receive_enable_training(sysinfo_t *si);

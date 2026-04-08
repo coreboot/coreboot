@@ -40,9 +40,9 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <arch/cpu.h>
 #include <lib.h>
 #include <device/mmio.h>
-#include <device/dram/ddr2.h>
 #include <device/i2c_simple.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
@@ -51,10 +51,66 @@
 #include <console/console.h>
 #include <delay.h>
 #include <cf9_reset.h>
-#include <pc80/mc146818rtc.h>
 #include <northbridge/intel/gm965/gm965.h>
 #include <southbridge/intel/i82801hx/i82801hx.h>
+#include <mrc_cache.h>
 
+/* MRC cache version for GM965 */
+#define MRC_CACHE_VERSION 1
+
+/* Cache structure for storing DRAM init state to SPI flash via MRC cache */
+struct gm965_mrc_cache {
+	uint32_t cpu_id;
+	uint16_t spd_crc[4];		/* Unique CRC for each DIMM slot */
+	dimminfo_t dimms[4];		/* Decoded DIMM attributes */
+	timings_t timings;		/* Computed timings */
+	uint8_t rec_coarse[2];		/* Receive-enable training coarse */
+	uint8_t rec_coarse_low[2];	/* Receive-enable training coarse_low */
+	uint8_t rec_fine[2];		/* Receive-enable training fine */
+	uint8_t raw_spd[4][SPD_SIZE_MAX_DDR2]; /* Full SPD for identification */
+};
+
+/* Read SPD unique identification bytes and compute CRC */
+static u16 spd_read_unique_crc(u8 i2c_addr)
+{
+	u8 spd[128] = {0};
+	/* Read bytes 64-72 (9 bytes) */
+	if (i2c_eeprom_read(i2c_addr, 64, 9, spd + 64) < 0) {
+		for (int i = 64; i <= 72; i++)
+			spd[i] = smbus_read_byte(i2c_addr, i);
+	}
+	/* Read bytes 93-98 (6 bytes) */
+	if (i2c_eeprom_read(i2c_addr, 93, 6, spd + 93) < 0) {
+		for (int i = 93; i <= 98; i++)
+			spd[i] = smbus_read_byte(i2c_addr, i);
+	}
+	return spd_ddr2_calc_unique_crc(spd, sizeof(spd));
+}
+
+/* Copy cached data into sysinfo and recompute derived fields */
+static void copy_cache_to_si(sysinfo_t *si, const struct gm965_mrc_cache *cache)
+{
+	memcpy(si->dimms, cache->dimms, sizeof(cache->dimms));
+	memcpy(&si->timings, &cache->timings, sizeof(cache->timings));
+	memcpy(si->rec_coarse, cache->rec_coarse, sizeof(cache->rec_coarse));
+	memcpy(si->rec_coarse_low, cache->rec_coarse_low, sizeof(cache->rec_coarse_low));
+	memcpy(si->rec_fine, cache->rec_fine, sizeof(cache->rec_fine));
+	memcpy(si->raw_spd, cache->raw_spd, sizeof(cache->raw_spd));
+
+	/* Compute dimm_count and channels */
+	si->dimm_count = 0;
+	int ch0_pop = 0, ch1_pop = 0;
+	for (int i = 0; i < 4; i++) {
+		if (si->dimms[i].present) {
+			si->dimm_count++;
+			if (i < 2)
+				ch0_pop = 1;
+			else
+				ch1_pop = 1;
+		}
+	}
+	si->channels = (ch0_pop ? 1 : 0) + (ch1_pop ? 1 : 0);
+}
 /* MCHBAR_BASE needed for RCOMP table direct pointer access */
 #ifndef MCHBAR_BASE
 #define MCHBAR_BASE   CONFIG_FIXED_MCHBAR_MMIO_BASE
@@ -73,7 +129,6 @@
  * Slots 1 and 3 are kept unused on GM965. A zero entry means the slot is
  * unpopulated and will be skipped.
  */
-
 
 /* ================================================================== */
 /* Timing lookup tables                                               */
@@ -3094,141 +3149,6 @@ static void check_bad_warmboot(void)
 }
 
 /* ================================================================== */
-/* CMOS Config Cache - Store / Restore                                */
-/* ================================================================== */
-
-/*
- * raminit_cache_store() - Pack SPD-derived config + training results
- * into 15 bytes and write to CMOS.
- *
- * Called once after a cold-boot raminit completes successfully.
- * The layout matches the BIOS 9-byte SPD cache concept (FFFF35D7)
- * but is extended with receive-enable training results so that
- * warm boot / S3 can skip both SPD reads and training.
- */
-static void raminit_cache_store(const sysinfo_t *si)
-{
-	uint8_t buf[CMOS_RAMINIT_SIZE];
-	const timings_t *t = &si->timings;
-	int s0 = 0, s2 = 2;  /* slot indices for ch0, ch1 */
-
-	buf[0]  = CMOS_RAMINIT_MAGIC;
-	buf[1]  = (t->fsb_clock & 3) | ((t->mem_clock & 3) << 2)
-		| ((t->channel_mode & 3) << 4);
-	buf[2]  = t->CAS;
-	buf[3]  = t->tRAS;
-	buf[4]  = (t->tRP & 0xf) | ((t->tRCD & 0xf) << 4);
-	buf[5]  = t->tRFC;
-	buf[6]  = (t->tWR & 0xf) | ((t->tRRD & 0xf) << 4);
-	buf[7]  = t->tRTP;
-
-	/* DIMM flags: per-channel present / dual_rank / banks==8 */
-	buf[8]  = (si->dimms[s0].present ? 1 : 0)
-		| (si->dimms[s0].dual_rank ? 2 : 0)
-		| ((si->dimms[s0].banks == 8) ? 4 : 0)
-		| (si->dimms[s2].present ? 8 : 0)
-		| (si->dimms[s2].dual_rank ? 16 : 0)
-		| ((si->dimms[s2].banks == 8) ? 32 : 0);
-
-	/* Geometry: cols in low nibble, log2(rank_cap_mb) in high */
-	buf[9]  = (si->dimms[s0].cols & 0xf)
-		| ((log2(si->dimms[s0].rank_capacity_mb) & 0xf) << 4);
-	buf[10] = (si->dimms[s2].cols & 0xf)
-		| ((log2(si->dimms[s2].rank_capacity_mb) & 0xf) << 4);
-
-	/* Training: coarse_high[3:0] | coarse_low[5:4] per channel */
-	buf[11] = (si->rec_coarse[0] & 0xf)
-		| ((si->rec_coarse_low[0] & 3) << 4);
-	buf[12] = (si->rec_fine[0] & 0xf)
-		| ((si->rec_fine[1] & 0xf) << 4);
-	buf[13] = (si->rec_coarse[1] & 0xf)
-		| ((si->rec_coarse_low[1] & 3) << 4);
-
-	/* Checksum: XOR of bytes 0-13 */
-	uint8_t cksum = 0;
-	for (int i = 0; i < CMOS_RAMINIT_SIZE - 1; i++)
-		cksum ^= buf[i];
-	buf[14] = cksum;
-
-	for (int i = 0; i < CMOS_RAMINIT_SIZE; i++)
-		cmos_write(buf[i], CMOS_RAMINIT_BASE + i);
-}
-
-/*
- * raminit_cache_restore() - Unpack config + training from CMOS.
- *
- * Returns 1 if the cache was valid (magic + checksum match), with
- * sysinfo fully populated.  Returns 0 on any mismatch - caller
- * should fall back to a full SPD-based init.
- */
-static int raminit_cache_restore(sysinfo_t *si)
-{
-	uint8_t buf[CMOS_RAMINIT_SIZE];
-	int s0 = 0, s2 = 2;
-
-	for (int i = 0; i < CMOS_RAMINIT_SIZE; i++)
-		buf[i] = cmos_read(CMOS_RAMINIT_BASE + i);
-
-	/* Validate magic */
-	if (buf[0] != CMOS_RAMINIT_MAGIC)
-		return 0;
-
-	/* Validate checksum */
-	uint8_t cksum = 0;
-	for (int i = 0; i < CMOS_RAMINIT_SIZE - 1; i++)
-		cksum ^= buf[i];
-	if (cksum != buf[14])
-		return 0;
-
-	/* Unpack timing config */
-	timings_t *t = &si->timings;
-	t->fsb_clock     = buf[1] & 3;
-	t->mem_clock     = (buf[1] >> 2) & 3;
-	t->channel_mode  = (buf[1] >> 4) & 3;
-	t->CAS           = buf[2];
-	t->tRAS          = buf[3];
-	t->tRP           = buf[4] & 0xf;
-	t->tRCD          = (buf[4] >> 4) & 0xf;
-	t->tRFC          = buf[5];
-	t->tWR           = buf[6] & 0xf;
-	t->tRRD          = (buf[6] >> 4) & 0xf;
-	t->tRTP          = buf[7];
-
-	/* Unpack DIMM flags */
-	uint8_t flags = buf[8];
-	si->dimms[s0].present    = (flags >> 0) & 1;
-	si->dimms[s0].dual_rank  = (flags >> 1) & 1;
-	si->dimms[s0].banks      = (flags & 4) ? 8 : 4;
-	si->dimms[s2].present    = (flags >> 3) & 1;
-	si->dimms[s2].dual_rank  = (flags >> 4) & 1;
-	si->dimms[s2].banks      = (flags & 32) ? 8 : 4;
-
-	/* Unpack geometry */
-	si->dimms[s0].cols             = buf[9] & 0xf;
-	si->dimms[s0].rank_capacity_mb = 1U << ((buf[9] >> 4) & 0xf);
-	si->dimms[s2].cols             = buf[10] & 0xf;
-	si->dimms[s2].rank_capacity_mb = 1U << ((buf[10] >> 4) & 0xf);
-
-	/* Mark unpopulated slots */
-	si->dimms[1].present = 0;
-	si->dimms[3].present = 0;
-
-	/* Derived fields */
-	si->dimm_count = si->dimms[s0].present + si->dimms[s2].present;
-	si->channels = (si->dimms[s0].present && si->dimms[s2].present) ? 2 : 1;
-
-	/* Unpack training results */
-	si->rec_coarse[0]     = buf[11] & 0xf;
-	si->rec_coarse_low[0] = (buf[11] >> 4) & 3;
-	si->rec_fine[0]       = buf[12] & 0xf;
-	si->rec_fine[1]       = (buf[12] >> 4) & 0xf;
-	si->rec_coarse[1]     = buf[13] & 0xf;
-	si->rec_coarse_low[1] = (buf[13] >> 4) & 3;
-
-	return 1;
-}
-
-/* ================================================================== */
 /* Main RAMINIT Entry Point                                           */
 /* ================================================================== */
 
@@ -3258,7 +3178,7 @@ static int raminit_cache_restore(sysinfo_t *si)
  */
 void raminit(sysinfo_t *si)
 {
-	int cached = 0;
+	int fast_boot = 0;
 
 	/* Get board-specific SPD address -> DIMM slot mapping */
 	mainboard_get_spd_map(si->spd_addr_map);
@@ -3266,30 +3186,37 @@ void raminit(sysinfo_t *si)
 	/* Check for warm boot / S3 resume */
 	si->s3_resume = check_warm_boot();
 
-	/*
-	 * Vendor BIOS (FFFF3220): A0 stepping only - if RCOMP_CTRL
-	 * bit 1 is stale from a prior boot, warm reset to clear it.
-	 * On C0 stepping (X61) this never fires.
-	 */
 	reset_on_stale_rcomp();
-
-	/*
-	 * Vendor BIOS (FFFF3220, FFFF3304-FFFF3346):
-	 * Set up ICH8 GEN_PMCON registers - clear stale status in
-	 * GEN_PMCON_3, clear status bits in GEN_PMCON_2, and set
-	 * DRAM_INIT bit 7 to mark raminit in progress.
-	 */
 	init_pmcon();
 
-	/*
-	 * On warm boot / S3 resume, try to restore the config from CMOS
-	 * to skip SPD reads and timing calculation (matching the Phoenix
-	 * BIOS 9-byte config buffer at FFFF35D7/FFFF36E4).
-	 */
-	if (si->s3_resume && raminit_cache_restore(si)) {
-		cached = 1;
-		printk(BIOS_DEBUG, "%s: restored from CMOS cache\n", __func__);
-	} else {
+	/* Attempt fast boot using MRC cache on any boot */
+	{
+		size_t mrc_size = 0;
+		struct gm965_mrc_cache *cached = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
+									     MRC_CACHE_VERSION,
+									     &mrc_size);
+		if (cached && mrc_size == sizeof(struct gm965_mrc_cache) &&
+		    cached->cpu_id == cpu_get_cpuid()) {
+			/* Verify SPD unique CRCs for populated slots */
+			int valid = 1;
+			for (int slot = 0; slot < 4; slot++) {
+				if (cached->dimms[slot].present) {
+					u16 crc = spd_read_unique_crc(si->spd_addr_map[slot]);
+					if (crc != cached->spd_crc[slot]) {
+						valid = 0;
+						break;
+					}
+				}
+			}
+			if (valid) {
+				copy_cache_to_si(si, cached);
+				fast_boot = 1;
+				printk(BIOS_DEBUG, "%s: fast boot from MRC cache\n", __func__);
+			}
+		}
+	}
+
+	if (!fast_boot) {
 		printk(BIOS_DEBUG, "%s: cold boot - scanning DIMMs\n", __func__);
 		detect_dimms(si);
 		printk(BIOS_DEBUG, "%s: %d DIMM(s), %d channel(s)\n",
@@ -3440,12 +3367,11 @@ void raminit(sysinfo_t *si)
 	mchbar_setbits32(DCC_MCHBAR, 0xf8000);
 
 	printk(BIOS_DEBUG, "%s: POST 39 - receive_enable_training "
-	       "(cached=%d)\n", __func__, cached);
-	if (cached) {
+	       "(fast_boot=%d)\n", __func__, fast_boot);
+	if (fast_boot) {
 		raminit_program_training(si);
 	} else {
 		receive_enable_training(si);
-		raminit_cache_store(si);
 	}
 	printk(BIOS_DEBUG, "%s: POST 39 done\n", __func__);
 
@@ -3569,5 +3495,43 @@ void raminit(sysinfo_t *si)
 	 */
 
 	mchbar_write32(SSKPD_MCHBAR, 0xCAFE);
+
+	/* Expose fast_boot to romstage so it can stash MRC data after cbmem_recovery() */
+	si->fast_boot = fast_boot;
+
 	printk(BIOS_DEBUG, "%s: complete\n", __func__);
+}
+
+/*
+ * raminit_stash_mrc_cache() - Build MRC cache struct and stash to CBMEM.
+ *
+ * Must be called after cbmem_recovery() so CBMEM is available.
+ * Only called on cold boot (!si->fast_boot) - on fast boot the cache
+ * is already valid and there's nothing new to save.
+ */
+void raminit_stash_mrc_cache(const sysinfo_t *si)
+{
+	struct gm965_mrc_cache cache;
+
+	memset(&cache, 0, sizeof(cache));
+
+	cache.cpu_id = cpu_get_cpuid();
+
+	/* Store SPD unique CRCs for cache validation on next boot */
+	for (int slot = 0; slot < 4; slot++) {
+		if (si->dimms[slot].present)
+			cache.spd_crc[slot] = spd_read_unique_crc(si->spd_addr_map[slot]);
+	}
+
+	memcpy(cache.dimms, si->dimms, sizeof(cache.dimms));
+	memcpy(&cache.timings, &si->timings, sizeof(cache.timings));
+	memcpy(cache.rec_coarse, si->rec_coarse, sizeof(cache.rec_coarse));
+	memcpy(cache.rec_coarse_low, si->rec_coarse_low, sizeof(cache.rec_coarse_low));
+	memcpy(cache.rec_fine, si->rec_fine, sizeof(cache.rec_fine));
+	memcpy(cache.raw_spd, si->raw_spd, sizeof(cache.raw_spd));
+
+	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
+			     &cache, sizeof(cache));
+
+	printk(BIOS_DEBUG, "GM965 MRC cache stashed (%zu bytes)\n", sizeof(cache));
 }

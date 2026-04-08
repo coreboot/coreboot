@@ -12,7 +12,9 @@ PREFIX  ?= /usr/local
 
 HOSTCFLAGS ?= $(CFLAGS)
 HOSTCFLAGS += -Wall -Wextra -MMD -MP -O3
+HOSTCFLAGS += -I $(ROOT)/commonlib/include
 HOSTCFLAGS += -I $(ROOT)/commonlib/bsd/include
+HOSTCFLAGS += -include $(ROOT)/commonlib/bsd/include/commonlib/bsd/compiler.h
 HOSTCFLAGS += -I $(ROOT)/vendorcode/intel/edk2/
 HOSTCFLAGS += -I $(TOP)/util/cbfstool/flashmap/
 HOSTCFLAGS += -I $(MDE)

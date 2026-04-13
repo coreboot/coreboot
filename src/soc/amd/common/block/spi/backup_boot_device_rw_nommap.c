@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/backup_boot_device.h>
+#include <amdblocks/psp.h>
 #include <boot_device.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
@@ -66,6 +67,10 @@ static void backup_boot_device_rw_init(void)
 	if (sfg_init_done == true)
 		return;
 
+	/* Cannot access backup boot device if ROM Armor is active */
+	if (psp_get_hsti_state_rom_armor_enforced())
+		return;
+
 	/* Ensure any necessary setup is performed by the drivers. */
 	spi_init();
 
@@ -80,6 +85,10 @@ static void backup_boot_device_rw_init(void)
  */
 const struct region_device *backup_boot_device_rw(void)
 {
+	/* Cannot access backup boot device if ROM Armor is active */
+	if (psp_get_hsti_state_rom_armor_enforced())
+		return NULL;
+
 	/* Probe for the SPI flash device if not already done. */
 	backup_boot_device_rw_init();
 
@@ -96,6 +105,10 @@ const struct region_device *backup_boot_device_rw(void)
  */
 const struct spi_flash *backup_boot_device_spi_flash(void)
 {
+	/* Cannot access backup boot device if ROM Armor is active */
+	if (psp_get_hsti_state_rom_armor_enforced())
+		return NULL;
+
 	backup_boot_device_rw_init();
 
 	if (sfg_init_done != true)
@@ -115,6 +128,10 @@ const struct spi_flash *backup_boot_device_spi_flash(void)
 int backup_boot_device_rw_subregion(const struct region *sub,
 				    struct region_device *subrd)
 {
+	/* Cannot access backup boot device if ROM Armor is active */
+	if (psp_get_hsti_state_rom_armor_enforced())
+		return -1;
+
 	/* Ensure boot device has been initialized at least once. */
 	backup_boot_device_rw_init();
 

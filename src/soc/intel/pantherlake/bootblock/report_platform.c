@@ -157,6 +157,9 @@ static struct {
 	{ PCI_DID_INTEL_PTL_H_GT2_2, "Pantherlake-H GT2" },
 	{ PCI_DID_INTEL_PTL_H_GT2_3, "Pantherlake-H GT2" },
 	{ PCI_DID_INTEL_PTL_H_GT2_4, "Pantherlake-H GT2" },
+	{ PCI_DID_INTEL_PTL_H_GT2_5, "Pantherlake-H GT2" },
+	{ PCI_DID_INTEL_PTL_H_GT2_6, "Pantherlake-H GT2" },
+	{ PCI_DID_INTEL_PTL_H_GT2_7, "Pantherlake-H GT2" },
 	{ PCI_DID_INTEL_WCL_GT2_1, "Wildcatlake GT2" },
 	{ PCI_DID_INTEL_WCL_GT2_2, "Wildcatlake GT2" },
 };

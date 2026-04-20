@@ -5,6 +5,7 @@
 #include <amdblocks/smi.h>
 #include <amdblocks/spi.h>
 #include <console/console.h>
+#include <delay.h>
 #include <boot_device.h>
 #include <device/pci_ops.h>
 #include <lib.h>
@@ -22,6 +23,8 @@ static uint8_t default_cs;
 
 #define GRANULARITY_TEST_4k		0x0000f000		/* bits 15-12 */
 #define WORD_TO_DWORD_UPPER(x)		((x << 16) & 0xffff0000)
+
+#define SPI_SEMAPHORE_TIMEOUT_MS	1000
 
 /* SPI MMIO registers */
 #define SPI_RESTRICTED_CMD1		0x04
@@ -335,6 +338,52 @@ static int fch_spi_flash_protect(const struct spi_flash *flash, const struct reg
 	return 0;
 }
 
+/*
+ * Polls SPI_MUTEX_PSP_OWNS (bit 10) and SPI_MUTEX_HFP_OWNS (bit 9) until
+ * both are clear, then sets SPI_MUTEX_HBIOS_OWNS (bit 5).
+ * Returns -1 on timeout.
+ */
+static int spi_semaphore_claim(void)
+{
+	uint16_t reg16;
+	struct stopwatch sw;
+
+	stopwatch_init_msecs_expire(&sw, SPI_SEMAPHORE_TIMEOUT_MS);
+
+	do {
+		reg16 = spi_read16(SPI_MISC_CNTRL);
+		if (reg16 & (SPI_MUTEX_PSP_OWNS | SPI_MUTEX_HFP_OWNS)) {
+			udelay(10);
+			continue;
+		}
+
+		/* HW prevents claiming ownership if PSP/HFP grab it first; read back to confirm. */
+		spi_write16(SPI_MISC_CNTRL, reg16 | SPI_MUTEX_HBIOS_OWNS);
+		reg16 = spi_read16(SPI_MISC_CNTRL);
+		if ((reg16 & SPI_MUTEX_HBIOS_OWNS) &&
+		    !(reg16 & (SPI_MUTEX_PSP_OWNS | SPI_MUTEX_HFP_OWNS)))
+			return 0;
+
+		udelay(10);
+	} while (!stopwatch_expired(&sw));
+
+	printk(BIOS_ERR,
+		"FCH SPI: semaphore timeout, held by %s (SPI_MISC_CNTRL=0x%04x)\n",
+		(reg16 & SPI_MUTEX_PSP_OWNS) ? "PSP" :
+		(reg16 & SPI_MUTEX_HFP_OWNS) ? "HFP" : "unknown",
+		reg16);
+	return -1;
+}
+
+/* Clear SPI_MUTEX_HBIOS_OWNS (bit 5) so the PSP or HFP can access SPI. */
+static void spi_semaphore_release(void)
+{
+	uint16_t reg16;
+
+	reg16 = spi_read16(SPI_MISC_CNTRL);
+	spi_write16(SPI_MISC_CNTRL, reg16 & ~SPI_MUTEX_HBIOS_OWNS);
+}
+
 /* Block PSP SMI while operating on the SPI flash */
 static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 {
@@ -343,6 +392,11 @@ static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 	if (psp_get_hsti_state_rom_armor_enforced()) {
 		printk(BIOS_ERR, "PSP ROM Armor is enforced, cannot access SPI flash directly\n");
 		return -1;
+	}
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_SEMAPHORE)) {
+		if (spi_semaphore_claim())
+			return -1;
 	}
 
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_SMI)) {
@@ -369,7 +423,7 @@ static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 	return 0;
 }
 
-/* Allow PSP SMI when not operating on the SPI flash */
+/* Release the SPI bus claimed by spi_ctrlr_claim_bus(). */
 static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 {
 	uint8_t reg8;
@@ -381,11 +435,12 @@ static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 		reg8 |= default_cs;
 		spi_write8(SPI_ALT_CS_REG, reg8);
 	}
-
 	if (ENV_RAMSTAGE && CONFIG(SOC_AMD_COMMON_BLOCK_PSP_SMI)) {
 		reg8 = spi_read8(SPI_MISC_CNTRL);
 		spi_write8(SPI_MISC_CNTRL, reg8 & ~SPI_SEMAPHORE_BIOS_LOCKED);
 	}
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_SEMAPHORE))
+		spi_semaphore_release();
 }
 
 static const struct spi_ctrlr fch_spi_flash_ctrlr = {

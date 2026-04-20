@@ -112,12 +112,22 @@ static enum mbox_p2c_status find_psp_spi_flash_device_region(const enum boot_dev
 static bool spi_controller_busy(void)
 {
 	bool busy;
+	const u16 misc_ctrl = spi_read16(SPI_MISC_CNTRL);
 
 	/* When the firmware is using the SPI controller stop here */
-	busy = (spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_BIOS_LOCKED);
+	busy = (misc_ctrl & SPI_SEMAPHORE_BIOS_LOCKED);
 	if (busy) {
 		printk(BIOS_NOTICE, "PSP: SPI controller blocked by coreboot (ring 0)\n");
 		return true;
+	}
+
+	/* When coprocessors are using the SPI controller stop here */
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_SEMAPHORE)) {
+		busy = (misc_ctrl & (SPI_MUTEX_PSP_OWNS | SPI_MUTEX_HFP_OWNS));
+		if (busy) {
+			printk(BIOS_NOTICE, "PSP: SPI controller blocked by coprocessor\n");
+			return true;
+		}
 	}
 
 	/*

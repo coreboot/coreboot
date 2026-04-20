@@ -19,6 +19,13 @@ config SOC_AMD_COMMON_BLOCK_SPI_DWORD_ACCESS
 config SOC_AMD_COMMON_BLOCK_SPI_DEBUG
 	bool "Enable SPI debugging"
 
+config SOC_AMD_COMMON_BLOCK_SPI_SEMAPHORE
+	bool
+	help
+	  Use hardware semaphore bits in SPI_MISC_CNTRL to synchronize
+	  SPI controller access between coreboot and PSP. Works in all
+	  boot stages. This is separate from SOC_AMD_COMMON_BLOCK_PSP_SMI.
+
 config SOC_AMD_COMMON_BLOCK_SPI_4DW_BURST
 	bool
 	depends on !SOC_AMD_STONEYRIDGE

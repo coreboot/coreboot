@@ -86,8 +86,14 @@ enum spi100_speed {
 #define SPI_FIFO_DEPTH			(SPI_FIFO_LAST_BYTE - SPI_FIFO + 1)
 
 #define SPI_MISC_CNTRL			0xfc
-/* AMD has re-purposed this unused SPI controller register bit as a semaphore to synchronize
-   access to the SPI controller between SMM and non-SMM software/OS driver. */
+/* Hardware SPI mutex bits used by SOC_AMD_COMMON_BLOCK_SPI_SEMAPHORE
+   Bits 9 and 10 are read-only from BIOS; bit 5 is the BIOS ownership bit. */
+#define   SPI_MUTEX_PSP_OWNS		BIT(10)	/* RO: PSP owns SPI mutex */
+#define   SPI_MUTEX_HFP_OWNS		BIT(9)	/* RO: Host-FP owns SPI mutex */
+#define   SPI_MUTEX_HBIOS_OWNS		BIT(5)  /* RW: Host-BIOS SPI mutex */
+/* AMD has re-purposed this unused SPI controller register bit as a semaphore
+   to synchronize access to the SPI controller between SMM and non-SMM software/OS driver.
+   Used by SOC_AMD_COMMON_BLOCK_PSP_SMI */
 #define   SPI_SEMAPHORE_DRIVER_LOCKED	BIT(4)
 #define   SPI_SEMAPHORE_BIOS_LOCKED	BIT(3)
 

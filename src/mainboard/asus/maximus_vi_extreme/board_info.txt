@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.asus.com/Motherboards/MAXIMUS_VI_EXTREME/
+ROM protocol: SPI
+Flashrom support: y
+ROM package: DIP-8 (x2)
+ROM socketed: y
+Release year: 2013

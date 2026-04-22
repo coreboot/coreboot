@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_ASUS_MAXIMUS_VI_EXTREME
+	bool "Maximus VI EXTREME"

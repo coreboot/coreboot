@@ -26,11 +26,15 @@ config BOARD_STARLABS_CEZANNE_SERIES
 	select SOC_AMD_CEZANNE
 	select SOC_AMD_COMMON_BLOCK_GRAPHICS_ATIF
 	select SPI_FLASH_WINBOND
-	select SYSTEM_TYPE_LAPTOP
 	select VGA_BIOS
+
+config BOARD_STARLABS_BYTE_CEZANNE
+	select BOARD_STARLABS_CEZANNE_SERIES
+	select SYSTEM_TYPE_MINIPC
 
 config BOARD_STARLABS_STARBOOK_CEZANNE
 	select BOARD_STARLABS_CEZANNE_SERIES
+	select SYSTEM_TYPE_LAPTOP
 
 if BOARD_STARLABS_CEZANNE_SERIES
 
@@ -50,7 +54,7 @@ config EC_GPE_SCI
 	default 0x17
 
 config EC_STARLABS_ADD_ITE_BIN
-	default y
+	default y if BOARD_STARLABS_STARBOOK_CEZANNE
 
 config EC_STARLABS_ITE_BIN_PATH
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"
@@ -65,16 +69,20 @@ config MAINBOARD_DIR
 	default "starlabs/cezanne"
 
 config MAINBOARD_FAMILY
-	default "B6-A"
+	default "B6-A"			if BOARD_STARLABS_STARBOOK_CEZANNE
+	default "Y1"			if BOARD_STARLABS_BYTE_CEZANNE
 
 config MAINBOARD_PART_NUMBER
-	default "StarBook Mk VI"
+	default "StarBook Mk VI"	if BOARD_STARLABS_STARBOOK_CEZANNE
+	default "Byte Mk I"		if BOARD_STARLABS_BYTE_CEZANNE
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
-	default "StarBook"
+	default "StarBook"		if BOARD_STARLABS_STARBOOK_CEZANNE
+	default "Byte"			if BOARD_STARLABS_BYTE_CEZANNE
 
 config POST_IO
-	default y
+	default y			if BOARD_STARLABS_STARBOOK_CEZANNE
+	default n			if BOARD_STARLABS_BYTE_CEZANNE
 
 config PSP_LOAD_MP2_FW
 	default y
@@ -86,7 +94,8 @@ config S3_VGA_ROM_RUN
 	default n
 
 config VARIANT_DIR
-	default "starbook"
+	default "starbook"		if BOARD_STARLABS_STARBOOK_CEZANNE
+	default "byte"			if BOARD_STARLABS_BYTE_CEZANNE
 
 config EFS_SPI_SPEED
 	default 3	# 66MHz

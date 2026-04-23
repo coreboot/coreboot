@@ -1,6 +1,9 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-comment "Star Labs StarBook Series"
+comment "Star Labs Cezanne Series"
+
+config BOARD_STARLABS_BYTE_CEZANNE
+	bool "Star Labs Byte Mk I (Ryzen 7 5800U)"
 
 config BOARD_STARLABS_STARBOOK_CEZANNE
 	bool "Star Labs StarBook Mk VI (Ryzen 7 5800U)"

@@ -24,7 +24,6 @@
 #include <soc/pm.h>
 #include <string.h>
 #include <types.h>
-#include <wrdd.h>
 
 #include "chip.h"
 
@@ -36,6 +35,9 @@
 		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
 		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD, \
 	}
+
+/* Default regulatory domain ID */
+#define WRDD_DEFAULT_REGULATORY_DOMAIN 0x4150
 
 /* C-state map without S0ix */
 static const acpi_cstate_t cstate_map[] = {
@@ -72,11 +74,7 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 {
 	gnvs->dpte = is_devfn_enabled(PCI_DEVFN(PUNIT_DEV, 0));
 
-	/* Fill in the Wi-Fi Region ID */
-	if (CONFIG(HAVE_REGULATORY_DOMAIN))
-		gnvs->cid1 = wifi_regulatory_domain();
-	else
-		gnvs->cid1 = WRDD_DEFAULT_REGULATORY_DOMAIN;
+	gnvs->cid1 = WRDD_DEFAULT_REGULATORY_DOMAIN;
 }
 
 static u8 soc_madt_sci_irq_polarity(u8 sci_irq)

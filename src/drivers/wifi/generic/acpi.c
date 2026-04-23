@@ -9,7 +9,6 @@
 #include <sar.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <wrdd.h>
 
 #include "chip.h"
 #include "wifi.h"
@@ -1220,27 +1219,6 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 
 			acpi_dp_write(dsd);
 		}
-	}
-
-	/* Fill regulatory domain structure */
-	if (CONFIG(HAVE_REGULATORY_DOMAIN)) {
-		/*
-		 * Name ("WRDD", Package () {
-		 *   WRDD_REVISION, // Revision
-		 *   Package () {
-		 *     DOMAIN_TYPE_WIFI,        // Domain Type, 7:WiFi
-		 *     wifi_regulatory_domain() // Country Identifier
-		 *   }
-		 * })
-		 */
-		acpigen_write_name("WRDD");
-		acpigen_write_package(2);
-		acpigen_write_integer(WRDD_REVISION);
-		acpigen_write_package(2);
-		acpigen_write_dword(DOMAIN_TYPE_WIFI);
-		acpigen_write_dword(wifi_regulatory_domain());
-		acpigen_pop_len();
-		acpigen_pop_len();
 	}
 
 	struct dsm_uuid dsm_ids[MAX_DSM_FUNCS];

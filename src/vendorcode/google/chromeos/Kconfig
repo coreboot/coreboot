@@ -31,12 +31,6 @@ config CHROMEOS_RAMOOPS_RAM_SIZE
 	default 0x00100000
 	depends on CHROMEOS_RAMOOPS
 
-config HAVE_REGULATORY_DOMAIN
-	bool "Add regulatory domain methods"
-	default n
-	help
-	 This option is needed to add ACPI regulatory domain methods
-
 config CHROMEOS_DISABLE_PLATFORM_HIERARCHY_ON_RESUME
 	bool
 	default y

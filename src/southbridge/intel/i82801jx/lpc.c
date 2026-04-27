@@ -83,15 +83,15 @@ static void i82801jx_pirq_init(struct device *dev)
 	 */
 	const u8 pirq_routing = 11;
 
-	pci_write_config8(dev, D31F0_PIRQA_ROUT, pirq_routing);
-	pci_write_config8(dev, D31F0_PIRQB_ROUT, pirq_routing);
-	pci_write_config8(dev, D31F0_PIRQC_ROUT, pirq_routing);
-	pci_write_config8(dev, D31F0_PIRQD_ROUT, pirq_routing);
+	pci_write_config8(dev, PIRQA_ROUT, pirq_routing);
+	pci_write_config8(dev, PIRQB_ROUT, pirq_routing);
+	pci_write_config8(dev, PIRQC_ROUT, pirq_routing);
+	pci_write_config8(dev, PIRQD_ROUT, pirq_routing);
 
-	pci_write_config8(dev, D31F0_PIRQE_ROUT, pirq_routing);
-	pci_write_config8(dev, D31F0_PIRQF_ROUT, pirq_routing);
-	pci_write_config8(dev, D31F0_PIRQG_ROUT, pirq_routing);
-	pci_write_config8(dev, D31F0_PIRQH_ROUT, pirq_routing);
+	pci_write_config8(dev, PIRQE_ROUT, pirq_routing);
+	pci_write_config8(dev, PIRQF_ROUT, pirq_routing);
+	pci_write_config8(dev, PIRQG_ROUT, pirq_routing);
+	pci_write_config8(dev, PIRQH_ROUT, pirq_routing);
 
 	/* Eric Biederman once said we should let the OS do this.
 	 * I am not so sure anymore he was right.

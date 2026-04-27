@@ -22,15 +22,6 @@
 #define  GPIO_EN		(1 << 4)
 #define GPIO_ROUT		0xb8
 
-#define PIRQA_ROUT		0x60
-#define PIRQB_ROUT		0x61
-#define PIRQC_ROUT		0x62
-#define PIRQD_ROUT		0x63
-#define PIRQE_ROUT		0x68
-#define PIRQF_ROUT		0x69
-#define PIRQG_ROUT		0x6A
-#define PIRQH_ROUT		0x6B
-
 #define RCBA			0xf0 /* Root Complex Register Block */
 
 /* Power Management */

@@ -6,6 +6,15 @@
 /* LPC GPIO Base Address Register */
 #define GPIOBASE		0x48
 
+#define PIRQA_ROUT		0x60
+#define PIRQB_ROUT		0x61
+#define PIRQC_ROUT		0x62
+#define PIRQD_ROUT		0x63
+#define PIRQE_ROUT		0x68
+#define PIRQF_ROUT		0x69
+#define PIRQG_ROUT		0x6a
+#define PIRQH_ROUT		0x6b
+
 #define LPC_IO_DEC		0x80 /* IO Decode Ranges Register */
 #define LPC_EN			0x82 /* LPC IF Enables Register */
 #define  CNF2_LPC_EN		(1 << 13) /* 0x4e/0x4f */

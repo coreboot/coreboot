@@ -61,15 +61,6 @@ void ich7_setup_cir(void);
 #define GPIO_CNTL		0x4C /* LPC GPIO Control Register */
 #define   GPIO_EN		(1 << 4)
 
-#define PIRQA_ROUT		0x60
-#define PIRQB_ROUT		0x61
-#define PIRQC_ROUT		0x62
-#define PIRQD_ROUT		0x63
-#define PIRQE_ROUT		0x68
-#define PIRQF_ROUT		0x69
-#define PIRQG_ROUT		0x6A
-#define PIRQH_ROUT		0x6B
-
 /* PCI Configuration Space (D31:F1): IDE */
 #define INTR_LN			0x3c
 #define IDE_TIM_PRI		0x40	/* IDE timings, primary */

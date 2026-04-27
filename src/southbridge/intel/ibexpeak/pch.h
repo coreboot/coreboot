@@ -4,6 +4,7 @@
 #define SOUTHBRIDGE_INTEL_IBEXPEAK_PCH_H
 
 #include <acpi/acpi.h>
+#include <southbridge/intel/common/lpc_def.h> /* IWYU pragma: export */
 #include <southbridge/intel/common/rcba.h> /* IWYU pragma: export */
 
 /* PCH types */

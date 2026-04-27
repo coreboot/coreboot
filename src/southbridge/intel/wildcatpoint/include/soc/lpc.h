@@ -3,6 +3,8 @@
 #ifndef _BROADWELL_LPC_H_
 #define _BROADWELL_LPC_H_
 
+#include <southbridge/intel/common/lpc_def.h> /* IWYU pragma: export */
+
 /* PCI Configuration Space (D31:F0): LPC */
 #define SERIRQ_CNTL		0x64
 #define PMBASE			0x40

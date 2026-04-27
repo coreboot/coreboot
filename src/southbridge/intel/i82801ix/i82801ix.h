@@ -5,6 +5,7 @@
 
 #define DEFAULT_TBAR		((u8 *)0xfed1b000)
 
+#include <southbridge/intel/common/lpc_def.h> /* IWYU pragma: export */
 #include <southbridge/intel/common/rcba.h> /* IWYU pragma: export */
 
 #if CONFIG(BOARD_EMULATION_QEMU_X86_Q35)

@@ -5,6 +5,7 @@
 
 #define DEFAULT_TBAR		((u8 *)0xfed1b000)
 
+#include <southbridge/intel/common/lpc_def.h> /* IWYU pragma: export */
 #include <southbridge/intel/common/rcba.h> /* IWYU pragma: export */
 
 #define DEFAULT_PMBASE		0x00000500

@@ -454,7 +454,8 @@ static void mtk_dsi_stop(struct dsi_regs *dsi)
 }
 
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
-		 const u8 *init_commands, struct thread_mutex *ready_mutex)
+		 const u8 *init_commands, void (*reset)(void),
+		 struct thread_mutex *ready_mutex)
 {
 	u32 data_rate;
 	u32 bits_per_pixel = mtk_dsi_get_bits_per_pixel(format);
@@ -501,8 +502,12 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 		mtk_dsi_clk_hs_mode_enable(dsi);
 	}
 
+	if (reset)
+		reset();
+
 	if (ready_mutex)
 		thread_mutex_unlock(ready_mutex);
+
 	if (init_commands)
 		mipi_panel_parse_commands(init_commands, mtk_dsi_cmdq, &mode_flags);
 

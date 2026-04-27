@@ -22,6 +22,7 @@ struct panel_description {
 	const char *name;
 	void (*configure_backlight)(bool enable);
 	void (*power_on)(void);
+	void (*reset)(void);
 	int (*get_edid)(struct edid *edid);
 	int (*post_power_on)(const struct edid *edid);
 	enum lb_fb_orientation orientation;

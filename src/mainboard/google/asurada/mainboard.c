@@ -112,7 +112,8 @@ static bool configure_display(void)
 			      MIPI_DSI_MODE_LINE_END |
 			      MIPI_DSI_MODE_EOT_PACKET);
 
-	if (mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, &edid, NULL, NULL) < 0) {
+	if (mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, &edid, NULL, NULL,
+			 NULL) < 0) {
 		printk(BIOS_ERR, "%s: Failed in DSI init\n", __func__);
 		return false;
 	}

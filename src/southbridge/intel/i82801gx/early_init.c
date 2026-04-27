@@ -41,10 +41,10 @@ void i82801gx_lpc_setup(void)
 		return;
 	config = dev->chip_info;
 
-	pci_write_config32(d31f0, GEN1_DEC, config->gen1_dec);
-	pci_write_config32(d31f0, GEN2_DEC, config->gen2_dec);
-	pci_write_config32(d31f0, GEN3_DEC, config->gen3_dec);
-	pci_write_config32(d31f0, GEN4_DEC, config->gen4_dec);
+	pci_write_config32(d31f0, LPC_GEN1_DEC, config->gen1_dec);
+	pci_write_config32(d31f0, LPC_GEN2_DEC, config->gen2_dec);
+	pci_write_config32(d31f0, LPC_GEN3_DEC, config->gen3_dec);
+	pci_write_config32(d31f0, LPC_GEN4_DEC, config->gen4_dec);
 }
 
 void i82801gx_setup_bars(void)

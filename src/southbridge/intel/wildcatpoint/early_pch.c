@@ -11,6 +11,7 @@
 #include <soc/pm.h>
 #include <soc/rcba.h>
 #include <soc/romstage.h>
+#include <southbridge/intel/common/lpc_def.h>
 #include <southbridge/intel/wildcatpoint/chip.h>
 
 static void pch_route_interrupts(void)

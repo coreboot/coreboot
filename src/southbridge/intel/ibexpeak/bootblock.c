@@ -3,6 +3,7 @@
 #include <arch/bootblock.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/common/early_spi.h>
+#include <southbridge/intel/common/lpc_def.h>
 #include "pch.h"
 #include "chip.h"
 

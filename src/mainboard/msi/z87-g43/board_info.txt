@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://msi.com/Motherboard/Z87-G43/
+ROM protocol: SPI
+Flashrom support: y
+ROM package: SOIC-8
+ROM socketed: n
+Release year: 2013

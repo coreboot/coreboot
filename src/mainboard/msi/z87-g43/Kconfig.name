@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_MSI_Z87_G43
+	bool "Z87-G43"

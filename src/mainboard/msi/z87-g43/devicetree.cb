@@ -1,0 +1,124 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/haswell
+	register "gpu_ddi_e_connected" = "1"
+	register "gpu_dp_b_hotplug" = "4"
+	register "gpu_dp_c_hotplug" = "4"
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
+
+	chip cpu/intel/haswell
+		device cpu_cluster 0 on
+			ops haswell_cpu_bus_ops
+		end
+	end
+
+	device domain 0 on
+		ops haswell_pci_domain_ops
+		subsystemid 0x1462 0x7816 inherit
+
+		device pci 00.0 on end		# Desktop Host bridge
+		device pci 01.0 on		# PEG: PCI_E2
+			smbios_slot_desc	"SlotTypePciExpressGen3" "SlotLengthOther"
+						"PCI_E2" "SlotDataBusWidth16X"
+		end
+		device pci 02.0 on end		# iGPU
+		device pci 03.0 on end		# Mini-HD audio
+
+		chip southbridge/intel/lynxpoint # Intel 8 Series Lynx Point PCH
+			register "gen1_dec" = "LPC_IO(0xa00, 0x20)"
+			register "gpe0_en_1" = "0x20002046"
+			register "sata_port0_gen3_dtle" = "0x2"
+			register "sata_port1_gen3_dtle" = "0x2"
+			register "sata_port_map" = "0x3f"
+
+			device pci 14.0 on  end		# xHCI Controller
+			device pci 16.0 on  end		# MEI #1
+			device pci 16.1 off end		# MEI #2
+			device pci 19.0 off end		# Intel Gigabit Ethernet
+			device pci 1a.0 on  end		# USB2 EHCI #2
+			device pci 1b.0 on		# High Definition Audio
+				subsystemid 0x1462 0xd816
+			end
+			device pci 1c.0 on		# RP #1: PCI_E3
+				smbios_slot_desc	"SlotTypePciExpressGen2" "SlotLengthOther"
+							"PCI_E3" "SlotDataBusWidth1X"
+			end
+			device pci 1c.1 on  end		# RP #2: Realtek 8111E GbE
+			device pci 1c.2 on		# RP #3: PCI_E1
+				smbios_slot_desc	"SlotTypePciExpressGen2" "SlotLengthOther"
+							"PCI_E1" "SlotDataBusWidth1X"
+			end
+			device pci 1c.3 on  end		# RP #4: PCIe-to-PCI
+			device pci 1c.4 on		# RP #5: PCI_E4
+				smbios_slot_desc	"SlotTypePciExpressGen2" "SlotLengthOther"
+							"PCI_E4" "SlotDataBusWidth4X"
+			end
+			device pci 1d.0 on  end		# USB2 EHCI #1
+			device pci 1f.0 on		# LPC bridge
+				chip superio/nuvoton/nct6779d
+					device pnp 4e.1 on		# Parallel
+						irq 0x70 = 0x05
+						irq 0xf0 = 0x3c
+					end
+					device pnp 4e.2 on  end		# UART A
+					device pnp 4e.3 off end		# UART B, IR
+					device pnp 4e.5 on		# Keyboard
+						io 0x60 = 0x0060
+						io 0x62 = 0x0064
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 4e.6   off end	# CIR
+					device pnp 4e.7   on		# GPIO6, GPIO7, GPIO8
+						irq 0xe0 = 0x73
+						irq 0xe1 = 0x0f
+					end
+					device pnp 4e.8   off end	# WDT1, GPIO0, GPIO1
+					device pnp 4e.9   off end	# GPIO1-8
+					device pnp 4e.109 off end	# GPIO1
+					device pnp 4e.209 on		# GPIO2
+						irq 0xe0 = 0xdf
+						irq 0xe1 = 0x60
+					end
+					device pnp 4e.309 on		# GPIO3
+						irq 0xe4 = 0x1f
+						irq 0xe5 = 0x76
+					end
+					device pnp 4e.409 on		# GPIO4
+						irq 0xf0 = 0xbf
+						irq 0xf1 = 0x40
+					end
+					device pnp 4e.509 on		# GPIO5
+						irq 0xe5 = 0x06
+						irq 0xeb = 0xc0
+						irq 0xf4 = 0x3f
+					end
+					device pnp 4e.609 off end	# GPIO6
+					device pnp 4e.709 on  end	# GPIO7
+					device pnp 4e.a   on		# ACPI
+						irq 0xe4 = 0x08		# 3VSBSW# enable bit
+						irq 0xe6 = 0x5c
+					end
+					device pnp 4e.b   on		# H/W Monitor, FP LED
+						io 0x60 = 0x0a00
+						io 0x62 = 0x0a10
+						irq 0xe4 = 0x7f
+						irq 0xf5 = 0x00
+					end
+					device pnp 4e.d   off end	# WDT1
+					device pnp 4e.e   off end	# CIR WAKE-UP
+					device pnp 4e.f   off end	# GPIO Push-pull/Open-drain selection
+					device pnp 4e.14  off end	# PORT80 UART
+					device pnp 4e.16  off end	# Deep Sleep
+				end
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on  end	# TPM
+				end
+			end
+			device pci 1f.2 on  end		# SATA Controller (AHCI)
+			device pci 1f.3 on  end		# SMBus
+			device pci 1f.5 off end		# SATA Controller (Legacy)
+			device pci 1f.6 off end		# Thermal
+		end
+	end
+end

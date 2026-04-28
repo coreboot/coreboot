@@ -19,8 +19,6 @@ void bootblock_mainboard_early_init(void)
 			| CNF2_LPC_EN | KBC_LPC_EN | COMA_LPC_EN
 			| COMB_LPC_EN);
 
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x7c0291);
-
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }
 

@@ -817,7 +817,7 @@ bootstrap_GCC() {
 		--with-mpfr="$DESTDIR$TARGETDIR" \
 		--with-mpc="$DESTDIR$TARGETDIR" \
 		--with-pkgversion="coreboot bootstrap v$CROSSGCC_VERSION" \
-		&& \
+		|| exit 1
 	# shellcheck disable=SC2086
 	$MAKE $JOBS BOOT_CFLAGS="$HOSTCFLAGS" BUILD_CONFIG="" bootstrap && \
 	$MAKE	install-gcc \
@@ -912,10 +912,10 @@ build_LIBSTDCXX() {
 	configure_GCC \
 		--with-gxx-include-dir="${LIBSTDCXX_INCLUDE_PATH}/coreboot-${TARGETARCH}/include/" \
 		--with-sysroot="${LIBSTDCXX_INCLUDE_PATH}/" && \
-	mkdir -p gcc/$TARGETARCH && \
+	mkdir -p gcc/$TARGETARCH || exit 1
 	# shellcheck disable=SC2086
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc && \
-	$MAKE install-target-libgcc DESTDIR="$DESTDIR" && \
+	$MAKE install-target-libgcc DESTDIR="$DESTDIR" || exit 1
 	# shellcheck disable=SC2086
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libstdc++-v3 && \
 	$MAKE install-target-libstdc++-v3 DESTDIR="$DESTDIR" || touch .failed

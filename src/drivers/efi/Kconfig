@@ -58,6 +58,16 @@ config DRIVERS_EFI_UPDATE_CAPSULES
 	  to discover firmware updates and expose them for tianocore thorough
 	  CBMEM for execution.  tianocore is responsible for erasing the variables.
 
+config DRIVERS_EFI_CAPSULE_ON_DISK_SUPPORT
+	bool "Support EFI capsules on disk"
+	depends on DRIVERS_EFI_UPDATE_CAPSULES
+	default y if SOC_AMD_COMMON
+	help
+	  Permit update capsules to be submitted via the EFI system
+	  partition instead of relying on capsule pointers surviving reset.
+	  Scanning DRAM for capsules is not reliable on some platforms, so this option is
+	  required for those platforms.
+
 config DRIVERS_EFI_CAPSULE_ACCEPT_EMBEDDED_DRIVERS
 	bool "Allow embedded drivers in update capsules"
 	depends on PAYLOAD_EDK2 && DRIVERS_EFI_UPDATE_CAPSULES

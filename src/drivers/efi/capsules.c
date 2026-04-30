@@ -89,6 +89,7 @@ struct memory_range {
 static const EFI_GUID capsule_vendor_guid = {
 	0x711C703F, 0xC285, 0x4B10, { 0xA3, 0xB0, 0x36, 0xEC, 0xBD, 0x3C, 0x8B, 0xE2 }
 };
+static const EFI_GUID efi_global_variable_guid = EFI_GLOBAL_VARIABLE;
 static const EFI_GUID windows_ux_capsule_guid = WINDOWS_UX_CAPSULE_GUID;
 static const EFI_GUID edk2_capsule_on_disk_name_guid = {
 	0x98C80A4F, 0xE16B, 0x4D11, { 0x93, 0x9A, 0xAB, 0xE5, 0x61, 0x26, 0x3, 0x30 }
@@ -107,6 +108,23 @@ struct memory_range coalesce_buffer;
 /* Where individual coalesced capsules are located and their count. */
 static struct memory_range uefi_capsules[MAX_CAPSULES];
 static int uefi_capsule_count;
+
+static bool efi_is_disk_capsules_boot(void)
+{
+	struct region_device rdev;
+	uint64_t os_indications = 0;
+	uint32_t size = sizeof(os_indications);
+
+	if (smmstore_lookup_region(&rdev))
+		return false;
+
+	if (efi_fv_get_option(&rdev, &efi_global_variable_guid, "OsIndications",
+			      &os_indications, &size) != CB_SUCCESS)
+		return false;
+
+	return size == sizeof(os_indications) &&
+	       (os_indications & EFI_OS_INDICATIONS_FILE_CAPSULE_DELIVERY_SUPPORTED);
+}
 
 static bool is_data_block(const struct block_descr *block)
 {
@@ -676,6 +694,11 @@ void efi_parse_capsules(void)
 	/* EDK2 starts with 20 items and then grows the list, but it's unlikely
 	   to be necessary in practice. */
 	enum { MAX_CAPSULE_BLOCKS = MAX_CAPSULES };
+
+	if (CONFIG(DRIVERS_EFI_CAPSULE_ON_DISK_SUPPORT) && efi_is_disk_capsules_boot()) {
+		set_boot_mode(LB_BOOT_MODE_FLASH_UPDATE);
+		return;
+	}
 
 	struct region_device rdev;
 	if (smmstore_lookup_region(&rdev)) {

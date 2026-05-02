@@ -707,8 +707,10 @@ void acpi_create_vfct(const struct device *device,
 	current = acpi_fill_vfct_func(device, vfct, current);
 
 	/* If no BIOS image, return with header->length == 0. */
-	if (!vfct->VBIOSImageOffset)
+	if (!vfct->VBIOSImageOffset) {
+		header->length = 0;
 		return;
+	}
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)vfct;

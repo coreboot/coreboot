@@ -13,6 +13,52 @@
 #include "model_2065x.h"
 #include "chip.h"
 
+#define MWAIT_RES(state, sub_state)                         \
+	{                                                   \
+		.addrl = (((state) << 4) | (sub_state)),    \
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,       \
+		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
+		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
+		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD, \
+	}
+
+/*
+ * List of supported C-states in this processor
+ *
+ * Latencies are typical worst-case package exit time in uS
+ * taken from the ACPI dump on Lenovo X201T.
+ */
+static acpi_cstate_t cstate_map[NUM_C_STATES] = {
+	[C_STATE_C0] = { },
+	[C_STATE_C1] = {
+		.latency = 3,
+		.power = 1000,
+		.resource = MWAIT_RES(0, 0),
+	},
+	[C_STATE_C1E] = {
+		.latency = 3,
+		.power = 1000,
+		.resource = MWAIT_RES(0, 1),
+	},
+	[C_STATE_C3] = {
+		.latency = 205,
+		.power = 500,
+		.resource = MWAIT_RES(1, 0),
+	},
+	[C_STATE_C6] = {
+		.latency = 245,
+		.power = 350,
+		.resource = MWAIT_RES(2, 0),
+	},
+	[C_STATE_C7] = {
+		.latency = 245,
+		.power = 200,
+		.resource = MWAIT_RES(3, 0),
+	},
+};
+
+static const char *const c_state_names[] = {"C0", "C1", "C1E", "C3", "C6", "C7"};
+
 static int get_cores_per_package(void)
 {
 	struct cpuinfo_x86 c;
@@ -29,9 +75,94 @@ static int get_cores_per_package(void)
 	return cores;
 }
 
-static void generate_C_state_entries(void)
+static void print_supported_cstates(void)
 {
-	/* TODO */
+	uint8_t state, substate;
+
+	printk(BIOS_DEBUG, "Supported C-states: ");
+
+	for (size_t i = 0; i < ARRAY_SIZE(cstate_map); i++) {
+		state = (cstate_map[i].resource.addrl >> 4) + 1;
+		substate = cstate_map[i].resource.addrl & 0xf;
+
+		/* CPU C0 is always supported */
+		if (i == 0 || cpu_get_c_substate_support(state) > substate)
+			printk(BIOS_DEBUG, " %s", c_state_names[i]);
+	}
+	printk(BIOS_DEBUG, "\n");
+}
+
+/*
+ * Returns the supported C-state or the next lower one that
+ * is supported.
+ */
+static int get_supported_cstate(int cstate)
+{
+	uint8_t state, substate;
+	size_t i;
+
+	assert(cstate < NUM_C_STATES);
+
+	for (i = cstate; i > 0; i--) {
+		state = (cstate_map[i].resource.addrl >> 4) + 1;
+		substate = cstate_map[i].resource.addrl & 0xf;
+		if (cpu_get_c_substate_support(state) > substate)
+			break;
+	}
+
+	if (cstate != i)
+		printk(BIOS_INFO, "Requested C-state %s not supported, using %s instead\n",
+		       c_state_names[cstate], c_state_names[i]);
+
+	return i;
+}
+
+static void generate_C_state_entries(const struct device *dev)
+{
+	// FIXME: Make this configurable in devicetree.
+	int acpi_cstates[3] = { C_STATE_C1E, C_STATE_C3, C_STATE_C6 };
+
+	acpi_cstate_t acpi_cstate_map[ARRAY_SIZE(acpi_cstates)] = { 0 };
+	/* Count number of active C-states */
+	int count = 0;
+
+	for (int i = 0; i < ARRAY_SIZE(acpi_cstates); i++) {
+		/* Remove invalid states */
+		if (acpi_cstates[i] >= ARRAY_SIZE(cstate_map)) {
+			printk(BIOS_ERR, "Invalid C-state in devicetree: %d\n",
+			       acpi_cstates[i]);
+			acpi_cstates[i] = 0;
+			continue;
+		}
+		/* Skip C0, it's always supported */
+		if (acpi_cstates[i] == 0)
+			continue;
+
+		/* Find supported state. Might downgrade a state. */
+		acpi_cstates[i] = get_supported_cstate(acpi_cstates[i]);
+
+		/* Remove duplicate states */
+		for (int j = i - 1; j >= 0; j--) {
+			if (acpi_cstates[i] == acpi_cstates[j]) {
+				acpi_cstates[i] = 0;
+				break;
+			}
+		}
+	}
+
+	/* Convert C-state to ACPI C-states */
+	for (int i = 0; i < ARRAY_SIZE(acpi_cstates); i++) {
+		if (acpi_cstates[i] == 0)
+			continue;
+		acpi_cstate_map[count] = cstate_map[acpi_cstates[i]];
+		acpi_cstate_map[count].ctype = i + 1;
+
+		count++;
+		printk(BIOS_DEBUG, "Advertising ACPI C State type C%d as CPU %s\n",
+		       i + 1, c_state_names[acpi_cstates[i]]);
+	}
+
+	acpigen_write_CST_package(acpi_cstate_map, count);
 }
 
 static acpi_tstate_t tss_table_fine[] = {
@@ -203,7 +334,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
-static void generate_cpu_entry(int cpu, int core, int cores_per_package)
+static void generate_cpu_entry(const struct device *device, int cpu, int core, int cores_per_package)
 {
 	/* Generate Scope(\_SB) { Device(CPUx */
 	acpigen_write_processor_device(cpu * cores_per_package + core);
@@ -212,7 +343,7 @@ static void generate_cpu_entry(int cpu, int core, int cores_per_package)
 	generate_P_state_entries(cpu, cores_per_package);
 
 	/* Generate C-state tables */
-	generate_C_state_entries();
+	generate_C_state_entries(device);
 
 	/* Generate T-state tables */
 	generate_T_state_entries(cpu, cores_per_package);
@@ -229,9 +360,11 @@ void generate_cpu_entries(const struct device *device)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
+	print_supported_cstates();
+
 	for (int cpu_id = 0; cpu_id < numcpus; cpu_id++)
 		for (int core_id = 0; core_id < cores_per_package; core_id++)
-			generate_cpu_entry(cpu_id, core_id, cores_per_package);
+			generate_cpu_entry(device, cpu_id, core_id, cores_per_package);
 
 	/* PPKG is usually used for thermal management
 	   of the first and only package. */

@@ -20,6 +20,31 @@
 #include <smp/node.h>
 #include <types.h>
 
+#define HIGHEST_CLEVEL		3	// FIXME: C7 is also supported.
+
+static void configure_c_states(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
+	msr.lo &= ~BIT(10);		// disable IO-based C-State transition requests to MWAIT
+	msr.lo &= ~7;
+	msr.lo |= HIGHEST_CLEVEL;	// support at most C6
+	if (HIGHEST_CLEVEL >= 3)
+		msr.lo |= BIT(25);	// C3 Auto Demotion Enable
+	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
+
+	if (boot_cpu()) {
+		msr = rdmsr(MSR_POWER_CTL);
+		msr.lo |= BIT(1);	// C1E Enable
+		wrmsr(MSR_POWER_CTL, msr);
+
+		msr = rdmsr(MSR_MISC_PWR_MGMT);
+		msr.lo &= ~BIT(0);	// Enable P-state HW_ALL coordination
+		wrmsr(MSR_MISC_PWR_MGMT, msr);
+	}
+}
+
 static void configure_thermal_target(struct device *dev)
 {
 	struct cpu_intel_model_2065x_config *conf = dev->upstream->dev->chip_info;
@@ -83,6 +108,8 @@ static void model_2065x_init(struct device *cpu)
 	set_vmx_and_lock();
 
 	set_aesni_lock();
+
+	configure_c_states();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();

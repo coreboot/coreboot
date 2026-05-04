@@ -128,7 +128,7 @@ static void run_selftest(void *data)
 	list_for_each(node, st_exec_state->selftest_list, list_node) {
 		st_debug("[%zu] Running 0x%x\n", idx + 1, node->test.id);
 		node->result = node->test.exec();
-		st_info("Selftest: %s (0x%x), Result: %s, Error Code: 0x%x\n",
+		st_info("Selftest: %s (0x%x), Result: %s, Error Code: %d\n",
 			st_get_name(node->test.id), node->test.id,
 			st_status_str[node->result.status], node->result.error_code);
 		st_log(node->test.id, node->result);

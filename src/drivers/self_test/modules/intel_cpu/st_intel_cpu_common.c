@@ -20,12 +20,14 @@ void st_readmsr(void *unused)
 	spin_unlock(&st_lock);
 }
 
-void st_readmsr_all_cpus(unsigned int reg)
+enum cb_err st_readmsr_all_cpus(unsigned int reg)
 {
 	memset(&msr_per_cpu, 0, sizeof(msr_per_cpu));
 	msr_per_cpu.reg = reg;
 	if (mp_run_on_all_cpus(st_readmsr, NULL) != CB_SUCCESS) {
 		st_debug("mp_run_on_all_cpus for st_readmsr(0x%x) failed\n", reg);
-		return;
+		return CB_ERR;
 	}
+
+	return CB_SUCCESS;
 }

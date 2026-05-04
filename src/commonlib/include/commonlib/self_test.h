@@ -27,9 +27,24 @@ enum st_id {
 	ST_CPU_INTEL_MICROCODE = ST_INTEL_START,
 };
 
+#define ST_ERR_NONE			0
+
+enum st_ucode_error {
+	ST_UCODE_ERR_MSR_READ_FAILED = 1,
+	ST_UCODE_ERR_NOT_LOADED,
+	ST_UCODE_ERR_CORE_MISMATCH,
+};
+
 #define ST_ID_TO_NAME_TABLE \
 	{ST_INVALID_ID,			"Invalid Test"},\
 	{ST_CPU_INTEL_MICROCODE,	"Intel_microcode_patch_loaded"}
+
+#define ST_ERR_TO_NAME_TABLE \
+	{ST_INVALID_ID,			ST_ERR_NONE,			"No error"},\
+	{ST_CPU_INTEL_MICROCODE,	ST_ERR_NONE,			"Success"},\
+	{ST_CPU_INTEL_MICROCODE,	ST_UCODE_ERR_MSR_READ_FAILED,	"MSR read failed"},\
+	{ST_CPU_INTEL_MICROCODE,	ST_UCODE_ERR_NOT_LOADED,	"Microcode not loaded"},\
+	{ST_CPU_INTEL_MICROCODE,	ST_UCODE_ERR_CORE_MISMATCH,	"Core revision mismatch"}
 
 #define ST_PASSED	0
 #define ST_SKIPPED	1
@@ -66,6 +81,16 @@ struct st_id_to_name {
 };
 
 /*
+ * Mapping structure to associate a self-test error code with its human-readable
+ * name or description.
+ */
+struct st_err_to_name {
+	uint32_t id;
+	uint16_t error_code;
+	const char *name;
+};
+
+/*
  * Human-readable string representations for each self-test status code,
  * indexed by st_status value.
  */
@@ -83,5 +108,6 @@ static const char * const st_status_str[] = {
  * from ST_ID_TO_NAME_TABLE.
  */
 static const struct st_id_to_name st_ids[] = { ST_ID_TO_NAME_TABLE };
+static const struct st_err_to_name st_err_ids[] = { ST_ERR_TO_NAME_TABLE };
 
 #endif /* __COMMONLIB_SELF_TEST_H__ */

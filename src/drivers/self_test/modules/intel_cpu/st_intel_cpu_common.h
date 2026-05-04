@@ -4,6 +4,7 @@
 #define _ST_INTEL_CPU_COMMON_H_
 
 #include <cpu/x86/msr.h>
+#include <types.h>
 
 struct msr_per_cpu {
 	unsigned int reg;
@@ -11,6 +12,6 @@ struct msr_per_cpu {
 };
 
 void st_readmsr(void *unused);
-void st_readmsr_all_cpus(unsigned int reg);
+enum cb_err st_readmsr_all_cpus(unsigned int reg);
 
 #endif /* _ST_INTEL_CPU_COMMON_H_ */

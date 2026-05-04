@@ -93,6 +93,9 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_pdp, REGION_SIZE(dram_pdp));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz_static, REGION_SIZE(dram_tz_static));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_adsp_rpc_heap, REGION_SIZE(dram_adsp_rpc_heap));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_pld_pep, REGION_SIZE(dram_pld_pep));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_pld_gmu, REGION_SIZE(dram_pld_gmu));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_pld_pdp, REGION_SIZE(dram_pld_pdp));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_wlan, REGION_SIZE(dram_wlan));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_pil, REGION_SIZE(dram_pil));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_ta, REGION_SIZE(dram_ta));

@@ -8,13 +8,20 @@
 #define ST_ID_TO_NAME_TABLE \
 	{ST_INVALID_ID,			"Invalid Test"}
 
-typedef uint32_t st_status;
-
 #define ST_PASSED	0
 #define ST_SKIPPED	1
 #define ST_WARNING	2
 #define ST_FAILED	3
 #define ST_STATUS_MAX	4
+
+/*
+ * Structure representing the return status and optional error code of a
+ * self-test execution.
+ */
+struct st_status {
+	uint16_t status;
+	uint16_t error_code;
+};
 
 /*
  * Structure representing a single self-test execution log entry stored in CBMEM
@@ -23,7 +30,7 @@ typedef uint32_t st_status;
  */
 struct self_test_log {
 	uint32_t id;
-	st_status status;
+	struct st_status result;
 };
 
 /*

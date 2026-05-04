@@ -13,7 +13,7 @@ static u32 cbmem_st_log_index;
 
 struct selftest_entry {
 	struct self_test_t test;
-	int result;
+	struct st_status result;
 	struct list_node list_node;
 };
 
@@ -49,14 +49,14 @@ static const char * const st_seq_to_name[] = {
 
 static struct st_exec_state_t st_exec_states[ST_BS_STATE_MAX * ST_BS_SEQ_MAX];
 
-static void st_log(uint32_t id, st_status status)
+static void st_log(uint32_t id, struct st_status result)
 {
 	size_t max_elements = CONFIG_SELF_TEST_OUTPUT_BUFFER_SIZE / sizeof(struct self_test_log);
 
 	if (cbmem_st_log_index < max_elements) {
 		struct self_test_log *entry = &cbmem_st_log[cbmem_st_log_index++];
 		entry->id = id;
-		entry->status = status;
+		entry->result = result;
 	}
 }
 
@@ -79,7 +79,8 @@ static void add_selftest(const struct self_test_t *test)
 
 	/* Initialize the entry */
 	e->test = *test;
-	e->result = ST_SKIPPED;
+	e->result.status = ST_SKIPPED;
+	e->result.error_code = 0;
 
 	/* Append to the appropriate execution list */
 	u32 list_idx = (test->state * ST_BS_SEQ_MAX) + test->when;
@@ -127,8 +128,9 @@ static void run_selftest(void *data)
 	list_for_each(node, st_exec_state->selftest_list, list_node) {
 		st_debug("[%zu] Running 0x%x\n", idx + 1, node->test.id);
 		node->result = node->test.exec();
-		st_info("Selftest: %s (0x%x), Result: %s\n", st_get_name(node->test.id),
-			node->test.id, st_status_str[node->result]);
+		st_info("Selftest: %s (0x%x), Result: %s, Error Code: 0x%x\n",
+			st_get_name(node->test.id), node->test.id,
+			st_status_str[node->result.status], node->result.error_code);
 		st_log(node->test.id, node->result);
 		idx++;
 	}

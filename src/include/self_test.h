@@ -12,9 +12,9 @@ struct self_test_t {
 	uint32_t id;
 	/*
 	 * Test override function to perform the test.
-	 * the return type of the function should be in st_status
+	 * the return type of the function should be in struct st_status
 	 */
-	st_status (*exec)(void);
+	struct st_status (*exec)(void);
 	/*
 	 * Specify the Boot State to execute this test, e.g. -
 	 * 1. BS_DEV_ENABLE, BS_ON_ENTRY <------- After PCI Enumeration

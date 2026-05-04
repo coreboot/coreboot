@@ -13,6 +13,7 @@ HOSTCFLAGS ?= $(CFLAGS)
 HOSTCFLAGS += -Wall -Wextra -MMD -MP -O3
 HOSTCFLAGS += -I $(TOP)/util/cbfstool/flashmap/
 HOSTCFLAGS += -I $(ROOT)/commonlib/bsd/include
+HOSTCFLAGS += -include $(TOP)/src/commonlib/bsd/include/commonlib/bsd/compiler.h
 
 HOSTLDFLAGS ?= $(LDFLAGS)
 

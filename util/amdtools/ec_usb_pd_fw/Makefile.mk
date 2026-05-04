@@ -9,6 +9,7 @@ EC_USB_PD_FWCFLAGS += -Wno-array-bounds -Wextra -MMD -MP -O3 -Wshadow $(WERROR)
 EC_USB_PD_FWCFLAGS += -I $(top)/util/cbfstool/flashmap/
 EC_USB_PD_FWCFLAGS += -I $(top)/util/amdtools/ec_usb_pd_fw
 EC_USB_PD_FWCFLAGS += -I $(top)/src/commonlib/bsd/include
+EC_USB_PD_FWCFLAGS += -include $(top)/src/commonlib/bsd/include/commonlib/bsd/compiler.h
 
 additional-dirs += $(objutil)/ec_usb_pd_fw
 

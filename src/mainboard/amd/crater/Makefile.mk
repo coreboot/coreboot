@@ -21,7 +21,16 @@ subdirs-y += ../../../../util/mec152x
 $(call add_intermediate, add_mchp_fw, $(objutil)/mec152x/mec152xtool)
 	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC_BODY -f $(CONFIG_CRATER_MCHP_FW_FILE) --fill-upward
 	$(objutil)/mec152x/mec152xtool $(obj)/coreboot.pre GEN_ECFW_PTR -f EC_BODY
-else
+
+ifeq ($(CONFIG_CRATER_HAVE_PD_FW),y)
+subdirs-y += ../../../../util/amdtools/ec_usb_pd_fw
+
+$(call add_intermediate, add_pd_fw, $(objutil)/ec_usb_pd_fw/ec_usb_pd_fw)
+	$(CBFSTOOL) $(obj)/coreboot.pre write -r PD_FW -f $(CONFIG_CRATER_PD_FW_FILE) --fill-upward
+	$(objutil)/ec_usb_pd_fw/ec_usb_pd_fw $(obj)/coreboot.pre GEN_PDFW_PTR -n -f PD_FW
+endif
+
+else # CONFIG_CRATER_HAVE_MCHP_FW
 show_notices:: warn_no_mchp
 endif
 

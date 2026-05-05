@@ -1733,6 +1733,15 @@ int main(int argc, char **argv)
 	ctx.ish_a_dir = NULL;
 	ctx.ish_b_dir = NULL;
 
+	if (cb_config.recovery_ab_single_copy) {
+		if (!platform_is_multi_level(cb_config.soc_id) ||
+		    !platform_needs_ish(cb_config.soc_id)) {
+			fprintf(stderr, "Error: AB recovery with single copy option requires multiple levels and ISH\n\n");
+			amdfwtool_cleanup(&ctx);
+			return 1;
+		}
+	}
+
 	if (platform_is_multi_level(cb_config.soc_id)) {
 
 		ctx.current_l1_pointer = 0;

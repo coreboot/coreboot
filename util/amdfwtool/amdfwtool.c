@@ -924,14 +924,18 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 	ctx->current_table = current_table_save;
 }
 
-static void integrate_psp_levels(context *ctx,
-				amd_cb_config *cb_config)
+static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 {
 	uint32_t current_table_save;
 	bool recovery_ab = cb_config->recovery_ab;
 	unsigned int count;
 	psp_directory_table *pspdir, *pspdir2, *pspdir2_b;
 	bool use_only_a = (cb_config->soc_id == PLATFORM_PHOENIX); /* TODO: b:285390041 */
+
+	/* PSP L1 must exist */
+	assert(ctx->pspdir);
+	/* PSP L2 must exist */
+	assert(ctx->pspdir2);
 
 	pspdir = ctx->pspdir;
 	pspdir2 = ctx->pspdir2;
@@ -940,7 +944,7 @@ static void integrate_psp_levels(context *ctx,
 
 	current_table_save = ctx->current_table;
 	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
-	if (recovery_ab && (pspdir2 != NULL)) {
+	if (recovery_ab) {
 		integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
 			AMD_FW_RECOVERYAB_A, cb_config->soc_id);
 		if (pspdir2_b != NULL)
@@ -1786,8 +1790,13 @@ int main(int argc, char **argv)
 			}
 			integrate_bios_levels(&ctx, &cb_config);
 		}
-		integrate_psp_levels(&ctx, &cb_config);
+		integrate_psp_level2(&ctx, &cb_config);
 	} else {
+		if (cb_config.recovery_ab) {
+			fprintf(stderr, "Error: AB recovery requires multiple levels\n\n");
+			amdfwtool_cleanup(&ctx);
+			return 1;
+		}
 		/* flat: PSP 1 cookie and no pointer to 2nd table */
 		ctx.pspdir = integrate_psp_firmwares(&ctx, amd_psp_fw_table, PSP_COOKIE, &cb_config);
 	}

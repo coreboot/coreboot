@@ -1,4 +1,5 @@
 chip soc/intel/apollolake
+	register "common_soc_config.chipset_lockdown" = "CHIPSET_LOCKDOWN_FSP"
 
 	# Graphics
 	# TODO:
@@ -65,7 +66,7 @@ chip soc/intel/apollolake
 				device generic 0 on end
 			end
 		end
-		device ref pmc		off end
+		device ref pmc		on  end
 		device ref p2sb		on  end
 		device ref fast_spi	on  end
 		device ref sram		on  end
@@ -102,12 +103,12 @@ chip soc/intel/apollolake
 		device ref uart2	on  end
 		device ref spi2		on  end
 		device ref lpc_espi	on
-			register "gen1_dec"			= "0x00040069"
-			register "gen2_dec"			= "0x00fc0201"
-			register "gen3_dec"			= "0x000c0081"
+			register "gen1_dec"			= "0x000c06a1"
+			register "gen2_dec"			= "0x000c0081"
 
 			chip ec/starlabs/merlin
 				# Port pair 4Eh/4Fh
+				device pnp 4e.00 on  end			# IO Interface
 				device pnp 4e.01 off end			# Com 1
 				device pnp 4e.02 off end			# Com 2
 				device pnp 4e.04 off end			# System Wake-Up

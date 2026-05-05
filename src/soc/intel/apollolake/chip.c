@@ -23,6 +23,7 @@
 #include <intelblocks/itss.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/systemagent.h>
+#include <intelpch/lockdown.h>
 #include <option.h>
 #include <soc/ahci.h>
 #include <soc/cpu.h>
@@ -704,13 +705,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 
 	silconfig->SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
 
-	/* coreboot handles the lockdown */
-	silconfig->LockDownGlobalSmi		= 0;
-	silconfig->BiosLock			= 0;
-	silconfig->BiosInterface		= 0;
-	silconfig->WriteProtectionEnable[0]	= 0;
-	silconfig->SpiEiss			= 0;
-	silconfig->RtcLock			= 0;
+	/* coreboot handles lockdown unless the board delegates it to FSP */
+	const bool lockdown_by_fsp = get_lockdown_config() == CHIPSET_LOCKDOWN_FSP;
+
+	silconfig->LockDownGlobalSmi		= lockdown_by_fsp;
+	silconfig->BiosLock			= lockdown_by_fsp;
+	silconfig->BiosInterface		= lockdown_by_fsp;
+	silconfig->WriteProtectionEnable[0]	= lockdown_by_fsp;
+	silconfig->SpiEiss			= lockdown_by_fsp;
+	silconfig->RtcLock			= lockdown_by_fsp;
 
 	/* Enable Audio clk gate and power gate */
 	silconfig->HDAudioClkGate = cfg->hdaudio_clk_gate_enable;

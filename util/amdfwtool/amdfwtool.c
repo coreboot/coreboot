@@ -704,23 +704,18 @@ static void fill_bios_directory_to_efs(embedded_firmware *amd_romsig, void *bios
 	if (platform_needs_ish(cb_config->soc_id))
 		return;
 
-	switch (cb_config->soc_id) {
-	case PLATFORM_RENOIR:
-	case PLATFORM_LUCIENNE:
-	case PLATFORM_CEZANNE:
-	case PLATFORM_GENOA:
-		if (!cb_config->recovery_ab)
-			amd_romsig->bios3_entry =
-				BUFF_TO_RUN_MODE(*ctx, biosdir, AMD_ADDR_REL_BIOS);
-		break;
-	case PLATFORM_CARRIZO:
-	case PLATFORM_STONEYRIDGE:
-	case PLATFORM_RAVEN:
-	case PLATFORM_PICASSO:
-	default:
-		amd_romsig->bios1_entry =
-			BUFF_TO_RUN_MODE(*ctx, biosdir, AMD_ADDR_REL_BIOS);
-		break;
+	if (!platform_is_multi_level(cb_config->soc_id)) {
+		/*
+		 * Old SoCs always advertise BHD in EFS. There's no support for A/B
+		 * recovery since it doesn't support PSP L2 tables.
+		 */
+		amd_romsig->bios1_entry = BUFF_TO_RUN_MODE(*ctx, biosdir, AMD_ADDR_REL_BIOS);
+	} else if (!cb_config->recovery_ab) {
+		/*
+		 * Multi level SoCs only advertise BHD in EFS when not using A/B recovery.
+		 * In A/B recovery mode BHD is advertised by PSP L2 table.
+		 */
+		amd_romsig->bios3_entry = BUFF_TO_RUN_MODE(*ctx, biosdir, AMD_ADDR_REL_BIOS);
 	}
 }
 

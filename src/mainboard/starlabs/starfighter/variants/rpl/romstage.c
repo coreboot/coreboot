@@ -1,11 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <common/memory.h>
+#include <console/console.h>
+#include <fsp/api.h>
 #include <option.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
 #include <types.h>
 
 #include <gpio.h>
+
+#define MEMORY_SPEED_DEFAULT 1
 
 static uint8_t get_memory_config_straps(void)
 {
@@ -57,6 +62,26 @@ static uint8_t memcfg_and_speed_to_cbfs_index(uint8_t memcfg, unsigned int speed
 	if (speed > 2)
 		speed = 2;
 	return (uint8_t)(memcfg * 3 + speed);
+}
+
+static unsigned int get_memory_speed_option(void)
+{
+	return starlabs_get_memory_speed_option(MEMORY_SPEED_DEFAULT);
+}
+
+static uint8_t get_spd_cbfs_index(void)
+{
+	const uint8_t strap = get_memory_config_straps();
+	const uint8_t memcfg = strap_to_memcfg_index(strap);
+	const unsigned int speed = get_memory_speed_option();
+	const uint8_t cbfs_index = memcfg_and_speed_to_cbfs_index(memcfg, speed);
+
+	return cbfs_index;
+}
+
+uint8_t fsp_memory_mainboard_version(void)
+{
+	return get_spd_cbfs_index();
 }
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
@@ -122,12 +147,14 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	};
 
 	const bool half_populated = false;
+	const uint8_t cbfs_index = get_spd_cbfs_index();
+
+	printk(BIOS_INFO, "Memory straps=%u SPD index=%u\n", get_memory_config_straps(),
+	       cbfs_index);
 
 	const struct mem_spd lpddr5_spd_info = {
 		.topo = MEM_TOPO_MEMORY_DOWN,
-		.cbfs_index = memcfg_and_speed_to_cbfs_index(
-			strap_to_memcfg_index(get_memory_config_straps()),
-			get_uint_option("memory_speed", 1)),
+		.cbfs_index = cbfs_index,
 	};
 
 	memcfg_init(mupd, &mem_config, &lpddr5_spd_info, half_populated);

@@ -1,9 +1,18 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <common/memory.h>
+#include <fsp/api.h>
 #include <option.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
 #include <types.h>
+
+#define MEMORY_SPEED_DEFAULT 0
+
+uint8_t fsp_memory_mainboard_version(void)
+{
+	return starlabs_get_memory_speed_option(MEMORY_SPEED_DEFAULT);
+}
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
@@ -93,7 +102,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	const struct mem_spd lpddr5_spd_info = {
 		.topo = MEM_TOPO_MEMORY_DOWN,
-		.cbfs_index = get_uint_option("memory_speed", 0),
+		.cbfs_index = fsp_memory_mainboard_version(),
 	};
 
 	memcfg_init(mupd, &mem_config, &lpddr5_spd_info, half_populated);

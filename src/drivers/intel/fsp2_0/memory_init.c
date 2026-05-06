@@ -227,18 +227,14 @@ uint8_t fsp_memory_soc_version(void)
 }
 
 /*
- * Allow SoC and/or mainboard to bump the revision of the FSP setting
- * number. The FSP spec uses the low 8 bits as the build number. Take over
- * bits 3:0 for the SoC setting and bits 7:4 for the mainboard. That way
- * a tweak in the settings will bump the version used to track the cached
- * setting which triggers retraining when the FSP version hasn't changed, but
- * the SoC or mainboard settings have.
+ * Allow SoC and/or mainboard to bump the revision of the memory setting
+ * number. Take over bits 3:0 for the SoC setting and bits 7:4 for the
+ * mainboard. That way a tweak in the settings will bump the version used to
+ * track the cached setting, which triggers retraining when the FSP or MRC
+ * version has not changed, but the SoC or mainboard settings have.
  */
-static uint32_t fsp_memory_settings_version(const struct fsp_header *hdr)
+static uint32_t fsp_memory_settings_version(uint32_t ver)
 {
-	/* Use the full FSP version by default. */
-	uint32_t ver = hdr->image_revision;
-
 	if (!CONFIG(FSP_PLATFORM_MEMORY_SETTINGS_VERSIONS))
 		return ver;
 
@@ -374,7 +370,8 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	if (CONFIG(MRC_CACHE_USING_MRC_VERSION))
 		version = fsp_mrc_version(hdr);
 	else
-		version = fsp_memory_settings_version(hdr);
+		version = hdr->image_revision;
+	version = fsp_memory_settings_version(version);
 
 	upd = (FSPM_UPD *)(uintptr_t)(hdr->cfg_region_offset + hdr->image_base);
 

@@ -260,10 +260,14 @@ config FSP_TEMP_RAM_SIZE
 config FSP_PLATFORM_MEMORY_SETTINGS_VERSIONS
 	bool
 	help
-	  This is selected by SoC or mainboard to supply their own
-	  concept of a version for the memory settings respectively.
-	  This allows deployed systems to bump their version number
-	  with the same FSP which will trigger a retrain of the memory.
+	  Select this when a SoC or mainboard needs to mix its own
+	  memory-settings version into the MRC cache version.
+
+	  FSP-M UPDs can affect memory training without changing the FSP
+	  binary version, and some platforms use the MRC version rather than
+	  the FSP-M image revision as the cache key. Mixing in the SoC and
+	  mainboard versions lets deployed systems invalidate stale training
+	  data when those settings change while keeping the same FSP binary.
 
 config FSP_COMPRESS_FSP_S_LZMA
 	bool

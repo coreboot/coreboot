@@ -7,7 +7,6 @@ bootblock-y += ec.c
 romstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_PHOENIX) += port_descriptors_phoenix.c
 romstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_GLINDA) += port_descriptors_glinda.c
 
-ramstage-y += chromeos.c
 ramstage-y += gpio.c
 ramstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_PHOENIX) += port_descriptors_phoenix.c
 ramstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_GLINDA) += port_descriptors_glinda.c

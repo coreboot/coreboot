@@ -7,7 +7,6 @@ config BOARD_AMD_BIRMANPLUS_COMMON
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
 	select DRIVERS_PCIE_RTD3_DEVICE
 	select DRIVERS_I2C_GENERIC
-	select MAINBOARD_HAS_CHROMEOS if SOC_AMD_PHOENIX_FSP
 	select SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
 	select SOC_AMD_COMMON_BLOCK_SIMNOW_SUPPORTED
 	select SPI_FLASH_EXIT_4_BYTE_ADDR_MODE
@@ -24,8 +23,8 @@ config BOARD_AMD_BIRMANPLUS_GLINDA
 if BOARD_AMD_BIRMANPLUS_COMMON
 
 config FMDFILE
-	default "src/mainboard/amd/birman_plus/chromeos_phoenix.fmd" if CHROMEOS && BOARD_AMD_BIRMANPLUS_PHOENIX
-	default "src/mainboard/amd/birman_plus/chromeos_glinda.fmd" if CHROMEOS && BOARD_AMD_BIRMANPLUS_GLINDA
+	default "src/mainboard/amd/birman_plus/vboot_phoenix.fmd" if VBOOT && BOARD_AMD_BIRMANPLUS_PHOENIX
+	default "src/mainboard/amd/birman_plus/vboot_glinda.fmd" if VBOOT && BOARD_AMD_BIRMANPLUS_GLINDA
 	default "src/mainboard/amd/birman_plus/board_phoenix.fmd" if BOARD_AMD_BIRMANPLUS_PHOENIX
 	default "src/mainboard/amd/birman_plus/board_glinda.fmd" if BOARD_AMD_BIRMANPLUS_GLINDA
 
@@ -69,12 +68,6 @@ config RO_REGION_ONLY
 	# Add the EFS and EC to the RO region only
 	# This is a birmanplus specific override of soc/amd/(phoenix | glinda)/Kconfig
 	default "apu/amdfw apu/ecfw"
-
-config CHROMEOS
-	# Use default libpayload config
-	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
-	# We don't have recovery buttons, so we can't manually enable devmode.
-	select GBB_FLAG_FORCE_DEV_SWITCH_ON
 
 config ENABLE_EVAL_CARD
 	bool "Enable Eval Card"

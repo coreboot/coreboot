@@ -1,30 +1,29 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-// TODO: update for maple
-
 #include <console/console.h>
 #include <device/i2c_simple.h>
 #include <gpio.h>
 #include <soc/platform_descriptors.h>
 #include <types.h>
 
-
-#define strix_halo_mxm_dxio_descriptor {			\
+#define strix_halo_ssd1_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
-	.port_present = 0,	\
+	.port_present = true,				\
 	.start_logical_lane = 0,				\
-	.end_logical_lane = CONFIG(ENABLE_SSD1_MAPLE) ? 3 : 7,	\
+	.end_logical_lane = 3,					\
 	.device_number = 3,				\
 	.function_number = 1,				\
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,			\
 	.link_aspm = ASPM_L1,				\
+	.link_aspm_L1_1 = true, \
+	.link_aspm_L1_2 = true, \
 	.link_hotplug = HOTPLUG_DISABLED,		\
-	.clk_req = CLK_REQ0,				\
+	.clk_req = CLK_REQ0, \
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
 
-#define strix_halo_ssd1_dxio_descriptor {				\
+#define strix_halo_dt_mpcie_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
 	.port_present = true,				\
 	.start_logical_lane = 4,				\
@@ -34,6 +33,8 @@
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,			\
 	.link_aspm = ASPM_L1,				\
+	.link_aspm_L1_1 = true, \
+	.link_aspm_L1_2 = true, \
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ1, \
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
@@ -42,13 +43,15 @@
 #define strix_halo_ssd0_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
 	.port_present = true,				\
-	.start_logical_lane = 16,				\
-	.end_logical_lane = 19,					\
+	.start_logical_lane = 12,				\
+	.end_logical_lane = 15,					\
 	.device_number = 2,				\
-	.function_number = 1,				\
+	.function_number = 5,				\
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,			\
 	.link_aspm = ASPM_L1,				\
+	.link_aspm_L1_1 = true, \
+	.link_aspm_L1_2 = true, \
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ2, \
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
@@ -64,6 +67,8 @@
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,			\
 	.link_aspm = ASPM_L1,				\
+	.link_aspm_L1_1 = true, \
+	.link_aspm_L1_2 = true, \
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ3,				\
 }
@@ -71,13 +76,15 @@
 #define strix_halo_wwan_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
 	.port_present = true,	\
-	.start_logical_lane = CONFIG(ENABLE_WLANx0_WWANx2_MAPLE) ? 10 : 11,				\
-	.end_logical_lane = 11,		\
+	.start_logical_lane = 11,				\
+	.end_logical_lane = CONFIG(ENABLE_WLANx0_WWANx2_MAPLE) ? 10 : 11,		\
 	.device_number = 2,				\
-	.function_number = 5,				\
+	.function_number = 4,				\
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,			\
 	.link_aspm = ASPM_L1,				\
+	.link_aspm_L1_1 = true, \
+	.link_aspm_L1_2 = true, \
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ4,				\
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
@@ -86,13 +93,15 @@
 #define strix_halo_gbe_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
 	.port_present = true,				\
-	.start_logical_lane = 13,				\
-	.end_logical_lane = 13,					\
+	.start_logical_lane = 8,				\
+	.end_logical_lane = 8,					\
 	.device_number = 2,				\
-	.function_number = 4,				\
+	.function_number = 1,				\
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,			\
 	.link_aspm = ASPM_L1,				\
+	.link_aspm_L1_1 = true, \
+	.link_aspm_L1_2 = true, \
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ6,				\
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
@@ -101,13 +110,15 @@
 #define strix_halo_sd_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
 	.port_present = true,				\
-	.start_logical_lane = 14,				\
-	.end_logical_lane = 14,					\
+	.start_logical_lane = 9,				\
+	.end_logical_lane = 9,					\
 	.device_number = 2,				\
 	.function_number = 2,				\
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,			\
 	.link_aspm = ASPM_L1,				\
+	.link_aspm_L1_1 = true, \
+	.link_aspm_L1_2 = true, \
 	.link_hotplug = HOTPLUG_BASIC,		\
 	.clk_req = CLK_REQ5,				\
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
@@ -188,10 +199,8 @@ void mainboard_get_dxio_ddi_descriptors(
 	maple_strix_halo_ddi_descriptors[1].connector_type = get_ddi1_type();
 
 	static const fsp_dxio_descriptor maple_strix_halo_dxio_descriptors[] = {
-		strix_halo_mxm_dxio_descriptor,
-#if CONFIG(ENABLE_SSD1_MAPLE)
 		strix_halo_ssd1_dxio_descriptor,
-#endif
+		strix_halo_dt_mpcie_dxio_descriptor,
 		strix_halo_ssd0_dxio_descriptor,
 #if !CONFIG(ENABLE_WLANx0_WWANx2_MAPLE)
 		strix_halo_wlan_dxio_descriptor,

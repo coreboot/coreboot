@@ -178,8 +178,8 @@ chip soc/amd/strix_halo
 		.ComboPhyStaticConfig[2] = USB_COMBO_PHY_MODE_USB_C,
 	}"
 
-	register "gpp_clk_config[0]" = "GPP_CLK_REQ" # MXM
-	register "gpp_clk_config[1]" = "GPP_CLK_REQ" # NVMe SSD1
+	register "gpp_clk_config[0]" = "GPP_CLK_REQ" # NVME SSD1
+	register "gpp_clk_config[1]" = "GPP_CLK_REQ" # DT MPCIE
 	register "gpp_clk_config[2]" = "GPP_CLK_REQ" # NVMe SSD0
 	register "gpp_clk_config[3]" = "GPP_CLK_REQ" # WLAN
 	register "gpp_clk_config[4]" = "GPP_CLK_REQ" # WWAN
@@ -188,17 +188,17 @@ chip soc/amd/strix_halo
 
 	device domain 0 on
 		device ref iommu on end
-		device ref gpp_bridge_2_1 on end # NVME SSD0
-		device ref gpp_bridge_2_2 on # SD Express
-			device pci 0.0 on end # RTS5261
-		end
-		device ref gpp_bridge_2_3 on end # WLAN
-		device ref gpp_bridge_2_4 on # GBE
+		device ref gpp_bridge_2_1 on # GBE
 			device pci 0.0 on end # RTL8111
 		end
-		device ref gpp_bridge_2_5 on end # WWAN
-		device ref gpp_bridge_3_1 on end # PCIe x4/x8 (ENABLE_SSD1_MAPLE)
-		device ref gpp_bridge_3_2 on end # NVME SSD1 (ENABLE_SSD1_MAPLE)
+		device ref gpp_bridge_2_2 on # SD Express
+			device pci 0.0 on end # RTS5264
+		end
+		device ref gpp_bridge_2_3 on end # WLAN
+		device ref gpp_bridge_2_4 on end # WWAN
+		device ref gpp_bridge_2_5 on end # NVME SSD0
+		device ref gpp_bridge_3_1 on end # NVME SSD1
+		device ref gpp_bridge_3_2 on end # DT MPCIE
 
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)

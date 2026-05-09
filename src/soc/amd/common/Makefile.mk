@@ -56,11 +56,17 @@ add_bootblock = \
 	$(CBFSTOOL) $(1) write -r EFS -f $(obj)/amdfw.rom --fill-upward
 
 else
-add_bootblock = \
+# Raw fmap section (e.g. AMDFW): cbfstool write. CBFS container: add as apu/amdfw
+# (type amdfw) at $(amdfw_offset) within the CBFS region.
+amdfw_bootblock_needs_raw_write = $(strip $(filter-out $(subst $(comma),$(spc),$(CBFS_REGIONS)),\
+	$(subst $(comma),$(spc),$(strip $(call regions-for-file,apu/amdfw)))))
+
+add_bootblock = $(if $(amdfw_bootblock_needs_raw_write),\
+	$(CBFSTOOL) $(1) write -u -r $(call regions-for-file,apu/amdfw) -i 0 -f $(2),\
 	$(CBFSTOOL) $(1) add -f $(2) -n apu/amdfw -t amdfw \
-	-b $(amdfw_offset) -r $(call regions-for-file,apu/amdfw) \
-	$(CBFSTOOL_ADD_CMD_OPTIONS)
-endif
+		-b $(amdfw_offset) -r $(call regions-for-file,apu/amdfw) \
+		$(CBFSTOOL_ADD_CMD_OPTIONS))
+endif # ifeq ($(CONFIG_PSP_AB_RECOVERY),y)
 endif # ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
 
 ifeq ($(CONFIG_VBOOT_GSCVD),y)

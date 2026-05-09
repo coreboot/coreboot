@@ -78,12 +78,19 @@ static void h8_sticky_fn(int on)
 	}
 }
 
-static void f1_to_f12_as_primary(int on)
+/*
+ * Stock BIOS uses bits 2-3 in 0x09 for this option.
+ * Bit 3 in 0x3b is only used by physical Fn+Esc toggle!
+ */
+static void h8_f1_to_f12_as_primary(int on)
 {
-	if (on)
-		ec_set_bit(0x3b, 3);
-	else
-		ec_clr_bit(0x3b, 3);
+	if (on) {
+		ec_set_bit(0x09, 2);
+		ec_clr_bit(0x09, 3);
+	} else {
+		ec_set_bit(0x09, 3);
+		ec_clr_bit(0x09, 2);
+	}
 }
 
 static u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
@@ -345,7 +352,7 @@ static void h8_enable(struct device *dev)
 	h8_sticky_fn(get_uint_option("sticky_fn", 0));
 
 	if (CONFIG(H8_HAS_PRIMARY_FN_KEYS))
-		f1_to_f12_as_primary(get_uint_option("f1_to_f12_as_primary", 1));
+		h8_f1_to_f12_as_primary(get_uint_option("f1_to_f12_as_primary", 1));
 
 	h8_charge_priority(get_uint_option("first_battery", PRIMARY_BATTERY));
 

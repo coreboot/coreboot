@@ -61,6 +61,10 @@ config H8_HAS_LEDLOGO
 	bool
 	default n
 
+config H8_HAS_FNLOCK_LED
+	bool
+	default n
+
 config THINKPADEC_HKEY_EISAID
 	string
 	default "IBM0068"

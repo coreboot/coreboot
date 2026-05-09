@@ -43,6 +43,7 @@ void h8_mb_init(void);
 #define H8_CONFIG0 0x00
 #define H8_CONFIG0_EVENTS_ENABLE	0x02
 #define H8_CONFIG0_HOTKEY_ENABLE	0x04
+#define H8_CONFIG0_STICKY_FN		0x08
 #define H8_CONFIG0_SMM_H8_ENABLE	0x20
 #define H8_CONFIG0_TC_ENABLE		0x80
 
@@ -56,6 +57,7 @@ void h8_mb_init(void);
 #define H8_CONFIG2_DOCK_SPEAKER_MUTE_POL	0x04
 
 #define H8_CONFIG3 0x03
+#define H8_CONFIG3_STICKY_FNLOCK_LED	0x10
 
 #define H8_SOUND_ENABLE0		0x04
 #define H8_SOUND_ENABLE1		0x05
@@ -77,6 +79,7 @@ void h8_mb_init(void);
 #define H8_LED_CONTROL_BAT0_LED		0x01
 #define H8_LED_CONTROL_BAT1_LED		0x02
 #define H8_LED_CONTROL_UBAY_LED		0x04
+#define H8_LED_CONTROL_FNLOCK_LED	0x06	/* early models: Fn key (green led); later models: Esc key (white led) */
 #define H8_LED_CONTROL_SUSPEND_LED	0x07
 #define H8_LED_CONTROL_DOCK_LED1	0x08
 #define H8_LED_CONTROL_DOCK_LED2	0x09

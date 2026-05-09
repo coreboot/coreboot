@@ -67,10 +67,15 @@ static void h8_charge_priority(enum battery battery)
 
 static void h8_sticky_fn(int on)
 {
-	if (on)
+	if (on) {
 		ec_set_bit(0x0, 3);
-	else
+		if (CONFIG(H8_HAS_FNLOCK_LED))
+			ec_set_bit(0x3, 4);
+	} else {
 		ec_clr_bit(0x0, 3);
+		if (CONFIG(H8_HAS_FNLOCK_LED))
+			ec_clr_bit(0x3, 4);
+	}
 }
 
 static void f1_to_f12_as_primary(int on)

@@ -446,6 +446,8 @@ chip soc/intel/pantherlake
 				register "mode" = "THC_HID_I2C_MODE"
 				register "dev_hidi2c.intf.hidi2c.addr" = "0x15"
 				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0x01"
+				register "dev_hidi2c.intf.hidi2c.interrupt_delay_value" = "100"
+				register "dev_hidi2c.intf.hidi2c.max_frame_size_value" = "128"
 				register "soc_hidi2c.fm_scl_low_period" = "160"
 				register "soc_hidi2c.fm_scl_high_period" = "146"
 				register "wake_on_touch" = "true"
@@ -470,6 +472,8 @@ chip soc/intel/pantherlake
 				register "dev_hidi2c.cid" = ""PNP0C50""
 				register "dev_hidi2c.intf.hidi2c.addr" = "0x39"
 				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0"
+				register "dev_hidi2c.intf.hidi2c.interrupt_delay_value" = "100"
+				register "dev_hidi2c.intf.hidi2c.max_frame_size_value" = "128"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F08)"
 				register "wake_on_touch" = "false"
 				# NOTE: Use GpioInt() in _CRS and does not use GPE.
@@ -489,6 +493,8 @@ chip soc/intel/pantherlake
 				register "dev_hidi2c.cid" = ""PNP0C50""
 				register "dev_hidi2c.intf.hidi2c.addr" = "0x41"
 				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0x0001"
+				register "dev_hidi2c.intf.hidi2c.interrupt_delay_value" = "100"
+				register "dev_hidi2c.intf.hidi2c.max_frame_size_value" = "128"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F08)"
 				register "wake_on_touch" = "false"
 				# NOTE: Use GpioInt() in _CRS and does not use GPE.

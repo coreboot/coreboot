@@ -125,6 +125,15 @@ static void sata_init(struct device *dev)
 	}
 	write32p(abar + 0x24, reg32);
 
+	/* PxCMD */
+	const unsigned int num_ports = pch_is_lp() ? 4 : 6;
+	for (unsigned int port = 0; port < num_ports; port++) {
+		reg32 = read32p(abar + 0x118 + 0x80 * port);
+		if (config->sata_hotplug_map & (1 << port))
+			reg32 |= 1 << 18;
+		write32p(abar + 0x118 + 0x80 * port, reg32);
+	}
+
 	/* Set Gen3 Transmitter settings if needed */
 	if (config->sata_port0_gen3_tx)
 		pch_iobp_update(SATA_IOBP_SP0G3IR, 0,

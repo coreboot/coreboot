@@ -40,6 +40,7 @@ struct southbridge_intel_lynxpoint_config {
 
 	/* SATA configuration */
 	uint8_t sata_port_map;
+	uint8_t sata_hotplug_map;
 	uint32_t sata_port0_gen3_tx;
 	uint32_t sata_port1_gen3_tx;
 	uint32_t sata_port0_gen3_dtle;

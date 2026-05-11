@@ -9,12 +9,7 @@ romstage-y += port_descriptors.c
 ramstage-y += gpio.c
 ramstage-y += port_descriptors.c
 
-ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5.bin),)
-APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5.bin
-APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5_DefaultRecovery.bin
-else
-files_added:: warn_no_apcb
-endif
+APCB_SOURCES_RECOVERY = $(src)/mainboard/$(MAINBOARDDIR)/APCB_FP8_LPDDR5_DefaultRecovery.apcb
 
 ifeq ($(CONFIG_JAGUAR_HAVE_MCHP_FW),y)
 subdirs-y += ../../../../util/mec152x

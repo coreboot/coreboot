@@ -10,8 +10,7 @@ config SOC_AMD_STRIX_HALO_BASE
 	select BOOT_DEVICE_SUPPORTS_WRITES if BOOT_DEVICE_SPI_FLASH
 	select DRIVERS_USB_ACPI
 	select DRIVERS_USB_PCI_XHCI
-	select FSP_COMPRESS_FSP_M_LZMA if !ASYNC_FILE_LOADING
-	select FSP_COMPRESS_FSP_M_LZ4 if ASYNC_FILE_LOADING
+	select FSP_COMPRESS_FSP_M_LZMA
 	select FSP_COMPRESS_FSP_S_LZ4
 	select GENERIC_GPIO_LIB
 	select HAVE_ACPI_TABLES
@@ -20,7 +19,6 @@ config SOC_AMD_STRIX_HALO_BASE
 	select HAVE_FSP_GOP
 	select HAVE_SMI_HANDLER
 	select IDT_IN_EVERY_STAGE
-	select PARALLEL_MP_AP_WORK
 	select PLATFORM_USES_FSP2_0
 	select PROVIDES_ROM_SHARING
 	select RTC
@@ -153,27 +151,6 @@ config PSP_APOB_DRAM_SIZE
 	hex
 	default 0x90000
 
-config PSP_SHAREDMEM_BASE
-	hex
-	default 0x2091000 if VBOOT
-	default 0x0
-	help
-	  This variable defines the base address in DRAM memory where PSP copies
-	  the vboot workbuf. This is used in the linker script to have a static
-	  allocation for the buffer as well as for adding relevant entries in
-	  the BIOS directory table for the PSP.
-
-config PSP_SHAREDMEM_SIZE
-	hex
-	default 0x8000 if VBOOT
-	default 0x0
-	help
-	  Sets the maximum size for the PSP to pass the vboot workbuf and
-	  any logs or timestamps back to coreboot.  This will be copied
-	  into main memory by the PSP and will be available when the x86 is
-	  started.  The workbuf's base depends on the address of the reset
-	  vector.
-
 config PRE_X86_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x1600
@@ -185,10 +162,6 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	default 0x1600
 	help
 	  Increase this value if preram cbmem console is getting truncated
-
-config CBFS_MCACHE_SIZE
-	hex
-	default 0x2000 if VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 config C_ENV_BOOTBLOCK_SIZE
 	hex
@@ -228,21 +201,6 @@ config FSP_TEMP_RAM_SIZE
 	default 0x40000
 	help
 	  The amount of coreboot-allocated heap and stack usage by the FSP.
-
-config ASYNC_FILE_LOADING
-	bool "Loads files from SPI asynchronously"
-	select COOP_MULTITASKING
-	select SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
-	select CBFS_PRELOAD
-	help
-	  When enabled, the platform will use the LPC SPI DMA controller to
-	  asynchronously load contents from the SPI ROM. This will improve
-	  boot time because the CPUs can be performing useful work while the
-	  SPI contents are being preloaded.
-
-config CBFS_CACHE_SIZE
-	hex
-	default 0x40000 if CBFS_PRELOAD
 
 config ECAM_MMCONF_BASE_ADDRESS
 	default 0xE0000000

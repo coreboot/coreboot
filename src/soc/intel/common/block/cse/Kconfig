@@ -302,6 +302,14 @@ config SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY_V3
 	  This config will make mainboard use version 3 of the CSE timestamp
 	  definitions, it can be used for Panther Lake U/H.
 
+config SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY_V5
+	bool
+	select SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY
+	help
+	  This config will make mainboard use version 5 of the CSE timestamp
+	  definitions, it can be used for Nova Lake. Version 5 expands the
+	  CSE boot performance response to 96 timestamp entries.
+
 config SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE
 	bool
 	default !SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE

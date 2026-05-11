@@ -3,6 +3,9 @@
 #ifndef SOC_INTEL_COMMON_CSE_TELEMETRY_V1_H
 #define SOC_INTEL_COMMON_CSE_TELEMETRY_V1_H
 
+/* Number of CSE boot performance data entries */
+#define NUM_CSE_BOOT_PERF_DATA	64
+
 enum cse_boot_perf_data_v1 {
 	/* CSME ROM start execution  */
 	PERF_DATA_CSME_ROM_START = 0,

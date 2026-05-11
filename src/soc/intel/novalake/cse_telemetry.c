@@ -29,6 +29,8 @@ void soc_cbmem_inject_telemetry_data(s64 *ts, s64 current_time)
 		start_stamp + ts[PERF_DATA_CSME_HOST_BOOT_PREP_DONE]);
 	timestamp_add(TS_ME_RECEIVED_CRDA_FROM_PMC,
 		start_stamp + ts[PERF_DATA_PMC_SENT_CRDA]);
+	timestamp_add(TS_DMU_LOAD_END,
+		start_stamp + ts[PERF_DATA_ESE_LOAD_DMU_COMPLETED]);
 	timestamp_add(TS_AUNIT_LOAD_END,
 		start_stamp + ts[PERF_DATA_ESE_LOAD_AUNIT_COMPLETED]);
 }

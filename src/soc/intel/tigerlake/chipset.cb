@@ -7,7 +7,7 @@ chip soc/intel/tigerlake
 		device pci 02.0 alias igpu off end
 		device pci 04.0 alias dptf off end
 		device pci 05.0 alias ipu off end
-		device pci 06.0 alias peg off end
+		device pci 06.0 alias peg off ops pcie_rp_ops end
 		device pci 07.0 alias tbt_pcie_rp0 off
 			chip soc/intel/common/block/usb4
 				use tbt_dma0 as usb4_port

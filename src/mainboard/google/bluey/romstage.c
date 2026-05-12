@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/mmio.h>
 #include <arch/stages.h>
 #include "board.h"
 #include <bootmode.h>
@@ -17,9 +18,11 @@
 #include <soc/qcom_spmi.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
+#include <soc/symbols_common.h>
 #include <soc/watchdog.h>
 
 #define DELAY_FOR_SHIP_MODE 11000 /* 11sec */
+#define IMEM_COOKIE_TYPE_OFFSET 108
 
 static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
 static bool battery_present = true;
@@ -279,8 +282,30 @@ static void handle_battery_shipping_recovery(void)
 	do_board_reset();
 }
 
+static bool check_ramdump_mode_is_set(void)
+{
+	if (!CONFIG(QC_RAMDUMP_ENABLE))
+		return false;
+
+	uint32_t rawdump_val = read32(_shared_imem + IMEM_COOKIE_TYPE_OFFSET);
+
+	if (rawdump_val == 0x1) {
+		printk(BIOS_DEBUG, "Ramdump mode detected: 0x%x\n", rawdump_val);
+		return true;
+	}
+
+	printk(BIOS_DEBUG, "Ramdump mode not enabled (value: 0x%x)\n", rawdump_val);
+
+	return false;
+}
+
 void platform_romstage_main(void)
 {
+	static bool ramdump_mode = false;
+
+	if (check_ramdump_mode_is_set())
+		ramdump_mode = true;
+
 	mainboard_setup_peripherals_early();
 
 	if (!qclib_check_dload_mode())
@@ -304,6 +329,11 @@ void platform_romstage_main(void)
 	mainboard_setup_peripherals_late(boot_mode);
 
 	qclib_rerun();
+
+	if (ramdump_mode) {
+		printk(BIOS_INFO, "Issuing board reset to come out of Ramdump mode\n");
+		do_board_reset();
+	}
 
 	late_setup_usb_typec();
 }

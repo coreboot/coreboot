@@ -20,3 +20,13 @@ config SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR
 	help
 	  Mirror LPC registers for IO/MMIO to their corresponding GPMR registers.
 	  Required for platforms starting from SPT.
+
+config SOC_INTEL_COMMON_BLOCK_LPC_GPMR_IOC_1MB
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR && SOC_INTEL_COMMON_BLOCK_IOC
+	help
+	  Select this for platforms where IOC uses the 1MB GPMR/LGMR register
+	  encoding. IOC and eSPI do not use identical address field definitions:
+	  IOC encodes the address in bits [27:16], while eSPI uses bits [31:16].
+	  Enabling this option ensures LPC->GPMR mirroring uses IOC-compatible
+	  encoding instead of assuming the eSPI field layout.

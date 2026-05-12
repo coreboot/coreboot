@@ -241,8 +241,11 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 	lgmr = (base & LPC_LGMR_ADDR_MASK) | LPC_LGMR_EN;
 
 	pci_write_config32(PCH_DEV_LPC, LPC_GENERIC_MEM_RANGE, lgmr);
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR)) {
+		if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_GPMR_IOC_1MB))
+			lgmr = LPC_LGMR_ADDR_1MB(base & LPC_LGMR_ADDR_MASK) | LPC_LGMR_EN;
 		gpmr_write32(GPMR_LPCGMR, lgmr);
+	}
 }
 
 /*

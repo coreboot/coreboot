@@ -660,7 +660,7 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->Hwp = 1;
 	s_cfg->Cx = 1;
 	s_cfg->PsOnEnable = 1;
-	s_cfg->PkgCStateLimit = LIMIT_AUTO;
+	s_cfg->PkgCStateLimit = config->s0ix_enable ? LIMIT_AUTO : LIMIT_C8;
 	/* Enable the energy efficient turbo mode */
 	s_cfg->EnergyEfficientTurbo = 1;
 	s_cfg->PmcLpmS0ixSubStateEnableMask = get_supported_lpm_mask();

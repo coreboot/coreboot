@@ -196,7 +196,17 @@ CEZANNE_FW_A_RECOVERY=$(if $(call get_fmap_value,FMAP_SECTION_RECOVERY_A_START),
 CEZANNE_FW_B_RECOVERY=$(if $(call get_fmap_value,FMAP_SECTION_RECOVERY_B_START), $(call int-add, \
 	$(call get_fmap_value,FMAP_SECTION_RECOVERY_B_START) $(AMD_FW_AB_POSITION)), \
 	$(error "CONFIG_PSP_AB_RECOVERY is enabled but region RECOVERY_B is not defined in the flash map"))
+
+ifeq ($(CONFIG_SOC_AMD_V2000A),y)
+	PSP_AB_NVRAM_BASE=$(if $(call get_fmap_value,FMAP_SECTION_PSP_AB_NVRAM_START), \
+		$(call _tohex,$(call get_fmap_value,FMAP_SECTION_PSP_AB_NVRAM_START)), \
+		$(error "CONFIG_PSP_AB_RECOVERY is enabled but region PSP_AB_NVRAM is not defined in the flash map"))
+	PSP_AB_NVRAM_SIZE=$(call get_fmap_value,FMAP_SECTION_PSP_AB_NVRAM_SIZE)
 endif
+endif
+
+OPT_PSP_AB_NVRAM_BASE=$(call add_opt_prefix, $(PSP_AB_NVRAM_BASE), --ab-nvram-base)
+OPT_PSP_AB_NVRAM_SIZE=$(call add_opt_prefix, $(PSP_AB_NVRAM_SIZE), --ab-nvram-size)
 
 OPT_RECOVERY_AB=$(call add_opt_prefix, $(CONFIG_PSP_AB_RECOVERY), --recovery-ab)
 OPT_RECOVERY_AB+=$(if $(CONFIG_PSP_AB_RECOVERY), --recovery-a-location $(call _tohex, $(CEZANNE_FW_A_RECOVERY)))
@@ -227,6 +237,8 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_EFS_SPI_SPEED) \
 		$(OPT_EFS_SPI_MICRON_FLAG) \
 		$(OPT_RECOVERY_AB) \
+		$(OPT_PSP_AB_NVRAM_BASE) \
+		$(OPT_PSP_AB_NVRAM_SIZE) \
 		--config $(CONFIG_AMDFW_CONFIG_FILE) \
 		--flashsize $(CONFIG_ROM_SIZE)
 

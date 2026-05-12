@@ -48,10 +48,13 @@ CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/common
 AMD_FW_AB_POSITION := 0x80
 
 ifeq ($(CONFIG_PSP_AB_RECOVERY), y)
-GLINDA_FW_A_RECOVERY=$(call int-add, \
-	$(call get_fmap_value,FMAP_SECTION_RECOVERY_A_START) $(AMD_FW_AB_POSITION))
-GLINDA_FW_B_RECOVERY=$(call int-add, \
-	$(call get_fmap_value,FMAP_SECTION_RECOVERY_B_START) $(AMD_FW_AB_POSITION))
+GLINDA_FW_A_RECOVERY=$(if $(call get_fmap_value,FMAP_SECTION_RECOVERY_A_START), $(call int-add, \
+	$(call get_fmap_value,FMAP_SECTION_RECOVERY_A_START) $(AMD_FW_AB_POSITION)), \
+	$(error "CONFIG_PSP_AB_RECOVERY is enabled but region RECOVERY_A is not defined in the flash map"))
+
+GLINDA_FW_B_RECOVERY=$(if $(call get_fmap_value,FMAP_SECTION_RECOVERY_B_START), $(call int-add, \
+	$(call get_fmap_value,FMAP_SECTION_RECOVERY_B_START) $(AMD_FW_AB_POSITION)), \
+	$(error "CONFIG_PSP_AB_RECOVERY is enabled but region RECOVERY_B is not defined in the flash map"))
 endif
 
 #
@@ -221,6 +224,9 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		--output $@
 
 ifeq ($(CONFIG_PSP_AB_RECOVERY),y)
+
+$(obj)/amdfw.rom.ra: $(obj)/amdfw.rom
+$(obj)/amdfw.rom.rb: $(obj)/amdfw.rom
 
 regions-for-file-apu/amdfw_ra = BOOTBLOCK
 regions-for-file-apu/amdfw_rb = BOOTBLOCK_B

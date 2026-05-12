@@ -18,6 +18,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SMBIOS_TYPE4_SOCKETED_CPU
 
 config FMDFILE
+	default "src/mainboard/amd/jaguar/board_faegan_ab.fmd" if PSP_AB_RECOVERY
 	default "src/mainboard/amd/jaguar/board_faegan.fmd"
 
 config PSP_LOAD_MP2_FW

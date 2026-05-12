@@ -102,6 +102,7 @@ typedef enum _amd_fw_type {
 	AMD_FW_MPIO = 0x5d,
 	AMD_FW_TPMLITE = 0x5f, /* family 17h & 19h */
 	AMD_FW_PSP_SMUSCS = 0x5f, /* family 15h & 16h */
+	AMD_FW_PSP_AB_NVRAM = 0x6e, /* PSP_AB_NVRAM on V2000A, FSDL driver on other SoCs */
 	AMD_FW_DMCUB = 0x71,
 	AMD_FW_PSP_BOOTLOADER_AB = 0x73,
 	AMD_RIB = 0x76,
@@ -518,5 +519,6 @@ bool platform_has_dir_header_v1(enum platform platform_type);
 bool platform_has_apob_nv_quirk(enum platform platform_type);
 uint32_t platform_get_psp_id(enum platform platform_type);
 bool platform_is_initial_alignment_required(enum platform platform_type);
+bool platform_has_legacy_ab_recovery(amd_cb_config *cb_config);
 
 #endif	/* _AMD_FW_TOOL_H_ */

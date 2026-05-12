@@ -217,6 +217,7 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_MPIO, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMUSCS, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_DMCUB, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_AB_NVRAM, .level = PSP_LVL1_AB },
 	{ .type = AMD_FW_PSP_BOOTLOADER_AB, .level = PSP_LVL2 | PSP_LVL2_AB,
 		.generate_manifest = true },
 	{ .type = AMD_RIB, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
@@ -1043,6 +1044,35 @@ static psp_directory_table *integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].size = 0xFFFFFFFF;
 			pspdir->entries[count].addr = fw_table[i].other;
 			pspdir->entries[count].address_mode = fw_table[i].other >> 62;
+			count++;
+		} else if (fw_table[i].type == AMD_FW_PSP_AB_NVRAM &&
+			   platform_has_legacy_ab_recovery(cb_config) &&
+			   fw_table[i].size != 0 &&
+			   fw_table[i].filename == NULL &&
+			   level == PSP_LVL1_AB) {
+			/*
+			 * Special case as entry 0x6e is FSDL driver (fw_table[i].filename != NULL)
+			 * on a platforms that don't use legacy A/B recovery. Here only the legacy
+			 * A/B recovery NVRAM region is handled, thus fw_table[i].filename == NULL.
+			 */
+			size = fw_table[i].size;
+			addr = fw_table[i].dest;
+			if (addr != ALIGN_UP(addr, ERASE_ALIGNMENT)) {
+				fprintf(stderr,
+					"Error: PSP NVRAM section not aligned with erase block size.\n\n");
+				amdfwtool_cleanup(ctx);
+				exit(1);
+			}
+			pspdir->entries[count].type = fw_table[i].type;
+			pspdir->entries[count].subprog = fw_table[i].subprog;
+			pspdir->entries[count].rsvd = 0;
+			pspdir->entries[count].size = size;
+			pspdir->entries[count].addr = addr;
+			pspdir->entries[count].writable = 1;
+
+			pspdir->entries[count].address_mode =
+				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
+
 			count++;
 		} else if (fw_table[i].type == AMD_FW_PSP_NVRAM ||
 			   fw_table[i].type == AMD_RPMC_NVRAM) {

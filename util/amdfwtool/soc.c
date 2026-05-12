@@ -276,3 +276,15 @@ uint32_t platform_get_psp_id(enum platform platform_type)
 {
 	return platform_table[platform_type].psp_id;
 }
+
+/**
+ * Returns true when legacy A/B recovery is enabled, which means that the PSP will look for
+ * PSP type 0x6e (PSP_AB_NVRAM) in the directory and treat it as A/B recovery data.
+ *
+ * @param cb_config: Configuration struct
+ * @return: true if legacy A/B recovery is enabled, false otherwise
+ */
+bool platform_has_legacy_ab_recovery(amd_cb_config *cb_config)
+{
+	return cb_config->soc_id == PLATFORM_RENOIR && cb_config->recovery_ab;
+}

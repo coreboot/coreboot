@@ -78,9 +78,9 @@ const struct pad_config gpio_table[] = {
 	/* GPIO_26:	TPNL_INT#		*/
 	PAD_NC(GPIO_26, DN_20K),
 	/* GPIO_27:	eMMC Strap		*/
-	PAD_NC(GPIO_27, NONE),
+	PAD_CFG_GPO(GPIO_27, 0, DEEP),
 	/* GPIO_28:	SPI Strap		*/
-	PAD_NC(GPIO_28, NONE),
+	PAD_CFG_GPO(GPIO_28, 1, DEEP),
 	/* GPIO_29:	Not Connected		*/
 	PAD_NC(GPIO_29, DN_20K),
 	/* GPIO_30:	Not Connected		*/
@@ -114,7 +114,7 @@ const struct pad_config gpio_table[] = {
 	/* GPIO_44:	USB OC0			*/
 	PAD_NC(GPIO_44, DN_20K),
 	/* GPIO_45:	USB_OC1			*/
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_45, UP_20K, DEEP, NF1, TxDRxE, ENPU),
+	PAD_NC(GPIO_45, DN_20K),
 	/* GPIO_46:	Not Connected		*/
 	PAD_NC(GPIO_46, DN_20K),
 	/* GPIO_47:	Not Connected		*/
@@ -197,9 +197,9 @@ const struct pad_config gpio_table[] = {
 	/* GPIO_82:	FP_MISO			*/
 	PAD_NC(GPIO_82, DN_20K),
 	/* GPIO_83:	LPC 1.8V/3.3V Select	*/
-	PAD_NC(GPIO_83, DN_20K),
+	PAD_CFG_GPO(GPIO_83, 0, DEEP),
 	/* GPIO_84:	Allow SPI Boot			*/
-	PAD_NC(GPIO_84, UP_20K),
+	PAD_CFG_GPO(GPIO_84, 0, DEEP),
 	/* GPIO_85:	Not Connected		*/
 	PAD_NC(GPIO_85, DN_20K),
 	/* GPIO_86:	GPIO_86			*/
@@ -370,9 +370,9 @@ const struct pad_config gpio_table[] = {
 	/* GPIO_173:	Not Connected		*/
 	PAD_NC(GPIO_173, DN_20K),
 	/* GPIO_174:	VDD2 1.20V / 1.24V Mode	*/
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_174, 1, DEEP, DN_20K, TxLASTRxE, ENPU),
+	PAD_CFG_GPO(GPIO_174, 1, DEEP),
 	/* GPIO_175:	eSPI / LPC Mode		*/
-	PAD_NC(GPIO_175, NONE),
+	PAD_CFG_GPO(GPIO_175, 0, DEEP),
 
 	/* ----- GPIO Group SCC ----- */
 	/* GPIO_176:	Not Connected		*/
@@ -406,7 +406,7 @@ const struct pad_config gpio_table[] = {
 	/* GPIO_190:	Not Connected		*/
 	PAD_NC(GPIO_190, DN_20K),
 	/* GPIO_191:	eSPI Flash Sharing	*/
-	PAD_NC(GPIO_191, NONE),
+	PAD_CFG_GPO(GPIO_191, 0, DEEP),
 	/* GPIO_192:	CNVI_BRI_RSP		*/
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_192, UP_20K, DEEP, NF1),
 	/* GPIO_193:	CNVI_RGI_DT		*/

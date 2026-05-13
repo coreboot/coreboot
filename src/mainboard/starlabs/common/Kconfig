@@ -23,6 +23,9 @@ config STARLABS_COMMON_CFR
 	bool
 	default y if CPU_INTEL_COMMON
 
+config STARLABS_LEGACY_PL4
+	bool
+
 config STARLABS_NVME_POWER_SEQUENCE
 	bool "Enable NVMe/M.2 slot power sequence"
 	depends on SOC_INTEL_COMMON_BLOCK_GPIO

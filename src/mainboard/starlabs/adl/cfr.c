@@ -166,7 +166,9 @@ static struct sm_obj_form performance_group = {
 					     &power_profile,
 					     &pl1_override,
 					     &pl2_override,
+#if CONFIG(STARLABS_LEGACY_PL4)
 					     &pl4_override,
+#endif
 					     &tcc_temp,
 					     NULL},
 };

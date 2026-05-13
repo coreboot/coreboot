@@ -100,9 +100,6 @@ struct mb_cfg {
 	/* Board type */
 	uint8_t UserBd;
 
-	/* Command Mirror */
-	uint8_t CmdMirror;
-
 	/* Enable/Disable TxDqDqs Retraining for Lp4/Lp5/DDR */
 	uint8_t LpDdrDqDqsReTraining;
 };

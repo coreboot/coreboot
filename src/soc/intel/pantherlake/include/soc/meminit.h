@@ -100,9 +100,6 @@ struct mb_cfg {
 
 	/* Board type */
 	uint8_t user_bd;
-
-	/* Command Mirror */
-	uint8_t cmd_mirror;
 };
 
 void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,

@@ -515,18 +515,83 @@ static int mkhi_end_of_post(void)
 	return 0;
 }
 
+/* TODO: Unify ME finalisation between LPT and WPT */
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+
+/* Send END OF POST message to the ME */
+static int mkhi_end_of_post_noack(void)
+{
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_GEN,
+		.command	= MKHI_END_OF_POST_NOACK,
+	};
+
+	/* Send request, do not wait for response */
+	if (mei_sendrecv_mkhi(&mkhi, NULL, 0, NULL, 0) < 0) {
+		printk(BIOS_ERR, "ME: END OF POST NOACK message failed\n");
+		return -1;
+	}
+
+	printk(BIOS_INFO, "ME: END OF POST NOACK message successful\n");
+	return 0;
+}
+
+/* Send HMRFPO LOCK message to the ME */
+static int mkhi_hmrfpo_lock(void)
+{
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_HMRFPO,
+		.command	= MKHI_HMRFPO_LOCK,
+	};
+	u32 ack;
+
+	/* Send request and wait for response */
+	if (mei_sendrecv_mkhi(&mkhi, NULL, 0, &ack, sizeof(ack)) < 0) {
+		printk(BIOS_ERR, "ME: HMRFPO LOCK message failed\n");
+		return -1;
+	}
+
+	printk(BIOS_INFO, "ME: HMRFPO LOCK message successful (%d)\n", ack);
+	return 0;
+}
+
+/* Send HMRFPO LOCK message to the ME, do not wait for response */
+static int mkhi_hmrfpo_lock_noack(void)
+{
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_HMRFPO,
+		.command	= MKHI_HMRFPO_LOCK_NOACK,
+	};
+
+	/* Send request, do not wait for response */
+	if (mei_sendrecv_mkhi(&mkhi, NULL, 0, NULL, 0) < 0) {
+		printk(BIOS_ERR, "ME: HMRFPO LOCK NOACK message failed\n");
+		return -1;
+	}
+
+	printk(BIOS_INFO, "ME: HMRFPO LOCK NOACK message successful\n");
+	return 0;
+}
+
+#endif
+
 static void intel_me_finalize(struct device *dev)
 {
+	/* TODO: Unify ME finalisation between LPT and WPT */
+#if !CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
 	union me_hfs hfs;
 	u32 reg32;
 
 	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	mei_base_address = (u8 *)(uintptr_t)(reg32 & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK);
+#endif
 
 	/* S3 path will have hidden this device already */
 	if (!mei_base_address || mei_base_address == (u8 *)0xfffffff0)
 		return;
 
+	/* TODO: Unify ME finalisation between LPT and WPT */
+#if !CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
 	/* Wait for ME MBP Cleared indicator */
 	intel_me_mbp_clear(dev);
 
@@ -541,6 +606,7 @@ static void intel_me_finalize(struct device *dev)
 
 	/* Try to send EOP command so ME stops accepting other commands */
 	mkhi_end_of_post();
+#endif
 
 	if (!get_uint_option("me_disable", CONFIG(DISABLE_ME_PCI)))
 		return;
@@ -806,7 +872,7 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 	/*
 	 * FIXME: Replace preprocessor once we know the correct flows
 	 * for each ME version. There does not seem to be ANY mention
-	 * of the "no-ack" versions of END OF POST / HMRFPO LOCK MKHI
+	 * of the "no-ack" versions of E ND OF POST / HMRFPO LOCK MKHI
 	 * messages that Wildcat Point code makes use of. Can they be
 	 * used on ME 9.x (LPT) or are they ME 10.x (WPT-LP) only?
 	 */
@@ -925,7 +991,9 @@ static void intel_me_init(struct device *dev)
 	if (intel_mei_setup(dev) < 0)
 		return;
 
-	if (intel_me_read_mbp(&mbp_data, dev))
+	/* Read ME MBP data */
+	int mbp_ret = intel_me_read_mbp(&mbp_data, dev);
+	if (mbp_ret < 0)
 		return;
 	intel_me_print_mbp(&mbp_data);
 
@@ -934,8 +1002,57 @@ static void intel_me_init(struct device *dev)
 		me_icc_set_clock_enables(config->icc_clock_disable);
 
 	/*
+	 * TODO: Unify ME finalisation between LPT and WPT. ME10 BWG
+	 * recommends sending the HMRFPO LOCK message prior to OpROM
+	 * execution, but we might want to skip sending that in case
+	 * one wants to send HMRFPO ENABLE afterwards.
+	 *
+	 * TODO: ME10 BWG states that neither HMRFPO LOCK nor END OF
+	 * POST MKHI messages should be sent when resuming from S3.
+	 */
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+	/* Make sure ME is in a mode that expects EOP */
+	union me_hfs hfs = { .raw = pci_read_config32(dev, PCI_ME_HFS) };
+
+	/* Abort and leave device alone if not normal mode */
+	if (hfs.fpt_bad ||
+	    hfs.working_state != ME_HFS_CWS_NORMAL ||
+	    hfs.operation_mode != ME_HFS_MODE_NORMAL)
+		return;
+
+	if (mbp_ret) {
+		/*
+		 * MBP Cleared wait is skipped,
+		 * Do not expect ACK and reset when complete.
+		 */
+
+		/* Send HMRFPO Lock command, no response */
+		mkhi_hmrfpo_lock_noack();
+
+		/* Send END OF POST command, no response */
+		mkhi_end_of_post_noack();
+
+		/* Assert reset and interrupt */
+		union mei_csr csr = read_host_csr();
+		csr.interrupt_generate = 1;
+		csr.reset = 1;
+		write_host_csr(csr);
+	} else {
+		/*
+		 * MBP Cleared wait was not skipped
+		 */
+
+		/* Send HMRFPO LOCK command */
+		mkhi_hmrfpo_lock();
+
+		/* Send EOP command so ME stops accepting other commands */
+		mkhi_end_of_post();
+	}
+#else
+	/*
 	 * Leave the ME unlocked. It will be locked later.
 	 */
+#endif
 }
 
 static void intel_me_enable(struct device *dev)

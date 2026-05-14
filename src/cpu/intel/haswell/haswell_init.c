@@ -603,6 +603,12 @@ void mp_init_cpus(struct bus *cpu_bus)
 			    MTRR_TYPE_WRPROT);
 }
 
+static void haswell_final(struct device *dev)
+{
+	/* Lock memory configuration to protect SMM */
+	msr_set(MSR_LT_LOCK_MEMORY, BIT(0));
+}
+
 static struct device_operations cpu_dev_ops = {
 	.init = cpu_core_init,
 };
@@ -626,6 +632,7 @@ struct device_operations haswell_cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
 	.init             = mp_cpu_bus_init,
+	.final            = haswell_final,
 	.acpi_fill_ssdt   = generate_cpu_entries,
 };
 

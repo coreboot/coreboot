@@ -17,8 +17,6 @@ ramstage-y += haswell_init.c
 ramstage-y += pcode_mailbox.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 
-smm-y += finalize.c
-
 subdirs-y += ../microcode
 subdirs-y += ../turbo
 

@@ -41,7 +41,7 @@ static void sata_init(struct device *dev)
 {
 	u32 reg32;
 
-	u32 *abar;
+	uintptr_t abar;
 
 	/* Get the chip configuration */
 	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
@@ -99,21 +99,21 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, 0x94, reg32);
 
 	/* Initialize AHCI memory-mapped space */
-	abar = (u32 *)pci_read_config32(dev, PCI_BASE_ADDRESS_5);
-	printk(BIOS_DEBUG, "ABAR: %p\n", abar);
+	abar = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
+	printk(BIOS_DEBUG, "ABAR: %p\n", (void *)abar);
 	/* CAP (HBA Capabilities) : enable power management */
-	reg32 = read32(abar + 0x00);
+	reg32 = read32p(abar + 0x00);
 	reg32 |= 0x0c006000;  // set PSC+SSC+SALP+SSS
 	reg32 &= ~0x00020060; // clear SXS+EMS+PMS
 	if (pch_is_lp())
 		reg32 |= (1 << 18);   // SAM: SATA AHCI MODE ONLY
-	write32(abar + 0x00, reg32);
+	write32p(abar + 0x00, reg32);
 	/* PI (Ports implemented) */
-	write32(abar + 0x03, config->sata_port_map);
-	(void)read32(abar + 0x03); /* Read back 1 */
-	(void)read32(abar + 0x03); /* Read back 2 */
+	write32p(abar + 0x0c, config->sata_port_map);
+	(void)read32p(abar + 0x0c); /* Read back 1 */
+	(void)read32p(abar + 0x0c); /* Read back 2 */
 	/* CAP2 (HBA Capabilities Extended)*/
-	reg32 = read32(abar + 0x09);
+	reg32 = read32p(abar + 0x24);
 	/* Enable DEVSLP */
 	if (pch_is_lp()) {
 		if (config->sata_devslp_disable)
@@ -123,7 +123,7 @@ static void sata_init(struct device *dev)
 	} else {
 		reg32 &= ~0x00000002;
 	}
-	write32(abar + 0x09, reg32);
+	write32p(abar + 0x24, reg32);
 
 	/* Set Gen3 Transmitter settings if needed */
 	if (config->sata_port0_gen3_tx)

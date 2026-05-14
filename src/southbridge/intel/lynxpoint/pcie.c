@@ -169,7 +169,7 @@ static void root_port_init_config(struct device *dev)
 		root_port_config_update_gbe_port();
 
 		if (dev->chip_info != NULL) {
-			struct southbridge_intel_lynxpoint_config *config;
+			const pch_config_t *config;
 
 			config = dev->chip_info;
 			rpc.coalesce = config->pcie_port_coalesce;
@@ -546,7 +546,7 @@ static void pcie_add_0x0202000_iobp(u32 reg)
 
 static void pch_pcie_early(struct device *dev)
 {
-	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+	const pch_config_t *config = dev->chip_info;
 	int do_aspm = 0;
 	int rp = root_port_number(dev);
 	int is_lp = pch_is_lp();

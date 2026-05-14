@@ -75,4 +75,7 @@ struct southbridge_intel_wildcatpoint_config {
 	int deep_sx_enable_dc;
 };
 
+/* Temporary, to make it easier to unify LPT and WPT */
+typedef struct southbridge_intel_wildcatpoint_config pch_config_t;
+
 #endif

@@ -156,7 +156,7 @@ static void update_bars(int sio_index, u32 bar0, u32 bar1)
 
 static void serialio_init(struct device *dev)
 {
-	struct southbridge_intel_lynxpoint_config *config = config_of(dev);
+	const pch_config_t *config = config_of(dev);
 	struct resource *bar0, *bar1;
 	int sio_index = -1;
 

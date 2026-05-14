@@ -44,7 +44,7 @@ static void sata_init(struct device *dev)
 	uintptr_t abar;
 
 	/* Get the chip configuration */
-	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+	const pch_config_t *config = dev->chip_info;
 
 	printk(BIOS_DEBUG, "SATA: Initializing...\n");
 
@@ -206,7 +206,7 @@ static void sata_init(struct device *dev)
 static void sata_enable(struct device *dev)
 {
 	/* Get the chip configuration */
-	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+	const pch_config_t *config = dev->chip_info;
 
 	if (!config)
 		return;

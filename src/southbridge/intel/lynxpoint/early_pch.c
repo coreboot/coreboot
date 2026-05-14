@@ -58,7 +58,7 @@ static void pch_generic_setup(void)
 void pch_enable_lpc(void)
 {
 	const struct device *dev = pcidev_on_root(0x1f, 0);
-	const struct southbridge_intel_lynxpoint_config *config = NULL;
+	const pch_config_t *config = NULL;
 
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);

@@ -142,7 +142,7 @@ static void pch_pirq_init(struct device *dev)
 }
 
 static void pch_gpi_routing(struct device *dev,
-			    struct southbridge_intel_lynxpoint_config *config)
+			    const pch_config_t *config)
 {
 	u32 reg32 = 0;
 
@@ -242,7 +242,7 @@ static void pch_power_options(struct device *dev)
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
 	if (dev->chip_info) {
-		struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+		const pch_config_t *config = dev->chip_info;
 
 		/*
 		 * Set the board's GPI routing on LynxPoint-H.
@@ -317,7 +317,7 @@ static void configure_dmi_pm(struct device *dev)
 /* LynxPoint PCH Power Management init */
 static void lpt_pm_init(struct device *dev)
 {
-	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+	const pch_config_t *config = dev->chip_info;
 
 	struct device *const pcie_dev = pcidev_on_root(0x1c, 0);
 
@@ -401,7 +401,7 @@ static void lpt_pm_init(struct device *dev)
 /* LynxPoint LP PCH Power Management init */
 static void lpt_lp_pm_init(struct device *dev)
 {
-	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+	const pch_config_t *config = dev->chip_info;
 	u32 data;
 
 	printk(BIOS_DEBUG, "LynxPoint LP PM init\n");
@@ -728,7 +728,7 @@ static void pch_lpc_add_io_resources(struct device *dev)
 
 	/* LPC Generic IO Decode range. */
 	if (dev->chip_info) {
-		struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+		const pch_config_t *config = dev->chip_info;
 		pch_lpc_add_gen_io_resources(dev, config->gen1_dec, LPC_GEN1_DEC);
 		pch_lpc_add_gen_io_resources(dev, config->gen2_dec, LPC_GEN2_DEC);
 		pch_lpc_add_gen_io_resources(dev, config->gen3_dec, LPC_GEN3_DEC);

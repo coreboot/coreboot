@@ -968,7 +968,7 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 /* Check whether ME is present and do basic init */
 static void intel_me_init(struct device *dev)
 {
-	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+	const pch_config_t *config = dev->chip_info;
 	enum me_bios_path path = intel_me_path(dev);
 	struct me_bios_payload mbp_data;
 

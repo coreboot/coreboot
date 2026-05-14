@@ -24,6 +24,20 @@
 #define GPIO_ALT_GPI_SMI_STS	0x50
 #define GPIO_ALT_GPI_SMI_EN	0x54
 
+/* TODO: Deduplicate */
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+uint16_t get_gpiobase(void)
+{
+	return DEFAULT_GPIOBASE;
+}
+
+/* STM Support */
+uint16_t get_pmbase(void)
+{
+	return DEFAULT_PMBASE;
+}
+#endif
+
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])
 {

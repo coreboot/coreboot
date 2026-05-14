@@ -2,7 +2,7 @@
 
 /*
  * This is a ramstage driver for the Intel Management Engine found in the
- * 6-series chipset.  It handles the required boot-time messages over the
+ * 8 / 9 series PCH.  It handles the required boot-time messages over the
  * MMIO-based Management Engine Interface to tell the ME that the BIOS is
  * finished with POST.  Additional messages are defined for debug but are
  * not used unless the console loglevel is high enough.
@@ -1075,14 +1075,10 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
-	0x9c3a, /* Low Power */
-	0x9cba, /* WildcatPoint */
-#else
 	PCI_DID_INTEL_LPT_H_MEI,
 	PCI_DID_INTEL_LPT_H_MEI_9,
 	PCI_DID_INTEL_LPT_LP_MEI,
-#endif
+	PCI_DID_INTEL_WPT_LP_MEI,
 	0
 };
 

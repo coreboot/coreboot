@@ -38,15 +38,6 @@ static void pch_enable_ioapic(struct device *dev)
 	register_new_ioapic_gsi0(IO_APIC_ADDR);
 }
 
-#define ACPI_SCI_IRQ	9
-
-void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags)
-{
-	*gsi = ACPI_SCI_IRQ;
-	*irq = ACPI_SCI_IRQ;
-	*flags = MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH;
-}
-
 static void enable_hpet(struct device *dev)
 {
 	size_t i;

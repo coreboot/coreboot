@@ -414,24 +414,6 @@ void disable_gpe(u32 mask)
 	outl(gpe0_en, get_pmbase() + GPE0_EN(GPE_STD));
 }
 
-int platform_is_resuming(void)
-{
-	if (!(inw(get_pmbase() + PM1_STS) & WAK_STS))
-		return 0;
-
-	return acpi_sleep_from_pm1(inl(get_pmbase() + PM1_CNT)) == ACPI_S3;
-}
-
-void poweroff(void)
-{
-	uint32_t pm1_cnt;
-
-	/* Go to S5 */
-	pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
-	pm1_cnt |= (0xf << 10);
-	outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
-}
-
 /* STM Support */
 uint16_t get_pmbase(void)
 {

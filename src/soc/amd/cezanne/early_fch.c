@@ -17,8 +17,7 @@
 
 static void lpc_configure_decodes(void)
 {
-	if (CONFIG(POST_IO) && (CONFIG_POST_IO_PORT == 0x80))
-		lpc_enable_port80();
+	lpc_enable_port80();
 }
 
 /* Before console init */

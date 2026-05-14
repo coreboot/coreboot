@@ -13,9 +13,12 @@ void smm_southbridge_clear_state(void)
 {
 	u32 smi_en;
 
+	/* TODO: Consolidate LPT/WPT power state handling */
+#if !CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
 	/* Log events from chipset before clearing */
 	if (CONFIG(ELOG))
 		pch_log_state();
+#endif
 
 	smi_en = inl(get_pmbase() + SMI_EN);
 	if (smi_en & APMC_EN) {

@@ -5,5 +5,3 @@
 #define WKLD_OFFSET 0x68
 
 #include <ec/apple/acpi/ec.asl>
-#include <ec/apple/acpi/ac.asl>
-#include <ec/apple/acpi/lid.asl>

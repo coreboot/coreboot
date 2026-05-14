@@ -10,6 +10,7 @@ Device(EC)
 
 	OperationRegion(ERAM, EmbeddedControl, 0x00, 0x100)
 
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
 	/* LID status change. */
 	Method(_Q20, 0, NotSerialized)
 	{
@@ -21,6 +22,7 @@ Device(EC)
 	{
 		Notify(AC, 0x80)
 	}
+#endif
 
 	Method(_CRS, 0)
 	{
@@ -41,5 +43,9 @@ Device(EC)
 	{
 	}
 
+#if CONFIG(SYSTEM_TYPE_LAPTOP)
 #include "battery.asl"
+#include "ac.asl"
+#include "lid.asl"
+#endif
 }

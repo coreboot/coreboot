@@ -1075,9 +1075,14 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+	0x9c3a, /* Low Power */
+	0x9cba, /* WildcatPoint */
+#else
 	PCI_DID_INTEL_LPT_H_MEI,
 	PCI_DID_INTEL_LPT_H_MEI_9,
 	PCI_DID_INTEL_LPT_LP_MEI,
+#endif
 	0
 };
 

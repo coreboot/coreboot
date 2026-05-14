@@ -13,7 +13,6 @@
 
 static void azalia_pch_init(struct device *dev, u8 *base)
 {
-	u8 reg8;
 	u16 reg16;
 	u32 reg32;
 
@@ -44,12 +43,15 @@ static void azalia_pch_init(struct device *dev, u8 *base)
 		pci_write_config32(dev, 0x120, reg32);
 	}
 
-	reg8 = pci_read_config8(dev, 0x43);
+	/* TODO: Clean up and verify */
+#if !CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+	u8 reg8 = pci_read_config8(dev, 0x43);
 	if (pch_is_lp())
 		reg8 &= ~(1 << 6);
 	else
 		reg8 |= (1 << 4);
 	pci_write_config8(dev, 0x43, reg8);
+#endif
 
 	if (!pch_is_lp())
 		pci_or_config32(dev, 0xc0, 1 << 17);
@@ -105,6 +107,37 @@ static void azalia_init(struct device *dev)
 	}
 }
 
+static void azalia_enable(struct device *dev)
+{
+	/* TODO: Clean up and verify for LPT-LP */
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+	u16 reg16;
+	u8 reg8;
+
+	reg8 = pci_read_config8(dev, 0x43);
+	reg8 |= 0x6f;
+	pci_write_config8(dev, 0x43, reg8);
+
+	if (!dev->enabled) {
+		/* Route I/O buffers to ADSP function */
+		reg8 = pci_read_config8(dev, 0x42);
+		reg8 |= (1 << 7) | (1 << 6);
+		pci_write_config8(dev, 0x42, reg8);
+
+		printk(BIOS_INFO, "Azalia disabled, I/O buffers routed to ADSP\n");
+
+		/* Ensure memory, io, and bus master are all disabled */
+		reg16 = pci_read_config16(dev, PCI_COMMAND);
+		reg16 &= ~(PCI_COMMAND_MASTER |
+			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+		pci_write_config16(dev, PCI_COMMAND, reg16);
+
+		/* Disable this device */
+		pch_disable_devfn(dev);
+	}
+#endif
+}
+
 static void azalia_final(struct device *dev)
 {
 	/* Set HDCFG.BCLD */
@@ -116,6 +149,7 @@ static struct device_operations azalia_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= azalia_init,
+	.enable			= azalia_enable,
 	.final			= azalia_final,
 	.ops_pci		= &pci_dev_ops_pci,
 };
@@ -124,6 +158,7 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_LPT_H_AUDIO,
 	PCI_DID_INTEL_LPT_H_AUDIO_9,
 	PCI_DID_INTEL_LPT_LP_AUDIO,
+	PCI_DID_INTEL_WPT_LP_AUDIO,
 	0
 };
 

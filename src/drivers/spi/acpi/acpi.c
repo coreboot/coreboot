@@ -173,6 +173,19 @@ static void spi_acpi_fill_ssdt_generator(const struct device *dev)
 	}
 
 	acpigen_pop_len(); /* Device */
+
+	/*
+	 * Intel PEP may require the GSPI host (e.g. SPI1) at D3 while power is on
+	 * the child device. Empty _PS0/_PS3 on the host scope satisfy LPI without
+	 * duplicating the child's PowerResource sequencing.
+	 */
+	if (config->has_power_resource) {
+		acpigen_write_method_serialized("_PS0", 0);
+		acpigen_pop_len(); /* Method */
+		acpigen_write_method_serialized("_PS3", 0);
+		acpigen_pop_len(); /* Method */
+	}
+
 	acpigen_pop_len(); /* Scope */
 
 	printk(BIOS_INFO, "%s: %s at %s\n", path,

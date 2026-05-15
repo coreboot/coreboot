@@ -1128,6 +1128,14 @@ static void create_fmap_template(char *image, int size, const char *layout_fname
 			continue;
 		}
 
+		/* Here we decide to use the coreboot generated FMAP BIOS region, instead of
+		 * the one specified in the IFD. The case when IFD and FMAP BIOS region do not
+		 * match cannot be caught here, therefore one should still validate IFD and
+		 * FMAP via CONFIG_VALIDATE_INTEL_DESCRIPTOR
+		 */
+		if (i == REGION_BIOS)
+			continue;
+
 		sorted_regions[count_regions] = region;
 		// basically insertion sort
 		for (int i = count_regions - 1; i >= 0; i--) {
@@ -1143,34 +1151,25 @@ static void create_fmap_template(char *image, int size, const char *layout_fname
 	// Now write regions sorted by base address in the fmap file
 	for (int i = 0; i < count_regions; i++) {
 		struct region region = sorted_regions[i];
-		char buf[512];
-		if (region.type == REGION_BIOS) {
-			/*
-			 * The size of the FMAP BIOS region and the IFD BIOS region may not be
-			 * the same, but at least the base address should be.
-			 */
-			snprintf(buf, 512,
-				"\t%s@0x%X ##BIOS_SIZE## {\n"
-					"\t\t##CONSOLE_ENTRY##\n"
-					"\t\t##MRC_CACHE_ENTRY##\n"
-					"\t\t##SMMSTORE_ENTRY##\n"
-					"\t\t##SPD_CACHE_ENTRY##\n"
-					"\t\t##VPD_ENTRY##\n"
-					"\t\tFMAP@##FMAP_BASE## ##FMAP_SIZE##\n"
-					"\t\tCOREBOOT(CBFS)@##CBFS_BASE## ##CBFS_SIZE##\n"
-				"\t}\n", region_names[region.type].fmapname, region.base);
-		} else {
-			snprintf(buf, 512, "\t%s@0x%X 0x%X\n",
-					region_names[region.type].fmapname, region.base,
-					region.size);
-		}
+		char buf[LAYOUT_LINELEN];
+		snprintf(buf, LAYOUT_LINELEN, "\t%s@0x%X 0x%X\n", region_names[region.type].fmapname, region.base, region.size);
 		if (write(layout_fd, buf, strlen(buf)) < 0) {
 			perror("Could not write to file");
 			exit(EXIT_FAILURE);
 		}
 	}
 
-	if (write(layout_fd, "}\n", 2) < 0) {
+	char *ebuf = "\tSI_BIOS@##BIOS_BASE## ##BIOS_SIZE## {\n"
+		     "\t\t##CONSOLE_ENTRY##\n"
+		     "\t\t##MRC_CACHE_ENTRY##\n"
+		     "\t\t##SMMSTORE_ENTRY##\n"
+		     "\t\t##SPD_CACHE_ENTRY##\n"
+		     "\t\t##VPD_ENTRY##\n"
+		     "\t\tFMAP@##FMAP_BASE## ##FMAP_SIZE##\n"
+		     "\t\tCOREBOOT(CBFS)@##CBFS_BASE## ##CBFS_SIZE##\n"
+		     "\t}\n"
+		     "}\n";
+	if (write(layout_fd, ebuf, strlen(ebuf)) < 0) {
 		perror("Could not write to file");
 		exit(EXIT_FAILURE);
 	}

@@ -89,7 +89,7 @@ config VARIANT_DIR
 	default "starbook"
 
 config EFS_SPI_SPEED
-	default 4	# 100MHz
+	default 3	# 66MHz
 
 config NORMAL_READ_SPI_SPEED
 	default 1	# 33MHz

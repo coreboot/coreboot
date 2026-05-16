@@ -171,7 +171,7 @@ static void load_qc_se_firmware_late(void)
 	if (!CONFIG(CONSOLE_SERIAL))
 		qupv3_se_fw_load_and_init(QUPV3_2_SE5, SE_PROTOCOL_UART, FIFO);
 
-	qupv3_se_fw_load_and_init(QUPV3_1_SE2, SE_PROTOCOL_I2C, MIXED); /* Touch I2C */
+	qupv3_se_fw_load_and_init(QUPV3_1_SE0, SE_PROTOCOL_I2C, MIXED); /* Touch I2C */
 	qupv3_se_fw_load_and_init(QUPV3_1_SE6, SE_PROTOCOL_UART, FIFO); /* BT UART */
 	qupv3_se_fw_load_and_init(QUPV3_0_SE0, SE_PROTOCOL_I2C, MIXED); /* Trackpad I2C */
 

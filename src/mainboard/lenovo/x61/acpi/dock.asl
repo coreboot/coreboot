@@ -41,12 +41,19 @@ Scope (\_SB)
 Scope(\_SB.PCI0.LPCB.EC)
 {
 	/*
-	 * _Q18: Vendor DSDT maps this as HKEY hotkey 0x1009 (Fn+F9),
-	 * NOT a dock event.  Dock connect is _Q50, disconnect is _Q58.
+	 * Vendor DSDT event mapping:
+	 * _Q18 is HKEY hotkey 0x1009, Fn+F9, not a dock event.
+	 * _Q37 and _Q58 are dock attach events.
+	 * _Q50 is an undock request from the dock eject button.
 	 */
 	Method(_Q18, 0, NotSerialized)
 	{
            ^HKEY.RHK(0x09)
+	}
+
+	Method(_Q37, 0, NotSerialized)
+	{
+	       Notify(\_SB.DOCK, 0)
 	}
 
 	Method(_Q50, 0, NotSerialized)

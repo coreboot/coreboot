@@ -13,6 +13,7 @@
 static const pnp_devfn_t dlpc_dev = PNP_DEV(0x164e, PC87382_DOCK);
 static const pnp_devfn_t dlpc_gpio = PNP_DEV(0x164e, PC87382_GPIO);
 static const pnp_devfn_t dock_gpio = PNP_DEV(0x2e, PC87392_GPIO);
+static const pnp_devfn_t dock_parallel = PNP_DEV(0x2e, PC87392_PP);
 static const pnp_devfn_t dock_serial = PNP_DEV(0x2e, PC87392_SP1);
 
 static void select_logical_device(pnp_devfn_t dev)
@@ -74,6 +75,9 @@ int dock_connect(void)
 {
 	int timeout = 1000;
 
+	/* Start from the vendor state: dock reset asserted, DLPC powered down. */
+	outb(inb(0x1680) & 0xfc, 0x1680);
+
 	outb(0x07, 0x164c);
 
 	timeout = 1000;
@@ -89,11 +93,11 @@ int dock_connect(void)
 		return 1;
 	}
 
-	/* Assert D_PLTRST# */
-	outb(0xfe, 0x1680);
+	/* Power up DLPC while keeping D_PLTRST# asserted. */
+	outb((inb(0x1680) & 0xfe) | 0x02, 0x1680);
 	mdelay(100);
-	/* Deassert D_PLTRST# */
-	outb(0xff, 0x1680);
+	/* Deassert D_PLTRST#. */
+	outb(inb(0x1680) | 0x03, 0x1680);
 
 	mdelay(100);
 
@@ -184,7 +188,14 @@ int dock_connect(void)
 	/* Enable USB and Ultrabay power */
 	outb(0x03, 0x1628);
 
+	select_logical_device(dock_parallel);
+	pnp_set_iobase(dock_parallel, PNP_IDX_IO0, 0x3bc);
+	pnp_set_irq(dock_parallel, PNP_IDX_IRQ0, 7);
+	pnp_set_enable(dock_parallel, 1);
+
 	select_logical_device(dock_serial);
+	pnp_set_iobase(dock_serial, PNP_IDX_IO0, 0x3f8);
+	pnp_set_irq(dock_serial, PNP_IDX_IRQ0, 4);
 	pnp_set_enable(dock_serial, 1);
 	return 0;
 }
@@ -192,17 +203,16 @@ int dock_connect(void)
 void dock_disconnect(void)
 {
 	printk(BIOS_DEBUG, "%s enter\n", __func__);
-	/* disconnect LPC bus */
-	outb(0x00, 0x164c);
+	/* Assert D_PLTRST# and DLPCPD before dropping dock power and LPC. */
+	outb(inb(0x1680) & 0xfc, 0x1680);
 	mdelay(10);
 
-	/* Assert PLTRST and DLPCPD */
-	outb(0xfc, 0x1680);
-	mdelay(10);
-
-	/* disable Ultrabay and USB Power */
+	/* Disable Ultrabay and USB power. */
 	outb(0x00, 0x1628);
 	udelay(10000);
+
+	/* Disconnect LPC bus. */
+	outb(0x00, 0x164c);
 
 	printk(BIOS_DEBUG, "%s finish\n", __func__);
 }

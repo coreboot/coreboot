@@ -4,6 +4,50 @@
 #include <console/console.h>
 #include <fw_config.h>
 #include <gpio.h>
+#include <option.h>
+#include <string.h>
+#include <types.h>
+
+enum storage_device {
+	STORAGE_NVME = 0,
+	STORAGE_EMMC = 1,
+};
+
+static enum storage_device storage_default_from_fw_config(void)
+{
+	return (fw_config_get() & FW_CONFIG_FIELD_BOOT_EMMC_MASK_MASK) ?
+		STORAGE_EMMC : STORAGE_NVME;
+}
+
+/* Override fw_config_probe_mainboard_override to check CFR for storage selection */
+bool fw_config_probe_mainboard_override(const struct fw_config *match, bool *result)
+{
+	/* Check if this is a storage-related probe */
+	if (match->field_name) {
+		/* Read CFR option; if unset, use fw_config setting */
+		uint8_t storage_selection =
+			get_uint_option("storage_device", storage_default_from_fw_config());
+		if (strcmp(match->field_name, "BOOT_NVME_MASK") == 0) {
+			/* NVMe is enabled if storage selection is NVMe */
+			*result = (storage_selection == STORAGE_NVME);
+			if (*result) {
+				printk(BIOS_INFO, "fw_config: NVMe enabled by CFR\n");
+			}
+			return true;
+		}
+		if (strcmp(match->field_name, "BOOT_EMMC_MASK") == 0) {
+			/* eMMC is enabled if storage selection is eMMC */
+			*result = (storage_selection == STORAGE_EMMC);
+			if (*result) {
+				printk(BIOS_INFO, "fw_config: eMMC enabled by CFR\n");
+			}
+			return true;
+		}
+	}
+
+	/* Not handled - use standard fw_config logic */
+	return false;
+}
 
 static const struct pad_config dmic_enable_pads[] = {
 	PAD_CFG_NF(GPP_S2, NONE, DEEP, NF2),	/* DMIC_CLK0_R */

@@ -43,6 +43,9 @@ endif
 ifeq ($(CONFIG_HAVE_GBE_BIN),y)
 add_intel_firmware: $(call strip_quotes,$(CONFIG_GBE_BIN_PATH))
 endif
+ifeq ($(CONFIG_HAVE_PLATFORM_DATA_BIN),y)
+add_intel_firmware: $(call strip_quotes,$(CONFIG_PLATFORM_DATA_BIN_PATH))
+endif
 ifeq ($(CONFIG_HAVE_EC_BIN),y)
 add_intel_firmware: $(call strip_quotes,$(CONFIG_EC_BIN_PATH))
 endif
@@ -91,6 +94,14 @@ ifeq ($(CONFIG_HAVE_GBE_BIN),y)
 	$(objutil)/ifdtool/ifdtool \
 		$(IFDTOOL_USE_CHIPSET) \
 		-i GbE:$(CONFIG_GBE_BIN_PATH) \
+		-O $(obj)/coreboot.pre \
+		$(obj)/coreboot.pre
+endif
+ifeq ($(CONFIG_HAVE_PLATFORM_DATA_BIN),y)
+	printf "    IFDTOOL    platform_data.bin -> coreboot.pre\n"
+	$(objutil)/ifdtool/ifdtool \
+		$(IFDTOOL_USE_CHIPSET) \
+		-i 'Platform Data':$(CONFIG_PLATFORM_DATA_BIN_PATH) \
 		-O $(obj)/coreboot.pre \
 		$(obj)/coreboot.pre
 endif

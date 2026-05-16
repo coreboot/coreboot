@@ -128,6 +128,22 @@ config GBE_BIN_PATH
 	depends on HAVE_GBE_BIN
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/gbe.bin"
 
+config MAINBOARD_USES_IFD_PLATFORM_DATA_REGION
+	def_bool n
+
+config HAVE_PLATFORM_DATA_BIN
+	bool "Add Platform Data region binary"
+	depends on HAVE_IFD_BIN && MAINBOARD_USES_IFD_PLATFORM_DATA_REGION
+	help
+	  Some platforms define a Platform Data region (SI_PDR) in the Intel
+	  Flash Descriptor. Select this to supply a binary that ifdtool will
+	  inject into that region when building coreboot.rom.
+
+config PLATFORM_DATA_BIN_PATH
+	string "Path to Platform Data region binary"
+	depends on HAVE_PLATFORM_DATA_BIN
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/platform_data.bin"
+
 config MAINBOARD_USES_IFD_EC_REGION
 	def_bool n
 

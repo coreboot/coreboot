@@ -4,7 +4,6 @@
 #define _SOC_QUALCOMM_TSENS_H_
 
 #include <stddef.h>
-#include <stdbool.h>
 #include <stdint.h>
 
 #define TM_SN_STATUS_OFF    0x00a0

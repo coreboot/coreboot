@@ -3,7 +3,6 @@
 #ifndef _SOC_QUALCOMM_QCLIB_COMMON_H__
 #define _SOC_QUALCOMM_QCLIB_COMMON_H__
 
-#include <stdbool.h>
 
 /* coreboot & QCLib I/F definitions */
 

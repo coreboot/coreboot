@@ -464,7 +464,7 @@ unpack_and_patch() {
 	archive="$(eval echo \$$package"_ARCHIVE")"
 	# shellcheck disable=SC2086
 	dir="$(eval echo \$$package"_DIR")"
-	test -d "${dir}" && test -f "${dir}/.unpack_success" || (
+	if ! { test -d "${dir}" && test -f "${dir}/.unpack_success"; }; then
 		printf " * "$archive"\n"
 		FLAGS=zxf
 		suffix=$(echo "$archive" | sed 's,.*\.,,')
@@ -486,7 +486,7 @@ unpack_and_patch() {
 			}
 		done
 		touch "${dir}/.unpack_success"
-	)
+	fi
 }
 
 fn_exists()

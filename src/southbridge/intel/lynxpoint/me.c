@@ -810,45 +810,51 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 		}
 	}
 
-	#define ASSIGN_FIELD_PTR(field_,val_) \
-		{ \
-		mbp_data->field_ = (typeof(mbp_data->field_))(void *)val_; \
+#define ASSIGN_FIELD_PTR(field_, val_) \
+	{ \
+		mbp_data->field_ = (typeof(mbp_data->field_))val_; \
 		break; \
-		}
-	/* Setup the pointers in the me_bios_payload structure. */
+	}
+
+	/*
+	 * Set up the pointers in the me_bios_payload structure.
+	 * We must NOT free `mbp` afterwards, because the memory
+	 * is still referenced by the pointers in `mbp_data`!
+	 */
 	for (i = 0; i < mbp->header.mbp_size - 1;) {
 		struct mbp_item_header *item = (void *)&mbp->data[i];
+		void *item_data = &mbp->data[i + 1];
 
 		switch (MBP_MAKE_IDENT(item->app_id, item->item_id)) {
 		case MBP_IDENT(KERNEL, FW_VER):
-			ASSIGN_FIELD_PTR(fw_version_name, &mbp->data[i+1]);
+			ASSIGN_FIELD_PTR(fw_version_name, item_data);
 
 		case MBP_IDENT(ICC, PROFILE):
-			ASSIGN_FIELD_PTR(icc_profile, &mbp->data[i+1]);
+			ASSIGN_FIELD_PTR(icc_profile, item_data);
 
 		case MBP_IDENT(INTEL_AT, STATE):
-			ASSIGN_FIELD_PTR(at_state, &mbp->data[i+1]);
+			ASSIGN_FIELD_PTR(at_state, item_data);
 
 		case MBP_IDENT(KERNEL, FW_CAP):
-			ASSIGN_FIELD_PTR(fw_capabilities, &mbp->data[i+1]);
+			ASSIGN_FIELD_PTR(fw_capabilities, item_data);
 
 		case MBP_IDENT(KERNEL, ROM_BIST):
-			ASSIGN_FIELD_PTR(rom_bist_data, &mbp->data[i+1]);
+			ASSIGN_FIELD_PTR(rom_bist_data, item_data);
 
 		case MBP_IDENT(KERNEL, PLAT_KEY):
-			ASSIGN_FIELD_PTR(platform_key, &mbp->data[i+1]);
+			ASSIGN_FIELD_PTR(platform_key, item_data);
 
 		case MBP_IDENT(KERNEL, FW_TYPE):
-			ASSIGN_FIELD_PTR(fw_plat_type, &mbp->data[i+1]);
+			ASSIGN_FIELD_PTR(fw_plat_type, item_data);
 
 		case MBP_IDENT(KERNEL, MFS_FAILURE):
-			ASSIGN_FIELD_PTR(mfsintegrity, &mbp->data[i+1]);
+			ASSIGN_FIELD_PTR(mfsintegrity, item_data);
 
 		case MBP_IDENT(KERNEL, PLAT_TIME):
-			ASSIGN_FIELD_PTR(plat_time, &mbp->data[i+1]);
+			ASSIGN_FIELD_PTR(plat_time, item_data);
 
 		case MBP_IDENT(NFC, SUPPORT_DATA):
-			ASSIGN_FIELD_PTR(nfc_data, &mbp->data[i+1]);
+			ASSIGN_FIELD_PTR(nfc_data, item_data);
 
 		default:
 			printk(BIOS_ERR, "ME MBP: unknown item 0x%x @ "
@@ -857,7 +863,7 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 		}
 		i += item->length;
 	}
-	#undef ASSIGN_FIELD_PTR
+#undef ASSIGN_FIELD_PTR
 
 	return 0;
 

@@ -400,7 +400,6 @@ unsigned char* ZSTD_maybeNullPtrAdd(unsigned char* ptr, ptrdiff_t add)
 /* Not all platforms that support msan provide sanitizers/msan_interface.h.
  * We therefore declare the functions we need ourselves, rather than trying to
  * include the header file... */
-#include <stddef.h>  /* size_t */
 #define ZSTD_DEPS_NEED_STDINT
 #include "zstd_deps.h"  /* intptr_t */
 
@@ -425,7 +424,6 @@ void __msan_print_shadow(const volatile void *x, size_t size);
 /* Not all platforms that support asan provide sanitizers/asan_interface.h.
  * We therefore declare the functions we need ourselves, rather than trying to
  * include the header file... */
-#include <stddef.h>  /* size_t */
 
 /**
  * Marks a memory region (<c>[addr, addr+size)</c>) as unaddressable.

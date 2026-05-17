@@ -5,7 +5,6 @@
 #include <string.h>
 #include <soc/cmd_db.h>
 #include <types.h>
-#include <string.h>
 #include <endian.h>
 
 /**

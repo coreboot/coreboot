@@ -6,7 +6,6 @@
 #include <device/pci_type.h>
 #include <gpio.h>
 #include <stdint.h>
-#include <gpio.h>
 
 #include "southbridge/intel/common/gpio.h"
 #include "southbridge/intel/common/lpc_def.h"

@@ -20,7 +20,7 @@ all-y += decompress/zstd_decompress.c
 all-y += common/entropy_common.c
 all-y += common/fse_decompress.c
 
-CPPFLAGS_common += -DZSTD_DISABLE_ASM=1
+CPPFLAGS_common += -DZSTD_DISABLE_ASM=1 -DZSTD_NO_TRACE=1
 # Measured on Intel Sandy Bridge i5-2540M at 800Mhz:
 # Setting                                      code size reduction    time loss
 # -DHUF_FORCE_DECOMPRESS_X1=1                  6.4 KiB                6%

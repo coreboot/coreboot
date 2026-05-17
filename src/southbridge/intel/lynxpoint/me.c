@@ -806,14 +806,11 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 	write_host_csr(host);
 
 	/* Dump out the MBP contents. */
-	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
+	if (CONFIG(DEBUG_INTEL_ME)) {
 		printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
 		       mbp->header.num_entries, mbp->header.mbp_size);
-		if (CONFIG(DEBUG_INTEL_ME)) {
-			for (i = 0; i < mbp->header.mbp_size - 1; i++) {
-				printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
-			}
-		}
+		for (i = 0; i < mbp->header.mbp_size - 1; i++)
+			printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
 	}
 
 #define ASSIGN_FIELD_PTR(field_, val_) \

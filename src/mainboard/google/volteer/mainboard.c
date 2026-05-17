@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <variant/gpio.h>
 #include <vb2_api.h>
-#include <static.h>
 
 #include "drivers/intel/pmc_mux/conn/chip.h"
 

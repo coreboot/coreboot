@@ -758,16 +758,19 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 	union me_hfs2 hfs2 = { .raw = pci_read_config32(dev, PCI_ME_HFS2) };
 	struct mbp_payload *mbp;
 	int i;
+	int ret = 0;
 
 	if (!hfs2.mbp_rdy) {
 		printk(BIOS_ERR, "ME: MBP not ready\n");
-		goto mbp_failure;
+		intel_me_mbp_give_up(dev);
+		return -1;
 	}
 
 	me2host_pending = me_to_host_words_pending();
 	if (!me2host_pending) {
 		printk(BIOS_ERR, "ME: no mbp data!\n");
-		goto mbp_failure;
+		intel_me_mbp_give_up(dev);
+		return -1;
 	}
 
 	/* we know for sure that at least the header is there */
@@ -779,11 +782,14 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 		       " buffer contains %d words\n",
 		       mbp_hdr.num_entries, mbp_hdr.mbp_size,
 		       me2host_pending);
-		goto mbp_failure;
+		intel_me_mbp_give_up(dev);
+		return -1;
 	}
 	mbp = malloc(mbp_hdr.mbp_size * sizeof(u32));
-	if (!mbp)
-		goto mbp_failure;
+	if (!mbp) {
+		intel_me_mbp_give_up(dev);
+		return -1;
+	}
 
 	mbp->header = mbp_hdr;
 	me2host_pending--;
@@ -865,11 +871,7 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 	}
 #undef ASSIGN_FIELD_PTR
 
-	return 0;
-
-mbp_failure:
-	intel_me_mbp_give_up(dev);
-	return -1;
+	return ret;
 }
 
 /* Check whether ME is present and do basic init */

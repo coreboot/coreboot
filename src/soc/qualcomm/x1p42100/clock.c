@@ -5,6 +5,7 @@
 #include <device/mmio.h>
 #include <soc/clock.h>
 #include <types.h>
+#include <stdbool.h>
 
 static struct clock_freq_config qspi_core_cfg[] = {
 	{

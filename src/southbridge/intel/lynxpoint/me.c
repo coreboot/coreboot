@@ -749,6 +749,7 @@ struct mbp_payload {
  *
  * Return -1 to indicate a problem (give up)
  * Return 0 to indicate success (send LOCK+EOP)
+ * Return 1 to indicate success (send LOCK+EOP with NOACK)
  */
 static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *dev)
 {
@@ -800,10 +801,37 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 		i++;
 	}
 
-	/* Signal to the ME that the host has finished reading the MBP. */
 	host = read_host_csr();
+
+	/*
+	 * FIXME: Replace preprocessor once we know the correct flows
+	 * for each ME version. There does not seem to be ANY mention
+	 * of the "no-ack" versions of END OF POST / HMRFPO LOCK MKHI
+	 * messages that Wildcat Point code makes use of. Can they be
+	 * used on ME 9.x (LPT) or are they ME 10.x (WPT-LP) only?
+	 */
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+	/* Check that read and write pointers are equal. */
+	if (host.buffer_read_ptr != host.buffer_write_ptr) {
+		printk(BIOS_INFO, "ME: MBP Read/Write pointer mismatch\n");
+		printk(BIOS_INFO, "ME: MBP Waiting for MBP cleared flag\n");
+
+		/* Tell ME that the host has finished reading the MBP. */
+		host.interrupt_generate = 1;
+		host.reset = 0;
+		write_host_csr(host);
+
+		/* Wait for the mbp_cleared indicator. */
+		intel_me_mbp_clear(dev);
+	} else {
+		/* Indicate NOACK messages should be used. */
+		ret = 1;
+	}
+#else
+	/* Signal to the ME that the host has finished reading the MBP. */
 	host.interrupt_generate = 1;
 	write_host_csr(host);
+#endif
 
 	/* Dump out the MBP contents. */
 	if (CONFIG(DEBUG_INTEL_ME)) {

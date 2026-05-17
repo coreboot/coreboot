@@ -30,6 +30,7 @@ static bool battery_below_threshold = false;
 static int32_t battery_cfet_status = 1; /* Active C-FET */
 static int32_t battery_dfet_status = 1; /* Active D-FET */
 static bool battery_needs_recovery = false;
+static bool chipset_dload_mode_active = false; /* Mode for crashlog */
 
 /*
  * is_off_mode - Check if the system is booting due to an off-mode power event.
@@ -251,11 +252,13 @@ static void late_setup_usb_typec(void)
  */
 static void mainboard_setup_peripherals_late(int mode)
 {
-	/* Perform PCIe setup early in async mode if supported to save 100ms */
-	if (mode == LB_BOOT_MODE_NORMAL || mode == LB_BOOT_MODE_NO_BATTERY)
-		qcom_setup_pcie_host(NULL);
-	else
-		gcom_pcie_power_off_ep();
+	if (!chipset_dload_mode_active) {
+		/* Perform PCIe setup early in async mode if supported to save 100ms */
+		if (mode == LB_BOOT_MODE_NORMAL || mode == LB_BOOT_MODE_NO_BATTERY)
+			qcom_setup_pcie_host(NULL);
+		else
+			gcom_pcie_power_off_ep();
+	}
 
 	/*
 	 * Enable fingerprint power rail early for stability prior to
@@ -308,7 +311,9 @@ void platform_romstage_main(void)
 
 	mainboard_setup_peripherals_early();
 
-	if (!qclib_check_dload_mode())
+	chipset_dload_mode_active = qclib_check_dload_mode();
+
+	if (!chipset_dload_mode_active)
 		shrm_fw_load_reset();
 
 	/* QCLib: DDR init & train */
@@ -323,7 +328,7 @@ void platform_romstage_main(void)
 	/* Underlying PMIC registers are accessible only at this point */
 	set_boot_mode();
 
-	if (!qclib_check_dload_mode())
+	if (!chipset_dload_mode_active)
 		aop_fw_load_reset();
 
 	mainboard_setup_peripherals_late(boot_mode);

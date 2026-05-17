@@ -1,0 +1,75 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_FRAMEWORK_MARIGOLD_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select CRB_TPM
+	select DRIVERS_I2C_HID
+	select DRIVERS_INTEL_USB4_RETIMER
+	select DRIVERS_INTEL_WIFI
+	select DRIVERS_GFX_GENERIC
+	select DRIVERS_INTEL_PMC
+	select HAVE_ACPI_TABLES
+	select HAVE_INTEL_PTT
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MEMORY_MAPPED_TPM
+	select PMC_IPC_ACPI_INTERFACE
+	select MAINBOARD_HAS_TPM2
+	select NO_UART_ON_SUPERIO
+	select PCIEXP_SUPPORT_RESIZABLE_BARS
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SKIP_SEND_CONNECT_TOPOLOGY_CMD
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	select SPD_READ_BY_WORD
+	select SYSTEM_TYPE_LAPTOP
+	select TPM_MEASURED_BOOT
+
+config BOARD_FRAMEWORK_MARIGOLD
+	select BOARD_FRAMEWORK_MARIGOLD_COMMON
+	select FSP_TYPE_IOT
+	select SOC_INTEL_METEORLAKE_U_H
+
+if BOARD_FRAMEWORK_MARIGOLD_COMMON
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config MAINBOARD_DIR
+	default "framework/marigold"
+
+config MAINBOARD_PART_NUMBER
+	default "Framework Laptop 13 (Intel Core Ultra Series 1)"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "Laptop 13 (Intel Core Ultra Series 1)"
+
+config MAINBOARD_FAMILY
+	default "Laptop"
+
+config CONSOLE_POST
+	default y
+
+config D3COLD_SUPPORT
+	default y
+
+config DIMM_SPD_SIZE
+	default 1024
+
+config ONBOARD_VGA_IS_PRIMARY
+	default y
+
+config PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS
+	default 36
+
+config POST_DEVICE
+	default n
+
+config UART_FOR_CONSOLE
+	default 0
+
+# PM Timer Disabled, saves power
+config USE_PM_ACPI_TIMER
+	default n
+
+endif

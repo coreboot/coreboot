@@ -62,7 +62,6 @@ upload-coreboot-sdk: test-docker-login
 coreboot-jenkins-node: test-docker
 	$(DOCKER) build \
 		--build-arg=SDK_VERSION="$(COREBOOT_IMAGE_TAG)" \
-		--build-arg=SSH_KEY="$(cat coreboot-jenkins-node/authorized_keys)" \
 		--tag coreboot/coreboot-jenkins-node:$(COREBOOT_IMAGE_TAG) \
 		coreboot-jenkins-node
 

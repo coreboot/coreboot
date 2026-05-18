@@ -7,15 +7,14 @@
 #
 #  SDK_VERSION is used to name the version of the coreboot sdk to use.
 #              Typically, this corresponds to the toolchain version.
-#  SSH_KEY is the contents of the file coreboot-jenkins-node/authorized_keys
-#          Because we're piping the contents of the dockerfile into the
-#          docker build command, the 'COPY' keyword isn't valid.
 
 ARG SDK_VERSION
 ARG SSH_KEY
 
 FROM coreboot/coreboot-sdk:${SDK_VERSION}
 USER root
+
+ADD run.sh /
 
 RUN apt-get -y update && \
 	apt-get -y install \
@@ -25,7 +24,6 @@ RUN apt-get -y update && \
 		liblua5.4-dev \
 		linkchecker \
 		lua5.4 \
-		openssh-server \
 		parallel \
 		ruby-full \
 		sdcc \
@@ -40,10 +38,6 @@ RUN apt-get -y update && \
 		swig \
 	&& apt-get clean \
 	&& gem install mdl
-
-RUN mkdir /var/run/sshd && \
-	chmod 0755 /var/run/sshd && \
-	/usr/bin/ssh-keygen -A
 
 # Create tmpfs directories to build in
 RUN mkdir /cb-build && \
@@ -67,8 +61,7 @@ ENTRYPOINT mount /cb-build && \
 	chown -R coreboot:coreboot /home/coreboot/node-root && \
 	mount /home/coreboot/.ccache && \
 	chown coreboot:coreboot /home/coreboot/.ccache && \
-	/usr/sbin/sshd -p 49151 -D
-EXPOSE 49151
+	/run.sh
 
 USER coreboot
 ENV VIRTUAL_ENV="/home/coreboot/python3"
@@ -84,9 +77,6 @@ RUN echo 'export PATH=$PATH:/opt/xgcc/bin' >> /home/coreboot/.bashrc && \
 		sphinx===7.2.6 \
 		sphinxcontrib-ditaa===1.0.2 \
 		sphinx_autobuild===2024.2.4 \
-		sphinx_rtd_theme===2.0.0 \
-	&& mkdir -p /home/coreboot/.ssh && \
-	echo "${SSH_KEY}" > /home/coreboot/.ssh/authorized_keys && \
-	chmod 0700 /home/coreboot/.ssh && \
-	chmod 0600 /home/coreboot/.ssh/authorized_keys
-USER root
+		sphinx_rtd_theme===2.0.0
+
+WORKDIR /home/coreboot

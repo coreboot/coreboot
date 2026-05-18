@@ -42,12 +42,9 @@ RUN apt-get -y update && \
 # Create tmpfs directories to build in
 RUN mkdir /cb-build && \
 	chown coreboot:coreboot /cb-build && \
-	echo "tmpfs /cb-build tmpfs rw,mode=1777,noatime 0 0" > /etc/fstab && \
 	mkdir -p /home/coreboot/node-root/workspace && \
 	chown -R coreboot:coreboot /home/coreboot/node-root && \
-	echo "tmpfs /home/coreboot/node-root/workspace tmpfs rw,mode=1777,strictatime,atime 0 0" >> /etc/fstab && \
-	chown coreboot:coreboot /home/coreboot/.ccache && \
-	echo "tmpfs /home/coreboot/.ccache tmpfs rw,mode=1777 0 0" >> /etc/fstab
+	chown coreboot:coreboot /home/coreboot/.ccache
 
 # Build encapsulate tool
 ADD https://raw.githubusercontent.com/coreboot/encapsulate/main/encapsulate.c /tmp/encapsulate.c
@@ -56,12 +53,7 @@ RUN gcc -o /usr/sbin/encapsulate /tmp/encapsulate.c && \
 	chmod +s /usr/sbin/encapsulate
 
 VOLUME /data/cache
-ENTRYPOINT mount /cb-build && \
-	mount /home/coreboot/node-root/workspace && \
-	chown -R coreboot:coreboot /home/coreboot/node-root && \
-	mount /home/coreboot/.ccache && \
-	chown coreboot:coreboot /home/coreboot/.ccache && \
-	/run.sh
+ENTRYPOINT [ "/run.sh" ]
 
 USER coreboot
 ENV VIRTUAL_ENV="/home/coreboot/python3"

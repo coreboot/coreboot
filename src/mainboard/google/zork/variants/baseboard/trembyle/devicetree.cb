@@ -62,7 +62,7 @@ chip soc/amd/picasso
 		.init_khz_preset = 1,
 	}"
 
-	register "has_usb2_phy_tune_params" = "1"
+	register "has_usb2_phy_tune_params" = "true"
 
 	# Controller0 Port0 Default
 	register "usb_2_port_tune_params[0]" = "{

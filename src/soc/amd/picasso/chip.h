@@ -221,7 +221,7 @@ struct soc_amd_picasso_config {
 	/* Force USB3 port to gen1, bit0 - controller0 Port0, bit1 - Port1 */
 	union usb3_force_gen1 usb3_port_force_gen1;
 
-	uint8_t has_usb2_phy_tune_params;
+	bool has_usb2_phy_tune_params;
 	struct usb2_phy_tune usb_2_port_tune_params[USB_PORT_COUNT];
 	enum {
 		USB_OC_PIN_0	= 0x0,

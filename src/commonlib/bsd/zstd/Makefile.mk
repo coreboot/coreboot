@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-only */
 
 zstd_support=n
+ifeq ($(CONFIG_FSP_COMPRESS_FSP_M_ZSTD),y)
+zstd_support=y
+endif
 ifeq ($(CONFIG_COMPRESS_RAMSTAGE_ZSTD),y)
 zstd_support=y
 endif

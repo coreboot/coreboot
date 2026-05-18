@@ -83,6 +83,9 @@ $(FSP_M_CBFS_2)-compression := LZMA
 else ifeq ($(CONFIG_FSP_COMPRESS_FSP_M_LZ4),y)
 $(FSP_M_CBFS)-compression := LZ4
 $(FSP_M_CBFS_2)-compression := LZ4
+else ifeq ($(CONFIG_FSP_COMPRESS_FSP_M_ZSTD),y)
+$(FSP_M_CBFS)-compression := ZSTD
+$(FSP_M_CBFS_2)-compression := ZSTD
 endif
 ifneq ($(CONFIG_FSP_ALIGNMENT_FSP_M),)
 $(FSP_M_CBFS)-align := $(CONFIG_FSP_ALIGNMENT_FSP_M)

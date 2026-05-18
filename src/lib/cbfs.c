@@ -160,6 +160,8 @@ static inline bool cbfs_lzma_enabled(void)
 
 static inline bool cbfs_zstd_enabled(void)
 {
+	if (fspm_env() && CONFIG(FSP_COMPRESS_FSP_M_ZSTD))
+		return true;
 	if (ENV_PAYLOAD_LOADER && CONFIG(COMPRESSED_PAYLOAD_ZSTD))
 		return true;
 	if (ENV_RAMSTAGE_LOADER && CONFIG(COMPRESS_RAMSTAGE_ZSTD))

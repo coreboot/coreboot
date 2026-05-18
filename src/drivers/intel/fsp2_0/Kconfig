@@ -279,6 +279,10 @@ config FSP_COMPRESS_FSP_M_LZ4
 	bool
 	depends on !FSP_M_XIP
 
+config FSP_COMPRESS_FSP_M_ZSTD
+	bool
+	depends on !FSP_M_XIP
+
 config FSP_ALIGNMENT_FSP_S
 	int
 	help

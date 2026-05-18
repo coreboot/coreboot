@@ -78,6 +78,9 @@ chip soc/intel/pantherlake
 		[VR_DOMAIN_GT] = 25 * 4,
 	}"
 
+	# Set on-board graphics as primary display
+	register "skip_ext_gfx_scan" = "true"
+
 	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,

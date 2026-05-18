@@ -194,6 +194,7 @@ chip soc/intel/jasperlake
 				end
 			end
 		end
+		device ref south_xdci on end
 		device ref i2c4 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

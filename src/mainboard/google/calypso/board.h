@@ -7,7 +7,7 @@
 #include <gpio.h>
 
 /* TODO: update as per datasheet */
-#define GPIO_AP_EC_INT		GPIO(66)
+#define GPIO_AP_EC_INT		GPIO(67)
 #define GSC_AP_INT(x)		GPIO(x)
 #define GPIO_GSC_AP_INT		GSC_AP_INT(CONFIG_MAINBOARD_GPIO_PIN_FOR_GSC_AP_INTERRUPT)
 

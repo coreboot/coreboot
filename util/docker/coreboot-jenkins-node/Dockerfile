@@ -1,6 +1,4 @@
-# This dockerfile is not meant to be used directly by docker.  The
-# {{}} varibles are replaced with values by the makefile.  Please generate
-# the docker image for this file by running:
+# Please generate the docker image for this file by running:
 #
 #   make coreboot-jenkins-node
 #
@@ -13,7 +11,10 @@
 #          Because we're piping the contents of the dockerfile into the
 #          docker build command, the 'COPY' keyword isn't valid.
 
-FROM coreboot/coreboot-sdk:{{SDK_VERSION}}
+ARG SDK_VERSION
+ARG SSH_KEY
+
+FROM coreboot/coreboot-sdk:${SDK_VERSION}
 USER root
 
 RUN apt-get -y update && \
@@ -84,7 +85,7 @@ RUN echo 'export PATH=$PATH:/opt/xgcc/bin' >> /home/coreboot/.bashrc && \
 		sphinx_autobuild===2024.2.4 \
 		sphinx_rtd_theme===2.0.0 \
 	&& mkdir -p /home/coreboot/.ssh && \
-	echo "{{SSH_KEY}}" > /home/coreboot/.ssh/authorized_keys && \
+	echo "${SSH_KEY}" > /home/coreboot/.ssh/authorized_keys && \
 	chmod 0700 /home/coreboot/.ssh && \
 	chmod 0600 /home/coreboot/.ssh/authorized_keys
 USER root

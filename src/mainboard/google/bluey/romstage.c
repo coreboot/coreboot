@@ -9,11 +9,13 @@
 #include <commonlib/coreboot_tables.h>
 #include <delay.h>
 #include <ec/google/chromeec/ec.h>
+#include <elog.h>
 #include <gpio.h>
 #include <reset.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/aop_common.h>
 #include <soc/pcie.h>
+#include <soc/platform_info.h>
 #include <soc/pmic.h>
 #include <soc/qcom_spmi.h>
 #include <soc/qclib_common.h>
@@ -301,6 +303,17 @@ static bool check_ramdump_mode_is_set(void)
 	return false;
 }
 
+static void check_first_boot_and_reset(enum boot_mode_t mode)
+{
+	if (platform_get_soc_id() == SOC_ID_HAMOA)
+		return;
+
+	if ((mode == LB_BOOT_MODE_RTC_WAKE) && (boot_count_read() == 1)) {
+		printk(BIOS_INFO, "First boot detected in non-normal mode; triggering reset.\n");
+		do_board_reset();
+	}
+}
+
 void platform_romstage_main(void)
 {
 	static bool ramdump_mode = false;
@@ -338,6 +351,8 @@ void platform_romstage_main(void)
 		printk(BIOS_INFO, "Issuing board reset to come out of Ramdump mode\n");
 		do_board_reset();
 	}
+
+	check_first_boot_and_reset(boot_mode);
 }
 
 void platform_romstage_postram(void)

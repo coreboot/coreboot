@@ -8,6 +8,7 @@
 #include <commonlib/coreboot_tables.h>
 #include <delay.h>
 #include <ec/google/chromeec/ec.h>
+#include <elog.h>
 #include <reset.h>
 #include <soc/aop_common.h>
 #include <soc/pcie.h>
@@ -185,6 +186,14 @@ static void handle_battery_shipping_recovery(bool board_reset)
 
 }
 
+static void check_first_boot_and_reset(enum boot_mode_t mode)
+{
+	if ((mode != LB_BOOT_MODE_NORMAL) && (boot_count_read() == 1)) {
+		printk(BIOS_INFO, "First boot detected in non-normal mode; triggering reset.\n");
+		do_board_reset();
+	}
+}
+
 void platform_romstage_main(void)
 {
 	mainboard_setup_peripherals_early();
@@ -217,6 +226,8 @@ void platform_romstage_main(void)
 	mainboard_setup_peripherals_late(boot_mode);
 
 	qclib_rerun();
+
+	check_first_boot_and_reset(boot_mode);
 }
 
 void platform_romstage_postram(void)

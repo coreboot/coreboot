@@ -33,13 +33,12 @@ config: checkout
 	mkdir -p $(project_build_dir)
 	rm -f $(project_config_file)
 ifneq ($(CONFIG_PAYLOAD_CONFIGFILE),)
-ifneq ("$(wildcard $(CONFIG_PAYLOAD_CONFIGFILE))","")
-	cat $(CONFIG_PAYLOAD_CONFIGFILE)" > tag-$(project_config_file)
+	if [ ! -f $(CONFIG_PAYLOAD_CONFIGFILE) ]; then \
+		echo "Error: File $(CONFIG_PAYLOAD_CONFIGFILE) does not exist"; \
+		false; \
+	fi
+	cat $(CONFIG_PAYLOAD_CONFIGFILE) > $(project_config_file)
 	$(MAKE) $(make_args) olddefconfig
-else
-	echo "Error: File $(CONFIG_PAYLOAD_CONFIGFILE) does not exist"
-	false
-endif
 else
 	$(MAKE) $(make_args) coreboot_defconfig
 endif

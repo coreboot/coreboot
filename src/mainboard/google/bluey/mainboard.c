@@ -172,7 +172,7 @@ static void trigger_critical_battery_shutdown(void)
 	google_chromeec_ap_poweroff();
 }
 
-static bool board_should_use_slow_charging(void)
+static bool board_support_dead_battery_charging(void)
 {
 	uint32_t capacity;
 
@@ -186,11 +186,9 @@ static bool board_should_use_slow_charging(void)
 
 	/*
 	 * If the remaining battery capacity is less than or equal to the
-	 * threshold, use slow charging to ensure system stability.
-	 *
-	 * FIXME: b/497622018
+	 * threshold, set dead battery charging mode.
 	 */
-	return capacity <= REMAINING_BATTERY_THRESHOLD_FOR_SLOW_CHARGING;
+	return capacity <= DEAD_BATT_CHG_THRESHOLD_MAH;
 }
 
 /*
@@ -203,10 +201,10 @@ static void handle_low_power_charging_boot(void)
 	if (!pll_init_and_set(apss_ncc0, L_VAL_710P4MHz))
 		printk(BIOS_DEBUG, "CPU Frequency set to 710MHz\n");
 
-	if (board_should_use_slow_charging())
-		enable_slow_battery_charging();
-	else
-		enable_fast_battery_charging();
+	if (board_support_dead_battery_charging())
+		configure_dead_battery_boot();
+
+	enable_fast_battery_charging();
 
 	/*
 	 * Disable the lightbar for Low-Battery or Off-Mode charging sequences.

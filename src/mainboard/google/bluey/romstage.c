@@ -126,10 +126,6 @@ int qclib_mainboard_override(struct qclib_cb_if_table *table)
 		return 0;
 	}
 
-	/* Skip PD negotiation only if a battery is present and its capacity is low */
-	if (battery_present && (capacity <= REMAINING_BATTERY_THRESHOLD_FOR_SLOW_CHARGING))
-		table->global_attributes &= ~QCLIB_GA_ENABLE_PD_NEGOTIATION;
-
 	return 0;
 }
 

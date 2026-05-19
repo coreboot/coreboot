@@ -58,6 +58,13 @@
 #define OS_TYPE_BOOTLOADER		0x00
 #define BOOT_REASON_FRESHBOOT		0x00
 
+/*
+ * SDAM15_MEM_061 (SPMI address 0x7E7D) - SetMaxPwrReq_BattSts register
+ * Bit 6 - DEAD_BATT_STS
+ */
+#define SDAM15_MEM_061_ADDR	0x7E7D
+#define DEAD_BATT_STS	BIT(6)
+
 #define DELAY_CHARGING_APPLET_MS 2000 /* 2sec */
 #define CHARGING_RAIL_STABILIZATION_DELAY_MS 5000 /* 5sec */
 #define LOW_BATTERY_CHARGING_LOOP_EXIT_MS (3 * 60 * 1000) /* 3min */
@@ -74,6 +81,7 @@ uint8_t mask;
 uint8_t value;
 } default_sdam_config[] = {
 	{PMIC_PD_NEGOTIATION_FLAG, SKIP_PORT_RESET, 0},
+	{SDAM15_MEM_061_ADDR, DEAD_BATT_STS, 0},
 	{PMIC0_SDAM16_MEM_030, SDAM16_INIT_MASK, (BOOT_REASON_FRESHBOOT << 4) | OS_TYPE_BOOTLOADER},
 #if CONFIG(DAM_SINK_SENSOR_Z1_OPTIMIZATION)
 	{PMIC_SDAM3_PSI_VARIANT_MAJOR, 0xFF, PMIC_PSI_WORKAROUND_ENABLE},
@@ -176,7 +184,7 @@ void launch_charger_applet(void)
 	static const long charging_enable_timeout_ms = CHARGING_RAIL_STABILIZATION_DELAY_MS;
 	struct stopwatch sw;
 	bool has_crossed_threshold = false;
-	bool has_entered_low_battery_mode = false;
+	bool has_entered_dead_battery_mode = false;
 
 	printk(BIOS_INFO, "Inside %s. Initiating charging\n", __func__);
 
@@ -213,14 +221,12 @@ void launch_charger_applet(void)
 	}
 	/*
 	 * If the remaining battery is less than
-	 * REMAINING_BATTERY_THRESHOLD_FOR_SLOW_CHARGING threshold, enter low-battery
-	 * charging mode and start a timeout timer to prevent getting stuck in a dead-loop
-	 * if the battery fails to charge.
-	 *
-	 * FIXME: b/497622018
+	 * DEAD_BATT_CHG_THRESHOLD_MAH threshold, enter low-battery
+	 * charging mode and start a timeout timer to come out from dead battery charging
+	 * mode.
 	 */
-	if (capacity <= REMAINING_BATTERY_THRESHOLD_FOR_SLOW_CHARGING) {
-		has_entered_low_battery_mode = true;
+	if (capacity <= DEAD_BATT_CHG_THRESHOLD_MAH) {
+		has_entered_dead_battery_mode = true;
 		stopwatch_init_msecs_expire(&sw, low_battery_charging_timeout_ms);
 	}
 
@@ -228,10 +234,10 @@ void launch_charger_applet(void)
 		/* Add static delay before reading the charging applet pre-requisites */
 		mdelay(DELAY_CHARGING_APPLET_MS);
 
-		if (has_entered_low_battery_mode) {
+		if (has_entered_dead_battery_mode) {
 			if (stopwatch_expired(&sw)) {
-				printk(BIOS_INFO, "Issuing power-off as switching from slow charging "
-						"to fast charging mode.\n");
+				printk(BIOS_INFO, "Issuing power-off to come out from"
+						" dead battery charging mode.\n");
 				google_chromeec_ap_poweroff();
 			}
 		}
@@ -374,4 +380,9 @@ bool platform_get_battery_soc_information(uint32_t *batt_pct)
 		return false;
 
 	return true;
+}
+
+void configure_dead_battery_boot(void)
+{
+	spmi_rmw8(SDAM15_MEM_061_ADDR, DEAD_BATT_STS, DEAD_BATT_STS);
 }

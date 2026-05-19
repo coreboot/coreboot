@@ -126,7 +126,9 @@ static void cmos_walk_options(struct cb_cmos_option_table *opttbl, FIELD **field
 				cmos_enum = next_cmos_enum_of_id(cmos_enum, option->config_id);
 			}
 
-			char **values = malloc(sizeof(char *) * (numvals + 1));
+			if (numvals <= 0)
+				break;
+			char **values = calloc(numvals + 1, sizeof(char *));
 			int cnt = 0;
 
 			cmos_enum =
@@ -185,7 +187,7 @@ int main(int argc, char **argv)
 
 	count_cmos_options(option, &numopts, &maxlength);
 
-	FIELD **fields = malloc(sizeof(FIELD *) * (2 * numopts + 1));
+	FIELD **fields = calloc((size_t)2 * numopts + 1, sizeof(FIELD *));
 
 	cmos_walk_options(opttbl, fields, numopts, maxlength);
 

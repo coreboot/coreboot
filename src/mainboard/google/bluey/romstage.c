@@ -307,6 +307,17 @@ static bool check_ramdump_mode_is_set(void)
 	return false;
 }
 
+static void check_first_boot_and_reset(enum boot_mode_t mode)
+{
+	if (!CONFIG(SOC_QUALCOMM_X1P42100))
+		return;
+
+	if ((mode != LB_BOOT_MODE_NORMAL) && (boot_count_read() == 1)) {
+		printk(BIOS_INFO, "First boot detected in non-normal mode; triggering reset.\n");
+		do_board_reset();
+	}
+}
+
 void platform_romstage_main(void)
 {
 	static bool ramdump_mode = false;
@@ -349,6 +360,8 @@ void platform_romstage_main(void)
 
 	/* Log the boot event (false indicates this is not an S3 resume) */
 	elog_boot_notify(false);
+
+	check_first_boot_and_reset(boot_mode);
 }
 
 void platform_romstage_postram(void)

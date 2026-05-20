@@ -1082,11 +1082,26 @@ static void dump_fd(char *image, int size)
 	}
 }
 
-/* Takes an image containing an IFD and creates a Flashmap .fmd file template.
- * This flashmap will contain all IFD regions except the BIOS region.
- * The BIOS region is created by coreboot itself and 'should' match the IFD region
- * anyway (CONFIG_VALIDATE_INTEL_DESCRIPTOR should make sure). coreboot built system will use
- * this template to generate the final Flashmap file.
+static unsigned int ifd_image_size(const struct frba *frba)
+{
+	unsigned int end = 0;
+
+	for (unsigned int i = 0; i < max_regions; i++) {
+		struct region region = get_region(frba, i);
+
+		if (region.limit == 0 || region.base == 0x07FFF000)
+			continue;
+
+		unsigned int region_end = (unsigned int)region.limit + 1;
+		if (region_end > end)
+			end = region_end;
+	}
+
+	return end;
+}
+
+/* Writes a complete .fmd for the IFD layout (valid input for fmaptool).
+ * coreboot replaces the SI_BIOS line with a top-aligned region and sub-layout.
  */
 static void create_fmap_template(char *image, int size, const char *layout_fname)
 {
@@ -1100,15 +1115,16 @@ static void create_fmap_template(char *image, int size, const char *layout_fname
 		exit(EXIT_FAILURE);
 	}
 
-	char *bbuf = "FLASH ##FLASH_SIZE## {\n";
-	if (write(layout_fd, bbuf, strlen(bbuf)) < 0) {
+	unsigned int flash_size = ifd_image_size(frba);
+	char buf[LAYOUT_LINELEN];
+
+	snprintf(buf, LAYOUT_LINELEN, "FLASH 0x%X {\n", flash_size);
+	if (write(layout_fd, buf, strlen(buf)) < 0) {
 		perror("Could not write to file");
 		exit(EXIT_FAILURE);
 	}
 
-	/* fmaptool requires regions in .fmd to be sorted.
-	 * => We need to sort the regions by base address before writing them in .fmd File
-	 */
+	/* fmaptool requires regions in .fmd to be sorted by base address. */
 	int count_regions = 0;
 	struct region sorted_regions[MAX_REGIONS] = { 0 };
 	for (unsigned int i = 0; i < max_regions; i++) {
@@ -1128,54 +1144,36 @@ static void create_fmap_template(char *image, int size, const char *layout_fname
 			continue;
 		}
 
-		/* Here we decide to use the coreboot generated FMAP BIOS region, instead of
-		 * the one specified in the IFD. The case when IFD and FMAP BIOS region do not
-		 * match cannot be caught here, therefore one should still validate IFD and
-		 * FMAP via CONFIG_VALIDATE_INTEL_DESCRIPTOR
-		 */
-		if (i == REGION_BIOS)
-			continue;
-
 		sorted_regions[count_regions] = region;
-		// basically insertion sort
-		for (int i = count_regions - 1; i >= 0; i--) {
-			if (sorted_regions[i].base > sorted_regions[i + 1].base) {
-				struct region tmp = sorted_regions[i];
-				sorted_regions[i] = sorted_regions[i + 1];
-				sorted_regions[i + 1] = tmp;
+		/* insertion sort by base */
+		for (int j = count_regions - 1; j >= 0; j--) {
+			if (sorted_regions[j].base > sorted_regions[j + 1].base) {
+				struct region tmp = sorted_regions[j];
+				sorted_regions[j] = sorted_regions[j + 1];
+				sorted_regions[j + 1] = tmp;
 			}
 		}
 		count_regions++;
 	}
 
-	// Now write regions sorted by base address in the fmap file
 	for (int i = 0; i < count_regions; i++) {
 		struct region region = sorted_regions[i];
-		char buf[LAYOUT_LINELEN];
-		snprintf(buf, LAYOUT_LINELEN, "\t%s@0x%X 0x%X\n", region_names[region.type].fmapname, region.base, region.size);
+
+		snprintf(buf, LAYOUT_LINELEN, "\t%s@0x%X 0x%X\n",
+			 region_names[region.type].fmapname, region.base, region.size);
 		if (write(layout_fd, buf, strlen(buf)) < 0) {
 			perror("Could not write to file");
 			exit(EXIT_FAILURE);
 		}
 	}
 
-	char *ebuf = "\tSI_BIOS@##BIOS_BASE## ##BIOS_SIZE## {\n"
-		     "\t\t##CONSOLE_ENTRY##\n"
-		     "\t\t##MRC_CACHE_ENTRY##\n"
-		     "\t\t##SMMSTORE_ENTRY##\n"
-		     "\t\t##SPD_CACHE_ENTRY##\n"
-		     "\t\t##VPD_ENTRY##\n"
-		     "\t\tFMAP@##FMAP_BASE## ##FMAP_SIZE##\n"
-		     "\t\tCOREBOOT(CBFS)@##CBFS_BASE## ##CBFS_SIZE##\n"
-		     "\t}\n"
-		     "}\n";
-	if (write(layout_fd, ebuf, strlen(ebuf)) < 0) {
+	if (write(layout_fd, "}\n", 2) < 0) {
 		perror("Could not write to file");
 		exit(EXIT_FAILURE);
 	}
 
 	close(layout_fd);
-	printf("Wrote layout to %s\n", layout_fname);
+	printf("Wrote IFD flashmap to %s\n", layout_fname);
 }
 
 static void write_regions(char *image, int size)
@@ -2226,7 +2224,7 @@ static void print_usage(const char *name)
 	printf("\n"
 	       "   -d | --dump:                          dump intel firmware descriptor\n"
 	       "   -f | --layout <filename>              dump regions into a flashrom layout file\n"
-	       "   -F | --fmap-layout <filename>         dump IFD regions into a fmap layout template (.fmd) file\n"
+	       "   -F | --fmap-layout <filename>         write a complete .fmd from the IFD layout\n"
 	       "   -t | --validate                       Validate that the firmware descriptor layout matches the fmap layout\n"
 	       "   -x | --extract:                       extract intel fd modules\n"
 	       "   -i | --inject <region>:<module>       inject file <module> into region <region>\n"

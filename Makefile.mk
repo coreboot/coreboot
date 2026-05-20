@@ -1111,37 +1111,12 @@ FMAP_FLASH_SIZE := $(CONFIG_ROM_SIZE)
 
 ifeq ($(CONFIG_ARCH_X86),y)
 
-DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default-x86.fmd
-# check if IFD_CHIPSET is set and if yes generate a FMAP template from IFD descriptor
-ifneq ($(CONFIG_IFD_CHIPSET),)
-ifeq ($(CONFIG_HAVE_IFD_BIN),y)
-DEFAULT_FLASHMAP:=$(obj)/fmap-template.fmd
-$(DEFAULT_FLASHMAP): $(call strip_quotes,$(CONFIG_IFD_BIN_PATH)) $(IFDTOOL)
-	echo "    IFDTOOL    -p $(CONFIG_IFD_CHIPSET) -F $@ $<"
-	$(IFDTOOL) -p $(CONFIG_IFD_CHIPSET) -F $@ $<
-endif # ifeq($(CONFIG_HAVE_IFD_BIN),y)
-endif # ifneq($(CONFIG_IFD_CHIPSET),)
-
 # entire "BIOS" region (everything directly of concern to the host system)
 FMAP_BIOS_BASE := $(call int-align, $(call int-subtract, $(CONFIG_ROM_SIZE) $(CONFIG_CBFS_SIZE)), 0x10000)
 FMAP_BIOS_SIZE := $(call int-align-down, $(shell echo $(CONFIG_CBFS_SIZE) | tr A-F a-f), 0x10000)
 # position and size of flashmap, relative to BIOS_BASE
 
-#
-# X86 CONSOLE FMAP region
-#
-# position, size and entry line of CONSOLE relative to BIOS_BASE, if enabled
-
 FMAP_CURRENT_BASE := 0
-
-ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
-FMAP_CONSOLE_BASE := $(FMAP_CURRENT_BASE)
-FMAP_CONSOLE_SIZE := $(CONFIG_CONSOLE_SPI_FLASH_BUFFER_SIZE)
-FMAP_CONSOLE_ENTRY := CONSOLE@$(call _tohex,$(FMAP_CONSOLE_BASE)) $(call _tohex,$(FMAP_CONSOLE_SIZE))
-FMAP_CURRENT_BASE := $(call int-add, $(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE))
-else
-FMAP_CONSOLE_ENTRY :=
-endif
 
 ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
 FMAP_MRC_CACHE_BASE := $(call int-align, $(FMAP_CURRENT_BASE), 0x10000)
@@ -1165,7 +1140,7 @@ ifeq ($(CONFIG_SPD_CACHE_IN_FMAP),y)
 FMAP_SPD_CACHE_BASE := $(call int-align, $(FMAP_CURRENT_BASE), 0x4000)
 FMAP_SPD_CACHE_SIZE := $(call int-multiply, $(CONFIG_DIMM_MAX) $(CONFIG_DIMM_SPD_SIZE))
 FMAP_SPD_CACHE_SIZE := $(call int-align, $(FMAP_SPD_CACHE_SIZE), 0x1000)
-FMAP_SPD_CACHE_ENTRY := $(CONFIG_SPD_CACHE_FMAP_NAME)@$(call _tohex,$(FMAP_SPD_CACHE_BASE)) $(call _tohex,$(FMAP_SPD_CACHE_SIZE))
+FMAP_SPD_CACHE_ENTRY := $(call strip_quotes,$(CONFIG_SPD_CACHE_FMAP_NAME))@$(call _tohex,$(FMAP_SPD_CACHE_BASE)) $(call _tohex,$(FMAP_SPD_CACHE_SIZE))
 FMAP_CURRENT_BASE := $(call int-add, $(FMAP_SPD_CACHE_BASE) $(FMAP_SPD_CACHE_SIZE))
 else
 FMAP_SPD_CACHE_ENTRY :=
@@ -1174,10 +1149,19 @@ endif
 ifeq ($(CONFIG_VPD),y)
 FMAP_VPD_BASE := $(call int-align, $(FMAP_CURRENT_BASE), 0x4000)
 FMAP_VPD_SIZE := $(CONFIG_VPD_FMAP_SIZE)
-FMAP_VPD_ENTRY := $(CONFIG_VPD_FMAP_NAME)@$(call _tohex,$(FMAP_VPD_BASE)) $(call _tohex,$(FMAP_VPD_SIZE))
+FMAP_VPD_ENTRY := $(call strip_quotes,$(CONFIG_VPD_FMAP_NAME))@$(call _tohex,$(FMAP_VPD_BASE)) $(call _tohex,$(FMAP_VPD_SIZE))
 FMAP_CURRENT_BASE := $(call int-add, $(FMAP_VPD_BASE) $(FMAP_VPD_SIZE))
 else
 FMAP_VPD_ENTRY :=
+endif
+
+ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_CONSOLE_BASE := $(call int-align, $(FMAP_CURRENT_BASE), 0x1000)
+FMAP_CONSOLE_SIZE := $(CONFIG_CONSOLE_SPI_FLASH_BUFFER_SIZE)
+FMAP_CONSOLE_ENTRY := CONSOLE@$(call _tohex,$(FMAP_CONSOLE_BASE)) $(call _tohex,$(FMAP_CONSOLE_SIZE))
+FMAP_CURRENT_BASE := $(call int-add, $(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE))
+else
+FMAP_CONSOLE_ENTRY :=
 endif
 
 ifeq ($(CONFIG_INCLUDE_HSPHY_IN_FMAP),y)
@@ -1200,13 +1184,12 @@ FMAP_FMAP_SIZE := 0x200
 #
 # X86 COREBOOT default cbfs FMAP region
 #
-# position and size of CBFS, relative to BIOS_BASE
+# position of CBFS, relative to BIOS_BASE
+# will extend to the end of the flash/bios region
 FMAP_CBFS_BASE := $(call int-align, $(call int-add, $(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE)), 0x1000)
-FMAP_CBFS_SIZE := $(call int-subtract, $(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
 
 else # ifeq ($(CONFIG_ARCH_X86),y)
 
-DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default.fmd
 # entire flash
 # entire "BIOS" region (everything directly of concern to the host system)
 FMAP_BIOS_BASE := 0
@@ -1248,26 +1231,64 @@ endif
 #
 # position and size of CBFS, relative to BIOS_BASE
 FMAP_CBFS_BASE := $(FMAP_CURRENT_BASE)
-FMAP_CBFS_SIZE := $(call int-subtract,$(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
+endif # ifeq ($(CONFIG_ARCH_X86),y)
+
+# x86 BIOS region and children (offsets relative to BIOS base).
+define FMAP_EMIT_X86_BIOS
+	printf '\tBIOS@0x%x 0x%x {\n' $(FMAP_BIOS_BASE) $(FMAP_BIOS_SIZE); \
+	$(if $(strip $(FMAP_MRC_CACHE_ENTRY)),printf '\t\t%s\n' '$(FMAP_MRC_CACHE_ENTRY)';) \
+	$(if $(strip $(FMAP_SMMSTORE_ENTRY)),printf '\t\t%s\n' '$(FMAP_SMMSTORE_ENTRY)';) \
+	$(if $(strip $(FMAP_SPD_CACHE_ENTRY)),printf '\t\t%s\n' '$(FMAP_SPD_CACHE_ENTRY)';) \
+	$(if $(strip $(FMAP_VPD_ENTRY)),printf '\t\t%s\n' '$(FMAP_VPD_ENTRY)';) \
+	$(if $(strip $(FMAP_CONSOLE_ENTRY)),printf '\t\t%s\n' '$(FMAP_CONSOLE_ENTRY)';) \
+	$(if $(strip $(FMAP_HSPHY_FW_ENTRY)),printf '\t\t%s\n' '$(FMAP_HSPHY_FW_ENTRY)';) \
+	printf '\t\tFMAP@0x%x 0x%x\n' $(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE); \
+	printf '\t\tCOREBOOT(CBFS)@0x%x\n' $(FMAP_CBFS_BASE); \
+	printf '\t}\n';
+endef
+
+# Non-x86 BIOS region: BOOTBLOCK, FMAP, optional regions, then CBFS.
+define FMAP_EMIT_NON_X86_BIOS
+	printf '\tBIOS@0x%x 0x%x {\n' $(FMAP_BIOS_BASE) $(FMAP_BIOS_SIZE); \
+	printf '\t\tBOOTBLOCK 128K\n'; \
+	printf '\t\tFMAP@0x%x 0x%x\n' $(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE); \
+	$(if $(strip $(FMAP_CONSOLE_ENTRY)),printf '\t\t%s\n' '$(FMAP_CONSOLE_ENTRY)';) \
+	$(if $(strip $(FMAP_MRC_CACHE_ENTRY)),printf '\t\t%s\n' '$(FMAP_MRC_CACHE_ENTRY)';) \
+	printf '\t\tCOREBOOT(CBFS)@0x%x\n' $(FMAP_CBFS_BASE); \
+	printf '\t}\n';
+endef
+
+ifeq ($(CONFIG_ARCH_X86),y)
+
+ifneq ($(and $(CONFIG_IFD_CHIPSET),$(CONFIG_HAVE_IFD_BIN)),)
+
+$(obj)/fmap-ifd.fmd: $(call strip_quotes,$(CONFIG_IFD_BIN_PATH)) $(IFDTOOL)
+	echo "    IFDTOOL    -p $(CONFIG_IFD_CHIPSET) -F $(obj)/fmap-ifd.fmd $<"
+	$(IFDTOOL) -p $(CONFIG_IFD_CHIPSET) -F $(obj)/fmap-ifd.fmd $<
+
+$(obj)/fmap.fmd: $(top)/Makefile.mk $(obj)/config.h $(obj)/fmap-ifd.fmd
+	@{ $(FMAP_EMIT_X86_BIOS) } > $(obj)/fmap-bios.tmp
+	sed -e '1s/^FLASH .*/FLASH $(call _tohex,$(FMAP_FLASH_SIZE)) {/' \
+	    -e '/SI_BIOS@/r $(obj)/fmap-bios.tmp' -e '/SI_BIOS@/d' \
+	    '$(obj)/fmap-ifd.fmd' > $@
+
+else # x86 without IFD
+
+$(obj)/fmap.fmd: $(top)/Makefile.mk $(obj)/config.h
+	@{ printf 'FLASH 0x%x {\n' $(FMAP_FLASH_SIZE); \
+	   $(FMAP_EMIT_X86_BIOS) \
+	   printf '}\n'; } > $@
+endif
+
+else # ifeq ($(CONFIG_ARCH_X86),y)
+
+$(obj)/fmap.fmd: $(top)/Makefile.mk $(obj)/config.h
+	@{ printf 'FLASH 0x%x {\n' $(FMAP_FLASH_SIZE); \
+	   $(FMAP_EMIT_NON_X86_BIOS) \
+	   printf '}\n'; } > $@
 
 endif # ifeq ($(CONFIG_ARCH_X86),y)
 
-$(obj)/fmap.fmd: $(top)/Makefile.mk $(DEFAULT_FLASHMAP) $(obj)/config.h
-	sed -e "s,##FLASH_SIZE##,$(call _tohex,$(FMAP_FLASH_SIZE))," \
-	    -e "s,##BIOS_BASE##,$(call _tohex,$(FMAP_BIOS_BASE))," \
-	    -e "s,##BIOS_SIZE##,$(call _tohex,$(FMAP_BIOS_SIZE))," \
-	    -e "s,##FMAP_BASE##,$(call _tohex,$(FMAP_FMAP_BASE))," \
-	    -e "s,##FMAP_SIZE##,$(FMAP_FMAP_SIZE)," \
-	    -e "s,##CONSOLE_ENTRY##,$(FMAP_CONSOLE_ENTRY)," \
-	    -e "s,##MRC_CACHE_ENTRY##,$(FMAP_MRC_CACHE_ENTRY)," \
-	    -e "s,##SMMSTORE_ENTRY##,$(FMAP_SMMSTORE_ENTRY)," \
-	    -e "s,##SPD_CACHE_ENTRY##,$(FMAP_SPD_CACHE_ENTRY)," \
-	    -e "s,##VPD_ENTRY##,$(FMAP_VPD_ENTRY)," \
-	    -e "s,##HSPHY_FW_ENTRY##,$(FMAP_HSPHY_FW_ENTRY)," \
-	    -e "s,##CBFS_BASE##,$(call _tohex,$(FMAP_CBFS_BASE))," \
-	    -e "s,##CBFS_SIZE##,$(call _tohex,$(FMAP_CBFS_SIZE))," \
-		$(DEFAULT_FLASHMAP) > $@.tmp
-	mv $@.tmp $@
 else # ifeq ($(CONFIG_FMDFILE),)
 $(obj)/fmap.fmd: $(CONFIG_FMDFILE) $(obj)/config.h
 	$(HOSTCC) $(PREPROCESS_ONLY) -include $(obj)/config.h $< -o $@.pre

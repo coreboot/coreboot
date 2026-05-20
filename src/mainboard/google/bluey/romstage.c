@@ -188,21 +188,28 @@ static void update_battery_status(void)
 		return;
 
 	struct ec_response_battery_get_misc_info misc_info;
+	bool misc_info_valid = false;
 
 	battery_present = google_chromeec_is_battery_present();
 	battery_below_threshold = google_chromeec_is_below_critical_threshold();
 
-	if (!google_chromeec_get_battery_misc_info(&misc_info)) {
+	if (google_chromeec_get_battery_misc_info(&misc_info) == 0) {
 		battery_cfet_status = misc_info.cfet_status;
 		battery_dfet_status = misc_info.dfet_status;
+		misc_info_valid = true;
+	} else {
+		printk(BIOS_WARNING, "Failed to get battery FET status from EC\n");
+		battery_cfet_status = -1;
+		battery_dfet_status = -1;
 	}
 
 	/*
 	 * SHIP MODE RECOVERY HANDLER:
-	 * Triggered when the battery is present, CFET is disabled, and the
-	 * battery status indicates it is waiting in an uninitialized charging state.
+	 * Triggered ONLY when the battery info was successfully read,
+	 * and BOTH FETs are explicitly 0 (indicating a locked BMS).
 	 */
-	bool is_bms_locked = (battery_cfet_status <= 0) && (battery_dfet_status <= 0);
+	bool is_bms_locked = misc_info_valid && (battery_cfet_status == 0)
+			 && (battery_dfet_status == 0);
 	battery_needs_recovery = battery_present && is_bms_locked;
 }
 

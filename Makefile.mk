@@ -1179,7 +1179,7 @@ endif
 #
 # position, size
 FMAP_FMAP_BASE := $(FMAP_CURRENT_BASE)
-FMAP_FMAP_SIZE := 0x200
+FMAP_FMAP_SIZE := 0x1000
 
 #
 # X86 COREBOOT default cbfs FMAP region

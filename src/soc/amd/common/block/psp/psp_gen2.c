@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <fmap.h>
+#include <thread.h>
 #include <timer.h>
 #include <types.h>
 #include "psp_def.h"
@@ -79,14 +80,19 @@ static int wait_command(uint64_t base, bool wait_for_ready)
 
 	stopwatch_init_msecs_expire(&sw, PSP_CMD_TIMEOUT);
 
-	do {
+	while (1) {
 		tmp = psp_read32(base, PSP_MAILBOX_COMMAND_OFFSET);
 		tmp &= ~and_mask.val;
 		if (tmp == expected.val)
-			return 0;
-	} while (!stopwatch_expired(&sw));
+			break;
 
-	return -PSPSTS_CMD_TIMEOUT;
+		if (stopwatch_expired(&sw))
+			return -PSPSTS_CMD_TIMEOUT;
+
+		thread_yield();
+	}
+
+	return 0;
 }
 
 int send_psp_command(uint32_t command, void *buffer)

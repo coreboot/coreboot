@@ -6,6 +6,7 @@
 #include <device/smbus_host.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/smbus.h>
+#include <thread.h>
 #include <soc/southbridge.h>
 
 /*
@@ -45,6 +46,8 @@ static int smbus_wait_until_ready(uintptr_t mmio)
 			return 0;
 		}
 		controller_write8(mmio, SMBHSTSTAT, val);
+
+		thread_yield();
 	} while (--loops);
 	return -2;		/* time out */
 }

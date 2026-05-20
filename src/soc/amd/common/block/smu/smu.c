@@ -5,6 +5,7 @@
 #include <amdblocks/smn.h>
 #include <amdblocks/smu.h>
 #include <soc/smu.h>
+#include <thread.h>
 #include <types.h>
 
 #define SMU_MESG_RESP_TIMEOUT	0x00
@@ -19,18 +20,22 @@ static int32_t smu_poll_response(bool print_command_duration)
 
 	stopwatch_init_msecs_expire(&sw, timeout_ms);
 
-	do {
+	while (1) {
 		result = smn_read32(SMN_SMU_MESG_RESP);
-		if (result) {
-			if (print_command_duration)
-				printk(BIOS_SPEW, "SMU command consumed %lld usecs\n",
-					stopwatch_duration_usecs(&sw));
-			return result;
-		}
-	} while (!stopwatch_expired(&sw));
+		if (result)
+			break;
 
-	printk(BIOS_ERR, "timeout sending SMU message\n");
-	return SMU_MESG_RESP_TIMEOUT;
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "timeout sending SMU message\n");
+			return SMU_MESG_RESP_TIMEOUT;
+		}
+		thread_yield();
+	}
+
+	if (print_command_duration)
+		printk(BIOS_SPEW, "SMU command consumed %lld usecs\n",
+		       stopwatch_duration_usecs(&sw));
+	return result;
 }
 
 /*

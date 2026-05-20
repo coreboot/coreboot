@@ -24,7 +24,6 @@
  * the regions are missing or corrupted the fTPM won't be operational.
  */
 
-#include <timer.h>
 #include <amdblocks/backup_boot_device.h>
 #include <amdblocks/psp.h>
 #include <amdblocks/reset.h>
@@ -35,6 +34,8 @@
 #include <device/mmio.h>
 #include <fmap.h>
 #include <string.h>
+#include <thread.h>
+#include <timer.h>
 
 #include "tpm.h"
 
@@ -92,6 +93,7 @@ static tpm_result_t crb_wait_for_reg32(const void *addr,
 			       reg_value, mask, expected_value);
 			return TPM_CB_TIMEOUT;
 		}
+		thread_yield();
 	}
 }
 

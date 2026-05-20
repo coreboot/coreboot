@@ -7,6 +7,7 @@
 #include <device/pci_def.h>
 #include <cbfs.h>
 #include <region_file.h>
+#include <thread.h>
 #include <timer.h>
 #include <console/console.h>
 #include <amdblocks/psp.h>
@@ -90,12 +91,17 @@ static int wait_initialized(struct pspv1_mbox *mbox)
 
 	stopwatch_init_msecs_expire(&sw, PSP_INIT_TIMEOUT);
 
-	do {
+	while (1) {
 		if (rd_mbox_sts(mbox) & PSPV1_STATUS_INITIALIZED)
-			return 0;
-	} while (!stopwatch_expired(&sw));
+			break;
 
-	return -PSPSTS_INIT_TIMEOUT;
+		if (stopwatch_expired(&sw))
+			return -PSPSTS_INIT_TIMEOUT;
+
+		thread_yield();
+	}
+
+	return 0;
 }
 
 static int wait_command(struct pspv1_mbox *mbox)
@@ -104,12 +110,17 @@ static int wait_command(struct pspv1_mbox *mbox)
 
 	stopwatch_init_msecs_expire(&sw, PSP_CMD_TIMEOUT);
 
-	do {
+	while (1) {
 		if (!rd_mbox_cmd(mbox))
-			return 0;
-	} while (!stopwatch_expired(&sw));
+			break;
 
-	return -PSPSTS_CMD_TIMEOUT;
+		if (stopwatch_expired(&sw))
+			return -PSPSTS_CMD_TIMEOUT;
+
+		thread_yield();
+	}
+
+	return 0;
 }
 
 int send_psp_command(uint32_t command, void *buffer)

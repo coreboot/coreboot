@@ -7,6 +7,7 @@
 #include <console/console.h>
 #include <espi.h>
 #include <soc/pci_devs.h>
+#include <thread.h>
 #include <timer.h>
 #include <types.h>
 
@@ -462,13 +463,18 @@ static enum cb_err espi_wait_ready(void)
 	union espi_txhdr0 hdr0;
 
 	stopwatch_init_usecs_expire(&sw, ESPI_CMD_TIMEOUT_US);
-	do {
+	while (1) {
 		hdr0.val = espi_read32(ESPI_DN_TX_HDR0);
 		if (!hdr0.cmd_sts)
-			return CB_SUCCESS;
-	} while (!stopwatch_expired(&sw));
+			break;
 
-	return CB_ERR;
+		if (stopwatch_expired(&sw))
+			return CB_ERR;
+
+		thread_yield();
+	}
+
+	return CB_SUCCESS;
 }
 
 /* Clear interrupt status register */
@@ -488,15 +494,20 @@ static enum cb_err espi_poll_status(uint32_t *status)
 	struct stopwatch sw;
 
 	stopwatch_init_usecs_expire(&sw, ESPI_CMD_TIMEOUT_US);
-	do {
+
+	while (1) {
 		*status = espi_read32(ESPI_SLAVE0_INT_STS);
 		if (*status)
-			return CB_SUCCESS;
-	} while (!stopwatch_expired(&sw));
+			break;
 
-	printk(BIOS_ERR, "eSPI timed out waiting for status update.\n");
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "eSPI timed out waiting for status update.\n");
+			return CB_ERR;
+		}
+		thread_yield();
+	}
 
-	return CB_ERR;
+	return CB_SUCCESS;
 }
 
 static void espi_show_failure(const struct espi_cmd *cmd, const char *str, uint32_t status)

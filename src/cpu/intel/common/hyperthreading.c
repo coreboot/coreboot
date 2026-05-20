@@ -4,10 +4,65 @@
 #include <cpu/intel/common/common.h>
 #include <types.h>
 
+#define CPUID_EXTENDED_CPU_TOPOLOGY		0x0b
+#define CPUID_EXTENDED_CPU_TOPOLOGY2		0x1f
+#define CPUID_CPU_TOPOLOGY_LEVEL_TYPE_SHIFT	8
+#define CPUID_CPU_TOPOLOGY_LEVEL_TYPE_MASK	0xff
+#define CPUID_CPU_TOPOLOGY_LEVEL_TYPE_SMT	1
+#define CPUID_CPU_TOPOLOGY_LEVEL(res) \
+	(((res).ecx >> CPUID_CPU_TOPOLOGY_LEVEL_TYPE_SHIFT) & \
+	 CPUID_CPU_TOPOLOGY_LEVEL_TYPE_MASK)
+
+bool intel_ht_or_mc_supported(void)
+{
+	/* Is Hyper-Threading or multi-core supported? */
+	return !!(cpuid_edx(1) & CPUID_FEATURE_HTT);
+}
+
+static bool topology_leaf_smt_threads(unsigned int leaf, unsigned int *threads)
+{
+	struct cpuid_result result;
+
+	if (cpuid_get_max_func() < leaf)
+		return false;
+
+	result = cpuid_ext(leaf, 0);
+	if (CPUID_CPU_TOPOLOGY_LEVEL(result) != CPUID_CPU_TOPOLOGY_LEVEL_TYPE_SMT)
+		return false;
+
+	*threads = result.ebx & 0xffff;
+	return *threads != 0;
+}
+
 bool intel_ht_supported(void)
 {
-	/* Is HyperThreading supported? */
-	return !!(cpuid_edx(1) & CPUID_FEATURE_HTT);
+	struct cpuid_result result;
+	unsigned int logical_processors;
+	unsigned int threads;
+	unsigned int cores;
+
+	if (!cpu_have_cpuid())
+		return false;
+
+	if (topology_leaf_smt_threads(CPUID_EXTENDED_CPU_TOPOLOGY2, &threads) ||
+	    topology_leaf_smt_threads(CPUID_EXTENDED_CPU_TOPOLOGY, &threads))
+		return threads > 1;
+
+	if (!intel_ht_or_mc_supported())
+		return false;
+
+	result = cpuid(1);
+	logical_processors = (result.ebx >> 16) & 0xff;
+	if (logical_processors <= 1)
+		return false;
+
+	if (cpuid_get_max_func() < 4)
+		return false;
+
+	result = cpuid_ext(4, 0);
+	cores = ((result.eax >> 26) & 0x3f) + 1;
+
+	return logical_processors > cores;
 }
 
 /*

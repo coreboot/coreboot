@@ -10,14 +10,6 @@
 #include <drivers/option/cfr_frontend.h>
 #include <soc/soc_chip.h>
 
-/* FSP hyperthreading */
-static const struct sm_object hyper_threading = SM_DECLARE_BOOL({
-	.opt_name	= "hyper_threading",
-	.ui_name	= "Hyper-Threading",
-	.ui_helptext	= "Enable or disable Hyper-Threading",
-	.default_value	= CONFIG(FSP_HYPERTHREADING),
-});
-
 /* IGD Enabled */
 static const struct sm_object igd_enabled = SM_DECLARE_BOOL({
 	.opt_name	= "igd_enabled",

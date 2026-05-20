@@ -57,13 +57,6 @@ static const struct sm_object gna = SM_DECLARE_BOOL({
 	.default_value	= false,
 });
 
-static const struct sm_object hyper_threading = SM_DECLARE_BOOL({
-	.opt_name	= "hyper_threading",
-	.ui_name	= "Hyper-Threading",
-	.ui_helptext	= "Enable or disable Hyper-Threading",
-	.default_value	= true,
-});
-
 static const struct sm_object memory_speed = SM_DECLARE_ENUM({
 	.opt_name	= "memory_speed",
 	.ui_name	= "Memory Speed",

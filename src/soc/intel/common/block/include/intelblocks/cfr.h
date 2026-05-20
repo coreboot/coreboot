@@ -59,6 +59,20 @@ static const struct sm_object power_on_after_fail_bool = SM_DECLARE_BOOL({
 	.default_value	= CONFIG_MAINBOARD_POWER_FAILURE_STATE,
 });
 
+/* FSP hyperthreading */
+static void update_hyper_threading(struct sm_object *new)
+{
+	if (!intel_ht_supported())
+		new->sm_bool.flags |= CFR_OPTFLAG_SUPPRESS;
+}
+
+static const struct sm_object hyper_threading = SM_DECLARE_BOOL({
+	.opt_name	= "hyper_threading",
+	.ui_name	= "Hyper-Threading",
+	.ui_helptext	= "Enable or disable Hyper-Threading",
+	.default_value	= CONFIG(FSP_HYPERTHREADING),
+}, WITH_CALLBACK(update_hyper_threading));
+
 /* PCIe PCH RP ASPM */
 static void update_pcie_aspm(struct sm_object *new)
 {

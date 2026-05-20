@@ -20,7 +20,12 @@ struct cppc_config;
 void cpu_init_cppc_config(struct cppc_config *config, u32 version);
 
 /*
- * Returns true if CPU supports Hyper-Threading.
+ * Returns true if CPU supports Hyper-Threading or multiple cores.
+ */
+bool intel_ht_or_mc_supported(void);
+
+/*
+ * Returns true if CPU supports more than one hardware thread per core.
  */
 bool intel_ht_supported(void);
 

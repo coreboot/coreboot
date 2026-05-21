@@ -95,9 +95,9 @@ typedef struct {
 **/
   UINT32                      BiosGuardAttr;
 
-/** Offset 0x0074 - Reserved
+/** Offset 0x0074
 **/
-  UINT8                       Reserved0[4];
+  UINT8                       FspsUpdRsvd0[4];
 
 /** Offset 0x0078 - BiosGuardModulePtr
   BiosGuardModulePtr default values
@@ -160,9 +160,9 @@ typedef struct {
 **/
   UINT8                       PchEspiNmiEnableCs1;
 
-/** Offset 0x0097 - Reserved
+/** Offset 0x0097
 **/
-  UINT8                       Reserved1;
+  UINT8                       FspsUpdRsvd1;
 
 /** Offset 0x0098 - CpuBistData
   Pointer CPU BIST Data
@@ -182,9 +182,9 @@ typedef struct {
 **/
   UINT8                       CpuCrashLogEnable;
 
-/** Offset 0x00A9 - Reserved
+/** Offset 0x00A9
 **/
-  UINT8                       Reserved2[3];
+  UINT8                       FspsUpdRsvd2[3];
 
 /** Offset 0x00AC - StreamTracer Mode
   Disable: Disable StreamTracer, Advanced Tracing: StreamTracer size 512MB - Recommended
@@ -621,9 +621,9 @@ typedef struct {
 **/
   UINT8                       ITbtPcieTunnelingForUsb4;
 
-/** Offset 0x0152 - Reserved
+/** Offset 0x0152
 **/
-  UINT8                       Reserved3[2];
+  UINT8                       FspsUpdRsvd3[2];
 
 /** Offset 0x0154 - ITBTForcePowerOn Timeout value
   ITBTForcePowerOn value. Specified increment values in miliseconds. Range is 0-1000.
@@ -647,9 +647,9 @@ typedef struct {
 **/
   UINT8                       Usb4CmMode;
 
-/** Offset 0x015D - Reserved
+/** Offset 0x015D
 **/
-  UINT8                       Reserved4[11];
+  UINT8                       FspsUpdRsvd4[11];
 
 /** Offset 0x0168 - FSPS Validation
   Point to FSPS Validation configuration structure
@@ -711,9 +711,9 @@ typedef struct {
 **/
   UINT8                       IaxEnable;
 
-/** Offset 0x017B - Reserved
+/** Offset 0x017B
 **/
-  UINT8                       Reserved5;
+  UINT8                       FspsUpdRsvd5;
 
 /** Offset 0x017C - ISH GP GPIO Pin Muxing
   Determines ISH GP GPIO Pin muxing. See GPIO_*_MUXING_ISH_GP_x_GPIO_*. 'x' are GP_NUMBER
@@ -974,9 +974,9 @@ typedef struct {
 **/
   UINT8                       PchIshI3cEnable[2];
 
-/** Offset 0x0279 - Reserved
+/** Offset 0x0279
 **/
-  UINT8                       Reserved6[3];
+  UINT8                       FspsUpdRsvd6[3];
 
 /** Offset 0x027C - Power button debounce configuration
   Debounce time for PWRBTN in microseconds. For values not supported by HW, they will
@@ -2200,9 +2200,9 @@ typedef struct {
 **/
   UINT8                       SerialIoLpssSpiMode[7];
 
-/** Offset 0x0E07 - Reserved
+/** Offset 0x0E07
 **/
-  UINT8                       Reserved7;
+  UINT8                       FspsUpdRsvd8;
 
 /** Offset 0x0E08 - LPSS SPI MOSI Pin Muxing
   Select LPSS SPI MOSI pin muxing. Refer to GPIO_*_MUXING_LPSS_SPIx_MOSI* for possible values.
@@ -2243,9 +2243,9 @@ typedef struct {
 **/
   UINT8                       SerialIoUartMode[7];
 
-/** Offset 0x0E71 - Reserved
+/** Offset 0x0E71
 **/
-  UINT8                       Reserved8[3];
+  UINT8                       FspsUpdRsvd9[3];
 
 /** Offset 0x0E74 - Default BaudRate for each Serial IO UART
   Set default BaudRate Supported from 0 - default to 6000000
@@ -2283,9 +2283,9 @@ typedef struct {
 **/
   UINT8                       SerialIoUartAutoFlow[7];
 
-/** Offset 0x0EBA - Reserved
+/** Offset 0x0EBA
 **/
-  UINT8                       Reserved9[2];
+  UINT8                       FspsUpdRsvd10[2];
 
 /** Offset 0x0EBC - SerialIoUartRtsPinMuxPolicy
   Select SerialIo Uart Rts pin muxing. Refer to GPIO_*_MUXING_SERIALIO_UARTx_RTS*
@@ -2323,9 +2323,9 @@ typedef struct {
 **/
   UINT8                       SerialIoI2cMode[8];
 
-/** Offset 0x0F26 - Reserved
+/** Offset 0x0F26
 **/
-  UINT8                       Reserved10[2];
+  UINT8                       FspsUpdRsvd11[2];
 
 /** Offset 0x0F28 - Serial IO I2C SDA Pin Muxing
   Select SerialIo I2c Sda pin muxing. Refer to GPIO_*_MUXING_SERIALIO_I2Cx_SDA* for
@@ -2352,9 +2352,9 @@ typedef struct {
 **/
   UINT8                       SerialIoI3cMode[3];
 
-/** Offset 0x0F73 - Reserved
+/** Offset 0x0F73
 **/
-  UINT8                       Reserved11;
+  UINT8                       FspsUpdRsvd12;
 
 /** Offset 0x0F74 - Serial IO I3C SDA Pin Muxing
   Select SerialIo I3c Sda pin muxing. Refer to GPIO_*_MUXING_SERIALIO_I3Cx_SDA* for
@@ -2369,9 +2369,9 @@ typedef struct {
 **/
   UINT8                       SerialIoI3cSdaPadTermination[3];
 
-/** Offset 0x0F83 - Reserved
+/** Offset 0x0F83
 **/
-  UINT8                       Reserved12;
+  UINT8                       FspsUpdRsvd13;
 
 /** Offset 0x0F84 - Serial IO I3C SCL Pin Muxing
   Select SerialIo I3c Scl pin muxing. Refer to GPIO_*_MUXING_SERIALIO_I3Cx_SCL* for
@@ -2386,9 +2386,9 @@ typedef struct {
 **/
   UINT8                       SerialIoI3cSclPadTermination[3];
 
-/** Offset 0x0F93 - Reserved
+/** Offset 0x0F93
 **/
-  UINT8                       Reserved13;
+  UINT8                       FspsUpdRsvd14;
 
 /** Offset 0x0F94 - Serial IO I3C SCL FB Pin Muxing
   Select SerialIo I3c SclFb pin muxing. Refer to GPIO_*_MUXING_SERIALIO_I3Cx_SCL FB*
@@ -2436,9 +2436,9 @@ typedef struct {
 **/
   UINT8                       VmdPortFunc[31];
 
-/** Offset 0x1021 - Reserved
+/** Offset 0x1021
 **/
-  UINT8                       Reserved14[7];
+  UINT8                       FspsUpdRsvd37[7];
 
 /** Offset 0x1028 - VMD Variable
   VMD Variable Pointer.
@@ -2472,9 +2472,9 @@ typedef struct {
 **/
   UINT8                       TcssTbtPerfBoost;
 
-/** Offset 0x103E - Reserved
+/** Offset 0x103E
 **/
-  UINT8                       Reserved15[2];
+  UINT8                       FspsUpdRsvd15[2];
 
 /** Offset 0x1040 - TypeC port GPIO setting
   GPIO Ping number for Type C Aux orientation setting, use the GpioPad that is defined
@@ -2517,9 +2517,9 @@ typedef struct {
 **/
   UINT8                       PmcPdEnable;
 
-/** Offset 0x107F - Reserved
+/** Offset 0x107F
 **/
-  UINT8                       Reserved16;
+  UINT8                       FspsUpdRsvd16;
 
 /** Offset 0x1080 - TCSS Aux Orientation Override Enable
   Bits 0, 2, ... 10 control override enables, bits 1, 3, ... 11 control overrides
@@ -2637,9 +2637,9 @@ typedef struct {
 **/
   UINT8                       TimestampTimerMode[2];
 
-/** Offset 0x10DA - Reserved
+/** Offset 0x10DA
 **/
-  UINT8                       Reserved17[2];
+  UINT8                       FspsUpdRsvd17[2];
 
 /** Offset 0x10DC - Touch Host Controller Display Frame Sync Period
   Period of the emulated display frame sync [ms] The minimum period is 2ms, maximum
@@ -2662,9 +2662,9 @@ typedef struct {
 **/
   UINT8                       ThcDsyncPad[2];
 
-/** Offset 0x10F6 - Reserved
+/** Offset 0x10F6
 **/
-  UINT8                       Reserved18[2];
+  UINT8                       FspsUpdRsvd18[2];
 
 /** Offset 0x10F8 - Touch Host Controller Hid Over Spi Connection Speed
   Hid Over Spi Connection Speed - SPI Frequency
@@ -2735,9 +2735,9 @@ typedef struct {
 **/
   UINT8                       ThcHidI2cAddressingMode[2];
 
-/** Offset 0x1156 - Reserved
+/** Offset 0x1156
 **/
-  UINT8                       Reserved19[2];
+  UINT8                       FspsUpdRsvd19[2];
 
 /** Offset 0x1158 - Touch Host Controller Hid Over I2c Device Descriptor Address
   Hid Over I2c Device Descriptor Address
@@ -2859,9 +2859,9 @@ typedef struct {
 **/
   UINT16                      ThcCustomizedSvid[2];
 
-/** Offset 0x11FE - Reserved
+/** Offset 0x11FE
 **/
-  UINT8                       Reserved20[2];
+  UINT8                       FspsUpdRsvd38[2];
 
 /** Offset 0x1200 - USB 3.1 Speed Selection
   Choose USB 3.1 Port Speed Selection. Each bit represents a port. 1: Gen1, 0: Gen2
@@ -2888,9 +2888,11 @@ typedef struct {
 **/
   UINT16                      ThcHidI2cIntDelayValue[2];
 
-/** Offset 0x1210 - Reserved
+/** Offset 0x1210 - PchPostMemRsvd
+  Reserved for PCH Post-Mem
+  $EN_DIS
 **/
-  UINT8                       Reserved21[9];
+  UINT8                       PchPostMemRsvd[9];
 
 /** Offset 0x1219 - PCHHOT# pin
   Enable PCHHOT# pin assertion when temperature is higher than PchHotLevel. 0: disable, 1: enable
@@ -2949,9 +2951,9 @@ typedef struct {
 **/
   UINT8                       PchTsnEnable[4];
 
-/** Offset 0x122A - Reserved
+/** Offset 0x122A
 **/
-  UINT8                      Reserved22[2];
+  UINT16                      FspsUpdRsvd20;
 
 /** Offset 0x122C - PCH TSN MAC Address High Bits
   Set TSN MAC Address High.
@@ -3053,9 +3055,9 @@ typedef struct {
 **/
   UINT8                       PchXhciDwbEnable;
 
-/** Offset 0x1286 - Reserved
+/** Offset 0x1286
 **/
-  UINT8                       Reserved23[2];
+  UINT8                       FspsUpdRsvd21[2];
 
 /** Offset 0x1288 - xHCI High Idle Time LTR override
   Value used for overriding LTR recommendation for xHCI High Idle Time LTR setting
@@ -3225,9 +3227,11 @@ typedef struct {
 **/
   UINT8                       SseCommunication;
 
-/** Offset 0x13AF - Reserved
+/** Offset 0x13AF - MePostMemRestrictedRsvd
+  Reserved for ME Post-Mem Restricted
+  $EN_DIS
 **/
-  UINT8                       Reserved24[2];
+  UINT8                       MePostMemRestrictedRsvd[2];
 
 /** Offset 0x13B1 - Enable/Disable NPU Device
   Enable(Default): Enable NPU Device, Disable: Disable NPU Device
@@ -3278,9 +3282,9 @@ typedef struct {
 **/
   UINT8                       PchCanEnable[2];
 
-/** Offset 0x13BC - Reserved
+/** Offset 0x13BC
 **/
-  UINT8                       Reserved25[4];
+  UINT8                       FspsUpdRsvd22[4];
 
 /** Offset 0x13C0 - SVID SDID table Poniter.
   The address of the table of SVID SDID to customize each SVID SDID entry. This is
@@ -3300,9 +3304,15 @@ typedef struct {
 **/
   UINT8                       DfxSkipBiosDone;
 
-/** Offset 0x13CB - Reserved
+/** Offset 0x13CB - SiPostMemRsvd
+  Reserved for SI Post-Mem
+  $EN_DIS
 **/
-  UINT8                       Reserved26[9];
+  UINT8                       SiPostMemRsvd[6];
+
+/** Offset 0x13D1
+**/
+  UINT8                       FspsUpdRsvd23[3];
 
 /** Offset 0x13D4 - LogoPixelHeight Address
   Address of LogoPixelHeight
@@ -3314,9 +3324,9 @@ typedef struct {
 **/
   UINT32                      LogoPixelWidth;
 
-/** Offset 0x13DC - Reserved
+/** Offset 0x13DC
 **/
-  UINT8                       Reserved27[4];
+  UINT8                       FspsUpdRsvd24[4];
 
 /** Offset 0x13E0 - Blt Buffer Address
   Address of Blt buffer
@@ -3389,9 +3399,9 @@ typedef struct {
 **/
   UINT8                       Dev2IsGfxWorkstation;
 
-/** Offset 0x13FA - Reserved
+/** Offset 0x13FA
 **/
-  UINT8                       Reserved28[2];
+  UINT8                       FspsUpdRsvd25[2];
 
 /** Offset 0x13FC - Intel Graphics VBT (Video BIOS Table) Size
   Size of Internal Graphics VBT Image
@@ -3410,9 +3420,9 @@ typedef struct {
 **/
   UINT8                       MaxActiveDisplays;
 
-/** Offset 0x1402 - Reserved
+/** Offset 0x1402
 **/
-  UINT8                       Reserved29[2];
+  UINT8                       FspsUpdRsvd26[2];
 
 /** Offset 0x1404 - HorizontalResolution for PEI Logo
   HorizontalResolution from PEIm Gfx for PEI Logo
@@ -3424,9 +3434,16 @@ typedef struct {
 **/
   UINT32                      VerticalResolution;
 
-/** Offset 0x140C - Reserved
+/** Offset 0x140C - Power Floor Aggressive Media Throttling
+  SoC can divide the media PLL to lower SoC floor power (Default disabled).  0: Disable:
+  Aggressive Media Throttling will not be used by SoC., </b>1: Enable <b>
+  $EN_DIS
 **/
-  UINT8                       Reserved30[56];
+  UINT8                       PowerFloorAggressiveMedia;
+
+/** Offset 0x140D
+**/
+  UINT8                       FspsUpdRsvd388[55];
 
 /** Offset 0x1444 - Address of PCH_DEVICE_INTERRUPT_CONFIG table.
   The address of the table of PCH_DEVICE_INTERRUPT_CONFIG.
@@ -3518,9 +3535,9 @@ typedef struct {
 **/
   UINT8                       PchFivrExtVnnRailSupportedVoltageStates;
 
-/** Offset 0x1459 - Reserved
+/** Offset 0x1459
 **/
-  UINT8                       Reserved31;
+  UINT8                       FspsUpdRsvd27;
 
 /** Offset 0x145A - External Vnn Voltage Value that will be used in S0ix/Sx states
   Value is given in 2.5mV increments (0=0mV, 1=2.5mV, 2=5mV...), Default is set to 420
@@ -3579,9 +3596,9 @@ typedef struct {
 **/
   UINT8                       PchFivrDynPm;
 
-/** Offset 0x1467 - Reserved
+/** Offset 0x1467
 **/
-  UINT8                       Reserved32;
+  UINT8                       FspsUpdRsvd28;
 
 /** Offset 0x1468 - External V1P05 Icc Max Value
   Granularity of this setting is 1mA and maximal possible value is 500mA
@@ -3702,9 +3719,9 @@ typedef struct {
 **/
   UINT8                       SkipBtPreInit;
 
-/** Offset 0x147F - Reserved
+/** Offset 0x147F
 **/
-  UINT8                       Reserved33;
+  UINT8                       FspsUpdRsvd29[1];
 
 /** Offset 0x1480 - CNVi RF_RESET pin muxing
   Select CNVi RF_RESET# pin depending on board routing. LP/P/M: GPP_A8 = 0x2942E408(default)
@@ -3748,9 +3765,9 @@ typedef struct {
 **/
   UINT8                       PchHdaVerbTableEntryNum;
 
-/** Offset 0x148D - Reserved
+/** Offset 0x148D
 **/
-  UINT8                       Reserved34[3];
+  UINT8                       FspsUpdRsvd30[3];
 
 /** Offset 0x1490 - PCH HDA Verb Table Pointer
   Pointer to Array of pointers to Verb Table.
@@ -3824,9 +3841,9 @@ typedef struct {
 **/
   UINT8                       PchHdaMicPrivacyHwModeDmic;
 
-/** Offset 0x14A3 - Reserved
+/** Offset 0x14A3
 **/
-  UINT8                       Reserved35;
+  UINT8                       FspsUpdRsvd31;
 
 /** Offset 0x14A4 - HD Audio Microphone Privacy Timeout. Indicates the time-out duration to wait before forcing the actual microphone privacy DMA data zeroing.
   HD Audio Microphone Privacy Timeout. Indicates the time-out duration to wait before
@@ -3834,9 +3851,13 @@ typedef struct {
 **/
   UINT32                      PchHdaMicPrivacyTimeout;
 
-/** Offset 0x14A8 - Reserved
+/** Offset 0x14A8
 **/
-  UINT8                       Reserved36[8];
+  UINT8                       PchHdaRsvd[5];
+
+/** Offset 0x14AD
+**/
+  UINT8                       FspsUpdRsvd32[3];
 
 /** Offset 0x14B0 - Pointer to ChipsetInit Binary
   ChipsetInit Binary Pointer.
@@ -3848,9 +3869,9 @@ typedef struct {
 **/
   UINT32                      ChipsetInitBinLen;
 
-/** Offset 0x14BC - Reserved
+/** Offset 0x14BC
 **/
-  UINT8                       Reserved37[4];
+  UINT8                       FspsUpdRsvd33[4];
 
 /** Offset 0x14C0 - Pointer to NPHY Binary
   Nphy Binary Pointer.
@@ -3862,9 +3883,9 @@ typedef struct {
 **/
   UINT32                      NphyBinLen;
 
-/** Offset 0x14CC - Reserved
+/** Offset 0x14CC
 **/
-  UINT8                       Reserved38[4];
+  UINT8                       FspsUpdRsvd34[4];
 
 /** Offset 0x14D0 - Pointer to SYNPS PHY Binary
   Synps Binary Pointer.
@@ -3890,9 +3911,13 @@ typedef struct {
 **/
   UINT8                       PmcWdtTimerEn;
 
-/** Offset 0x14DE - Reserved
+/** Offset 0x14DE
 **/
-  UINT8                       Reserved39[2];
+  UINT8                       FspsUpdRsvd35;
+
+/** Offset 0x14DF
+**/
+  UINT8                       ReservedFspsUpd;
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration

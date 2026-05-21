@@ -50,6 +50,41 @@ typedef struct {
   UINT16            BiosChipInitCrc;  ///< 16 bit CRC value of PchChipInit Table
 } CHIPSET_INIT_INFO;
 
+///
+/// MRC Error Key Value Entry structure maps an MRC error code to an error message string.
+///
+/*
+//
+// MRC Error Key Value Table Entries
+// OEM can customize this table to display error messages on VGA display
+// The Key is used to look up the error message, and the Value is the message string
+//
+// Message types:
+// - MRC_NO_MEMORY_DETECTED (0xDF7E)        - "NO MEMORY DETECTED"
+// - MRC_MEM_INIT_DONE_WITH_ERRORS (0xDF55) - "BASIC MEMORY TEST FAILED"
+// - 0xFFFF (Fallback)                      - "MRC FAILED, POST CODE: " + POST code in hex
+//   Any other MRC failure (SPD processing, PLL lock, calibration, training etc.)
+//   will use the fallback message with the actual POST code appended.
+//
+// Maximum message length (excluding null terminator):
+// - Exact match messages (specific POST code keys): 80 characters
+// - Fallback message (key 0xFFFF): 73 characters (+ "0xXXXX" appended automatically)
+//
+*/
+typedef struct {
+  UINT32         Key;            ///< MRC POST code (16-bit value, 0xFFFF = fallback key)
+  CONST CHAR8    *Value;         ///< MRC error message string
+} FSP_MRC_ERROR_KEY_VALUE_ENTRY;
+
+///
+/// MRC Error Key Value Table contains array of error code to message mappings.
+///
+typedef struct {
+  UINT32                         Count; ///< Number of entries in Entry[] array
+  UINT32                         Size;  ///< Total size of table in bytes
+  FSP_MRC_ERROR_KEY_VALUE_ENTRY  Entry[]; ///< Variable length array of key-value pairs
+} FSP_MRC_ERROR_KEY_VALUE_TABLE;
+
 
 /** Fsp M Configuration
 **/
@@ -67,9 +102,9 @@ typedef struct {
 **/
   UINT8                       SerialIoUartDebugAutoFlow;
 
-/** Offset 0x0062 - Reserved
+/** Offset 0x0062
 **/
-  UINT8                       Reserved0[2];
+  UINT8                       FspmUpdRsvd0[2];
 
 /** Offset 0x0064 - SerialIoUartDebugRxPinMux - FSPT
   Select RX pin muxing for SerialIo UART used for debug
@@ -141,9 +176,30 @@ typedef struct {
 **/
   UINT8                       MemTestOnWarmBoot;
 
-/** Offset 0x007B - Reserved
+/** Offset 0x007B - NnFlex Override for PHY RxEqTap0
+  Controlled by NnFlexPhyOvrdMask bit[0], 6 bit 2's complement
 **/
-  UINT8                       Reserved1[5];
+  UINT8                       NnFlexPhyRxEqTap0;
+
+/** Offset 0x007C - NnFlex Override for PHY RxEqTap1
+  Controlled by NnFlexPhyOvrdMask bit[1], 6 bit 2's complement, valid range: [-16..15]
+**/
+  UINT8                       NnFlexPhyRxEqTap1;
+
+/** Offset 0x007D - NnFlex Override for PHY DqTcoComp
+  Controlled by NnFlexPhyOvrdMask bit[2], 6 bit 2's complement
+**/
+  UINT8                       NnFlexPhyDqTcoComp;
+
+/** Offset 0x007E - NnFlex Override for PHY RxCtleR
+  Controlled by NnFlexPhyOvrdMask bit[3]
+**/
+  UINT8                       NnFlexPhyRxCtleR;
+
+/** Offset 0x007F - NnFlex Override for PHY RxCtleC
+  Controlled by NnFlexPhyOvrdMask bit[4]
+**/
+  UINT8                       NnFlexPhyRxCtleC;
 
 /** Offset 0x0080 - Platform Reserved Memory Size
   The minimum platform memory size required to pass control into DXE
@@ -156,9 +212,35 @@ typedef struct {
 **/
   UINT16                      MemorySpdDataLen;
 
-/** Offset 0x008A - Reserved
+/** Offset 0x008A - NnFlex Override for PHY RxCtleRcmn
+  Controlled by NnFlexPhyOvrdMask bit[5]
 **/
-  UINT8                       Reserved2[6];
+  UINT8                       NnFlexPhyRxCtleRcmn;
+
+/** Offset 0x008B - NnFlex Override for PHY RxCtleEq
+  Controlled by NnFlexPhyOvrdMask bit[6]
+**/
+  UINT8                       NnFlexPhyRxCtleEq;
+
+/** Offset 0x008C - NnFlex Override for PHY RxCtleTailCtl
+  Controlled by NnFlexPhyOvrdMask bit[7]
+**/
+  UINT8                       NnFlexPhyRxCtleTailCtl;
+
+/** Offset 0x008D - NnFlex Override for LP5 Dfeq
+  Controlled by NnFlexDramOvrdMask bit[0], MR24 encoding
+**/
+  UINT8                       NnFlexLpddr5Dfeq;
+
+/** Offset 0x008E - NnFlex Override for LP5 PdDrvStr
+  Controlled by NnFlexDramOvrdMask bit[1], MR3 encoding
+**/
+  UINT8                       NnFlexLpddr5PdDrvStr;
+
+/** Offset 0x008F - NnFlex Override for LP5 SocOdt
+  Controlled by NnFlexDramOvrdMask bit[2], MR17 encoding
+**/
+  UINT8                       NnFlexLpddr5SocOdt;
 
 /** Offset 0x0090 - Memory SPD Pointer Controller 0 Channel 0 Dimm 0
   Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
@@ -1259,9 +1341,10 @@ typedef struct {
 **/
   UINT8                       IbeccProtectedRegionEnable[8];
 
-/** Offset 0x027D - Reserved
+/** Offset 0x027D - NnFlex Override for LP5 PreEmpDn
+  Controlled by NnFlexDramOvrdMask bit[3], MR58 encoding
 **/
-  UINT8                       Reserved3;
+  UINT8                       NnFlexLpddr5PreEmpDn;
 
 /** Offset 0x027E - IbeccProtectedRegionBases
   IBECC Protected Region Bases per IBECC instance
@@ -1541,9 +1624,10 @@ typedef struct {
 **/
   UINT8                       SafeModeOverride;
 
-/** Offset 0x02CB - Reserved
+/** Offset 0x02CB - NnFlex Override for LP5 PreEmpUp
+  Controlled by NnFlexDramOvrdMask bit[4], MR58 encoding
 **/
-  UINT8                       Reserved4;
+  UINT8                       NnFlexLpddr5PreEmpUp;
 
 /** Offset 0x02CC - IbeccEccInjAddrBase
   Address to match against for ECC error injection. Example: 1 = 32MB, 2 = 64MB
@@ -1651,9 +1735,10 @@ typedef struct {
 **/
   UINT8                       ThrtCkeMinTmrLpddr;
 
-/** Offset 0x02E7 - Reserved
+/** Offset 0x02E7 - NnFlex Override for LP5 WckDcaWr
+  Controlled by NnFlexDramOvrdMask bit[5], 4-bit 2's complement, valid range: [-7..7]
 **/
-  UINT8                       Reserved5;
+  UINT8                       NnFlexLpddr5WckDcaWr;
 
 /** Offset 0x02E8 - Margin limit check L2
   Margin limit check L2 threshold: <b>100=Default</b>
@@ -1801,9 +1886,82 @@ typedef struct {
 **/
   UINT8                       DIMMRXOFFSET;
 
-/** Offset 0x0321 - Reserved
+/** Offset 0x0321 - Enable Flexible Analog Settings
+  Enable/Disable Flexible Analog Settings
+  $EN_DIS
 **/
-  UINT8                       Reserved6[14];
+  UINT8                       FlexibleAnalogSettings;
+
+/** Offset 0x0322 - Force WRDSEQT at 2400
+  Force Enable Write Drive Strength training at 2400
+  $EN_DIS
+**/
+  UINT8                       ForceWRDSEQT2400;
+
+/** Offset 0x0323 - NnFlex Override for LP5 WckDcaRd
+  Controlled by NnFlexDramOvrdMask bit[6], 4-bit 2's complement, valid range: [-7..7]
+**/
+  UINT8                       NnFlexLpddr5WckDcaRd;
+
+/** Offset 0x0324 - NnFlex Override for LP5 RttNT
+  Controlled by NnFlexDramOvrdMask bit[7], MR41 encoding
+**/
+  UINT8                       NnFlexLpddr5RttNT;
+
+/** Offset 0x0325 - NnFlex Override for DDR5 DfeTap1
+  Controlled by NnFlexDramOvrdMask bit[0], 8-bit 2's complement, valid range: [-40..40]
+**/
+  UINT8                       NnFlexDdr5DfeTap1;
+
+/** Offset 0x0326 - NnFlex Override for DDR5 DfeTap2
+  Controlled by NnFlexDramOvrdMask bit[1], 8-bit 2's complement, valid range: [-15..15]
+**/
+  UINT8                       NnFlexDdr5DfeTap2;
+
+/** Offset 0x0327 - NnFlex Override for DDR5 RttWr
+  Controlled by NnFlexDramOvrdMask bit[2], MR34 encoding
+**/
+  UINT8                       NnFlexDdr5RttWr;
+
+/** Offset 0x0328 - NnFlex Override for DDR5 RttNomWr
+  Controlled by NnFlexDramOvrdMask bit[3], MR35 encoding
+**/
+  UINT8                       NnFlexDdr5RttNomWr;
+
+/** Offset 0x0329 - NnFlex Override for DDR5 RttNomRd
+  Controlled by NnFlexDramOvrdMask bit[4], MR35 encoding
+**/
+  UINT8                       NnFlexDdr5RttNomRd;
+
+/** Offset 0x032A - NnFlex Override for DDR5 RonUp
+  Controlled by NnFlexDramOvrdMask bit[5], MR5 encoding
+**/
+  UINT8                       NnFlexDdr5RonUp;
+
+/** Offset 0x032B - NnFlex Override for DDR5 RonDn
+  Controlled by NnFlexDramOvrdMask bit[6], MR5 encoding
+**/
+  UINT8                       NnFlexDdr5RonDn;
+
+/** Offset 0x032C - NnFlex Phy Override Enable bit mask
+  Bitmask to enable PHY NnFlex overrides. [0]: PhyRxEqTap0 [1]: PhyRxEqTap1 [2]: PhyDqTcoComp
+  [3]: PhyRxCtleR [4]: PhyRxCtleC [5]: PhyRxCtleRcmn [6]: PhyRxCtleEq [7]: PhyRxCtleTailCtl
+**/
+  UINT8                       NnFlexPhyOvrdMask;
+
+/** Offset 0x032D - NnFlex LP5/DDR5 Override Enable bit mask
+  Bitmask to enable LP5/DDR5 NnFlex overrides. [0]: Lp5Dfeq/Ddr5DfeTap1 [1]: Lp5PdDrvStr/Ddr5DfeTap2
+  [2]: Lp5SocOdt/Ddr5RttWr [3]: Lp5PreEmpDn/Ddr5RttNomWr [4]: Lp5PreEmpUp/Ddr5RttNomRd
+  [5]: Lp5WckDcaWr/Ddr5RonUp [6]: Lp5WckDcaRd/Ddr5RonDn [7]: Lp5RttNT
+**/
+  UINT8                       NnFlexDramOvrdMask;
+
+/** Offset 0x032E - Force DIMM Rx Offset Calibration training
+  Force DIMM Rx Offset Calibration training for LPDDR5X, frequencies >= 6800: 0 =
+  Disable, 1 = Enable
+  $EN_DIS
+**/
+  UINT8                       ForceDIMMRXOFFSET;
 
 /** Offset 0x032F - Board Type
   MrcBoardType, Options are 0=Mobile/Mobile Halo, 1=Desktop/DT Halo, 5=ULT/ULX/Mobile
@@ -1955,9 +2113,9 @@ typedef struct {
 **/
   UINT8                       PchHdaAudioLinkDmicEnable[2];
 
-/** Offset 0x04D6 - Reserved
+/** Offset 0x04D6
 **/
-  UINT8                       Reserved7[2];
+  UINT8                       FspmUpdRsvd1543[2];
 
 /** Offset 0x04D8 - DMIC<N> ClkA Pin Muxing (N - DMIC number)
   Determines DMIC<N> ClkA Pin muxing. See  GPIO_*_MUXING_DMIC<N>_CLKA_*
@@ -1970,9 +2128,9 @@ typedef struct {
 **/
   UINT8                       PchHdaDspEnable;
 
-/** Offset 0x04E1 - Reserved
+/** Offset 0x04E1
 **/
-  UINT8                       Reserved8[3];
+  UINT8                       FspmUpdRsvd1554[3];
 
 /** Offset 0x04E4 - DMIC<N> Data Pin Muxing
   Determines DMIC<N> Data Pin muxing. See GPIO_*_MUXING_DMIC<N>_DATA_*
@@ -2038,9 +2196,21 @@ typedef struct {
 **/
   UINT8                       PchHdAudioSndwMultilaneEnable[2];
 
-/** Offset 0x0571 - Reserved
+/** Offset 0x0571 - NnFlexCmdOvrdMask
+  Bitmask to enable CMD NnFlex overrides. [0]: CmdDrvVrefUp, [1]: CtlDrvVrefUp, [2]:
+  CmdCaTxEq, [3]: CtlDrvVrefDn
 **/
-  UINT8                       Reserved9[3];
+  UINT8                       NnFlexCmdOvrdMask;
+
+/** Offset 0x0572 - NnFlexCmdDrvVrefUp
+  Controlled by NnFlexCmdOvrdMask bit[0], [0..191]
+**/
+  UINT8                       NnFlexCmdDrvVrefUp;
+
+/** Offset 0x0573 - NnFlexCtlDrvVrefUp
+  Controlled by NnFlexCmdOvrdMask bit[1], [0..191]
+**/
+  UINT8                       NnFlexCtlDrvVrefUp;
 
 /** Offset 0x0574 - SoundWire<N> Clk Pin Muxing (N - SoundWire number)
   Determines SoundWire<N> Clk Pin muxing. See  GPIOV2_*_MUXING_SNDW<N>_CLK*
@@ -2079,9 +2249,9 @@ typedef struct {
 **/
   UINT8                       PchHdAudioSndwMultilaneSndwInterface[2];
 
-/** Offset 0x059F - Reserved
+/** Offset 0x059F
 **/
-  UINT8                       Reserved10;
+  UINT8                       FspmUpdRsvd11;
 
 /** Offset 0x05A0 - Audio Sub System IDs
   Set default Audio Sub System IDs. If its set to 0 then value from Strap is used.
@@ -2128,9 +2298,9 @@ typedef struct {
 **/
   UINT8                       PcieClkSrcClkReq[18];
 
-/** Offset 0x05CE - Reserved
+/** Offset 0x05CE
 **/
-  UINT8                       Reserved11[14];
+  UINT8                       PcieClkSrcClkReqRsvd[14];
 
 /** Offset 0x05DC - Clk Req GPIO Pin
   Select Clk Req Pin. Refer to GPIO_*_MUXING_SRC_CLKREQ_x* for possible values.
@@ -2149,9 +2319,20 @@ typedef struct {
 **/
   UINT8                       PcdDebugInterfaceFlags;
 
-/** Offset 0x0601 - Reserved
+/** Offset 0x0601 - NnFlexCmdCaTxEq
+  Controlled by NnFlexCmdOvrdMask bit[2], [0..31]
 **/
-  UINT8                       Reserved12[3];
+  UINT8                       NnFlexCmdCaTxEq;
+
+/** Offset 0x0602 - NnFlexCtlDrvVrefDn
+  Controlled by NnFlexCmdOvrdMask bit[3], [0..191]
+**/
+  UINT8                       NnFlexCtlDrvVrefDn;
+
+/** Offset 0x0603 - FspmUpdRsvd12
+  Reserved
+**/
+  UINT8                       FspmUpdRsvd12;
 
 /** Offset 0x0604 - Serial Io Uart Debug Mmio Base
   Select SerialIo Uart default MMIO resource in SEC/PEI phase when PcdLpssUartMode
@@ -2230,9 +2411,9 @@ typedef struct {
 **/
   UINT8                       FabricGVDisable;
 
-/** Offset 0x061B - Reserved
+/** Offset 0x061B
 **/
-  UINT8                       Reserved13;
+  UINT8                       FspmUpdRsvd13[1];
 
 /** Offset 0x061C - HECI Timeouts
   0: Disable, 1: Enable (Default) timeout check for HECI
@@ -2319,9 +2500,9 @@ typedef struct {
 **/
   UINT8                       I2cPostCodeEnable;
 
-/** Offset 0x062B - Reserved
+/** Offset 0x062B
 **/
-  UINT8                       Reserved14[5];
+  UINT8                       FspmUpdRsvd14[5];
 
 /** Offset 0x0630 - FSPM Validation Pointer
   Point to FSPM Validation configuration structure
@@ -2341,9 +2522,9 @@ typedef struct {
 **/
   UINT8                       PchSpiExtendedBiosDecodeRangeEnable;
 
-/** Offset 0x063A - Reserved
+/** Offset 0x063A
 **/
-  UINT8                       Reserved15[2];
+  UINT8                       FspmUpdRsvd15[2];
 
 /** Offset 0x063C - Extended BIOS Direct Read Decode Range base
   Bits of 31:16 of a memory address that'll be a base for Extended BIOS Direct Read Decode.
@@ -2372,9 +2553,9 @@ typedef struct {
 **/
   UINT8                       PchNumRsvdSmbusAddresses;
 
-/** Offset 0x0647 - Reserved
+/** Offset 0x0647
 **/
-  UINT8                       Reserved16;
+  UINT8                       FspmUpdRsvd16;
 
 /** Offset 0x0648 - SMBUS Base Address
   SMBUS Base Address (IO space).
@@ -2387,9 +2568,14 @@ typedef struct {
 **/
   UINT8                       PchSmbAlertEnable;
 
-/** Offset 0x064B - Reserved
+/** Offset 0x064B
 **/
-  UINT8                       Reserved17[13];
+  UINT8                       FspmUpdRsvd17[5];
+
+/** Offset 0x0650 - Point of RsvdSmbusAddressTable
+  Array of addresses reserved for non-ARP-capable SMBus devices.
+**/
+  UINT64                      RsvdSmbusAddressTablePtr;
 
 /** Offset 0x0658 - Smbus dynamic power gating
   Disable or Enable Smbus dynamic power gating.
@@ -2594,9 +2780,9 @@ typedef struct {
 **/
   UINT8                       CoreVfConfigScope;
 
-/** Offset 0x06EB - Reserved
+/** Offset 0x06EB
 **/
-  UINT8                       Reserved18;
+  UINT8                       FspmUpdRsvd18;
 
 /** Offset 0x06EC - Per-core VF Offset
   Array used to specifies the selected Core Offset Voltage. This voltage is specified
@@ -2622,9 +2808,9 @@ typedef struct {
 **/
   UINT8                       PerCoreVoltageMode[8];
 
-/** Offset 0x070D - Reserved
+/** Offset 0x070D
 **/
-  UINT8                       Reserved19;
+  UINT8                       FspmUpdRsvd19;
 
 /** Offset 0x070E - Per-core Voltage Override
   Array used to specifies the selected Core Voltage Override.
@@ -2666,9 +2852,9 @@ typedef struct {
 **/
   UINT8                       FllOverclockMode;
 
-/** Offset 0x0731 - Reserved
+/** Offset 0x0731
 **/
-  UINT8                       Reserved20;
+  UINT8                       FspmUpdRsvd20;
 
 /** Offset 0x0732 - Ring VF Point Offset
   Array used to specifies the Ring Voltage Offset applied to the each selected VF
@@ -2734,9 +2920,11 @@ typedef struct {
 **/
   UINT8                       RingPllVoltageOffset;
 
-/** Offset 0x0783 - Reserved
+/** Offset 0x0783 - OcPreMemRsvd
+  Reserved for OC Pre-Mem
+  $EN_DIS
 **/
-  UINT8                       Reserved21[5];
+  UINT8                       OcPreMemRsvd[5];
 
 /** Offset 0x0788 - Enable PCH ISH Controller
   0: Disable, 1: Enable (Default) ISH Controller
@@ -2744,9 +2932,9 @@ typedef struct {
 **/
   UINT8                       PchIshEnable;
 
-/** Offset 0x0789 - Reserved
+/** Offset 0x0789
 **/
-  UINT8                       Reserved22;
+  UINT8                       FspmUpdRsvd21;
 
 /** Offset 0x078A - BiosSize
   The size of the BIOS region of the IFWI. Used if FspmUpd->FspmConfig.BiosGuard !=
@@ -2805,9 +2993,9 @@ typedef struct {
 **/
   UINT8                       GenerateNewTmeKey;
 
-/** Offset 0x0794 - Reserved
+/** Offset 0x0794
 **/
-  UINT8                       Reserved23[4];
+  UINT8                       FspmUpdRsvd22[4];
 
 /** Offset 0x0798 - TME Exclude Base Address
   TME Exclude Base Address.
@@ -2938,9 +3126,9 @@ typedef struct {
 **/
   UINT8                       DfdEnable;
 
-/** Offset 0x07C5 - Reserved
+/** Offset 0x07C5
 **/
-  UINT8                       Reserved24[3];
+  UINT8                       FspmUpdRsvd23[3];
 
 /** Offset 0x07C8 - PrmrrSize
   Enable/Disable. 0: Disable, define default value of PrmrrSize , 1: enable
@@ -2966,9 +3154,9 @@ typedef struct {
 **/
   UINT8                       TccActivationOffset;
 
-/** Offset 0x07D2 - Reserved
+/** Offset 0x07D2
 **/
-  UINT8                       Reserved25[2];
+  UINT8                       FspmUpdRsvd24[2];
 
 /** Offset 0x07D4 - Platform PL1 power
   Platform Power Limit 1 Power in Milli Watts. BIOS will round to the nearest 1/8W
@@ -3016,9 +3204,9 @@ typedef struct {
 **/
   UINT8                       ThETAIbattEnable;
 
-/** Offset 0x07E7 - Reserved
+/** Offset 0x07E7
 **/
-  UINT8                       Reserved26;
+  UINT8                       FspmUpdRsvd25;
 
 /** Offset 0x07E8 - ISYS Current Limit L1
   This field indicated the current limitiation of L1. Indicate current limit for which
@@ -3032,9 +3220,9 @@ typedef struct {
 **/
   UINT8                       IsysCurrentL1Tau;
 
-/** Offset 0x07EB - Reserved
+/** Offset 0x07EB
 **/
-  UINT8                       Reserved27;
+  UINT8                       FspmUpdRsvd26;
 
 /** Offset 0x07EC - ISYS Current Limit L2
   This bits enables disables ISYS_CURRENT_LIMIT_L2 algorithm.Indicate current limit
@@ -3201,9 +3389,9 @@ typedef struct {
 **/
   UINT8                       PowerLimit1Time;
 
-/** Offset 0x0812 - Reserved
+/** Offset 0x0812
 **/
-  UINT8                       Reserved28[2];
+  UINT8                       FspmUpdRsvd27[2];
 
 /** Offset 0x0814 - Package Long duration turbo mode power limit
   Power Limit 1 in Milli Watts. BIOS will round to the nearest 1/8W when programming.
@@ -3438,9 +3626,9 @@ typedef struct {
 **/
   UINT16                      Ps3Threshold[6];
 
-/** Offset 0x08BA - Reserved
+/** Offset 0x08BA
 **/
-  UINT8                       Reserved29[2];
+  UINT8                       FspmUpdRsvd28[2];
 
 /** Offset 0x08BC - Imon offset correction
   IMON Offset is an 32-bit signed value (2's complement). Units 1/1000, Range is [-128000,
@@ -3516,9 +3704,9 @@ typedef struct {
 **/
   UINT8                       SlowSlewRate[6];
 
-/** Offset 0x0922 - Reserved
+/** Offset 0x0922
 **/
-  UINT8                       Reserved30[2];
+  UINT8                       FspmUpdRsvd29[2];
 
 /** Offset 0x0924 - Platform Psys offset correction
   PSYS Offset defined in 1/1000 increments. <b>0 - Auto</b> This is an 32-bit signed
@@ -3615,9 +3803,9 @@ typedef struct {
 **/
   UINT8                       VsysDeassertionDeglitchExponent;
 
-/** Offset 0x0955 - Reserved
+/** Offset 0x0955
 **/
-  UINT8                       Reserved31;
+  UINT8                       FspmUpdRsvd31;
 
 /** Offset 0x0956 - VR Fast Vmode ICC Limit support
   Voltage Regulator Fast Vmode ICC Limit. A value of 400 = 100A. A value of 0 corresponds
@@ -3640,9 +3828,9 @@ typedef struct {
 **/
   UINT8                       CepEnable[6];
 
-/** Offset 0x096E - Reserved
+/** Offset 0x096E
 **/
-  UINT8                       Reserved32[2];
+  UINT8                       FspmUpdRsvd48[2];
 
 /** Offset 0x0970 - Vsys Full Scale
   Vsys Full Scale, Range is 0-255000mV
@@ -3664,9 +3852,11 @@ typedef struct {
 **/
   UINT32                      PsysCriticalThreshold;
 
-/** Offset 0x0980 - Reserved
+/** Offset 0x0980 - CpuPmVrRsvd
+  Reserved for CPU Power Mgmt VR Config
+  $EN_DIS
 **/
-  UINT8                       Reserved33[8];
+  UINT8                       CpuPmVrRsvd[8];
 
 /** Offset 0x0988 - IOE Debug Enable
   Enable/Disable IOE Debug. When enabled, IOE D2D Dfx link will keep up and clock
@@ -3706,9 +3896,9 @@ typedef struct {
 **/
   UINT8                       PchTestDmiMeUmaRootSpaceCheck;
 
-/** Offset 0x098E - Reserved
+/** Offset 0x098E
 **/
-  UINT8                       Reserved34[2];
+  UINT8                       FspmUpdRsvd32[2];
 
 /** Offset 0x0990 - PMR Size
   Size of PMR memory buffer. 0x400000 for normal boot and 0x200000 for S3 boot
@@ -3743,9 +3933,9 @@ typedef struct {
 **/
   UINT32                      VtdBaseAddress[9];
 
-/** Offset 0x09BC - Reserved
+/** Offset 0x09BC
 **/
-  UINT8                       Reserved35[4];
+  UINT8                       FspmUpdRsvd34[4];
 
 /** Offset 0x09C0 - MMIO Size
   Size of MMIO space reserved for devices. 0(Default)=Auto, non-Zero=size in MB
@@ -3825,9 +4015,9 @@ typedef struct {
 **/
   UINT8                       CridEnable;
 
-/** Offset 0x09FA - Reserved
+/** Offset 0x09FA
 **/
-  UINT8                       Reserved36[2];
+  UINT8                       FspmUpdRsvd35[2];
 
 /** Offset 0x09FC - StreamTracer Mode
   Disable: Disable StreamTracer, Advanced Tracing: StreamTracer size 512MB - Recommended
@@ -3870,9 +4060,9 @@ typedef struct {
 **/
   UINT8                       SiSkipOverrideBootModeWhenFwUpdate;
 
-/** Offset 0x0A19 - Reserved
+/** Offset 0x0A19
 **/
-  UINT8                       Reserved37;
+  UINT8                       FspmUpdRsvd36;
 
 /** Offset 0x0A1A - Static Content at 4GB Location
   0 (Default): No Allocation, 0x20:32MB, 0x40:64MB, 0x80:128MB, 0x100:256MB, 0x200:512MB,
@@ -3900,9 +4090,11 @@ typedef struct {
 **/
   UINT8                       CmosTxtOffset;
 
-/** Offset 0x0A1E - Reserved
+/** Offset 0x0A1E - SiPreMemRsvd
+  Reserved for SI Pre-Mem
+  $EN_DIS
 **/
-  UINT8                       Reserved38[13];
+  UINT8                       SiPreMemRsvd[13];
 
 /** Offset 0x0A2B - Program GPIOs for LFP on DDI port-A device
   0=Disabled,1(Default)=eDP, 2=MIPI DSI
@@ -4011,9 +4203,9 @@ typedef struct {
 **/
   UINT8                       OemT12DelayOverride;
 
-/** Offset 0x0A3E - Reserved
+/** Offset 0x0A3E
 **/
-  UINT8                       Reserved39[2];
+  UINT8                       FspmUpdRsvd37[2];
 
 /** Offset 0x0A40 - Temporary MMIO address for GMADR
   The reference code will use this as Temporary MMIO address space to access GMADR
@@ -4063,18 +4255,18 @@ typedef struct {
 **/
   UINT8                       IGpuGsm2Size;
 
-/** Offset 0x0A56 - Reserved
+/** Offset 0x0A56
 **/
-  UINT8                       Reserved40[2];
+  UINT8                       FspmUpdRsvd46[2];
 
 /** Offset 0x0A58 - Intel Graphics VBT (Video BIOS Table) Size
   Size of Internal Graphics VBT Image
 **/
   UINT32                      VbtSize;
 
-/** Offset 0x0A5C - Reserved
+/** Offset 0x0A5C
 **/
-  UINT8                       Reserved41[4];
+  UINT8                       FspmUpdRsvd47[4];
 
 /** Offset 0x0A60 - Graphics Configuration Ptr
   Points to VBT
@@ -4097,7 +4289,8 @@ typedef struct {
   BIT1 - (0 : VGA Text Mode 3, 1 : VGA Graphics Mode 12), BIT2 - (0 : VGA Exit Supported,
   1: NO VGA Exit), BIT3 - (0 : VGA Init During Display Init, 1 - VGA Init During
   MRC Cold Boot), BIT4 - (0 : Enable Progress Bar, 1 : Disable Progress Bar), BIT5
-  - (0 : VGA Mode 12 16 Color Support, 1 : VGA Mode 12 Monochrome Black and White Support)
+  - (0 : VGA Mode 12 16 Color Support, 1 : VGA Mode 12 Monochrome Black and White
+  Support), BIT6-7 - (0 : No Higher Cd Clock, 1 : 442 MHz, 2 : 461 MHz, 3 : Reserved)
   0:VGA Disable, 1:Mode 3 VGA, 2:Mode 12 VGA
 **/
   UINT8                       VgaInitControl;
@@ -4250,9 +4443,9 @@ typedef struct {
 **/
   UINT8                       WeaklockEn;
 
-/** Offset 0x0ACB - Reserved
+/** Offset 0x0ACB
 **/
-  UINT8                       Reserved42;
+  UINT8                       FspmUpdRsvd39;
 
 /** Offset 0x0ACC - Rx DQS Delay Comp Support
   Enables/Disable Rx DQS Delay Comp Support
@@ -4260,9 +4453,9 @@ typedef struct {
 **/
   UINT8                       RxDqsDelayCompEn;
 
-/** Offset 0x0ACD - Reserved
+/** Offset 0x0ACD
 **/
-  UINT8                       Reserved43[2];
+  UINT8                       FspmUpdRsvd336[2];
 
 /** Offset 0x0ACF - Mrc Failure On Unsupported Dimm
   Enables/Disable Mrc Failure On Unsupported Dimm
@@ -4537,9 +4730,9 @@ typedef struct {
 **/
   UINT8                       SubChHashInterleaveBit;
 
-/** Offset 0x0B09 - Reserved
+/** Offset 0x0B09
 **/
-  UINT8                       Reserved44;
+  UINT8                       FspmUpdRsvd40;
 
 /** Offset 0x0B0A - SubCh Hash Mask
   Set the BIT(s) to be included in the XOR function. NOTE BIT mask corresponds to
@@ -4553,9 +4746,9 @@ typedef struct {
 **/
   UINT8                       ForceCkdBypass;
 
-/** Offset 0x0B0D - Reserved
+/** Offset 0x0B0D
 **/
-  UINT8                       Reserved45[3];
+  UINT8                       FspmUpdRsvd41[3];
 
 /** Offset 0x0B10 - Disable Zq
   Enable/Disable Zq Calibration: 0:Enabled, 1:Disabled
@@ -4663,9 +4856,30 @@ typedef struct {
 **/
   UINT16                      VddqVoltage;
 
-/** Offset 0x0B4A - Reserved
+/** Offset 0x0B4A
 **/
-  UINT8                       Reserved46[30];
+  UINT8                       FspmUpdRsvd50[6];
+
+/** Offset 0x0B50 - Graphics Mode 12 Font Pointer
+  Pointer to VGA Mode 12 Font Data (8x16 character set).\n
+  Format: UINT8 array[256][16] where each character is 16 bytes (16 rows of 8 pixels).\n
+  Must be provided if VGA Mode 12 is enabled.
+**/
+  UINT64                      GraphicsMode12FontPtr;
+
+/** Offset 0x0B58 - MRC Error Key Value Table Pointer
+  Pointer to MRC Error Key Value Table. Table maps MRC error codes to error message
+  strings for display during memory init. See FSP_MRC_ERROR_KEY_VALUE_TABLE.
+**/
+  UINT64                      MrcErrorKeyValueTablePtr;
+
+/** Offset 0x0B60
+**/
+  UINT8                       FspmUpdRsvd49[5];
+
+/** Offset 0x0B65
+**/
+  UINT8                       ReservedFspmUpd[3];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

@@ -124,8 +124,8 @@ chip northbridge/intel/sandybridge
 
 					register "beepmask0" = "0x02"
 					register "beepmask1" = "0x86"
-					register "has_thinklight" = "1"
-					register "has_power_management_beeps" = "1"
+					register "has_thinklight" = "true"
+					register "has_power_management_beeps" = "true"
 					register "event2_enable" = "0xff"
 					register "event3_enable" = "0xff"
 					register "event4_enable" = "0xf0"

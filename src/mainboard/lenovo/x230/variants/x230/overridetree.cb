@@ -25,8 +25,8 @@ chip northbridge/intel/sandybridge
 			device ref lpc on
 				chip ec/lenovo/h8
 					register "eventa_enable" = "0x01"
-					register "has_thinklight" = "1"
-					register "has_keyboard_backlight" = "1"
+					register "has_thinklight" = "true"
+					register "has_keyboard_backlight" = "true"
 					device pnp ff.2 on end
 				end
 			end

@@ -21,7 +21,7 @@ chip northbridge/intel/sandybridge
 			device ref lpc on
 				chip ec/lenovo/h8
 					device pnp ff.2 on end # dummy
-					register "has_thinklight" = "1"
+					register "has_thinklight" = "true"
 					register "eventa_enable" = "0x01"
 					register "eventb_enable" = "0xf0"
 				end

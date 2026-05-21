@@ -128,9 +128,9 @@ chip northbridge/intel/gm45
 
 					register "beepmask0" = "0xfe"
 					register "beepmask1" = "0x96"
-					register "has_thinklight" = "1"
-					register "has_power_management_beeps" = "1"
-					register "has_uwb" = "1"
+					register "has_thinklight" = "true"
+					register "has_power_management_beeps" = "true"
+					register "has_uwb" = "true"
 
 					register "event2_enable" = "0xff"
 					register "event3_enable" = "0xff"

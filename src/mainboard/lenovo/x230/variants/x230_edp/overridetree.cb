@@ -3,8 +3,8 @@ chip northbridge/intel/sandybridge
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
 			device ref lpc on
 				chip ec/lenovo/h8
-					register "has_thinklight" = "1"
-					register "has_keyboard_backlight" = "1"
+					register "has_thinklight" = "true"
+					register "has_keyboard_backlight" = "true"
 				end
 			end
 		end

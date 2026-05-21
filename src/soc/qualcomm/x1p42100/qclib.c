@@ -31,6 +31,14 @@ int qclib_soc_override(struct qclib_cb_if_table *table)
 {
 	ssize_t data_size;
 
+	/* Attempt to load DCB Blob */
+	data_size = cbfs_load(qclib_file(QCLIB_CBFS_DCB), _dcb, REGION_SIZE(dcb));
+	if (!data_size) {
+		printk(BIOS_ERR, "[%s] /dcb failed\n", __func__);
+		return -1;
+	}
+	qclib_add_if_table_entry(QCLIB_TE_DCB_SETTINGS, _dcb, data_size, 0);
+
 	/* Attempt to load DTB Blob */
 	data_size = cbfs_load(qclib_file(QCLIB_CBFS_DTB), _dtb, REGION_SIZE(dtb));
 	if (!data_size) {

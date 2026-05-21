@@ -96,7 +96,7 @@ config VARIANT_DIR
 	default "byte"			if BOARD_STARLABS_BYTE_CEZANNE
 
 config EFS_SPI_SPEED
-	default 3	# 66MHz
+	default 0	# 66MHz
 
 config NORMAL_READ_SPI_SPEED
 	default 1	# 33MHz

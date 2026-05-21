@@ -50,4 +50,25 @@
 #define PLATFORMINFO_VERSION_MAJOR		0x01
 #define PLATFORMINFO_VERSION_MINOR		0x00
 
+#define TCSR_SOC_HW_VERSION_DEVICE_NUM_HAMOA    0x09
+#define TCSR_SOC_HW_VERSION_DEVICE_NUM_X1P42100 0x16
+
+enum qclib_soc_id {
+	SOC_ID_UNKNOWN,
+	SOC_ID_HAMOA,
+	SOC_ID_X1P42100,
+};
+
+union tcsr_soc_hw_version {
+	struct {
+		uint32_t minor_version  : 8;  /* bits[7:0]   */
+		uint32_t major_version  : 8;  /* bits[15:8]  */
+		uint32_t device_number  : 12; /* bits[27:16] */
+		uint32_t family_number  : 4;  /* bits[31:28] */
+	};
+	uint32_t data;
+};
+
+enum qclib_soc_id platform_get_soc_id(void);
+
 #endif /* __SOC_QUALCOMM_X1P42100_PLATFORM_INFO_H__ */

@@ -43,6 +43,7 @@ ifeq ($(CONFIG_SOC_QUALCOMM_PCIE_ASYNCHRONOUS_INIT),y)
 romstage-$(CONFIG_PCI) += ../common/pcie_common.c
 romstage-$(CONFIG_PCI) += pcie.c
 endif
+romstage-y += platform_info.c
 
 ################################################################################
 ramstage-y += soc.c
@@ -74,6 +75,7 @@ ramstage-y += lpass.c
 ramstage-y += ../common/tsens.c
 ramstage-y += tsens_map.c
 ramstage-y += ../common/pmic_gpio.c
+ramstage-y += platform_info.c
 
 ################################################################################
 

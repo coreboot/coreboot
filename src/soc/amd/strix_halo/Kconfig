@@ -120,8 +120,7 @@ config VGA_BIOS_ID
 	default "1002,1902" if SOC_AMD_STRIX_HALO_FAEGAN
 	default "1002,150e"
 	help
-	  The default VGA BIOS PCI vendor/device ID should be set to the
-	  result of the map_oprom_vendev() function in graphics.c.
+	  The default VGA BIOS PCI vendor/device ID of the GPU and VBIOS.
 
 config CPU_PT_ROM_MAP_GB
 	default 1024

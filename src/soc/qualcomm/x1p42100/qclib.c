@@ -7,6 +7,7 @@
 #include <device/mmio.h>
 #include <soc/symbols_common.h>
 #include <soc/addressmap.h>
+#include <soc/platform_info.h>
 
 __weak int qclib_mainboard_override(struct qclib_cb_if_table *table) { return 0; }
 
@@ -45,17 +46,15 @@ static const struct qclib_file_map x1p_files = {
 	.cpr = CONFIG_CBFS_PREFIX "/cpr_x1p42100",
 };
 
-/*
- * This is a static config check.
- * In the future, you can easily change this function to read a hardware register,
- * chip ID, or platform fuse to return the correct map dynamically.
- */
 static const struct qclib_file_map *get_soc_file_map(void)
 {
-	if (CONFIG(SOC_QUALCOMM_HAMOA))
+	enum qclib_soc_id soc = platform_get_soc_id();
+
+	if (soc == SOC_ID_HAMOA)
 		return &hamoa_files;
-	else
-		return &x1p_files;
+
+	/* Fall back to x1p42100 configuration by default */
+	return &x1p_files;
 }
 
 const char *qclib_override_soc_file(enum qclib_cbfs_file file)

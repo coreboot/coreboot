@@ -7,8 +7,6 @@
 #include <soc/qcom_spmi.h>
 #include <timer.h>
 
-#define PPID_MASK		(0xfffU << 8)
-
 /* These are opcodes specific to this SPMI arbitrator, *not* SPMI commands. */
 #define OPC_EXT_WRITEL		0
 #define OPC_EXT_READL		1
@@ -59,10 +57,11 @@ struct qcom_spmi qcom_spmi = {
 static struct qcom_spmi_regs *find_apid(uint32_t addr)
 {
 	size_t i;
+	uint32_t target_ppid = SPMI_PPID_FROM_ADDR(addr);
 
 	for (i = 0U; i < qcom_spmi.num_apid; i++) {
 		uint32_t reg = read32(&qcom_spmi.apid_map[i]);
-		if ((reg != 0U) && ((addr & PPID_MASK) == (reg & PPID_MASK)))
+		if ((reg != 0U) && (target_ppid == SPMI_PPID_FROM_REG(reg)))
 			return &qcom_spmi.regs_per_apid[i];
 	}
 

@@ -236,6 +236,18 @@ enum dload_mode_cookies {
 #define SPMI_PMIC_ARB_CHANNEL_BASE	0x0C500000
 #define SPMI_PMIC_ARB_CHANNEL_SIZE	0x1000
 
+/*
+ * APID map entry format (PMIC_ARB_REG_ADDRp) for x1p42100:
+ *   bit 24    : IRQ_OWN
+ *   bits 19:16: SID
+ *   bits 15:8 : ADDRESS (PPID)
+ * SID+PPID are extracted from addr bits[19:8] directly (no shift needed).
+ */
+/* ADDR.PPID is 12 bits: SID (19:16) + Periph (15:8) */
+#define SPMI_PPID_FROM_ADDR(a) ((a) & (0xfffU << 8))
+/* REG.PPID is 12 bits: SID (19:16) + Periph (15:8) */
+#define SPMI_PPID_FROM_REG(r)  ((r) & (0xfffU << 8))
+
 /* MDSS, MDP, EDP & EDP-phy Register bases */
 enum {
 	MDSS_BASE = 0xAE00000,

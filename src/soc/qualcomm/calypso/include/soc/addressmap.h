@@ -74,4 +74,24 @@
 #define QUP_WRAP3_BASE			0x009C0000
 #define QUP_3_GSI_BASE			0x00904000
 
+/* SPMI PMIC ARB */
+#define SPMI_PMIC_ARB_CORE_BASE		0x0C400000
+#define FIRST_APID_MAP_OFFSET		0x3000
+#define LAST_APID_MAP_OFFSET		0x5800
+#define SPMI_PMIC_ARB_APID_COUNT	((LAST_APID_MAP_OFFSET - FIRST_APID_MAP_OFFSET) / 4)
+#define SPMI_PMIC_ARB_APID_MAP_BASE	(SPMI_PMIC_ARB_CORE_BASE + FIRST_APID_MAP_OFFSET)
+#define SPMI_PMIC_ARB_CHANNEL_BASE	0x0C900000
+#define SPMI_PMIC_ARB_CHANNEL_SIZE	0x200
+
+/*
+ * APID map entry format (PMIC_ARB_REG_ADDRp) for Calypso:
+ *   bit 31    : IRQ_OWN
+ *   bits 12:8 : DEVID_SID (5-bit slave ID)
+ *   bits 7:0  : ADDRESS (PPID)
+ */
+/* ADDR.PPID is 13 bits: SID (20:16) + Periph (15:8) */
+#define SPMI_PPID_FROM_ADDR(a) (((a) >> 8) & 0x1fffU)
+/* REG.PPID is 13 bits: SID (12:8) + Periph (7:0) */
+#define SPMI_PPID_FROM_REG(r)  ((r) & 0x1fffU)
+
 #endif /*  __SOC_QUALCOMM_CALYPSO_ADDRESS_MAP_H__ */

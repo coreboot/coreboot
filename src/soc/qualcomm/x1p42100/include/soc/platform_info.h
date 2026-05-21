@@ -24,24 +24,18 @@
  * - CHIPINFO_FAMILY_*: eChipInfoFamily
  * - CHIPINFO_ID_SCP_*: eChipInfoId (SCP)
  */
-#if CONFIG(SOC_QUALCOMM_HAMOA)
+
 /* Hamoa (SC8380XP) identifiers used by ADSP BOOT_PARAMS on x1p42100 platforms. */
-#define CHIPINFO_FAMILY				0x0088
-#define CHIPINFO_ID_SCP				0x022B
+#define HAMOA_FAMILY				0x0088
+#define HAMOA_ID_SCP				0x022B
 
-/* Hamoa chip version used for BOOT_PARAMS[3] packing. */
-#define CHIPINFO_CHIP_VERSION			0x00020000 /* nChipVersion (SMEM) */
-#define CHIPINFO_CHIP_VERSION_MAJOR		0x02
-#define CHIPINFO_CHIP_VERSION_MINOR		0x00
-#else
 /* Purwa Compute (SC8340XP / X1P4x100) */
-#define CHIPINFO_FAMILY				0x009A
-#define CHIPINFO_ID_SCP				0x027B
+#define X1P42100_FAMILY				0x009A
+#define X1P42100_ID_SCP				0x027B
 
 #define CHIPINFO_CHIP_VERSION			0x00020000 /* nChipVersion (SMEM) */
 #define CHIPINFO_CHIP_VERSION_MAJOR		0x02
 #define CHIPINFO_CHIP_VERSION_MINOR		0x00
-#endif
 
 /* x1p42100 platform info used for BOOT_PARAMS[4] packing. */
 #define PLATFORMINFO_TYPE			0x28 /* ePlatformType */

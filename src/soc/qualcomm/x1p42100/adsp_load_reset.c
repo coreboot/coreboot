@@ -53,9 +53,13 @@ static enum cb_err lpass_dtb_bring_up(uintptr_t dtb_entry_addr, size_t dtb_size)
 	write32(&lpass_qdsp6ss->boot_params[1], (uint32_t)(dtb_entry_addr >> 32));
 
 	/* x1p42100 uses fixed SoC boot args; do not depend on SMEM init ordering. */
-
-	chip_family = CHIPINFO_FAMILY & CHIP_FAMILY_MASK;
-	chip_id = CHIPINFO_ID_SCP & CHIP_ID_MASK;
+	if (platform_get_soc_id() == SOC_ID_HAMOA) {
+		chip_family = HAMOA_FAMILY & CHIP_FAMILY_MASK;
+		chip_id = HAMOA_ID_SCP & CHIP_ID_MASK;
+	} else {
+		chip_family = X1P42100_FAMILY & CHIP_FAMILY_MASK;
+		chip_id = X1P42100_ID_SCP & CHIP_ID_MASK;
+	}
 	boot_params2 = (chip_family << CHIP_FAMILY_SHIFT) | chip_id;
 
 	chip_major = CHIPINFO_CHIP_VERSION_MAJOR;

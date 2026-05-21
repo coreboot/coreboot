@@ -27,6 +27,53 @@ bool qclib_check_dload_mode(void)
 	return false;
 }
 
+struct qclib_file_map {
+	const char *dcb;
+	const char *dtb;
+	const char *cpr;
+};
+
+static const struct qclib_file_map hamoa_files = {
+	.dcb = CONFIG_CBFS_PREFIX "/dcb_hamoa",
+	.dtb = CONFIG_CBFS_PREFIX "/dtb_hamoa",
+	.cpr = CONFIG_CBFS_PREFIX "/cpr_hamoa",
+};
+
+static const struct qclib_file_map x1p_files = {
+	.dcb = CONFIG_CBFS_PREFIX "/dcb_x1p42100",
+	.dtb = CONFIG_CBFS_PREFIX "/dtb_x1p42100",
+	.cpr = CONFIG_CBFS_PREFIX "/cpr_x1p42100",
+};
+
+/*
+ * This is a static config check.
+ * In the future, you can easily change this function to read a hardware register,
+ * chip ID, or platform fuse to return the correct map dynamically.
+ */
+static const struct qclib_file_map *get_soc_file_map(void)
+{
+	if (CONFIG(SOC_QUALCOMM_HAMOA))
+		return &hamoa_files;
+	else
+		return &x1p_files;
+}
+
+const char *qclib_override_soc_file(enum qclib_cbfs_file file)
+{
+	const struct qclib_file_map *map = get_soc_file_map();
+
+	switch (file) {
+	case QCLIB_CBFS_DCB:
+		return map->dcb;
+	case QCLIB_CBFS_DTB:
+		return map->dtb;
+	case QCLIB_CBFS_CPR:
+		return map->cpr;
+	default:
+		return NULL;
+	}
+}
+
 int qclib_soc_override(struct qclib_cb_if_table *table)
 {
 	ssize_t data_size;

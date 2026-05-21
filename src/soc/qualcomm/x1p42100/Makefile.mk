@@ -92,12 +92,6 @@ else
 BLOB_VARIANT := non_secure
 endif
 
-ifeq ($(CONFIG_SOC_QUALCOMM_HAMOA),y)
-DTB_DCB_BLOB_PATH := hamoa
-else
-DTB_DCB_BLOB_PATH := x1p42100
-endif
-
 ifeq ($(CONFIG_QC_SDI_ENABLE),y)
 BL31_MAKEARGS += QTI_SDI_BUILD=1
 BL31_MAKEARGS += QTISECLIB_PATH=$(X1P42100_BLOB)/qtiseclib/libqtisec_dbg.a
@@ -107,11 +101,13 @@ endif # CONFIG_QC_SDI_ENABLE
 
 ifeq ($(CONFIG_QC_QDUTT_ENABLE),y)
 QCLIB_FILE := $(X1P42100_BLOB)/QDUTT/boot/QcDdi.elf
-DCB_FILE := $(X1P42100_BLOB)/QDUTT/boot/$(DTB_DCB_BLOB_PATH)/dcb.bin
+DCB_FILE_HAMOA := $(X1P42100_BLOB)/QDUTT/boot/hamoa/dcb.bin
+DCB_FILE_X1P42100 := $(X1P42100_BLOB)/QDUTT/boot/x1p42100/dcb.bin
 SHRM_FILE := $(X1P42100_BLOB)/QDUTT/$(BLOB_VARIANT)/shrm/shrm.elf
 else
 QCLIB_FILE := $(X1P42100_BLOB)/boot/QcLib.elf
-DCB_FILE := $(X1P42100_BLOB)/boot/$(DTB_DCB_BLOB_PATH)/dcb.bin
+DCB_FILE_HAMOA := $(X1P42100_BLOB)/boot/hamoa/dcb.bin
+DCB_FILE_X1P42100 := $(X1P42100_BLOB)/boot/x1p42100/dcb.bin
 SHRM_FILE := $(X1P42100_BLOB)/$(BLOB_VARIANT)/shrm/shrm.elf
 endif # CONFIG_QC_QDUTT_ENABLE
 
@@ -148,27 +144,47 @@ $(QCLIB_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 cbfs-files-y += $(QCLIB_CBFS)
 
 ################################################################################
-DCB_CBFS := $(CONFIG_CBFS_PREFIX)/dcb
-$(DCB_CBFS)-file := $(DCB_FILE)
-$(DCB_CBFS)-type := raw
-$(DCB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
-cbfs-files-y += $(DCB_CBFS)
+DCB_CBFS_HAMOA := $(CONFIG_CBFS_PREFIX)/dcb_hamoa
+$(DCB_CBFS_HAMOA)-file := $(DCB_FILE_HAMOA)
+$(DCB_CBFS_HAMOA)-type := raw
+$(DCB_CBFS_HAMOA)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(DCB_CBFS_HAMOA)
+
+DCB_CBFS_X1P42100 := $(CONFIG_CBFS_PREFIX)/dcb_x1p42100
+$(DCB_CBFS_X1P42100)-file := $(DCB_FILE_X1P42100)
+$(DCB_CBFS_X1P42100)-type := raw
+$(DCB_CBFS_X1P42100)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(DCB_CBFS_X1P42100)
 
 ################################################################################
-DTB_FILE := $(X1P42100_BLOB)/boot/$(DTB_DCB_BLOB_PATH)/pre-ddr.dtb
-DTB_CBFS := $(CONFIG_CBFS_PREFIX)/dtb
-$(DTB_CBFS)-file := $(DTB_FILE)
-$(DTB_CBFS)-type := raw
-$(DTB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
-cbfs-files-y += $(DTB_CBFS)
+DTB_FILE_HAMOA := $(X1P42100_BLOB)/boot/hamoa/pre-ddr.dtb
+DTB_CBFS_HAMOA := $(CONFIG_CBFS_PREFIX)/dtb_hamoa
+$(DTB_CBFS_HAMOA)-file := $(DTB_FILE_HAMOA)
+$(DTB_CBFS_HAMOA)-type := raw
+$(DTB_CBFS_HAMOA)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(DTB_CBFS_HAMOA)
+
+DTB_FILE_X1P42100 := $(X1P42100_BLOB)/boot/x1p42100/pre-ddr.dtb
+DTB_CBFS_X1P42100 := $(CONFIG_CBFS_PREFIX)/dtb_x1p42100
+$(DTB_CBFS_X1P42100)-file := $(DTB_FILE_X1P42100)
+$(DTB_CBFS_X1P42100)-type := raw
+$(DTB_CBFS_X1P42100)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(DTB_CBFS_X1P42100)
 
 ################################################################################
-CPR_FILE := $(X1P42100_BLOB)/boot/$(DTB_DCB_BLOB_PATH)/cpr.bin
-CPR_CBFS := $(CONFIG_CBFS_PREFIX)/cpr
-$(CPR_CBFS)-file := $(CPR_FILE)
-$(CPR_CBFS)-type := raw
-$(CPR_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
-cbfs-files-y += $(CPR_CBFS)
+CPR_FILE_HAMOA := $(X1P42100_BLOB)/boot/hamoa/cpr.bin
+CPR_CBFS_HAMOA := $(CONFIG_CBFS_PREFIX)/cpr_hamoa
+$(CPR_CBFS_HAMOA)-file := $(CPR_FILE_HAMOA)
+$(CPR_CBFS_HAMOA)-type := raw
+$(CPR_CBFS_HAMOA)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+cbfs-files-y += $(CPR_CBFS_HAMOA)
+
+CPR_FILE_X1P42100 := $(X1P42100_BLOB)/boot/x1p42100/cpr.bin
+CPR_CBFS_X1P42100 := $(CONFIG_CBFS_PREFIX)/cpr_x1p42100
+$(CPR_CBFS_X1P42100)-file := $(CPR_FILE_X1P42100)
+$(CPR_CBFS_X1P42100)-type := raw
+$(CPR_CBFS_X1P42100)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+cbfs-files-y += $(CPR_CBFS_X1P42100)
 
 ################################################################################
 UART_FW_FILE := $(X1P42100_BLOB)/qup_fw/uart_fw.bin

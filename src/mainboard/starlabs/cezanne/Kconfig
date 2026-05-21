@@ -95,6 +95,9 @@ config VARIANT_DIR
 	default "starbook"		if BOARD_STARLABS_STARBOOK_CEZANNE
 	default "byte"			if BOARD_STARLABS_BYTE_CEZANNE
 
+config EFS_SPI_READ_MODE
+	default 5	# Quad IO (1-4-4)
+
 config EFS_SPI_SPEED
 	default 0	# 66MHz
 

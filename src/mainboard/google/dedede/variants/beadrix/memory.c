@@ -41,7 +41,41 @@ static const struct mb_cfg board_memcfg_cfg = {
 	.UserBd = BOARD_TYPE_MOBILE,
 };
 
+/* ZTLX04GCCQ-CA2G, RAMID=3 */
+static const struct mb_cfg zillia_memcfg_cfg = {
+
+        .dq_map[DDR_CH0] = {
+                {0xf, 0xf0},
+                {0xf, 0xf0},
+                {0xff, 0x0},
+                {0x0, 0x0},
+                {0x0, 0x0},
+                {0x0, 0x0}
+        },
+        .dq_map[DDR_CH1] = {
+                {0xf, 0xf0},
+                {0xf, 0xf0},
+                {0xff, 0x0},
+                {0x0, 0x0},
+                {0x00, 0x0},
+                {0x00, 0x0}
+        },
+
+        .dqs_map[DDR_CH0] = {0, 3, 2, 1, 7, 5, 4, 6},
+        .dqs_map[DDR_CH1] = {3, 1, 2, 0, 4, 7, 6, 5},
+
+        .rcomp_resistor = {100, 100, 100},
+        .rcomp_targets = {40, 40, 40, 30, 20},
+
+        .ect = 1,
+
+        .UserBd = BOARD_TYPE_MOBILE,
+};
+
 const struct mb_cfg *variant_memcfg_config(void)
 {
-	return &board_memcfg_cfg;
+        if (variant_memory_sku() == 3)
+                return &zillia_memcfg_cfg;
+        else
+                return &board_memcfg_cfg;
 }

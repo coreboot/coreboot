@@ -280,6 +280,7 @@ void early_usb_init(void);
 #define D22IR		0x315c	/* 16bit */
 #define D20IR		0x3160	/* 16bit */
 #define OIC		0x31fe	/* 16bit */
+#define SOFT_RESET_LOCK 0x38f0
 #define SOFT_RESET_CTRL 0x38f4
 #define SOFT_RESET_DATA 0x38f8
 

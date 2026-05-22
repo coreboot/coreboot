@@ -18,6 +18,8 @@ bootblock-y += bootblock.c
 bootblock-y += ../car/non-evict/cache_as_ram.S
 bootblock-y += ../../x86/early_reset.S
 bootblock-y += ../car/bootblock.c
+bootblock-y += ../../../arch/x86/cf9_reset.c
+bootblock-y += ../common/hyperthreading.c
 
 postcar-y += ../car/non-evict/exit_car.S
 

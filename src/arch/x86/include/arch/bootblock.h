@@ -7,4 +7,8 @@ void bootblock_early_cpu_init(void);
 void bootblock_early_northbridge_init(void);
 void bootblock_early_southbridge_init(void);
 
+void bootblock_cpu_init(void);
+void bootblock_northbridge_init(void);
+void bootblock_southbridge_init(void);
+
 #endif

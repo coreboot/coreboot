@@ -128,6 +128,7 @@ enum clk_ctl_cbcr {
 	CLK_CTL_EN_SHFT  = 0,
 	CLK_CTL_HW_CTL_SHFT = 1,
 	CLK_CTL_ARES_SHFT = 2,
+	CLK_CTL_FORCE_MEM_PERIPH_ON_SHFT = 13,
 	CLK_CTL_FORCE_MEM_CORE_ON_SHFT = 14,
 	CLK_CTL_IGNORE_RPMH_CLK_DIS_SHFT = 20,
 	CLK_CTL_IGNORE_PMU_CLK_DIS_SHFT = 21,
@@ -174,6 +175,7 @@ void clock_configure_ignore_pmu_clk_dis(void *cbcr_addr, bool enable);
 void clock_configure_hw_ctl(void *cbcr_addr, bool enable);
 
 void clock_configure_force_mem_core_on(void *cbcr_addr, bool enable);
+void clock_configure_force_mem_periph_on(void *cbcr_addr, bool enable);
 
 enum cb_err enable_and_poll_gdsc_status(void *gdscr_addr);
 

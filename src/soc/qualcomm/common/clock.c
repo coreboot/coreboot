@@ -118,6 +118,18 @@ void clock_configure_force_mem_core_on(void *cbcr_addr, bool enable)
 		clrbits32(cbcr_addr, BIT(CLK_CTL_FORCE_MEM_CORE_ON_SHFT));
 }
 
+void clock_configure_force_mem_periph_on(void *cbcr_addr, bool enable)
+{
+	if (!cbcr_addr)
+		return;
+
+	/* Forces peripheral core-on signal to stay active during clk halt */
+	if (enable)
+		setbits32(cbcr_addr, BIT(CLK_CTL_FORCE_MEM_PERIPH_ON_SHFT));
+	else
+		clrbits32(cbcr_addr, BIT(CLK_CTL_FORCE_MEM_PERIPH_ON_SHFT));
+}
+
 /* Clock Block Reset Operations */
 void clock_reset_bcr(void *bcr_addr, bool assert)
 {

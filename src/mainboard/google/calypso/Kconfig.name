@@ -7,3 +7,6 @@ config BOARD_GOOGLE_CALYPSO
 
 config BOARD_GOOGLE_MENSA
 	bool "->  Mensa"
+
+config BOARD_GOOGLE_C1NV
+	bool "->  C1nv"

@@ -23,10 +23,14 @@ entries
 408	1	e	1	nmi
 411	1	e	8	sata_mode
 
+# coreboot config options: cpu
+412	1	e	1	hyper_threading
+
 # coreboot config options: bootloader
 416	424	s	0	boot_devices
 840	8	h	0	boot_default
 848	1	e	7	cmos_defaults_loaded
+
 
 # coreboot config options: mainboard specific options
 

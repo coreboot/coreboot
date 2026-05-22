@@ -57,6 +57,9 @@ entries
 425          1       e       9        audio_panel_type
 426          2       e       10       ps2_port_role
 
+# coreboot config options: cpu
+428          1       e       1        hyper_threading
+
 # -----------------------------------------------------------------
 # Sandy/Ivy Bridge MRC Scrambler Seed values
 # note: MUST NOT be covered by checksum!

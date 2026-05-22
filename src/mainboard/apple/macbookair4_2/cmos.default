@@ -2,3 +2,4 @@
 
 boot_option=Fallback
 debug_level=Debug
+hyper_threading=Enable

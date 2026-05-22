@@ -31,6 +31,9 @@ entries
 424	1	e	14	me_state
 425	2	h	0	me_state_prev
 
+# coreboot config options: cpu
+427	1	e	1	hyper_threading
+
 # coreboot config options: northbridge
 432	3	e	11	gfx_uma_size
 

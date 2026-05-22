@@ -25,6 +25,9 @@ entries
 # coreboot config options: EC
 412	1	e	1	fan_full_speed
 
+# coreboot config options: cpu
+427	1	e	1	hyper_threading
+
 # coreboot config options: northbridge
 432	3	e	9	gfx_uma_size
 

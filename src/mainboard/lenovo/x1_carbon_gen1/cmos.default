@@ -16,3 +16,4 @@ sticky_fn=Disable
 trackpoint=Enable
 backlight=Both
 usb_always_on=Disable
+hyper_threading=Enable

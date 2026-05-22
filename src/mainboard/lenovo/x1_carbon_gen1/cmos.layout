@@ -35,6 +35,7 @@ entries
 422	2	e	10	backlight
 
 # coreboot config options: cpu
+427	1	e	1	hyper_threading
 
 # coreboot config options: northbridge
 432	3	e	11	gfx_uma_size

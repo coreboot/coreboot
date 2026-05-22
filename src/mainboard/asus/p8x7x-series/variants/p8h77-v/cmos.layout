@@ -26,6 +26,9 @@ entries
 
 426	2	e	7	ps2_port_role
 
+# coreboot config options: cpu
+428	1	e	1	hyper_threading
+
 # coreboot config options: check sums
 984	16	h	0	check_sum
 
@@ -89,4 +92,4 @@ enumerations
 # -----------------------------------------------------------------
 checksums
 
-checksum 392 423 984
+checksum 392 431 984

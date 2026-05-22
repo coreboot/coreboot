@@ -20,6 +20,9 @@ entries
 409	2	e	7	power_on_after_fail
 411	1	e	8	sata_mode
 
+# coreboot config options: cpu
+412	1	e	1	hyper_threading
+
 # coreboot config options: bootloader
 #Used by ChromeOS:
 416	128	r	0	vbnv

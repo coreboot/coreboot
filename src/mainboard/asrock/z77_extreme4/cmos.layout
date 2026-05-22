@@ -24,6 +24,9 @@ entries
 # coreboot config options: northbridge
 416	5	e	6	gfx_uma_size
 
+# coreboot config options: cpu
+427	1	e	1	hyper_threading
+
 # coreboot config options: check sums
 984	16	h	0	check_sum
 
@@ -83,4 +86,4 @@ enumerations
 # -----------------------------------------------------------------
 checksums
 
-checksum 392 423 984
+checksum 392 431 984

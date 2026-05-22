@@ -18,3 +18,4 @@ backlight=Both
 usb_always_on=Disable
 f1_to_f12_as_primary=Enable
 me_state=Normal
+hyper_threading=Enable

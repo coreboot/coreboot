@@ -14,3 +14,4 @@ fn_ctrl_swap=Disable
 sticky_fn=Disable
 trackpoint=Enable
 usb_always_on=Disable
+hyper_threading=Enable

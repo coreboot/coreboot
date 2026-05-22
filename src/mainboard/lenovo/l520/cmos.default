@@ -17,3 +17,4 @@ trackpoint=Enable
 backlight=Both
 usb_always_on=Disable
 me_state=Normal
+hyper_threading=Enable

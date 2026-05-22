@@ -16,3 +16,4 @@ fn_ctrl_swap=Disable
 sticky_fn=Disable
 trackpoint=Enable
 me_state=Normal
+hyper_threading=Enable

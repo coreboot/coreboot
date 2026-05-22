@@ -7,3 +7,4 @@ nmi=Enable
 sata_mode=AHCI
 gfx_uma_size=32M
 psu_fan_lvl=3
+hyper_threading=Enable

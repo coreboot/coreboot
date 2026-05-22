@@ -17,6 +17,7 @@ entries
 
 # coreboot config options: cpu
 401	3	e	12	gfx_uma_size
+404	1	e	1	hyper_threading
 
 # coreboot config options: southbridge
 407	1	e	1	nmi

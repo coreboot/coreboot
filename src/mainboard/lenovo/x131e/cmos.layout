@@ -33,6 +33,7 @@ entries
 419	2	e	12	usb_always_on
 
 # coreboot config options: cpu
+427	1	e	1	hyper_threading
 
 # coreboot config options: northbridge
 432	3	e	11	gfx_uma_size

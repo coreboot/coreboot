@@ -14,6 +14,9 @@
 
 #define ACPI_NOTIFY_CROS_EC_MKBP	0x80
 #define ACPI_NOTIFY_CROS_EC_PANIC	0xB0
+/* Windows CrosEc / crosecbus: ACPI notify on GOOG0004 (CREC) */
+#define ACPI_NOTIFY_CROS_EC_S0IX_ENTER	0x01
+#define ACPI_NOTIFY_CROS_EC_S0IX_EXIT	0x02
 
 // Mainboard specific throttle handler
 #ifdef DPTF_ENABLE_CHARGER
@@ -235,6 +238,16 @@ Device (EC0)
 		Local0 *= 10
 
 		Return (Local0)
+	}
+
+	Method (S0IX, 1, Serialized)
+	{
+		If (Arg0) {
+			Notify (^CREC, ACPI_NOTIFY_CROS_EC_S0IX_ENTER)
+		}
+		Else {
+			Notify (^CREC, ACPI_NOTIFY_CROS_EC_S0IX_EXIT)
+		}
 	}
 
 	// Lid Closed Event

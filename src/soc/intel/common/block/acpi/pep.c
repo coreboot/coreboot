@@ -16,7 +16,8 @@
 #define PEP_S0IX_UUID			"57a6512e-3979-4e9d-9708-ff13b2508972"
 #define SYSTEM_POWER_MANAGEMENT_HID	"INT33A1"
 #define SYSTEM_POWER_MANAGEMENT_CID	"PNP0D80"
-#define EC_S0IX_HOOK			"\\_SB.PCI0.LPCB.EC0.S0IX"
+#define EC_S0IX_HOOK_EC			"\\_SB.PCI0.LPCB.EC.S0IX"
+#define EC_S0IX_HOOK_EC0		"\\_SB.PCI0.LPCB.EC0.S0IX"
 #define EC_DISPLAY_HOOK			"\\_SB.PCI0.LPCB.EC0.EDSX"
 #define MAINBOARD_HOOK			"\\_SB.MS0X"
 #define MAINBOARD_DISPLAY_HOOK		"\\_SB.MDSX"
@@ -232,13 +233,22 @@ static void acpi_lpi_get_constraints(void *unused)
 	}
 }
 
+static void acpigen_call_ec_s0ix_hook(int state)
+{
+	const char *hooks[] = { EC_S0IX_HOOK_EC, EC_S0IX_HOOK_EC0 };
+
+	for (size_t i = 0; i < ARRAY_SIZE(hooks); i++) {
+		acpigen_write_if_cond_ref_of(hooks[i]);
+		acpigen_emit_namestring(hooks[i]);
+		acpigen_write_integer(state);
+		acpigen_write_if_end();
+	}
+}
+
 static void lpi_s0ix_entry(void *unused)
 {
 	/* Inform the EC */
-	acpigen_write_if_cond_ref_of(EC_S0IX_HOOK);
-	acpigen_emit_namestring(EC_S0IX_HOOK);
-	acpigen_write_integer(1);
-	acpigen_write_if_end();
+	acpigen_call_ec_s0ix_hook(1);
 
 	/* Provide a board level S0ix hook */
 	acpigen_write_if_cond_ref_of(MAINBOARD_HOOK);
@@ -263,10 +273,7 @@ static void lpi_s0ix_entry(void *unused)
 static void lpi_s0ix_exit(void *unused)
 {
 	/* Inform the EC */
-	acpigen_write_if_cond_ref_of(EC_S0IX_HOOK);
-	acpigen_emit_namestring(EC_S0IX_HOOK);
-	acpigen_write_integer(0);
-	acpigen_write_if_end();
+	acpigen_call_ec_s0ix_hook(0);
 
 	/* Provide a board level S0ix hook */
 	acpigen_write_if_cond_ref_of(MAINBOARD_HOOK);

@@ -113,7 +113,7 @@ chip northbridge/intel/gm965
 
 					register "beepmask0" = "0xfe"
 					register "beepmask1" = "0x96"
-					register "has_power_management_beeps" = "1"
+					register "has_power_management_beeps" = "true"
 
 					register "event2_enable" = "0xff"
 					register "event3_enable" = "0xff"

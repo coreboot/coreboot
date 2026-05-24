@@ -402,11 +402,10 @@ int LzmaDecode(CLzmaDecoderState *vs,
 						do {
 							RC_NORMALIZE
 							Range >>= 1;
-							rep0 <<= 1;
-							if (Code >= Range) {
-								Code -= Range;
-								rep0 |= 1;
-							}
+							Code -= Range;
+							UInt32 t = (0 - ((UInt32)Code >> 31));
+							rep0 = (rep0 << 1) + (t + 1);
+							Code += Range & t;
 						} while (--numDirectBits != 0);
 						prob = p + Align;
 						rep0 <<= kNumAlignBits;

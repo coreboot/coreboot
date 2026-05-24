@@ -30,6 +30,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_102, NONE, DEEP, NF1),                                 /* Sleep S4 */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_103, NONE, DEEP, NF1),                                 /* Suspend Power Ack */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_106, UP_20K, DEEP, NF1),                               /* Battery Low */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_108, NONE, DEEP, NF1),                                 /* Suspend Clock */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_109, NONE, DEEP, NF1),                                 /* Suspend Status */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_142, 1, DEEP, UP_20K, IGNORE, SAME),                  /* Wake */
 
@@ -172,7 +173,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPIO_91, DN_20K),
 	PAD_NC(GPIO_104, UP_20K),
 	PAD_NC(GPIO_105, UP_20K),
-	PAD_NC(GPIO_108, NONE),
 	PAD_NC(GPIO_110, DN_20K),
 	PAD_NC(GPIO_111, DN_20K),
 	PAD_NC(GPIO_112, DN_20K),

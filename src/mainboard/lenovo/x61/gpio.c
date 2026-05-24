@@ -82,12 +82,9 @@ static const struct pch_gpio_set1 pch_gpio_set1_level = {
 	/* gpio9=LOW, gpio27=LOW, gpio28=LOW: default */
 };
 
-/*
- * GPI_INV (0x000039ff): bits 1-8 set -> invert GPIO1-8 for SMI/SCI.
- * Bits 11-13 are also set but those GPIOs are in native mode so inversion
- * is irrelevant there.
- */
+/* GPI_INV vendor value is 0x000039ff. */
 static const struct pch_gpio_set1 pch_gpio_set1_invert = {
+	.gpio0 = GPIO_INVERT,
 	.gpio1 = GPIO_INVERT,
 	.gpio2 = GPIO_INVERT,
 	.gpio3 = GPIO_INVERT,
@@ -96,6 +93,9 @@ static const struct pch_gpio_set1 pch_gpio_set1_invert = {
 	.gpio6 = GPIO_INVERT,
 	.gpio7 = GPIO_INVERT,  /* BDC_PRESENCE#, active low */
 	.gpio8 = GPIO_INVERT,  /* H8_WAKE#, active low */
+	.gpio11 = GPIO_INVERT,
+	.gpio12 = GPIO_INVERT,
+	.gpio13 = GPIO_INVERT,
 };
 
 static const struct pch_gpio_set1 pch_gpio_set1_blink = {

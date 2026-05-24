@@ -47,9 +47,10 @@ void bootblock_mainboard_early_init(void)
 
 void mainboard_late_rcba_config(void)
 {
-	/* Device 1f interrupt pin register */
+	/* Device interrupt pin registers */
 	RCBA32(D31IP) = 0x00001230;
 	RCBA32(D29IP) = 0x40004321;
+	RCBA32(D26IP) = 0x30000021;
 
 	/* PCIe Interrupts */
 	RCBA32(D28IP) = 0x00004321;
@@ -62,6 +63,7 @@ void mainboard_late_rcba_config(void)
 	RCBA16(D29IR) = 0x3210;
 	RCBA16(D28IR) = 0x7654;
 	RCBA16(D27IR) = 0x0010;
+	RCBA16(D26IR) = 0x0654;
 
 	/* Set up I/O Trap #3 for 0x800-0x80c (Trap) */
 	RCBA64(IOTR3) = 0x000200f0000c0801ULL;

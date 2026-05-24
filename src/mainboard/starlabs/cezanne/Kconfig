@@ -60,9 +60,6 @@ config EC_STARLABS_ADD_ITE_BIN
 config EC_STARLABS_ITE_BIN_PATH
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"
 
-config EDK2_BOOTSPLASH_FILE
-	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
-
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 

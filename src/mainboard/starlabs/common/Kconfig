@@ -2,6 +2,10 @@
 
 if VENDOR_STARLABS
 
+config EDK2_BOOTSPLASH_FILE
+	string
+	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
+
 config STARLABS_MEMORY_SETTINGS_VERSION
 	bool
 	default y if PLATFORM_USES_FSP2_0 && CACHE_MRC_SETTINGS

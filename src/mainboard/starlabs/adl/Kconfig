@@ -80,10 +80,6 @@ config DEVICETREE
 config DIMM_SPD_SIZE
 	default 512
 
-config EDK2_BOOTSPLASH_FILE
-	string
-	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
-
 config EC_STARLABS_ITE_BIN_PATH
 	string
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"

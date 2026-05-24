@@ -62,7 +62,7 @@ void i82801hx_dmi_setup(void)
 	RCBA32(RCBA_CIR1) = 0x00109000;
 	RCBA16(RCBA_CIR3) = 0x060b;
 	RCBA32(RCBA_CIR2) = 0x86000040;
-	RCBA32(RCBA_CIR4) = 0x00002008;
+	RCBA16(RCBA_CIR4) = 0x2008;
 	RCBA8(RCBA_BCR) = 0x45;
 	/* Vendor BIOS masked writes: clear bit 7, set high-word mask 0x0d00. */
 	/* TODO: different on desktop */

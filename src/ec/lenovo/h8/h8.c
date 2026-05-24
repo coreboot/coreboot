@@ -253,6 +253,7 @@ static void h8_enable(struct device *dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
 	u8 val;
+	u8 backlight;
 	u8 beepmask0, beepmask1, reg8;
 
 	dev->ops = &h8_dev_ops;
@@ -266,11 +267,20 @@ static void h8_enable(struct device *dev)
 	reg8 |= H8_CONFIG0_TC_ENABLE;
 	ec_write(H8_CONFIG0, reg8);
 
+	/* Default to both keyboard illumination devices */
+	backlight = get_uint_option("backlight", 0) & 0x3;
+
+	/*
+	 * Disable keyboard backlight if:
+	 *   - Non-backlit hardware is physically installed -or-
+	 *   - "Thinklight only" or "None" is selected as keyboard illumination
+	 */
+	if (conf->has_keyboard_backlight)
+		conf->has_keyboard_backlight = (ec_read(0x34) & 0x40) && !(backlight & 0x2);
+
 	reg8 = conf->config1;
-	if (conf->has_thinklight || conf->has_keyboard_backlight) {
-		/* Default to both backlights */
-		reg8 = (reg8 & 0xf3) | ((get_uint_option("backlight", 0) & 0x3) << 2);
-	}
+	if (conf->has_thinklight || conf->has_keyboard_backlight)
+		reg8 = (reg8 & 0xf3) | (backlight << 2);
 	ec_write(H8_CONFIG1, reg8);
 	ec_write(H8_CONFIG2, conf->config2);
 	ec_write(H8_CONFIG3, conf->config3);

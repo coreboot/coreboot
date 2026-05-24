@@ -41,6 +41,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_94, NATIVE, DEEP, NF1),                                /* IO 2 */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_95, NATIVE, DEEP, NF1),                                /* IO 3 */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_96, NATIVE, DEEP, NF1),                                /* Clock */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_97, NATIVE, DEEP, NF1),                                /* Clock Feedback */
 
 	/* Touchpad */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_114, NONE, DEEP, NF1, HIZCRx1, DISPUPD),               /* Data */
@@ -200,6 +201,8 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPIO_144, DN_20K),
 	PAD_NC(GPIO_145, DN_20K),
 	PAD_NC(GPIO_146, DN_20K),
+	/* GPIO 147 through 155 are configured by the TXE. */
+	PAD_NC(GPIO_156, DN_20K),
 	PAD_NC(GPIO_157, DN_20K),
 	PAD_NC(GPIO_158, DN_20K),
 	PAD_NC(GPIO_159, DN_20K),
@@ -215,6 +218,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPIO_176, DN_20K),
 	PAD_NC(GPIO_178, DN_20K),
 	PAD_NC(GPIO_179, DN_20K),
+	PAD_NC(GPIO_180, DN_20K),
 	PAD_NC(GPIO_181, DN_20K),
 	PAD_NC(GPIO_182, DN_20K),
 	PAD_NC(GPIO_183, DN_20K),
@@ -225,7 +229,9 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPIO_188, DN_20K),
 	PAD_NC(GPIO_189, DN_20K),
 	PAD_NC(GPIO_190, DN_20K),
+	PAD_NC(GPIO_197, DN_20K),
 	PAD_NC(GPIO_198, DN_20K),
+	PAD_NC(GPIO_199, DN_20K),
 	PAD_NC(GPIO_200, DN_20K),
 	PAD_NC(GPIO_201, DN_20K),
 	PAD_NC(GPIO_202, DN_20K),

@@ -74,15 +74,6 @@ const u32 cim_verb_data[] = {
 	0x0017a208,
 	0x00170500,
 
-	0x8086280d,	/* Codec Vendor / Device ID: Intel */
-	0x80860101,	/* Subsystem ID */
-	4,		/* Number of verb entries */
-
-	AZALIA_SUBVENDOR(2, 0x80860101),
-
-	AZALIA_PIN_CFG(2, 0x05, 0x18560010),
-	AZALIA_PIN_CFG(2, 0x06, 0x18560020),
-	AZALIA_PIN_CFG(2, 0x07, 0x18560030),
 };
 
 const u32 pc_beep_verbs[] = {};

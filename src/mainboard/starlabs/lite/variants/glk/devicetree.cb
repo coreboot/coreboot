@@ -80,8 +80,8 @@ chip soc/intel/apollolake
 			register "usb3_port[1]"		= "PORT_EN(OC_SKIP)"
 
 			# Motherboard USB 3.0 Type-A
-			register "usb2_port[3]"		= "PORT_EN(OC1)"
-			register "usb3_port[0]"		= "PORT_EN(OC1)"
+			register "usb2_port[3]"		= "PORT_EN(OC_SKIP)"
+			register "usb3_port[0]"		= "PORT_EN(OC_SKIP)"
 
 			# Daughterboard USB 3.0 Type-A
 			register "usb2_port[5]"		= "PORT_EN(OC_SKIP)"

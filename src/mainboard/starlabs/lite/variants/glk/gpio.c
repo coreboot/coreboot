@@ -50,10 +50,12 @@ const struct pad_config gpio_table[] = {
 	/* Wireless */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_33, 1, DEEP, UP_20K, TxLASTRxE, DISPUPD),             /* Bluetooth RF Kill */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_34, 1, DEEP, NONE, IGNORE, DISPUPD),                  /* WiFi RF Kill */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_191, NONE, DEEP, NF1),                                 /* BRI Data */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_192, UP_20K, DEEP, NF1),                               /* BRI Response */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_193, NONE, DEEP, NF1),                                 /* RGI Data */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_194, UP_20K, DEEP, NF1),                               /* RGI Response */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_195, NONE, DEEP, NF1),                                 /* RF Reset */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_196, NONE, DEEP, NF1),                                 /* XTAL Clock Request */
 
 	/* Display */
 	PAD_CFG_NF_IOSSTATE(GPIO_124, UP_20K, DEEP, NF1, HIZCRx0),                              /* DDC Data */
@@ -93,7 +95,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPIO_84, 0, DEEP),                                                          /* SPI Boot	[ Enabled  / Disabled ] */
 	PAD_CFG_GPO(GPIO_174, 1, DEEP),                                                         /* VDD2		[ 1.20V    / 1.24V    ] */
 	PAD_CFG_GPO(GPIO_175, 0, DEEP),                                                         /* Bus		[ LPC      / eSPI     ] */
-	PAD_CFG_GPO(GPIO_191, 0, DEEP),                                                         /* eSPI Flash	[ MAFS     / SAFS     ] */
 
 	PAD_NC(GPIO_0, DN_20K),
 	PAD_NC(GPIO_1, DN_20K),

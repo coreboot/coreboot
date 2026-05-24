@@ -48,11 +48,6 @@ chip soc/intel/apollolake
 	register "pcie_rp_deemphasis_enable[4]"	= "1"
 	register "pcie_rp_deemphasis_enable[5]"	= "1"
 
-	# GPE configuration
-	register "gpe0_dw1"			= "PMC_GPE_NW_63_32"
-	register "gpe0_dw2"			= "PMC_GPE_N_95_64"
-	register "gpe0_dw3"			= "PMC_GPE_NW_31_0"
-
 	register "slp_s3_assertion_width_usecs"	= "28000"
 
 	device domain 0 on

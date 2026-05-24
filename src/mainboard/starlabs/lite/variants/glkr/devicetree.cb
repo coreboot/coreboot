@@ -163,7 +163,7 @@ chip soc/intel/apollolake
 		end
 		device ref uart0	on  end
 		device ref uart2	on  end
-		device ref spi2		on  end
+		device ref spi2		off end
 		device ref lpc_espi	on
 			register "gen1_dec"			= "0x00040069"
 			register "gen2_dec"			= "0x00fc0201"

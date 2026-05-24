@@ -46,7 +46,7 @@ chip soc/intel/apollolake
 	register "pcie_rp_deemphasis_enable[4]"	= "1"
 	register "pcie_rp_deemphasis_enable[5]"	= "1"
 
-	register "slp_s3_assertion_width_usecs"	= "28000"
+	register "slp_s3_assertion_width_usecs"	= "1000"
 
 	device domain 0 on
 		device ref igd		on

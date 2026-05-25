@@ -3,6 +3,8 @@
 #ifndef __MAINBOARD_GOOGLE_RAURU_STORAGE_H__
 #define __MAINBOARD_GOOGLE_RAURU_STORAGE_H__
 
+#include <stdint.h>
+
 uint32_t storage_id(void);
 
 #endif

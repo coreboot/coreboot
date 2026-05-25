@@ -4,6 +4,7 @@
 #define __MAINBOARD_GOOGLE_RAURU_PANEL_H__
 
 #include <soc/display.h>
+#include <stdint.h>
 
 uint32_t panel_id(void);
 void configure_backlight(bool enable);

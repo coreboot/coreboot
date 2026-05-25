@@ -3,6 +3,8 @@
 #ifndef __MAINBOARD_GOOGLE_SKYWALKER_STORAGE_H__
 #define __MAINBOARD_GOOGLE_SKYWALKER_STORAGE_H__
 
+#include <stdint.h>
+
 uint32_t storage_id(void);
 
 #endif

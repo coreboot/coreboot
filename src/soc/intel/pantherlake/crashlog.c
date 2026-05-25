@@ -111,6 +111,11 @@ void cl_get_pmc_sram_data(cl_node_t *head)
 		if (!descriptor_table.regions[i].bits.size)
 			continue;
 
+		if (descriptor_table.regions[i].bits.size * sizeof(u32) > pmc_crashLog_size) {
+			printk(BIOS_ERR, "Region size exceeds remaining crashlog size\n");
+			goto pmc_send_re_arm_after_reset;
+		}
+
 		/*
 		 * Region with metadata TAG contains information about BDF entry for SOC PMC SRAM
 		 * and IOE SRAM. We don't need to parse this as we already define BDFs in

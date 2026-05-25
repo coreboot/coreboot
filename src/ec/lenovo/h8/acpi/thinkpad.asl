@@ -27,6 +27,9 @@ Device (HKEY)
 	/* Device enabled. */
 	Name (EN, 0)
 
+	/* Hotkey control state, read by thinkpad_acpi hotkey_status_get(). */
+	Name (DHKC, 0)
+
 	Method (_STA, 0, NotSerialized)
 	{
 		Return (0x0F)
@@ -70,6 +73,7 @@ Device (HKEY)
 
 	/* Enable/disable all events.  */
 	Method (MHKC, 1, NotSerialized) {
+		DHKC = Arg0
 		If (Arg0) {
 			EMSK = DHKN
 			ETAB = Ones

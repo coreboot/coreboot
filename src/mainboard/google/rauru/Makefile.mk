@@ -9,6 +9,7 @@ bootblock-y += bootblock.c
 romstage-y += romstage.c
 
 ramstage-y += boardid.c
+ramstage-$(CONFIG_RAURU_HAS_CBI_SKU_ID) += sku_id.c
 ramstage-y += mainboard.c
 ramstage-y += panel.c
 ramstage-y += regulator.c

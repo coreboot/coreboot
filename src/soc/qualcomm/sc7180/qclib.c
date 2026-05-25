@@ -15,13 +15,13 @@ static int dcb_fuse_longsys1p8(void)
 	return bit_value;
 }
 
-const char *qclib_file(enum qclib_cbfs_file file)
+const char *qclib_override_soc_file(enum qclib_cbfs_file file)
 {
 	if ((file == QCLIB_CBFS_DCB) && dcb_fuse_longsys1p8()) {
 		printk(BIOS_INFO, "Using DCB for Longsys 1.8V memory based on fuse setting\n");
 		return CONFIG_CBFS_PREFIX "/dcb_longsys1p8";
 	} else {
-		return qclib_file_default(file);
+		return NULL;
 	}
 }
 

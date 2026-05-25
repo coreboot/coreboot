@@ -187,8 +187,16 @@ const char *qclib_file_default(enum qclib_cbfs_file file)
 	}
 }
 
+__weak const char *qclib_override_soc_file(enum qclib_cbfs_file file)
+{
+	return NULL;
+}
+
 const char *qclib_file(enum qclib_cbfs_file file)
-	__attribute__((weak, alias("qclib_file_default")));
+{
+	const char *name = qclib_override_soc_file(file);
+	return name ?: qclib_file_default(file);
+}
 
 void qclib_add_if_table_entry(const char *name, void *base,
 				uint32_t size, uint32_t attrs)

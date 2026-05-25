@@ -89,6 +89,7 @@ void qclib_add_if_table_entry(const char *name, void *base,
 void qclib_load_and_run(void);
 void qclib_rerun(void);
 int  qclib_soc_override(struct qclib_cb_if_table *table);
+const char *qclib_override_soc_file(enum qclib_cbfs_file file);
 int  qclib_mainboard_override(struct qclib_cb_if_table *table);
 bool qclib_check_dload_mode(void);
 

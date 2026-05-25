@@ -9,6 +9,9 @@
 #define INTF_FLUSH INTF_FLUSH_5
 
 #define MDSS_MAX_SINGLE_PIPE_PIXEL_WIDTH 2560U
+#define MDSS_MAX_MDP_CLK 575000000U
+#define MDSS_MDP_CLK_FUDGE_FACTOR_NUMER 105U
+#define MDSS_MDP_CLK_FUDGE_FACTOR_DENOM 100U
 
 #ifndef WRITE32_LOG
 #define WRITE32_LOG(addr, val)                                                               \
@@ -784,5 +787,6 @@ void intf_tg_setup(struct edid *edid);
 void intf_fetch_start_config(struct edid *edid);
 void mdss_source_pipe_config(struct edid *edid, uintptr_t dram_display);
 void mdss_layer_mixer_setup(struct edid *edid);
+uint32_t calculate_mode_mdp_clk(const struct edid_mode *mode);
 
 #endif // _SOC_DISPLAY_MDSS_REG_H_

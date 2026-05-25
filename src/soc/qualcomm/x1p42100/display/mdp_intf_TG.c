@@ -103,7 +103,8 @@ void intf_fetch_start_config(struct edid *edid)
 
 void merge_3d_active(struct edid *edid)
 {
-	bool dual = (edid->mode.ha > MDSS_MAX_SINGLE_PIPE_PIXEL_WIDTH);
+	bool dual = (edid->mode.ha > MDSS_MAX_SINGLE_PIPE_PIXEL_WIDTH) ||
+		(calculate_mode_mdp_clk(&edid->mode) > MDSS_MAX_MDP_CLK);
 
 	if (dual)
 		write32(&mdp_ctl_0->merge_3d_flush, 0x1);

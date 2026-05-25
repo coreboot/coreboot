@@ -9,9 +9,21 @@
 
 #include <soc/symbols_common.h>
 
+uint32_t calculate_mode_mdp_clk(const struct edid_mode *mode) {
+	/* pixel clock = total_h * total_v * refresh. Use it for mode_mdp_clock */
+	uint64_t mode_mdp_clk = (uint64_t)mode->pixel_clock * 1000;
+
+	/* clock inefficiency factor of 5% */
+	mode_mdp_clk *= MDSS_MDP_CLK_FUDGE_FACTOR_NUMER;
+	mode_mdp_clk /= MDSS_MDP_CLK_FUDGE_FACTOR_DENOM;
+
+	return (uint32_t)mode_mdp_clk;
+}
+
 void mdss_source_pipe_config(struct edid *edid, uintptr_t dram_display)
 {
-	uint32_t pipe_count = (edid->mode.ha > MDSS_MAX_SINGLE_PIPE_PIXEL_WIDTH) ? 2 : 1;
+	uint32_t pipe_count = ((edid->mode.ha > MDSS_MAX_SINGLE_PIPE_PIXEL_WIDTH) ||
+			(calculate_mode_mdp_clk(&edid->mode) > MDSS_MAX_MDP_CLK)) ? 2 : 1;
 
 	/* Source Dimensions: Per Pipe */
 	uint32_t src_h = edid->mode.va;
@@ -92,9 +104,8 @@ void mdss_layer_mixer_setup(struct edid *edid)
 {
 	uint32_t full_w = edid->mode.ha;
 	uint32_t full_h = edid->mode.va;
-
-	bool dual = (full_w > MDSS_MAX_SINGLE_PIPE_PIXEL_WIDTH);
-
+	bool dual = ((full_w > MDSS_MAX_SINGLE_PIPE_PIXEL_WIDTH) ||
+		(calculate_mode_mdp_clk(&edid->mode) > MDSS_MAX_MDP_CLK));
 	uint32_t lm_w = dual ? (full_w / 2) : full_w;
 	uint32_t lm_out_size = (full_h << 16) | (lm_w & 0xFFFF);
 

@@ -19,16 +19,16 @@ __weak void pmif_spmi_config(struct pmif *arb)
 
 static int spmi_read_check(struct pmif *pmif_arb, int slvid)
 {
-	u32 rdata = 0;
+	u8 rdata = 0;
 
-	pmif_arb->read(pmif_arb, slvid, MT6315_READ_TEST, &rdata);
+	pmif_arb->read8(pmif_arb, slvid, MT6315_READ_TEST, &rdata);
 	if (rdata != MT6315_DEFAULT_VALUE_READ) {
 		printk(BIOS_INFO, "%s next, slvid:%d rdata = 0x%x.\n",
 			__func__, slvid, rdata);
 		return -E_NODEV;
 	}
 
-	pmif_arb->read(pmif_arb, slvid, MT6315_READ_TEST_1, &rdata);
+	pmif_arb->read8(pmif_arb, slvid, MT6315_READ_TEST_1, &rdata);
 	if (rdata != MT6315_DEFAULT_VALUE_READ) {
 		printk(BIOS_INFO, "%s next, slvid:%d rdata = 0x%x.\n",
 			__func__, slvid, rdata);

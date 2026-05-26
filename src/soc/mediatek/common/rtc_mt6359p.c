@@ -13,20 +13,16 @@ static struct pmif *pmif_arb = NULL;
 
 void rtc_read(u16 addr, u16 *rdata)
 {
-	u32 data;
-
 	if (!pmif_arb)
 		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
-	pmif_arb->read(pmif_arb, 0, (u32)addr, &data);
-
-	*rdata = (u16)data;
+	pmif_arb->read16(pmif_arb, 0, (u32)addr, rdata);
 }
 
 void rtc_write(u16 addr, u16 wdata)
 {
 	if (!pmif_arb)
 		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
-	pmif_arb->write(pmif_arb, 0, (unsigned int)addr, (unsigned int)wdata);
+	pmif_arb->write16(pmif_arb, 0, (u32)addr, wdata);
 }
 
 static void rtc_write_field(u16 reg, u16 val, u16 mask, u16 shift)

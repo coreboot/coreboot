@@ -28,8 +28,8 @@ struct pmif {
 	u32 swinf_no;
 	u32 mstid;
 	u32 pmifid;
-	void (*read)(struct pmif *arb, u32 slvid, u32 reg, u32 *data);
-	void (*write)(struct pmif *arb, u32 slvid, u32 reg, u32 data);
+	void (*read8)(struct pmif *arb, u32 slvid, u32 reg, u8 *data);
+	void (*write8)(struct pmif *arb, u32 slvid, u32 reg, u8 data);
 	void (*read16)(struct pmif *arb, u32 slvid, u32 reg, u16 *data);
 	void (*write16)(struct pmif *arb, u32 slvid, u32 reg, u16 data);
 	u32 (*read_field)(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift);
@@ -86,15 +86,15 @@ DEFINE_BIT(PMIFSPMI_MD_CTL_SRVOL_EN, 11)
 struct pmif *get_pmif_controller(int inf, int mstid);
 void pmwrap_interface_init(void);
 int mtk_pmif_init(void);
-void pmif_spmi_read(struct pmif *arb, u32 slvid, u32 reg, u32 *data);
-void pmif_spmi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data);
+void pmif_spmi_read8(struct pmif *arb, u32 slvid, u32 reg, u8 *data);
+void pmif_spmi_write8(struct pmif *arb, u32 slvid, u32 reg, u8 data);
 void pmif_spmi_read16(struct pmif *arb, u32 slvid, u32 reg, u16 *data);
 void pmif_spmi_write16(struct pmif *arb, u32 slvid, u32 reg, u16 data);
 u32 pmif_spmi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift);
 void pmif_spmi_write_field(struct pmif *arb, u32 slvid, u32 reg,
 			   u32 val, u32 mask, u32 shift);
-void pmif_spi_read(struct pmif *arb, u32 slvid, u32 reg, u32 *data);
-void pmif_spi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data);
+void pmif_spi_read16(struct pmif *arb, u32 slvid, u32 reg, u16 *data);
+void pmif_spi_write16(struct pmif *arb, u32 slvid, u32 reg, u16 data);
 u32 pmif_spi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift);
 void pmif_spi_write_field(struct pmif *arb, u32 slvid, u32 reg,
 			  u32 val, u32 mask, u32 shift);

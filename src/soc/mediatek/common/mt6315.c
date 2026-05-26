@@ -9,14 +9,14 @@
 
 static struct pmif *pmif_arb = NULL;
 
-static void mt6315_read(u32 slvid, u32 reg, u32 *data)
+static void mt6315_read(u32 slvid, u32 reg, u8 *data)
 {
-	pmif_arb->read(pmif_arb, slvid, reg, data);
+	pmif_arb->read8(pmif_arb, slvid, reg, data);
 }
 
-static void mt6315_write(u32 slvid, u32 reg, u32 data)
+static void mt6315_write(u32 slvid, u32 reg, u8 data)
 {
-	pmif_arb->write(pmif_arb, slvid, reg, data);
+	pmif_arb->write8(pmif_arb, slvid, reg, data);
 }
 
 void mt6315_write_field(u32 slvid, u32 reg, u32 val, u32 mask, u32 shift)
@@ -62,7 +62,8 @@ void mt6315_buck_set_voltage(u32 slvid, u32 buck_id, u32 buck_uv)
 
 u32 mt6315_buck_get_voltage(u32 slvid, u32 buck_id)
 {
-	u32 vol_reg, vol;
+	u32 vol_reg;
+	u8 vol;
 
 	if (!pmif_arb)
 		die("ERROR: pmif_arb not initialized");
@@ -80,7 +81,7 @@ u32 mt6315_buck_get_voltage(u32 slvid, u32 buck_id)
 	};
 
 	mt6315_read(slvid, vol_reg, &vol);
-	return vol * 6250;
+	return (u32)vol * 6250;
 }
 
 static void init_pmif_arb(void)

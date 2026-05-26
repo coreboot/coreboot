@@ -36,18 +36,18 @@ u16 mt6363_read16(u32 reg)
 
 u8 mt6363_read8(u32 reg)
 {
-	u32 rdata = 0;
+	u8 rdata = 0;
 
 	assert(pmif_arb);
-	pmif_arb->read(pmif_arb, SPMI_SLAVE_4, reg, &rdata);
+	pmif_arb->read8(pmif_arb, SPMI_SLAVE_4, reg, &rdata);
 
-	return (u8)rdata;
+	return rdata;
 }
 
 void mt6363_write8(u32 reg, u8 data)
 {
 	assert(pmif_arb);
-	pmif_arb->write(pmif_arb, SPMI_SLAVE_4, reg, data);
+	pmif_arb->write8(pmif_arb, SPMI_SLAVE_4, reg, data);
 }
 
 static u32 mt6363_read_field(u32 reg, u32 mask, u32 shift)

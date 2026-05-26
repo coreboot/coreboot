@@ -14,18 +14,18 @@ static const u32 mt6316_slave_id[] = {
 
 static u8 mt6316_read8(enum spmi_slave slvid, u32 reg)
 {
-	u32 rdata = 0;
+	u8 rdata = 0;
 
 	assert(pmif_arb);
-	pmif_arb->read(pmif_arb, slvid, reg, &rdata);
+	pmif_arb->read8(pmif_arb, slvid, reg, &rdata);
 
-	return (u8)rdata;
+	return rdata;
 }
 
 static void mt6316_write8(enum spmi_slave slvid, u32 reg, u8 data)
 {
 	assert(pmif_arb);
-	pmif_arb->write(pmif_arb, slvid, reg, data);
+	pmif_arb->write8(pmif_arb, slvid, reg, data);
 }
 
 void mt6316_write_field(enum spmi_slave slvid, u32 reg, u32 val, u32 mask, u32 shift)

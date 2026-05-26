@@ -36,18 +36,18 @@ void mt6685_write_field(u32 reg, u32 val, u32 mask, u32 shift)
 
 u8 mt6685_read8(u32 reg)
 {
-	u32 rdata = 0;
+	u8 rdata = 0;
 
 	mt6685_init_pmif_arb();
-	pmif_arb->read(pmif_arb, SPMI_SLAVE_9, reg, &rdata);
+	pmif_arb->read8(pmif_arb, SPMI_SLAVE_9, reg, &rdata);
 
-	return (u8)rdata;
+	return rdata;
 }
 
 void mt6685_write8(u32 reg, u8 reg_val)
 {
 	mt6685_init_pmif_arb();
-	pmif_arb->write(pmif_arb, SPMI_SLAVE_9, reg, reg_val);
+	pmif_arb->write8(pmif_arb, SPMI_SLAVE_9, reg, reg_val);
 }
 
 u16 mt6685_read16(u32 reg)

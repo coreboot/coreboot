@@ -114,14 +114,14 @@ static struct subsys_rc_con rc_ctrl[MAX_CHN_NUM] = {
 	[CHN_RESERVE] = SUB_CTRL_CON(0x0, 0x0, 0x1, DXCO_SETTLE_BLK_DIS),
 };
 
-static void pmic_read(u32 addr, u32 *rdata)
+static void pmic_read(u32 addr, u16 *rdata)
 {
 	static struct pmif *pmif_arb;
 
 	if (!pmif_arb)
 		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
 
-	pmif_arb->read(pmif_arb, 0, addr, rdata);
+	pmif_arb->read16(pmif_arb, 0, addr, rdata);
 }
 
 static void rc_dump_reg_info(void)
@@ -352,7 +352,6 @@ int srclken_rc_init(void)
 	for (chn_n = 0; chn_n < MAX_CHN_NUM; chn_n++) {
 		unsigned int chk_sta, shift_chn_n = 0;
 		int retry;
-		u32 temp;
 
 		/* Fix RC_MXX_REQ_STA_0 register shift */
 		if (chn_n > 0)
@@ -365,6 +364,7 @@ int srclken_rc_init(void)
 				!= chk_sta && retry-- > 0)
 			udelay(10);
 		if (retry < 0) {
+			u16 temp;
 			pmic_read(PMIC_PMRC_CON0, &temp);
 			rc_info("polling M%02d failed.(R:%#x)(C:%#x)(PMRC:%#x)\n",
 				chn_n,

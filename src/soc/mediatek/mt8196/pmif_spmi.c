@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
+#include <assert.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <gpio.h>
@@ -163,9 +164,9 @@ void pmif_spmi_iocfg(void)
 
 static int spmi_read_check(struct pmif *arb, const struct spmi_device *dev)
 {
-	u32 rdata = 0;
+	u8 rdata = 0;
 
-	arb->read(arb, dev->slvid, dev->hwcid_addr, &rdata);
+	arb->read8(arb, dev->slvid, dev->hwcid_addr, &rdata);
 	if ((rdata & dev->hwcid_mask) != (dev->hwcid_val & dev->hwcid_mask)) {
 		printk(BIOS_WARNING, "%s next, slvid:%d rdata = 0x%x\n",
 		       __func__, dev->slvid, rdata);
@@ -216,15 +217,16 @@ static int spmi_cali_rd_clock_polarity(struct pmif *arb, const struct spmi_devic
 
 static int spmi_config_slave(struct pmif *arb, const struct spmi_device *dev)
 {
-	u32 wdata;
+	u8 wdata;
 
 	/* set RG_RCS_ADDR=slave id */
-	wdata = dev->slvid;
-	arb->write(arb, dev->slvid, 0x419, wdata); /* rcs_slvid_addr: 0x419 */
+	wdata = (u8)dev->slvid;
+	arb->write8(arb, dev->slvid, 0x419, wdata); /* rcs_slvid_addr: 0x419 */
 
 	/* set RG_RCS_ENABLE=1, RG_RCS_ID=Master ID */
-	wdata = 0x5 | (dev->mstid << 4);
-	arb->write(arb, dev->slvid, 0x418, wdata); /* rcs_slvid_en: 0x418 */
+	assert(dev->mstid <= 1);
+	wdata = 0x5 | (u8)(dev->mstid << 4);
+	arb->write8(arb, dev->slvid, 0x418, wdata); /* rcs_slvid_en: 0x418 */
 
 	return 0;
 }

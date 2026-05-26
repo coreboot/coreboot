@@ -24,7 +24,7 @@ static struct pmif *pmif_arb;
 static void mt6373_write8(u32 reg, u8 data)
 {
 	assert(pmif_arb);
-	pmif_arb->write(pmif_arb, SPMI_SLAVE_5, reg, data);
+	pmif_arb->write8(pmif_arb, SPMI_SLAVE_5, reg, data);
 }
 
 static u32 mt6373_read_field(u32 reg, u32 mask, u32 shift)

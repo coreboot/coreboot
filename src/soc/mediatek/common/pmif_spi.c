@@ -125,11 +125,11 @@ static void init_reg_clock(struct pmif *arb)
 	write32(&mtk_pmicspi_mst->cslext_read, 0x100);
 
 	/* Set Read Dummy Cycle Number (Slave Clock is 18MHz) */
-	arb->write(arb, DEFAULT_SLVID, PMIC_DEW_RDDMY_NO, DUMMY_READ_CYCLES);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_DEW_RDDMY_NO, DUMMY_READ_CYCLES);
 	write32(&mtk_pmicspi_mst->rddmy, DUMMY_READ_CYCLES);
 
 	/* Enable DIO mode */
-	arb->write(arb, DEFAULT_SLVID, PMIC_DEW_DIO_EN, 0x1);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_DEW_DIO_EN, 0x1);
 
 	/* Wait for completion of sending the commands */
 	if (check_idle(&arb->mtk_pmif->inf_busy_sta, PMIF_SPI_AP)) {
@@ -153,23 +153,23 @@ static void init_reg_clock(struct pmif *arb)
 static void init_spislv(struct pmif *arb)
 {
 	/* Turn on SPI IO filter function */
-	arb->write(arb, DEFAULT_SLVID, PMIC_FILTER_CON0, SPI_FILTER);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_FILTER_CON0, SPI_FILTER);
 	/* Turn on SPI IO SMT function to improve noise immunity */
-	arb->write(arb, DEFAULT_SLVID, PMIC_SMT_CON1, SPI_SMT);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_SMT_CON1, SPI_SMT);
 	/* Turn off SPI IO pull function for power saving */
-	arb->write(arb, DEFAULT_SLVID, PMIC_GPIO_PULLEN0_CLR, SPI_PULL_DISABLE);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_GPIO_PULLEN0_CLR, SPI_PULL_DISABLE);
 	/* Enable SPI access in SODI-3.0 and Suspend modes */
-	arb->write(arb, DEFAULT_SLVID, PMIC_RG_SPI_CON0, 0x2);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_RG_SPI_CON0, 0x2);
 	/* Set SPI IO driving strength to 4 mA */
-	arb->write(arb, DEFAULT_SLVID, PMIC_DRV_CON1, SPI_DRIVING);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_DRV_CON1, SPI_DRIVING);
 }
 
 static int init_sistrobe(struct pmif *arb)
 {
-	u32 rdata = 0;
+	u16 rdata = 0;
 	int si_sample_ctrl;
 	/* Random data for testing */
-	const u32 test_data[30] = {
+	const u16 test_data[30] = {
 		0x6996, 0x9669, 0x6996, 0x9669, 0x6996, 0x9669, 0x6996,
 		0x9669, 0x6996, 0x9669, 0x5AA5, 0xA55A, 0x5AA5, 0xA55A,
 		0x5AA5, 0xA55A, 0x5AA5, 0xA55A, 0x5AA5, 0xA55A, 0x1B27,
@@ -180,7 +180,7 @@ static int init_sistrobe(struct pmif *arb)
 	for (si_sample_ctrl = 0; si_sample_ctrl < 16; si_sample_ctrl++) {
 		write32(&mtk_pmicspi_mst->si_sampling_ctrl, si_sample_ctrl << 5);
 
-		arb->read(arb, DEFAULT_SLVID, PMIC_DEW_READ_TEST, &rdata);
+		arb->read16(arb, DEFAULT_SLVID, PMIC_DEW_READ_TEST, &rdata);
 		if (rdata == DEFAULT_VALUE_READ_TEST)
 			break;
 	}
@@ -196,12 +196,12 @@ static int init_sistrobe(struct pmif *arb)
 	 * to current sampling clock edge.
 	 */
 	for (int si_dly = 0; si_dly < 10; si_dly++) {
-		arb->write(arb, DEFAULT_SLVID, PMIC_RG_SPI_CON2, si_dly);
+		arb->write16(arb, DEFAULT_SLVID, PMIC_RG_SPI_CON2, si_dly);
 
 		int start_boundary_found = 0;
 		for (int i = 0; i < ARRAY_SIZE(test_data); i++) {
-			arb->write(arb, DEFAULT_SLVID, PMIC_DEW_WRITE_TEST, test_data[i]);
-			arb->read(arb, DEFAULT_SLVID, PMIC_DEW_WRITE_TEST, &rdata);
+			arb->write16(arb, DEFAULT_SLVID, PMIC_DEW_WRITE_TEST, test_data[i]);
+			arb->read16(arb, DEFAULT_SLVID, PMIC_DEW_WRITE_TEST, &rdata);
 			if ((rdata & 0x7fff) != (test_data[i] & 0x7fff)) {
 				start_boundary_found = 1;
 				break;
@@ -218,7 +218,7 @@ static int init_sistrobe(struct pmif *arb)
 	write32(&mtk_pmicspi_mst->si_sampling_ctrl, ++si_sample_ctrl << 5);
 
 	/* Read Test */
-	arb->read(arb, DEFAULT_SLVID, PMIC_DEW_READ_TEST, &rdata);
+	arb->read16(arb, DEFAULT_SLVID, PMIC_DEW_READ_TEST, &rdata);
 	if (rdata != DEFAULT_VALUE_READ_TEST) {
 		printk(BIOS_ERR, "[%s] Failed for read test, data = %#x.\n",
 			__func__, rdata);
@@ -231,10 +231,10 @@ static int init_sistrobe(struct pmif *arb)
 static void init_staupd(struct pmif *arb)
 {
 	/* Unlock SPI Slave registers */
-	arb->write(arb, DEFAULT_SLVID, PMIC_SPISLV_KEY, 0xbade);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_SPISLV_KEY, 0xbade);
 
 	/* Enable CRC of PMIC 0 */
-	arb->write(arb, DEFAULT_SLVID, PMIC_DEW_CRC_EN, 0x1);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_DEW_CRC_EN, 0x1);
 
 	/* Wait for completion of sending the commands */
 	if (check_idle(&arb->mtk_pmif->inf_busy_sta, PMIF_SPI_AP)) {
@@ -257,7 +257,7 @@ static void init_staupd(struct pmif *arb)
 	write32(&arb->mtk_pmif->sig_mode, 0x0);
 
 	/* Lock SPI Slave registers */
-	arb->write(arb, DEFAULT_SLVID, PMIC_SPISLV_KEY, 0x0);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_SPISLV_KEY, 0x0);
 
 	/* Set up PMIC Siganature */
 	write32(&arb->mtk_pmif->pmic_sig_addr, PMIC_DEW_CRC_VAL);
@@ -300,7 +300,7 @@ int pmif_spi_init(struct pmif *arb)
 	}
 
 	/* Lock SPISLV Registers */
-	arb->write(arb, DEFAULT_SLVID, PMIC_SPISLV_KEY, 0x0);
+	arb->write16(arb, DEFAULT_SLVID, PMIC_SPISLV_KEY, 0x0);
 
 	/*
 	 * Status update function initialization

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>
@@ -8,6 +9,8 @@
 #include <soc/pmif_spmi.h>
 #include <soc/pmif_sw.h>
 #include <soc/spmi.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <timer.h>
 
 static int pmif_check_swinf(struct pmif *arb, long timeout_us, u32 expected_status)
@@ -25,11 +28,11 @@ static int pmif_check_swinf(struct pmif *arb, long timeout_us, u32 expected_stat
 	return 0;
 }
 
-static void pmif_send_cmd(struct pmif *arb, int write, u32 opc, u32 slvid,
-			  u32 addr, u32 *rdata, u32 wdata, u32 len)
+static void send_cmd(struct pmif *arb, bool write, u32 opc, u32 slvid,
+		     u32 bc, u32 addr, u32 *rdata, u32 wdata)
 {
 	int ret;
-	u32 data, bc = len - 1;
+	u32 cmd = (opc << 30) | ((u32)write << 29) | (slvid << 24) | (bc << 16) | addr;
 
 	/* Wait for Software Interface FSM state to be IDLE. */
 	ret = pmif_check_swinf(arb, PMIF_WAIT_IDLE_US, SWINF_FSM_IDLE);
@@ -43,8 +46,7 @@ static void pmif_send_cmd(struct pmif *arb, int write, u32 opc, u32 slvid,
 		write32(&arb->ch->wdata, wdata);
 
 	/* Send the command. */
-	write32(&arb->ch->ch_send,
-		(opc << 30) | (write << 29) | (slvid << 24) | (bc << 16) | addr);
+	write32(&arb->ch->ch_send, cmd);
 
 	if (!write) {
 		/*
@@ -57,88 +59,107 @@ static void pmif_send_cmd(struct pmif *arb, int write, u32 opc, u32 slvid,
 			return;
 		}
 
-		data = read32(&arb->ch->rdata);
-		*rdata = data;
+		*rdata = read32(&arb->ch->rdata);
 		write32(&arb->ch->ch_rdy, 0x1);
 	}
 }
 
-void pmif_spmi_read(struct pmif *arb, u32 slvid, u32 reg, u32 *data)
+static void pmif_send_cmd(struct pmif *arb, bool write, u32 opc, u32 slvid,
+			  u32 addr, u32 *rdata, u32 wdata, u32 len)
 {
-	*data = 0;
-	pmif_send_cmd(arb, 0, PMIF_CMD_EXT_REG_LONG, slvid, reg, data, 0, 1);
+	assert(len >= 1);
+	send_cmd(arb, write, opc, slvid, len - 1, addr, rdata, wdata);
 }
 
-void pmif_spmi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data)
+/* Data type is always u16 for PWRAP interface. */
+static void pwrap_send_cmd(struct pmif *arb, bool write, u32 addr,
+			   u16 *rdata, u16 wdata)
 {
-	pmif_send_cmd(arb, 1, PMIF_CMD_EXT_REG_LONG, slvid, reg, NULL, data, 1);
+	u32 rdata32 = 0;
+
+	/* opc, slvid, bc are not used for PWRAP interface. */
+	send_cmd(arb, write, 0, 0, 0, addr, &rdata32, wdata);
+
+	if (!write) {
+		*rdata = (u16)rdata32;
+		assert(*rdata == rdata32);
+	}
+}
+
+void pmif_spmi_read8(struct pmif *arb, u32 slvid, u32 reg, u8 *data)
+{
+	u32 rdata = 0;
+	pmif_send_cmd(arb, false, PMIF_CMD_EXT_REG_LONG, slvid, reg, &rdata, 0, 1);
+	assert(rdata <= UINT8_MAX);
+	*data = (u8)rdata;
+}
+
+void pmif_spmi_write8(struct pmif *arb, u32 slvid, u32 reg, u8 data)
+{
+	pmif_send_cmd(arb, true, PMIF_CMD_EXT_REG_LONG, slvid, reg, NULL, data, 1);
 }
 
 void pmif_spmi_read16(struct pmif *arb, u32 slvid, u32 reg, u16 *data)
 {
 	u32 rdata = 0;
-	pmif_send_cmd(arb, 0, PMIF_CMD_EXT_REG_LONG, slvid, reg, &rdata, 0, 2);
+	pmif_send_cmd(arb, false, PMIF_CMD_EXT_REG_LONG, slvid, reg, &rdata, 0, 2);
+	assert(rdata <= UINT16_MAX);
 	*data = (u16)rdata;
 }
 
 void pmif_spmi_write16(struct pmif *arb, u32 slvid, u32 reg, u16 data)
 {
-	pmif_send_cmd(arb, 1, PMIF_CMD_EXT_REG_LONG, slvid, reg, NULL, data, 2);
+	pmif_send_cmd(arb, true, PMIF_CMD_EXT_REG_LONG, slvid, reg, NULL, data, 2);
 }
 
 u32 pmif_spmi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift)
 {
-	u32 data;
+	u8 data;
 
-	pmif_spmi_read(arb, slvid, reg, &data);
-	data &= (mask << shift);
-	data >>= shift;
-
-	return data;
+	pmif_spmi_read8(arb, slvid, reg, &data);
+	return ((u32)data >> shift) & mask;
 }
 
 void pmif_spmi_write_field(struct pmif *arb, u32 slvid, u32 reg,
 			   u32 val, u32 mask, u32 shift)
 {
-	u32 old, new;
+	u8 old, new;
 
-	pmif_spmi_read(arb, slvid, reg, &old);
+	pmif_spmi_read8(arb, slvid, reg, &old);
 	new = old & ~(mask << shift);
-	new |= (val << shift);
-	pmif_spmi_write(arb, slvid, reg, new);
+	new |= (u8)((val & mask) << shift);
+	pmif_spmi_write8(arb, slvid, reg, new);
 }
 
-void pmif_spi_read(struct pmif *arb, u32 slvid, u32 reg, u32 *data)
+void pmif_spi_read16(struct pmif *arb, u32 slvid, u32 reg, u16 *data)
 {
-	*data = 0;
-	pmif_send_cmd(arb, 0, PMIF_CMD_REG_0, slvid, reg, data, 0, 1);
+	pwrap_send_cmd(arb, false, reg, data, 0);
 }
 
-void pmif_spi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data)
+void pmif_spi_write16(struct pmif *arb, u32 slvid, u32 reg, u16 data)
 {
-	pmif_send_cmd(arb, 1, PMIF_CMD_REG_0, slvid, reg, NULL, data, 1);
+	pwrap_send_cmd(arb, true, reg, NULL, data);
 }
 
 u32 pmif_spi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift)
 {
-	u32 data;
+	u16 data;
 
-	pmif_spi_read(arb, slvid, reg, &data);
-	data &= (mask << shift);
-	data >>= shift;
-
-	return data;
+	pmif_spi_read16(arb, slvid, reg, &data);
+	return ((u32)data >> shift) & mask;
 }
 
 void pmif_spi_write_field(struct pmif *arb, u32 slvid, u32 reg,
 			  u32 val, u32 mask, u32 shift)
 {
-	u32 old, new;
+	u16 old, new;
 
-	pmif_spi_read(arb, slvid, reg, &old);
+	assert(((val & mask) << shift) <= UINT16_MAX);
+
+	pmif_spi_read16(arb, slvid, reg, &old);
 	new = old & ~(mask << shift);
-	new |= (val << shift);
-	pmif_spi_write(arb, slvid, reg, new);
+	new |= (u16)((val & mask) << shift);
+	pmif_spi_write16(arb, slvid, reg, new);
 }
 
 int pmif_check_init_done(struct pmif *arb)

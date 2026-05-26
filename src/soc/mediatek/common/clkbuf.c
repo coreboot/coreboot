@@ -28,20 +28,20 @@ static struct pmif *pmif_arb;
 
 static u32 buf_read(u32 addr)
 {
-	u32 rdata;
+	u16 rdata;
 
 	if (!pmif_arb)
 		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
-	pmif_arb->read(pmif_arb, 0, addr, &rdata);
+	pmif_arb->read16(pmif_arb, 0, addr, &rdata);
 
-	return rdata;
+	return (u32)rdata;
 }
 
 static void buf_write(u32 addr, u32 wdata)
 {
 	if (!pmif_arb)
 		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
-	pmif_arb->write(pmif_arb, 0, addr, wdata);
+	pmif_arb->write16(pmif_arb, 0, addr, (u16)wdata);
 }
 
 static void dump_clkbuf_log(void)

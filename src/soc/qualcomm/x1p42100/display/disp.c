@@ -112,7 +112,7 @@ enum cb_err display_rpmh_init(void)
 
 	printk(BIOS_INFO, "ARC regulator initialized successfully\n");
 
-	rc = rpmh_regulator_arc_set_level(&arc_reg, RPMH_REGULATOR_LEVEL_MIN_MM0, true, false);
+	rc = rpmh_regulator_arc_set_level(&arc_reg, RPMH_REGULATOR_LEVEL_NOM_L1, true, false);
 	if (rc) {
 		printk(BIOS_ERR, "Failed to set ARC level\n");
 		return CB_ERR;

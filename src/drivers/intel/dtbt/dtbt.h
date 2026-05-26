@@ -38,6 +38,14 @@
 #define MR_4C_NHI	0x1137
 #define MR_4C_USB	0x1138
 
+/* Barlow Ridge device IDs */
+#define BR_80G_BRG	0x5780
+#define BR_80G_NHI	0x5781
+#define BR_80G_USB	0x5782
+#define BR_40G_BRG	0x5783
+#define BR_40G_NHI	0x5784
+#define BR_40G_USB	0x5785
+
 /* Security Levels */
 #define SEC_LEVEL_NONE			0
 #define SEC_LEVEL_USER			1
@@ -52,6 +60,7 @@
 #define PCIE2TBT_OS_UP			6
 #define PCIE2TBT_SET_SECURITY_LEVEL	8
 #define PCIE2TBT_GET_SECURITY_LEVEL	9
+#define PCIE2TBT_MPS			17
 #define PCIE2TBT_BOOT_ON		24
 #define PCIE2TBT_USB_ON			25
 #define PCIE2TBT_GET_ENUMERATION_METHOD	26
@@ -60,6 +69,7 @@
 #define PCIE2TBT_SX_START		29
 #define PCIE2TBT_ACL_BOOT		30
 #define PCIE2TBT_CONNECT_TOPOLOGY	31
+#define PCIE2TBT_GO2SLEEP		36
 
 #define TBT2PCIE			0x548
 #define TBT2PCIE_DONE			BIT(0)

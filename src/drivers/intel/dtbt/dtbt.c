@@ -253,6 +253,8 @@ static const unsigned short pci_device_ids[] = {
 	TR_DD_BRG,
 	MR_2C_BRG,
 	MR_4C_BRG,
+	BR_80G_BRG,
+	BR_40G_BRG,
 	0
 };
 

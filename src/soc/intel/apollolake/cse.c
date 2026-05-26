@@ -192,7 +192,7 @@ static void dump_cse_state(void)
 	printk(BIOS_DEBUG, "CSE: Actual IBB Size        : %u\n",
 		fwsts3.fields.ibb_size);
 	printk(BIOS_DEBUG, "CSE: Verified Boot Valid    : %s\n",
-		fwsts4.fields.txe_veri_boot_valid ? "PASS" : "FAIL");
+		fwsts4.fields.txe_veri_boot_valid ? "YES" : "NO");
 	printk(BIOS_DEBUG, "CSE: Verified Boot Test     : %s\n",
 		fwsts4.fields.txe_veri_boot_test ? "YES" : "NO");
 	printk(BIOS_DEBUG, "CSE: FPF status             : %s\n",

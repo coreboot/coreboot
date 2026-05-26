@@ -978,6 +978,7 @@ MEDIATEK SOCS
 M:	Hung-Te Lin <hungte@chromium.org>
 M:	Yu-Ping Wu <yupingso@google.com>
 M:	Yidi Lin <yidilin@google.com>
+M:	Chen-Tsung Hsieh <chentsung@google.com>
 S:	Supported
 F:	src/soc/mediatek/
 

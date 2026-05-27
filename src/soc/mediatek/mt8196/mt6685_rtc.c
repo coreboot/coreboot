@@ -33,6 +33,20 @@ void rtc_write(u16 addr, u16 wdata)
 	mt6685_write16(addr, wdata);
 }
 
+static bool rtc_clrset_trigger(u16 addr, u16 clr_bits, u16 set_bits)
+{
+	u16 rdata;
+
+	rtc_read(addr, &rdata);
+
+	rdata &= ~clr_bits;
+	rdata |= set_bits;
+
+	rtc_write(addr, rdata);
+
+	return rtc_write_trigger();
+}
+
 static u16 rtc_get_prot_stat(void)
 {
 	u16 val;
@@ -78,9 +92,7 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 	u16 fqmtr_data;
 
 	if (val != 0) {
-		rtc_read(RTC_BBPU, &rdata);
-		rtc_write(RTC_BBPU, rdata | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-		rtc_write_trigger();
+		rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 		rtc_read(RTC_OSC32CON, &rdata);
 		osc32con = rdata & 0xFFE0;
 		rtc_xosc_write(osc32con | (val & RTC_XOSCCALI_MASK));
@@ -195,30 +207,14 @@ static bool rtc_frequency_meter_check(void)
 	return true;
 }
 
-static bool rtc_clrset_trigger(u16 addr, u16 clr_bits, u16 set_bits)
-{
-	u16 rdata;
-
-	rtc_read(addr, &rdata);
-
-	rdata &= ~clr_bits;
-	rdata |= set_bits;
-
-	rtc_write(addr, rdata);
-
-	return rtc_write_trigger();
-}
-
 bool rtc_gpio_init(void)
 {
 	/* GPI mode and pull enable + pull down */
-	rtc_clrset_trigger(RTC_CON,
-			   (u16)(~(RTC_CON_LPSTA_RAW | RTC_CON_LPRST |
-				   RTC_XOSC32_LPEN | RTC_EOSC32_LPEN) |
-				 RTC_CON_GPU | RTC_CON_F32KOB),
-			   RTC_CON_GPEN | RTC_CON_GOE);
-
-	return rtc_write_trigger();
+	u16 mask = (RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_XOSC32_LPEN |
+		    RTC_EOSC32_LPEN);
+	return rtc_clrset_trigger(RTC_CON,
+				  (u16)(~mask) | RTC_CON_GPU | RTC_CON_F32KOB,
+				  RTC_CON_GPEN | RTC_CON_GOE);
 }
 
 static bool rtc_hw_init(void)
@@ -228,18 +224,14 @@ static bool rtc_hw_init(void)
 
 	stopwatch_init_usecs_expire(&sw, BBPU_RELOAD_TIMEOUT_US);
 
-	rtc_read(RTC_BBPU, &rdata);
-	rtc_write(RTC_BBPU,
-		  rdata | RTC_BBPU_KEY | RTC_BBPU_RESET_ALARM |
-		  (RTC_BBPU_RESET_SPAR & (~RTC_BBPU_SPAR_SW)));
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_BBPU, 0,
+			   RTC_BBPU_KEY | RTC_BBPU_RESET_ALARM |
+			   (RTC_BBPU_RESET_SPAR & (~RTC_BBPU_SPAR_SW)));
 
 	do {
-		rtc_read(RTC_BBPU, &rdata);
-		rtc_write(RTC_BBPU, rdata | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-		rtc_write_trigger();
-		rtc_read(RTC_BBPU, &rdata);
+		rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
+		rtc_read(RTC_BBPU, &rdata);
 		if (!(rdata & (RTC_BBPU_RESET_ALARM | RTC_BBPU_RESET_SPAR)))
 			return true;
 
@@ -282,9 +274,7 @@ static bool rtc_lpd_init(void)
 	printk(BIOS_INFO, "%s: RTC_CON=%#x\n", __func__, rdata);
 
 	/* bit 7 for low power detected in preloader */
-	rtc_read(RTC_CON, &rdata);
-	rtc_write(RTC_SPAR0, rdata | RTC_PDN1_PWRON_TIME);
-	if (!rtc_write_trigger())
+	if (!rtc_clrset_trigger(RTC_SPAR0, 0, RTC_PDN1_PWRON_TIME))
 		return false;
 
 	return true;
@@ -389,9 +379,7 @@ static bool rtc_first_boot_init(void)
 	u16 rdata;
 	printk(BIOS_INFO, "%s: Enter\n", __func__);
 
-	rtc_read(RTC_BBPU, &rdata);
-	rtc_write(RTC_BBPU, rdata | RTC_BBPU_KEY | RTC_BBPU_RESET_SPAR);
-	if (!rtc_write_trigger())
+	if (!rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RESET_SPAR))
 		return false;
 
 	if (!mt6685_writeif_unlock()) {
@@ -421,10 +409,7 @@ static bool rtc_first_boot_init(void)
 		return false;
 	}
 
-	rtc_read(RTC_BBPU, &rdata);
-	rtc_write(RTC_BBPU, rdata | RTC_BBPU_KEY | RTC_BBPU_RESET_SPAR);
-
-	if (!rtc_write_trigger()) {
+	if (!rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RESET_SPAR)) {
 		printk(BIOS_ERR,
 		       "%s rtc_write_trigger failed after BBPU written\n", __func__);
 		return false;
@@ -475,26 +460,17 @@ static void rtc_enable_dcxo(void)
 	if (!mt6685_writeif_unlock())
 		printk(BIOS_ERR, "mt6685_writeif_unlock() failed\n");
 
-	rtc_read(RTC_BBPU, &rdata);
-	rtc_write(RTC_BBPU, rdata | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	rtc_write_trigger();
-	rtc_read(RTC_OSC32CON, &rdata);
+	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
+	rtc_read(RTC_OSC32CON, &rdata);
 	/* 0: f32k_ck src = dcxo_ck */
 	rtc_xosc_write(rdata & ~RTC_EMBCK_SRC_SEL);
 
-	rtc_read(RTC_BBPU, &rdata);
-	rtc_write(RTC_BBPU, rdata | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
-	rtc_read(RTC_CON, &rdata);
-	con = rdata;
-
-	rtc_read(RTC_OSC32CON, &rdata);
-	osc32con = rdata;
-
-	rtc_read(RTC_AL_SEC, &rdata);
-	sec = rdata;
+	rtc_read(RTC_CON, &con);
+	rtc_read(RTC_OSC32CON, &osc32con);
+	rtc_read(RTC_AL_SEC, &sec);
 
 	printk(BIOS_INFO, "%s con = %#x, osc32con = %#x, sec = %#x\n", __func__,
 	       con, osc32con, sec);
@@ -550,10 +526,8 @@ void rtc_boot(void)
 	       rtc_bbpu, rtc_con, rtc_osc32con,
 	       rtc_al_sec, rtc_al_yea);
 
-	rtc_read(RTC_BBPU, &rtc_bbpu);
-	rtc_write(RTC_BBPU, rtc_bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-
-	if (!rtc_write_trigger() || !mt6685_writeif_unlock()) {
+	if (!rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD) ||
+	    !mt6685_writeif_unlock()) {
 		rtc_recovery_flow();
 	} else {
 		rtc_read(RTC_POWERKEY1, &rtc_pwrkey1);
@@ -571,14 +545,10 @@ void rtc_boot(void)
 	}
 
 	/* Set RTC EOSC calibration period = 8sec */
-	rtc_read(RTC_AL_DOW, &rdata);
-	rtc_write(RTC_AL_DOW, rdata | RTC_EOSC_CALI_TD_8SEC);
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_AL_DOW, 0, RTC_EOSC_CALI_TD_8SEC);
 
 	/* Make sure RTC get the latest register info. */
-	rtc_read(RTC_BBPU, &rtc_bbpu);
-	rtc_write(RTC_BBPU, rtc_bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
 	/* HW K EOSC mode whatever power off (including plug out battery) */
 	rtc_read(RTC_AL_YEA, &rtc_al_yea);
@@ -612,21 +582,16 @@ void rtc_boot(void)
 			 RG_RTC_EOSC32_CK_PDN_MASK, RG_RTC_EOSC32_CK_PDN_SHIFT);
 
 	/* Set register to let MD know 32k status */
-	rtc_read(RTC_SPAR0, &rdata);
-	rtc_write(RTC_SPAR0, (rdata & ~RTC_SPAR0_32K_LESS));
-
 	printk(BIOS_INFO, "32k-less mode\n");
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_SPAR0, RTC_SPAR0_32K_LESS, 0);
 
-	rtc_read(RTC_BBPU, &rtc_bbpu);
-	rtc_write(RTC_BBPU, rtc_bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
 	/* Clear ONESHOT bit to solve alarm issue */
+	rtc_clrset_trigger(RTC_IRQ_EN, RTC_IRQ_EN_ONESHOT, 0);
+
 	rtc_read(RTC_IRQ_EN, &rdata);
-	rtc_write(RTC_IRQ_EN, rdata & ~RTC_IRQ_EN_ONESHOT);
-	rtc_write_trigger();
-	rtc_read(RTC_IRQ_EN, &rdata);
+
 	printk(BIOS_INFO, "check RTC_IRQ_EN = %#x\n", rdata);
 
 	if (need_secure_rtc_set_ck)
@@ -636,9 +601,7 @@ void rtc_boot(void)
 static void rtc_get_tick(struct rtc_time *tm)
 {
 	u16 rdata;
-	rtc_read(RTC_BBPU, &rdata);
-	rtc_write(RTC_BBPU, rdata | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
 	rtc_read(RTC_TC_SEC, &rdata);
 	tm->sec = rdata;

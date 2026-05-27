@@ -2,5 +2,4 @@
 
 chip soc/qualcomm/calypso
 	device cpu_cluster 0 on end
-	device domain 0 on end
 end

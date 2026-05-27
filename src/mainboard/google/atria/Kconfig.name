@@ -4,3 +4,6 @@ comment "Atria (Intel NovaLake)"
 
 config BOARD_GOOGLE_ATRIA
 	bool "->  Atria"
+
+config BOARD_GOOGLE_PENGHU
+	bool "->  Penghu"

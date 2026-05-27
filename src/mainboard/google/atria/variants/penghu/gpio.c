@@ -1,0 +1,390 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
+#include <baseboard/gpio.h>
+#include <baseboard/variants.h>
+#include <soc/gpio.h>
+
+/* Pad configuration in ramstage*/
+static const struct pad_config gpio_table[] = {
+	/* GPP_A02:     ESPI_SOC_IO2_R */
+	/* GPP_A02 => ESPI_SOC_IO2_R configured on reset, do not touch */
+
+	/* GPP_A03:     ESPI_SOC_IO3_R */
+	/* GPP_A03 => ESPI_SOC_IO3_R configured on reset, do not touch */
+
+	/* GPP_A04:     ESPI_SOC_CS_R_L */
+	/* GPP_A04 => ESPI_SOC_CS_R_L configured on reset, do not touch */
+
+	/* GPP_A05:     ESPI_SOC_CLK_R */
+	/* GPP_A05 => ESPI_SOC_CLK_R configured on reset, do not touch */
+
+	/* GPP_A06:     ESPI_SOC_RST_L */
+	/* GPP_A06 => ESPI_SOC_RST_L configured on reset, do not touch */
+
+	/* GPP_A07:     SPI_SOC_CLK_FP_R */
+	/* GPP_A07 => SPI_SOC_CLK_FP_R configured on reset, do not touch */
+
+	/* GPP_A08:     WWAN_EN */
+	PAD_CFG_GPO(GPP_A08, 1, DEEP),
+	/* GPP_A09:     EN_WWAN_PWR */
+	PAD_CFG_GPO(GPP_A09, 1, PLTRST),
+	/* GPP_A10:     WLAN_PERST_L */
+	PAD_CFG_GPO(GPP_A10, 1, PLTRST),
+	/* GPP_A11:     SSD_GEN4_PERST_L */
+	PAD_CFG_GPO(GPP_A11, 1, PLTRST),
+	/* GPP_A13:     SLP_S0_GATE_R */
+	/* GPP_A13 => SLP_S0_GATE_R configured on reset, do not touch */
+
+	/* GPP_A14:     SPI_SOC_CS_FP_R_L */
+	/* GPP_A14 => SPI_SOC_CS_FP_R_L configured on reset, do not touch */
+
+	/* GPP_A15:     BT_DISABLE_L */
+	PAD_CFG_GPO(GPP_A15, 1, DEEP),
+	/* GPP_A16:     SPI_SOC_DI_FP_DO */
+	/* GPP_A16 => SPI_SOC_DI_FP_DO configured on reset, do not touch */
+
+	/* GPP_A17:     SPI_SOC_DO_FP_DI_R */
+	/* GPP_A17 => SPI_SOC_DO_FP_DI_R configured on reset, do not touch */
+
+	/* GPP_B00:     PMC_I2C_PD_SCL */
+	PAD_CFG_NF(GPP_B00, NONE, DEEP, NF1),
+	/* GPP_B01:     PMC_I2C_PD_SDA */
+	PAD_CFG_NF(GPP_B01, NONE, DEEP, NF1),
+	/* GPP_B02:     MEM_STRAP_0 */
+	PAD_CFG_GPI(GPP_B02, NONE, DEEP),
+	/* GPP_B03:     MEM_STRAP_1 */
+	PAD_CFG_GPI(GPP_B03, NONE, DEEP),
+	/* GPP_B04:     MEM_STRAP_2 */
+	PAD_CFG_GPI(GPP_B04, NONE, DEEP),
+	/* GPP_B05:     MEM_STRAP_3 */
+	PAD_CFG_GPI(GPP_B05, NONE, DEEP),
+	/* GPP_B06:     EC_ISH_INT_ODL */
+	PAD_CFG_NF(GPP_B06, NONE, DEEP, NF4),
+	/* GPP_B07:     ISH_ACCEL_MB_INT_L */
+	PAD_CFG_NF(GPP_B07, NONE, DEEP, NF4),
+	/* GPP_B08:     ISH_ACCEL_DB_INT_L */
+	PAD_CFG_NF(GPP_B08, NONE, DEEP, NF4),
+	/* GPP_B09:     SOC_FP_RST_L */
+	PAD_CFG_GPO(GPP_B09, 1, PLTRST),
+	/* GPP_B10:     SOC_GPP_B10 */
+	PAD_NC(GPP_B10, NONE),
+	/* GPP_B11:     EN_SPK_PA */
+	PAD_CFG_GPO(GPP_B11, 1, DEEP),
+	/* GPP_B13:     PLT_RST_L */
+	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
+	/* GPP_B14:     HDMI_HPD_L_STRAP */
+	PAD_CFG_NF(GPP_B14, NONE, DEEP, NF2),
+	/* GPP_B15:     SOC_GPP_B15 */
+	PAD_NC(GPP_B15, NONE),
+	/* GPP_B17:     SD_PE_PRSNT_L */
+	PAD_CFG_GPI(GPP_B17, NONE, DEEP),
+	/* GPP_B18:     ISH_EC_I2C_SENSOR_SDA */
+	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
+	/* GPP_B19:     ISH_EC_I2C_SENSOR_SCL */
+	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF1),
+	/* GPP_B20:     WWAN_RST_L */
+	PAD_CFG_GPO(GPP_B20, 1, DEEP),
+	/* GPP_B21:     USB_RT_FORCE_PWR */
+	PAD_CFG_GPO(GPP_B21, 0, PLTRST),
+	/* GPP_B22:     SOC_GPP_B22 */
+	PAD_NC(GPP_B22, NONE),
+	/* GPP_B23:     SOC_GPP_B23_STRAP */
+	PAD_NC(GPP_B23, NONE),
+	/* GPP_B24:     NC */
+	/* GPP_B24 => NC configured on reset, do not touch */
+
+	/* GPP_B25:     SOC_UFS_RST_L */
+	/* GPP_B25 => SOC_UFS_RST_L configured on reset, do not touch */
+
+	/* GPP_C03:     NC */
+	PAD_NC(GPP_C03, NONE),
+	/* GPP_C04:     NC */
+	PAD_NC(GPP_C04, NONE),
+	/* GPP_C05:     EN_UCAM_PWR_STRAP */
+	PAD_CFG_GPO(GPP_C05, 1, DEEP),
+	/* GPP_C06:     EN_FCAM_PWR */
+	PAD_CFG_GPO(GPP_C06, 1, DEEP),
+	/* GPP_C07:     MEM_CH_SEL */
+	PAD_CFG_GPI(GPP_C07, NONE, DEEP),
+	/* GPP_C08:     EN_WCAM_PWR_STRAP */
+	PAD_CFG_GPO(GPP_C08, 1, DEEP),
+	/* GPP_C09:     SSD_GEN5_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_C09, NONE, DEEP, NF1),
+	/* GPP_C10:     SD_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_C10, NONE, DEEP, NF1),
+	/* GPP_C11:     WLAN_PCIE_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_C11, NONE, DEEP, NF1),
+	/* GPP_C12:     WWAN_PCIE_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_C12, NONE, DEEP, NF1),
+	/* GPP_C13:     SSD_GEN4_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_C13, NONE, DEEP, NF1),
+	/* GPP_C14:     SOC_GPP_C14 */
+	PAD_NC(GPP_C14, NONE),
+	/* GPP_C15:     SOC_GPP_C15_STRAP */
+	PAD_NC(GPP_C15, NONE),
+	/* GPP_C16:     USB_C0_LSX_TX */
+	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
+	/* GPP_C17:     USB_C0_LSX_RX */
+	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
+	/* GPP_C18:     USB_C1_LSX_TX */
+	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
+	/* GPP_C19:     USB_C1_LSX_RX */
+	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
+	/* GPP_C20:     USB_C2_LSX_TX */
+	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
+	/* GPP_C21:     USB_C2_LSX_RX */
+	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
+	/* GPP_C22:     DDI4_HDMI_CTRLCLK */
+	PAD_CFG_NF(GPP_C22, NONE, DEEP, NF2),
+	/* GPP_C23:     DDI4_HDMI_CTRLDATA */
+	PAD_CFG_NF(GPP_C23, NONE, DEEP, NF2),
+	/* GPP_D00:     WCAM_MCLK_R */
+	PAD_CFG_NF(GPP_D00, NONE, DEEP, NF1),
+	/* GPP_D01:     EN_PWR_FP */
+	PAD_CFG_GPO(GPP_D01, 1, DEEP),
+	/* GPP_D02:     SOC_WP_OD */
+	PAD_CFG_GPI(GPP_D02, NONE, DEEP),
+	/* GPP_D03:     SOC_GPP_D03_STRAP */
+	PAD_NC(GPP_D03, NONE),
+	/* GPP_D04:     UCAM_MCLK_R */
+	PAD_CFG_NF(GPP_D04, NONE, DEEP, NF1),
+	/* GPP_D05:     UART_ISH_RX_DBG_TX */
+	PAD_CFG_NF(GPP_D05, NONE, DEEP, NF2),
+	/* GPP_D06:     UART_ISH_TX_DBG_RX */
+	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF2),
+	/* GPP_D07:     EN_PP3300_SD */
+	PAD_CFG_GPO(GPP_D07, 1, PLTRST),
+	/* GPP_D08:     SOC_GPP_D08 */
+	PAD_NC(GPP_D08, NONE),
+	/* GPP_D09:     I2S0_MCLK_R */
+	PAD_CFG_NF(GPP_D09, NONE, DEEP, NF2),
+	/* GPP_D10:     I2S0_SCLK */
+	PAD_CFG_NF(GPP_D10, NONE, DEEP, NF2),
+	/* GPP_D11:     I2S0_SFRM */
+	PAD_CFG_NF(GPP_D11, NONE, DEEP, NF2),
+	/* GPP_D12:     I2S0_TXD_STRAP */
+	PAD_CFG_NF(GPP_D12, NONE, DEEP, NF1),
+	/* GPP_D13:     I2S0_RDX */
+	PAD_CFG_NF(GPP_D13, NONE, DEEP, NF1),
+	/* GPP_D16:     SOC_GPP_D16 */
+	PAD_NC(GPP_D16, NONE),
+	/* GPP_D17:     SOC_GPP_D17 */
+	PAD_NC(GPP_D17, NONE),
+	/* GPP_D18:     SOC_GPP_D18 */
+	PAD_NC(GPP_D18, NONE),
+	/* GPP_D20:     SOC_GPP_D20 */
+	PAD_NC(GPP_D20, NONE),
+	/* GPP_D21:     SOC_UFS_REFCLK */
+	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF1),
+	/* GPP_D22:     WWAN_RF_DISABLE_ODL */
+	PAD_CFG_GPO(GPP_D22, 1, PLTRST),
+	/* GPP_D23:     WIFI_DISABLE_L */
+	PAD_CFG_GPO(GPP_D23, 1, DEEP),
+	/* GPP_E01:     SOC_GPP_E01 */
+	PAD_NC(GPP_E01, NONE),
+	/* GPP_E02:     FP_SOC_INT_L */
+	PAD_CFG_GPI_IRQ_WAKE(GPP_E02, NONE, PWROK, LEVEL, INVERT),
+	/* GPP_E03:     SSD_GEN5_PERST_L */
+	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
+	/* GPP_E04:     EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_E04, 1, DEEP),
+	/* GPP_E05:     WWAN_PERST_L */
+	PAD_CFG_GPO(GPP_E05, 1, PLTRST),
+	/* GPP_E06:     SOC_GPP_E06_STRAP */
+	PAD_NC(GPP_E06, NONE),
+	/* GPP_E07:     WCAM_RST_L */
+	PAD_CFG_GPO(GPP_E07, 1, DEEP),
+	/* GPP_E08:     SOC_TCHSCR_REPORT_EN */
+	PAD_CFG_GPO(GPP_E08, 1, PLTRST),
+	/* GPP_E09:     USBA_OC_ODL_STRAP */
+	PAD_NC(GPP_E09, NONE),
+	/* GPP_E11:     SPI_TCHSCR_CLK */
+	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF3),
+	/* GPP_E12:     SPI_I2C_TCHSCR_MOSI_SCL */
+	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF3),
+	/* GPP_E13:     SPI_I2C_TCHSCR_MISO_SDA */
+	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF3),
+	/* GPP_E14:     SOC_GPP_E14 */
+	PAD_NC(GPP_E14, NONE),
+	/* GPP_E15:     SOC_GPP_E15 */
+	PAD_NC(GPP_E15, NONE),
+	/* GPP_E16:     TCHSCR_RST_ODL */
+	PAD_CFG_NF(GPP_E16, NONE, DEEP, NF3),
+	/* GPP_E17:     SPI_TCHSCR_CS_L */
+	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF3),
+	/* GPP_E18:     TCHSCR_INT_ODL */
+	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF3),
+	/* GPP_E19:     SD_PE_WAKE_ODL */
+	PAD_CFG_GPI(GPP_E19, NONE, DEEP),
+	/* GPP_E20:     SOC_FP_FW_UP */
+	PAD_CFG_GPO(GPP_E20, 0, PLTRST),
+	/* GPP_E22:     EN_TCHSCR_PWR */
+	PAD_CFG_GPO(GPP_E22, 1, PLTRST),
+	/* GPP_F00:     CNV_BRI_DT_R */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F00, NONE, DEEP, NF1),
+	/* GPP_F01:     CNV_BRI_RSP */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F01, NONE, DEEP, NF1),
+	/* GPP_F02:     CNV_RGI_DT_STRAP_R */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F02, NONE, DEEP, NF1),
+	/* GPP_F03:     CNV_RGI_RSP */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F03, NONE, DEEP, NF1),
+	/* GPP_F04:     CNV_RF_RST_L */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F04, NONE, DEEP, NF1),
+	/* GPP_F05:     CNV_CLKREQ */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F05, NONE, DEEP, NF3),
+	/* GPP_F07:     FCAM_MCLK */
+	PAD_CFG_NF(GPP_F07, NONE, DEEP, NF2),
+	/* GPP_F08:     NC */
+	PAD_NC(GPP_F08, NONE),
+	/* GPP_F09:     SOC_PEN_DETECT */
+	PAD_CFG_GPI_TRIG_OWN(GPP_F09, NONE, DEEP, LEVEL, ACPI),
+	/* GPP_F11:     UCAM_RST_L */
+	PAD_CFG_GPO(GPP_F11, 1, DEEP),
+	/* GPP_F12:     I2C_TCHPAD_SCL */
+	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF1),
+	/* GPP_F13:     I2C_TCHPAD_SDA */
+	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF1),
+	/* GPP_F14:     EC_SOC_INT_ODL */
+	PAD_CFG_GPI_APIC_LOCK(GPP_F14, NONE, LEVEL, INVERT, LOCK_CONFIG),
+	/* GPP_F15:     WWAN_PCIE_WAKE_ODL */
+	PAD_CFG_GPI_SCI_LOW(GPP_F15, NONE, DEEP, LEVEL),
+	/* GPP_F16:     GSC_SOC_INT_ODL */
+	PAD_CFG_GPI_APIC_LOCK(GPP_F16, NONE, LEVEL, INVERT, LOCK_CONFIG),
+	/* GPP_F17:     HP_INT_ODL */
+	// TODO: Check pin GPP_F17 interrupt route, polarity, trigger
+	PAD_CFG_GPI_INT(GPP_F17, NONE, PLTRST, EDGE_BOTH),
+	/* GPP_F18:     TCHPAD_INT_ODL */
+	PAD_CFG_GPI_APIC_DRIVER(GPP_F18, NONE, PLTRST, EDGE_SINGLE, INVERT),
+	/* GPP_F19:     SOC_GPP_F19_STRAP */
+	PAD_NC(GPP_F19, NONE),
+	/* GPP_F22:     WLAN_PCIE_WAKE_ODL */
+	PAD_CFG_GPI_SCI_LOW(GPP_F22, NONE, DEEP, LEVEL),
+	/* GPP_F23:     SD_PERST_L */
+	PAD_CFG_GPO(GPP_F23, 1, PLTRST),
+	/* GPP_H00:     SOC_GPP_H00_STRAP */
+	PAD_NC(GPP_H00, NONE),
+	/* GPP_H01:     SOC_GPP_H01_STRAP */
+	PAD_NC(GPP_H01, NONE),
+	/* GPP_H02:     SOC_GPP_H02_STRAP */
+	PAD_NC(GPP_H02, NONE),
+	/* GPP_H03:     SOC_GPP_H03 */
+	PAD_NC(GPP_H03, NONE),
+	/* GPP_H04:     SOC_I2C_GSC_SDA */
+	PAD_CFG_NF(GPP_H04, NONE, DEEP, NF1),
+	/* GPP_H05:     SOC_I2C_GSC_SCL */
+	PAD_CFG_NF(GPP_H05, NONE, DEEP, NF1),
+	/* GPP_H06:     SOC_I2C_AUDIO_SAR_SDA */
+	PAD_CFG_NF(GPP_H06, NONE, DEEP, NF1),
+	/* GPP_H07:     SOC_I2C_AUDIO_SAR_SCL */
+	PAD_CFG_NF(GPP_H07, NONE, DEEP, NF1),
+	/* GPP_H08:     UART_SOC_RX_DBG_TX */
+	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
+	/* GPP_H09:     UART_SOC_TX_DBG_RX */
+	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),
+	/* GPP_H10:     SOC_GPP_H10 */
+	PAD_NC(GPP_H10, NONE),
+	/* GPP_H11:     SOC_GPP_H11 */
+	PAD_NC(GPP_H11, NONE),
+	/* GPP_H14:     UART_SOC_RX_FP_TX */
+	PAD_CFG_NF(GPP_H14, NONE, DEEP, NF2),
+	/* GPP_H15:     UART_SOC_TX_FP_RX */
+	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF2),
+	/* GPP_H16:     SOC_GPP_H16 */
+	PAD_NC(GPP_H16, NONE),
+	/* GPP_H17:     SOC_GPP_H17 */
+	PAD_NC(GPP_H17, NONE),
+	/* GPP_H19:     SOC_I2C_UFC_SDA */
+	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
+	/* GPP_H20:     SOC_I2C_UFC_SCL */
+	PAD_CFG_NF(GPP_H20, NONE, DEEP, NF1),
+	/* GPP_H21:     I2C_WFC_SDA */
+	PAD_CFG_NF(GPP_H21, NONE, DEEP, NF1),
+	/* GPP_H22:     I2C_WFC_SCL */
+	PAD_CFG_NF(GPP_H22, NONE, DEEP, NF1),
+	/* GPP_S00:     SDW3_CLK_I2S1_TXD */
+	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF1),
+	/* GPP_S01:     SDW3_DAT0 */
+	PAD_CFG_NF(GPP_S01, NONE, DEEP, NF1),
+	/* GPP_S02:     SDW3_DAT1_I2S1_SCLK */
+	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF1),
+	/* GPP_S03:     SDW3_DAT2_I2S1_SFRM */
+	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF1),
+	/* GPP_S04:     DMIC_CLK0_EDP */
+	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF5),
+	/* GPP_S05:     DMIC_DATA0_EDP */
+	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF5),
+	/* GPP_S06:     DMIC_SOC_CLK1 */
+	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF5),
+	/* GPP_S07:     DMIC_SOC_DATA1 */
+	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF5),
+	/* GPP_V00:     BATLOW_L */
+	PAD_CFG_NF(GPP_V00, NONE, DEEP, NF1),
+	/* GPP_V01:     ACPRESENT */
+	PAD_CFG_NF(GPP_V01, NONE, DEEP, NF1),
+	/* GPP_V02:     EC_SOC_WAKE_ODL */
+	PAD_CFG_NF(GPP_V02, NONE, DEEP, NF1),
+	/* GPP_V03:     EC_SOC_PWR_BTN_ODL */
+	PAD_CFG_NF(GPP_V03, NONE, DEEP, NF1),
+	/* GPP_V04:     SLP_S3_L */
+	PAD_CFG_NF(GPP_V04, NONE, DEEP, NF1),
+	/* GPP_V05:     SLP_S4_L */
+	PAD_CFG_NF(GPP_V05, NONE, DEEP, NF1),
+	/* GPP_V06:     SLP_A_L */
+	PAD_NC(GPP_V06, NONE),
+	/* GPP_V07:     SOC_SUSCLK */
+	PAD_CFG_NF(GPP_V07, NONE, DEEP, NF1),
+	/* GPP_V08:     SOC_GPP_V08 */
+	PAD_NC(GPP_V08, NONE),
+	/* GPP_V09:     SLP_S5_L */
+	PAD_CFG_NF(GPP_V09, NONE, DEEP, NF1),
+	/* GPP_V10:     NC */
+	PAD_NC(GPP_V10, NONE),
+	/* GPP_V11:     SLP_LAN_L */
+	PAD_NC(GPP_V11, NONE),
+	/* GPP_V12:     SOC_WAKE_L */
+	PAD_CFG_NF(GPP_V12, NONE, DEEP, NF1),
+	/* GPP_V16:     EC_SOC_REC_SWITCH_ODL */
+	PAD_CFG_GPI(GPP_V16, NONE, DEEP),
+	/* GPP_V17:     SOC_GPP_V17_STRAP */
+	PAD_NC(GPP_V17, NONE),
+};
+
+/* Early pad configuration in bootblock */
+static const struct pad_config early_gpio_table[] = {
+	/* GPP_F16:     GSC_SOC_INT_ODL */
+	PAD_CFG_GPI_APIC_LOCK(GPP_F16, NONE, LEVEL, INVERT, LOCK_CONFIG),
+	/* GPP_H04:     SOC_I2C_GSC_SDA */
+	PAD_CFG_NF(GPP_H04, NONE, DEEP, NF1),
+	/* GPP_H05:     SOC_I2C_GSC_SCL */
+	PAD_CFG_NF(GPP_H05, NONE, DEEP, NF1),
+
+	/* GPP_H08:     UART_SOC_RX_DBG_TX */
+	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
+	/* GPP_H09:     UART_SOC_TX_DBG_RX */
+	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),
+
+};
+
+/* Pad configuration in romstage */
+static const struct pad_config romstage_gpio_table[] = {
+
+};
+
+const struct pad_config *variant_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(gpio_table);
+	return gpio_table;
+}
+
+const struct pad_config *variant_early_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(early_gpio_table);
+	return early_gpio_table;
+}
+
+/* Create the stub for romstage gpio, typically use for power sequence */
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
+}

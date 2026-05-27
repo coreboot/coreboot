@@ -12,6 +12,7 @@ config BOARD_STARLABS_LITE_SERIES
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select HAVE_INTEL_PTT
+	select VALIDATE_INTEL_DESCRIPTOR
 	select INTEL_GMA_HAVE_VBT
 	select INTEL_LPSS_UART_FOR_CONSOLE
 	select CRB_TPM
@@ -62,7 +63,11 @@ config EC_VARIANT_DIR
 
 config FMDFILE
 	default "src/mainboard/starlabs/lite/vboot.fmd" if VBOOT
-	default "src/mainboard/starlabs/lite/board.fmd"
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
+
+config IFWI_FITC_CONFIG_PROFILE
+	default "glk"  if BOARD_STARLABS_LITE_GLK
+	default "glkr" if BOARD_STARLABS_LITE_GLKR
 
 config MAINBOARD_DIR
 	default "starlabs/lite"

@@ -494,4 +494,132 @@ config IFWI_MEASURED_BOOT
 	  Measuring the IBBL, IBB and TXE using either PTT or a TPM. The IBB is measured
 	  only after it has been loaded into the CSE.
 
+config IFWI_STITCH_IMAGE
+	bool "Stitch of complete IFWI image"
+	help
+	  Use coreboot tooling to build and sign the Apollo Lake IFWI image.
+	  This creates BPDT/CPD/MN2 metadata and signs it with OpenSSL.
+
+	  Intel FIT and MEU are not used.
+
+	  MN2 signatures can be checked with OpenSSL after extracting the
+	  signature and signed manifest bytes:
+
+	    openssl dgst -sha256 -verify <public.pem> -signature <sig.bin> <data.bin>
+
+if IFWI_STITCH_IMAGE
+
+config IFWI_CSE_IMAGE
+	string "CSE image"
+	help
+	  Path to the CSE region input image. This is required when
+	  IFWI_STITCH_IMAGE is enabled. Extract this from the CSE/ME flash
+	  region of a known-good vendor IFWI.
+
+config IFWI_PMCP
+	string "PMCP sub-partition binary"
+	help
+	  Path to the PMCP sub-partition binary. This is required when
+	  IFWI_STITCH_IMAGE is enabled. Extract this sub-partition from a
+	  known-good vendor IFWI for the target board.
+
+config IFWI_PRIVATE_KEY
+	string "Key to use for manifest"
+	help
+	  Path to the RSA private key used for IFWI manifest signing. This is
+	  required when IFWI_STITCH_IMAGE is enabled. Validate the key with:
+
+	    openssl rsa -in <key.pem> -check -noout
+
+config IFWI_DESCRIPTOR
+	string "Flash descriptor binary"
+	help
+	  Intel flash descriptor used by the native Apollo Lake IFWI stitcher.
+	  Extract this from a reference IFWI with:
+
+	    util/ifdtool/ifdtool -x <vendor-ifwi.bin>
+
+config IFWI_UEP_FPF_FLAGS
+	hex "UEP FPF flags"
+	default 0xc880
+	help
+	  Value to write into the generated UEP fuse-emulation records.
+	  This is kept configurable because the value differs between known
+	  Apollo Lake/Gemini Lake images and the UEP format is not publicly
+	  documented. When matching a vendor IFWI, compare against the UEP
+	  sub-partition records at offsets 0x2c and 0xc4.
+
+config IFWI_UEP_BOOT_POLICY
+	hex "UEP Boot Guard policy flags"
+	default 0x11f
+	help
+	  Value to write into the generated UEP Boot Guard policy records.
+	  This should match the Boot Guard policy fused for the target. When
+	  matching a vendor IFWI, compare against the UEP sub-partition
+	  records at offsets 0x70 and 0xc4.
+
+config IFWI_SMIP
+	string "SMIP payload or sub-partition binary"
+	help
+	  SMIP payload or full SMIP CPD sub-partition used by the native
+	  Apollo Lake IFWI stitcher. A full sub-partition is re-signed. A raw
+	  payload is wrapped in a native SMIP CPD and signed. Leave empty to
+	  generate a minimal SMIP payload from a dummy IAFW SMIP.
+
+config IFWI_FITC_CONFIG
+	string "fitc.cfg CSE BUP directory entry override"
+	help
+	  Optional fitc.cfg directory entry override added to the CSE BUP
+	  sub-partition by the native Apollo Lake IFWI stitcher. Leave unset
+	  to preserve the entry from IFWI_CSE_IMAGE, or generate one if the
+	  source CSE image has an empty entry. This is the CSE boot partition
+	  configuration normally emitted by FIT.
+
+choice
+	prompt "fitc.cfg profile"
+	default IFWI_FITC_CONFIG_PROFILE_NONE
+	help
+	  Board profile used when generating the CSE BUP fitc.cfg entry.
+
+config IFWI_FITC_CONFIG_PROFILE_NONE
+	bool "None"
+
+config IFWI_FITC_CONFIG_PROFILE_GLK
+	bool "Gemini Lake"
+
+config IFWI_FITC_CONFIG_PROFILE_GLKR
+	bool "Gemini Lake Refresh"
+
+endchoice
+
+config IFWI_FITC_CONFIG_PROFILE
+	string
+	default "glk" if IFWI_FITC_CONFIG_PROFILE_GLK
+	default "glkr" if IFWI_FITC_CONFIG_PROFILE_GLKR
+	default ""
+
+config IFWI_EC_IMAGE
+	string "EC region binary"
+	help
+	  Optional EC region binary. Leave unset when the descriptor does not
+	  define an EC region.
+
+config IFWI_BP2_OFFSET
+	hex "Second boot partition offset"
+	default 0x0
+	help
+	  Flash offset of the second logical boot partition. Use 0 to derive
+	  the offset from the BIOS region described by the flash descriptor.
+
+config IFWI_FIT_TOOL_VERSION
+	hex "BPDT FIT tool version"
+	default 0x0
+	help
+	  Value to write into the BPDT FIT tool version field. This is metadata
+	  only and is kept configurable to allow comparisons with
+	  vendor-generated IFWI images. Extract the value from a reference
+	  IFWI BPDT header when exact metadata matching is required.
+
+endif
+
 endif

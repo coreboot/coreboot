@@ -233,4 +233,92 @@ ifeq ($(CONFIG_IFWI_IBBM_LOAD),y)
 coreboot: $(objcbfs)/ibbl.rom $(objcbfs)/ibbm.rom $(objcbfs)/obb.rom
 endif
 
+ifeq ($(CONFIG_IFWI_STITCH_IMAGE),y)
+coreboot: $(obj)/coreboot-ifwi.rom
+
+ifwi_cse_image=$(call strip_quotes,$(CONFIG_IFWI_CSE_IMAGE))
+ifwi_pmcp=$(call strip_quotes,$(CONFIG_IFWI_PMCP))
+ifwi_private_key=$(call strip_quotes,$(CONFIG_IFWI_PRIVATE_KEY))
+ifwi_descriptor=$(call strip_quotes,$(CONFIG_IFWI_DESCRIPTOR))
+ifwi_smip_source=$(call strip_quotes,$(CONFIG_IFWI_SMIP))
+ifwi_fitc_config=$(call strip_quotes,$(CONFIG_IFWI_FITC_CONFIG))
+ifwi_fitc_config_profile=$(call strip_quotes,$(CONFIG_IFWI_FITC_CONFIG_PROFILE))
+ifwi_ec_image=$(call strip_quotes,$(CONFIG_IFWI_EC_IMAGE))
+ifwi_smip_arg=$(if $(ifwi_smip_source),--smip $(ifwi_smip_source),)
+ifwi_smip_dep=$(if $(ifwi_smip_source),$(ifwi_smip_source),)
+ifwi_fitc_profile_arg=$(if $(ifwi_fitc_config_profile),--fitc-config-profile $(ifwi_fitc_config_profile),)
+empty :=
+space := $(empty) $(empty)
+escape_spaces = $(subst $(space),\$(space),$(1))
+ifwi_cse_image_dep=$(call escape_spaces,$(ifwi_cse_image))
+ifwi_pmcp_dep=$(call escape_spaces,$(ifwi_pmcp))
+ifwi_descriptor_dep=$(call escape_spaces,$(ifwi_descriptor))
+
+ifeq ($(ifwi_cse_image),)
+$(error CONFIG_IFWI_CSE_IMAGE is required when CONFIG_IFWI_STITCH_IMAGE=y)
+endif
+ifeq ($(ifwi_pmcp),)
+$(error CONFIG_IFWI_PMCP is required when CONFIG_IFWI_STITCH_IMAGE=y)
+endif
+ifeq ($(ifwi_private_key),)
+$(error CONFIG_IFWI_PRIVATE_KEY is required when CONFIG_IFWI_STITCH_IMAGE=y)
+endif
+ifeq ($(ifwi_descriptor),)
+$(error CONFIG_IFWI_DESCRIPTOR is required when CONFIG_IFWI_STITCH_IMAGE=y)
+endif
+
+$(obj)/cse_image.bin: $(ifwi_cse_image_dep)
+	cp "$(ifwi_cse_image)" $@
+
+$(obj)/pmcp.bin: $(ifwi_pmcp_dep)
+	cp "$(ifwi_pmcp)" $@
+
+$(obj)/private.pem: $(ifwi_private_key)
+	cp $< $@
+
+ifeq ($(CONFIG_SOC_INTEL_GEMINILAKE),y)
+patch1=3rdparty/intel-microcode/intel-ucode/06-7a-01
+patch2=3rdparty/intel-microcode/intel-ucode/06-7a-08
+else
+patch1=3rdparty/intel-microcode/intel-ucode/06-5c-09
+patch2=3rdparty/intel-microcode/intel-ucode/06-5c-0a
+endif
+
+$(obj)/coreboot-ifwi.rom: $(obj)/cse_image.bin $(CBFSTOOL) \
+			  $(objcbfs)/ibbl.rom $(objcbfs)/ibbm.rom \
+			  $(objcbfs)/obb.rom $(obj)/private.pem \
+			  $(obj)/pmcp.bin \
+			  $(ifwi_descriptor_dep) \
+			  $(ifwi_smip_dep) \
+			  $(if $(ifwi_fitc_config),$(ifwi_fitc_config),) \
+			  $(ifwi_ec_image) $(patch1) $(patch2) \
+			  util/apl_ifwi/apl_ifwi.py
+	python3 util/apl_ifwi/apl_ifwi.py \
+		--output $@ \
+		--descriptor "$(ifwi_descriptor)" \
+		--cse-image $(obj)/cse_image.bin \
+		--ibbl $(objcbfs)/ibbl.rom \
+		--ibb $(objcbfs)/ibbm.rom \
+		--obb $(objcbfs)/obb.rom \
+		--private-key $(obj)/private.pem \
+		--pmcp $(obj)/pmcp.bin \
+		$(ifwi_smip_arg) \
+		--uep-fpf-flags $(CONFIG_IFWI_UEP_FPF_FLAGS) \
+		--uep-boot-policy $(CONFIG_IFWI_UEP_BOOT_POLICY) \
+		--microcode $(patch1) \
+		--microcode $(patch2) \
+		--bp2-offset $(CONFIG_IFWI_BP2_OFFSET) \
+		--fit-tool-version $(CONFIG_IFWI_FIT_TOOL_VERSION) \
+		$(ifwi_fitc_profile_arg) \
+		$(if $(ifwi_fitc_config),--fitc-config $(ifwi_fitc_config),) \
+		$(if $(ifwi_ec_image),--ec $(ifwi_ec_image),)
+ifeq ($(CONFIG_VALIDATE_INTEL_DESCRIPTOR),y)
+	printf "    FMAP       validate IFWI layout\n"
+	$(CBFSTOOL) $@ layout -w > /dev/null
+endif
+	printf "    IFWI       overwrite coreboot.rom\n"
+	cp $@ $(obj)/coreboot.rom
+
+endif # CONFIG_IFWI_STITCH_IMAGE
+
 endif # if CONFIG_SOC_INTEL_APOLLOLAKE

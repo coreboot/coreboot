@@ -25,6 +25,7 @@ DefinitionBlock(
 		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 		#include <soc/intel/pantherlake/acpi/southbridge.asl>
 		#include <soc/intel/pantherlake/acpi/tcss.asl>
+		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 	}
 
 #if CONFIG(EC_GOOGLE_CHROMEEC)

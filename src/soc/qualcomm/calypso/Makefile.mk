@@ -254,6 +254,31 @@ $(CPUCP_DTBS_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(CPUCP_DTBS_CBFS)
 
 ################################################################################
+PDP_FILE := $(CALYPSO_BLOB)/pdp/pdp.elf
+
+PDP_CBFS_RW := $(CONFIG_CBFS_PREFIX)/pdp_rw
+regions-for-file-$(PDP_CBFS_RW) = FW_MAIN_A,FW_MAIN_B
+$(PDP_CBFS_RW)-file := $(PDP_FILE)
+$(PDP_CBFS_RW)-type := payload
+$(PDP_CBFS_RW)-compression := none
+cbfs-files-y += $(PDP_CBFS_RW)
+
+PDP_CBFS_RO := $(CONFIG_CBFS_PREFIX)/pdp_ro
+regions-for-file-$(PDP_CBFS_RO) = COREBOOT
+$(PDP_CBFS_RO)-file := $(PDP_FILE)
+$(PDP_CBFS_RO)-type := payload
+$(PDP_CBFS_RO)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(PDP_CBFS_RO)
+
+################################################################################
+PDP_CDB_FILE := $(CALYPSO_BLOB)/pdp/pdp_cdb.elf
+PDP_CDB_CBFS := $(CONFIG_CBFS_PREFIX)/pdp_cdb
+$(PDP_CDB_CBFS)-file := $(PDP_CDB_FILE)
+$(PDP_CDB_CBFS)-type := payload
+$(PDP_CDB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(PDP_CDB_CBFS)
+
+################################################################################
 SHRM_CBFS := $(CONFIG_CBFS_PREFIX)/shrm
 $(SHRM_CBFS)-file := $(SHRM_FILE)
 $(SHRM_CBFS)-type := payload

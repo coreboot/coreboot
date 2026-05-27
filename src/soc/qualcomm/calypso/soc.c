@@ -110,7 +110,7 @@ static void qtee_fw_config_load(void)
 
 static void soc_init(struct device *dev)
 {
-	cpucp_fw_load_reset();
+	cpucp_pdp_fw_load_reset();
 	qtee_fw_config_load();
 	preload_bl31();
 	preload_bl32();

@@ -39,7 +39,7 @@
 
 #define GSI_FW_MAGIC_HEADER					0x20495351
 #define GSI_REG_BASE_SIZE					0x5000
-#define GSI_INST_RAM_n_MAX_n					4095
+#define GSI_INST_RAM_n_MAX_n					5800
 #define GSI_FW_BYTES_PER_LINE					8
 #define GSI_MCS_CFG_MCS_ENABLE_BMSK				0x1
 #define GSI_CFG_DOUBLE_MCS_CLK_FREQ_BMSK			0x4

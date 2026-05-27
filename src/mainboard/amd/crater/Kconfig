@@ -34,12 +34,12 @@ config MAINBOARD_PART_NUMBER
 config DEVICETREE
 	default "devicetree_v2000a.cb"
 
+config AMD_SOC_CONSOLE_UART
+	default y if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
+
 config CRATER_HAVE_MCHP_FW
 	bool "Have Microchip EC firmware?"
 	default n
-
-config AMD_SOC_CONSOLE_UART
-	default y if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
 
 config CRATER_MCHP_FW_FILE
 	string "Microchip EC firmware file"

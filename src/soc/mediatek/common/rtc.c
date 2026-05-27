@@ -43,6 +43,20 @@ bool rtc_writeif_unlock(void)
 	return true;
 }
 
+bool rtc_clrset_trigger(u16 addr, u16 clr_bits, u16 set_bits)
+{
+	u16 rdata;
+
+	rtc_read(addr, &rdata);
+
+	rdata &= ~clr_bits;
+	rdata |= set_bits;
+
+	rtc_write(addr, rdata);
+
+	return rtc_write_trigger();
+}
+
 /* set rtc time */
 int rtc_set(const struct rtc_time *time)
 {
@@ -195,9 +209,7 @@ void rtc_boot_common(void)
 
 	switch (rtc_check_state()) {
 	case RTC_STATE_REBOOT:
-		rtc_read(RTC_BBPU, &bbpu);
-		rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-		rtc_write_trigger();
+		rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 		rtc_osc_init();
 		rtc_info("RTC_STATE_REBOOT\n");
 		break;

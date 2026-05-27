@@ -17,12 +17,9 @@
 /* Initialize RTC setting of using DCXO clock */
 static bool rtc_enable_dcxo(void)
 {
-	u16 bbpu, con, osc32con, sec;
+	u16 con, osc32con, sec;
 
-	rtc_read(RTC_BBPU, &bbpu);
-	rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-
-	if (!rtc_write_trigger()) {
+	if (!rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD)) {
 		rtc_info("rtc_write_trigger() failed\n");
 		return false;
 	}
@@ -54,8 +51,6 @@ static bool rtc_enable_dcxo(void)
 /* Initialize RTC related gpio */
 bool rtc_gpio_init(void)
 {
-	u16 con;
-
 	/* RTC_32K1V8 clock change from 128k div 4 source to RTC 32k source */
 	pwrap_write_field(PMIC_RG_TOP_CKSEL_CON0_SET, 0x1, 0x1, 3);
 
@@ -63,24 +58,19 @@ bool rtc_gpio_init(void)
 	pwrap_write_field(PMIC_RG_TOP_CKPDN_CON1_CLR, 0x1, 0x1, 1);
 
 	/* Export 32K clock RTC_32K2V8 */
-	rtc_read(RTC_CON, &con);
-	con &= (RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_CON_EOSC32_LPEN
-		| RTC_CON_XOSC32_LPEN);
-	con |= (RTC_CON_GPEN | RTC_CON_GOE);
-	con &= ~RTC_CON_F32KOB;
-	rtc_write(RTC_CON, con);
-
-	return rtc_write_trigger();
+	u16 mask = (RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_CON_EOSC32_LPEN |
+		    RTC_CON_XOSC32_LPEN);
+	return rtc_clrset_trigger(RTC_CON,
+				  (u16)(~mask) | RTC_CON_F32KOB,
+				  RTC_CON_GPEN | RTC_CON_GOE);
 }
 
 u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 {
-	u16 bbpu, osc32con;
+	u16 osc32con;
 	u16 fqmtr_busy, fqmtr_data, fqmtr_rst, fqmtr_tcksel;
 
-	rtc_read(RTC_BBPU, &bbpu);
-	rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	if (!rtc_write_trigger()) {
+	if (!rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD)) {
 		rtc_info("rtc_write_trigger() failed\n");
 		return false;
 	}
@@ -153,13 +143,10 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 /* Low power detect setting */
 static bool rtc_lpd_init(void)
 {
-	u16 con, sec;
+	u16 con;
 
 	/* Set RTC_LPD_OPT */
-	rtc_read(RTC_AL_SEC, &sec);
-	sec |= RTC_LPD_OPT_F32K_CK_ALIVE;
-	rtc_write(RTC_AL_SEC, sec);
-	if (!rtc_write_trigger()) {
+	if (!rtc_clrset_trigger(RTC_AL_SEC, 0, RTC_LPD_OPT_F32K_CK_ALIVE)) {
 		rtc_info("rtc_write_trigger() failed\n");
 		return false;
 	}
@@ -181,11 +168,7 @@ static bool rtc_lpd_init(void)
 	rtc_write(RTC_CON, con);
 
 	/* Set RTC_LPD_OPT */
-	rtc_read(RTC_AL_SEC, &sec);
-	sec &= ~RTC_LPD_OPT_MASK;
-	sec |= RTC_LPD_OPT_EOSC_LPD;
-	rtc_write(RTC_AL_SEC, sec);
-	if (!rtc_write_trigger()) {
+	if (!rtc_clrset_trigger(RTC_AL_SEC, RTC_LPD_OPT_MASK, RTC_LPD_OPT_EOSC_LPD)) {
 		rtc_info("rtc_write_trigger() failed\n");
 		return false;
 	}
@@ -197,18 +180,14 @@ static bool rtc_hw_init(void)
 {
 	u16 bbpu;
 
-	rtc_read(RTC_BBPU, &bbpu);
-	rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_INIT);
-	if (!rtc_write_trigger()) {
+	if (!rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_INIT)) {
 		rtc_info("rtc_write_trigger() failed\n");
 		return false;
 	}
 
 	udelay(500);
 
-	rtc_read(RTC_BBPU, &bbpu);
-	rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	if (!rtc_write_trigger()) {
+	if (!rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD)) {
 		rtc_info("rtc_write_trigger() failed\n");
 		return false;
 	}

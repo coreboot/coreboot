@@ -43,10 +43,8 @@ static bool rtc_enable_dcxo(void)
 		return false;
 	}
 
-	u16 bbpu, con, osc32con, sec;
-	rtc_read(RTC_BBPU, &bbpu);
-	rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	rtc_write_trigger();
+	u16 con, osc32con, sec;
+	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 	rtc_read(RTC_OSC32CON, &osc32con);
 	osc32con &= ~(RTC_EMBCK_SRC_SEL | RTC_EMBCK_SEL_MODE_MASK);
 	osc32con |= (OSC32CON_ANALOG_SETTING | RTC_REG_XOSC32_ENB);
@@ -66,30 +64,22 @@ static bool rtc_enable_dcxo(void)
 /* initialize rtc related gpio */
 bool rtc_gpio_init(void)
 {
-	u16 con;
-
 	/* GPI mode and pull down */
-	rtc_read(RTC_CON, &con);
-	con &= (RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_CON_EOSC32_LPEN
-		| RTC_CON_XOSC32_LPEN);
-	con |= (RTC_CON_GPEN | RTC_CON_GOE);
-	con &= ~(RTC_CON_F32KOB);
-	con &= ~RTC_CON_GPU;
-	rtc_write(RTC_CON, con);
-
-	return rtc_write_trigger();
+	u16 mask = (RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_CON_EOSC32_LPEN |
+		    RTC_CON_XOSC32_LPEN);
+	return rtc_clrset_trigger(RTC_CON,
+				  (u16)(~mask) | RTC_CON_F32KOB | RTC_CON_GPU,
+				  RTC_CON_GPEN | RTC_CON_GOE);
 }
 
 u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 {
-	u16 bbpu, osc32con;
+	u16 osc32con;
 	u16 fqmtr_busy, fqmtr_data, fqmtr_tcksel;
 	struct stopwatch sw;
 
 	if (val) {
-		rtc_read(RTC_BBPU, &bbpu);
-		rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-		rtc_write_trigger();
+		rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 		rtc_read(RTC_OSC32CON, &osc32con);
 		rtc_xosc_write((osc32con & ~RTC_XOSCCALI_MASK) |
 				(val & RTC_XOSCCALI_MASK));
@@ -159,14 +149,10 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 /* low power detect setting */
 static bool rtc_lpd_init(void)
 {
-	u16 con, sec;
+	u16 con;
 
 	/* enable both XOSC & EOSC LPD */
-	rtc_read(RTC_AL_SEC, &sec);
-	sec &= ~RTC_LPD_OPT_F32K_CK_ALIVE;
-	rtc_write(RTC_AL_SEC, sec);
-
-	if (!rtc_write_trigger())
+	if (!rtc_clrset_trigger(RTC_AL_SEC, RTC_LPD_OPT_F32K_CK_ALIVE, 0))
 		return false;
 
 	/* init XOSC32 to detect 32k clock stop */
@@ -193,21 +179,18 @@ static bool rtc_hw_init(void)
 {
 	u16 bbpu;
 
-	rtc_read(RTC_BBPU, &bbpu);
-	bbpu |= RTC_BBPU_KEY | RTC_BBPU_RESET_ALARM | RTC_BBPU_RESET_SPAR;
-	rtc_write(RTC_BBPU, bbpu & (~RTC_BBPU_SPAR_SW));
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_BBPU, RTC_BBPU_SPAR_SW,
+			   RTC_BBPU_KEY | RTC_BBPU_RESET_ALARM | RTC_BBPU_RESET_SPAR);
 	udelay(500);
 
-	rtc_read(RTC_BBPU, &bbpu);
-	rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	rtc_write_trigger();
-	rtc_read(RTC_BBPU, &bbpu);
+	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
+	rtc_read(RTC_BBPU, &bbpu);
 	if (bbpu & RTC_BBPU_RESET_ALARM || bbpu & RTC_BBPU_RESET_SPAR) {
 		rtc_info("timeout\n");
 		return false;
 	}
+
 	return true;
 }
 
@@ -215,8 +198,6 @@ static bool rtc_hw_init(void)
 int rtc_init(int recover)
 {
 	int ret;
-	u16 year;
-	u16 al_dow;
 
 	rtc_info("recovery: %d\n", recover);
 
@@ -254,14 +235,10 @@ int rtc_init(int recover)
 	}
 
 	/* RTC EOSC calibration period setting and day-of-week value of alarm counter setting */
-	rtc_read(RTC_AL_DOW, &al_dow);
-	rtc_write(RTC_AL_DOW, al_dow | RTC_EOSC_CALI_TD_DEFAULT);
+	rtc_clrset_trigger(RTC_AL_DOW, 0, RTC_EOSC_CALI_TD_DEFAULT);
 
 	/* solution1 for EOSC cali*/
-	rtc_read(RTC_AL_YEA, &year);
-	rtc_write(RTC_AL_YEA, (year | RTC_K_EOSC_RSV_0) & (~RTC_K_EOSC_RSV_1)
-		& (~RTC_K_EOSC_RSV_2));
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_AL_YEA, RTC_K_EOSC_RSV_1 | RTC_K_EOSC_RSV_2, RTC_K_EOSC_RSV_0);
 
 	if (!rtc_lpd_init()) {
 		ret = -RTC_STATUS_LPD_INIT_FAIL;

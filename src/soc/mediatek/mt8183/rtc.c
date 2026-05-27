@@ -11,11 +11,9 @@
 /* initialize rtc setting of using dcxo clock */
 static bool rtc_enable_dcxo(void)
 {
-	u16 bbpu, con, osc32con, sec;
+	u16 con, osc32con, sec;
 
-	rtc_read(RTC_BBPU, &bbpu);
-	rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
 	mdelay(1);
 	if (!rtc_writeif_unlock()) {
@@ -44,8 +42,6 @@ static bool rtc_enable_dcxo(void)
 /* initialize rtc related gpio */
 bool rtc_gpio_init(void)
 {
-	u16 con;
-
 	/* RTC_32K1V8 clock change from 128k div 4 source
 	 * to RTC 32k source
 	 */
@@ -55,26 +51,21 @@ bool rtc_gpio_init(void)
 	pwrap_write_field(PMIC_RG_TOP_CKPDN_CON1_CLR, 0x1, 0x1, 1);
 
 	/* Export 32K clock RTC_32K2V8 */
-	rtc_read(RTC_CON, &con);
-	con &= (RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_CON_EOSC32_LPEN
-		| RTC_CON_XOSC32_LPEN);
-	con |= (RTC_CON_GPEN | RTC_CON_GOE);
-	con &= ~(RTC_CON_F32KOB);
-	rtc_write(RTC_CON, con);
-
-	return rtc_write_trigger();
+	u16 mask = (RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_CON_EOSC32_LPEN |
+		    RTC_CON_XOSC32_LPEN);
+	return rtc_clrset_trigger(RTC_CON,
+				  (u16)(~mask) | RTC_CON_F32KOB,
+				  RTC_CON_GPEN | RTC_CON_GOE);
 }
 
 u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 {
-	u16 bbpu, osc32con;
+	u16 osc32con;
 	u16 fqmtr_busy, fqmtr_data, fqmtr_rst, fqmtr_tcksel;
 	struct stopwatch sw;
 
 	if (val) {
-		rtc_read(RTC_BBPU, &bbpu);
-		rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-		rtc_write_trigger();
+		rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 		rtc_read(RTC_OSC32CON, &osc32con);
 		rtc_xosc_write((osc32con & ~RTC_XOSCCALI_MASK) |
 				(val & RTC_XOSCCALI_MASK));
@@ -143,13 +134,10 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 /* low power detect setting */
 static bool rtc_lpd_init(void)
 {
-	u16 con, sec;
+	u16 con;
 
 	/* set RTC_LPD_OPT */
-	rtc_read(RTC_AL_SEC, &sec);
-	sec |= RTC_LPD_OPT_F32K_CK_ALIVE;
-	rtc_write(RTC_AL_SEC, sec);
-	if (!rtc_write_trigger())
+	if (!rtc_clrset_trigger(RTC_AL_SEC, 0, RTC_LPD_OPT_F32K_CK_ALIVE))
 		return false;
 
 	/* init XOSC32 to detect 32k clock stop */
@@ -169,11 +157,7 @@ static bool rtc_lpd_init(void)
 	rtc_write(RTC_CON, con);
 
 	/* set RTC_LPD_OPT */
-	rtc_read(RTC_AL_SEC, &sec);
-	sec &= ~RTC_LPD_OPT_MASK;
-	sec |= RTC_LPD_OPT_EOSC_LPD;
-	rtc_write(RTC_AL_SEC, sec);
-	if (!rtc_write_trigger())
+	if (!rtc_clrset_trigger(RTC_AL_SEC, RTC_LPD_OPT_MASK, RTC_LPD_OPT_EOSC_LPD))
 		return false;
 
 	return true;
@@ -183,15 +167,11 @@ static bool rtc_hw_init(void)
 {
 	u16 bbpu;
 
-	rtc_read(RTC_BBPU, &bbpu);
-	rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_INIT);
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_INIT);
 
 	udelay(500);
 
-	rtc_read(RTC_BBPU, &bbpu);
-	rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-	rtc_write_trigger();
+	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
 	rtc_read(RTC_BBPU, &bbpu);
 	if (bbpu & RTC_BBPU_INIT) {

@@ -97,6 +97,7 @@ enum {
 /* external API */
 bool rtc_write_trigger(void);
 bool rtc_writeif_unlock(void);
+bool rtc_clrset_trigger(u16 addr, u16 clr_bits, u16 set_bits);
 bool rtc_xosc_write(u16 val);
 bool rtc_lpen(u16 con);
 bool rtc_reg_init(void);

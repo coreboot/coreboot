@@ -10,18 +10,14 @@
 /* initialize rtc related gpio */
 bool rtc_gpio_init(void)
 {
-	u16 con;
-
 	mt6391_gpio_set_pull(3, MT6391_GPIO_PULL_DISABLE,
-				MT6391_GPIO_PULL_DOWN);  /* RTC_32K1V8 */
+			     MT6391_GPIO_PULL_DOWN);  /* RTC_32K1V8 */
 
 	/* Export 32K clock RTC_32K2V8 */
-	rtc_read(RTC_CON, &con);
-	con &= (RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_CON_LPEN);
-	con |= (RTC_CON_GPEN | RTC_CON_GOE);
-	con &= ~(RTC_CON_F32KOB);
-	rtc_write(RTC_CON, con);
-	return rtc_write_trigger();
+	u16 mask = RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_CON_LPEN;
+	return rtc_clrset_trigger(RTC_CON,
+				  (u16)(~mask) | RTC_CON_F32KOB,
+				  RTC_CON_GPEN | RTC_CON_GOE);
 }
 
 /* set xosc mode */

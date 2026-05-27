@@ -33,20 +33,6 @@ void rtc_write(u16 addr, u16 wdata)
 	mt6685_write16(addr, wdata);
 }
 
-static bool rtc_clrset_trigger(u16 addr, u16 clr_bits, u16 set_bits)
-{
-	u16 rdata;
-
-	rtc_read(addr, &rdata);
-
-	rdata &= ~clr_bits;
-	rdata |= set_bits;
-
-	rtc_write(addr, rdata);
-
-	return rtc_write_trigger();
-}
-
 static u16 rtc_get_prot_stat(void)
 {
 	u16 val;

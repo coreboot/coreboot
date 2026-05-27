@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* TODO: update for Maple */
 
 #include <gpio.h>
 #include "gpio.h"
@@ -22,10 +21,10 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_SCI(GPIO_4, PULL_UP, EDGE_LOW),
 	/* MPM_EVENT_L, input or OD output */
 	PAD_GPI(GPIO_5, PULL_UP),
-	/* TPNL_INT_L */
+	/* EC_SCI_L */
 	PAD_SCI(GPIO_6, PULL_UP, EDGE_LOW),
-	/* EC SCI */
-	PAD_SCI(GPIO_7, PULL_UP, EDGE_LOW),
+	/* APU_VDDCR_SR_LP_L */
+	PAD_GPO(GPIO_7, HIGH),
 	/* TPAD_INT_L */
 	PAD_SCI(GPIO_8, PULL_UP, EDGE_LOW),
 	/* SD_CARD_PRSNT_L */
@@ -73,7 +72,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_38, CLK_REQ5_L, PULL_NONE),
 	/* CLK_REQ6_L */
 	PAD_NF(GPIO_39, CLK_REQ6_L, PULL_NONE),
-	/* USB2_HDR_P0/1_SMI */
+	/* USB2_HDR_P0/1_SMI_L / DASH_SMI_L */
 	PAD_SCI(GPIO_40, PULL_UP, EDGE_LOW),
 	/* GPIO_41: Not available */
 	/* GPIO_42: VDD_MEM_VID1 - Controlled by firmware outside of coreboot (ABL) */
@@ -109,11 +108,11 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* FANOUT0 */
 	PAD_NF(GPIO_85, FANOUT0, PULL_NONE),
 	/* GPIO_86 - GPIO_88: Not available */
-	/* I2S CODEC INT */
-	PAD_SCI(GPIO_89, PULL_UP, EDGE_LOW),
+	/* APU_MIPI_S0_GPIO89 */
+	PAD_GPO(GPIO_89, HIGH),
 	/* ALERT_L_M2_SSD0 */
 	PAD_SCI(GPIO_90, PULL_UP, EDGE_LOW),
-	/* NFC IRQ */
+	/* NFC_IRQ_L_1V8 */
 	PAD_SCI(GPIO_91, PULL_UP, EDGE_LOW),
 	/* CLK_REQ0_L */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_NONE),
@@ -136,7 +135,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* CLK_REQ2_L */
 	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_NONE),
 	/* GPIO_117 - GPIO_129: Not available */
-	/* TPM IRQ */
+	/* TPM_PIRQ_L */
 	PAD_INT(GPIO_130, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* CLK_REQ3_L */
 	PAD_NF(GPIO_131, CLK_REQ3_L, PULL_NONE),
@@ -151,8 +150,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_137, UART2_RTS_L, PULL_NONE),
 	/* UART2_TXD */
 	PAD_NF(GPIO_138, UART2_TXD, PULL_NONE),
-	/* M2_SSD2_RST_L */
-	PAD_GPO(GPIO_139, HIGH),
+	/* UART2_INTR / I2S_CODEC_INT_1V8 */
+	PAD_GPI(GPIO_139, PULL_UP),
 	/* UART0_CTS_L */
 	PAD_NF(GPIO_140, UART0_CTS_L, PULL_NONE),
 	/* UART0_RXD */
@@ -161,8 +160,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_142, UART0_RTS_L, PULL_NONE),
 	/* UART0_TXD */
 	PAD_NF(GPIO_143, UART0_TXD, PULL_NONE),
-	/* M2_SSD3_RST_L */
-	PAD_GPO(GPIO_144, HIGH),
+	/* NFC_RST_L / WAKE_1V8 */
+	PAD_GPO(GPIO_144, LOW),
 	/* I2C0 SCL */
 	PAD_NF(GPIO_145, I2C0_SCL, PULL_NONE),
 	/* I2C0 SDA */
@@ -172,16 +171,13 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* I2C1 SDA */
 	PAD_NF(GPIO_148, I2C1_SDA, PULL_NONE),
 	/* GPIO_149 - GPIO_152: Not available */
-	/* UART4_CTS_L */
-	PAD_NF(GPIO_153, UART4_CTS_L, PULL_NONE),
-	/* UART4_RTS_L */
-	PAD_NF(GPIO_154, UART4_RTS_L, PULL_NONE),
+	/* GPIO_153 - GPIO_154: Controlled by firmware outside of coreboot */
 	/* UART4_RXD */
 	PAD_NF(GPIO_155, UART4_RXD, PULL_NONE),
 	/* UART4_TXD */
 	PAD_NF(GPIO_156, UART4_TXD, PULL_NONE),
-	/* M2_SSD4_RST_L */
-	PAD_GPO(GPIO_157, HIGH),
+	/* UART4_INTR / ALERT_L_M2_WWAN / ALERT_L_M2_SSD1 */
+	PAD_GPI(GPIO_157, PULL_UP),
 };
 
 void mainboard_program_gpios(void)

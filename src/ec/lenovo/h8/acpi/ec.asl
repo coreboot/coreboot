@@ -159,6 +159,11 @@ Device(EC)
 	/* AC status change: not present */
 	Method(_Q27, 0, NotSerialized)
 	{
+		#if CONFIG(H8_HAS_BAT_CHARGE_BEHAVIOUR)
+		/* Reset battery charge behaviour on AC detach */
+		\_SB.PCI0.LPCB.EC.HKEY.RBCB(0)
+		#endif
+
 		Notify (AC, 0x80)
 		EVNT = 0x50
 		\PNOT()

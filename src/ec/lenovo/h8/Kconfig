@@ -41,6 +41,10 @@ config H8_FN_CTRL_SWAP
 	  The main use-case for this Kconfig option is to enable Fn-Ctrl swap
 	  without using any runtime configurable option backends (e.g. CMOS).
 
+config H8_HAS_BAT_CHARGE_BEHAVIOUR
+	bool
+	default n
+
 config H8_HAS_BAT_THRESHOLDS_IMPL
 	bool
 	default n

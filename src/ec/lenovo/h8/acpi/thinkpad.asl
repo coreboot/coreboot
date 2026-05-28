@@ -313,6 +313,10 @@ Device (HKEY)
 		}
 	}
 
+	#if CONFIG(H8_HAS_BAT_CHARGE_BEHAVIOUR)
+	#include "thinkpad_bat_charge_behaviour.asl"
+	#endif
+
 	#if CONFIG(H8_HAS_BAT_THRESHOLDS_IMPL)
 	#include "thinkpad_bat_thresholds.asl"
 	#endif

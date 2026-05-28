@@ -39,7 +39,6 @@ smm-$(CONFIG_DEBUG_SMI) += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/cezanne/include
 CPPFLAGS_common += -I$(src)/soc/amd/cezanne/acpi
-CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/common
 
 ifeq ($(CONFIG_SOC_AMD_CEZANNE),y)
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/cezanne

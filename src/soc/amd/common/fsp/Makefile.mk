@@ -1,5 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
+CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/common
+
 romstage-y += fsp_memmap.c
 romstage-y += fsp_reset.c
 romstage-y += fsp_romstage.c

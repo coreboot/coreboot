@@ -47,7 +47,6 @@ CPPFLAGS_common += -I$(src)/soc/amd/phoenix/acpi
 
 ifeq ($(CONFIG_SOC_AMD_PHOENIX_FSP),y)
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/phoenix
-CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/common
 endif
 
 # Building the cbfs image will fail if the offset, aligned to 64 bytes, isn't large enough

@@ -40,7 +40,6 @@ smm-$(CONFIG_DEBUG_SMI) += uart.c
 CPPFLAGS_common += -I$(src)/soc/amd/strix_halo/include
 CPPFLAGS_common += -I$(src)/soc/amd/strix_halo/acpi
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/strix_halo
-CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/common
 
 # Target an offset into the CBFS. AMDFWTOOL will align it again and
 # pad the space between the CBFS file header and the directory table.

@@ -80,7 +80,7 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 	if (val != 0) {
 		rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 		rtc_read(RTC_OSC32CON, &rdata);
-		osc32con = rdata & 0xFFE0;
+		osc32con = rdata & ~RTC_XOSCCALI_MASK;
 		rtc_xosc_write(osc32con | (val & RTC_XOSCCALI_MASK));
 	}
 

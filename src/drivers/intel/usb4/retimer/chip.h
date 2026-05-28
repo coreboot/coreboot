@@ -7,7 +7,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_pld.h>
 
-#define DFP_NUM_MAX	2
+#define DFP_NUM_MAX	4
 
 enum ec_typec_port {
 	UNDEFINED = 0,
@@ -18,6 +18,7 @@ enum ec_typec_port {
 };
 
 struct drivers_intel_usb4_retimer_config {
+	uint8_t num_dfps;
 	/* Downstream facing port(DFP) */
 	struct {
 		/* GPIO used to control power of retimer device */

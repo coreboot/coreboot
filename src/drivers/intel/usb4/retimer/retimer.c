@@ -3,6 +3,7 @@
 #include <acpi/acpigen.h>
 #include <acpi/acpi_device.h>
 #include <acpi/acpi_pld.h>
+#include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <drivers/usb/acpi/chip.h>
@@ -382,6 +383,12 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 	if (!usb4_retimer_scope || !config)
 		return;
 
+	assert(config->num_dfps <= DFP_NUM_MAX);
+	/* All existing boards have 2 DFPs. If num_dfps is not configfured, then
+	   set it to 2 by default. */
+	if (!config->num_dfps)
+		config->num_dfps = 2;
+
 	/* Scope */
 	acpigen_write_scope(usb4_retimer_scope);
 
@@ -390,7 +397,7 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 	acpigen_write_ADR(0);
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 
-	for (dfp_port = 0; dfp_port < DFP_NUM_MAX; dfp_port++) {
+	for (dfp_port = 0; dfp_port < config->num_dfps; dfp_port++) {
 		if (!config->dfp[dfp_port].power_gpio.pin_count) {
 			printk(BIOS_WARNING, "%s: No DFP%1d power GPIO for %s\n",
 				__func__, dfp_port, dev_path(dev));

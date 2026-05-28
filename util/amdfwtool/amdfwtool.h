@@ -463,6 +463,7 @@ typedef struct _amd_cb_config {
 	uint8_t efs_spi_readmode, efs_spi_speed, efs_spi_micron_flag;
 	uint32_t body_location, efs_location, ral2_location, rbl2_location;
 	uint64_t signed_start_addr;
+	uint32_t rom_size;
 	char *manifest_file;
 	const char *signed_output_file;
 	char *output, *config;
@@ -508,7 +509,7 @@ ssize_t copy_blob(context *ctx, const char *src_file);
 #define LINE_EOF (1)
 #define LINE_TOO_LONG (2)
 
-int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *ctx);
+int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config);
 
 
 enum platform platform_identify(char *soc_name);

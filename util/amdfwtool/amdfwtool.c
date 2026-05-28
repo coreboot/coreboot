@@ -1698,13 +1698,9 @@ int main(int argc, char **argv)
 		.efs_spi_readmode = 0xff, .efs_spi_speed = 0xff, .efs_spi_micron_flag = 0xff
 	};
 
-	ctx.current_pointer_saved = 0xFFFFFFFF;
-
-	retval = amdfwtool_getopt(argc, argv, &cb_config, &ctx);
-
-	if (retval) {
+	retval = amdfwtool_getopt(argc, argv, &cb_config);
+	if (retval)
 		return retval;
-	}
 
 	retval = open_process_config(cb_config.config, &cb_config);
 	if (retval) {
@@ -1712,6 +1708,8 @@ int main(int argc, char **argv)
 		return retval;
 	}
 
+	ctx.current_pointer_saved = 0xFFFFFFFF;
+	ctx.rom_size = cb_config.rom_size;
 	ctx.rom = malloc(ctx.rom_size);
 	if (!ctx.rom) {
 		fprintf(stderr, "Error: Failed to allocate memory\n");

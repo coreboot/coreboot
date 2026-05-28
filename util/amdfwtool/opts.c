@@ -333,7 +333,7 @@ static void register_fw_fuse(char *str)
 	}
 }
 
-int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *ctx)
+int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 {
 	int c;
 	/* Values cleared after each firmware or parameter, regardless if N/A */
@@ -512,7 +512,7 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 			cb_config->output = optarg;
 			break;
 		case AMDFW_OPT_FLASHSIZE:
-			ctx->rom_size = (uint32_t)strtoul(optarg, &tmp, 16);
+			cb_config->rom_size = (uint32_t)strtoul(optarg, &tmp, 16);
 			if (*tmp != '\0') {
 				fprintf(stderr, "Error: ROM size specified"
 					" incorrectly (%s)\n\n", optarg);
@@ -613,15 +613,15 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 		retval = 1;
 	}
 
-	if (ctx->rom_size % 1024 != 0) {
+	if (cb_config->rom_size % 1024 != 0) {
 		fprintf(stderr, "Error: ROM Size (%d bytes) should be a multiple of"
-			" 1024 bytes.\n\n", ctx->rom_size);
+			" 1024 bytes.\n\n", cb_config->rom_size);
 		retval = 1;
 	}
 
-	if (ctx->rom_size < MIN_ROM_KB * 1024) {
+	if (cb_config->rom_size < MIN_ROM_KB * 1024) {
 		fprintf(stderr, "Error: ROM Size (%dKB) must be at least %dKB.\n\n",
-			ctx->rom_size / 1024, MIN_ROM_KB);
+			cb_config->rom_size / 1024, MIN_ROM_KB);
 		retval = 1;
 	}
 
@@ -630,15 +630,15 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 		return 1;
 	}
 
-	printf("    AMDFWTOOL  Using ROM size of %dKB\n", ctx->rom_size / 1024);
+	printf("    AMDFWTOOL  Using ROM size of %dKB\n", cb_config->rom_size / 1024);
 
 	/* If the flash size is larger than 16M, we assume the given
 	   addresses are already relative ones. Otherwise we print error.*/
-	if (cb_config->efs_location > ctx->rom_size) {
+	if (cb_config->efs_location > cb_config->rom_size) {
 		fprintf(stderr, "Error: EFS/Directory location outside of ROM.\n\n");
 		return 1;
 	}
-	if (cb_config->body_location && cb_config->body_location > ctx->rom_size) {
+	if (cb_config->body_location && cb_config->body_location > cb_config->rom_size) {
 		fprintf(stderr, "Error: Body location outside of ROM.\n\n");
 		return 1;
 	}
@@ -673,7 +673,7 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 		case 0x620000:
 		case 0x420000:
 			/* Special cases for 8M. */
-			if (ctx->rom_size != 0x800000) {
+			if (cb_config->rom_size != 0x800000) {
 				fprintf(stderr, "Error: Invalid Directory location.\n");
 				fprintf(stderr, "%x is only for 8M image size.", cb_config->efs_location);
 				return 1;
@@ -683,7 +683,7 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 		case 0x320000:
 		case 0x220000:
 			/* Special cases for 4M. */
-			if (ctx->rom_size != 0x400000) {
+			if (cb_config->rom_size != 0x400000) {
 				fprintf(stderr, "Error: Invalid Directory location.\n");
 				fprintf(stderr, "%x is only for 4M image size.", cb_config->efs_location);
 				return 1;

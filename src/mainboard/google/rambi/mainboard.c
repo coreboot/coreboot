@@ -11,9 +11,6 @@
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
-#if CONFIG(BOARD_GOOGLE_NINJA) || CONFIG(BOARD_GOOGLE_SUMO)
-	lan_init();
-#endif
 }
 
 static int mainboard_smbios_data(struct device *dev, int *handle,

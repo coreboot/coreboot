@@ -40,14 +40,6 @@ smm-$(CONFIG_DEBUG_SMI) += uart.c
 CPPFLAGS_common += -I$(src)/soc/amd/cezanne/include
 CPPFLAGS_common += -I$(src)/soc/amd/cezanne/acpi
 
-ifeq ($(CONFIG_SOC_AMD_CEZANNE),y)
-CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/cezanne
-endif
-
-ifeq ($(CONFIG_SOC_AMD_RENOIR)$(CONFIG_SOC_AMD_V2000A),y)
-CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/renoir
-endif
-
 # 0x40 accounts for the cbfs_file struct + filename + metadata structs, aligned to 64 bytes
 # Building the cbfs image will fail if the offset isn't large enough
 AMD_FW_AB_POSITION := 0x40

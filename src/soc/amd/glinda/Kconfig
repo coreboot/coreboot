@@ -209,6 +209,9 @@ config ROMSTAGE_SIZE
 	help
 	  Sets the size of DRAM allocation for romstage in linker script.
 
+config FSP_HEADER_PATH
+	default "src/vendorcode/amd/fsp/glinda"
+
 config FSP_M_ADDR
 	hex
 	default 0x20E0000

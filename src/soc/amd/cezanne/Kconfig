@@ -129,6 +129,10 @@ config CHIPSET_DEVICETREE
 	string
 	default "soc/amd/cezanne/chipset.cb"
 
+config FSP_HEADER_PATH
+	default "src/vendorcode/amd/fsp/cezanne" if SOC_AMD_CEZANNE
+	default "src/vendorcode/amd/fsp/renoir" if SOC_AMD_RENOIR || SOC_AMD_V2000A
+
 config FSP_M_FILE
 	string "FSP-M (memory init) binary path and filename"
 	depends on ADD_FSP_BINARIES

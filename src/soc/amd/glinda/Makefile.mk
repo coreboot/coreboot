@@ -39,7 +39,6 @@ smm-$(CONFIG_DEBUG_SMI) += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/glinda/include
 CPPFLAGS_common += -I$(src)/soc/amd/glinda/acpi
-CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/glinda
 
 # Target an offset into the CBFS. AMDFWTOOL will align it again and
 # pad the space between the CBFS file header and the directory table.

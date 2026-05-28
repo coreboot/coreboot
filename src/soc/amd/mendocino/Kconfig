@@ -117,6 +117,9 @@ config CHIPSET_DEVICETREE
 	default "soc/amd/mendocino/chipset_mendocino.cb" if SOC_AMD_MENDOCINO
 	default "soc/amd/mendocino/chipset_rembrandt.cb"
 
+config FSP_HEADER_PATH
+	default "src/vendorcode/amd/fsp/mendocino"
+
 config FSP_M_FILE
 	string "FSP-M (memory init) binary path and filename"
 	depends on ADD_FSP_BINARIES

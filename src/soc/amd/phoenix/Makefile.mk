@@ -45,10 +45,6 @@ smm-$(CONFIG_DEBUG_SMI) += uart.c
 CPPFLAGS_common += -I$(src)/soc/amd/phoenix/include
 CPPFLAGS_common += -I$(src)/soc/amd/phoenix/acpi
 
-ifeq ($(CONFIG_SOC_AMD_PHOENIX_FSP),y)
-CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/phoenix
-endif
-
 # Building the cbfs image will fail if the offset, aligned to 64 bytes, isn't large enough
 ifeq ($(CONFIG_CBFS_VERIFICATION),y)
 # 0x80 accounts for the cbfs_file struct + filename + metadata structs

@@ -449,6 +449,9 @@ endif # SOC_AMD_PHOENIX_BASE
 
 if SOC_AMD_PHOENIX_FSP
 
+config FSP_HEADER_PATH
+	default "src/vendorcode/amd/fsp/phoenix"
+
 config FSP_M_ADDR
 	hex
 	default 0x20E0000

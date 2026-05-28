@@ -40,7 +40,6 @@ smm-$(CONFIG_DEBUG_SMI) += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/mendocino/include
 CPPFLAGS_common += -I$(src)/soc/amd/mendocino/acpi
-CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/mendocino
 
 # Building the cbfs image will fail if the offset, aligned to 64 bytes, isn't large enough
 ifeq ($(CONFIG_CBFS_VERIFICATION),y)

@@ -10,7 +10,6 @@ romstage-y += variants/$(VARIANT_DIR)/pei_data.c
 ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
-ramstage-y += lan.c
 ramstage-y += variants/$(VARIANT_DIR)/pei_data.c
 
 verstage-$(CONFIG_CHROMEOS) += chromeos.c

@@ -4,8 +4,6 @@
 #define ONBOARD_H
 
 #ifndef __ACPI__
-void lan_init(void);
-
 void set_power_led(int state);
 
 enum {
@@ -14,13 +12,6 @@ enum {
 	LED_BLINK,
 };
 #endif
-
-/* defines for programming the MAC address */
-#define JECHT_NIC_VENDOR_ID		0x10EC
-#define JECHT_NIC_DEVICE_ID		0x8168
-
-/* 0x00: White LINK LED and Amber ACTIVE LED */
-#define JECHT_NIC_LED_MODE		0x00
 
 /* NIC wake is GPIO 8 */
 #define JECHT_NIC_WAKE_GPIO		8

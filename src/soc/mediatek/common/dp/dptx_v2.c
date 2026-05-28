@@ -55,6 +55,9 @@ static void update_swing_preemphasis(const struct mtk_dp *mtk_dp, u8 lane_count,
 	u8 swing_val[MAX_LANECOUNT];
 	u8 preemphasis[MAX_LANECOUNT];
 
+	if (lane_count > ARRAY_SIZE(swing_val))
+		die("Invalid eDP lane count %u > %zu\n", lane_count, ARRAY_SIZE(swing_val));
+
 	for (int lane = 0; lane < lane_count; lane++) {
 		u8 val;
 		int index = lane / 2;
@@ -262,8 +265,8 @@ int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 	buffer = 0x1;
 	dptx_auxwrite_dpcd(mtk_dp, DP_AUX_NATIVE_WRITE, DPCD_00600, 0x1, &buffer);
 
-	linkrate = mtk_dp->rx_cap[1];
-	lanecount = mtk_dp->rx_cap[2] & 0x1F;
+	linkrate = mtk_dp->train_info.linkrate;
+	lanecount = mtk_dp->train_info.linklane_count;
 
 	printk(BIOS_INFO, "RX support linkrate = %#x, lanecount = %#x\n", linkrate, lanecount);
 

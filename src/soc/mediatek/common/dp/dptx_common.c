@@ -437,10 +437,19 @@ static void dptx_check_sinkcap(struct mtk_dp *mtk_dp)
 	if (mtk_dp->train_info.dpcd_rev >= 0x14)
 		dptx_fec_ready(mtk_dp, FEC_BIT_ERROR_COUNT);
 
-	mtk_dp->train_info.linkrate = MIN(buffer[0x1],
-					  mtk_dp->train_info.sys_max_linkrate);
-	mtk_dp->train_info.linklane_count = MIN(buffer[2] & 0x1F,
-						MAX_LANECOUNT);
+	mtk_dp->train_info.linkrate = buffer[1];
+	if (mtk_dp->train_info.linkrate > mtk_dp->train_info.sys_max_linkrate) {
+		printk(BIOS_ERR, "DP: Invalid linkrate %#x, clamp to %#x\n",
+		       mtk_dp->train_info.linkrate, mtk_dp->train_info.sys_max_linkrate);
+		mtk_dp->train_info.linkrate = mtk_dp->train_info.sys_max_linkrate;
+	}
+
+	mtk_dp->train_info.linklane_count = buffer[2] & 0x1F;
+	if (mtk_dp->train_info.linklane_count > MAX_LANECOUNT) {
+		printk(BIOS_ERR, "DP: Invalid linklane_count %d, clamp to %d\n",
+		       mtk_dp->train_info.linklane_count, MAX_LANECOUNT);
+		mtk_dp->train_info.linklane_count = MAX_LANECOUNT;
+	}
 
 	mtk_dp->train_info.tps3 = (buffer[2] & BIT(6)) >> 0x6;
 	mtk_dp->train_info.tps4 = (buffer[3] & BIT(7)) >> 0x7;

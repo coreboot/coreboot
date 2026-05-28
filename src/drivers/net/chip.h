@@ -35,6 +35,9 @@ struct drivers_net_config {
 	/* Allow kernel driver to enable ASPM L1.2. */
 	bool enable_aspm_l1_2;
 
+	/* Enable CLKREQ# via PCI config register 0x81 (RTL8168 specific). */
+	bool enable_pcie_clkreq;
+
 	/* When set to true, this will add a _DSD which contains a single
 	   property, `DmaProperty`, set to 1, under the ACPI Device. */
 	bool add_acpi_dma_property;

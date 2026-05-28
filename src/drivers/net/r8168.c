@@ -387,6 +387,7 @@ static void r8168_set_customized_led(struct device *dev, u16 io_base)
 
 static void r8168_init(struct device *dev)
 {
+	struct drivers_net_config *config = dev->chip_info;
 	/* Get the resource of the NIC mmio */
 	struct resource *nic_res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	u16 io_base = (u16)nic_res->base;
@@ -400,6 +401,10 @@ static void r8168_init(struct device *dev)
 	pci_write_config16(dev, PCI_COMMAND,
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 
+	/* Enable CLKREQ# if set in devicetree. */
+	if (config && config->enable_pcie_clkreq)
+		pci_write_config8(dev, 0x81, 0x01);
+
 	/* Program MAC address based on CBFS "macaddress" containing
 	 * a string AA:BB:CC:DD:EE:FF */
 	program_mac_address(dev, io_base);
@@ -408,8 +413,7 @@ static void r8168_init(struct device *dev)
 	if (CONFIG(RT8168_SET_LED_MODE))
 		r8168_set_customized_led(dev, io_base);
 
-	struct drivers_net_config *config = dev->chip_info;
-	if (CONFIG(PCIEXP_ASPM) && config->enable_aspm_l1_2)
+	if (CONFIG(PCIEXP_ASPM) && config && config->enable_aspm_l1_2)
 		enable_aspm_l1_2(io_base);
 }
 

@@ -159,25 +159,24 @@ static void fetch_mac_string_vpd(struct drivers_net_config *config, u8 *macstrbu
 	if (!config)
 		return;
 
+	uint8_t index = config->device_index;
+
 	/* Current implementation is up to 10 NIC cards */
-	if (config->device_index > MAX_DEVICE_SUPPORT) {
+	if (index > MAX_DEVICE_SUPPORT) {
 		printk(BIOS_ERR, "r8168: the maximum device_index should be less then %d\n."
 					" Using default 00:e0:4c:00:c0:b0\n", MAX_DEVICE_SUPPORT);
 		return;
 	}
 
-	if (fetch_mac_vpd_dev_idx(macstrbuf, config->device_index) == CB_SUCCESS)
+	if (CONFIG(RT8168_SUPPORT_LEGACY_VPD_MAC) && index == 0 &&
+			fetch_mac_vpd_key(macstrbuf, "ethernet_mac") == CB_SUCCESS)
 		return;
 
-	if (!CONFIG(RT8168_SUPPORT_LEGACY_VPD_MAC)) {
-		printk(BIOS_ERR, "r8168: mac address not found in VPD,"
-						 " using default 00:e0:4c:00:c0:b0\n");
+	if (fetch_mac_vpd_dev_idx(macstrbuf, index) == CB_SUCCESS)
 		return;
-	}
 
-	if (fetch_mac_vpd_key(macstrbuf, "ethernet_mac") != CB_SUCCESS)
-		printk(BIOS_ERR, "r8168: mac address not found in VPD,"
-					 " using default 00:e0:4c:00:c0:b0\n");
+	printk(BIOS_ERR, "r8168: mac address not found in VPD,"
+			 " using default 00:e0:4c:00:c0:b0\n");
 }
 
 static enum cb_err fetch_mac_string_cbfs(u8 *macstrbuf)

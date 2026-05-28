@@ -48,10 +48,6 @@ config BOARD_STARLABS_STARFIGHTER_MTL
 
 if BOARD_STARLABS_STARFIGHTER_SERIES
 
-config BOARD_USES_FIXED_MODE_VBT
-	bool
-	default y
-
 config CCD_PORT
 	int
 	default 4

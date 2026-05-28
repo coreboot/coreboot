@@ -39,6 +39,16 @@
 #define ASPM_L1_2_MASK		0xe059000f
 #define ERIDR			0x70
 #define ERIAR			0x74
+#define TX_CONFIG		0x40
+
+/* From Realtek r8168 Linux driver */
+#define TXCFG_CHIP_FAMILY_MASK		0x7c800000
+#define TXCFG_IC_VER_ID_MASK		0x00700000
+#define TXCFG_IC_VER_ID_METHOD_17	0x00100000
+#define TXCFG_FAMILY_8168EVL_METHOD_17	0x2c800000
+#define TXCFG_FAMILY_8168F_UP		0x48000000
+
+#define ERIAR_WRITE_MASK		0x8000f000
 
 #define DEVICE_INDEX_BYTE	12
 #define MAX_DEVICE_SUPPORT	10
@@ -199,6 +209,41 @@ static void get_mac_address(u8 *macaddr, const u8 *strbuf)
 	}
 }
 
+static void r8168_eri_write(u16 io_base, u32 reg, u32 data)
+{
+	outl(data, io_base + ERIDR);
+	inl(io_base + ERIDR);
+	outl(ERIAR_WRITE_MASK | reg, io_base + ERIAR);
+	inl(io_base + ERIAR);
+}
+
+/*
+ * Program MAC to ERI (Extended Register Interface)
+ * 8168E-VL (CFG_METHOD_17) uses 0xf0/0xf4; CFG_METHOD_18+ uses 0xe0/0xe4.
+ * Pre-CFG_METHOD_17 does not support ERI.
+ */
+static void program_mac_eri(u16 io_base, u32 maclo, u32 machi)
+{
+	const u32 txconfig = inl(io_base + TX_CONFIG);
+	const u32 family = txconfig & TXCFG_CHIP_FAMILY_MASK;
+	const u32 ic_ver = txconfig & TXCFG_IC_VER_ID_MASK;
+	const bool method_17 = family == TXCFG_FAMILY_8168EVL_METHOD_17 &&
+			       ic_ver == TXCFG_IC_VER_ID_METHOD_17;
+
+	if (!method_17 && family < TXCFG_FAMILY_8168F_UP)
+		return;
+
+	if (method_17) {
+		r8168_eri_write(io_base, 0xf0, (maclo & 0xffff) << 16);
+		r8168_eri_write(io_base, 0xf4, (maclo >> 16) | (machi << 16));
+	} else {
+		r8168_eri_write(io_base, 0xe0, maclo);
+		r8168_eri_write(io_base, 0xe4, machi);
+	}
+
+	udelay(1000);
+}
+
 static void program_mac_address(struct device *dev, u16 io_base)
 {
 	u8 macstrbuf[MACLEN] = { 0 };
@@ -239,34 +284,16 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	/* Set MAC address: only 4-byte write accesses allowed */
 	maclo = mac[0] | mac[1] << 8 | mac[2] << 16 | mac[3] << 24;
 	machi = mac[4] | mac[5] << 8;
+
+	/* Write MAC to ID registers (MAC4/MAC0) */
 	outl(machi, io_base + 4);
 	inl(io_base + 4);
 	outl(maclo, io_base);
 	inl(io_base);
-	/* Some boards (e.g. asus/p8z77-v_le_plus) need the MAC address set here too */
-	if (CONFIG(RT8168_PUT_MAC_TO_ERI)) {
-		switch (pci_read_config8(dev, PCI_REVISION_ID)) {
-		case 6:
-			outl((maclo & 0xffff) << 16, io_base + ERIDR);
-			inl(io_base + ERIDR);
-			outl(0x8000f0f0, io_base + ERIAR);
-			inl(io_base + ERIAR);
-			outl((machi << 16 | maclo >> 16), io_base + ERIDR);
-			inl(io_base + ERIDR);
-			outl(0x8000f0f4, io_base + ERIAR);
-			break;
-		case 9:
-			outl(maclo, io_base + ERIDR);
-			inl(io_base + ERIDR);
-			outl(0x8000f0e0, io_base + ERIAR);
-			inl(io_base + ERIAR);
-			outl(machi, io_base + ERIDR);
-			inl(io_base + ERIDR);
-			outl(0x800030e4, io_base + ERIAR);
-			break;
-		}
-		udelay(1000);
-	}
+
+	/* Write MAC to ERI (Extended Register Interface) */
+	program_mac_eri(io_base, maclo, machi);
+
 	/* Lock config regs */
 	outb(CFG_9346_LOCK, io_base + CFG_9346);
 

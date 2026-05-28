@@ -7,14 +7,9 @@
 #include "ec.h"
 #include "variant.h"
 
-__weak void lan_init(void)
-{
-}
-
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
-	lan_init();
 }
 
 static void mainboard_fill_ssdt(const struct device *dev)

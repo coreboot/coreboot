@@ -3,13 +3,6 @@
 #ifndef ONBOARD_H
 #define ONBOARD_H
 
-/* defines for programming the MAC address */
-#define BUDDY_NIC_VENDOR_ID		0x10EC
-#define BUDDY_NIC_DEVICE_ID		0x8168
-
-/* 0x00: White LINK LED and Amber ACTIVE LED */
-#define BUDDY_NIC_LED_MODE		0x00
-
 #define BOARD_TOUCHSCREEN_NAME		"touchscreen"
 #define BOARD_TOUCHSCREEN_IRQ		38	/* PIRQW */
 #define BOARD_TOUCHSCREEN_WAKE_GPIO	25	/* GPIO25 */

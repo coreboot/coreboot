@@ -40,7 +40,14 @@ chip northbridge/intel/broadwell
 			device pci 13.0 on  end # Smart Sound Audio DSP
 			device pci 1b.0 off end # High Definition Audio
 			device pci 1c.0 off end # PCIe Port #1
-			device pci 1c.2 on  end # PCIe Port #3 - LAN (becomes RP1)
+			device pci 1c.2 on # PCIe Port #3 - LAN (becomes RP1)
+				chip drivers/net
+					register "customized_leds" = "0x0087"
+					register "device_index" = "0"
+					register "enable_pcie_clkreq" = "true"
+					device pci 00.0 on end
+				end
+			end
 			device pci 1c.3 on  end # PCIe Port #4 - WLAN (becomes RP2)
 			device pci 1f.2 on  end # SATA Controller
 			device pci 1f.3 on  end # SMBus

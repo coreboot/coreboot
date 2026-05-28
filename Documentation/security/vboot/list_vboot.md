@@ -255,7 +255,6 @@
 - Pico (Acer Chromebook Spin 311)
 - Link (Google Chromebook Pixel (2013))
 - Mistral
-- Myst
 - Nyan
 - Nyan Big (Acer Chromebook 13 (CB5-311))
 - Nyan Blaze (HP Chromebook 14 G3)

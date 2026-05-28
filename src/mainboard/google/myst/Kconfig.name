@@ -1,6 +1,0 @@
-## SPDX-License-Identifier: GPL-2.0-only
-
-comment "Myst (AMD Ryzen Mobile 7000 (Phoenix))"
-
-config BOARD_GOOGLE_MYST
-	bool "->  Myst"

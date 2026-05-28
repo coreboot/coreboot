@@ -46,6 +46,65 @@ static uint32_t get_max_pl1(uint32_t tdp)
 	return MAX(tdp, DIV_ROUND_UP(tdp * 3, 2));
 }
 
+static bool use_derived_pl4(void)
+{
+	return CONFIG(EC_STARLABS_MERLIN) && !CONFIG(STARLABS_LEGACY_PL4);
+}
+
+static uint32_t get_board_pl4(uint32_t tdp)
+{
+	uint32_t pl4 = CONFIG_MB_STARLABS_PL4_WATTS;
+
+	/*
+	 * Newer Merlin EC boards update PL4 dynamically at runtime. Keep a
+	 * boot-time ceiling in coreboot by adding the CPU's maximum PL1 budget
+	 * to the board power budget.
+	 */
+	if (use_derived_pl4() && tdp)
+		pl4 += get_max_pl1(tdp);
+
+	return pl4;
+}
+
+static uint32_t get_entry_pl4(const struct soc_power_limits_config *entry,
+	uint32_t fallback_tdp)
+{
+	uint32_t tdp = fallback_tdp;
+	uint32_t pl4;
+
+	if (entry && entry->tdp_pl1_override)
+		tdp = entry->tdp_pl1_override;
+
+	pl4 = get_board_pl4(tdp);
+
+	if (use_derived_pl4() && entry && entry->tdp_pl4)
+		pl4 = MIN(pl4, entry->tdp_pl4);
+
+	return pl4;
+}
+
+static uint32_t get_power_profile_pl4(const config_t *cfg, uint32_t tdp)
+{
+	uint32_t pl4 = get_board_pl4(tdp);
+
+	if (!use_derived_pl4())
+		return pl4;
+
+	const struct soc_power_limits_config *limits =
+		(const struct soc_power_limits_config *)&cfg->power_limits_config;
+	size_t limit_count =
+		sizeof(cfg->power_limits_config) / sizeof(struct soc_power_limits_config);
+
+	for (size_t i = 0; i < limit_count; i++) {
+		const struct soc_power_limits_config *entry = &limits[i];
+
+		if (entry->tdp_pl1_override == tdp)
+			pl4 = MIN(pl4, get_entry_pl4(entry, tdp));
+	}
+
+	return pl4;
+}
+
 static uint32_t get_tj_max(void)
 {
 #if CONFIG(BOARD_STARLABS_LITE_GLK) || CONFIG(BOARD_STARLABS_LITE_GLKR)
@@ -81,7 +140,7 @@ bool starlabs_get_power_profile_bounds(const config_t *cfg,
 	stock_pl1 = get_cpu_tdp();
 	if (!stock_pl1)
 		return false;
-	stock_pl4 = CONFIG_MB_STARLABS_PL4_WATTS;
+	stock_pl4 = get_power_profile_pl4(cfg, stock_pl1);
 	stock_tcc_offset = CONFIG(EC_STARLABS_FAN) ? 10 : 20;
 	tj_max = get_tj_max();
 	min_pl1 = get_power_saver_pl1(stock_pl1);
@@ -116,6 +175,7 @@ void update_power_limits(config_t *cfg)
 	uint32_t performance_tcc_offset = CONFIG(EC_STARLABS_FAN) ? 10 : 20;
 	uint32_t tj_max = get_tj_max();
 	const enum cmos_power_profile profile = get_power_profile(PP_BALANCED);
+	uint32_t cpu_tdp = get_cpu_tdp();
 	struct starlabs_power_profile_bounds bounds;
 	bool have_bounds = starlabs_get_power_profile_bounds(cfg, &bounds);
 	uint16_t custom_pl1 = 0, custom_pl2 = 0, custom_pl4 = 0;
@@ -137,9 +197,13 @@ void update_power_limits(config_t *cfg)
 			custom_pl1 = clamp_u32(bounds.min_pl1,
 				get_uint_option("pl1_override", bounds.default_pl1),
 				bounds.max_pl1);
-			custom_pl4 = clamp_u32(bounds.min_pl4,
-				get_uint_option("pl4_override", bounds.default_pl4),
-				bounds.max_pl4);
+			if (CONFIG(STARLABS_LEGACY_PL4)) {
+				custom_pl4 = clamp_u32(bounds.min_pl4,
+					get_uint_option("pl4_override", bounds.default_pl4),
+					bounds.max_pl4);
+			} else {
+				custom_pl4 = bounds.default_pl4;
+			}
 			custom_pl2 = clamp_u32(bounds.min_pl2,
 				get_uint_option("pl2_override", bounds.default_pl2),
 				bounds.max_pl2);
@@ -165,16 +229,19 @@ void update_power_limits(config_t *cfg)
 
 	for (size_t i = 0; i < limit_count; i++) {
 		struct soc_power_limits_config *entry = &limits[i];
-		uint16_t tdp, pl1, pl2;
+		uint16_t tdp, pl1, pl2, pl4;
 
 		if (profile == PP_CUSTOM && have_bounds) {
+			pl4 = CONFIG(STARLABS_LEGACY_PL4) ? custom_pl4 :
+				get_entry_pl4(entry, cpu_tdp);
 			entry->tdp_pl1_override = custom_pl1;
-			entry->tdp_pl2_override = custom_pl2;
-			entry->tdp_pl4 = custom_pl4;
+			entry->tdp_pl2_override = MIN(custom_pl2, pl4);
+			entry->tdp_pl4 = pl4;
 			continue;
 		}
 
-		entry->tdp_pl4 = (uint16_t)CONFIG_MB_STARLABS_PL4_WATTS;
+		pl4 = get_entry_pl4(entry, cpu_tdp);
+		entry->tdp_pl4 = pl4;
 
 		tdp = entry->tdp_pl1_override;
 		if (!tdp)

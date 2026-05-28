@@ -9,7 +9,6 @@ romstage-y += variants/$(VARIANT_DIR)/gpio.c
 ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
-ramstage-y += lan.c
 
 verstage-y += chromeos.c
 

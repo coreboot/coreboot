@@ -2,27 +2,9 @@
 
 #include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
-#include <device/device.h>
-#include <southbridge/intel/lynxpoint/pch.h>
-
-#include "onboard.h"
 
 void mainboard_suspend_resume(void)
 {
 	/* Call SMM finalize() handlers before resume */
 	apm_control(APM_CNT_FINALIZE);
 }
-
-static void mainboard_init(struct device *dev)
-{
-	lan_init();
-}
-
-static void mainboard_enable(struct device *dev)
-{
-	dev->ops->init = mainboard_init;
-}
-
-struct chip_operations mainboard_ops = {
-	.enable_dev = mainboard_enable,
-};

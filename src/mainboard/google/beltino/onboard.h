@@ -3,13 +3,6 @@
 #ifndef __MAINBOARD_ONBOARD_H
 #define __MAINBOARD_ONBOARD_H
 
-/* defines for programming the MAC address */
-#define NIC_VENDOR_ID		0x10EC
-#define NIC_DEVICE_ID		0x8168
-
-/* 0x00: White LINK LED and Amber ACTIVE LED */
-#define NIC_LED_MODE		0x00
-
 /* NIC wake is GPIO 8 */
 #define NIC_WAKE_GPIO		8
 
@@ -29,8 +22,6 @@
 #define IT8772F_EC_DEV PNP_DEV(IT8772F_BASE, IT8772F_EC)
 
 #ifndef __ACPI__
-void lan_init(void);
-
 void set_power_led(int state);
 
 enum {

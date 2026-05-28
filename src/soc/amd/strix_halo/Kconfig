@@ -97,13 +97,6 @@ config SOC_AMD_STRIX_HALO
 	help
 	  AMD Strix Halo support
 
-config SOC_AMD_STRIX_HALO_FAEGAN
-	bool
-	select SOC_AMD_STRIX_HALO_BASE
-	select SOC_AMD_SUPPORTS_WARM_RESET
-	help
-	  AMD Strix Halo Faegan support
-
 if SOC_AMD_STRIX_HALO_BASE
 
 config CHIPSET_DEVICETREE
@@ -112,12 +105,10 @@ config CHIPSET_DEVICETREE
 
 config VGA_BIOS_FILE
 	string
-	default "3rdparty/amd_blobs/strixhalo/KRK2E_GENERIC_vbios.sbin" if SOC_AMD_STRIX_HALO_FAEGAN
 	default "3rdparty/amd_blobs/strixhalo/STRIX_HALO_GENERIC_vbios.sbin"
 
 config VGA_BIOS_ID
 	string
-	default "1002,1902" if SOC_AMD_STRIX_HALO_FAEGAN
 	default "1002,150e"
 	help
 	  The default VGA BIOS PCI vendor/device ID of the GPU and VBIOS.
@@ -348,51 +339,6 @@ config PSP_AB_RECOVERY
 	help
 	  Enable the PSP A/B Recovery mechanism
 
-endmenu
-
-menu "RAS Config Options"
-choice
-	prompt "PCIe AER Report Mechanism"
-	depends on SOC_AMD_STRIX_HALO_FAEGAN
-	default AMD_PCIE_AER_OS_FIRST_HANDLING_STXH
-	help
-	  Choose a PCIe AER Report Mechanism.
-
-config AMD_PCIE_AER_PFEH_FIRMWARE_FIRST_REPORTING_STXH
-	bool "PFEH-based Firmware First reporting"
-
-config AMD_PCIE_AER_OS_FIRST_HANDLING_STXH
-	bool "OS First handling"
-
-config AMD_PCIE_AER_FIRMWARE_FIRST_HANDLING_STXH
-	bool "Firmware First handling through SMI"
-endchoice
-
-choice
-	prompt "AMD NBIO Ras Control V2"
-	depends on SOC_AMD_STRIX_HALO_FAEGAN
-	default AMD_NBIO_RAS_MCA_REPORTING_STXH if SOC_AMD_STRIX_HALO_FAEGAN
-	default AMD_NBIO_RAS_DISABLE_STXH
-	help
-	  Choose an AMD NBIO RAS control option.
-
-config AMD_NBIO_RAS_DISABLE_STXH
-	bool "Disable NBIO Ras Control"
-
-config AMD_NBIO_RAS_MCA_REPORTING_STXH
-	bool "MCA reporting"
-
-config AMD_NBIO_RAS_LEGACY_MODE_STXH
-	bool "Legacy Mode"
-endchoice
-
-config AMD_PCIE_ECRC_ENABLEMENT
-	bool "PCIe ECRC Enablement"
-	depends on SOC_AMD_STRIX_HALO_FAEGAN
-	default y if SOC_AMD_STRIX_HALO_FAEGAN
-	default n
-	help
-	  Enable/Disable PCIe ECRC support.
 endmenu
 
 endif # SOC_AMD_STRIX_HALO_BASE

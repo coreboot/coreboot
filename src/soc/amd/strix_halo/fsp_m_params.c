@@ -160,31 +160,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->enable_nb_azalia = is_dev_enabled(DEV_PTR(gfx_hda));
 	mcfg->hda_enable = is_dev_enabled(DEV_PTR(hda));
 
-	/* Strix Halo Faegan only: RAS Config Options */
-	if (CONFIG(SOC_AMD_STRIX_HALO_FAEGAN)) {
-		if (CONFIG(AMD_PCIE_AER_OS_FIRST_HANDLING_STXH))
-			mcfg->amd_pcie_aer_report_mechanism = 1;
-		else if (CONFIG(AMD_PCIE_AER_FIRMWARE_FIRST_HANDLING_STXH))
-			mcfg->amd_pcie_aer_report_mechanism = 2;
-		else
-			mcfg->amd_pcie_aer_report_mechanism = 0;
-
-		if (CONFIG(AMD_NBIO_RAS_MCA_REPORTING_STXH))
-			mcfg->amd_nbio_ras_controlv2 = 1;
-		else if (CONFIG(AMD_NBIO_RAS_LEGACY_MODE_STXH))
-			mcfg->amd_nbio_ras_controlv2 = 2;
-		else
-			mcfg->amd_nbio_ras_controlv2 = 0;
-
-		mcfg->pcie_ecrc_enablement = CONFIG(AMD_PCIE_ECRC_ENABLEMENT);
-		printk(BIOS_SPEW, "mcfg->amd_pcie_aer_report_mechanism %x\n",
-		       mcfg->amd_pcie_aer_report_mechanism);
-		printk(BIOS_SPEW, "mcfg->amd_nbio_ras_controlv2 %x\n",
-		       mcfg->amd_nbio_ras_controlv2);
-		printk(BIOS_SPEW, "mcfg->pcie_ecrc_enablement %x\n",
-		       mcfg->pcie_ecrc_enablement);
-	}
-
 	if (config->usb_phy_custom) {
 		/* devicetree config is const, use local copy */
 		static struct usb_phy_config lcl_usb_phy;

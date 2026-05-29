@@ -31,6 +31,7 @@ static bool battery_below_threshold = false;
 static int32_t battery_cfet_status = 1; /* Active C-FET */
 static int32_t battery_dfet_status = 1; /* Active D-FET */
 static bool battery_needs_recovery = false;
+static bool battery_is_cutoff = false;
 static bool chipset_dload_mode_active = false; /* Mode for crashlog */
 
 /*
@@ -193,7 +194,7 @@ static void update_battery_status(void)
 	battery_present = google_chromeec_is_battery_present();
 	battery_below_threshold = google_chromeec_is_below_critical_threshold();
 
-	if (google_chromeec_get_battery_misc_info(&misc_info) == 0) {
+	if (battery_present && (google_chromeec_get_battery_misc_info(&misc_info) == 0)) {
 		battery_cfet_status = misc_info.cfet_status;
 		battery_dfet_status = misc_info.dfet_status;
 		misc_info_valid = true;
@@ -208,9 +209,15 @@ static void update_battery_status(void)
 	 * Triggered ONLY when the battery info was successfully read,
 	 * and BOTH FETs are explicitly 0 (indicating a locked BMS).
 	 */
-	bool is_bms_locked = misc_info_valid && (battery_cfet_status == 0)
+	battery_needs_recovery = misc_info_valid && (battery_cfet_status == 0)
 			 && (battery_dfet_status == 0);
-	battery_needs_recovery = battery_present && is_bms_locked;
+
+	/*
+	 * BATTERY CUTOFF / DISCONNECT DETECTION:
+	 * Triggered when the hardware reports no battery present AND
+	 * the EC FET status read failed (returning -1).
+	 */
+	battery_is_cutoff = (battery_cfet_status == -1) && (battery_dfet_status == -1);
 }
 
 /* Perform romstage early hardware initialization */
@@ -276,7 +283,7 @@ static void mainboard_setup_peripherals_late(int mode)
 	}
 }
 
-static void handle_battery_shipping_recovery(void)
+static void handle_battery_shipping_recovery(bool board_reset)
 {
 	printk(BIOS_INFO, "==================================================\n");
 	printk(BIOS_INFO, "Device has entered into shipping recovery mode.\n");
@@ -286,8 +293,13 @@ static void handle_battery_shipping_recovery(void)
 	enable_slow_battery_charging();
 	mdelay(DELAY_FOR_SHIP_MODE);
 
-	printk(BIOS_INFO, "Issuing board reset\n");
-	do_board_reset();
+	if (board_reset) {
+		printk(BIOS_INFO, "Issuing board reset\n");
+		do_board_reset();
+	}
+
+	/* Disable charging where `board_reset` is not allowed */
+	disable_slow_battery_charging();
 }
 
 static bool check_ramdump_mode_is_set(void)
@@ -336,8 +348,8 @@ void platform_romstage_main(void)
 	qclib_load_and_run();
 
 	/* Recovery from battery shipping mode */
-	if (battery_needs_recovery)
-		handle_battery_shipping_recovery();
+	if (battery_needs_recovery || battery_is_cutoff)
+		handle_battery_shipping_recovery(battery_needs_recovery);
 
 	init_sdam_config();
 

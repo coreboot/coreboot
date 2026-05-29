@@ -19,7 +19,7 @@ const int dptx_hal_driving_offset[] = {
 
 const int dptx_hal_driving_offset_size = ARRAY_SIZE(dptx_hal_driving_offset);
 
-void dptx_hal_init_setting(struct mtk_dp *mtk_dp)
+void dptx_hal_init_setting(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_mask(mtk_dp, 0x2000, GENMASK(1, 0), GENMASK(1, 0));
 
@@ -45,7 +45,7 @@ void dptx_hal_init_setting(struct mtk_dp *mtk_dp)
 		    ENCODER_IRQ_MSK | TRANS_IRQ_MSK);
 }
 
-void dptx_hal_set_color_format(struct mtk_dp *mtk_dp, u8 out_format)
+void dptx_hal_set_color_format(const struct mtk_dp *mtk_dp, u8 out_format)
 {
 	u32 val;
 
@@ -72,7 +72,7 @@ void dptx_hal_set_color_format(struct mtk_dp *mtk_dp, u8 out_format)
 	mtk_dp_mask(mtk_dp, REG_303C_DP_ENCODER0_P0, val << 12, 0x7 << 12);
 }
 
-void dptx_hal_settu_setencoder(struct mtk_dp *mtk_dp)
+void dptx_hal_settu_setencoder(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_mask(mtk_dp, REG_303C_DP_ENCODER0_P0, BIT(15), BIT(15));
 	DP_WRITE2BYTE(mtk_dp, REG_3040_DP_ENCODER0_P0, 0x2020);
@@ -81,13 +81,14 @@ void dptx_hal_settu_setencoder(struct mtk_dp *mtk_dp)
 	mtk_dp_mask(mtk_dp, REG_3364_DP_ENCODER1_P0, 0x40 << 8, 0x70 << 8);
 }
 
-bool dptx_hal_hpd_high(struct mtk_dp *mtk_dp)
+bool dptx_hal_hpd_high(const struct mtk_dp *mtk_dp)
 {
 	return mtk_dp_read(mtk_dp, REG_364C_AUX_TX_P0) & BIT(15);
 }
 
-void dptx_hal_set_swing_preemphasis(struct mtk_dp *mtk_dp, size_t lane_count,
-				    u8 *swing_value, u8 *preemphasis)
+void dptx_hal_set_swing_preemphasis(const struct mtk_dp *mtk_dp, size_t lane_count,
+				    const u8 *swing_value, const u8 *preemphasis)
+
 {
 	assert(lane_count <= DPTX_LANE_MAX);
 
@@ -101,13 +102,13 @@ void dptx_hal_set_swing_preemphasis(struct mtk_dp *mtk_dp, size_t lane_count,
 	}
 }
 
-void dptx_hal_hpd_detect_setting(struct mtk_dp *mtk_dp)
+void dptx_hal_hpd_detect_setting(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_mask(mtk_dp, REG_364C_AUX_TX_P0, HPD_INT_THD_FLDMASK_VAL << 4,
 		    HPD_INT_THD_FLDMASK);
 }
 
-void dptx_hal_phy_init(struct mtk_dp *mtk_dp)
+void dptx_hal_phy_init(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_phy_mask(mtk_dp, IPMUX_CONTROL, 0 << EDPTX_DSI_PHYD_SEL_FLDMASK_POS,
 			EDPTX_DSI_PHYD_SEL_FLDMASK);
@@ -116,7 +117,7 @@ void dptx_hal_phy_init(struct mtk_dp *mtk_dp)
 	dptx_hal_ssc_en(mtk_dp, false);
 }
 
-void dptx_hal_set_txrate(struct mtk_dp *mtk_dp, u8 value)
+void dptx_hal_set_txrate(const struct mtk_dp *mtk_dp, u8 value)
 {
 	printk(BIOS_INFO, "Link rate = 0x%x\n", value);
 	switch (value) {
@@ -138,7 +139,7 @@ void dptx_hal_set_txrate(struct mtk_dp *mtk_dp, u8 value)
 	}
 }
 
-void dptx_hal_phy_setting(struct mtk_dp *mtk_dp)
+void dptx_hal_phy_setting(const struct mtk_dp *mtk_dp)
 {
 	u8 link_rate = mtk_dp->train_info.linkrate;
 	u8 lane_count = mtk_dp->train_info.linklane_count;
@@ -154,7 +155,7 @@ void dptx_hal_phy_setting(struct mtk_dp *mtk_dp)
 	       mtk_dp_phy_read(mtk_dp, DP_PHY_DIG_PLL_CTL_1));
 }
 
-void dptx_hal_ssc_en(struct mtk_dp *mtk_dp, bool enable)
+void dptx_hal_ssc_en(const struct mtk_dp *mtk_dp, bool enable)
 {
 	if (enable) {
 		printk(BIOS_DEBUG, "[eDPTX] enable ssc\n");
@@ -169,7 +170,7 @@ void dptx_hal_ssc_en(struct mtk_dp *mtk_dp, bool enable)
 	mdelay(1);
 }
 
-void dptx_hal_aux_setting(struct mtk_dp *mtk_dp)
+void dptx_hal_aux_setting(const struct mtk_dp *mtk_dp)
 {
 	/* Modify timeout threshold = 1595 [12 : 8] */
 	mtk_dp_mask(mtk_dp, REG_360C_AUX_TX_P0, 0x1D0C, 0x1FFF);
@@ -201,7 +202,7 @@ void dptx_hal_aux_setting(struct mtk_dp *mtk_dp)
 		    XTAL_FREQ_DP_TX_AUX_366C_MASK);
 }
 
-void dptx_hal_digital_setting(struct mtk_dp *mtk_dp)
+void dptx_hal_digital_setting(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_mask(mtk_dp, REG_304C_DP_ENCODER0_P0, 0, VBID_VIDEO_MUTE_DP_ENC0_4P_MASK);
 	mtk_dp_mask(mtk_dp, REG_3368_DP_ENCODER1_P0, BS2BS_MODE_DP_ENC1_4P_VAL << 12,
@@ -261,7 +262,7 @@ void dptx_hal_digital_setting(struct mtk_dp *mtk_dp)
 	mdelay(1);
 }
 
-void dptx_hal_digital_swreset(struct mtk_dp *mtk_dp)
+void dptx_hal_digital_swreset(const struct mtk_dp *mtk_dp)
 {
 	printk(BIOS_DEBUG, "[eDPTX] DP_PHY_DIG_TX_CTL_0:%#x\n",
 	       mtk_dp_phy_read(mtk_dp, DP_PHY_DIG_TX_CTL_0));
@@ -274,7 +275,7 @@ void dptx_hal_digital_swreset(struct mtk_dp *mtk_dp)
 	       mtk_dp_phy_read(mtk_dp, DP_PHY_DIG_TX_CTL_0));
 }
 
-void dptx_hal_swing_emp_reset(struct mtk_dp *mtk_dp)
+void dptx_hal_swing_emp_reset(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_mask(mtk_dp, REG_2004_TOP_SWING_EMP, 0,
 		    DP_TX0_VOLT_SWING_MASK | DP_TX1_VOLT_SWING_MASK | DP_TX2_VOLT_SWING_MASK |
@@ -282,7 +283,7 @@ void dptx_hal_swing_emp_reset(struct mtk_dp *mtk_dp)
 		    DP_TX2_PRE_EMPH_MASK | DP_TX3_PRE_EMPH_MASK);
 }
 
-static void dptx_hal_phy_wait_aux_ldo_ready(struct mtk_dp *mtk_dp)
+static void dptx_hal_phy_wait_aux_ldo_ready(const struct mtk_dp *mtk_dp)
 {
 	u32 mask = RGS_BG_CORE_EN_READY_MASK | RGS_AUX_LDO_EN_READY_MASK;
 
@@ -293,7 +294,7 @@ static void dptx_hal_phy_wait_aux_ldo_ready(struct mtk_dp *mtk_dp)
 	}
 }
 
-void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, u8 value)
+void dptx_hal_set_txlane(const struct mtk_dp *mtk_dp, u8 value)
 {
 	/* Turn off phy power before phy configure */
 	mtk_dp_mask(mtk_dp, REG_3F44_DP_ENC_4P_3, PHY_PWR_STATE_OW_EN_DP_ENC_4P_3,
@@ -313,7 +314,7 @@ void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, u8 value)
 	mtk_dp_mask(mtk_dp, REG_34A4_DP_TRANS_P0, value << 2, BIT(3) | BIT(2));
 }
 
-void dptx_hal_phy_set_idle_pattern(struct mtk_dp *mtk_dp, u8 lane_count, bool enable)
+void dptx_hal_phy_set_idle_pattern(const struct mtk_dp *mtk_dp, u8 lane_count, bool enable)
 {
 	u32 val = 0x0;
 
@@ -340,7 +341,7 @@ void dptx_hal_phy_set_idle_pattern(struct mtk_dp *mtk_dp, u8 lane_count, bool en
 		    POST_MISC_DATA_LANE_OV_DP_TRANS_4P_MASK);
 }
 
-void dptx_hal_phyd_reset(struct mtk_dp *mtk_dp)
+void dptx_hal_phyd_reset(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_phy_mask(mtk_dp, DP_PHY_DIG_SW_RST, 0, BIT(0));
 	udelay(10);

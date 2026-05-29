@@ -13,7 +13,7 @@
 #include <soc/dptx_reg.h>
 #include <timer.h>
 
-static void mtk_edp_pattern(struct mtk_dp *mtk_dp, u8 lane_count, u8 pattern)
+static void mtk_edp_pattern(const struct mtk_dp *mtk_dp, u8 lane_count, u8 pattern)
 {
 	u8 aux_offset;
 
@@ -49,7 +49,7 @@ static void mtk_edp_pattern(struct mtk_dp *mtk_dp, u8 lane_count, u8 pattern)
 	dptx_auxwrite_dpcd(mtk_dp, DP_AUX_NATIVE_WRITE, DPCD_00102, 0x1, &aux_offset);
 }
 
-static void update_swing_preemphasis(struct mtk_dp *mtk_dp, u8 lane_count,
+static void update_swing_preemphasis(const struct mtk_dp *mtk_dp, u8 lane_count,
 				     u8 dpcd_adjust_req[DP_LANSE_ADJUST_SIZE])
 {
 	u8 swing_val[MAX_LANECOUNT];
@@ -85,7 +85,7 @@ static void update_swing_preemphasis(struct mtk_dp *mtk_dp, u8 lane_count,
 	dptx_hal_set_swing_preemphasis(mtk_dp, lane_count, swing_val, preemphasis);
 }
 
-static void dptx_training_changemode(struct mtk_dp *mtk_dp)
+static void dptx_training_changemode(const struct mtk_dp *mtk_dp)
 {
 	dptx_hal_phyd_reset(mtk_dp);
 	dptx_hal_swing_emp_reset(mtk_dp);
@@ -93,7 +93,7 @@ static void dptx_training_changemode(struct mtk_dp *mtk_dp)
 	mdelay(2);
 }
 
-static void mtk_edp_train_setting(struct mtk_dp *mtk_dp,
+static void mtk_edp_train_setting(const struct mtk_dp *mtk_dp,
 				  u8 linkrate, u8 lanecount)
 {
 	u8 lanecount_enhanced_frame;
@@ -120,12 +120,12 @@ static void mtk_edp_train_setting(struct mtk_dp *mtk_dp,
 	       linkrate, lanecount);
 }
 
-static void drm_dp_dpcd_read_link_status(struct mtk_dp *mtk_dp, u8 status[DP_LINK_STATUS_SIZE])
+static void drm_dp_dpcd_read_link_status(const struct mtk_dp *mtk_dp, u8 status[DP_LINK_STATUS_SIZE])
 {
 	dptx_auxread_dpcd(mtk_dp, DP_AUX_NATIVE_READ, DPCD_00202, DP_LINK_STATUS_SIZE, status);
 }
 
-static int mtk_edp_train_cr(struct mtk_dp *mtk_dp, u8 lane_count)
+static int mtk_edp_train_cr(const struct mtk_dp *mtk_dp, u8 lane_count)
 {
 	u8 lane_adjust[DP_LANSE_ADJUST_SIZE];
 	u8 link_status[DP_LINK_STATUS_SIZE];
@@ -197,7 +197,7 @@ static int mtk_edp_train_cr(struct mtk_dp *mtk_dp, u8 lane_count)
 	return DPTX_TRANING_FAIL;
 }
 
-static int mtk_edp_train_eq(struct mtk_dp *mtk_dp, u8 lane_count)
+static int mtk_edp_train_eq(const struct mtk_dp *mtk_dp, u8 lane_count)
 {
 	u8 lane_adjust[2];
 	u8 link_status[DP_LINK_STATUS_SIZE];

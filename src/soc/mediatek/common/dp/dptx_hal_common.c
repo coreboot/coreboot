@@ -12,7 +12,7 @@
 
 #define REG_OFFSET_LIMIT 0x8000
 
-u32 mtk_dp_read(struct mtk_dp *mtk_dp, u32 offset)
+u32 mtk_dp_read(const struct mtk_dp *mtk_dp, u32 offset)
 {
 	void *addr = mtk_dp->regs + offset;
 
@@ -21,7 +21,7 @@ u32 mtk_dp_read(struct mtk_dp *mtk_dp, u32 offset)
 
 	return read32(addr);
 }
-void mtk_dp_write(struct mtk_dp *mtk_dp, u32 offset, u32 val)
+void mtk_dp_write(const struct mtk_dp *mtk_dp, u32 offset, u32 val)
 {
 	void *addr = mtk_dp->regs + offset;
 
@@ -31,7 +31,7 @@ void mtk_dp_write(struct mtk_dp *mtk_dp, u32 offset, u32 val)
 	write32(addr, val);
 }
 
-void mtk_dp_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask)
+void mtk_dp_mask(const struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask)
 {
 	void *addr = mtk_dp->regs + offset;
 
@@ -42,7 +42,7 @@ void mtk_dp_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask)
 	clrsetbits32(addr, mask, val);
 }
 
-void mtk_dp_write_byte(struct mtk_dp *mtk_dp, u32 addr, u8 val, u8 mask)
+void mtk_dp_write_byte(const struct mtk_dp *mtk_dp, u32 addr, u8 val, u8 mask)
 {
 	if (addr % 2) {
 		mtk_dp_write(mtk_dp, DP_TX_TOP_APB_WSTRB, 0x12);
@@ -55,7 +55,7 @@ void mtk_dp_write_byte(struct mtk_dp *mtk_dp, u32 addr, u8 val, u8 mask)
 	mtk_dp_write(mtk_dp, DP_TX_TOP_APB_WSTRB, 0x0);
 }
 
-u32 mtk_dp_phy_read(struct mtk_dp *mtk_dp, u32 offset)
+u32 mtk_dp_phy_read(const struct mtk_dp *mtk_dp, u32 offset)
 {
 	void *addr = mtk_dp->phy_regs + offset;
 
@@ -65,7 +65,7 @@ u32 mtk_dp_phy_read(struct mtk_dp *mtk_dp, u32 offset)
 	return read32(addr);
 }
 
-void mtk_dp_phy_write(struct mtk_dp *mtk_dp, u32 offset, u32 val)
+void mtk_dp_phy_write(const struct mtk_dp *mtk_dp, u32 offset, u32 val)
 {
 	void *addr = mtk_dp->phy_regs + offset;
 
@@ -75,7 +75,7 @@ void mtk_dp_phy_write(struct mtk_dp *mtk_dp, u32 offset, u32 val)
 	write32(addr, val);
 }
 
-void mtk_dp_phy_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask)
+void mtk_dp_phy_mask(const struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask)
 {
 	void *addr = mtk_dp->phy_regs + offset;
 
@@ -86,7 +86,7 @@ void mtk_dp_phy_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask)
 	clrsetbits32(addr, mask, val);
 }
 
-void dptx_hal_verify_clock(struct mtk_dp *mtk_dp)
+void dptx_hal_verify_clock(const struct mtk_dp *mtk_dp)
 {
 	u32 m, n, ls_clk, pix_clk;
 
@@ -100,12 +100,12 @@ void dptx_hal_verify_clock(struct mtk_dp *mtk_dp)
 	       pix_clk / 4);
 }
 
-void dptx_hal_bypassmsa_en(struct mtk_dp *mtk_dp, bool enable)
+void dptx_hal_bypassmsa_en(const struct mtk_dp *mtk_dp, bool enable)
 {
 	mtk_dp_mask(mtk_dp, REG_3030_DP_ENCODER0_P0, enable ? 0 : 0x3ff, 0x3ff);
 }
 
-void dptx_hal_set_msa(struct mtk_dp *mtk_dp)
+void dptx_hal_set_msa(const struct mtk_dp *mtk_dp)
 {
 	u32 va, vsync, vbp, vfp, vtotal, ha, hsync, hbp, hfp, htotal, val;
 	struct edid *edid = mtk_dp->edid;
@@ -166,7 +166,7 @@ void dptx_hal_set_msa(struct mtk_dp *mtk_dp)
 	       edid->mode.pixel_clock * 1000 / htotal / vtotal);
 }
 
-void dptx_hal_set_color_depth(struct mtk_dp *mtk_dp, u8 color_depth)
+void dptx_hal_set_color_depth(const struct mtk_dp *mtk_dp, u8 color_depth)
 {
 	u8 val;
 
@@ -194,13 +194,13 @@ void dptx_hal_set_color_depth(struct mtk_dp *mtk_dp, u8 color_depth)
 	mtk_dp_write_byte(mtk_dp, REG_303C_DP_ENCODER0_P0 + 1, val, 0x7);
 }
 
-void dptx_hal_setmisc(struct mtk_dp *mtk_dp, u8 cmisc[2])
+void dptx_hal_setmisc(const struct mtk_dp *mtk_dp, u8 cmisc[2])
 {
 	mtk_dp_write_byte(mtk_dp, REG_3034_DP_ENCODER0_P0, cmisc[0], 0xfe);
 	mtk_dp_write_byte(mtk_dp, REG_3034_DP_ENCODER0_P0 + 1, cmisc[1], 0xff);
 }
 
-void dptx_hal_overwrite_mn(struct mtk_dp *mtk_dp, bool enable, u32 video_m, u32 video_n)
+void dptx_hal_overwrite_mn(const struct mtk_dp *mtk_dp, bool enable, u32 video_m, u32 video_n)
 {
 	if (enable) {
 		/* Turn on overwrite MN */
@@ -219,7 +219,7 @@ void dptx_hal_overwrite_mn(struct mtk_dp *mtk_dp, bool enable, u32 video_m, u32 
 	}
 }
 
-u8 dptx_hal_get_colorbpp(struct mtk_dp *mtk_dp)
+u8 dptx_hal_get_colorbpp(const struct mtk_dp *mtk_dp)
 {
 	u8 color_bpp;
 	u8 color_depth = mtk_dp->info.depth;
@@ -275,7 +275,7 @@ u8 dptx_hal_get_colorbpp(struct mtk_dp *mtk_dp)
 	return color_bpp;
 }
 
-void dptx_hal_settu_sramrd_start(struct mtk_dp *mtk_dp, u16 value)
+void dptx_hal_settu_sramrd_start(const struct mtk_dp *mtk_dp, u16 value)
 {
 	/*
 	 * [5:0] video sram start address
@@ -284,17 +284,17 @@ void dptx_hal_settu_sramrd_start(struct mtk_dp *mtk_dp, u16 value)
 	mtk_dp_write_byte(mtk_dp, REG_303C_DP_ENCODER0_P0, (u8)value, 0x3f);
 }
 
-void dptx_hal_setsdp_downcnt_init_inhblanking(struct mtk_dp *mtk_dp, u16 value)
+void dptx_hal_setsdp_downcnt_init_inhblanking(const struct mtk_dp *mtk_dp, u16 value)
 {
 	DP_WRITE2BYTE(mtk_dp, REG_3364_DP_ENCODER1_P0, value);
 }
 
-void dptx_hal_setsdp_downcnt_init(struct mtk_dp *mtk_dp, u16 value)
+void dptx_hal_setsdp_downcnt_init(const struct mtk_dp *mtk_dp, u16 value)
 {
 	DP_WRITE2BYTE(mtk_dp, REG_3040_DP_ENCODER0_P0, value);
 }
 
-bool dptx_hal_auxread_bytes(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr, size_t length,
+bool dptx_hal_auxread_bytes(const struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr, size_t length,
 			    u8 *rx_buf)
 {
 	bool valid_cmd = false;
@@ -409,8 +409,8 @@ bool dptx_hal_auxread_bytes(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr, size_t
 	return valid_cmd;
 }
 
-bool dptx_hal_auxwrite_bytes(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr, size_t length,
-			     u8 *data)
+bool dptx_hal_auxwrite_bytes(const struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr, size_t length,
+			     const u8 *data)
 {
 	bool valid_cmd = false;
 	u8 reply_cmd;
@@ -497,14 +497,14 @@ bool dptx_hal_auxwrite_bytes(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr, size_
 	return valid_cmd;
 }
 
-void dptx_hal_hpd_int_en(struct mtk_dp *mtk_dp, bool enable)
+void dptx_hal_hpd_int_en(const struct mtk_dp *mtk_dp, bool enable)
 {
 	/* [7]:int, [6]:Con, [5]DisCon, [4]No-Use: UnMASK HPD Port */
 	mtk_dp_write_byte(mtk_dp, REG_3418_DP_TRANS_P0, enable ? 0 : GENMASK(7, 5),
 			  GENMASK(7, 5));
 }
 
-void dptx_hal_set_txtrainingpattern(struct mtk_dp *mtk_dp, u8 value)
+void dptx_hal_set_txtrainingpattern(const struct mtk_dp *mtk_dp, u8 value)
 {
 	/* if Set TPS1. */
 	if (value == BIT(4))
@@ -513,13 +513,13 @@ void dptx_hal_set_txtrainingpattern(struct mtk_dp *mtk_dp, u8 value)
 	mtk_dp_write_byte(mtk_dp, REG_3400_DP_TRANS_P0 + 1, value, GENMASK(7, 4));
 }
 
-void dptx_hal_phy_setidlepattern(struct mtk_dp *mtk_dp, bool enable)
+void dptx_hal_phy_setidlepattern(const struct mtk_dp *mtk_dp, bool enable)
 {
 	mtk_dp_write_byte(mtk_dp, REG_3580_DP_TRANS_P0 + 1,
 			  enable ? 0xf : 0x0, 0xf);
 }
 
-void dptx_hal_set_ef_mode(struct mtk_dp *mtk_dp, bool enable)
+void dptx_hal_set_ef_mode(const struct mtk_dp *mtk_dp, bool enable)
 {
 	/*
 	 * [4]: REG_enhanced_frame_mode
@@ -531,7 +531,7 @@ void dptx_hal_set_ef_mode(struct mtk_dp *mtk_dp, bool enable)
 		mtk_dp_write_byte(mtk_dp, REG_3000_DP_ENCODER0_P0, 0, BIT(4));
 }
 
-void dptx_hal_setscramble(struct mtk_dp *mtk_dp, bool enable)
+void dptx_hal_setscramble(const struct mtk_dp *mtk_dp, bool enable)
 {
 	/* [0]: dp tx transmitter scramble enable. */
 	if (enable)
@@ -540,7 +540,7 @@ void dptx_hal_setscramble(struct mtk_dp *mtk_dp, bool enable)
 		mtk_dp_write_byte(mtk_dp, REG_3404_DP_TRANS_P0, 0, BIT(0));
 }
 
-void dptx_hal_videomute(struct mtk_dp *mtk_dp, bool enable)
+void dptx_hal_videomute(const struct mtk_dp *mtk_dp, bool enable)
 {
 	if (enable) {
 		mtk_dp_write_byte(mtk_dp, REG_3000_DP_ENCODER0_P0, BIT(3) | BIT(2),
@@ -553,7 +553,7 @@ void dptx_hal_videomute(struct mtk_dp *mtk_dp, bool enable)
 	printk(BIOS_DEBUG, "mute = %#x\n", read32(mtk_dp->regs + 0x402c));
 }
 
-void dptx_hal_analog_power_en(struct mtk_dp *mtk_dp, bool enable)
+void dptx_hal_analog_power_en(const struct mtk_dp *mtk_dp, bool enable)
 {
 	if (enable) {
 		mtk_dp_write_byte(mtk_dp, DP_TX_TOP_RESET_AND_PROBE, 0, BIT(4));
@@ -568,4 +568,4 @@ void dptx_hal_analog_power_en(struct mtk_dp *mtk_dp, bool enable)
 	}
 }
 
-__weak void dptx_hal_phy_init(struct mtk_dp *mtk_dp) { /* do nothing */ }
+__weak void dptx_hal_phy_init(const struct mtk_dp *mtk_dp) { /* do nothing */ }

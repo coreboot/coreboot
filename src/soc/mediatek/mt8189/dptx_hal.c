@@ -11,7 +11,7 @@
 #include <soc/dptx_hal.h>
 #include <soc/dptx_reg.h>
 
-void dptx_hal_reset_swing_preemphasis(struct mtk_dp *mtk_dp)
+void dptx_hal_reset_swing_preemphasis(const struct mtk_dp *mtk_dp)
 {
 	u32 mask = EDP_TX_LN_VOLT_SWING_VAL_MASK | EDP_TX_LN_PRE_EMPH_VAL_MASK |
 		   EDP_TX_LN_VOLT_SWING_EN_MASK | EDP_TX_LN_PRE_EMPH_EN_MASK;
@@ -21,7 +21,7 @@ void dptx_hal_reset_swing_preemphasis(struct mtk_dp *mtk_dp)
 		mtk_dp_phy_mask(mtk_dp, dptx_hal_driving_offset[i], value, mask);
 }
 
-void dptx_hal_phy_set_lanes(struct mtk_dp *mtk_dp, u8 lane_count)
+void dptx_hal_phy_set_lanes(const struct mtk_dp *mtk_dp, u8 lane_count)
 {
 	mtk_dp_phy_mask(mtk_dp, PHYD_DIG_GLB_OFFSET + 0x44,
 			GENMASK(4 + lane_count - 1, 4), GENMASK(7, 4));

@@ -51,7 +51,7 @@ __weak int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid)
 	return -1;
 }
 
-__weak int mtk_edp_enable(struct mtk_dp *mtk_dp)
+__weak int mtk_edp_enable(const struct mtk_dp *mtk_dp)
 {
 	printk(BIOS_WARNING, "%s: Not supported\n", __func__);
 	return -1;

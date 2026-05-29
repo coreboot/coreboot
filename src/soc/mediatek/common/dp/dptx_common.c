@@ -13,8 +13,8 @@
 #include <string.h>
 #include <timer.h>
 
-static bool dptx_auxwrite_bytes(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
-			 size_t length, u8 *data)
+static bool dptx_auxwrite_bytes(const struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
+				size_t length, const u8 *data)
 {
 	if (retry(7, dptx_hal_auxwrite_bytes(mtk_dp, cmd, dpcd_addr, length, data),
 		  mdelay(1)))
@@ -26,8 +26,8 @@ static bool dptx_auxwrite_bytes(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 	return false;
 }
 
-bool dptx_auxwrite_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
-			size_t length, u8 *data)
+bool dptx_auxwrite_dpcd(const struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
+			size_t length, const u8 *data)
 {
 	bool ret = true;
 	size_t offset = 0;
@@ -42,7 +42,7 @@ bool dptx_auxwrite_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 	return ret;
 }
 
-static bool dptx_auxread_bytes(struct mtk_dp *mtk_dp, u8 cmd,
+static bool dptx_auxread_bytes(const struct mtk_dp *mtk_dp, u8 cmd,
 			       u32 dpcd_addr, size_t length, u8 *data)
 {
 	if (retry(7, dptx_hal_auxread_bytes(mtk_dp, cmd, dpcd_addr, length, data),
@@ -55,7 +55,7 @@ static bool dptx_auxread_bytes(struct mtk_dp *mtk_dp, u8 cmd,
 	return false;
 }
 
-bool dptx_auxread_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
+bool dptx_auxread_dpcd(const struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 		       size_t length, u8 *rxbuf)
 {
 	bool ret = true;
@@ -202,7 +202,7 @@ bool dptx_channel_eq_ok(const u8 link_status[DP_LINK_STATUS_SIZE],
 	return true;
 }
 
-static void dptx_videomute(struct mtk_dp *mtk_dp, bool enable)
+static void dptx_videomute(const struct mtk_dp *mtk_dp, bool enable)
 {
 	dptx_hal_videomute(mtk_dp, enable);
 }
@@ -239,7 +239,7 @@ static void dptx_fec_ready(struct mtk_dp *mtk_dp, u8 err_cnt_sel)
 	}
 }
 
-void dptx_init_variable(struct mtk_dp *mtk_dp)
+static void dptx_init_variable(struct mtk_dp *mtk_dp)
 {
 	mtk_dp->regs = (void *)EDP_BASE;
 	mtk_dp->phy_regs = (void *)EDP_PHY_BASE;
@@ -267,7 +267,7 @@ static inline bool dptx_check_res_sample_rate(const struct edid *edid)
 	return edid->mode.va + edid->mode.vbl <= 525;
 }
 
-static void dptx_setsdp_downcnt_init(struct mtk_dp *mtk_dp, u16 sram_read_start)
+static void dptx_setsdp_downcnt_init(const struct mtk_dp *mtk_dp, u16 sram_read_start)
 {
 	u32 count = 0; /* count: sdp_down_cnt_init */
 	u8 offset;
@@ -299,7 +299,7 @@ static void dptx_setsdp_downcnt_init(struct mtk_dp *mtk_dp, u16 sram_read_start)
 	dptx_hal_setsdp_downcnt_init(mtk_dp, count);
 }
 
-static void dptx_setsdp_downcnt_init_inhblanking(struct mtk_dp *mtk_dp)
+static void dptx_setsdp_downcnt_init_inhblanking(const struct mtk_dp *mtk_dp)
 {
 	int pixclk_mhz = mtk_dp->edid->mode.pixel_clock / 1000;
 	u8 offset;
@@ -330,7 +330,7 @@ static void dptx_setsdp_downcnt_init_inhblanking(struct mtk_dp *mtk_dp)
 	dptx_hal_setsdp_downcnt_init_inhblanking(mtk_dp, count);
 }
 
-static void dptx_set_tu(struct mtk_dp *mtk_dp)
+static void dptx_set_tu(const struct mtk_dp *mtk_dp)
 {
 	u8 bpp;
 	u16 sram_read_start = DPTX_TBC_BUF_READSTARTADRTHRD;
@@ -359,7 +359,7 @@ static void dptx_set_tu(struct mtk_dp *mtk_dp)
 	dptx_setsdp_downcnt_init(mtk_dp, sram_read_start);
 }
 
-static void dptx_set_misc(struct mtk_dp *mtk_dp)
+static void dptx_set_misc(const struct mtk_dp *mtk_dp)
 {
 	u8 format, depth;
 	union misc_t dptx_misc = { .cmisc = {} };
@@ -401,7 +401,7 @@ static void dptx_set_misc(struct mtk_dp *mtk_dp)
 	dptx_hal_setmisc(mtk_dp, dptx_misc.cmisc);
 }
 
-static void dptx_set_dptxout(struct mtk_dp *mtk_dp)
+static void dptx_set_dptxout(const struct mtk_dp *mtk_dp)
 {
 	dptx_hal_bypassmsa_en(mtk_dp, false);
 	dptx_set_tu(mtk_dp);
@@ -485,7 +485,7 @@ static void dptx_check_sinkcap(struct mtk_dp *mtk_dp)
 	       stopwatch_duration_msecs(&sw));
 }
 
-void dptx_video_enable(struct mtk_dp *mtk_dp, bool enable)
+void dptx_video_enable(const struct mtk_dp *mtk_dp, bool enable)
 {
 	printk(BIOS_INFO, "Output Video %s!\n", enable ?
 	       "enable" : "disable");
@@ -498,17 +498,17 @@ void dptx_video_enable(struct mtk_dp *mtk_dp, bool enable)
 		dptx_videomute(mtk_dp, true);
 }
 
-static void dptx_set_color_format(struct mtk_dp *mtk_dp, u8 color_format)
+static void dptx_set_color_format(const struct mtk_dp *mtk_dp, u8 color_format)
 {
 	dptx_hal_set_color_format(mtk_dp, color_format);
 }
 
-static void dptx_set_color_depth(struct mtk_dp *mtk_dp, u8 color_depth)
+static void dptx_set_color_depth(const struct mtk_dp *mtk_dp, u8 color_depth)
 {
 	dptx_hal_set_color_depth(mtk_dp, color_depth);
 }
 
-void dptx_video_config(struct mtk_dp *mtk_dp)
+void dptx_video_config(const struct mtk_dp *mtk_dp)
 {
 	u32 mvid = 0;
 	bool overwrite = false;
@@ -522,7 +522,7 @@ void dptx_video_config(struct mtk_dp *mtk_dp)
 	dptx_set_color_format(mtk_dp, mtk_dp->info.format);
 }
 
-static void dptx_init_port(struct mtk_dp *mtk_dp)
+static void dptx_init_port(const struct mtk_dp *mtk_dp)
 {
 	dptx_hal_phy_setidlepattern(mtk_dp, true);
 	dptx_hal_init_setting(mtk_dp);
@@ -575,7 +575,7 @@ int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid)
 	return 0;
 }
 
-int mtk_edp_enable(struct mtk_dp *mtk_dp)
+int mtk_edp_enable(const struct mtk_dp *mtk_dp)
 {
 	if (!mtk_dp) {
 		printk(BIOS_ERR, "%s: eDP is not initialized\n", __func__);

@@ -27,7 +27,7 @@ static const struct shift_mask volt_preemphasis[DPTX_LANE_MAX] = {
 	[DPTX_LANE3] = { DP_TX3_PRE_EMPH_FLDMASK_POS, DP_TX3_PRE_EMPH_FLDMASK },
 };
 
-void dptx_hal_init_setting(struct mtk_dp *mtk_dp)
+void dptx_hal_init_setting(const struct mtk_dp *mtk_dp)
 {
 	DP_WRITE1BYTE(mtk_dp, REG_342C_DP_TRANS_P0, 0x69);
 	mtk_dp_mask(mtk_dp, REG_3540_DP_TRANS_P0, BIT(3), BIT(3));
@@ -36,7 +36,7 @@ void dptx_hal_init_setting(struct mtk_dp *mtk_dp)
 	mtk_dp_mask(mtk_dp, DP_TX_TOP_IRQ_MASK, BIT(2), BIT(2));
 }
 
-void dptx_hal_set_color_format(struct mtk_dp *mtk_dp, u8 out_format)
+void dptx_hal_set_color_format(const struct mtk_dp *mtk_dp, u8 out_format)
 {
 	/* MISC0 */
 	mtk_dp_write_byte(mtk_dp, REG_3034_DP_ENCODER0_P0,
@@ -61,7 +61,7 @@ void dptx_hal_set_color_format(struct mtk_dp *mtk_dp, u8 out_format)
 	}
 }
 
-void dptx_hal_settu_setencoder(struct mtk_dp *mtk_dp)
+void dptx_hal_settu_setencoder(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_write_byte(mtk_dp, REG_303C_DP_ENCODER0_P0 + 1,
 			  BIT(7), BIT(7));
@@ -74,13 +74,13 @@ void dptx_hal_settu_setencoder(struct mtk_dp *mtk_dp)
 	DP_WRITE2BYTE(mtk_dp, REG_3368_DP_ENCODER1_P0, 0x1111);
 }
 
-bool dptx_hal_hpd_high(struct mtk_dp *mtk_dp)
+bool dptx_hal_hpd_high(const struct mtk_dp *mtk_dp)
 {
 	return mtk_dp_read(mtk_dp, REG_3414_DP_TRANS_P0) & BIT(2);
 }
 
-void dptx_hal_set_swing_preemphasis(struct mtk_dp *mtk_dp, size_t lane_count,
-				    u8 *swing_value, u8 *preemphasis)
+void dptx_hal_set_swing_preemphasis(const struct mtk_dp *mtk_dp, size_t lane_count,
+				    const u8 *swing_value, const u8 *preemphasis)
 {
 	assert(lane_count <= DPTX_LANE_MAX);
 
@@ -96,7 +96,7 @@ void dptx_hal_set_swing_preemphasis(struct mtk_dp *mtk_dp, size_t lane_count,
 	}
 }
 
-void dptx_hal_reset_swing_preemphasis(struct mtk_dp *mtk_dp)
+void dptx_hal_reset_swing_preemphasis(const struct mtk_dp *mtk_dp)
 {
 	int lane;
 
@@ -108,7 +108,7 @@ void dptx_hal_reset_swing_preemphasis(struct mtk_dp *mtk_dp)
 			    0, volt_preemphasis[lane].mask);
 }
 
-void dptx_hal_hpd_detect_setting(struct mtk_dp *mtk_dp)
+void dptx_hal_hpd_detect_setting(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_write_byte(mtk_dp, REG_3410_DP_TRANS_P0,
 			  0x8, GENMASK(3, 0));
@@ -119,7 +119,7 @@ void dptx_hal_hpd_detect_setting(struct mtk_dp *mtk_dp)
 	DP_WRITE1BYTE(mtk_dp, REG_3430_DP_TRANS_P0, 0x2);
 }
 
-void dptx_hal_phy_setting(struct mtk_dp *mtk_dp)
+void dptx_hal_phy_setting(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_mask(mtk_dp, DP_TX_TOP_PWR_STATE,
 		    0x3 << DP_PWR_STATE_FLDMASK_POS, DP_PWR_STATE_FLDMASK);
@@ -154,7 +154,7 @@ void dptx_hal_phy_setting(struct mtk_dp *mtk_dp)
 	mtk_dp_mask(mtk_dp, 0x3690, BIT(8), BIT(8));
 }
 
-void dptx_hal_ssc_en(struct mtk_dp *mtk_dp, bool enable)
+void dptx_hal_ssc_en(const struct mtk_dp *mtk_dp, bool enable)
 {
 	mtk_dp_mask(mtk_dp, 0x2000, BIT(0), GENMASK(1, 0));
 
@@ -168,7 +168,7 @@ void dptx_hal_ssc_en(struct mtk_dp *mtk_dp, bool enable)
 	mdelay(1);
 }
 
-void dptx_hal_aux_setting(struct mtk_dp *mtk_dp)
+void dptx_hal_aux_setting(const struct mtk_dp *mtk_dp)
 {
 	/* [12 : 8]: modify timeout threshold = 1595 */
 	mtk_dp_mask(mtk_dp, REG_360C_AUX_TX_P0,
@@ -185,7 +185,7 @@ void dptx_hal_aux_setting(struct mtk_dp *mtk_dp)
 		    MTK_ATOP_EN_AUX_TX_P0_FLDMASK);
 }
 
-void dptx_hal_digital_setting(struct mtk_dp *mtk_dp)
+void dptx_hal_digital_setting(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_write_byte(mtk_dp, REG_304C_DP_ENCODER0_P0,
 			  0, VBID_VIDEO_MUTE_DP_ENCODER0_P0_FLDMASK);
@@ -204,21 +204,21 @@ void dptx_hal_digital_setting(struct mtk_dp *mtk_dp)
 	mtk_dp_write_byte(mtk_dp, REG_3004_DP_ENCODER0_P0 + 1, 0, BIT(1));
 }
 
-void dptx_hal_digital_swreset(struct mtk_dp *mtk_dp)
+void dptx_hal_digital_swreset(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_write_byte(mtk_dp, REG_340C_DP_TRANS_P0 + 1, BIT(5), BIT(5));
 	mdelay(1);
 	mtk_dp_write_byte(mtk_dp, REG_340C_DP_TRANS_P0 + 1, 0, BIT(5));
 }
 
-void dptx_hal_phyd_reset(struct mtk_dp *mtk_dp)
+void dptx_hal_phyd_reset(const struct mtk_dp *mtk_dp)
 {
 	mtk_dp_write_byte(mtk_dp, 0x1038, 0, BIT(0));
 	mdelay(1);
 	mtk_dp_write_byte(mtk_dp, 0x1038, BIT(0), BIT(0));
 }
 
-void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, u8 value)
+void dptx_hal_set_txlane(const struct mtk_dp *mtk_dp, u8 value)
 {
 	if (value == 0)
 		mtk_dp_write_byte(mtk_dp, REG_35F0_DP_TRANS_P0,
@@ -237,7 +237,7 @@ void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, u8 value)
 	}
 }
 
-void dptx_hal_set_txrate(struct mtk_dp *mtk_dp, u8 value)
+void dptx_hal_set_txrate(const struct mtk_dp *mtk_dp, u8 value)
 {
 	/* Power off TPLL and lane */
 	mtk_dp_write(mtk_dp, 0x2000, 0x00000001);

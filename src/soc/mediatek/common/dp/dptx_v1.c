@@ -14,7 +14,7 @@
 #include <string.h>
 #include <timer.h>
 
-static void dptx_training_checkswingpre(struct mtk_dp *mtk_dp,
+static void dptx_training_checkswingpre(const struct mtk_dp *mtk_dp,
 					u8 target_lane_count,
 					const u8 *dpcp202_x, u8 *dpcp_buf)
 {
@@ -349,7 +349,7 @@ static int dptx_trainingflow(struct mtk_dp *mtk_dp,
 	return DPTX_PASS;
 }
 
-static void dptx_training_changemode(struct mtk_dp *mtk_dp)
+static void dptx_training_changemode(const struct mtk_dp *mtk_dp)
 {
 	dptx_hal_phyd_reset(mtk_dp);
 	dptx_hal_reset_swing_preemphasis(mtk_dp);

@@ -118,6 +118,63 @@ config ACPI_CONSOLE
 	help
 	  Provide a mechanism for serial console based ACPI debug.
 
+config SOC_INTEL_COMMON_ACPI_BDAT
+	bool
+	default n
+	select ACPI_BDAT
+	help
+	  Export BIOS Data to ACPI space.
+
+config SOC_INTEL_RMT_PLUS_COMMON
+	bool
+	select SOC_INTEL_COMMON_ACPI_BDAT
+
+config SOC_INTEL_RMT_PLUS_SUPPORTED
+	bool
+
+# Mainboards may select one RMT+ default helper to choose the default mode.
+# Do not select more than one helper. If both helpers are selected, Kconfig
+# uses the first matching choice default and selects always-on RMT+.
+config SOC_INTEL_RMT_PLUS_ALWAYS_DEFAULT
+	bool
+
+config SOC_INTEL_RMT_PLUS_IN_DEV_MODE_DEFAULT
+	bool
+
+choice
+	prompt "Intel RMT+ mode"
+	depends on SOC_INTEL_RMT_PLUS_SUPPORTED
+	default SOC_INTEL_RMT_PLUS if SOC_INTEL_RMT_PLUS_ALWAYS_DEFAULT
+	default SOC_INTEL_RMT_PLUS_IN_DEV_MODE if SOC_INTEL_RMT_PLUS_IN_DEV_MODE_DEFAULT
+	default SOC_INTEL_RMT_PLUS_DISABLED
+	help
+	  Select how Intel RMT+ is enabled when a platform supports the
+	  required FSP-M UPDs.
+
+config SOC_INTEL_RMT_PLUS_DISABLED
+	bool "Disabled"
+
+config SOC_INTEL_RMT_PLUS
+	bool "Always enable"
+	select SOC_INTEL_RMT_PLUS_COMMON
+	help
+	  Intel RMT+ (Rank Margin Test Plus) is a FSP-M memory training
+	  feature that exports rank margin data through BDAT HOBs. With this
+	  option selected, coreboot enables RMT+ unconditionally when memory
+	  training runs.
+
+config SOC_INTEL_RMT_PLUS_IN_DEV_MODE
+	bool "Developer mode only"
+	select SOC_INTEL_RMT_PLUS_COMMON
+	help
+	  Intel RMT+ (Rank Margin Test Plus) is a FSP-M memory training
+	  feature that exports rank margin data through BDAT HOBs. With this
+	  option selected, coreboot enables RMT+ only when booting in
+	  developer mode. If vboot is not enabled, developer mode is never
+	  reported and RMT+ is not enabled.
+
+endchoice
+
 config PAVP
 	bool "Enable PAVP (Protected Audio-Video Path) support"
 	default y

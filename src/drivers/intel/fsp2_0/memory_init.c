@@ -21,6 +21,7 @@
 #include <security/vboot/antirollback.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/intel/common/reset.h>
+#include <stddef.h>
 #include <string.h>
 #include <symbols.h>
 #include <timestamp.h>
@@ -262,9 +263,9 @@ static uint32_t fsp_mrc_version(const struct fsp_header *hdr)
 {
 	uint32_t ver = 0;
 #if CONFIG(MRC_CACHE_USING_MRC_VERSION)
-	void *fspm_blob_file = (void *)(uintptr_t)hdr->image_base;
-	FSP_PRODUCER_DATA_TABLES *ft = fspm_blob_file + FSP_HDR_OFFSET;
-	FSP_PRODUCER_DATA_TYPE2 *table2 = &ft->FspProduceDataType2;
+	uint8_t *fspm_blob_file = (uint8_t *)(uintptr_t)hdr->image_base;
+	FSP_PRODUCER_DATA_TYPE2 *table2 = (void *)(fspm_blob_file + FSP_HDR_OFFSET +
+		offsetof(FSP_PRODUCER_DATA_TABLES, FspProduceDataType2));
 	size_t mrc_version_size = sizeof(table2->MrcVersion);
 	for (size_t i = 0; i < mrc_version_size; i++) {
 		ver |= (table2->MrcVersion[i] << ((mrc_version_size - 1) - i) * 8);

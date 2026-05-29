@@ -18,7 +18,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* D11 : EN_PP3300_SSD */
 	PAD_CFG_GPO_LOCK(GPP_D11, 1, LOCK_CONFIG),
 	/* E5  : NC ==> GPP_E5_STRAP */
-	PAD_CFG_GPI_LOCK(GPP_E5, NONE, LOCK_CONFIG),
+	PAD_CFG_GPI_LOCK(GPP_E5, DN_20K, LOCK_CONFIG),
 	/* E17 : SSD_PLN_L */
 	PAD_CFG_GPO_LOCK(GPP_E17, 1, LOCK_CONFIG),
 	/* F12 : WWAN_RST_L */
@@ -76,7 +76,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* H13 : UART0_CTS# ==> EN_PP3300_SD_X */
 	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 	/* E5  : NC ==> GPP_E5_STRAP */
-	PAD_CFG_GPI(GPP_E5, NONE, DEEP),
+	PAD_CFG_GPI(GPP_E5, DN_20K, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {

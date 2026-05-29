@@ -77,6 +77,7 @@ enum coreboot_acpi_ids {
 
 enum acpi_tables {
 	/* Alphabetic list of Tables defined by ACPI and used by coreboot */
+	BDAT,	/* BIOS Data ACPI Table */
 	BERT,   /* Boot Error Record Table */
 	CEDT,   /* CXL Early Discovery Table */
 	DBG2,   /* Debug Port Table 2 */
@@ -1109,6 +1110,12 @@ typedef struct acpi_ecdt {
 	u8 ec_id[];				/* EC ID  */
 } __packed acpi_ecdt_t;
 
+/* BDAT (BIOS Data ACPI Table) */
+typedef struct acpi_bdat {
+	acpi_header_t header;
+	acpi_addr_t bdat_gas;
+} __packed acpi_bdat_t;
+
 typedef struct acpi_cstate {
 	u8  ctype;
 	u16 latency;
@@ -1674,6 +1681,9 @@ unsigned long acpi_create_dmar_ds_msi_hpet(unsigned long current,
 						u8 bus, u8 dev, u8 fn);
 
 unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid);
+
+/* chipsets that select ACPI_BDAT must implement this function */
+enum cb_err acpi_soc_get_bdat_region(void **region);
 
 void acpi_soc_fill_gtdt(acpi_gtdt_t *gtdt);
 unsigned long acpi_soc_gtdt_add_timers(uint32_t *count, unsigned long current);

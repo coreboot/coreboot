@@ -1123,6 +1123,24 @@ static void acpi_create_bert(acpi_header_t *header, void *unused)
 	bert->region_length = (size_t)size;
 }
 
+static void acpi_create_bdat(acpi_header_t *header, void *unused)
+{
+	if (!CONFIG(ACPI_BDAT))
+		return;
+
+	acpi_bdat_t *bdat = (acpi_bdat_t *)header;
+	void *region;
+
+	if (acpi_soc_get_bdat_region(&region) != CB_SUCCESS)
+		return;
+
+	if (acpi_fill_header(header, "BDAT", BDAT, sizeof(acpi_bdat_t)) != CB_SUCCESS)
+		return;
+
+	bdat->bdat_gas.addrl = (uintptr_t)region & 0xffffffff;
+	bdat->bdat_gas.addrh = ((uint64_t)(uintptr_t)region) >> 32;
+}
+
 __weak void arch_fill_fadt(acpi_fadt_t *fadt) { }
 __weak void soc_fill_fadt(acpi_fadt_t *fadt) { }
 __weak void mainboard_fill_fadt(acpi_fadt_t *fadt) { }
@@ -1483,6 +1501,7 @@ unsigned long write_acpi_tables(const unsigned long start)
 		{ acpi_create_madt, NULL, sizeof(acpi_header_t) },
 		{ acpi_create_hest, NULL, sizeof(acpi_hest_t) },
 		{ acpi_create_bert, NULL, sizeof(acpi_bert_t) },
+		{ acpi_create_bdat, NULL, sizeof(acpi_bdat_t) },
 		{ acpi_create_spcr, NULL, sizeof(acpi_spcr_t) },
 		{ acpi_create_gtdt, NULL, sizeof(acpi_gtdt_t) },
 		{ acpi_create_pptt, NULL, sizeof(acpi_pptt_t) },
@@ -1834,6 +1853,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 	case NHLT:
 		return 5;
 	case BERT:
+		return 1;
+	case BDAT:
 		return 1;
 	case CEDT: /* CXL 3.0 section 9.17.1 */
 		return 1;

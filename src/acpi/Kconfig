@@ -140,3 +140,9 @@ config ACPI_HEST_ERROR_LOG_BUFFER_SIZE
 	depends on ACPI_HEST
 	help
 	  Define the size of the HEST ACPI error log buffer
+
+config ACPI_BDAT
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  Selected by platforms that support and implement BIOS Data ACPI Table (BDAT).

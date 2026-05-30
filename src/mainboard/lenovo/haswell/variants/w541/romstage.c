@@ -4,7 +4,6 @@
 #include <northbridge/intel/haswell/haswell.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <ec/lenovo/pmh7/pmh7.h>
-#include <device/pci_ops.h>
 
 const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS] = {
 	/* Length, Enable, OCn#, Location */

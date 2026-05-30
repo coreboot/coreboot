@@ -17,7 +17,6 @@
 #include <libbdk-hal/bdk-l2c.h>
 #include <libdram/libdram-config.h>
 #include <soc/ecam.h>
-#include <device/pci_ops.h>
 #include <device/mmio.h>
 #include <device/pci.h>
 

@@ -8,7 +8,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/mp.h>
 #include <device/device.h>
-#include <device/pci_ops.h>
 #include <types.h>
 
 /* Parallel MP initialization support. */

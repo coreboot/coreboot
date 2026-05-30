@@ -8,7 +8,6 @@
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/smm.h>
 #include <device/mmio.h>
-#include <device/pci_ops.h>
 #include <security/intel/cbnt/cbnt.h>
 #include <types.h>
 

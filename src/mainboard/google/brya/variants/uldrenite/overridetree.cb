@@ -112,7 +112,7 @@ chip soc/intel/alderlake
 	register "tcss_aux_ori" = "0"
 
 	# HD Audio
-	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_dsp_enable" = "true"
 	register "pch_hda_audio_link_hda_enable" = "1"
 	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
 	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"

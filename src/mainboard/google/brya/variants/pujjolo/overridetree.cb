@@ -85,7 +85,7 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 port for WWAN
 
 	# HD Audio
-	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_dsp_enable" = "true"
 	register "pch_hda_audio_link_hda_enable" = "1"
 	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
 	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"

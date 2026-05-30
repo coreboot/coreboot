@@ -77,7 +77,7 @@ chip soc/intel/alderlake
 	register "pch_reset_power_cycle_duration" = "POWER_CYCLE_DURATION_1S"
 
 	# HD Audio
-	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_dsp_enable" = "true"
 	register "pch_hda_sdi_enable[0]" = "true"
 	register "pch_hda_sdi_enable[1]" = "true"
 	register "pch_hda_audio_link_hda_enable" = "1"

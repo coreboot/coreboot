@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include <bootblock_common.h>
-#include <device/pci_ops.h>
 #include <device/pnp_ops.h>
 #include <option.h>
 #include <superio/nuvoton/common/nuvoton.h>

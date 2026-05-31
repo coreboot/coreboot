@@ -2,7 +2,6 @@
 
 #include <timestamp.h>
 #include <console/console.h>
-#include <device/pci_ops.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <romstage_handoff.h>

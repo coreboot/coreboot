@@ -4,7 +4,6 @@
 #include <commonlib/bsd/clamp.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/pci_ops.h>
 #include <northbridge/intel/haswell/haswell.h>
 
 #include "raminit_native.h"

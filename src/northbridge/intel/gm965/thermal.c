@@ -18,7 +18,6 @@
  */
 
 #include <stdint.h>
-#include <device/pci_ops.h>
 #include <device/smbus_host.h>
 #include <console/console.h>
 #include <northbridge/intel/gm965/gm965.h>

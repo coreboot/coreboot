@@ -7,7 +7,6 @@
 #include <acpi/acpigen.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#include <device/pci_ops.h>
 
 #include "gm965.h"
 

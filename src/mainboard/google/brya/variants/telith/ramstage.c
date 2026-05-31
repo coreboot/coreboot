@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/power_limit.h>
 

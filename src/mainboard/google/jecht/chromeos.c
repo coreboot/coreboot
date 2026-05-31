@@ -2,7 +2,6 @@
 
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
-#include <device/pci_ops.h>
 #include <device/device.h>
 #include <gpio.h>
 #include <types.h>

@@ -3,7 +3,6 @@
  * Intel ICH8-M LPC Bridge - IOAPIC enable
  */
 
-#include <device/pci_ops.h>
 #include <southbridge/intel/i82801hx/i82801hx.h>
 
 /* ================================================================== */

@@ -11,7 +11,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <device/pci_ops.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801hx/i82801hx.h>

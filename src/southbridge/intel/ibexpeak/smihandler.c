@@ -2,7 +2,6 @@
 
 #include <types.h>
 #include <arch/io.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <cpu/intel/em64t101_save_state.h>

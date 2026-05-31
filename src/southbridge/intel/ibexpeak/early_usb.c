@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/mmio.h>
-#include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/common/pmbase.h>

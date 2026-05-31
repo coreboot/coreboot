@@ -3,7 +3,6 @@
 #include <acpi/acpigen.h>
 #include <acpi/acpigen_pci.h>
 #include <device/pci_def.h>
-#include <device/pci_ops.h>
 
 #include "acpi_pirq_gen.h"
 

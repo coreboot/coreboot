@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
-#include <device/pci_ops.h>
 #include <intelblocks/pmc.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>

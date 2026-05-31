@@ -2,7 +2,6 @@
 
 #include <soc/pci_devs.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include <soc/soc_info.h>
 #include <intelblocks/tcss.h>
 

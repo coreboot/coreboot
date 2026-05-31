@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <cpu/intel/cpu_ids.h>
 #include <device/device.h>
-#include <device/pci_ops.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <drivers/usb/acpi/chip.h>

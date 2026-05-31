@@ -6,7 +6,6 @@
 #include <device/dram/common.h>
 #include <device/dram/ddr4.h>
 #include <device/pci_def.h>
-#include <device/pci_ops.h>
 #include <fsp/api.h>
 #include <fsp/soc_binding.h>
 #include <fsp/util.h>

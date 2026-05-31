@@ -3,7 +3,6 @@
 #include <arch/io.h>
 #include <arch/romstage.h>
 #include <device/mmio.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <elog.h>

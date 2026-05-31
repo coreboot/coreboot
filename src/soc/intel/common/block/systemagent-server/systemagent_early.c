@@ -3,7 +3,6 @@
 #define __SIMPLE_DEVICE__
 
 #include <commonlib/bsd/helpers.h>
-#include <device/pci_ops.h>
 #include <intelblocks/systemagent_server.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>

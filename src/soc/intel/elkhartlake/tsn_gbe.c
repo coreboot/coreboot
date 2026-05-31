@@ -5,7 +5,6 @@
 #include <device/mdio.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include <intelblocks/lpss.h>
 #include <soc/soc_chip.h>
 #include <soc/tsn_gbe.h>

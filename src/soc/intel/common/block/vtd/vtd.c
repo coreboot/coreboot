@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <device/mmio.h>
-#include <device/pci_ops.h>
 #include <fsp/util.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/vtd.h>

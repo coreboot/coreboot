@@ -10,7 +10,6 @@
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ops.h>
 #include <smp/node.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>

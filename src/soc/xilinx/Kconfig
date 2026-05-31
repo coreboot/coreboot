@@ -1,4 +1,0 @@
-## SPDX-License-Identifier: GPL-2.0-only
-
-# Load all chipsets
-source "src/soc/xilinx/*/Kconfig"

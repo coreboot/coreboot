@@ -21,6 +21,7 @@ typedef __WINT_TYPE__ wint_t;
 
 #if __STDC_VERSION__ >= 202300L
 #define NULL nullptr
+typedef typeof(nullptr) nullptr_t;
 #else
 #define nullptr ((void *)0)
 #define NULL ((void *)0)

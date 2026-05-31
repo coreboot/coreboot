@@ -7,7 +7,6 @@
 #include <amdblocks/chip.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ops.h>
 #include <commonlib/helpers.h>
 #include "acp_def.h"
 

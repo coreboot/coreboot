@@ -7,7 +7,6 @@
 #include <console/console.h>
 #include <soc/pci_devs.h>
 #include <soc/msr.h>
-#include <device/pci_ops.h>
 
 unsigned long tsc_freq_mhz(void)
 {

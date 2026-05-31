@@ -7,7 +7,6 @@
 #include <console/console.h>
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
-#include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>

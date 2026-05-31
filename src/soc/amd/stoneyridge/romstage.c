@@ -17,7 +17,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
-#include <device/pci_ops.h>
 #include <elog.h>
 #include <program_loading.h>
 #include <romstage_common.h>

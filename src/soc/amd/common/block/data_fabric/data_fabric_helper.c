@@ -4,7 +4,6 @@
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/pci_devs.h>
 #include <console/console.h>
-#include <device/pci_ops.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
 #include <types.h>

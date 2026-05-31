@@ -5,7 +5,6 @@
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ops.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/pci_clk_req.h>
 #include <amdblocks/reset.h>

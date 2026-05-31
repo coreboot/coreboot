@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <stdint.h>
+
 uint8_t get_max_usb20_port(void);
 uint8_t get_max_usb30_port(void);
 uint8_t get_max_tcss_port(void);

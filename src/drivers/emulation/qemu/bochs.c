@@ -6,7 +6,6 @@
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include <framebuffer_info.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>

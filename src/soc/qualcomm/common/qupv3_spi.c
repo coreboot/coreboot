@@ -34,7 +34,6 @@
 /* If fragmentation bit is set then CS will not toggle after each transfer */
 #define M_CMD_FRAGMENTATION	BIT(2)
 
-#define BITS_PER_BYTE	8
 #define BITS_PER_WORD	8
 #define TX_WATERMARK	1
 

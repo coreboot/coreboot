@@ -30,6 +30,7 @@
 #define BIT_FLAG_32(x)			(1u << (x))
 #endif
 
-#define BITS_PER_BYTE			8
+#define BITS_PER_BYTE			CHAR_BIT
+_Static_assert(CHAR_BIT == 8, "coreboot expects 8-bit bytes");
 
 #endif /* __TYPES_H */

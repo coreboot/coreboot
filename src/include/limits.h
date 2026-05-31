@@ -3,6 +3,8 @@
 #ifndef LIMITS_H
 #define LIMITS_H
 
+#define CHAR_BIT	8
+
 #define USHRT_MAX	((unsigned short)~0U)
 #define SHRT_MAX	((short)(USHRT_MAX >> 1))
 #define SHRT_MIN	((short)(-SHRT_MAX - 1))

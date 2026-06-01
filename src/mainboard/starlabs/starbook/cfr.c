@@ -195,6 +195,10 @@ static struct sm_obj_form security_group = {
 		&intel_tme,
 		&me_state,
 		&me_state_counter,
+		#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || \
+		    CONFIG(SOC_INTEL_RAPTORLAKE) || CONFIG(SOC_INTEL_METEORLAKE)
+		&ibecc,
+		#endif
 		NULL
 	},
 };

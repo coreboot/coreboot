@@ -94,6 +94,18 @@ static const struct sm_object hda_dsp = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
+#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || \
+	CONFIG(SOC_INTEL_RAPTORLAKE) || CONFIG(SOC_INTEL_METEORLAKE)
+static const struct sm_object ibecc = SM_DECLARE_BOOL({
+	.flags		= CFR_OPTFLAG_RUNTIME,
+	.opt_name	= "ibecc_enable",
+	.ui_name	= "In-Band ECC",
+	.ui_helptext	= "Enable or disable In-Band ECC. Enabling this option reduces "
+			  "available RAM because memory is reserved for ECC data.",
+	.default_value	= false,
+});
+#endif
+
 static const struct sm_object power_profile = SM_DECLARE_ENUM({
 	.opt_name	= "power_profile",
 	.ui_name	= "Power Profile",

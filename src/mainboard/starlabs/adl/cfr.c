@@ -176,7 +176,11 @@ static struct sm_obj_form performance_group = {
 static struct sm_obj_form security_group = {
 	.ui_name = "Security",
 	.obj_list = (const struct sm_object *[]){&bios_lock, &intel_tme, &me_state,
-						 &me_state_counter, NULL},
+						 &me_state_counter,
+#if CONFIG(SOC_INTEL_ALDERLAKE)
+						 &ibecc,
+#endif
+						 NULL},
 };
 
 static struct sm_obj_form suspend_lid_group = {

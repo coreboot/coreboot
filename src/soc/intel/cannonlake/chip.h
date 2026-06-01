@@ -232,6 +232,9 @@ struct soc_intel_cannonlake_config {
 	/* Heci related */
 	bool DisableHeciRetry;
 
+	/* Enable/Disable CPU Replacement check on CML */
+	bool cpu_replacement_check;
+
 	/* Gfx related */
 	bool SkipExtGfxScan;
 

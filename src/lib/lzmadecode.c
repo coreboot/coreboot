@@ -259,24 +259,20 @@ int LzmaDecode(CLzmaDecoderState *vs,
 				+ (previousByte >> (8 - lc))));
 
 			if (state >= kNumLitStates) {
-				int matchByte;
+				size_t matchByte;
+				size_t offs = 0x100;
 				matchByte = outStream[nowPos - rep0];
-				do {
-					int bit;
-					CProb *probLit;
-					matchByte <<= 1;
-					bit = (matchByte & 0x100);
-					probLit = prob + 0x100 + bit + symbol;
-					RC_GET_BIT2(probLit, symbol,
-						if (bit != 0)
-							break,
-						if (bit == 0)
-							break)
-				} while (symbol < 0x100);
-			}
-			while (symbol < 0x100) {
-				CProb *probLit = prob + symbol;
-				RC_GET_BIT(probLit, symbol)
+				while (symbol < 0x100) {
+					const size_t bit = offs;
+					matchByte = matchByte + matchByte;
+					offs &= matchByte;
+					CProb *probLit = prob + offs + bit + symbol;
+					RC_GET_BIT2(probLit, symbol, offs ^= bit, ;)
+				};
+			} else {
+				while (symbol < 0x100) {
+					RC_GET_BIT(prob + symbol, symbol)
+				}
 			}
 			previousByte = (Byte)symbol;
 

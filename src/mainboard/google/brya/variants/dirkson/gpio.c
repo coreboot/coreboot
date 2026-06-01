@@ -52,7 +52,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* E9 : USB_OC0# ==> USB_A0_OC_ODL */
 	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
 	/* E19 : DDP1_CTRLDATA ==> GPP_E19_STRAP */
-	PAD_CFG_GPI_LOCK(GPP_E19, NONE, LOCK_CONFIG),
+	PAD_CFG_GPI_LOCK(GPP_E19, DN_20K, LOCK_CONFIG),
 	/* E22 : DDPA_CTRLCLK ==> DDPA_CTRLCLK */
 	PAD_CFG_NF(GPP_E22, NONE, DEEP, NF1),
 	/* E23 : DDPA_CTRLDATA ==> DDPA_CTRLDATA */
@@ -144,7 +144,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* E19 : DDP1_CTRLDATA ==> GPP_E19_STRAP */
-	PAD_CFG_GPI(GPP_E19, NONE, DEEP),
+	PAD_CFG_GPI(GPP_E19, DN_20K, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {

@@ -120,12 +120,6 @@ int qclib_mainboard_override(struct qclib_cb_if_table *table)
 	else
 		table->global_attributes &= ~QCLIB_GA_ENABLE_PD_NEGOTIATION;
 
-	uint32_t capacity;
-	if (google_chromeec_read_batt_remaining_capacity(&capacity) < 0) {
-		printk(BIOS_WARNING, "Failed to get battery capacity\n");
-		return 0;
-	}
-
 	return 0;
 }
 

@@ -9,7 +9,6 @@
 #include <commonlib/coreboot_tables.h>
 #include <delay.h>
 #include <ec/google/chromeec/ec.h>
-#include <elog.h>
 #include <gpio.h>
 #include <reset.h>
 #include <security/vboot/vboot_common.h>
@@ -358,9 +357,6 @@ void platform_romstage_main(void)
 	}
 
 	late_setup_usb_typec();
-
-	/* Log the boot event (false indicates this is not an S3 resume) */
-	elog_boot_notify(false);
 }
 
 void platform_romstage_postram(void)

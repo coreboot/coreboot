@@ -6,6 +6,7 @@
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pcie_rp.h>
+#include <option.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pcie.h>
@@ -136,8 +137,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->FClkFrequency = 0x1;
 
 	/* Ib-Band ECC configuration */
-	if (config->ibecc.enable) {
-		m_cfg->Ibecc = !!config->ibecc.enable;
+	if (get_uint_option("ibecc_enable", config->ibecc.enable)) {
+		m_cfg->Ibecc = true;
 		m_cfg->IbeccParity = !!config->ibecc.parity_en;
 		m_cfg->IbeccOperationMode = config->ibecc.mode;
 		if (m_cfg->IbeccOperationMode == IBECC_PER_REGION) {

@@ -405,8 +405,8 @@ static void fill_fspm_ibecc_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
 	/* In-Band ECC configuration */
-	if (config->ibecc.enable) {
-		m_cfg->Ibecc = config->ibecc.enable;
+	if (get_uint_option("ibecc_enable", config->ibecc.enable)) {
+		m_cfg->Ibecc = true;
 		m_cfg->IbeccOperationMode = config->ibecc.mode;
 		if (m_cfg->IbeccOperationMode == IBECC_MODE_PER_REGION) {
 			FSP_ARRAY_LOAD(m_cfg->IbeccProtectedRangeEnable,

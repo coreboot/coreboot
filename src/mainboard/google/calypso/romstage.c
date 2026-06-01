@@ -5,7 +5,6 @@
 #include <cbmem.h>
 #include <commonlib/coreboot_tables.h>
 #include <ec/google/chromeec/ec.h>
-#include <elog.h>
 #include <soc/aop_common.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
@@ -124,9 +123,6 @@ void platform_romstage_main(void)
 	mainboard_setup_peripherals_late(boot_mode);
 
 	qclib_rerun();
-
-	/* Log the boot event (false indicates this is not an S3 resume) */
-	elog_boot_notify(false);
 }
 
 void platform_romstage_postram(void)

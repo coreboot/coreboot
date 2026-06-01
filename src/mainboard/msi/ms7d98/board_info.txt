@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.msi.com/Motherboard/PRO-B760-P-WIFI-DDR4
+ROM IC: Winbond 25Q256JWFQ
+ROM package: WSON-8
+ROM socketed: no
+Flashrom support: yes
+Release year: 2023

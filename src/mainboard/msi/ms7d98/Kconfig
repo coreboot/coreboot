@@ -1,0 +1,38 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_MSI_MS7D98
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_32768
+	select CRB_TPM
+	select DRIVERS_UART_8250IO
+	select DRIVERS_PCIE_RTD3_DEVICE
+	select HAVE_ACPI_TABLES
+	select HAVE_ACPI_RESUME
+	select HAVE_INTEL_PTT
+	select INTEL_GMA_HAVE_VBT
+	select MEMORY_MAPPED_TPM
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_COMMON_BLOCK_MEMINIT
+	select SOC_INTEL_RAPTORLAKE_PCH_S
+	select SUPERIO_NUVOTON_NCT6687D
+
+config MAINBOARD_VENDOR
+	default "Micro-Star International Co., Ltd."
+
+config MAINBOARD_PART_NUMBER
+	default "MS-7D98"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "PRO B760-P WIFI DDR4 (MS-7D98)"
+
+config MAINBOARD_DIR
+	default "msi/ms7d98"
+
+config USE_LEGACY_8254_TIMER
+	default y		# Required for proper S3
+
+config CBFS_SIZE
+	default 0x1000000 	# 16MB
+endif

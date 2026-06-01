@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_MSI_MS7D98
+	bool "PRO B760-P WIFI DDR4 (MS-7D98)"

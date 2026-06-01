@@ -1,0 +1,399 @@
+chip soc/intel/alderlake
+	# FSP configuration
+	register "eist_enable"	 = "true"
+	register "enable_c6dram" = "true"
+	register "sagv"		 = "SaGv_Enabled"
+
+	# PME routing
+	register "pmc_gpe0_dw0" = "GPP_J"
+	register "pmc_gpe0_dw1" = "GPP_VPGIO"
+	register "pmc_gpe0_dw2" = "GPD"
+
+	# FiVR External Rails
+	register "ext_fivr_settings"	= "{ .configure_ext_fivr = 1, }"
+	register "fivr_spread_spectrum" = "FIVR_SS_1_5"
+	register "fivr_rfi_frequency"	= "1394"
+
+	# MSI engineers didn't bother with implementing proper power management,
+	# therefore we need to keep clocks powered at all times.
+	# This means that ASPM will not work, with the exception of RP5 where they
+	# did have to implement proper power management for Thunderbolt 4 add-on card.
+	register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"	# PCIE_E1 (x16)
+	register "pcie_clk_config_flag[8]" = "PCIE_CLK_FREE_RUNNING"	# M2_2 (PCH)
+	register "pcie_clk_config_flag[9]" = "PCIE_CLK_FREE_RUNNING"	# M2_1 (CPU)
+	register "pcie_clk_config_flag[10]" = "PCIE_CLK_FREE_RUNNING"	# PCIE_E2 (x1)
+	register "pcie_clk_config_flag[11]" = "PCIE_CLK_FREE_RUNNING"	# RTL8125
+	register "pcie_clk_config_flag[12]" = "PCIE_CLK_FREE_RUNNING"	# PCIE_E4 (x1)
+	register "pcie_clk_config_flag[13]" = "PCIE_CLK_FREE_RUNNING"	# CNVi slot
+	register "pcie_clk_config_flag[14]" = "PCIE_CLK_FREE_RUNNING"	# PCIE_E5 (x1)
+
+	device domain 0 on
+		device ref pcie5_0 on				# PCI_E1 (PCI-E x16 Gen5 CPU)
+			register "cpu_pcie_rp[CPU_RP(2)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc	"SlotTypePciExpressGen5x16" "SlotLengthLong"
+						"PCI_E1" "SlotDataBusWidth16X"
+		end
+
+		device ref igpu on
+			# VBT enables DDI A, B, C, TC1, TC2, TC3, TC4.
+			# However, only TC1 and TC3 are routed to ports on the back.
+			# TC1 (DDI1) is occupied by DP to HDMI bridge.
+			# TC3 (DDI3) is routed straight to the DisplayPort on the I/O panel.
+			register "ddi_ports_config" = "{
+				[DDI_PORT_1] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_3] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+			}"
+		end
+
+		device ref pcie4_0 on				# M2_1 (M.2 Gen4 2280 CPU)
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_src = 9,
+				.clk_req = 9,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc	"SlotTypeM2Socket3" "SlotLengthLong"
+						"M2_1" "SlotDataBusWidth4X"
+		end
+
+		device ref crashlog off end
+		device ref heci1 off end
+		device ref shared_sram on end
+
+		device ref xhci on
+			register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# LAN Left
+			register "usb2_ports[1]" = "USB2_PORT_LONG(OC0)"	# LAN Right
+			register "usb2_ports[2]" = "USB2_PORT_LONG(OC1)"	# USB-C (Rear)
+			register "usb2_ports[3]" = "USB2_PORT_MID(OC2)"		# JUSB1
+			register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# HUB (JUSB3, JUSB4)
+			register "usb2_ports[5]" = "USB2_PORT_MID(OC4)"		# HUB (rear, bottom)
+			register "usb2_ports[6]" = "USB2_PORT_LONG(OC4)"	# PS/2 Left
+			register "usb2_ports[7]" = "USB2_PORT_LONG(OC4)"	# PS/2 Right
+			register "usb2_ports[8]" = "USB2_PORT_MID(OC5)"		# JUSB2_1
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC5)"		# JUSB2_2
+			register "usb2_ports[10]" = "USB2_PORT_SHORT(OC_SKIP)"	# MSI MYSTIC LIGHT
+			register "usb2_ports[13]" = "USB2_PORT_LONG(OC_SKIP)"	# CNVi
+
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# LAN Left
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# LAN Right
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"	# USB-C (Rear)
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC2)"	# JUSB1
+			register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC5)"	# JUSB2_1
+			register "usb3_ports[9]" = "USB3_PORT_DEFAULT(OC5)"	# JUSB2_2
+		end
+
+		device ref cnvi_wifi on
+			register "cnvi_bt_core" = "true"
+			register "cnvi_bt_audio_offload" = "false"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "enable_cnvi_ddr_rfim" = "true"
+				device generic 0 on end
+			end
+		end
+
+		device ref sata on
+			# Last slot is muxed with M2_2 slot under PCH heatsink (RootPort 25)
+			register "sata_ports_enable" = "{
+				[4] = 1,
+				[5] = 1,
+				[6] = 1,
+				[7] = 1,
+			}"
+			register "sata_ports_dev_slp" = "{
+				[4] = 1,
+				[5] = 1,
+				[6] = 1,
+				[7] = 1,
+			}"
+			register "sata_salp_support" = "true"
+		end
+
+		device ref pcie_rp1 on				# RTL8125 Built-in NIC
+			register "pch_pcie_rp[PCH_RP(1)]" = "{
+				.clk_src = 11,
+				.clk_req = 11,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_BUILT_IN |
+					 PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			device pci 00.0 on end
+		end
+
+		device ref pcie_rp2 on				# PCI_E2 (PCI-E x1 Gen4 PCH)
+			register "pch_pcie_rp[PCH_RP(2)]" = "{
+				.clk_src = 10,
+				.clk_req = 10,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc	"SlotTypePciExpressGen4x1" "SlotLengthLong"
+						"PCI_E2" "SlotDataBusWidth1X"
+		end
+
+		device ref pcie_rp3 on				# PCI_E4 (PCI-E x1 Gen4 PCH)
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 12,
+				.clk_req = 12,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc	"SlotTypePciExpressGen4x1" "SlotLengthLong"
+						"PCI_E4" "SlotDataBusWidth1X"
+		end
+
+		device ref pcie_rp4 on				# PCI_E5 (PCI-E x1 Gen4 PCH)
+			register "pch_pcie_rp[PCH_RP(4)]" = "{
+				.clk_src = 14,
+				.clk_req = 14,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc	"SlotTypePciExpressGen4x1" "SlotLengthLong"
+						"PCI_E5" "SlotDataBusWidth1X"
+		end
+
+		# This slot can be used for Thunderbolt add-on card, but hasn't been tested.
+		device ref pcie_rp5 on				# PCI_E3 (PCI-E x4 Gen4 PCH)
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 15,
+				.clk_req = 15,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+				.PcieRpL1Substates = L1_SS_L1_2,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_G1)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F12)"
+				register "srcclk_pin" = "15"
+				device generic 0 on end
+			end
+			smbios_slot_desc	"SlotTypePciExpressGen4x4" "SlotLengthLong"
+						"PCI_E3" "SlotDataBusWidth4X"
+		end
+
+		device ref pcie_rp15 off			# [UNTESTED]: PCIe in CNVi slot
+			register "pch_pcie_rp[PCH_RP(15)]" = "{
+				.clk_src = 13,
+				.clk_req = 13,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+
+		device ref pcie_rp25 on				# M2_2 (M.2 Gen4 2280 PCH)
+			register "pch_pcie_rp[PCH_RP(25)]" = "{
+				.clk_src = 8,
+				.clk_req = 8,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc	"SlotTypeM2Socket3" "SlotLengthLong"
+						"M2_2" "SlotDataBusWidth4X"
+		end
+
+		device ref pch_espi on
+			register "gen1_dec" = "0x00fc0201"
+			register "gen2_dec" = "0x003c0a01"
+			register "gen3_dec" = "0x000c03f1"
+			register "gen4_dec" = "0x000c0081"
+			chip superio/nuvoton/nct6687d
+				# a0: 20 02 09 31 0a 0b 0c 00 00 00 00 00 00 00 00 00
+				# b0: 66 67 68 69 6a 6b 6c 6d 60 00 00 00 00 00 00 00
+				register "sensors[0]" = "PECI_AGENT0_DOMAIN0"
+				register "sensors[1]" = "TD0P_CURRENT_MODE"
+				register "sensors[2]" = "THERMISTOR15"
+				register "sensors[3]" = "PCH_CHIP"
+				register "sensors[4]" = "THERMISTOR16"
+				register "sensors[5]" = "THERMISTOR0"
+				register "sensors[6]" = "THERMISTOR1"
+				register "sensors[16]" = "VIN0"
+				register "sensors[17]" = "VIN1"
+				register "sensors[18]" = "VIN2"
+				register "sensors[19]" = "VIN3"
+				register "sensors[20]" = "VIN4"
+				register "sensors[21]" = "VIN5"
+				register "sensors[22]" = "VIN6"
+				register "sensors[23]" = "VIN7"
+				register "sensors[24]" = "VCC"
+
+				register "peci_speed" = "PECI_1200KHZ"
+
+				register "fan_default_val" = "40"
+				register "smart_tracking.speed_boundary_low" = "1500"
+				register "smart_tracking.speed_boundary_high" = "2500"
+				register "smart_tracking.rpm_tolerance_low" = "100"
+				register "smart_tracking.rpm_tolerance_mid" = "100"
+				register "smart_tracking.rpm_tolerance_high" = "100"
+				register "smart_tracking.step_up" = "1"
+				register "smart_tracking.step_down" = "1"
+
+				# CPU_FAN
+				register "FAN1.mode" = "FAN_SMART_FAN_IV"
+				register "FAN1.unit_sel" = "FAN_PWM"
+				register "FAN1.fanin_sel" = "TACH_PWM1"
+				register "FAN1.fanout_sel" = "TACH_PWM0"
+				register "FAN1.fan_alg_weight" = "10"
+				register "FAN1.smart_tracking_en" = "true"
+				register "FAN1.crit_temp" = "100"
+				register "FAN1.smart_fan.temp_src" = "{ 1, 0, 0, 0 }"
+				register "FAN1.smart_fan.temp_levels" = "{ 40, 55, 70, 85, 90, 95, 100 }"
+				register "FAN1.smart_fan.speed_levels" = "{ 20, 38, 63, 85, 90, 95, 100 }"
+				register "FAN1.smart_fan.cut_off_delay" = "5"
+				register "FAN1.smart_fan.step_up_time" = "1"
+				register "FAN1.smart_fan.step_down_time" = "1"
+
+				# PUMP_FAN
+				register "FAN2.mode" = "FAN_SMART_FAN_IV"
+				register "FAN2.unit_sel" = "FAN_PWM"
+				register "FAN2.fanin_sel" = "TACH_PWM3"
+				register "FAN2.fanout_sel" = "TACH_PWM2"
+				register "FAN2.fan_alg_weight" = "10"
+				register "FAN2.smart_tracking_en" = "true"
+				register "FAN2.crit_temp" = "100"
+				register "FAN2.smart_fan.temp_src" = "{ 1, 0, 0, 0 }"
+				register "FAN2.smart_fan.temp_levels" = "{ 32, 32, 32, 32, 32, 32, 32 }"
+				register "FAN2.smart_fan.speed_levels" = "{ 100, 100, 100, 100, 100, 100, 100 }"
+				register "FAN2.smart_fan.cut_off_delay" = "5"
+				register "FAN2.smart_fan.step_up_time" = "1"
+				register "FAN2.smart_fan.step_down_time" = "1"
+
+				# SYS_FAN1
+				register "FAN3.mode" = "FAN_SMART_FAN_IV"
+				register "FAN3.unit_sel" = "FAN_PWM"
+				register "FAN3.fanin_sel" = "TACH_PWM11"
+				register "FAN3.fanout_sel" = "TACH_PWM10"
+				register "FAN3.fan_alg_weight" = "10"
+				register "FAN3.smart_tracking_en" = "true"
+				register "FAN3.crit_temp" = "100"
+				register "FAN3.smart_fan.temp_src" = "{ 1, 0, 0, 0 }"
+				register "FAN3.smart_fan.temp_levels" = "{ 40, 55, 70, 85, 90, 95, 100 }"
+				register "FAN3.smart_fan.speed_levels" = "{ 20, 38, 63, 85, 90, 95, 100 }"
+				register "FAN3.smart_fan.cut_off_delay" = "5"
+				register "FAN3.smart_fan.step_up_time" = "1"
+				register "FAN3.smart_fan.step_down_time" = "1"
+
+				# SYS_FAN2
+				register "FAN4.mode" = "FAN_SMART_FAN_IV"
+				register "FAN4.unit_sel" = "FAN_PWM"
+				register "FAN4.fanin_sel" = "TACH_PWM13"
+				register "FAN4.fanout_sel" = "TACH_PWM12"
+				register "FAN4.fan_alg_weight" = "10"
+				register "FAN4.smart_tracking_en" = "true"
+				register "FAN4.crit_temp" = "101"
+				register "FAN4.smart_fan.temp_src" = "{ 1, 0, 0, 0 }"
+				register "FAN4.smart_fan.temp_levels" = "{ 40, 55, 70, 85, 90, 95, 100 }"
+				register "FAN4.smart_fan.speed_levels" = "{ 20, 38, 63, 85, 90, 95, 100 }"
+				register "FAN4.smart_fan.cut_off_delay" = "5"
+				register "FAN4.smart_fan.step_up_time" = "1"
+				register "FAN4.smart_fan.step_down_time" = "1"
+
+				# SYS_FAN3
+				register "FAN5.mode" = "FAN_SMART_FAN_IV"
+				register "FAN5.unit_sel" = "FAN_PWM"
+				register "FAN5.fanin_sel" = "TACH_PWM15"
+				register "FAN5.fanout_sel" = "TACH_PWM14"
+				register "FAN5.fan_alg_weight" = "10"
+				register "FAN5.smart_tracking_en" = "true"
+				register "FAN5.crit_temp" = "100"
+				register "FAN5.smart_fan.temp_src" = "{ 1, 0, 0, 0 }"
+				register "FAN5.smart_fan.temp_levels" = "{ 40, 55, 70, 85, 90, 95, 100 }"
+				register "FAN5.smart_fan.speed_levels" = "{ 20, 38, 63, 85, 90, 95, 100 }"
+				register "FAN5.smart_fan.cut_off_delay" = "5"
+				register "FAN5.smart_fan.step_up_time" = "1"
+				register "FAN5.smart_fan.step_down_time" = "1"
+
+				# SYS_FAN4
+				register "FAN6.mode" = "FAN_SMART_FAN_IV"
+				register "FAN6.unit_sel" = "FAN_PWM"
+				register "FAN6.fanin_sel" = "TACH_PWM17"
+				register "FAN6.fanout_sel" = "TACH_PWM16"
+				register "FAN6.fan_alg_weight" = "10"
+				register "FAN6.smart_tracking_en" = "true"
+				register "FAN6.crit_temp" = "100"
+				register "FAN6.smart_fan.temp_src" = "{ 1, 0, 0, 0 }"
+				register "FAN6.smart_fan.temp_levels" = "{ 40, 55, 70, 85, 90, 95, 100 }"
+				register "FAN6.smart_fan.speed_levels" = "{ 20, 38, 63, 85, 90, 95, 100 }"
+				register "FAN6.smart_fan.cut_off_delay" = "5"
+				register "FAN6.smart_fan.step_up_time" = "1"
+				register "FAN6.smart_fan.step_down_time" = "1"
+
+				# SYS_FAN5
+				register "FAN7.mode" = "FAN_SMART_FAN_IV"
+				register "FAN7.unit_sel" = "FAN_PWM"
+				register "FAN7.fanin_sel" = "TACH_PWM19"
+				register "FAN7.fanout_sel" = "TACH_PWM18"
+				register "FAN7.fan_alg_weight" = "10"
+				register "FAN7.smart_tracking_en" = "true"
+				register "FAN7.crit_temp" = "100"
+				register "FAN7.smart_fan.temp_src" = "{ 1, 0, 0, 0 }"
+				register "FAN7.smart_fan.temp_levels" = "{ 40, 55, 70, 85, 90, 95, 100 }"
+				register "FAN7.smart_fan.speed_levels" = "{ 20, 38, 63, 85, 90, 95, 100 }"
+				register "FAN7.smart_fan.cut_off_delay" = "5"
+				register "FAN7.smart_fan.step_up_time" = "1"
+				register "FAN7.smart_fan.step_down_time" = "1"
+
+				device pnp 4e.1 on		# LPT
+					io 0x60 = 0x378
+					irq 0x70 = 0x05
+					irq 0xf0 = 0x3c
+				end
+				device pnp 4e.2 on		# COM1
+					io 0x60 = 0x3f8
+					irq 0x70 = 0x04
+				end
+				device pnp 4e.3 off end		# COM2/IR
+				device pnp 4e.5 on		# PS/2
+					io 0x60 = 0x60
+					io 0x62 = 0x64
+					irq 0x70 = 0x01
+					irq 0x72 = 0x0c
+				end
+				device pnp 4e.6 off end		# CIR
+				device pnp 4e.7 off end		# GPIO0-7
+				device pnp 4e.8 off end		# PORT80 UART
+				device pnp 4e.9 off end		# GPIO8-9, GPIO1-8 AF
+				device pnp 4e.a on  end		# ACPI
+				device pnp 4e.b on		# EC
+					io 0x60 = 0xa20
+					irq 0xe0 = 0x00
+				end
+
+				device pnp 4e.c off end		# RTC
+				device pnp 4e.d off		# Deep Sleep/Power Fault
+					irq 0xe2 = 0x07
+					irq 0xe3 = 0x01
+					irq 0xe8 = 0x07
+					irq 0xf0 = 0x30
+					irq 0xf3 = 0x80
+				end
+				device pnp 4e.e off end		# TACHIN/PWMOUT
+				device pnp 4e.f on		# Function register
+					irq 0xe3 = 0xff
+					irq 0xe4 = 0xff
+					irq 0xe5 = 0x80
+					irq 0xe8 = 0x01
+					irq 0xea = 0x01
+				end
+			end
+
+			chip drivers/pc80/tpm
+				device pnp 0.0 on end		# TPM header, unpopulated by default
+			end
+		end
+
+		device ref hda on
+			subsystemid 0x1462 0x9d98
+			register "pch_hda_sdi_enable[0]"	= "true"
+			register "pch_hda_dsp_enable"		= "false"
+			register "pch_hda_audio_link_hda_enable" = "true"
+			register "pch_hda_idisp_codec_enable"	= "true"
+			register "pch_hda_idisp_link_tmode"	= "HDA_TMODE_8T"
+			register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+
+		end
+
+		device ref smbus on end
+
+		chip drivers/crb
+			device mmio 0xfed40000 on end		# Intel fTPM
+		end
+	end
+end

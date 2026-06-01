@@ -442,7 +442,35 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_3	0x7d14 /* Meteorlake P */
 #define PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_4	0x7d15 /* Meteorlake P */
 #define PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_5	0x7d16 /* Meteorlake P */
-#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_8_6	0xa706 /* Raptorlake H 8+6 */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_16	0xa700 /* Raptorlake S/S Refresh 8P+16E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_8	0xa703 /* Raptorlake S 8P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_8	0xa704 /* Raptorlake S/S Refresh 6P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_4	0xa705 /* Raptorlake S/S Refresh 6P+4E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_8_2	0x4640 /* Raptorlake S/S Refresh 6P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_4_2	0x4648 /* Raptorlake S/S Refresh 6P+4E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_4_0	0x4630 /* Raptorlake S/S Refresh 4P+0E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_12	0xa740 /* Raptorlake S Refresh 8P+12E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_2_0	0x4610 /* Raptorlake S Refresh 2P+0E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_16	0xa702 /* Raptorlake HX/HX Refresh 8P+16E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_12	0xa729 /* Raptorlake HX/HX Refresh 8P+12E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_8	0xa728 /* Raptorlake HX/HX Refresh 8P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_8	0xa72a /* Raptorlake HX/HX Refresh 6P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_4	0xa719 /* Raptorlake HX/HX Refresh 6P+4E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_8_2	0x4637 /* Raptorlake HX 8P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_8_2	0x463b /* Raptorlake HX 6P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_4_2	0x4647 /* Raptorlake HX 6P+4E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_6_8	0xa706 /* Raptorlake H/H Refresh/P 6P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_4_8	0xa707 /* Raptorlake H/H Refresh/P 4P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_6_4	0xa715 /* Raptorlake H/H Refresh 6P+4E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_4_4	0xa716 /* Raptorlake H/H Refresh 4P+4E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_PX_6_8	0xa709 /* Raptorlake PX 6P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_PX_4_8	0xa70a /* Raptorlake PX 4P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_2_8	0xa708 /* Raptorlake U/U Refresh 2P+8E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_2_4	0xa71b /* Raptorlake U/U Refresh 2P+4E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_1_4	0xa71c /* Raptorlake U 1P+4E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_8_0	0xa711 /* Raptorlake E/E Refresh 8P + 0E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_6_0	0xa712 /* Raptorlake E/E Refresh 6P + 0E */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_4_0	0xa713 /* Raptorlake E/E Refresh E 4P + 0E */
 
 /* Intel GPUs */
 #define PCI_DEVICE_ID_INTEL_G35_EXPRESS		0x2982

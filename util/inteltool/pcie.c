@@ -256,6 +256,120 @@ static const io_register_t cometlake_dmi_registers[] = {
 	{ 0x9A, 2, "LSTS2"       }, // Link Status 2
 };
 
+static const io_register_t raptorlake_dmi_registers[] = {
+	{ 0x000, 4, "ID"          }, // Device Identifiers
+	{ 0x004, 2, "CMD"         }, // Device Command
+	{ 0x006, 2, "PSTS"        }, // Primary Status
+	{ 0x008, 4, "RID_CC"      }, // Revision ID
+	{ 0x00e, 1, "HTYPE"       }, // Header Type
+	{ 0x01e, 2, "SSTS"        }, // Secondary Status
+	{ 0x02c, 4, "SVD"         }, // Subsystem Vendor IDs
+	{ 0x034, 1, "CAPP"        }, // Capabilities List Pointer
+	{ 0x03e, 1, "BCTRL"       }, // Bridge Control
+	{ 0x044, 1, "DCAP"        }, // Device Capabilities
+	{ 0x048, 2, "DCTL"        }, // Device Control
+	{ 0x04a, 2, "DSTS"        }, // Device Status
+	{ 0x04c, 4, "LCAP"        }, // Link Capabilities
+	{ 0x050, 2, "LCTL"        }, // Link Control
+	{ 0x052, 2, "LSTS"        }, // Link Status
+	{ 0x05c, 2, "RCTL"        }, // Root Control
+	{ 0x060, 4, "RSTS"        }, // Root Status
+	{ 0x064, 4, "DCAP2"       }, // Device Capabilities 2
+	{ 0x068, 2, "DCTL2"       }, // Device Control 2
+	{ 0x06a, 2, "DSTS2"       }, // Device Status 2
+	{ 0x06c, 4, "LCAP2"       }, // Link Capabilities 2
+	{ 0x070, 2, "LCTL2"       }, // Link Control 2
+	{ 0x072, 2, "LSTS2"       }, // Link Status 2
+	{ 0x074, 4, "SLCAP2"      }, // Slot Capabilities 2
+	{ 0x078, 2, "SLCTL2"      }, // Slot Control 2
+	{ 0x07a, 2, "SLSTS2"      }, // Slot Status 2
+	{ 0x080, 2, "MID"         }, // Message Signaled Interrupt Identifiers
+	{ 0x082, 2, "MC"          }, // Message Signaled Interrupt Message
+	{ 0x084, 4, "MA"          }, // Message Signaled Interrupt Message Address
+	{ 0x088, 2, "MD"          }, // Message Signaled Interrupt Message Data
+	{ 0x090, 2, "SVCAP"       }, // Subsystem Vendor Capability
+	{ 0x094, 4, "SVID"        }, // Subsystem Vendor IDs
+	{ 0x0a0, 2, "PMCAP"       }, // Power Management Capability
+	{ 0x0a2, 2, "PMC"         }, // PCI Power Management Capabilities
+	{ 0x0a4, 4, "PMCS"        }, // PCI Power Management Control
+	{ 0x100, 4, "AECH"        }, // Advanced Error Extended
+	{ 0x104, 4, "UES"         }, // Uncorrectable Error Status
+	{ 0x108, 4, "UEM"         }, // Uncorrectable Error Mask
+	{ 0x10c, 4, "UEV"         }, // Uncorrectable Error Severity
+	{ 0x110, 4, "CES"         }, // Correctable Error Status
+	{ 0x114, 4, "CEM"         }, // Correctable Error Mask
+	{ 0x118, 4, "AECC"        }, // Advanced Error Capabilities And Control
+	{ 0x11c, 4, "HL_DW1"      }, // Header Log
+	{ 0x120, 4, "HL_DW2"      }, // Header Log
+	{ 0x124, 4, "HL_DW3"      }, // Header Log
+	{ 0x128, 4, "HL_DW4"      }, // Header Log
+	{ 0x12c, 4, "REC"         }, // Root Error Command
+	{ 0x130, 4, "RES"         }, // Root Error Status
+	{ 0x134, 4, "ESID"        }, // Error Source Identification
+	{ 0x150, 4, "PTMECH"      }, // PTM Extended Capability Header
+	{ 0x284, 4, "PVCCR1"      }, // Port VC Capability Register 1
+	{ 0x288, 4, "PVCC2"       }, // Port VC Capability 2
+	{ 0x28c, 2, "PVCC"        }, // Port VC Control
+	{ 0x28e, 2, "PVCS"        }, // Port VC Status
+	{ 0x290, 4, "V0VCRC"      }, // Virtual Channel 0 Resource Capability
+	{ 0x294, 4, "V0CTL"       }, // Virtual Channel 0 Resource Control
+	{ 0x29a, 2, "V0STS"       }, // Virtual Channel 0 Resource Status
+	{ 0x29c, 4, "V1VCRC"      }, // Virtual Channel 1 Resource Capability
+	{ 0x2a0, 4, "V1CTL"       }, // Virtual Channel 1 Resource Control
+	{ 0x2a6, 2, "V1STS"       }, // Virtual Channel 1 Resource Status
+	{ 0xa30, 4, "SPEECH"      }, // Secondary PCI Express Extended Capability Header
+	{ 0xa34, 4, "LCTL3"       }, // Link Control 3
+	{ 0xa38, 4, "LES"         }, // Lane Error Status
+	{ 0xa3c, 4, "L01EC"       }, // Lane 0 And Lane 1 Equalization Control
+	{ 0xa40, 4, "L23EC"       }, // Lane 2 And Lane 3 Equalization Control
+	{ 0xa44, 4, "L45EC"       }, // Lane 4 And Lane 5 Equalization Control
+	{ 0xa48, 4, "L67EC"       }, // Lane 6 And Lane 7 Equalization Control
+	{ 0xa4c, 4, "L89EC"       }, // Lane 8 And Lane 9 Equalization Control
+	{ 0xa50, 4, "L1011EC"     }, // Lane 10 And Lane 11 Equalization Control
+	{ 0xa54, 4, "L1213EC"     }, // Lane 12 And Lane 13 Equalization Control
+	{ 0xa58, 4, "L1415EC"     }, // Lane 14 And Lane 15 Equalization Control
+	{ 0xa90, 4, "DLFECH"      }, // Data Link Feature Extended Capability Header
+	{ 0xa94, 4, "DLFCAP"      }, // Data Link Feature Capabilities Register
+	{ 0xa98, 4, "DLFSTS"      }, // Data Link Feature Status Register
+	{ 0xa9c, 4, "PL16GECH"    }, // Physical Layer 16.0 GT/s Extended Capability Header
+	{ 0xaa0, 4, "PL16CAP"     }, // Physical Layer 16.0 GT/s Capability Register
+	{ 0xaa4, 4, "PL16CTL"     }, // Physical Layer 16.0 GT/s Control Register
+	{ 0xaa8, 4, "PL16S"       }, // Physical Layer 16.0 GT/s Status Register
+	{ 0xaac, 4, "PL16LDPMS"   }, // Physical Layer 16.0 GT/s Local Data Parity Mismatch Status Register
+	{ 0xab0, 4, "PL16FRDPMS"  }, // Physical Layer 16.0 GT/s First Retimer Data Parity Mismatch Status Register
+	{ 0xab4, 4, "PL16SRDPMS"  }, // Physical Layer 16.0 GT/s Second Retimer Data Parity Mismatch Status Register
+	{ 0xab8, 4, "PL16ES"      }, // Physical Layer 16.0 GT/s Extra Status Register
+	{ 0xabc, 2, "PL16L01EC"   }, // Physical Layer 16.0 GT/s Lane 01 Equalization Control Register
+	{ 0xabe, 2, "PL16L23EC"   }, // Physical Layer 16.0 GT/s Lane 23 Equalization Control Register
+	{ 0xac0, 2, "PL16L45EC"   }, // Physical Layer 16.0 GT/s Lane 45 Equalization Control Register
+	{ 0xac2, 2, "PL16L67EC"   }, // Physical Layer 16.0 GT/s Lane 67 Equalization Control Register
+	{ 0xac4, 2, "PL16L89EC"   }, // Physical Layer 16.0 GT/s Lane 89 Equalization Control Register
+	{ 0xac6, 2, "PL16L1011EC" }, // Physical Layer 16.0 GT/s Lane 1011 Equalization Control Register
+	{ 0xac8, 2, "PL16L1213EC" }, // Physical Layer 16.0 GT/s Lane 1213 Equalization Control Register
+	{ 0xaca, 2, "PL16L1415EC" }, // Physical Layer 16.0 GT/s Lane 1415 Equalization Control Register
+	{ 0xc70, 4, "VNNREMCTL"   }, // VNN Removal Control
+	{ 0xc74, 4, "VNNRSNRC1"   }, // VNN Removal Save And Restore Hardware Contexts 1
+	{ 0xd00, 4, "DIDOVR"      }, // Device ID Override
+	{ 0xedc, 4, "PL16MECH"    }, // Physical Layer 16.0 GT/s Margining Extended Capability Header
+	{ 0xee0, 4, "PL16MPCPS"   }, // Physical Layer 16.0 GT/s Margining Port Capabilities and Port Status
+	{ 0xee4, 4, "PL16L0MCS"   }, // Physical Layer 16.0 GT/s Lane0 Margin Control and Status Register
+	{ 0xee8, 4, "PL16L1MCS"   }, // Physical Layer 16.0 GT/s Lane1 Margin Control and Status Register
+	{ 0xeec, 4, "PL16L2MCS"   }, // Physical Layer 16.0 GT/s Lane2 Margin Control and Status Register
+	{ 0xef0, 4, "PL16L3MCS"   }, // Physical Layer 16.0 GT/s Lane3 Margin Control and Status Register
+	{ 0xef4, 4, "PL16L4MCS"   }, // Physical Layer 16.0 GT/s Lane4 Margin Control and Status Register
+	{ 0xef8, 4, "PL16L5MCS"   }, // Physical Layer 16.0 GT/s Lane5 Margin Control and Status Register
+	{ 0xefc, 4, "PL16L6MCS"   }, // Physical Layer 16.0 GT/s Lane6 Margin Control and Status Register
+	{ 0xf00, 4, "PL16L7MCS"   }, // Physical Layer 16.0 GT/s Lane7 Margin Control and Status Register
+	{ 0xf04, 4, "PL16L8MCS"   }, // Physical Layer 16.0 GT/s Lane8 Margin Control and Status Register
+	{ 0xf08, 4, "PL16L9MCS"   }, // Physical Layer 16.0 GT/s Lane9 Margin Control and Status Register
+	{ 0xf0c, 4, "PL16L10MCS"  }, // Physical Layer 16.0 GT/s Lane10 Margin Control and Status Register
+	{ 0xf10, 4, "PL16L11MCS"  }, // Physical Layer 16.0 GT/s Lane11 Margin Control and Status Register
+	{ 0xf14, 4, "PL16L12MCS"  }, // Physical Layer 16.0 GT/s Lane12 Margin Control and Status Register
+	{ 0xf18, 4, "PL16L13MCS"  }, // Physical Layer 16.0 GT/s Lane13 Margin Control and Status Register
+	{ 0xf1c, 4, "PL16L14MCS"  }, // Physical Layer 16.0 GT/s Lane14 Margin Control and Status Register
+	{ 0xf20, 4, "PL16L15MCS"  }, // Physical Layer 16.0 GT/s Lane15 Margin Control and Status Register
+};
+
 /*
  * Egress Port Root Complex MMIO configuration space
  */
@@ -321,6 +435,35 @@ int print_epbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_8:
 	case PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_4:
 	case PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_4_1:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_16:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_4_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_12:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_2_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_16:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_12:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_4_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_4_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_PX_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_PX_4_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_2_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_2_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_1_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_8_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_6_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_4_0:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_U1:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_U2:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_U3:
@@ -498,6 +641,40 @@ int print_dmibar(struct pci_dev *nb)
 		dmi_registers = alderlake_dmi_registers;
 		size = ARRAY_SIZE(alderlake_dmi_registers);
 		break;
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_16:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_4_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_12:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_2_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_16:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_12:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_4_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_4_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_PX_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_PX_4_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_2_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_2_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_1_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_8_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_6_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_4_0:
+		dmibar_phys = pci_read_long(nb, 0x68) & 0xfffffffe;
+		dmibar_phys |= ((uint64_t)pci_read_long(nb, 0x6c)) << 32;
+		dmi_registers = raptorlake_dmi_registers;
+		size = ARRAY_SIZE(raptorlake_dmi_registers);
+		break;
 	default:
 		printf("Error: Dumping DMIBAR on this northbridge is not (yet) supported.\n");
 		return 1;
@@ -612,6 +789,35 @@ int print_pciexbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_8:
 	case PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_4:
 	case PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_4_1:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_16:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_4_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_12:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_2_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_16:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_12:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_4_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_4_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_PX_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_PX_4_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_2_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_2_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_1_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_8_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_6_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_4_0:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_U1:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_U2:
 	case PCI_DEVICE_ID_INTEL_CORE_CML_U3:

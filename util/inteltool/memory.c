@@ -173,6 +173,58 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 		mchbar_phys &= 0xfffffffe;
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
 		break;
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_16:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_6_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_4_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_8_12:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_S_2_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_16:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_12:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_8_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_8_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_HX_6_4_2:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_4_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_6_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_4_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_PX_6_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_PX_4_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_2_8:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_2_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_U_1_4:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_8_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_6_0:
+	case PCI_DEVICE_ID_INTEL_CORE_RPL_ID_E_4_0:
+		mchbar_phys = pci_read_long(nb, 0x48);
+
+		/* Test if bit 0 of the MCHBAR reg is 1 to enable memory reads.
+		 * If it isn't, try to set it. This may fail, because there is
+		 * some bit that locks that bit, and isn't in the public
+		 * datasheets.
+		 */
+
+		if(!(mchbar_phys & 1))
+		{
+			printf("Access to the MCHBAR is currently disabled, "
+				   "attempting to enable.\n");
+			mchbar_phys |= 0x1;
+			pci_write_long(nb, 0x48, mchbar_phys);
+			if(pci_read_long(nb, 0x48) & 1)
+				printf("Enabled successfully.\n");
+			else
+				printf("Enable FAILED!\n");
+		}
+		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
+		mchbar_phys &= 0x000003fffffe0000UL; /* 42:17 */
+		size = 128 * 1024;
+		break;
 	case PCI_DEVICE_ID_INTEL_82443LX:
 	case PCI_DEVICE_ID_INTEL_82443BX:
 	case PCI_DEVICE_ID_INTEL_82810:

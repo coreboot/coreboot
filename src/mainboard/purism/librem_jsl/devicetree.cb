@@ -23,8 +23,6 @@ chip soc/intel/jasperlake
 	register "pmc_gpe0_dw1" = "PMC_GPP_D"
 	register "pmc_gpe0_dw2" = "PMC_GPD"
 
-	register "SkipCpuReplacementCheck" = "1"
-
 	device cpu_cluster 0 on end
 
 	register "SerialIoI2cMode" = "{

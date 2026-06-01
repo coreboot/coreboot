@@ -139,8 +139,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	FSP_ARRAY_LOAD(m_cfg->PchHdaAudioLinkSspEnable, config->PchHdaAudioLinkSspEnable);
 	FSP_ARRAY_LOAD(m_cfg->PchHdaAudioLinkSndwEnable, config->PchHdaAudioLinkSndwEnable);
 
-	/* Skip the CPU replacement check */
-	m_cfg->SkipCpuReplacementCheck = config->SkipCpuReplacementCheck;
+	/* Skip the CPU replacement check - JSL is a soldered SoC */
+	m_cfg->SkipCpuReplacementCheck = 1;
 
 	/*
 	 * Set GpioOverride

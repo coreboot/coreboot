@@ -218,7 +218,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
 	int lc = vs->Properties.lc;
 
 
-	int state = 0;
+	size_t state = 0;
 	UInt32 rep0 = 1, rep1 = 1, rep2 = 1, rep3 = 1;
 	int len = 0;
 	const Byte *Buffer;
@@ -281,12 +281,12 @@ int LzmaDecode(CLzmaDecoderState *vs,
 			previousByte = (Byte)symbol;
 
 			outStream[nowPos++] = previousByte;
-			if (state < 4)
-				state = 0;
-			else if (state < 10)
-				state -= 3;
-			else
-				state -= 6;
+
+			/* Lookup table is slightly faster than two conditional branches */
+			static const size_t state_lut[kNumStates + 1] = {
+				0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 4, 5, 6
+			};
+			state = state_lut[state];
 		} else {
 			UpdateBit1(prob);
 			prob = p + IsRep + state;

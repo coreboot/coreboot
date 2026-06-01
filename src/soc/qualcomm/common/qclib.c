@@ -347,6 +347,13 @@ static void qclib_prepare_and_run(void)
 
 	prog_run(&qclib);
 
+	if (qclib_cb_if_table.num_entries > QCLIB_MAX_NUMBER_OF_ENTRIES) {
+		printk(BIOS_ERR, "QcLib returned invalid num_entries=%u,",
+			qclib_cb_if_table.num_entries);
+		printk(BIOS_ERR, " clamping to %d\n", QCLIB_MAX_NUMBER_OF_ENTRIES);
+		qclib_cb_if_table.num_entries = QCLIB_MAX_NUMBER_OF_ENTRIES;
+	}
+
 	/*
 	 * Post-QCLib execution: If the MMU was toggled off, ensure it is
 	 * cleanly disabled (flushed/invalidated) before restoring the

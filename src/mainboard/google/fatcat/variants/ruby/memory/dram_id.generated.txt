@@ -5,8 +5,5 @@
 
 DRAM Part Name                 ID to assign
 H58G56CK8BX146                 0 (0000)
-H58G66EK9BX223                 1 (0001)
-K3KL8L80EM-MGCV                0 (0000)
-K3KL9L90EM-MGCV                1 (0001)
 MT62F1G32D2DS-020 WT:D         0 (0000)
-MT62F2G32D4DS-020 WT:D         2 (0010)
+K3KL8L80EM-MGCV                0 (0000)

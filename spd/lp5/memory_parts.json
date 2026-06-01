@@ -478,6 +478,28 @@
             "speedMbps": 7500,
             "lp5x": true
         }
+    },
+    {
+        "name": "K3KL9L90EM-MGCV",
+        "attribs": {
+            "densityPerDieGb": 16,
+            "diesPerPackage": 4,
+            "bitWidthPerChannel": 16,
+            "ranksPerChannel": 2,
+            "speedMbps": 9600,
+            "lp5x": true
+        }
+    },
+    {
+        "name": "H58G66EK9BX223",
+        "attribs": {
+            "densityPerDieGb": 16,
+            "diesPerPackage": 4,
+            "bitWidthPerChannel": 16,
+            "ranksPerChannel": 2,
+            "speedMbps": 9600,
+            "lp5x": true
+        }
     }
     ]
 }

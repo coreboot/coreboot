@@ -431,12 +431,17 @@ int LzmaDecode(CLzmaDecoderState *vs,
 			if (rep0 > nowPos)
 				return LZMA_RESULT_DATA_ERROR;
 
+			if (nowPos + len > outSize)
+				len = outSize - nowPos;
 
+			Byte *dst = &outStream[nowPos];
+			const Byte *src = dst - rep0;
+			const Byte *const end = dst + len;
 			do {
-				previousByte = outStream[nowPos - rep0];
-				len--;
-				outStream[nowPos++] = previousByte;
-			} while (len != 0 && nowPos < outSize);
+				*(dst++) = *(src++);
+			} while (dst != end);
+			nowPos += len;
+			previousByte = outStream[nowPos - 1];
 		}
 	}
 	RC_NORMALIZE;

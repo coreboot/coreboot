@@ -49,14 +49,8 @@ static inline int elog_gsmi_add_event_word(u8 event_type, u16 data) { return 0; 
 
 u32 gsmi_exec(u8 command, u32 *param);
 
-#if CONFIG(ELOG_BOOT_COUNT)
 u32 boot_count_read(void);
-#else
-static inline u32 boot_count_read(void)
-{
-	return 0;
-}
-#endif
+u32 boot_count_read_backend(void);
 u32 boot_count_increment(void);
 
 static inline void elog_boot_notify(int s3_resume)

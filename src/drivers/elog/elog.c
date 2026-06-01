@@ -37,6 +37,7 @@ enum elog_init_state {
 struct elog_state {
 	u16 full_threshold;
 	u16 shrink_size;
+	u32 last_boot_count;
 
 	/*
 	 * The non-volatile storage chases the mirrored copy. When nv_last_write
@@ -308,6 +309,24 @@ static void elog_nv_erase(void)
 }
 
 /*
+ * Parse the boot event and update last boot count.
+ */
+static void update_last_boot_count(size_t offset, size_t len)
+{
+	struct event_header *event;
+
+	if (len < sizeof(*event) + sizeof(u32) + 1)
+		return;
+
+	event = elog_get_event_buffer(offset, len);
+	if (!event)
+		return;
+
+	elog_state.last_boot_count = *(u32 *)event_get_data(event);
+	elog_put_event_buffer(event);
+}
+
+/*
  * Scan the event area and validate each entry and update the ELOG state.
  */
 static int elog_update_event_buffer_state(void)
@@ -340,6 +359,10 @@ static int elog_update_event_buffer_state(void)
 				offset);
 			return -1;
 		}
+
+		/* Get boot count from elog if not stored elsewhere */
+		if (!CONFIG(ELOG_BOOT_COUNT) && (type == ELOG_TYPE_BOOT))
+			update_last_boot_count(offset, len);
 
 		/* Move to the next event */
 		elog_tandem_increment_last_write(len);
@@ -883,6 +906,16 @@ int elog_add_event_wake(u8 source, u32 instance)
 		.instance = instance
 	};
 	return elog_add_event_raw(ELOG_TYPE_WAKE_SOURCE, &wake, sizeof(wake));
+}
+
+u32 boot_count_read(void)
+{
+	if (CONFIG(ELOG_BOOT_COUNT))
+		return boot_count_read_backend();
+
+	/* Fall back to calculating boot count from existing log if not external counter. */
+	elog_init();
+	return elog_state.last_boot_count + 1;
 }
 
 int elog_add_extended_event(u8 type, u32 complement)

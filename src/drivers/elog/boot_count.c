@@ -93,7 +93,7 @@ u32 boot_count_increment(void)
 }
 
 /* Return the current boot count */
-u32 boot_count_read(void)
+u32 boot_count_read_backend(void)
 {
 	struct boot_count bc;
 

@@ -510,6 +510,11 @@ static enum cb_err qcom_dw_pcie_enable(struct qcom_pcie_cntlr_t *pcie)
 	post_phy_pwr_up_init(pcie);
 	post_phy_pwr_up_dbi_init(pcie);
 #endif
+	/* T_perst-clk: REFCLK must be stable for at least 100us before
+	* de-asserting PERST#. A 8ms delay ensures ample margin for
+	* the clock to stabilize across all operating conditions.
+	*/
+	mdelay(8);
 	/* de-assert PCIe reset link to bring EP out of reset */
 	gpio_set(pcierc->perst, 1);
 

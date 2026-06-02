@@ -1,27 +1,27 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include "board.h"
+
 #include <arch/stages.h>
 #include <bootmode.h>
 #include <cbmem.h>
 #include <commonlib/coreboot_tables.h>
+#include <delay.h>
 #include <ec/google/chromeec/ec.h>
+#include <reset.h>
 #include <soc/aop_common.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
 #include <soc/watchdog.h>
 
+#define DELAY_FOR_SHIP_MODE 11000 /* 11sec */
 static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
-
-static bool platform_get_battery_soc_information(uint32_t *batt_pct)
-{
-	if (!CONFIG(EC_GOOGLE_CHROMEEC))
-		return false;
-
-	if (google_chromeec_read_batt_state_of_charge(batt_pct))
-		return false;
-
-	return true;
-}
+static bool battery_present = true;
+static bool battery_below_threshold = false;
+static int32_t battery_cfet_status = 1; /* Active C-FET */
+static int32_t battery_dfet_status = 1; /* Active D-FET */
+static bool battery_is_cutoff = false;
+static bool battery_needs_recovery = false;
 
 /*
  * is_off_mode - Check if the system is booting due to an off-mode power event.
@@ -47,11 +47,13 @@ static enum boot_mode_t set_boot_mode(void)
 
 	enum boot_mode_t boot_mode_new;
 
-	if (google_chromeec_is_rtc_event()) {
+	if (!battery_present) {
+		boot_mode_new = LB_BOOT_MODE_NO_BATTERY;
+	} else if (google_chromeec_is_rtc_event()) {
 		boot_mode_new = LB_BOOT_MODE_RTC_WAKE;
-	} else if (is_off_mode() && google_chromeec_is_battery_present()) {
+	} else if (is_off_mode()) {
 		boot_mode_new = LB_BOOT_MODE_OFFMODE_CHARGING;
-	} else if (google_chromeec_is_below_critical_threshold()) {
+	} else if (battery_below_threshold) {
 		if (google_chromeec_is_charger_present())
 			boot_mode_new = LB_BOOT_MODE_LOW_BATTERY_CHARGING;
 		else
@@ -75,20 +77,57 @@ static void platform_init_lightbar(void)
 	 * in a previous boot without a subsequent EC reset.
 	 */
 	google_chromeec_lightbar_on();
+}
+/*
+ * Update and cache battery status from the EC.
+ * This should be called once, early in the boot process,
+ * after the EC is reachable.
+ */
+static void update_battery_status(void)
+{
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return;
+
+	struct ec_response_battery_get_misc_info misc_info;
+	bool misc_info_valid = false;
+
+	battery_present = google_chromeec_is_battery_present();
+	battery_below_threshold = google_chromeec_is_below_critical_threshold();
+
+	if (battery_present && (google_chromeec_get_battery_misc_info(&misc_info) == 0)) {
+		battery_cfet_status = misc_info.cfet_status;
+		battery_dfet_status = misc_info.dfet_status;
+		misc_info_valid = true;
+	} else {
+		printk(BIOS_WARNING, "Failed to get battery FET status from EC\n");
+		battery_cfet_status = -1;
+		battery_dfet_status = -1;
+	}
 
 	/*
-	 * Only alert the user (set LED to red in color) if the lid is closed and the battery
-	 * is critically low without AC power.
+	 * SHIP MODE RECOVERY HANDLER:
+	 * Triggered ONLY when the battery info was successfully read,
+	 * and BOTH FETs are explicitly 0 (indicating a locked BMS).
 	 */
-	if (CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch() &&
-	    google_chromeec_is_critically_low_on_battery())
-		google_chromeec_set_lightbar_rgb(0xff, 0xff, 0x00, 0x00);
+	battery_needs_recovery = misc_info_valid && (battery_cfet_status == 0)
+			 && (battery_dfet_status == 0);
+
+	/*
+	 * BATTERY CUTOFF / DISCONNECT DETECTION:
+	 * Triggered when the hardware reports no battery present AND
+	 * the EC FET status read failed (returning -1).
+	 */
+	battery_is_cutoff = (battery_cfet_status == -1) && (battery_dfet_status == -1);
+
 }
 
 /* Perform romstage early hardware initialization */
 static void mainboard_setup_peripherals_early(void)
 {
 	platform_init_lightbar();
+
+	update_battery_status();
+
 	/* Watchdog must be checked first to avoid erasing watchdog info later. */
 	check_wdog();
 }
@@ -97,6 +136,26 @@ static void mainboard_setup_peripherals_early(void)
 static void mainboard_setup_peripherals_late(int mode)
 {
 	/* Placeholder */
+}
+
+static void handle_battery_shipping_recovery(bool board_reset)
+{
+	printk(BIOS_INFO, "==================================================\n");
+	printk(BIOS_INFO, "Device has entered into shipping recovery mode.\n");
+	printk(BIOS_INFO, "Please wait ...\n");
+	printk(BIOS_INFO, "==================================================\n");
+
+	enable_slow_battery_charging();
+	mdelay(DELAY_FOR_SHIP_MODE);
+
+	if (board_reset) {
+		printk(BIOS_INFO, "Issuing board reset\n");
+		do_board_reset();
+	}
+
+	/* Disable charging where `board_reset` is not allowed */
+	disable_slow_battery_charging();
+
 }
 
 void platform_romstage_main(void)
@@ -116,6 +175,10 @@ void platform_romstage_main(void)
 
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
+
+	/* Recovery from battery shipping mode */
+	if (battery_needs_recovery || battery_is_cutoff)
+		handle_battery_shipping_recovery(battery_needs_recovery);
 
 	/* Underlying PMIC registers are accessible only at this point */
 	set_boot_mode();

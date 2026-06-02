@@ -22,6 +22,7 @@ static int32_t battery_cfet_status = 1; /* Active C-FET */
 static int32_t battery_dfet_status = 1; /* Active D-FET */
 static bool battery_is_cutoff = false;
 static bool battery_needs_recovery = false;
+static bool chipset_dload_mode_active = false; /* Mode for crashlog */
 
 /*
  * is_off_mode - Check if the system is booting due to an off-mode power event.
@@ -161,6 +162,7 @@ static void handle_battery_shipping_recovery(bool board_reset)
 void platform_romstage_main(void)
 {
 	mainboard_setup_peripherals_early();
+	chipset_dload_mode_active = qclib_check_dload_mode();
 
 	if (CONFIG(EC_GOOGLE_CHROMEEC) && CONFIG(CONSOLE_SERIAL)) {
 		uint32_t batt_pct;
@@ -170,8 +172,8 @@ void platform_romstage_main(void)
 			printk(BIOS_WARNING, "Failed to get battery level\n");
 	}
 
-	if (!qclib_check_dload_mode())
-        shrm_fw_load_reset();
+	if (!chipset_dload_mode_active)
+		shrm_fw_load_reset();
 
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
@@ -183,7 +185,7 @@ void platform_romstage_main(void)
 	/* Underlying PMIC registers are accessible only at this point */
 	set_boot_mode();
 
-	if (!qclib_check_dload_mode())
+	if (!chipset_dload_mode_active)
 		aop_fw_load_reset();
 
 	mainboard_setup_peripherals_late(boot_mode);

@@ -64,6 +64,18 @@ chip soc/intel/elkhartlake
 	register "PcieRpLtrDisable[2]" = "true"
 	register "PcieRpLtrDisable[4]" = "true"
 
+	# Enable PCIe EQ override
+	register "PcieEqOverrideDefault" = "true"
+	register "PcieEqMethod" = "FIXED_EQ"
+	register "PcieEqMode" = "COEFFICIENT_EQ"
+	register "PcieEqPh3NumberOfPresetsOrCoefficients" = "2"
+	register "PcieEqPh3PreCursorList[0]" = "10"
+	register "PcieEqPh3PreCursorList[1]" = "10"
+	register "PcieEqPh3PostCursorList[0]" = "8"
+	register "PcieEqPh3PostCursorList[1]" = "8"
+	register "PcieEqPh1DownstreamPortTransmitterPreset" = "7"
+	register "PcieEqPh1UpstreamPortTransmitterPreset" = "1"
+
 	# Storage (SDCARD/EMMC) related UPDs
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsEmmcDdr50Enabled" = "1"

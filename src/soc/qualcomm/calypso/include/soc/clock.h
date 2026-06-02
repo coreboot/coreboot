@@ -20,6 +20,7 @@
 
 /* CPU PLL*/
 #define L_VAL_1363P2MHz         0x47
+#define L_VAL_710P4MHz          0x25
 
 #define QUPV3_WRAP0_CLK_ENA_S(idx)              (13 + idx)
 #define QUPV3_WRAP1_CLK_ENA_S(idx)              (15 + idx)
@@ -287,5 +288,7 @@ static struct calypso_qupv3_wrap *const qup_wrap0_clk = (void *)GCC_QUPV3_WRAP0_
 static struct calypso_qupv3_wrap *const qup_wrap1_clk = (void *)GCC_QUPV3_WRAP1_BASE;
 static struct calypso_qupv3_wrap *const qup_wrap2_clk = (void *)GCC_QUPV3_WRAP2_BASE;
 static struct calypso_qupv3_wrap *const qup_oob_clk = (void *)GCC_QUPV3_OOB_BASE;
+
+enum cb_err pll_init_and_set(struct calypso_ncc0_clock *ncc0, u32 l_val);
 
 #endif	// __SOC_QUALCOMM_CALYPSO_CLOCK_H__

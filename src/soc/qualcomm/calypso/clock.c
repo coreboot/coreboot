@@ -133,7 +133,7 @@ void clock_configure_dfsr(int qup)
 	/* placeholder */
 }
 
-static enum cb_err pll_init_and_set(struct calypso_ncc0_clock *ncc0, u32 l_val)
+enum cb_err pll_init_and_set(struct calypso_ncc0_clock *ncc0, u32 l_val)
 {
 	int ret;
 	struct alpha_pll_reg_val_config ncc0_pll_cfg = {0};

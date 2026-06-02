@@ -62,6 +62,17 @@ static void (*tpm_start_callbacks[])(void *) = {
 	tpm_start_func1_cb,
 };
 
+static void crb_tpm_init_mailbox(struct device *dev)
+{
+	/*
+	 * When TPM2 is enabled crb_tis_probe() will call crb_tpm_init()
+	 * and then issue tlcl_startup(). When not selected only initialize the
+	 * mailbox, but don't start the TPM.
+	 */
+	if (!CONFIG(TPM2))
+		crb_tpm_init();
+}
+
 #define TPM_START_UUID   "6bbf6cab-5463-4714-b7cd-f0203c0368d4"
 
 static void crb_tpm_fill_ssdt(const struct device *dev)
@@ -181,10 +192,34 @@ static int smbios_write_type43_tpm(struct device *dev, int *handle, unsigned lon
 }
 #endif
 
+static unsigned long acpi_create_tpm2(const struct device *device,
+				      unsigned long current,
+				      struct acpi_rsdp *rsdp)
+{
+	/* When TPM2 is enabled table is written by common code */
+	if (CONFIG(TPM2))
+		return current;
+
+	if (!crb_tpm_is_active())
+		return current;
+
+	acpi_tpm2_t *tpm2 = (acpi_tpm2_t *)(uintptr_t)current;
+	acpi_write_tpm2(tpm2, NULL, 0, crb_tpm_base_address() + 0x40, ACPI_TPM2_SM_ACPI_START);
+
+	current += tpm2->header.length;
+	current = acpi_align_current(current);
+
+	acpi_add_table(rsdp, tpm2);
+
+	return current;
+}
+
 static struct device_operations __maybe_unused amd_crb_ops = {
 	.read_resources = noop_read_resources,
 	.set_resources = noop_set_resources,
+	.init = crb_tpm_init_mailbox,
 #if CONFIG(HAVE_ACPI_TABLES)
+	.write_acpi_tables = acpi_create_tpm2,
 	.acpi_name = crb_tpm_acpi_name,
 	.acpi_fill_ssdt = crb_tpm_fill_ssdt,
 #endif

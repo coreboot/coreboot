@@ -17,6 +17,13 @@
 #define  MMC_CAP_BYP_SDR104	(1 << 14)
 #define  MMC_CAP_BYP_DDR50	(1 << 15)
 
+#define GEN3_TUNING_BUS		1
+#define GEN3_TUNING_MMIO_BASE	0xfe800000
+#define GEN3_TUNING_RP		(PCI_DEV(0, 0x1c, 0x04))
+#define GEN3_TUNING_DEV		(PCI_DEV(GEN3_TUNING_BUS, 0, 0))
+#define GEN3_EQ_CONTROL_REG	0x8A8
+#define  GEN3_EQ_PRESET_7	0x05008071
+
 /* Disable SDR104 and SDR50 mode while keeping DDR50 mode enabled. */
 static void disable_sdr_modes(struct resource *res)
 {
@@ -24,6 +31,32 @@ static void disable_sdr_modes(struct resource *res)
 	clrsetbits32(res2mmio(res, MMC_CAP_BYP_REG1, 0),
 			MMC_CAP_BYP_SDR104 | MMC_CAP_BYP_SDR50,
 			MMC_CAP_BYP_DDR50);
+}
+
+void variant_mainboard_init(void)
+{
+	/* First set up root port bridge to get access to Gen3 device. */
+	pci_s_write_config8(GEN3_TUNING_RP, PCI_SECONDARY_BUS, GEN3_TUNING_BUS);
+	pci_s_write_config8(GEN3_TUNING_RP, PCI_SUBORDINATE_BUS, GEN3_TUNING_BUS);
+	/* Define an address window to forward to the secondary bus. */
+	pci_s_write_config32(GEN3_TUNING_RP, PCI_MEMORY_BASE,
+			(GEN3_TUNING_MMIO_BASE | (GEN3_TUNING_MMIO_BASE >> 16)));
+	/* Enable memory mapped transfers. */
+	pci_s_write_config32(GEN3_TUNING_RP, PCI_COMMAND, PCI_COMMAND_MEMORY);
+	/* Now the device is visible on bus 1, dev 0, function 0. */
+	pci_s_write_config32(GEN3_TUNING_DEV, PCI_BASE_ADDRESS_0, GEN3_TUNING_MMIO_BASE);
+	pci_s_write_config32(GEN3_TUNING_DEV, PCI_COMMAND, PCI_COMMAND_MEMORY);
+
+	/* Selection of Preset 7 for transmitter of DSP for Gen3-Link. */
+	pci_s_write_config32(GEN3_TUNING_DEV, GEN3_EQ_CONTROL_REG, GEN3_EQ_PRESET_7);
+
+	/* Now delete all the changes made in config space so that the PCI enumerator can do
+	   its work. */
+	pci_s_write_config32(GEN3_TUNING_DEV, PCI_BASE_ADDRESS_0, 0);
+	pci_s_write_config32(GEN3_TUNING_DEV, PCI_COMMAND, 0);
+	pci_s_write_config32(GEN3_TUNING_RP, PCI_PRIMARY_BUS, 0x0);
+	pci_s_write_config32(GEN3_TUNING_RP, PCI_MEMORY_BASE, 0);
+	pci_s_write_config32(GEN3_TUNING_RP, PCI_COMMAND, 0);
 }
 
 void variant_mainboard_final(void)

@@ -331,9 +331,10 @@ cl_node_t *malloc_cl_node(size_t len)
 		return NULL;
 
 	node->data = malloc(len * sizeof(u32));
-	if (!(node->data))
+	if (!(node->data)) {
+		free(node);
 		return NULL;
-
+	}
 	node->size = len * sizeof(u32);
 	node->next = NULL;
 

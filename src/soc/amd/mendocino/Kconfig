@@ -165,7 +165,7 @@ config PSP_APOB_DRAM_SIZE
 
 config PSP_SHAREDMEM_BASE
 	hex
-	default 0x201F000 if VBOOT
+	default 0x201F000 if VBOOT_STARTS_BEFORE_BOOTBLOCK
 	default 0x0
 	help
 	  This variable defines the base address in DRAM memory where PSP copies
@@ -175,7 +175,7 @@ config PSP_SHAREDMEM_BASE
 
 config PSP_SHAREDMEM_SIZE
 	hex
-	default 0x8000 if VBOOT
+	default 0x8000 if VBOOT_STARTS_BEFORE_BOOTBLOCK
 	default 0x0
 	help
 	  Sets the maximum size for the PSP to pass the vboot workbuf and

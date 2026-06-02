@@ -49,4 +49,6 @@
 #include <soc/intel/common/acpi/pci_osc.asl>
 
 /* GbE 0:1f.6 */
+#if CONFIG(MAINBOARD_USES_IFD_GBE_REGION)
 #include <soc/intel/common/block/acpi/acpi/pch_glan.asl>
+#endif

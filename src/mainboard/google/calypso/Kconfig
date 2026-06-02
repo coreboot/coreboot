@@ -25,6 +25,8 @@ config BOARD_GOOGLE_MODEL_MENSA
 
 config BOARD_GOOGLE_MENSA
 	select BOARD_GOOGLE_MODEL_MENSA
+	select DAP_USE_SMB1
+	select HAVE_DEBUG_ACCESS_PORT_SOURCE_SINK
 	select MAINBOARD_HAS_FINGERPRINT_VIA_USB
 	select SOC_QUALCOMM_CALYPSO
 
@@ -70,6 +72,39 @@ config MAINBOARD_HAS_FINGERPRINT
 	help
 	  Enable this option if your mainboard is equipped with an onboard
 	  fingerprint reader. This could be connected via SPI or USB.
+
+config HAVE_DEBUG_ACCESS_PORT_SOURCE_SINK
+	bool
+	default n
+	help
+	  Enable this option to allow source and sink modes on the debug access port.
+
+config DAP_SMB_SLAVE_ID
+	depends on HAVE_DEBUG_ACCESS_PORT_SOURCE_SINK
+	hex
+	default 0x09 if DAP_USE_SMB1
+	default 0x0a if DAP_USE_SMB2
+	default 0x0b if DAP_USE_SMB3
+	help
+	  The Slave ID for the Debug Access Port communication.
+
+config DAP_USE_SMB1
+	depends on HAVE_DEBUG_ACCESS_PORT_SOURCE_SINK
+	bool
+	help
+	  Select this to use SMB1 for DAP.
+
+config DAP_USE_SMB2
+	depends on HAVE_DEBUG_ACCESS_PORT_SOURCE_SINK
+	bool
+	help
+	  Select this to use SMB2 for DAP.
+
+config DAP_USE_SMB3
+	depends on HAVE_DEBUG_ACCESS_PORT_SOURCE_SINK
+	bool
+	help
+	  Select this to use SMB3 for DAP.
 
 config MAINBOARD_HAS_GOOGLE_TPM
 	bool

@@ -1,6 +1,6 @@
 chip soc/intel/cannonlake
 
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 	register "enable_c6dram" = "1"
 
 	register "AcousticNoiseMitigation" = "1"

@@ -7,7 +7,7 @@ chip soc/intel/snowridge
 	}"
 
 	# Enable Enhanced Intel SpeedStep
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	device cpu_cluster 0 alias cpu_bus on end
 

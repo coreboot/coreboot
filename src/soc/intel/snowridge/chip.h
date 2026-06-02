@@ -14,7 +14,7 @@
 #define MAX_DOMAIN (BL_MAX_SOCKET * BL_MAX_LOGIC_IIO_STACK + 2)
 
 struct snr_domain {
-	uint8_t enabled;
+	bool enabled;
 	uint8_t personality;
 	uint8_t bus_base;
 	uint8_t bus_limit;
@@ -31,7 +31,7 @@ struct soc_intel_snowridge_config {
 	struct soc_intel_common_config common_soc_config;
 
 	uint32_t tcc_offset; /**< Needed by `common/block/cpulib.c`. */
-	uint8_t eist_enable;
+	bool eist_enable;
 
 	struct snr_domain domain[MAX_DOMAIN];
 };

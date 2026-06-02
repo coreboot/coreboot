@@ -4,7 +4,7 @@ chip soc/intel/skylake
 	register "deep_sx_config" = "DSX_EN_WAKE_PIN | DSX_EN_LAN_WAKE_PIN"
 
 	# Enable Enhanced Intel SpeedStep
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	device domain 0 on
 

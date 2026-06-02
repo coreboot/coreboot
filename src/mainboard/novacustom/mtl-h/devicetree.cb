@@ -10,7 +10,7 @@ chip soc/intel/meteorlake
 	}"
 
 	# Enable Enhanced Intel SpeedStep
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	# Enable S0ix / Modern Standby
 	register "s0ix_enable" = "1"

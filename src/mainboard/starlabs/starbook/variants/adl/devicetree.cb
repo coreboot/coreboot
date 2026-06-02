@@ -1,7 +1,7 @@
 chip soc/intel/alderlake
 	# FSP UPDs
 	register "eist_enable"				= "true"
-	register "enable_c6dram"			= "1"
+	register "enable_c6dram"			= "true"
 	register "energy_efficient_turbo"		= "true"
 	register "sagv"					= "SaGv_Enabled"
 

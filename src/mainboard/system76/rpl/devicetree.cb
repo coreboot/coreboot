@@ -14,7 +14,7 @@ chip soc/intel/alderlake
 	register "eist_enable" = "true"
 
 	# Enable C6 DRAM
-	register "enable_c6dram" = "1"
+	register "enable_c6dram" = "true"
 
 	# Thermal
 	register "tcc_offset" = "8"

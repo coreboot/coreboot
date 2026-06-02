@@ -19,7 +19,7 @@ chip soc/intel/tigerlake
 
 # FSP Memory (soc/intel/tigerlake/romstage/fsp_params.c)
 	# Enable C6 DRAM
-	register "enable_c6dram" = "1"
+	register "enable_c6dram" = "true"
 
 	# System Agent dynamic frequency support
 	register "SaGv" = "SaGv_Enabled"

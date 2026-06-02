@@ -4,7 +4,7 @@ chip soc/intel/alderlake
 	# Sagv Configuration
 	register "sagv" = "SaGv_Enabled"
 	register "RMT" = "0"
-	register "enable_c6dram" = "1"
+	register "enable_c6dram" = "true"
 
 	register "pmc_gpe0_dw0" = "GPP_J"
 	register "pmc_gpe0_dw1" = "GPP_VPGIO"

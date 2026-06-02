@@ -21,7 +21,7 @@ chip soc/intel/cannonlake
 	register "eist_enable" = "true"
 
 # FSP Memory (soc/intel/cannonlake/romstage/fsp_params.c)
-	register "enable_c6dram" = "1"
+	register "enable_c6dram" = "true"
 
 # FSP Silicon (soc/intel/cannonlake/fsp_params.c)
 	# Misc

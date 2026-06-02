@@ -378,7 +378,7 @@ struct soc_intel_novalake_config {
 	bool heci_enable;
 
 	/* Enable C6 DRAM */
-	uint8_t enable_c6dram;
+	bool enable_c6dram;
 	uint8_t PmTimerDisabled;
 
 	/* SATA related */

@@ -37,6 +37,7 @@ romstage-y += mmu.c
 romstage-y += ../common/aop_load_reset.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 romstage-$(CONFIG_SOC_QUALCOMM_CDT) += ../common/cdt.c
+romstage-y += ../common/spmi.c
 
 ################################################################################
 ramstage-y += soc.c
@@ -45,6 +46,7 @@ ramstage-y += ../common/mmu.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ramstage-$(CONFIG_PCI) += ../common/pcie_common.c
 ramstage-y += cpucp_load_reset.c
+ramstage-y += ../common/spmi.c
 
 ################################################################################
 

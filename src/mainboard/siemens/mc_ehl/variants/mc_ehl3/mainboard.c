@@ -17,6 +17,10 @@
 #define  MMC_CAP_BYP_SDR104	(1 << 14)
 #define  MMC_CAP_BYP_DDR50	(1 << 15)
 
+#define GEN2_TUNING_RP		(PCI_DEV(0, 0x1c, 0x02))
+#define GEN2_LCTL2_LSTS2_REG	0x70
+#define  GEN2_LCTL2_LSTS2_SD	(1 << 6)
+
 #define GEN3_TUNING_BUS		1
 #define GEN3_TUNING_MMIO_BASE	0xfe800000
 #define GEN3_TUNING_RP		(PCI_DEV(0, 0x1c, 0x04))
@@ -57,6 +61,11 @@ void variant_mainboard_init(void)
 	pci_s_write_config32(GEN3_TUNING_RP, PCI_PRIMARY_BUS, 0x0);
 	pci_s_write_config32(GEN3_TUNING_RP, PCI_MEMORY_BASE, 0);
 	pci_s_write_config32(GEN3_TUNING_RP, PCI_COMMAND, 0);
+
+	/* Select -3.5 dB de-emphasis for Gen2 (5.0 GT/s) */
+	pci_s_write_config32(GEN2_TUNING_RP, GEN2_LCTL2_LSTS2_REG,
+			pci_s_read_config32(GEN2_TUNING_RP, GEN2_LCTL2_LSTS2_REG) |
+			GEN2_LCTL2_LSTS2_SD);
 }
 
 void variant_mainboard_final(void)

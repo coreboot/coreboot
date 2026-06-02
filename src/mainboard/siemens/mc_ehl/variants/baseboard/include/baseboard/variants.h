@@ -18,7 +18,8 @@ const struct mb_cfg *variant_memcfg_config(void);
 /* This function can select half-populate DRAM */
 bool half_populated(void);
 
-/* The following function performs board specific things. */
+/* The following functions perform board specific things. */
+void variant_mainboard_init(void);
 void variant_mainboard_final(void);
 
 #endif /*__BASEBOARD_VARIANTS_H__ */

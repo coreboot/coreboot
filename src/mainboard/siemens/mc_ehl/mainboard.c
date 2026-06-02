@@ -139,6 +139,9 @@ static void mainboard_init(void *chip_info)
 
 	pads = variant_gpio_table(&num);
 	gpio_configure_pads(pads, num);
+
+	/* Do board specific things */
+	variant_mainboard_init();
 }
 
 static void mainboard_final(void *chip_info)
@@ -160,7 +163,11 @@ static void mainboard_final(void *chip_info)
 	}
 }
 
-/* The following function performs board specific things. */
+/* The following functions perform board specific things. */
+void __weak variant_mainboard_init(void)
+{
+}
+
 void __weak variant_mainboard_final(void)
 {
 }

@@ -25,6 +25,15 @@
 #endif
 #endif
 
+#define DEAD_BATT_CHG_THRESHOLD_MAH 100
+
 void setup_chromeos_gpios(void);
+void configure_debug_access_port(void);
+void enable_slow_battery_charging(void);
+void disable_slow_battery_charging(void);
+void launch_charger_applet(void);
+bool platform_get_battery_soc_information(uint32_t *batt_pct);
+void enable_fast_battery_charging(void);
+void configure_dead_battery_boot(void);
 
 #endif /* MAINBOARD_GOOGLE_MENSA_BOARD_H */

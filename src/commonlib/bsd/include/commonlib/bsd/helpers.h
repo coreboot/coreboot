@@ -12,11 +12,11 @@
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #endif
 
-#define ALIGN(x, a)             __ALIGN_MASK(x, (__typeof__(x))(a)-1UL)
+#define ALIGN(x, a)             __ALIGN_MASK(x, (typeof(x))(a)-1UL)
 #define __ALIGN_MASK(x, mask)   (((x)+(mask))&~(mask))
 #define ALIGN_UP(x, a)          ALIGN((x), (a))
-#define ALIGN_DOWN(x, a)        ((x) & ~((__typeof__(x))(a)-1UL))
-#define IS_ALIGNED(x, a)        (((x) & ((__typeof__(x))(a)-1UL)) == 0)
+#define ALIGN_DOWN(x, a)        ((x) & ~((typeof(x))(a)-1UL))
+#define IS_ALIGNED(x, a)        (((x) & ((typeof(x))(a)-1UL)) == 0)
 
 /* Double-evaluation unsafe min/max, for bitfields and outside of functions */
 #define __CMP_UNSAFE(a, b, op) ((a) op (b) ? (a) : (b))
@@ -42,13 +42,13 @@
 
 #ifndef ABS
 #define ABS(a) ({ \
-	__typeof__(a) _abs_local_a = (a); \
+	typeof(a) _abs_local_a = (a); \
 	(_abs_local_a < 0) ? (-_abs_local_a) : _abs_local_a; \
 })
 #endif
 
 #define IS_POWER_OF_2(x) ({ \
-	__typeof__(x) _power_local_x = (x); \
+	typeof(x) _power_local_x = (x); \
 	(_power_local_x & (_power_local_x - 1)) == 0; \
 })
 
@@ -58,15 +58,15 @@
 #define GENMASK(high, low) (((~0ULL) << (low)) & (~0ULL >> (63 - (high))))
 
 #define DIV_ROUND_UP(x, y) ({ \
-	__typeof__(x) _div_local_x = (x); \
-	__typeof__(y) _div_local_y = (y); \
+	typeof(x) _div_local_x = (x); \
+	typeof(y) _div_local_y = (y); \
 	(_div_local_x + _div_local_y - 1) / _div_local_y; \
 })
 
 #define SWAP(a, b) do { \
-	__typeof__(&(a)) _swap_local_a = &(a); \
-	__typeof__(&(b)) _swap_local_b = &(b); \
-	__typeof__(a) _swap_local_tmp = *_swap_local_a; \
+	typeof(&(a)) _swap_local_a = &(a); \
+	typeof(&(b)) _swap_local_b = &(b); \
+	typeof(a) _swap_local_tmp = *_swap_local_a; \
 	*_swap_local_a = *_swap_local_b; \
 	*_swap_local_b = _swap_local_tmp; \
 } while (0)
@@ -93,8 +93,8 @@
 
 #define _retry_impl(attempts, condition, expr, ...)	\
 ({							\
-	__typeof__(condition) _retry_ret =		\
-		(__typeof__(condition))0;		\
+	typeof(condition) _retry_ret =			\
+		(typeof(condition))0;			\
 	int _retry_attempts = (attempts);		\
 	do {						\
 		_retry_ret = (condition);		\

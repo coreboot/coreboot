@@ -227,7 +227,7 @@ static void *mdev_mmap(const struct region_device *rd, size_t offset,
 {
 	const struct mem_region_device *mdev;
 
-	mdev = container_of(rd, __typeof__(*mdev), rdev);
+	mdev = container_of(rd, typeof(*mdev), rdev);
 
 	return &mdev->base[offset];
 }
@@ -243,7 +243,7 @@ static ssize_t mdev_readat(const struct region_device *rd, void *b,
 {
 	const struct mem_region_device *mdev;
 
-	mdev = container_of(rd, __typeof__(*mdev), rdev);
+	mdev = container_of(rd, typeof(*mdev), rdev);
 
 	memcpy(b, &mdev->base[offset], size);
 
@@ -255,7 +255,7 @@ static ssize_t mdev_writeat(const struct region_device *rd, const void *b,
 {
 	const struct mem_region_device *mdev;
 
-	mdev = container_of(rd, __typeof__(*mdev), rdev);
+	mdev = container_of(rd, typeof(*mdev), rdev);
 
 	memcpy(&mdev->base[offset], b, size);
 
@@ -267,7 +267,7 @@ static ssize_t mdev_eraseat(const struct region_device *rd, size_t offset,
 {
 	const struct mem_region_device *mdev;
 
-	mdev = container_of(rd, __typeof__(*mdev), rdev);
+	mdev = container_of(rd, typeof(*mdev), rdev);
 
 	memset(&mdev->base[offset], 0, size);
 
@@ -307,7 +307,7 @@ void *mmap_helper_rdev_mmap(const struct region_device *rd, size_t offset,
 	struct mmap_helper_region_device *mdev;
 	void *mapping;
 
-	mdev = container_of((void *)rd, __typeof__(*mdev), rdev);
+	mdev = container_of((void *)rd, typeof(*mdev), rdev);
 
 	mapping = mem_pool_alloc(mdev->pool, size);
 
@@ -326,7 +326,7 @@ int mmap_helper_rdev_munmap(const struct region_device *rd, void *mapping)
 {
 	struct mmap_helper_region_device *mdev;
 
-	mdev = container_of((void *)rd, __typeof__(*mdev), rdev);
+	mdev = container_of((void *)rd, typeof(*mdev), rdev);
 
 	mem_pool_free(mdev->pool, mapping);
 
@@ -358,7 +358,7 @@ static void *xlate_mmap(const struct region_device *rd, size_t offset,
 	};
 	const struct xlate_window *xlwindow;
 
-	xldev = container_of(rd, __typeof__(*xldev), rdev);
+	xldev = container_of(rd, typeof(*xldev), rdev);
 
 	xlwindow = xlate_find_window(xldev, &req);
 	if (!xlwindow)
@@ -392,7 +392,7 @@ static ssize_t xlate_readat(const struct region_device *rd, void *b,
 	const struct xlate_window *xlwindow;
 	const struct xlate_region_device *xldev;
 
-	xldev = container_of(rd, __typeof__(*xldev), rdev);
+	xldev = container_of(rd, typeof(*xldev), rdev);
 
 	xlwindow = xlate_find_window(xldev, &req);
 	if (!xlwindow)
@@ -413,7 +413,7 @@ static ssize_t xlate_writeat(const struct region_device *rd, const void *b,
 	const struct xlate_window *xlwindow;
 	const struct xlate_region_device *xldev;
 
-	xldev = container_of(rd, __typeof__(*xldev), rdev);
+	xldev = container_of(rd, typeof(*xldev), rdev);
 
 	xlwindow = xlate_find_window(xldev, &req);
 	if (!xlwindow)
@@ -434,7 +434,7 @@ static ssize_t xlate_eraseat(const struct region_device *rd,
 	const struct xlate_window *xlwindow;
 	const struct xlate_region_device *xldev;
 
-	xldev = container_of(rd, __typeof__(*xldev), rdev);
+	xldev = container_of(rd, typeof(*xldev), rdev);
 
 	xlwindow = xlate_find_window(xldev, &req);
 	if (!xlwindow)

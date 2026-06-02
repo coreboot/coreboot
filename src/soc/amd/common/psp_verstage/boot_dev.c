@@ -19,7 +19,7 @@ static void *boot_dev_mmap(const struct region_device *rd, size_t offset, size_t
 	void *mapping = NULL;
 	uint32_t ret;
 
-	mdev = container_of(rd, __typeof__(*mdev), rdev);
+	mdev = container_of(rd, typeof(*mdev), rdev);
 	if (CONFIG(PSP_VERSTAGE_MAP_ENTIRE_SPIROM))
 		return &(mdev->base[offset]);
 
@@ -65,7 +65,7 @@ static ssize_t boot_dev_dma_readat(const struct region_device *rd, void *dest,
 							size_t offset, size_t size)
 {
 	size_t memcpy_size = ALIGN_UP((uintptr_t)dest, DEST_BUF_ALIGNMENT) - (uintptr_t)dest;
-	const struct mem_region_device *mdev = container_of(rd, __typeof__(*mdev), rdev);
+	const struct mem_region_device *mdev = container_of(rd, typeof(*mdev), rdev);
 	int ret;
 
 	if (memcpy_size > size)
@@ -94,7 +94,7 @@ static ssize_t boot_dev_dma_readat(const struct region_device *rd, void *dest,
 static ssize_t boot_dev_readat(const struct region_device *rd, void *dest,
 						size_t offset, size_t size)
 {
-	const struct mem_region_device *mdev = container_of(rd, __typeof__(*mdev), rdev);
+	const struct mem_region_device *mdev = container_of(rd, typeof(*mdev), rdev);
 
 	if (CONFIG(PSP_VERSTAGE_CCP_DMA))
 		return boot_dev_dma_readat(rd, dest, offset, size);

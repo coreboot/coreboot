@@ -43,7 +43,7 @@ static ssize_t qemu_writeat(const struct region_device *rd, const void *b,
 	volatile char *ptr;
 	const char *buf = b;
 
-	mdev = container_of(rd, __typeof__(*mdev), rdev);
+	mdev = container_of(rd, typeof(*mdev), rdev);
 	ptr = &mdev->base[offset];
 
 	for (i = 0; i < size; i++) {
@@ -67,7 +67,7 @@ static ssize_t qemu_eraseat(const struct region_device *rd, size_t offset,
 	size_t i;
 	volatile char *ptr;
 
-	mdev = container_of(rd, __typeof__(*mdev), rdev);
+	mdev = container_of(rd, typeof(*mdev), rdev);
 	ptr = &mdev->base[offset];
 
 	if (!IS_ALIGNED(offset, QEMU_FLASH_BLOCK_SIZE)) {

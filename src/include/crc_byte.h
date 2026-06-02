@@ -37,7 +37,7 @@ uint32_t crc32_byte(uint32_t prev_crc, uint8_t data);
 #define CRC(buf, size, crc_func) ({ \
 	const uint8_t *_crc_local_buf = (const uint8_t *)(buf); \
 	size_t _crc_local_size = size; \
-	__typeof__(crc_func(0, 0)) _crc_local_result = 0; \
+	typeof(crc_func(0, 0)) _crc_local_result = 0; \
 	while (_crc_local_size--) { \
 		_crc_local_result = crc_func(_crc_local_result, *_crc_local_buf++); \
 	} \

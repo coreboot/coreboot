@@ -15,10 +15,10 @@
  * for negative dividends if the divisor variable type is unsigned.
  */
 #define DIV_ROUND_CLOSEST(x, divisor)({					\
-	__typeof__(x) _div_local_x = (x);				\
-	__typeof__(divisor) _div_local_d = (divisor);			\
-	(((__typeof__(x))-1) > 0 ||					\
-	 ((__typeof__(divisor))-1) > 0 || (_div_local_x) > 0) ?		\
+	typeof(x) _div_local_x = (x);					\
+	typeof(divisor) _div_local_d = (divisor);			\
+	(((typeof(x))-1) > 0 ||						\
+	 ((typeof(divisor))-1) > 0 || (_div_local_x) > 0) ?		\
 		((_div_local_x + (_div_local_d / 2)) / _div_local_d) :	\
 		((_div_local_x - (_div_local_d / 2)) / _div_local_d);	\
 })
@@ -31,7 +31,7 @@
  *
  */
 #define container_of(ptr, type, member) ({			\
-	const __typeof__(((type *)0)->member) *__mptr = (ptr);	\
+	const typeof(((type *)0)->member) *__mptr = (ptr);	\
 	(type *)((char *)__mptr - offsetof(type, member)); })
 
 #ifndef alloca

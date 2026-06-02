@@ -32,7 +32,7 @@ static ssize_t spi_dma_readat_mmap(const struct region_device *rd, void *b, size
 {
 	const struct mem_region_device *mdev;
 
-	mdev = container_of(rd, __typeof__(*mdev), rdev);
+	mdev = container_of(rd, typeof(*mdev), rdev);
 
 	memcpy(b, &mdev->base[offset], size);
 
@@ -213,7 +213,7 @@ static void *spi_dma_mmap(const struct region_device *rd, size_t offset, size_t 
 	const struct mem_region_device *mdev;
 	void *mapping;
 
-	mdev = container_of(rd, __typeof__(*mdev), rdev);
+	mdev = container_of(rd, typeof(*mdev), rdev);
 
 	if (!CONFIG_CBFS_CACHE_SIZE)
 		return &mdev->base[offset];

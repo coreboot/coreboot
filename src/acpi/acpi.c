@@ -261,6 +261,9 @@ static void *get_tpm2_log(u32 *size)
 
 static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 {
+	u64 control_area;
+	u32 start_method;
+
 	if (tlcl_get_family() != TPM_2)
 		return;
 
@@ -270,37 +273,44 @@ static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 
 	acpi_tpm2_t *tpm2 = (acpi_tpm2_t *)header;
 	u32 tpm2_log_len;
-	void *lasa;
 
 	/*
 	 * Some payloads like SeaBIOS depend on log area to use TPM2.
 	 * Get the memory size and address of TPM2 log area or initialize it.
 	 */
-	lasa = get_tpm2_log(&tpm2_log_len);
+	void *lasa = get_tpm2_log(&tpm2_log_len);
 	if (!lasa)
 		tpm2_log_len = 0;
+
+	if (CONFIG(AMD_CRB_FTPM) && crb_tpm_is_active()) {
+		control_area = crb_tpm_base_address() + 0x40;
+		start_method = ACPI_TPM2_SM_ACPI_START;
+	} else if (CONFIG(CRB_TPM) && crb_tpm_is_active()) {
+		control_area = crb_tpm_base_address() + 0x40;
+		start_method = ACPI_TPM2_SM_CRB;
+	} else {
+		control_area = 0;
+		start_method = ACPI_TPM2_SM_MMIO_TIS;
+	}
+	acpi_write_tpm2(tpm2, lasa, tpm2_log_len, control_area, start_method);
+}
+
+void acpi_write_tpm2(acpi_tpm2_t *tpm2, const void *lasa, const u32 tpm2_log_len,
+		     const u64 control_area, const u32 start_method)
+{
+	acpi_header_t *header = &tpm2->header;
+	memset(tpm2, 0, sizeof(acpi_tpm2_t));
 
 	if (acpi_fill_header(header, "TPM2", TPM2, sizeof(acpi_tpm2_t)) != CB_SUCCESS)
 		return;
 
-	/* Hard to detect for coreboot. Just set it to 0 */
-	tpm2->platform_class = 0;
-
-	if (CONFIG(AMD_CRB_FTPM) && crb_tpm_is_active()) {
-		tpm2->control_area = crb_tpm_base_address() + 0x40;
-		tpm2->start_method = ACPI_TPM2_SM_ACPI_START;
-	} else if (CONFIG(CRB_TPM) && crb_tpm_is_active()) {
-		tpm2->control_area = crb_tpm_base_address() + 0x40;
-		tpm2->start_method = ACPI_TPM2_SM_CRB;
-	} else {
-		tpm2->control_area = 0;
-		tpm2->start_method = ACPI_TPM2_SM_MMIO_TIS;
-	}
-	memset(tpm2->msp, 0, sizeof(tpm2->msp));
-
-	/* Fill the log area size and start address fields. */
+	tpm2->control_area = control_area;
+	tpm2->start_method = start_method;
 	tpm2->laml = tpm2_log_len;
 	tpm2->lasa = (uintptr_t)lasa;
+
+	tpm2->header.checksum = 0;
+	tpm2->header.checksum = acpi_checksum((void *)tpm2, tpm2->header.length);
 }
 
 static void acpi_ssdt_write_cbtable(void)

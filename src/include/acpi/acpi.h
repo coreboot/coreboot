@@ -1626,6 +1626,9 @@ void acpi_create_crat(struct acpi_crat_header *crat,
 unsigned long acpi_write_hpet(const struct device *device, unsigned long start,
 			      acpi_rsdp_t *rsdp);
 
+void acpi_write_tpm2(acpi_tpm2_t *tpm2, const void *lasa, const u32 tpm2_log_len,
+		     const u64 control_area, const u32 start_method);
+
 /* cpu/intel/speedstep/acpi.c */
 void generate_cpu_entries(const struct device *device);
 

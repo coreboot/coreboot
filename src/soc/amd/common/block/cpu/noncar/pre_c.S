@@ -3,6 +3,8 @@
 #include <amdblocks/post_codes.h>
 #include <cpu/x86/64bit/entry64.inc>
 #include <cpu/x86/post_code.h>
+#include <cpu/x86/mtrr.h>
+#include <cpu/x86/cache.h>
 
 .section .init, "ax", @progbits
 
@@ -27,6 +29,21 @@ bootblock_resume_entry:
 bootblock_pre_c_entry:
 	post_code(POSTCODE_BOOTBLOCK_PRE_C_ENTRY)
 
+	/*
+	 * Configure the default memory type to cachable. This code runs from RAM and
+	 * does not access MMIO, so it's safe to mark everything cachable.
+	 */
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
+	rdmsr
+	and	$(~0x0cff), %ax
+	orl	$(MTRR_DEF_TYPE_EN | MTRR_TYPE_WRBACK), %eax
+	wrmsr
+
+	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
+	movl	%cr0, %eax
+	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
+	movl	%eax, %cr0
+
 #if ENV_X86_64
 	setup_longmode $PML4E
 #endif
@@ -44,6 +61,24 @@ bootblock_pre_c_entry:
 
 	/* Copy .data section content */
 #include <cpu/x86/copy_data_section.inc>
+
+#if ENV_X86_64
+	/* Disable cache (CR0.CD = 1, CR0.NW = 1). */
+	mov	%cr0, %rax
+	or	$((CR0_CacheDisable | CR0_NoWriteThrough)), %eax
+	mov	%rax, %cr0
+#else
+	/* Disable cache (CR0.CD = 1, CR0.NW = 1). */
+	mov	%cr0, %eax
+	or	$((CR0_CacheDisable | CR0_NoWriteThrough)), %eax
+	mov	%eax, %cr0
+#endif
+
+	/* Restore default memory type MSR. C code will set up proper MTRRs. */
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
+	rdmsr
+	and	$(~0x0cff), %ax
+	wrmsr
 
 	/* Align the stack for call to bootblock_c_entry(). */
 	and	$0xfffffff0, %esp

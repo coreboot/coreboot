@@ -5,9 +5,12 @@
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/i2c.h>
 #include <device/device.h>
+#include <ec/acpi/ec.h>
 #include <soc/amd/glinda/chip.h>
 #include <static.h>
 #include <types.h>
+
+#include "ec.h"
 
 /* The IRQ mapping in fch_irq_map ends up getting written to the indirect address space that is
    accessed via I/O ports 0xc00/0xc01. */
@@ -100,12 +103,27 @@ static void mainboard_configure_i3c(void)
 	}
 }
 
+static void mainboard_configure_ec(void)
+{
+	ec_set_ports(JAGUAR_EC_CMD, JAGUAR_EC_DATA);
+
+	/* Modern Standby enable, D3 cold enable */
+	const u8 mask = EC_MODERN_STANDBY_SSD0_D3_EN |
+			EC_MODERN_STANDBY_SSD1_D3_EN |
+			EC_MODERN_STANDBY_S0ix;
+
+	u8 tmp = ec_read(EC_MODERN_STANDBY);
+	if ((tmp & mask) != mask)
+		ec_write(EC_MODERN_STANDBY, tmp | mask);
+}
+
 static void mainboard_init(void *chip_info)
 {
 	mainboard_program_gpios();
 	mainboard_configure_uarts();
 	mainboard_configure_i2c();
 	mainboard_configure_i3c();
+	mainboard_configure_ec();
 }
 
 struct chip_operations mainboard_ops = {

@@ -6,86 +6,62 @@
 #include <ec/acpi/ec.h>
 #include <stdint.h>
 
-#define JAGUAR_EC_CMD	0x666
-#define JAGUAR_EC_DATA	0x662
-
+/* Controls power and reset lines connected to EC */
 static void configure_ec_gpio(void)
 {
 	uint8_t tmp;
-	uint8_t olddata = ec_read(0x31);
+	uint8_t olddata = ec_read(EC_PAGE_SELECT);
 
 	/* select page c2 */
-	ec_write(0x31, 0xc2);
-
-	tmp = ec_read(0xe);
-	printk(BIOS_SPEW, "EC: 0x%02x = %02x\n", 0xe, tmp);
-	tmp = ec_read(0xf);
-	printk(BIOS_SPEW, "EC: 0x%02x = %02x\n", 0xf, tmp);
-	tmp = ec_read(0x11);
-	printk(BIOS_SPEW, "PCIe GPP0 Slot-0 before Force Power for EC: 0x%02x = %02x\n", 0x11, tmp);
+	ec_write(EC_PAGE_SELECT, EC_GPIO_PAGE);
 
 	/* SLOT-0 Force power */
 	if (CONFIG(ENABLE_EVAL_CARD) &&
 	    CONFIG(ENABLE_FORCE_POWER_GPP0) &&
 	    CONFIG(PCIE_SLOT0_2X4))  {
-		// Writing 0 on BIT 0 to turn on force power
-		tmp |= BIT(0);
+		tmp = EC_FORCE_PWR_SLOT0;
+	} else {
+		tmp = 0;
 	}
-	ec_write(0x11, tmp);
-	printk(BIOS_SPEW, "PCIe GPP0 Slot-0 Force Power for EC: 0x%02x = %02x\n", 0x11, tmp);
+
+	ec_write(EC_FORCE_PWR, tmp);
+	printk(BIOS_SPEW, "EC: 0x%02x = %02x\n", EC_FORCE_PWR, tmp);
 
 	/* Configure PCIe mux */
-	tmp = ec_read(0x13) & ~(BIT(2) | BIT(1) | BIT(0));
-
 	if (CONFIG(ENABLE_NVME_PCIE_2LANES)) {
-		tmp |= BIT(1);
+		tmp = EC_PCIE_MUX_M2_SLOT_2X2X;
 	} else if (CONFIG(ENABLE_PCIE_4LANES)) {
-		tmp |= BIT(0);
+		tmp = EC_PCIE_MUX_SLOT1X4;
 	} else if (CONFIG(ENABLE_NVME_WLAN_2LANES)) {
-		tmp |= BIT(0);
-		tmp |= BIT(1);
+		tmp = EC_PCIE_MUX_M2_WLAN_2X2X;
+	} else {
+		tmp = EC_PCIE_MUX_NVMEX4;
 	}
-	ec_write(0x13, tmp);
-	printk(BIOS_SPEW, "PCIe Mux value for EC: 0x%02x = %02x\n", 0x13, tmp);
+	ec_write(EC_PCIE_MUX, tmp);
+	printk(BIOS_SPEW, "EC: 0x%02x = %02x\n", EC_PCIE_MUX, tmp);
 
-	tmp = ec_read(0x22);
+	tmp = 0;
 	if (CONFIG(XGBE_LED_TURN_ON))
-		tmp |= BIT(2);
-	else
-		tmp &= ~BIT(2);
+		tmp |= EC_XGBE_LED_ENABLE;
 
 	if (CONFIG(XGBE_EN))
-		tmp |= BIT(0) | BIT(3);
-	else
-		tmp &= ~(BIT(0) | BIT(3));
-	ec_write(0x22, tmp);
-	printk(BIOS_SPEW, "EC: 0x%02x = %02x\n", 0x22, tmp);
+		tmp |= EC_XGBE_MDIO0_1_XGBE | EC_XGBE_SFPP_MUX_ENABLE;
+
+	ec_write(EC_XGBE_CTRL, tmp);
+	printk(BIOS_SPEW, "EC: 0x%02x = %02x\n", EC_XGBE_CTRL, tmp);
 
 	/* Enable M.2 SSD0 power */
-	tmp = ec_read(0x15);
 	if (CONFIG(ENABLE_NVME_4LANES) ||
 	    CONFIG(ENABLE_NVME_PCIE_2LANES) ||
 	    CONFIG(ENABLE_NVME_WLAN_2LANES))
-		tmp |= BIT(0) | BIT(4);
+		tmp = EC_M2_POWER_PWR_EN | EC_M2_POWER_PERST_N;
 	else
-		tmp &= ~(BIT(0) | BIT(4));
-	ec_write(0x15, tmp);
-	printk(BIOS_SPEW, "EC: 0x%02x = %02x\n", 0x15, tmp);
-
-	/* USB PD setup */
-	tmp = ec_read(0x19);
-	tmp |= BIT(1);
-	tmp |= BIT(2);
-	tmp |= BIT(3);
-	ec_write(0x19, tmp);
+		tmp = 0;
+	ec_write(EC_M2_POWER, tmp);
+	printk(BIOS_SPEW, "EC: 0x%02x = %02x\n", EC_M2_POWER, tmp);
 
 	/* restore page */
-	ec_write(0x31, olddata);
-
-	/* Modern Standby enable, D3 cold enable */
-	tmp = ec_read(0xB7);
-	tmp |= BIT(7) | BIT(4) | BIT(5);
-	ec_write(0xB7, tmp);
+	ec_write(EC_PAGE_SELECT, olddata);
 }
 
 void jaguar_ec_init(void)

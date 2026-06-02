@@ -231,6 +231,22 @@ config FSP_TEMP_RAM_SIZE
 	help
 	  The amount of coreboot-allocated heap and stack usage by the FSP.
 
+config VERSTAGE_ADDR
+	hex
+	depends on VBOOT_SEPARATE_VERSTAGE
+	default 0x21A0000
+	help
+	  Sets the address in DRAM where verstage should be loaded if running
+	  as a separate stage on x86.
+
+config VERSTAGE_SIZE
+	hex
+	depends on VBOOT_SEPARATE_VERSTAGE
+	default 0x80000
+	help
+	  Sets the size of DRAM allocation for verstage in linker script if
+	  running as a separate stage on x86.
+
 config ASYNC_FILE_LOADING
 	bool "Loads files from SPI asynchronously"
 	select COOP_MULTITASKING
@@ -384,6 +400,10 @@ config PSPV2_MBOX_CMD_OFFSET
 	default 0x10970
 
 endmenu
+
+config VBOOT
+	select VBOOT_VBNV_CMOS
+	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
 
 menu "RAS Config Options"
 choice

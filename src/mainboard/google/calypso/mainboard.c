@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include "board.h"
+
 #include <bootsplash.h>
 #include <cbmem.h>
 #include <commonlib/bsd/cbmem_id.h>
@@ -73,6 +75,32 @@ static bool is_low_power_boot_with_charger(void)
 	return ret;
 }
 
+#if CONFIG(PLATFORM_HAS_OFF_MODE_CHARGING_INDICATOR)
+bool platform_is_off_mode_charging_active(void)
+{
+	return (get_boot_mode() == LB_BOOT_MODE_OFFMODE_CHARGING);
+}
+#endif
+
+static bool board_support_dead_battery_charging(void)
+{
+	uint32_t capacity;
+
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return false;
+
+	if (google_chromeec_read_batt_remaining_capacity(&capacity) < 0) {
+		printk(BIOS_WARNING, "Failed to get battery capacity; defaulting to slow charging\n");
+		return true;
+	}
+
+	/*
+	 * If the remaining battery capacity is less than or equal to the
+	 * threshold, set dead battery charging mode.
+	 */
+	return capacity <= DEAD_BATT_CHG_THRESHOLD_MAH;
+}
+
 /*
  * Handle charging and UI states for low-power or off-mode boot scenarios.
  * This function handles the transitions needed when the device is powered
@@ -80,6 +108,15 @@ static bool is_low_power_boot_with_charger(void)
  */
 static void handle_low_power_charging_boot(void)
 {
+	if (!pll_init_and_set(apss_ncc0, L_VAL_710P4MHz))
+		printk(BIOS_DEBUG, "CPU Frequency set to 710MHz\n");
+
+	if (board_support_dead_battery_charging())
+		configure_dead_battery_boot();
+
+	/* FIXME: Add fast charging support */
+	enable_slow_battery_charging();
+
 	/*
 	 * Disable the lightbar for Low-Battery or Off-Mode charging sequences.
 	 * This maintains visual consistency between the built-in display
@@ -90,7 +127,8 @@ static void handle_low_power_charging_boot(void)
 
 	/* Placeholder for display stop before launching charging applet */
 
-	/* Placeholder for Boot to charging applet */
+	/* Boot to charging applet; if this fails, the applet should trigger a reset */
+	launch_charger_applet();
 }
 
 static void mainboard_init(void *chip_info)

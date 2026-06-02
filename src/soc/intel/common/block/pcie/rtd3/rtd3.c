@@ -154,13 +154,7 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 		acpigen_write_if_lequal_namestr_int("ONSK", 0);
 
 	/* The _STA returns current power status of device, so we can skip _ON
-	 * if _STA returns 1
-	 * Example:
-	 * Local0 = \_SB.PCI0.RP01.RTD3._STA ()
-	 * If ((Local0 == One))
-	 * {
-	 *   Return (One)
-	 * }
+	 * if _STA returns 1.
 	 */
 	acpigen_write_store();
 	acpigen_emit_namestring(acpi_device_path_join(parent, "RTD3._STA"));
@@ -173,8 +167,9 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 	 */
 	if (trigger_opal_s3_unlock)
 		acpigen_write_store_int_to_namestr(APM_CNT_OPAL_S3_UNLOCK, "APMC");
-	acpigen_write_return_op(ONE_OP);
 	acpigen_write_if_end();
+
+	acpigen_write_if_lnotequal_op_int(LOCAL0_OP, ONE_OP);
 
 	if (config->use_rp_mutex)
 		acpigen_write_acquire(acpi_device_path_join(parent, RP_MUTEX_NAME),
@@ -222,6 +217,7 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 
 	if (config->use_rp_mutex)
 		acpigen_write_release(acpi_device_path_join(parent, RP_MUTEX_NAME));
+	acpigen_write_if_end();
 
 	if (config->skip_on_off_support) {
 		/* If current _ON is skipped, ONSK is decremented so that _ON will be

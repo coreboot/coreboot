@@ -466,7 +466,7 @@ Scope (\_SB.PCI0)
 				\_SB.PCI0.TDM0.D3CE()  /* Enable DMA RTD3 */
 
 				If (\_SB.PCI0.TDM0.IF30 != 1) {
-					Return
+					Return (0)
 				}
 
 				Printf("Push TBT RPs to D3Cold together")
@@ -480,6 +480,8 @@ Scope (\_SB.PCI0)
 				}
 			}
 		}
+
+		Return (0)
 	}
 
 	/*
@@ -525,7 +527,7 @@ Scope (\_SB.PCI0)
 				\_SB.PCI0.TDM1.D3CE()  /* Enable DMA RTD3. */
 
 				If (\_SB.PCI0.TDM1.IF30 != 1) {
-					Return
+					Return (0)
 				}
 
 				Printf("Push TBT RPs to D3Cold together")
@@ -539,6 +541,8 @@ Scope (\_SB.PCI0)
 				}
 			}
 		}
+
+		Return (0)
 	}
 
 	PowerResource (TBT0, 5, 1)

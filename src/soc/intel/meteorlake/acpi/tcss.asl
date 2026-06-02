@@ -458,6 +458,8 @@ Scope (\_SB.PCI0)
 				}
 			}
 		}
+
+		Return (0)
 	}
 
 	/*
@@ -513,6 +515,8 @@ Scope (\_SB.PCI0)
 				}
 			}
 		}
+
+		Return (0)
 	}
 
 	PowerResource (TBT0, 5, 1)

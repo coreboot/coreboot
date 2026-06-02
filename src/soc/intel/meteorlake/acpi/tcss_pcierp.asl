@@ -198,28 +198,26 @@ Name (STAT, 0x1)  /* Variable to save power state 1 - D0, 0 - D3C */
  */
 Method (D3CX, 0, Serialized)
 {
-	If (STAT == 0x1) {
-		Return
-	}
+	If (STAT != 0x1) {
+		RPFE = 0  /* Set RTD3PFETDIS = 0 */
+		RPER = 0  /* Set RTD3PERST = 0 */
+		L23R = 1  /* Set L23r2dt = 1 */
 
-	RPFE = 0  /* Set RTD3PFETDIS = 0 */
-	RPER = 0  /* Set RTD3PERST = 0 */
-	L23R = 1  /* Set L23r2dt = 1 */
-
-	/*
-	 * Poll for L23r2dt == 0. Wait for transition to Detect.
-	 */
-	Local0 = 0
-	Local1 = L23R
-	While (Local1) {
-		If (Local0 > 20) {
-			Break
-		}
-		Sleep(5)
-		Local0++
+		/*
+		 * Poll for L23r2dt == 0. Wait for transition to Detect.
+		 */
+		Local0 = 0
 		Local1 = L23R
+		While (Local1) {
+			If (Local0 > 20) {
+				Break
+			}
+			Sleep(5)
+			Local0++
+			Local1 = L23R
+		}
+		STAT = 0x1
 	}
-	STAT = 0x1
 }
 
 /*
@@ -227,27 +225,25 @@ Method (D3CX, 0, Serialized)
  */
 Method (D3CE, 0, Serialized)
 {
-	If (STAT == 0x0) {
-		Return
-	}
+	If (STAT != 0x0) {
+		L23E = 1  /* Set L23er = 1 */
 
-	L23E = 1  /* Set L23er = 1 */
-
-	/* Poll until L23er == 0 */
-	Local0 = 0
-	Local1 = L23E
-	While (Local1) {
-		If (Local0 > 20) {
-			Break
-		}
-		Sleep(5)
-		Local0++
+		/* Poll until L23er == 0 */
+		Local0 = 0
 		Local1 = L23E
-	}
+		While (Local1) {
+			If (Local0 > 20) {
+				Break
+			}
+			Sleep(5)
+			Local0++
+			Local1 = L23E
+		}
 
-	STAT = 0  /* D3Cold */
-	RPFE = 1  /* Set RTD3PFETDIS = 1 */
-	RPER = 1  /* Set RTD3PERST = 1 */
+		STAT = 0  /* D3Cold */
+		RPFE = 1  /* Set RTD3PFETDIS = 1 */
+		RPER = 1  /* Set RTD3PERST = 1 */
+	}
 }
 
 Method (_PS0, 0, Serialized)

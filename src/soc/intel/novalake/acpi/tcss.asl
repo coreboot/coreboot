@@ -442,6 +442,8 @@ Scope (\_SB.PCI0)
 				}
 			}
 		}
+
+		Return (0)
 	}
 
 

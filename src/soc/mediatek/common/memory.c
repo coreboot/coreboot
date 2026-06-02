@@ -196,6 +196,9 @@ static u16 get_expected_config(void)
 	if (CONFIG(MEDIATEK_DRAM_DVFS))
 		config |= DRAMC_CONFIG_DVFS;
 
+	if (CONFIG(MEDIATEK_DRAM_HIGH_FREQ))
+		config |= DRAMC_CONFIG_HIGH_FREQ;
+
 	if (CONFIG(MEDIATEK_DRAM_SCRAMBLE))
 		config |= DRAMC_CONFIG_SCRAMBLE;
 

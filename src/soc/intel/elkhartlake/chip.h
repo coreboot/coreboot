@@ -26,6 +26,11 @@
 /* Define config parameters for In-Band ECC (IBECC). */
 #define MAX_IBECC_REGIONS	8
 
+/* Define max PCIe Link EQ coefficients. */
+#define PCIE_LINK_EQ_COEFFICIENTS_MAX	10
+/* Define max PCIe Link EQ preset list. */
+#define PCIE_LINK_EQ_PRESETS_MAX	11
+
 enum ibecc_mode {
 	IBECC_PER_REGION,
 	IBECC_NONE,
@@ -106,6 +111,18 @@ enum sata_speed_limit {
 	SATA_DEFAULT = 0,
 	SATA_GEN1,
 	SATA_GEN2
+};
+
+/* PCIe equalization method */
+enum pcie_eq_method {
+	HARDWARE_EQ,
+	FIXED_EQ
+};
+
+/* PCIe equalization mode */
+enum pcie_eq_mode {
+	PRESET_EQ,
+	COEFFICIENT_EQ
 };
 
 struct soc_intel_elkhartlake_config {
@@ -249,6 +266,17 @@ struct soc_intel_elkhartlake_config {
 
 	/* PCIe root port speed. 0: Auto (Default); 1: Gen1; 2: Gen2; 3: Gen3 */
 	uint8_t PcieRpPcieSpeed[CONFIG_MAX_ROOT_PORTS];
+
+	/* PCIe link equalization settings */
+	bool PcieEqOverrideDefault;
+	enum pcie_eq_method PcieEqMethod;
+	enum pcie_eq_mode PcieEqMode;
+	uint8_t PcieEqPh3NumberOfPresetsOrCoefficients;
+	uint8_t PcieEqPh3PreCursorList[PCIE_LINK_EQ_COEFFICIENTS_MAX];
+	uint8_t PcieEqPh3PostCursorList[PCIE_LINK_EQ_COEFFICIENTS_MAX];
+	uint8_t PcieEqPh3PresetList[PCIE_LINK_EQ_PRESETS_MAX];
+	uint32_t PcieEqPh1DownstreamPortTransmitterPreset;
+	uint32_t PcieEqPh1UpstreamPortTransmitterPreset;
 
 	/* eMMC and SD */
 	uint8_t ScsEmmcHs400Enabled;

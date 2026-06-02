@@ -33,40 +33,6 @@ static const char *id_to_region_name(uint64_t target_nv_id)
 	return NULL;
 }
 
-/*
- * Do not cache the location to cope with flash changing underneath (e.g. due
- * to an update)
- */
-static int lookup_store(uint64_t target_nv_id, struct region_device *rstore)
-{
-	/* read_rdev, write_rdev and store_irdev need to be static to not go out of scope when
-	   this function returns */
-	static struct region_device read_rdev, write_rdev;
-	static struct incoherent_rdev store_irdev;
-	const char *name;
-	struct region region;
-	const struct region_device *rdev;
-
-	name = id_to_region_name(target_nv_id);
-	if (!name)
-		return -1;
-
-	if (fmap_locate_area(name, &region) < 0)
-		return -1;
-
-	if (boot_device_ro_subregion(&region, &read_rdev) < 0)
-		return -1;
-
-	if (boot_device_rw_subregion(&region, &write_rdev) < 0)
-		return -1;
-
-	rdev = incoherent_rdev_init(&store_irdev, &region, &read_rdev, &write_rdev);
-	if (rdev == NULL)
-		return -1;
-
-	return rdev_chain(rstore, rdev, 0, region_device_sz(rdev));
-}
-
 static enum mbox_p2c_status get_flash_device(const enum boot_device boot_device,
 					     const struct spi_flash **flash)
 {
@@ -90,12 +56,46 @@ static enum mbox_p2c_status find_psp_spi_flash_device_region(const enum boot_dev
 							     struct region_device *store,
 							     const struct spi_flash **flash)
 {
+	static struct region_device read_rdev, write_rdev;
+	static struct incoherent_rdev store_irdev;
+	const struct region_device *rdev;
+	const char *name;
+	struct region region;
+
 	if (get_flash_device(boot_device, flash) != MBOX_PSP_SUCCESS)
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
-	if (lookup_store(target_nv_id, store) < 0) {
-		printk(BIOS_ERR, "PSP: Unable to find PSP SPI region\n");
+	name = id_to_region_name(target_nv_id);
+	if (!name)
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+	if (fmap_locate_area(name, &region) < 0)
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+	if (boot_device == FLASH_PRIMARY) {
+		if (boot_device_ro_subregion(&region, &read_rdev) < 0)
+			return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+		if (boot_device_rw_subregion(&region, &write_rdev) < 0)
+			return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+		rdev = incoherent_rdev_init(&store_irdev, &region, &read_rdev, &write_rdev);
+		if (rdev == NULL)
+			return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+		return rdev_chain(store, rdev, 0, region_device_sz(rdev));
+
+	} else if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_BACKUP_SPI_FLASH)) {
+		/*
+		 * FIXME: No backup_boot_device_ro_subregion() implementation yet, so use
+		 * the rw one for both read and write. This is slower!
+		 */
+		if (backup_boot_device_rw_subregion(&region, &write_rdev) < 0)
+			return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+		return rdev_chain(store, &write_rdev, 0, region_device_sz(&write_rdev));
+	} else {
+		return MBOX_PSP_INVALID_PARAMETER;
 	}
 
 	return MBOX_PSP_SUCCESS;

@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Strix Halo */
-
 #include <amdblocks/i2c.h>
 #include <soc/aoac_defs.h>
 #include <soc/iomap.h>

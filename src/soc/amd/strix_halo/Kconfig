@@ -47,7 +47,7 @@ config SOC_AMD_STRIX_HALO_BASE
 	select SOC_AMD_COMMON_BLOCK_HAS_ESPI		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_HAS_ESPI_ALERT_ENABLE # TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_I2C			# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_I23C_PAD_CTRL	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_I23C_PAD_CTRL
 	select SOC_AMD_COMMON_BLOCK_I3C                 # TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_IOMMU		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_LPC			# TODO: Check if this is still correct

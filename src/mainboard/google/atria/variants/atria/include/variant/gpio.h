@@ -11,5 +11,6 @@
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE GPE0_LAN_WAK
 #define EC_SYNC_IRQ GPP_F14_IRQ
+#define GPIO_SLP_S0_GATE GPP_A13
 
 #endif /* __MAINBOARD_GPIO_H__ */

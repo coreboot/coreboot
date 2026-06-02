@@ -1,11 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi.h>
-#include <baseboard/variants.h>
+#include <acpi/acpigen.h>
 #include <baseboard/gpio.h>
+#include <baseboard/variants.h>
 #include <bootstate.h>
 #include <device/device.h>
 #include <variant/ec.h>
+#include <variant/gpio.h>
 
 void __weak fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
@@ -33,9 +35,28 @@ static void mainboard_early(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, mainboard_early, NULL);
 
+static void mainboard_generate_s0ix_hook(void)
+{
+	acpigen_write_if_lequal_op_int(ARG0_OP, 1);
+	{
+		if (CONFIG(HAVE_SLP_S0_GATE))
+			acpigen_soc_clear_tx_gpio(GPIO_SLP_S0_GATE);
+	}
+	acpigen_write_else();
+	{
+		if (CONFIG(HAVE_SLP_S0_GATE))
+			acpigen_soc_set_tx_gpio(GPIO_SLP_S0_GATE);
+	}
+	acpigen_write_if_end();
+}
+
 static void mainboard_fill_ssdt(const struct device *dev)
 {
-	/* TODO: Add mainboard specific SSDT */
+	acpigen_write_scope("\\_SB");
+	acpigen_write_method_serialized("MS0X", 1);
+	mainboard_generate_s0ix_hook();
+	acpigen_write_method_end(); /* Method */
+	acpigen_write_scope_end(); /* Scope */
 }
 
 static void mainboard_enable(struct device *dev)

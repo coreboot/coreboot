@@ -8,6 +8,7 @@
 #include <soc/aop_common.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
+#include <soc/watchdog.h>
 
 static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
 
@@ -88,6 +89,8 @@ static void platform_init_lightbar(void)
 static void mainboard_setup_peripherals_early(void)
 {
 	platform_init_lightbar();
+	/* Watchdog must be checked first to avoid erasing watchdog info later. */
+	check_wdog();
 }
 
 /* Perform romstage late hardware initialization */

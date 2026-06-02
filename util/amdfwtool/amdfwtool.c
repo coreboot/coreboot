@@ -926,7 +926,6 @@ static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 	bool recovery_ab = cb_config->recovery_ab;
 	unsigned int count;
 	psp_directory_table *pspdir, *pspdir2, *pspdir2_b;
-	bool use_only_a = (cb_config->soc_id == PLATFORM_PHOENIX); /* TODO: b:285390041 */
 
 	/* PSP L1 must exist */
 	assert(ctx->pspdir);
@@ -945,12 +944,10 @@ static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 			AMD_FW_RECOVERYAB_A, cb_config->soc_id);
 		if (pspdir2_b != NULL)
 			integrate_psp_ab(ctx, pspdir, pspdir2_b, ctx->ish_b_dir,
-				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
-				cb_config->soc_id);
+				AMD_FW_RECOVERYAB_B, cb_config->soc_id);
 		else
 			integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
-				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
-				cb_config->soc_id);
+				AMD_FW_RECOVERYAB_B, cb_config->soc_id);
 
 		/*
 		 * The PSP L1(B) can only be used on ISH platforms. On those platforms, there

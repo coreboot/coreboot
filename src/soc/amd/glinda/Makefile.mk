@@ -18,8 +18,6 @@ all_x86-y	+= uart.c
 bootblock-y	+= early_fch.c
 bootblock-y	+= espi_util.c
 
-verstage-y	+= espi_util.c
-
 romstage-y	+= fsp_m_params.c
 
 ramstage-y	+= acpi.c

@@ -152,27 +152,6 @@ config PSP_APOB_DRAM_SIZE
 	hex
 	default 0x40000
 
-config PSP_SHAREDMEM_BASE
-	hex
-	default 0x2041000 if VBOOT
-	default 0x0
-	help
-	  This variable defines the base address in DRAM memory where PSP copies
-	  the vboot workbuf. This is used in the linker script to have a static
-	  allocation for the buffer as well as for adding relevant entries in
-	  the BIOS directory table for the PSP.
-
-config PSP_SHAREDMEM_SIZE
-	hex
-	default 0x8000 if VBOOT
-	default 0x0
-	help
-	  Sets the maximum size for the PSP to pass the vboot workbuf and
-	  any logs or timestamps back to coreboot.  This will be copied
-	  into main memory by the PSP and will be available when the x86 is
-	  started.  The workbuf's base depends on the address of the reset
-	  vector.
-
 config PRE_X86_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x1600
@@ -184,10 +163,6 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	default 0x1600
 	help
 	  Increase this value if preram cbmem console is getting truncated
-
-config CBFS_MCACHE_SIZE
-	hex
-	default 0x2000 if VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 config C_ENV_BOOTBLOCK_SIZE
 	hex

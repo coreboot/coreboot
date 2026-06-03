@@ -413,6 +413,21 @@ void cbfs_preload_wait_for_all(void)
 		thread_join(&context->handle);
 }
 
+bool cbfs_preload_is_preload_thread(void)
+{
+	if (!CONFIG(CBFS_PRELOAD) || !ENV_SUPPORTS_COOP)
+		return false;
+
+	struct cbfs_preload_context *context;
+
+	list_for_each(context, cbfs_preload_context_list, list_node) {
+		if (context->handle.thread_id == thread_id())
+			return true;
+	}
+
+	return false;
+}
+
 static struct cbfs_preload_context *find_cbfs_preload_context(const char *name)
 {
 	struct cbfs_preload_context *context;

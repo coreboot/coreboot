@@ -187,6 +187,9 @@ static void prepare_thread(struct thread *t, struct thread_handle *handle,
 	/* Pointer used to publish the state of thread */
 	t->handle = handle;
 
+	/* Update assigned thread id */
+	handle->thread_id = t->id;
+
 	arch_prepare_thread(t, thread_entry, thread_arg);
 }
 
@@ -373,6 +376,16 @@ int thread_check_stacks(void)
 	}
 
 	return ret;
+}
+
+/*
+ * Returns the thread ID of the currently running thread, or -1 on error.
+ */
+int thread_id(void)
+{
+	const struct thread *current = current_thread();
+
+	return current ? current->id : -1;
 }
 
 void thread_coop_enable(void)

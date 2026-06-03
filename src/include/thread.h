@@ -21,6 +21,8 @@ struct thread_handle {
 	enum thread_state state;
 	/* Only valid when state == THREAD_DONE */
 	enum cb_err error;
+	/* Unique identifier */
+	int thread_id;
 };
 
 /* Run func(arg) on a new thread. Return 0 on successful start of thread, < 0
@@ -70,6 +72,8 @@ int thread_yield_microseconds(unsigned int microsecs);
 void thread_coop_enable(void);
 void thread_coop_disable(void);
 
+int thread_id(void);
+
 void thread_mutex_lock(struct thread_mutex *mutex);
 void thread_mutex_unlock(struct thread_mutex *mutex);
 
@@ -95,6 +99,9 @@ static inline void thread_coop_disable(void) {}
 static inline void thread_mutex_lock(struct thread_mutex *mutex) {}
 
 static inline void thread_mutex_unlock(struct thread_mutex *mutex) {}
+
+static inline int thread_id(void) {return -1;}
+
 #endif
 /* Check all thread stacks for overruns. */
 int thread_check_stacks(void);

@@ -129,6 +129,9 @@ void cbfs_preload(const char *name);
 /* Wait for all preloaded CBFS contexts to complete their operations. */
 void cbfs_preload_wait_for_all(void);
 
+/* Returns true if the current thread is a CBFS preload thread, false otherwise. */
+bool cbfs_preload_is_preload_thread(void);
+
 /* Removes a previously allocated CBFS mapping. Should try to unmap mappings in strict LIFO
    order where possible, since mapping backends often don't support more complicated cases. */
 void cbfs_unmap(void *mapping);

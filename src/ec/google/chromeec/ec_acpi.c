@@ -274,6 +274,11 @@ static void fill_ssdt_ps2_keyboard(const struct device *dev)
 				 !!(keybd.capabilities & KEYBD_CAP_SCRNLOCK_KEY),
 				 !!(keybd.capabilities & KEYBD_CAP_ASSISTANT_KEY),
 				 true);
+
+	/* Windows drivers expect function-row-physmap under CKSC (no keymap). */
+	if (!CONFIG(CHROMEOS))
+		acpigen_ps2_keyboard_physmap_dsd("_SB.PCI0.LPCB.EC0.CREC.CKSC",
+						 keybd.num_top_row_keys, ps2_action_keys);
 }
 
 static const char *ec_acpi_name(const struct device *dev)

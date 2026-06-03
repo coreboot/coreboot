@@ -278,7 +278,6 @@ config MAINBOARD_GPIO_PIN_FOR_GSC_AP_INTERRUPT
 config MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_POWER
 	int
 	default 88 if BOARD_GOOGLE_MODEL_MICA
-	default 88 if BOARD_GOOGLE_MODEL_QUARTZ
 	default 0
 	help
 	  The GPIO pin number used to enable/disable power to the

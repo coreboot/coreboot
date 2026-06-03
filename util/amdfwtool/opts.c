@@ -65,7 +65,6 @@ enum {
 	LONGOPT_SPI_READ_MODE	= 256,
 	LONGOPT_SPI_SPEED	= 257,
 	LONGOPT_SPI_MICRON_FLAG	= 258,
-	LONGOPT_BIOS_SIG	= 259,
 	LONGOPT_NVRAM_BASE	= 260,
 	LONGOPT_NVRAM_SIZE	= 261,
 	LONGOPT_RPMC_NVRAM_BASE	= 262,
@@ -113,7 +112,6 @@ static struct option long_options[] = {
 	{"bios-bin-dest",    required_argument, 0, AMDFW_OPT_BIOSBIN_DEST },
 	{"bios-uncomp-size", required_argument, 0, AMDFW_OPT_BIOS_UNCOMP_SIZE },
 	{"bios-bin-uncomp",        no_argument, 0, AMDFW_OPT_BIOSBIN_UNCOMP },
-	{"bios-sig-size",    required_argument, 0, LONGOPT_BIOS_SIG },
 	{"ucode",            required_argument, 0, AMDFW_OPT_UCODE },
 	{"apob-nv-base",     required_argument, 0, AMDFW_OPT_APOB_NVBASE },
 	{"apob-nv-size",     required_argument, 0, AMDFW_OPT_APOB_NVSIZE },
@@ -453,11 +451,6 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 			bios_tbl_index = find_bios_entry(AMD_BIOS_BIN);
 			if (bios_tbl_index != -1)
 				amd_bios_table[bios_tbl_index].zlib = 0;
-			break;
-		case LONGOPT_BIOS_SIG:
-			/* BIOS signature size */
-			register_bios_fw_addr(AMD_BIOS_SIG, 0, 0, optarg);
-			sub = instance = 0;
 			break;
 		case AMDFW_OPT_UCODE:
 			register_bdt_data(AMD_BIOS_UCODE, sub,

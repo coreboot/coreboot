@@ -17,6 +17,7 @@ struct platform_info {
 	bool is_second_gen;
 	bool has_dir_header_v1;
 	uint32_t psp_id;
+	uint32_t psb_reserved_size;
 };
 
 static const struct platform_info platform_table[] = {
@@ -29,6 +30,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = false,
 		.has_dir_header_v1 = false,
 		.psp_id = 0,
+		.psb_reserved_size = 0,
 	},
 	[PLATFORM_CARRIZO] = {
 		.name = "Carrizo",
@@ -39,6 +41,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = false,
 		.has_dir_header_v1 = false,
 		.psp_id = 0,
+		.psb_reserved_size = 0,
 	},
 	[PLATFORM_STONEYRIDGE] = {
 		.name = "Stoneyridge",
@@ -49,6 +52,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = false,
 		.has_dir_header_v1 = false,
 		.psp_id = 0x10220B00,
+		.psb_reserved_size = 0,
 	},
 	[PLATFORM_RAVEN] = {
 		.name = "Raven",
@@ -59,6 +63,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = false,
 		.has_dir_header_v1 = false,
 		.psp_id = 0xBC0A0000,
+		.psb_reserved_size = 0x100,
 	},
 	[PLATFORM_PICASSO] = {
 		.name = "Picasso",
@@ -69,6 +74,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = false,
 		.has_dir_header_v1 = false,
 		.psp_id = 0xBC0A0000,
+		.psb_reserved_size = 0x100,
 	},
 	[PLATFORM_RENOIR] = {
 		.name = "Renoir",
@@ -79,6 +85,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
 		.psp_id = 0xBC0C0000,
+		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_LUCIENNE] = {
 		.name = "Lucienne",
@@ -89,6 +96,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
 		.psp_id = 0xBC0C0000,
+		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_CEZANNE] = {
 		.name = "Cezanne",
@@ -99,6 +107,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
 		.psp_id = 0xBC0C0140,
+		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_MENDOCINO] = {
 		.name = "Mendocino",
@@ -109,6 +118,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
 		.psp_id = 0xBC0D0900,
+		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_PHOENIX] = {
 		.name = "Phoenix",
@@ -119,6 +129,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
 		.psp_id = 0xBC0D0400,
+		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_STRIX] = {
 		.name = "Strix",
@@ -129,6 +140,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = true,
 		.has_dir_header_v1 = true,
 		.psp_id = 0xBC0E0200,
+		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_GENOA] = {
 		.name = "Genoa",
@@ -139,6 +151,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
 		.psp_id = 0xBC0C0111,
+		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_KRACKAN2E] = {
 		.name = "Krackan2e",
@@ -149,6 +162,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = true,
 		.has_dir_header_v1 = true,
 		.psp_id = 0xbc0e1000,
+		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_STRIXHALO] = {
 		.name = "Strixhalo",
@@ -159,6 +173,7 @@ static const struct platform_info platform_table[] = {
 		.is_second_gen = true,
 		.has_dir_header_v1 = true,
 		.psp_id = 0xbc0e0900,
+		.psb_reserved_size = 0x200,
 	},
 };
 
@@ -287,4 +302,15 @@ uint32_t platform_get_psp_id(enum platform platform_type)
 bool platform_has_legacy_ab_recovery(amd_cb_config *cb_config)
 {
 	return cb_config->soc_id == PLATFORM_RENOIR && cb_config->recovery_ab;
+}
+
+/**
+ * Returns the maximum size of BIOS type 0x07 used for PSB.
+ *
+ * @param cb_config: Configuration struct
+ * @return: number of bytes to reserve for PSB, or 0 if PSB is unsupported
+ */
+bool platform_psb_reserved_size(enum platform platform_type)
+{
+	return platform_table[platform_type].psb_reserved_size;
 }

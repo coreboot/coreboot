@@ -521,5 +521,6 @@ bool platform_has_apob_nv_quirk(enum platform platform_type);
 uint32_t platform_get_psp_id(enum platform platform_type);
 bool platform_is_initial_alignment_required(enum platform platform_type);
 bool platform_has_legacy_ab_recovery(amd_cb_config *cb_config);
+bool platform_psb_reserved_size(enum platform platform_type);
 
 #endif	/* _AMD_FW_TOOL_H_ */

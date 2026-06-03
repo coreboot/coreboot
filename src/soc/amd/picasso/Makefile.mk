@@ -100,12 +100,6 @@ PSP_RPMC_NVRAM_SIZE=$(call get_fmap_value,FMAP_SECTION_PSP_RPMC_NVRAM_SIZE)
 # BIOS Directory Table items - proper ordering is managed by amdfwtool
 #
 
-# type = 0x7
-# RSA 2048 signature
-#ifeq ($(CONFIG_PSP_PLATFORM_SECURE_BOOT),y)
-PSP_BIOS_SIG_SIZE=0x100
-#endif
-
 # type = 0x60
 PSP_APCB_FILES=$(APCB_SOURCES)
 
@@ -172,7 +166,6 @@ OPT_PSP_BIOSBIN_FILE=$(call add_opt_prefix, $(PSP_BIOSBIN_FILE), --bios-bin)
 OPT_PSP_BIOSBIN_DEST=$(call add_opt_prefix, $(PSP_BIOSBIN_DEST), --bios-bin-dest)
 OPT_PSP_BIOSBIN_SIZE=$(call add_opt_prefix, $(PSP_BIOSBIN_SIZE), --bios-uncomp-size)
 
-OPT_PSP_BIOS_SIG_SIZE=$(call add_opt_prefix, $(PSP_BIOS_SIG_SIZE), --bios-sig-size)
 OPT_PSP_SHAREDMEM_BASE=$(call add_opt_prefix, $(PSP_SHAREDMEM_BASE), --sharedmem)
 OPT_PSP_SHAREDMEM_SIZE=$(call add_opt_prefix, $(PSP_SHAREDMEM_SIZE), --sharedmem-size)
 OPT_APOB_NV_SIZE=$(call add_opt_prefix, $(APOB_NV_SIZE), --apob-nv-size)

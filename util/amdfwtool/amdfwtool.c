@@ -1397,9 +1397,11 @@ static void integrate_bios_firmwares(context *ctx,
 
 		/* BIOS Directory items may have additional requirements */
 
-		/* SIG needs a size, else no choice but to skip */
-		if (fw_table[i].type == AMD_BIOS_SIG && !fw_table[i].size)
-			continue;
+		if (fw_table[i].type == AMD_BIOS_SIG && !fw_table[i].size) {
+			/* When signature is empty reserve some space to fill it in later. */
+			fw_table[i].size = platform_psb_reserved_size(cb_config->soc_id);
+		}
+
 		/* NV_ST needs a src and size, else no choice but to skip */
 		if (fw_table[i].type == AMD_BIOS_NV_ST &&
 		    (!fw_table[i].src || !fw_table[i].size))

@@ -64,6 +64,11 @@ chip soc/intel/elkhartlake
 	register "PcieRpLtrDisable[2]" = "true"
 	register "PcieRpLtrDisable[4]" = "true"
 
+	# Adjust TX Output De-Emphasis for PCIe RP3 to -6.3 dB
+	register "pcie_mp_cfg[2]" = "{
+		.tx_gen2_de_emph_3p5 = 0x1f,
+	}"
+
 	# Enable PCIe EQ override
 	register "PcieEqOverrideDefault" = "true"
 	register "PcieEqMethod" = "FIXED_EQ"

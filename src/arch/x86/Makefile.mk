@@ -82,6 +82,7 @@ bootblock-y += id.S
 bootblock-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 bootblock-y += bootblock.ld
 bootblock-y += car.ld
+bootblock-$(CONFIG_ASYNC_FILE_LOADING_CACHE) += region.c
 
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
@@ -170,6 +171,7 @@ romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += thread_switch_32.S
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_64) += thread_switch_64.S
 endif # CONFIG_COOP_MULTITASKING
 romstage-y += car.ld
+romstage-$(CONFIG_ASYNC_FILE_LOADING_CACHE) += region.c
 
 romstage-srcs += $(wildcard $(src)/mainboard/$(MAINBOARDDIR)/romstage.c)
 romstage-libs ?=
@@ -265,6 +267,7 @@ endif # CONFIG_COOP_MULTITASKING
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
 ramstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
+ramstage-$(CONFIG_ASYNC_FILE_LOADING_CACHE) += region.c
 
 rmodules_x86_32-y += memcpy.c
 rmodules_x86_32-y += memmove_32.c

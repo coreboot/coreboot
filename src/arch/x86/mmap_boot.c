@@ -3,6 +3,7 @@
 #include <boot_device.h>
 #include <spi_flash.h>
 #include <stdint.h>
+#include <arch/region.h>
 
 /* The ROM is memory mapped just below 4GiB. Form a pointer for the base. */
 #define rom_base ((void *)(uintptr_t)(0x100000000ULL-CONFIG_ROM_SIZE))
@@ -12,7 +13,10 @@ static const struct mem_region_device boot_dev =
 
 const struct region_device *boot_device_ro(void)
 {
-	return &boot_dev.rdev;
+	if (CONFIG(ASYNC_FILE_LOADING_CACHE) && ENV_SUPPORTS_COOP)
+		return mmio_region_device_preload_ro_init(&boot_dev.rdev);
+	else
+		return &boot_dev.rdev;
 }
 
 uint32_t spi_flash_get_mmap_windows(struct flash_mmap_window *table)

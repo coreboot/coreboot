@@ -179,6 +179,7 @@ config POSTRAM_CBFS_CACHE_IN_BSS
 
 config RAMSTAGE_CBFS_CACHE_SIZE
 	hex
+	default 0x200000 if ASYNC_FILE_LOADING_CACHE
 	default 0x4000
 	depends on POSTRAM_CBFS_CACHE_IN_BSS
 	help
@@ -493,5 +494,17 @@ config IOAPIC_USE_PRESET_ID
 	help
 	  Select this option if coreboot should keep IOAPIC IDs programmed
 	  by silicon vendor initialization code.
+
+config ASYNC_FILE_LOADING_CACHE
+	bool "Loads files from SPI asynchronously by prefetching SPI ROM"
+	depends on SSE
+	depends on BOOT_DEVICE_MEMORY_MAPPED
+	select COOP_MULTITASKING
+	select CBFS_PRELOAD
+	help
+	  When enabled, the platform will use the SSE 'prefetchnta' instruction to
+	  asynchronously load contents from the SPI ROM. This will improve
+	  boot time because the CPUs can be performing useful work while the
+	  SPI contents are being preloaded.
 
 endif

@@ -1,7 +1,4 @@
 chip northbridge/intel/sandybridge
-	# IGD Displays
-	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
-
 	# Enable DisplayPort 1 Hotplug with 6ms pulse
 	register "gpu_dp_d_hotplug" = "0x06"
 
@@ -11,8 +8,6 @@ chip northbridge/intel/sandybridge
 	# Enable DVI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
-	# 1333MHz RAM frequency
-	register "max_mem_clock_mhz" = "666"
 	register "spd_addresses" = "{0x50, 0, 0x51, 0}"
 
 	device domain 0 on
@@ -46,7 +41,6 @@ chip northbridge/intel/sandybridge
 			device ref mei1 on  end	# Management Engine Interface 1
 			device ref gbe on  end	# Intel Gigabit Ethernet
 			device ref hda on  end	# HD Audio controller
-			device ref pcie_rp1 on  end	# PCIe Port #1 (unused)
 			device ref pcie_rp2 on  end	# PCIe Port #2 (full-length mPCIe/mSATA)
 			device ref pcie_rp3 on  end	# PCIe Port #3 (half-length mPCIe)
 			device ref ehci1 on  end	# USB2 EHCI #1

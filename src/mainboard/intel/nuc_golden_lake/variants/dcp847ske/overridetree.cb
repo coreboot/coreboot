@@ -1,0 +1,13 @@
+chip northbridge/intel/sandybridge
+	# IGD Displays
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+
+	# 1333MHz RAM frequency (Celeron 847)
+	register "max_mem_clock_mhz" = "666"
+
+	device domain 0 on
+		chip southbridge/intel/bd82x6x
+			device ref pcie_rp1 on  end	# PCIe Port #1
+		end
+	end
+end

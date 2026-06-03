@@ -1546,11 +1546,29 @@ static void integrate_bios_firmwares(context *ctx,
 			biosdir->entries[count].dest = fw_table[i].dest;
 			biosdir->entries[count].size = fw_table[i].size;
 			break;
+		case AMD_BIOS_APCB:
+		case AMD_BIOS_APCB_BK:
+			adjust_current_pointer(ctx, 0, ERASE_ALIGNMENT);
+			bytes = copy_blob(ctx, fw_table[i].filename);
+			if (bytes <= 0) {
+				amdfwtool_cleanup(ctx);
+				exit(1);
+			}
+			/* Size needs to be multiple of 4K. Most APCB files are padded, some are not. */
+			bytes = ALIGN_UP(bytes, ERASE_ALIGNMENT);
+			biosdir->entries[count].size = (uint32_t)bytes;
+			biosdir->entries[count].source = RUN_CURRENT(*ctx);
+			biosdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
 
+			adjust_current_pointer(ctx, bytes, BLOB_ALIGNMENT);
+			if (fw_table[i].type == AMD_BIOS_APCB && !cb_config->have_apcb_bk) {
+				size = biosdir->entries[count].size;
+				source = biosdir->entries[count].source;
+				count++;
+				add_bios_apcb_bk_entry(biosdir, count, fw_table[i].inst, size, source);
+			}
+			break;
 		default: /* everything else is copied from input */
-			if (fw_table[i].type == AMD_BIOS_APCB ||
-					fw_table[i].type == AMD_BIOS_APCB_BK)
-				adjust_current_pointer(ctx, 0, ERASE_ALIGNMENT);
 			bytes = copy_blob(ctx, fw_table[i].filename);
 			if (bytes <= 0) {
 				amdfwtool_cleanup(ctx);
@@ -1562,12 +1580,6 @@ static void integrate_bios_firmwares(context *ctx,
 			biosdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
 
 			adjust_current_pointer(ctx, bytes, 0x100U);
-			if (fw_table[i].type == AMD_BIOS_APCB && !cb_config->have_apcb_bk) {
-				size = biosdir->entries[count].size;
-				source = biosdir->entries[count].source;
-				count++;
-				add_bios_apcb_bk_entry(biosdir, count, fw_table[i].inst, size, source);
-			}
 			break;
 		}
 

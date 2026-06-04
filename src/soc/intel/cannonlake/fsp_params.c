@@ -235,6 +235,8 @@ static void parse_devicetree(const config_t *config, FSP_S_CONFIG *s_cfg)
 	uint32_t dev_offset = 0;
 	uint32_t i = 0;
 
+	s_cfg->GnaEnable = is_devfn_enabled(SA_DEVFN_GNA);
+
 	for (i = 0; i < CONFIG_SOC_INTEL_I2C_DEV_MAX; i++, dev_offset++) {
 		s_cfg->SerialIoI2cMode[i] =
 				get_param_value(config, dev_offset);

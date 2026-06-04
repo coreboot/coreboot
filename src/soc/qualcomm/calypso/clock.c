@@ -263,3 +263,226 @@ void clock_init(void)
 
 	speed_up_boot_cpu();
 }
+
+static struct pcie pcie_cfg[] = {
+	[GCC_AGGRE_NOC_PCIE_5_EAST_SF_AXI_CLK] = {
+		.clk = &gcc->pcie_5.aggre_noc_pcie_5_east_sf_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en1,
+		.vote_bit = AGGRE_NOC_PCIE_5_EAST_SF_AXI_CLK_ENA,
+	},
+	[GCC_AGGRE_NOC_PCIE_EAST_TUNNEL_AXI_CLK] = {
+		.clk = &gcc->pcie_noc.aggre_noc_pcie_east_tunnel_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en2,
+		.vote_bit = AGGRE_NOC_PCIE_EAST_TUNNEL_AXI_CLK_ENA,
+	},
+	[GCC_AGGRE_NOC_PCIE_WEST_TUNNEL_AXI_CLK] = {
+		.clk = &gcc->pcie_noc.aggre_noc_pcie_west_tunnel_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en2,
+		.vote_bit = AGGRE_NOC_PCIE_WEST_TUNNEL_AXI_CLK_ENA,
+	},
+	[GCC_ANOC_PCIE_PWRCTL_CLK] = {
+		.clk = &gcc->anoc_pcie_pwrctl_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en1,
+		.vote_bit = ANOC_PCIE_PWRCTL_CLK_ENA,
+	},
+	[GCC_CNOC_PCIE_EAST_TUNNEL_CLK] = {
+		.clk = &gcc->pcie_noc.cnoc_pcie_east_tunnel_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en1,
+		.vote_bit = CNOC_PCIE_EAST_TUNNEL_CLK_ENA,
+	},
+	[GCC_CNOC_PCIE_WEST_TUNNEL_CLK] = {
+		.clk = &gcc->pcie_noc.cnoc_pcie_west_tunnel_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en1,
+		.vote_bit = CNOC_PCIE_WEST_TUNNEL_CLK_ENA,
+	},
+	[GCC_PCIE_LINK_XO_CLK] = {
+		.clk = &gcc->pcie_noc.pcie_link_xo_cbcr,
+		.vote_bit = NO_VOTE_BIT,
+	},
+	[GCC_HSCNOC_PCIE_SF_QTC_CLK] = {
+		.clk = &gcc->pcie_noc.hscnoc_pcie_sf_qtc_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = HSCNOC_PCIE_SF_QTC_CLK_ENA,
+	},
+	[GCC_HSCNOC_PCIE_SLAVE_SF_EAST_CLK] = {
+		.clk = &gcc->pcie_noc.hscnoc_pcie_slave_sf_east_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = HSCNOC_PCIE_SLAVE_SF_EAST_CLK_ENA,
+	},
+	[GCC_HSCNOC_PCIE_SLAVE_SF_WEST_CLK] = {
+		.clk = &gcc->pcie_noc.hscnoc_pcie_slave_sf_west_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = HSCNOC_PCIE_SLAVE_SF_WEST_CLK_ENA,
+	},
+	[GCC_PCIE_NOC_PWRCTL_CLK] = {
+		.clk = &gcc->pcie_noc.pcie_noc_pwrctl_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en1,
+		.vote_bit = PCIE_NOC_PWRCTL_CLK_ENA,
+	},
+	[GCC_PCIE_NOC_SF_CENTER_CLK] = {
+		.clk = &gcc->pcie_noc.pcie_noc_sf_center_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en1,
+		.vote_bit = PCIE_NOC_SF_CENTER_CLK_ENA,
+	},
+	[GCC_PCIE_NOC_SLAVE_SF_EAST_CLK] = {
+		.clk = &gcc->pcie_noc.pcie_noc_slave_sf_east_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en1,
+		.vote_bit = PCIE_NOC_SLAVE_SF_EAST_CLK_ENA,
+	},
+	[GCC_PCIE_NOC_SLAVE_SF_WEST_CLK] = {
+		.clk = &gcc->pcie_noc.pcie_noc_slave_sf_west_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en1,
+		.vote_bit = PCIE_NOC_SLAVE_SF_WEST_CLK_ENA,
+	},
+	[GCC_SMMU_PCIE_QTC_AT_CLK] = {
+		.clk = &gcc->smmu_pcie_qtc_at_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = SMMU_PCIE_QTC_AT_CLK_ENA,
+	},
+	[GCC_TCU_PCIE_SF_QTC_CLK] = {
+		.clk = &gcc->pcie_noc.tcu_pcie_sf_qtc_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = TCU_PCIE_SF_QTC_CLK_ENA,
+	},
+	[GCC_TRACE_NOC_PCIE_3B_AT_CLK] = {
+		.clk = &gcc->pcie_noc.trace_noc_pcie_3b_at_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en2,
+		.vote_bit = TRACE_NOC_PCIE_3B_AT_CLK_ENA,
+	},
+	[GCC_TRACE_NOC_PCIE_5_AT_CLK] = {
+		.clk = &gcc->pcie_noc.trace_noc_pcie_5_at_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en2,
+		.vote_bit = TRACE_NOC_PCIE_5_AT_CLK_ENA,
+	},
+	[GCC_TRACE_NOC_TCU_PCIE_QTC_AT_CLK] = {
+		.clk = &gcc->trace_noc_tcu_pcie_qtc_at_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en2,
+		.vote_bit = TRACE_NOC_TCU_PCIE_QTC_AT_CLK_ENA,
+	},
+	[GCC_PCIE_5_AT_CLK] = {
+		.clk = &gcc->pcie_5.at_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = PCIE_5_AT_CLK_ENA,
+	},
+	[GCC_PCIE_5_AUX_CLK] = {
+		.clk = &gcc->pcie_5.aux_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = PCIE_5_AUX_CLK_ENA,
+	},
+	[GCC_PCIE_5_CFG_AHB_CLK] = {
+		.clk = &gcc->pcie_5_cfg_ahb_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = PCIE_5_CFG_AHB_CLK_ENA,
+	},
+	[GCC_PCIE_5_MSTR_AXI_CLK] = {
+		.clk = &gcc->pcie_5.mstr_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = PCIE_5_MSTR_AXI_CLK_ENA,
+	},
+	[GCC_PCIE_5_PHY_RCHNG_CLK] = {
+		.clk = &gcc->pcie_5.phy_rchng_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = PCIE_5_PHY_RCHNG_CLK_ENA,
+	},
+	[GCC_PCIE_5_PIPE_DIV2_CLK] = {
+		.clk = &gcc->pcie_5.pipe_div2_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = PCIE_5_PIPE_DIV2_CLK_ENA,
+	},
+	[GCC_PCIE_5_SLV_AXI_CLK] = {
+		.clk = &gcc->pcie_5.slv_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = PCIE_5_SLV_AXI_CLK_ENA,
+	},
+	[GCC_PCIE_5_SLV_Q2A_AXI_CLK] = {
+		.clk = &gcc->pcie_5.slv_q2a_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = PCIE_5_SLV_Q2A_AXI_CLK_ENA,
+	},
+	[GCC_PCIE_PHY_5_AUX_CLK] = {
+		.clk = &gcc->pcie_phy_5_aux_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = PCIE_PHY_5_AUX_CLK_ENA,
+	},
+	[GCC_PCIE_5_PIPE_CLK] = {
+		.clk = &gcc->pcie_5.pipe_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = PCIE_5_PIPE_CLK_ENA,
+	},
+	[GCC_PCIE_5_PIPE_MUXR] = {
+		.clk = &gcc->pcie_5.pipe_muxr,
+		.vote_bit = NO_VOTE_BIT,
+	},
+	[GCC_QMIP_PCIE_5_AHB_CLK] = {
+		.clk = &gcc->pcie_5.qmip_pcie_5_ahb_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en6,
+		.vote_bit = QMIP_PCIE_5_AHB_CLK_ENA,
+	},
+};
+
+static u32 *gdsc_regs[MAX_GDSC] = {
+	[PCIE_5_GDSC]     = &gcc->pcie_5.gdscr,
+	[PCIE_5_PHY_GDSC] = &gcc->pcie_phy_5_gdscr,
+};
+
+enum cb_err clock_enable_pcie(enum clk_pcie clk_type)
+{
+	int clk_vote_bit;
+
+	if (clk_type >= PCIE_CLK_COUNT) {
+		printk(BIOS_ERR, "%s: invalid PCIe clock %d\n", __func__, clk_type);
+		return CB_ERR;
+	}
+
+	clk_vote_bit = pcie_cfg[clk_type].vote_bit;
+	if (clk_vote_bit < 0)
+		return clock_enable(pcie_cfg[clk_type].clk);
+
+	return clock_enable_vote(pcie_cfg[clk_type].clk,
+			pcie_cfg[clk_type].clk_br_en, pcie_cfg[clk_type].vote_bit);
+}
+
+enum cb_err clock_configure_mux(enum clk_pcie clk_type, u32 src_type)
+{
+	if (clk_type >= PCIE_CLK_COUNT)
+		return CB_ERR;
+
+	/* Set clock src */
+	write32(pcie_cfg[clk_type].clk, src_type);
+
+	return CB_SUCCESS;
+}
+
+enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type)
+{
+	if (gdsc_type >= MAX_GDSC) {
+		printk(BIOS_ERR, "%s: invalid GDSC %d\n", __func__, gdsc_type);
+		return CB_ERR;
+	}
+
+	return enable_and_poll_gdsc_status(gdsc_regs[gdsc_type]);
+}
+
+/* Configure gcc_pcie_5_phy_rchng_clk to 100 MHz */
+static struct clock_freq_config pcie5_phy_rchng_cfg[] = {
+	{
+		.hz  = 100 * MHz,
+		.src = SRC_GPLL0_MAIN_600MHZ,
+		.div = QCOM_CLOCK_DIV(6),
+	},
+};
+
+enum cb_err clock_configure_pcie(void)
+{
+	enum cb_err ret;
+
+	/* Configure the RCG to 100 MHz */
+	ret = clock_configure(&gcc->pcie_5.phy_rchng_rcg, pcie5_phy_rchng_cfg,
+			      100 * MHz, ARRAY_SIZE(pcie5_phy_rchng_cfg));
+	if (ret != CB_SUCCESS) {
+		printk(BIOS_ERR, "%s: failed to configure PCIE5 PHY RCHNG clock\n",
+		       __func__);
+	}
+
+	return ret;
+}

@@ -38,15 +38,23 @@ romstage-y += ../common/aop_load_reset.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 romstage-$(CONFIG_SOC_QUALCOMM_CDT) += ../common/cdt.c
 romstage-y += ../common/spmi.c
+romstage-y += ../common/pmic_gpio.c
+romstage-$(CONFIG_PCI) += pcie.c
+ifeq ($(CONFIG_SOC_QUALCOMM_PCIE_ASYNCHRONOUS_INIT),y)
+romstage-$(CONFIG_PCI) += ../common/pcie_common.c
+endif
 
 ################################################################################
+
 ramstage-y += soc.c
 ramstage-y += cbmem.c
 ramstage-y += ../common/mmu.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
+ramstage-$(CONFIG_PCI) += pcie.c
 ramstage-$(CONFIG_PCI) += ../common/pcie_common.c
 ramstage-y += cpucp_load_reset.c
 ramstage-y += ../common/spmi.c
+ramstage-y += ../common/pmic_gpio.c
 
 ################################################################################
 

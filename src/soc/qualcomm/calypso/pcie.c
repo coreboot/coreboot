@@ -1,11 +1,529 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <device/mmio.h>
+#include <soc/addressmap.h>
+#include <soc/clock.h>
 #include <soc/pcie.h>
+#include <soc/pmic_gpio.h>
+#include <soc/qcom_qmp_phy.h>
+
+/* PMIC B SPMI slave ID */
+#define PMIC_B_SID			1
+#define NVME_REG_EN			14
+
+/* PCIe5 4-lane (5x4) QMP PHY init sequence */
+
+/* PLL (serdes) registers */
+static const struct qcom_qmp_phy_init_tbl calypso_qmp_pcie5_serdes_tbl[] = {
+	/* Enable L and R bias */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CLK_FWD_CONFIG_1,		0x0F),
+	/* Gen5 PLL charge pump adjustment */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SSC_STEP_SIZE1_MODE2,		0xAB),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SSC_STEP_SIZE2_MODE2,		0x01),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CP_CTRL_MODE2,			0x06),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_PLL_RCTRL_MODE2,		0x16),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_PLL_CCTRL_MODE2,		0x36),
+	/* Set gen5 coreclk divider */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CORECLK_DIV_MODE2,		0x04),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_LOCK_CMP1_MODE2,		0x0A),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_LOCK_CMP2_MODE2,		0x1A),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DEC_START_MODE2,		0x68),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DIV_FRAC_START1_MODE2,		0xAB),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DIV_FRAC_START2_MODE2,		0xAA),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DIV_FRAC_START3_MODE2,		0x02),
+	/* Set binary VCO cal comp value Gen5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_BIN_VCOCAL_CMP_CODE1_MODE2,	0xA4),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_BIN_VCOCAL_CMP_CODE2_MODE2,	0x18),
+	/* Gen3/4 PLL settings */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SSC_STEP_SIZE1_MODE1,		0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SSC_STEP_SIZE2_MODE1,		0x03),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CP_CTRL_MODE1,			0x06),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_PLL_RCTRL_MODE1,		0x16),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_PLL_CCTRL_MODE1,		0x36),
+	/* Set gen3 coreclk divider */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CORECLK_DIV_MODE1,		0x04),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_LOCK_CMP1_MODE1,		0x04),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_LOCK_CMP2_MODE1,		0x0D),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DEC_START_MODE1,		0x68),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DIV_FRAC_START1_MODE1,		0xAB),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DIV_FRAC_START2_MODE1,		0xAA),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DIV_FRAC_START3_MODE1,		0x02),
+	/* Set binary VCO cal comp value Gen3/4 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_BIN_VCOCAL_CMP_CODE1_MODE1,	0x52),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_BIN_VCOCAL_CMP_CODE2_MODE1,	0x0C),
+	/* Set HSCLK divider for Gen1 and Gen3 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_HSCLK_SEL_1,			0x3C),
+	/* Set HSCLK divider for Gen5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_HSCLK_SEL_2,			0x01),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_BIN_VCOCAL_HSCLK_SEL_1,	0x3C),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_BIN_VCOCAL_HSCLK_SEL_2,	0x01),
+	/* Gen1/2 PLL settings */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SSC_STEP_SIZE1_MODE0,		0xE0),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SSC_STEP_SIZE2_MODE0,		0x01),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CP_CTRL_MODE0,			0x06),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_PLL_RCTRL_MODE0,		0x16),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_PLL_CCTRL_MODE0,		0x36),
+	/* Set gen1 coreclk divider */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CORECLK_DIV_MODE0,		0x0A),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_LOCK_CMP1_MODE0,		0x40),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_LOCK_CMP2_MODE0,		0x03),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DEC_START_MODE0,		0x41),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DIV_FRAC_START1_MODE0,		0xAB),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DIV_FRAC_START2_MODE0,		0xAA),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DIV_FRAC_START3_MODE0,		0x01),
+	/* Set binary VCO cal comp value Gen1/2 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_BIN_VCOCAL_CMP_CODE1_MODE0,	0xD4),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_BIN_VCOCAL_CMP_CODE2_MODE0,	0x03),
+	/* Set HSCLK divider for Gen2 and Gen4 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_HSCLK_HS_SWITCH_SEL_1,	0x16),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_HSCLK_HS_SWITCH_SEL_2,	0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_BG_TIMER,			0x0A),
+	/* Phase-based vs binary VCO calibration */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_VCO_TUNE_CTRL,			0x40),
+	/* Downspread SSC enabled */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SSC_EN_CENTER,			0x01),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SSC_PER1,			0x62),
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SSC_PER2,			0x02),
+	/* Set HSCLK divider for gen1/2, gen3/4, gen5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_POST_DIV_MUX,			0xC0),
+	/* Enable right and left side clock buffers and bias */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_BIAS_EN_CLKBUFLR_EN,		0x1F),
+	/* Enable endpoint clock drive with pulldown when off */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CLK_ENABLE1,			0x90),
+	/* Select SW endpoint enable */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SYS_CLK_CTRL,			0x82),
+	/* Adjust VCO current */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_PLL_IVCO,			0x0F),
+	/* Select SE cmos clock input */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_SYSCLK_EN_SEL,			0x08),
+	/* Lock count = 512, lock range = +/-64 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_LOCK_CMP_EN,			0x46),
+	/* Use same range values for all lock iterations */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_LOCK_CMP_CFG,			0x04),
+	/* Set mode0 as gen1/2, mode1 as gen3/4, mode2 as gen5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_VCO_TUNE_MAP,			0x24),
+	/* Set rchng clock as endpoint refclk source during relock */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CLK_SELECT,			0x34),
+	/* Set PLL lock clock divider. Enable automatic div2 in hs_switch */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CORE_CLK_EN,			0xE0),
+	/* Set gen1/2 PLL feedback divide to 6 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CMN_CONFIG_1,			0x86),
+	/* Set hs_switch as part of rate change */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CMN_MISC1,			0x88),
+	/* VCCA selected as input to Vreg */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CMN_MODE,			0x14),
+	/* Increase Vreg */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_VCO_DC_LEVEL_CTRL,		0x0F),
+	/* Enable VCO div3 before Epclk div circuit in Gen12 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CMN_CONFIG_2,			0x10),
+	/* Set EP divider in Gen3/4 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CLK_EP_DIV_MODE1,		0x14),
+	/* Set EP divider in Gen1/2 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CLK_EP_DIV_MODE0,		0x32),
+	/* Enable DCC calibration */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_PSM_CAL_EN,			0x05),
+	/* Enable PCS control of SSC_EN */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_PLL_SPARE_FOR_ECO,		0x40),
+	/* Invert analog comp sign */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DCC_CAL_1,			0x40),
+	/* Skip PLL digital DCC cal */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DCC_CAL_2,			0x07),
+	/* Increase cal wait-time to 65 cycles */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DCC_CAL_3,			0x60),
+	/* Zero DCC code for right driver stage */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DCC_CAL_7,			0x20),
+	/* Force DCC code for VCO stage */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DCC_CAL_8,			0x36),
+	/* Zero DCC code for left driver stage */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_DCC_CAL_9,			0x20),
+	/* Enable ip50/ie50 to lanes */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_IP_CTRL_AND_DP_SEL,		0xAF),
+	/* Adjust IE trim */
+	QMP_PHY_INIT_CFG(QSERDES_V5_PLL_CMN_IETRIM,			0x1B),
+};
+
+/*
+ * TXRXZ broadcast registers (applied to all 4 lanes simultaneously)
+ * Contains RX mode, CDR, sigdet, and TX adaptation settings
+ */
+static const struct qcom_qmp_phy_init_tbl calypso_qmp_pcie5_txrxz_tbl[] = {
+	/* Force use of local bias, bypass pulse width filter */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_SIGDET_ENABLES,		0x1C),
+	/* Rx setting adjustment for G3 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE2_B0,		0xCF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE2_B1,		0xA1),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE2_B2,		0x7C),
+	/* 0x71: PCIE5/PCIE3A instance */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE2_B3,		0x71),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE2_B4,		0x02),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE2_B5,		0x5E),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE2_B6,		0x12),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE2_B7,		0x23),
+	/* Rx setting adjustment for G4 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE3_B0,		0xCE),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE3_B1,		0xB3),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE3_B2,		0x38),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE3_B3,		0x60),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE3_B4,		0x2C),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE3_B5,		0x5D),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE3_B6,		0x2D),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE3_B7,		0x3B),
+	/* Rx setting adjustment for G5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE4_B0,		0xAF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE4_B1,		0xC6),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE4_B2,		0xC3),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE4_B3,		0x70),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE4_B4,		0x8C),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE4_B5,		0x5E),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE4_B6,		0x64),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE4_B7,		0x7A),
+	/* Adjust Gen4 summer speed */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_SUMMER_CAL_SPD_MODE_RATE_0123, 0x6F),
+	/* Adjust txadpt post thresholds */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_TX_ADAPT_POST_THRESH1,	0x02),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_TX_ADAPT_POST_THRESH2,	0x0D),
+	/* Use QSRV pre-adapt algorithm */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_PHPRE_CTRL,			0x20),
+	/* Use CTLE code for TX post adaption */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_TX_ADPT_CTRL,			0x30),
+	/* Rx setting adjustment for G1/G2 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE_0_1_B0,		0xEF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE_0_1_B1,		0x48),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE_0_1_B2,		0x5C),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE_0_1_B3,		0x51),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE_0_1_B4,		0x2A),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE_0_1_B5,		0x47),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE_0_1_B6,		0x08),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_MODE_RATE_0_1_B7,		0x1D),
+	/* Si adjustment */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_LANE_MODE_1,			0x05),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_LANE_MODE_2,			0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_LANE_MODE_3,			0x41),
+	/* Update BLW cap */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_LANE_MODE_4,			0x00),
+	/* LDO control */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_PCIE5_TOP_LDO_CODE_CTRL1,	0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_PCIE5_TOP_LDO_CODE_CTRL2,	0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_PCIE5_TOP_LDO_CODE_CTRL3,	0x80),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_PCIE5_TOP_LDO_CODE_CTRL4,	0x8D),
+	/* DFE Tap control per rate */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_DFE_TAP1_DAC_ENABLE,		0x1C),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_DFE_TAP2_DAC_ENABLE,		0x1C),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_DFE_TAP345_DAC_ENABLE,	0x18),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_DFE_TAP67_DAC_ENABLE,	0x10),
+	/* Adjust charge pump current per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_CP_CUR_FLL_RATE0,	0x07),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_CP_CUR_FLL_RATE1,	0x07),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_CP_CUR_FLL_RATE2,	0x0A),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_CP_CUR_FLL_RATE3,	0x0A),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_CP_CUR_FLL_RATE4,	0x0A),
+	/* 0x01: PCIE5/PCIE3A instance */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_CP_CUR_PLL_RATE0,	0x03),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_CP_CUR_PLL_RATE1,	0x04),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_CP_CUR_PLL_RATE2,	0x01),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_CP_CUR_PLL_RATE3,	0x03),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_CP_CUR_PLL_RATE4,	0x03),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_FLL_DIV_RATIO_RATE_0123,	0x94),
+	/* Adjust filter RC code */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_CCODE_RATE_01,	0x66),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_CCODE_RATE_23,	0x57),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_CCODE_RATE4,	0x07),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_RCODE_FAST_RATE_0_1,	0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_RCODE_FAST_RATE_2_3,	0x22),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_RCODE_FAST_RATE4,	0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_RCODE_FLL_RATE_0_1,	0x33),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_RCODE_FLL_RATE_2_3,	0x32),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_RCODE_FLL_RATE4,	0x03),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_RCODE_PLL_RATE_0_1,	0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_RCODE_PLL_RATE_2_3,	0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_RCODE_PLL_RATE4,	0x02),
+	/* Adjust Fastlock charge pump current per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_FASTLOCK_CP_CUR_PLL_RATE0,	0x14),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_FASTLOCK_CP_CUR_PLL_RATE1,	0x14),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_FASTLOCK_CP_CUR_PLL_RATE2,	0x14),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_FASTLOCK_CP_CUR_PLL_RATE3,	0x14),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_FASTLOCK_CP_CUR_PLL_RATE4,	0x03),
+	/* Use Iqtune bypass code */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_IQTUNE_CTRL,		0x5A),
+	/* Upper band adjustment per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CAL_UPPER_FREQ_DIFF_BND1_RATE0,	0xFF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CAL_UPPER_FREQ_DIFF_BND1_RATE1,	0xFF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CAL_UPPER_FREQ_DIFF_BND1_RATE2,	0xFF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CAL_UPPER_FREQ_DIFF_BND1_RATE3,	0xFF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CAL_UPPER_FREQ_DIFF_BND1_RATE4,	0xFF),
+	/* Lower band adjustment per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CAL_LOWER_FREQ_DIFF_BND_RATE0,	0x10),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CAL_LOWER_FREQ_DIFF_BND_RATE1,	0x16),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CAL_LOWER_FREQ_DIFF_BND_RATE2,	0x0A),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CAL_LOWER_FREQ_DIFF_BND_RATE3,	0x07),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CAL_LOWER_FREQ_DIFF_BND_RATE4,	0x08),
+	/* Iqtune adjustment */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_IQTUNE_MAN_INDEX,	0x11),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_IQTUNE_CLK0_CAL_CODE_RATE4,	0x03),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_IQTUNE_ANA_CTRL,		0x00),
+	/* 0x5F: PCIE5/PCIE3A instance. Adjust div2/div4 path setting in Gen1/2/3/4 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_IQTUNE_DIV2_CTRL_RATE0123,	0x5F),
+	/* Adjust VCO measure count per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CTUNE_MEAS_CNT1_RATE0,	0x13),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CTUNE_MEAS_CNT2_RATE0,	0x13),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CTUNE_MEAS_CNT1_RATE1,	0x26),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CTUNE_MEAS_CNT2_RATE1,	0x26),
+	/* 0x85: PCIE5/PCIE3A instance. Adjust VCO measure count */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CTUNE_MEAS_CNT1_RATE2,	0x85),
+	/* 0x1E: PCIE5/PCIE3A instance. Adjust VCO measure count */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CTUNE_MEAS_CNT2_RATE2,	0x1E),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CTUNE_MEAS_CNT1_RATE3,	0xCC),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CTUNE_MEAS_CNT2_RATE3,	0x3D),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CTUNE_MEAS_CNT1_RATE4,	0xCC),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CTUNE_MEAS_CNT2_RATE4,	0x3D),
+	/* Adjust summer cal ref source per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_IVCM_CAL_CTRL2,		0x83),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_IVCM_CAL_CTRL3,		0x44),
+	/* 0x02: std/med channel. 0x03: long channel. 0x02: short channel */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_IVCM_CAL_CTRL4,		0x02),
+	/* CTLE adaptor force control per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_EQU_ADAPTOR_CNTRL3,	0x0A),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_EQU_ADAPTOR_CNTRL4,	0xAA),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_EQU_ADAPTOR_CNTRL5,	0x0A),
+	/* VGA adaptor force value per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VGA_CAL_MAN_VAL_RATE0_1,	0xDD),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VGA_CAL_MAN_VAL_RATE2_3,	0xDB),
+	/* 0x04: std/med channel. 0x08: long channel. 0x00: short channel */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VGA_CAL_MAN_VAL_RATE4,	0x04),
+	/* 0x15: PCIE5/PCIE3A instance. Enable override for all rates */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CAP_CODE_OVRD_MUXES,	0x15),
+	/* 0x7F: PCIE5/PCIE3A instance. Force VCO cap code values Gen1-4 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CAP_CODE_RATE_0123,	0x7F),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_CAP_CODE_RATE4,	0x01),
+	/* Adjust KVCO freq target per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_IDEAL_FREQ_DIFF1_RATE0,	0x2B),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_IDEAL_FREQ_DIFF2_RATE0,	0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_IDEAL_FREQ_DIFF1_RATE1,	0x20),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_IDEAL_FREQ_DIFF2_RATE1,	0x00),
+	/* 0x35: PCIE5/PCIE3A instance. Adjust KVCO freq target Gen3 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_IDEAL_FREQ_DIFF1_RATE2,	0x35),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_IDEAL_FREQ_DIFF2_RATE2,	0x00),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_IDEAL_FREQ_DIFF1_RATE3,	0x35),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_IDEAL_FREQ_DIFF1_RATE4,	0x20),
+	/* Adjust KVCO init */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_INIT_RATE_0_1,		0x11),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_INIT_RATE_2_3,		0x11),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_INIT_RATE_4,		0x01),
+	/* Adjust delay for freq_lock_detect per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_FREQ_LOCK_DET_DLY_RATE0,	0xFF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_FREQ_LOCK_DET_DLY_RATE1,	0xFF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_FREQ_LOCK_DET_DLY_RATE2,	0xFF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_FREQ_LOCK_DET_DLY_RATE3,	0xFF),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_FREQ_LOCK_DET_DLY_RATE4,	0xFF),
+	/* Adjust common mode voltage input per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCTRL_RATE_0_1,		0x34),
+	/* 0x43: PCIE5/PCIE3A instance. Adjust common mode voltage input Gen3/4 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCTRL_RATE_2_3,		0x43),
+	/* Adjust common mode voltage input Gen5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCTRL_RATE_4,		0x03),
+	/* 0x07: PCIE5/PCIE3A instance. Enable slow VCO in Gen1/2/3 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_TYPE_CONFIG,		0x07),
+	/* Override KP/KVCO code for Gen5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KP_CODE_OVRD_RATE4,		0x03),
+	/* 0x03: PCIE5/PCIE3A instance. Override KVCO code, Gen3 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_CODE_OVRD_RATE2,	0x03),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_KVCO_CODE_OVRD_RATE4,	0x04),
+	/* Enable LD-6bit and VCO boost prop gain */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOOP_FUNC_CTRL,		0xD0),
+	/* GM Cal resistor setting per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_GM_CAL_RES_RATE0_1,		0xCC),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_GM_CAL_RES_RATE2_3,		0x8A),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_GM_CAL_RES_RATE4,		0x09),
+	/* VCO lowfreq enable Gen1-5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_VCO_EN_LOWFREQ,		0x1F),
+	/* Resistor trim Vref sel */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RESTRIM_VREF_SEL,		0x16),
+	/* Force pd_iq low */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_RCVR_EN,			0x08),
+	/* RX resistor code offset */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RES_CODE_LANE_OFFSET_RX,	0x17),
+	/* Bypass restrim calibration and use one from refgen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RESTRIM_CAL_CTRL,		0x08),
+	/* Resistor trim postcal offset */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RESTRIM_POST_CAL_OFFSET,	0x10),
+	/* Adjust CTLE post cal offset Gen4/5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CTLE_POST_CAL_OFFSET_RATE_3_4,	0x67),
+	/* Manual VGA mode and update Gen5 KVGA gain control */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VGA_CAL_CNTRL1,		0x00),
+	/* Manual Vthresh mode */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VTHRESH_CAL_CNTRL1,		0x04),
+	/* Enable cdr_refclk clock gate */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CLKBUF_ENABLE,		0x40),
+	/* Adjust VCO coarse lower band per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VCO_CTUNE_LOWER_BND_RATE2,	0x11),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VCO_CTUNE_LOWER_BND_RATE3,	0x11),
+	/* Adjust upper coarse tune band per Gen */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VCO_CTUNE_UPPER_BND_RATE0,	0x1E),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VCO_CTUNE_UPPER_BND_RATE1,	0x1E),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VCO_CTUNE_UPPER_BND_RATE2,	0x1E),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VCO_CTUNE_UPPER_BND_RATE3,	0x1E),
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VCO_CTUNE_UPPER_BND_RATE4,	0x1E),
+	/* Use smaller sigdet threshold step size */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_SIGDET_CNTRL,		0x2F),
+	/* Adjust sigdet level */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_SIGDET_LVL,			0x84),
+	/* Adjust sigdet cal trim */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_SIGDET_CAL_TRIM,		0x66),
+	/* Set R2 analog controls through reserved interface */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_DIG_BKUP_CTRL16,		0x6E),
+	/* Enable all samplers */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_RX_IDAC_ENABLES,		0xFF),
+	/* Vthresh cal manual value (long channel: use 0x70) */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_VTHRESH_CAL_MAN_VAL_RATE4,	0x56),
+	/* Adjust phase lock count Gen5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_PHASE_LOCK_CNT_RATE4,	0x80),
+	/* Enhance PLL locking range during FLL-PLL transition Gen5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_FAST_LOCK_EN_CTRL,	0x10),
+	/* Adjust KP offset Gen5 */
+	QMP_PHY_INIT_CFG(QSERDES_V5_TXRX_CDR_LOCK_KP_OFFSET_RATE4,	0x20),
+};
+
+/* PCS COM registers */
+static const struct qcom_qmp_phy_init_tbl calypso_qmp_pcie5_pcs_tbl[] = {
+	/*
+	 * Maxpclk handshake enabled and l1p12 to l1p0 disabled.
+	 * Keep PLL/EP clock on in P2 until CLKREQ# goes high.
+	 */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_POWER_STATE_CONFIG2,	0x3D),
+	/* Enable PCLK 32khz toggle in L1SS/P2 for DCD aging */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_POWER_STATE_CONFIG5,	0xE4),
+	/* Extend pipe clk toggles during L1SS/P2 entry */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_POWER_STATE_CONFIG6,	0x1F),
+	/* Enable SSC control by PCS and mask during CDR cal */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_POWER_STATE_CONFIG7,	0x0D),
+	/* Adjust Pinf RTB depth */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_PCS_TX_RX_CONFIG2,		0xE4),
+	/* Adjust local blockalign and holdoff-only features */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_PCS_TX_RX_CONFIG3,		0x30),
+	/* G12 Rxvalid asserted by snoop comma lock */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_PCS_TX_RX_CONFIG5,		0x05),
+	/* Zero rxvalid extend cycles, eight rxclk extend cycles */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_PCS_TX_RX_CONFIG6,		0x08),
+	/* P0 rxvalid assert wait count 1 microsecond */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_PCS_TX_RX_CONFIG7,		0x20),
+	/* P0s rxvalid assert wait count 1 microsecond */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_PCS_TX_RX_CONFIG8,		0x20),
+	/* G345 Rxvalid asserted by snoop block align */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_PCS_TX_RX_CONFIG10,	0x40),
+	/* Enable endpoint refclk drive */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_ENDPOINT_REFCLK_DRIVE,	0xC1),
+	/* Adjust sigdet level */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_RX_SIGDET_LVL,		0x66),
+	/* Disable osc detect */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_OSC_DTCT_ACTIONS,		0x00),
+	/* Disable doubling of P0 holdoff time in G2 */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_LOCK_DETECT_CONFIG2,	0x00),
+	/* Set 4us holdoff time */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_ALIGN_DETECT_CONFIG1,	0x00),
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_ALIGN_DETECT_CONFIG2,	0x04),
+	/* Detect 2 EIEOS for alignment, WDT increment 8us steps */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_ALIGN_DETECT_CONFIG3,	0x1F),
+	/* Enable WDT Gen4/5 */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_ALIGN_DETECT_CONFIG7,	0x35),
+	/* Wait for cdr_lock indication to start alignment holdoff */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_ALIGN_DETECT_CONFIG8,	0x3E),
+	/* Flip post inc/dec mappings */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_EQ_CONFIG1,		0x06),
+	/* Select DFE freeze release w/o align */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_EQ_CONFIG2,		0x1C),
+	/* Disable background BLW */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G345_EQ_CONFIG1,		0x07),
+	/* Disable early training G3/G4/G5 */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G345_EQ_CONFIG3,		0x00),
+	/* Disable Vth adaptation, run CTLE only during G3 DC Rxeq */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G3_EQ_CONFIG1,		0x00),
+	/* Enable Pass2 during G3 DC Rxeq */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G3_EQ_CONFIG5,		0x90),
+	/* Run CTLE only during G3 Pass2 Rxeq */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G3_EQ_CONFIG7,		0x0D),
+	/* Disable Vth adaptation, run CTLE only during G4 DC Rxeq */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G4_EQ_CONFIG1,		0x00),
+	/* Enable Pass2 during G4 DC Rxeq */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G4_EQ_CONFIG5,		0x90),
+	/* Run CTLE only during G4 Pass2 Rxeq */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G4_EQ_CONFIG7,		0x0D),
+	/* Disable Vth adaptation, run CTLE only during G5 DC Rxeq */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G5_EQ_CONFIG1,		0x00),
+	/* Enable Pass2 during G5 DC Rxeq */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G5_EQ_CONFIG5,		0x90),
+	/* Run CTLE only during G5 Pass2 Rxeq */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_COM_G5_EQ_CONFIG7,		0x0D),
+};
+
+/* PCS LANEZ broadcast registers */
+static const struct qcom_qmp_phy_init_tbl calypso_qmp_pcie5_pcs_lanez_tbl[] = {
+	/*
+	 * 0x00: Link partner Tx Preset adjusted during G34 RxEq training
+	 * 0x55: Link partner Tx Preset fixed
+	 */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_LANEZ_OUTSIG_MX_CTRL2,	0x00),
+	/*
+	 * 0x00: Link partner Tx Preset adjusted during G5 RxEq training
+	 * 0x05: Link partner Tx Preset fixed
+	 */
+	QMP_PHY_INIT_CFG(QPHY_PCIE5_PCS_LANEZ_OUTSIG_MX_CTRL5,	0x00),
+};
+
+static pcie_cntlr_cfg_t pcie_host = {
+	.parf           = (void *)PCIE5_PCIE_PARF,
+	.dbi_base       = (void *)PCIE5_GEN1X4_PCIE_DBI,
+	.elbi           = (void *)PCIE5_GEN1X4_PCIE_ELBI,
+	.atu_base       = (void *)PCIE5_GEN1X4_DWC_PCIE_DM_IATU,
+	.cfg_base       = (void *)(PCIE5_GEN1X4_PCIE_DBI + PCIE_EP_CONF_OFFSET),
+	.pcie_bcr       = (void *)PCIE5_BCR,
+	.qmp_phy_bcr    = (void *)GCC_PCIE_5_PHY_BCR,
+	.lanes          = PCIE_1x4_NUM_LANES,
+	.cfg_size       = PCIE_EP_CONF_SIZE,
+	.perst          = GPIO(152),
+
+	/* Store the IO and MEM space settings for future use by the ATU */
+	.io.phys_start  = PCIE5_GEN1X4_PCIE_DBI + PCIE_IO_SPACE_OFFSET,
+	.io.size        = PCIE_IO_SPACE_SIZE,
+	.mem.phys_start = PCIE5_GEN1X4_PCIE_DBI + PCIE_MMIO_SPACE_OFFSET,
+	.mem.size       = PCIE5_SPACE_END_ADDR,
+};
+
+static pcie_qmp_phy_cfg_t pcie5_qmp_phy_1x4 = {
+	.qserdes_pll       = (void *)PCIE5_QMP_PHY_SERDES,
+	.qserdes_txrx0     = (void *)PCIE5_QMP_PHY_TXRX0,
+	.qserdes_txrx1     = (void *)PCIE5_QMP_PHY_TXRX1,
+	.qserdes_txrx2     = (void *)PCIE5_QMP_PHY_TXRX2,
+	.qserdes_txrx3     = (void *)PCIE5_QMP_PHY_TXRX3,
+	.qserdes_txrxz     = (void *)PCIE5_QMP_PHY_TXRXZ,
+	.pcs_com           = (void *)PCIE5_QMP_PHY_PCS_COM,
+	.pcs_lane0         = (void *)PCIE5_QMP_PHY_PCS_LANE0,
+	.pcs_lane1         = (void *)PCIE5_QMP_PHY_PCS_LANE1,
+	.pcs_lane2         = (void *)PCIE5_QMP_PHY_PCS_LANE2,
+	.pcs_lane3         = (void *)PCIE5_QMP_PHY_PCS_LANE3,
+	.pcs_lanez         = (void *)PCIE5_QMP_PHY_PCS_LANEZ,
+
+	.serdes_tbl        = calypso_qmp_pcie5_serdes_tbl,
+	.serdes_tbl_num    = ARRAY_SIZE(calypso_qmp_pcie5_serdes_tbl),
+	.txrxz_tbl         = calypso_qmp_pcie5_txrxz_tbl,
+	.txrxz_tbl_num     = ARRAY_SIZE(calypso_qmp_pcie5_txrxz_tbl),
+	.pcs_tbl           = calypso_qmp_pcie5_pcs_tbl,
+	.pcs_tbl_num       = ARRAY_SIZE(calypso_qmp_pcie5_pcs_tbl),
+	.pcs_lanez_tbl     = calypso_qmp_pcie5_pcs_lanez_tbl,
+	.pcs_lanez_tbl_num = ARRAY_SIZE(calypso_qmp_pcie5_pcs_lanez_tbl),
+};
 
 /* Enable PIPE clock */
 int qcom_dw_pcie_enable_pipe_clock(void)
 {
-	/* placeholder */
+	/* Keep memory and peripheral core powered during clock halt */
+	clock_configure_force_mem_core_on(&gcc->pcie_5.pipe_cbcr, true);
+	clock_configure_force_mem_periph_on(&gcc->pcie_5.pipe_cbcr, true);
+
+	/* Set pipe clock source */
+	if (clock_configure_mux(GCC_PCIE_5_PIPE_MUXR, GCC_PCIE_5_PIPE_SRC_SEL)) {
+		printk(BIOS_ERR, " %s(): Pipe clock enable failed\n", __func__);
+		return -1;
+	}
 
 	return 0;
 }
@@ -13,7 +531,45 @@ int qcom_dw_pcie_enable_pipe_clock(void)
 /* Enable controller specific clocks */
 int32_t qcom_dw_pcie_enable_clock(void)
 {
-	/* placeholder */
+	int32_t ret, clk, gdsc;
+
+	/* Enable GDSCs */
+	for (gdsc = PCIE_5_GDSC; gdsc < MAX_GDSC; gdsc++) {
+		ret = clock_enable_gdsc(gdsc);
+		if (ret) {
+			printk(BIOS_ERR, "%s: failed to enable GDSC %d\n",
+			       __func__, gdsc);
+			return ret;
+		}
+	}
+
+	/* Disable HW_CTL */
+	clock_configure_hw_ctl(&gcc->pcie_5_cfg_ahb_cbcr, false);
+	clock_configure_hw_ctl(&gcc->pcie_5.slv_axi_cbcr, false);
+	clock_configure_hw_ctl(&gcc->pcie_5.qmip_pcie_5_ahb_cbcr, false);
+	clock_configure_hw_ctl(&gcc->anoc_pcie_pwrctl_cbcr, false);
+	clock_configure_hw_ctl(&gcc->pcie_noc.hscnoc_pcie_sf_qtc_cbcr, false);
+
+	/* Configure PHY RCHNG clock to 100 MHz */
+	ret = clock_configure_pcie();
+	if (ret) {
+		printk(BIOS_ERR, "%s: failed to configure PCIE5 PHY RCHNG clock\n",
+		       __func__);
+		return ret;
+	}
+
+	/* Enable PCIe clocks */
+	for (clk = GCC_AGGRE_NOC_PCIE_5_EAST_SF_AXI_CLK; clk < PCIE_CLK_COUNT; clk++) {
+		if (clk == GCC_PCIE_5_PIPE_MUXR)
+			continue;
+
+		ret = clock_enable_pcie(clk);
+		if (ret)
+			printk(BIOS_WARNING, "%s: failed to enable PCIe clock %d (skipping)\n",
+			       __func__, clk);
+	}
+
+	write32(TCSR_PCIE_1_CLKREF_EN__PCIE_ENABLE, 0x1);
 
 	return 0;
 }
@@ -21,10 +577,17 @@ int32_t qcom_dw_pcie_enable_clock(void)
 /* Turn on NVMe */
 void gcom_pcie_power_on_ep(void)
 {
-	/* placeholder */
+	pmic_gpio_output(PMIC_B_SID, NVME_REG_EN, true);
+}
+
+/* Turn off NVMe */
+void gcom_pcie_power_off_ep(void)
+{
+	pmic_gpio_output(PMIC_B_SID, NVME_REG_EN, false);
 }
 
 void gcom_pcie_get_config(struct qcom_pcie_cntlr_t *host_cfg)
 {
-	/* placeholder */
+	host_cfg->cntlr_cfg = &pcie_host;
+	host_cfg->qmp_phy_cfg = &pcie5_qmp_phy_1x4;
 }

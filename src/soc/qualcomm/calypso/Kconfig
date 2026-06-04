@@ -31,6 +31,7 @@ config SOC_QUALCOMM_CALYPSO_BASE
 config SOC_QUALCOMM_CALYPSO
 	bool
 	select SOC_QUALCOMM_CALYPSO_BASE
+	select QMP_PHY_PCIE5_1X4
 	default n
 	help
 	  Choose this option if the mainboard is built using Calypso system-on-a-chip SoC.

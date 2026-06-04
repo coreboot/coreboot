@@ -18,8 +18,7 @@
 
 bool mainboard_needs_pcie_init(void)
 {
-	/* Placeholder */
-	return false;
+	return true;
 }
 
 /*

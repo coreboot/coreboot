@@ -10,6 +10,8 @@
 #include <ec/google/chromeec/ec.h>
 #include <reset.h>
 #include <soc/aop_common.h>
+#include <soc/pcie.h>
+#include <soc/qcom_spmi.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
 #include <soc/watchdog.h>
@@ -136,7 +138,22 @@ static void mainboard_setup_peripherals_early(void)
 /* Perform romstage late hardware initialization */
 static void mainboard_setup_peripherals_late(int mode)
 {
-	/* Placeholder */
+	/*
+	 * Power on NVMe early so that the DDR init and other operations
+	 * that follow provide an organic >50ms delay before PCIe PERST
+	 * de-assertion in platform_romstage_postram(), satisfying the
+	 * NVMe spec requirement without a static mdelay().
+	 */
+	gcom_pcie_power_on_ep();
+
+	if (!chipset_dload_mode_active) {
+		/* Perform PCIe setup early in async mode if supported to save 100ms */
+		if (mode == LB_BOOT_MODE_NORMAL || mode == LB_BOOT_MODE_NO_BATTERY)
+			qcom_setup_pcie_host(NULL);
+		else
+			gcom_pcie_power_off_ep();
+	}
+
 }
 
 static void handle_battery_shipping_recovery(bool board_reset)

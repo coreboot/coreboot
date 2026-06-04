@@ -5,7 +5,7 @@
 #include <timer.h>
 
 /* Calculate divisor. Do not floor but round to nearest integer. */
-unsigned int uart_baudrate_divisor(unsigned int baudrate,
+unsigned int uart_calc_baudrate_divisor(unsigned int baudrate,
 	unsigned int refclk, unsigned int oversample)
 {
 	return (1 + (2 * refclk) / (baudrate * oversample)) / 2;

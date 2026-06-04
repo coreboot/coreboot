@@ -32,17 +32,24 @@ static inline unsigned int get_uart_for_console(void)
 }
 #endif
 
-/* Returns the divisor value for a given baudrate.
- * The formula to satisfy is:
- *    refclk / divisor = baudrate * oversample
- */
-unsigned int uart_baudrate_divisor(unsigned int baudrate,
-	unsigned int refclk, unsigned int oversample);
-
 /* Returns the oversample divisor multiplied by any other divisors that act
  * on the input clock
  */
 unsigned int uart_input_clock_divider(void);
+
+/* Returns the divisor value for a given baudrate.
+ * The formula to satisfy is:
+ *    refclk / divisor = baudrate * oversample
+ */
+unsigned int uart_calc_baudrate_divisor(unsigned int baudrate,
+	unsigned int refclk, unsigned int oversample);
+
+/* Same as above but with the most commonly used parameters */
+static inline unsigned int uart_get_baudrate_divisor(void)
+{
+	return uart_calc_baudrate_divisor(get_uart_baudrate(),
+		uart_platform_refclk(), uart_input_clock_divider());
+}
 
 /* Bitbang out one byte on an 8n1 UART through the output function set_tx(). */
 void uart_bitbang_tx_byte(unsigned char data, void (*set_tx)(int line_state));

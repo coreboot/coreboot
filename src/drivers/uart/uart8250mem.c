@@ -103,9 +103,7 @@ void uart_init(unsigned int idx)
 	if (!base)
 		return;
 
-	unsigned int div;
-	div = uart_baudrate_divisor(get_uart_baudrate(),
-		uart_platform_refclk(), uart_input_clock_divider());
+	unsigned int div = uart_get_baudrate_divisor();
 	uart8250_mem_init(base, div);
 }
 

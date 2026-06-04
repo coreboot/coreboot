@@ -53,8 +53,7 @@ void uart_init(unsigned int idx)
 	 * <=>
 	 * div = (f_in / f_baud) - 1
 	 */
-	unsigned int div = uart_baudrate_divisor(get_uart_baudrate(), uart_platform_refclk(),
-			uart_input_clock_divider());
+	unsigned int div = uart_get_baudrate_divisor();
 	div -= 1;
 
 	sifive_uart_init(uart_platform_baseptr(idx), div);

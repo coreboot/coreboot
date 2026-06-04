@@ -33,6 +33,32 @@ static void set_package_element_name(const char *package_name, unsigned int elem
 	acpigen_emit_byte(ZERO_OP); /* Ignore Index() Destination */
 }
 
+static void tpm_ppi_func_field_name(char *name, unsigned int function)
+{
+	name[0] = 'F';
+	name[1] = '0' + (function / 100);
+	name[2] = '0' + ((function / 10) % 10);
+	name[3] = '0' + (function % 10);
+	name[4] = '\0';
+}
+
+static void tpm_ppi_write_func_fields(void)
+{
+	char name[5];
+
+	acpigen_emit_ext_op(FIELD_OP);
+	acpigen_write_len_f();
+	acpigen_emit_namestring("PPOP");
+	acpigen_emit_byte(FIELD_ANYACC | FIELD_NOLOCK | FIELD_PRESERVE);
+
+	for (unsigned int i = 0; i <= VENDOR_SPECIFIC_OFFSET; i++) {
+		tpm_ppi_func_field_name(name, i);
+		acpigen_write_field_name(name, 8);
+	}
+
+	acpigen_pop_len();
+}
+
 /* PPI function is passed in src_op. Converted to Local2. Clobbers Local1 and Local2 */
 static void verify_supported_ppi(uint8_t src_op)
 {
@@ -609,6 +635,7 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 		sizeof(*ppib));
 
 	acpigen_write_opregion(&opreg);
+	tpm_ppi_write_func_fields();
 	acpigen_write_field(opreg.name, list, ARRAY_SIZE(list),
 			    FIELD_ANYACC | FIELD_NOLOCK | FIELD_PRESERVE);
 
@@ -643,28 +670,16 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 	acpigen_write_return_integer(0);
 	acpigen_pop_len(); /* If */
 
-	/* Local1 = (Local0 * 0x08) */
-	acpigen_emit_byte(MULTIPLY_OP);
-	acpigen_emit_byte(LOCAL0_OP);
-	acpigen_write_integer(8);
-	acpigen_emit_byte(LOCAL1_OP);
+	for (unsigned int i = 0; i <= VENDOR_SPECIFIC_OFFSET; i++) {
+		char name[5];
 
-	/* CreateField (PPOP, Local1, 0x08, TPPF) */
-	acpigen_emit_ext_op(CREATEFIELD_OP);
-	acpigen_emit_namestring("PPOP");
-	acpigen_emit_byte(LOCAL1_OP);
-	acpigen_write_integer(8);
+		tpm_ppi_func_field_name(name, i);
+		acpigen_write_if_lequal_op_int(LOCAL0_OP, i);
+		acpigen_write_return_namestr(name);
+		acpigen_pop_len(); /* If */
+	}
 
-	/* Name of the dynamically-created field */
-	acpigen_emit_namestring("TPPF");
-
-	/* Local0 = ToInteger(TPPF) */
-	acpigen_emit_byte(TO_INTEGER_OP);
-	acpigen_emit_namestring("TPPF");
-	acpigen_emit_byte(LOCAL0_OP);
-
-	/* Return (Local0) */
-	acpigen_write_return_op(LOCAL0_OP);
+	acpigen_write_return_integer(0);
 	acpigen_pop_len(); /* Method */
 
 	/*

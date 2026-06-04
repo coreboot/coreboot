@@ -4,7 +4,6 @@
 #include <device/pnp_def.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>

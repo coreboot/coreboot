@@ -121,6 +121,7 @@
 
 #ifndef __ACPI__
 
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 
 static inline int lpc_is_mobile(const u16 devid)

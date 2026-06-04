@@ -39,6 +39,12 @@
 /* USB XHCI 0:14.0 */
 #include "xhci.asl"
 
+/* Telemetry 0:0a.0 */
+#include "telemetry.asl"
+
+/* IOE Shared SRAM 0:13.3 */
+#include "ioe_sram.asl"
+
 /* PMC Shared SRAM 0:14.2 */
 #include <soc/intel/common/block/acpi/acpi/sram.asl>
 

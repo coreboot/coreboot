@@ -82,6 +82,7 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCI_DEVFN_TBT2:		return "TRP2";
 	case PCI_DEVFN_TBT3:		return "TRP3";
 	case PCI_DEVFN_IPU:		return "IPU0";
+	case PCI_DEVFN_TELEMETRY:	return "TELM";
 	case PCI_DEVFN_ISH:		return "ISHB";
 	case PCI_DEVFN_GNA:		return "GNA";
 	case PCI_DEVFN_XHCI:	return "XHCI";
@@ -108,6 +109,7 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCI_DEVFN_UART0:	return "UAR0";
 	case PCI_DEVFN_UART1:	return "UAR1";
 	case PCI_DEVFN_UART2:	return "UAR2";
+	case PCI_DEVFN_IOE_SRAM:	return "ISRM";
 	case PCI_DEVFN_GSPI0:	return "SPI0";
 	case PCI_DEVFN_GSPI1:	return "SPI1";
 	case PCI_DEVFN_GSPI2:	return "SPI2";

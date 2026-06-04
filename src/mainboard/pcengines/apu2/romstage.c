@@ -4,7 +4,6 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/gpio.h>
 #include <amdblocks/gpio_defs.h>
-#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <gpio.h>
 #include <northbridge/amd/agesa/state_machine.h>

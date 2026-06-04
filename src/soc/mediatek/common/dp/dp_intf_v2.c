@@ -117,6 +117,28 @@ static void mtk_dvo_shadow_ctrl(const struct mtk_dvo *dvo)
 	mtk_dvo_mask(dvo, DVO_SHADOW_CTRL, FORCE_COMMIT, FORCE_COMMIT);
 }
 
+static u32 clksrc_to_multiplier(u32 clksrc)
+{
+	u32 multiplier;
+
+	switch (clksrc) {
+	case TVDPLL_D16:
+		multiplier = 16;
+		break;
+	case TVDPLL_D8:
+		multiplier = 8;
+		break;
+	case TVDPLL_D4:
+		multiplier = 4;
+		break;
+	default:
+		multiplier = 1;
+		break;
+	}
+
+	return multiplier;
+}
+
 static int mtk_dvo_power_on(const struct mtk_dvo *dvo, const struct edid *edid)
 {
 	u32 clksrc;
@@ -129,7 +151,7 @@ static int mtk_dvo_power_on(const struct mtk_dvo *dvo, const struct edid *edid)
 	else
 		clksrc = TVDPLL_D4;
 
-	pll_rate = edid->mode.pixel_clock * 1000 * (1 << (clksrc + 1));
+	pll_rate = edid->mode.pixel_clock * 1000 * clksrc_to_multiplier(clksrc);
 
 	mt_pll_set_tvd_pll1_freq(pll_rate / 4);
 	mt_pll_edp_mux_set_sel(clksrc);

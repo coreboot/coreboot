@@ -74,6 +74,7 @@ const char *soc_acpi_name(const struct device *dev)
 	case SA_DEVFN_GNA:	return "GNA";
 	case PCH_DEVFN_XHCI:	return "XHCI";
 	case PCH_DEVFN_USBOTG:	return "XDCI";
+	case PCH_DEVFN_SRAM:	return "SRAM";
 	case PCH_DEVFN_I2C0:	return "I2C0";
 	case PCH_DEVFN_I2C1:	return "I2C1";
 	case PCH_DEVFN_I2C2:	return "I2C2";

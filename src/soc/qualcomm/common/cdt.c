@@ -4,7 +4,29 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <commonlib/region.h>
+#include <stdbool.h>
 #include <soc/cdt.h>
+#include <soc/symbols_common.h>
+
+static const struct platform_id_cdt *plat_id;
+static bool cdt_initialized;
+
+static void cdt_init_platform_id(void)
+{
+	const struct cdt_header *hdr = (const struct cdt_header *)_cdt_data;
+	const struct cdb_meta *meta;
+
+	cdt_initialized = true;
+
+	if (hdr->magic != CDT_MAGIC) {
+		printk(BIOS_ERR, "CDT: Invalid magic 0x%08x\n", hdr->magic);
+		return;
+	}
+
+	meta = (const struct cdb_meta *)(_cdt_data + sizeof(struct cdt_header));
+	plat_id = (const struct platform_id_cdt *)
+		(_cdt_data + meta[CDT_BLOCK_INDEX_PLATFORM_ID].offset);
+}
 
 ssize_t cdt_read(void *buffer, size_t buffer_size)
 {
@@ -31,5 +53,22 @@ ssize_t cdt_read(void *buffer, size_t buffer_size)
 	}
 
 	printk(BIOS_INFO, "CDT: Read %zd bytes from '%s'\n", bytes_read, CDT_REGION_NAME);
+
 	return bytes_read;
+}
+
+uint8_t cdt_get_platform_id(void)
+{
+	if (!cdt_initialized)
+		cdt_init_platform_id();
+
+	return plat_id ? plat_id->platform : 0;
+}
+
+uint32_t cdt_get_hw_version(void)
+{
+	if (!cdt_initialized)
+		cdt_init_platform_id();
+
+	return plat_id ? plat_id->hw_version_major : 0;
 }

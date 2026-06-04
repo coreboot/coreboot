@@ -32,6 +32,11 @@ chip soc/intel/novalake
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
+	register "pch_hda_dsp_enable" = "true"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_link_interface" = "IDISP_LINK_HDA"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref dtt on end

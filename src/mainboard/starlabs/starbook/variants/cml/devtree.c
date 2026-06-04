@@ -3,7 +3,6 @@
 #include <chip.h>
 #include <cpu/intel/turbo.h>
 #include <device/device.h>
-#include <device/pci_def.h>
 #include <devtree_update.h>
 #include <option.h>
 #include <static.h>

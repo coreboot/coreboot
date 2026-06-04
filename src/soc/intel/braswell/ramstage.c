@@ -7,7 +7,6 @@
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
-#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <fsp/util.h>
 #include <gpio.h>

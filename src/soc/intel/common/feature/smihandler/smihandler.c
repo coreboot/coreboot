@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/pci_def.h>
 #include <intelblocks/smihandler.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>

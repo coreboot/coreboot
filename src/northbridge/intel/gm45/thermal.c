@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdint.h>
-#include <device/pci_def.h>
 #include <spd.h>
 
 #include "gm45.h"

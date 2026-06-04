@@ -6,7 +6,6 @@
 #include <arch/romstage.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>

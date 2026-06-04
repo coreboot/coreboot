@@ -2,7 +2,6 @@
 
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <northbridge/intel/haswell/memmap.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

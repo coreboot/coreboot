@@ -5,7 +5,6 @@
 #include <cpu/intel/model_2065x/model_2065x.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
-#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/ironlake/raminit.h>
 #include <types.h>

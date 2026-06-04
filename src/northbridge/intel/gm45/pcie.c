@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 

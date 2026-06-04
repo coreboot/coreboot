@@ -6,7 +6,6 @@
 #include <romstage_handoff.h>
 #include "sandybridge.h"
 #include <arch/romstage.h>
-#include <device/pci_def.h>
 #include <device/device.h>
 #include <northbridge/intel/sandybridge/chip.h>
 #include <security/intel/txt/txt.h>

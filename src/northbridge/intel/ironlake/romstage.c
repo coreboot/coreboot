@@ -8,7 +8,6 @@
 #include <romstage_handoff.h>
 #include "ironlake.h"
 #include <arch/romstage.h>
-#include <device/pci_def.h>
 #include <device/device.h>
 #include <northbridge/intel/ironlake/chip.h>
 #include <northbridge/intel/ironlake/raminit.h>

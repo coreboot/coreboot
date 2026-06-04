@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <commonlib/helpers.h>
-#include <device/pci_def.h>
 #include <device/device.h>
 
 /* warning: Porting.h includes an open #pragma pack(1) */

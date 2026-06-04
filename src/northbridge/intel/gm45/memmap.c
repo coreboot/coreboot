@@ -5,7 +5,6 @@
 
 #include <arch/romstage.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>

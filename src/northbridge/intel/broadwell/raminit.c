@@ -5,7 +5,6 @@
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
-#include <device/pci_def.h>
 #include <memory_info.h>
 #include <mrc_cache.h>
 #include <string.h>

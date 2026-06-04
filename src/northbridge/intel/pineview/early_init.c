@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <northbridge/intel/pineview/pineview.h>
 #include <northbridge/intel/pineview/chip.h>
 #include <option.h>

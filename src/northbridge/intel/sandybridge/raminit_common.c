@@ -7,7 +7,6 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/chip.h>
-#include <device/pci_def.h>
 #include <delay.h>
 #include <types.h>
 

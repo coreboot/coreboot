@@ -6,7 +6,6 @@
 #include <commonlib/helpers.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
-#include <device/pci_def.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <northbridge/intel/pineview/pineview.h>

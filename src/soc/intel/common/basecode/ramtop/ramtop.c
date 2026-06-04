@@ -7,6 +7,7 @@
 #include <fsp/util.h>
 #include <intelbasecode/ramtop.h>
 #include <pc80/mc146818rtc.h>
+#include <security/vboot/vboot_common.h>
 #include <stdint.h>
 
 /* We need a region in CMOS to store the RAMTOP address */
@@ -36,6 +37,13 @@
 #else
 #define CMOS_VSTART_ramtop 800
 #endif	// CONFIG(USE_OPTION_TABLE)
+
+/* RAMTOP validation boundaries */
+#define MIN_RAMTOP_SIZE      (4 * MiB)
+#define MAX_RAMTOP_SIZE      (128 * MiB)
+#define RAMTOP_ALIGNMENT     (4 * MiB)
+#define MIN_DRAM_BASE_ADDR   0x40000000
+#define MAX_DRAM_LIMIT_ADDR  0xFE000000
 
 struct ramtop_table {
 	uint32_t signature;
@@ -118,6 +126,30 @@ static size_t calculate_ramtop_size(uint32_t addr)
 	return ramtop_size;
 }
 
+/* Validate that the RAMTOP address and size conform to realistic boundaries */
+static bool is_ramtop_valid(uint32_t addr, size_t size)
+{
+	/* Size must be reasonable (e.g., between 4 MiB and 128 MiB) */
+	if (size < MIN_RAMTOP_SIZE || size > MAX_RAMTOP_SIZE)
+		return false;
+
+	/* Address must match the alignment established in fill_postcar_frame */
+	if (!IS_ALIGNED((uintptr_t)addr, RAMTOP_ALIGNMENT))
+		return false;
+
+	/* Guard against underflow, ensure size isn't larger than the address. */
+	if (size > addr)
+		return false;
+
+	uint32_t base = addr - size;
+
+	/* Ensure the entire range falls within realistic 32-bit physical DRAM boundaries */
+	if (base < MIN_DRAM_BASE_ADDR || addr > MAX_DRAM_LIMIT_ADDR)
+		return false;
+
+	return true;
+}
+
 /* Update the RAMTOP if required based on the input top_of_ram address */
 void update_ramtop(uint32_t addr)
 {
@@ -132,6 +164,13 @@ void update_ramtop(uint32_t addr)
 	}
 
 	size_t size = calculate_ramtop_size(addr);
+
+	/* Ensure the calculated values are completely sane before committing to CMOS */
+	if (!is_ramtop_valid(addr, size)) {
+		printk(BIOS_WARNING, "Invalid RAMTOP calculation aborted: addr=0x%x, size=0x%zx\n",
+			 addr, size);
+		return;
+	}
 
 	/* Update ramtop if required */
 	if ((ramtop.addr == addr) && (ramtop.size == size))
@@ -170,19 +209,29 @@ static uint32_t get_ramtop_size(void)
 /* Early caching of top_of_ram region */
 void early_ramtop_enable_cache_range(void)
 {
+	/* Do not rely on persistent storage data if booting into recovery */
+	if (vboot_recovery_mode_enabled())
+		return;
+
 	uint32_t ramtop = get_ramtop_addr();
 	if (!ramtop)
 		return;
+
+	size_t ramtop_size = get_ramtop_size();
+	if (!ramtop_size)
+		return;
+
+	if (!is_ramtop_valid(ramtop, ramtop_size)) {
+		printk(BIOS_WARNING, "Refusing to cache invalid CMOS RAMTOP: addr=0x%x, size=0x%zx\n",
+			 ramtop, ramtop_size);
+		return;
+	}
 
 	int mtrr = get_free_var_mtrr();
 	if (mtrr == -1) {
 		printk(BIOS_WARNING, "ramtop_table update failure due to no free MTRR available!\n");
 		return;
 	}
-
-	size_t ramtop_size = get_ramtop_size();
-	if (!ramtop_size)
-		return;
 
 	/*
 	 *  INTEL RECOMMENDATION: Early Ramtop Caching Configuration

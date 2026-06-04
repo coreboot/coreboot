@@ -9,7 +9,7 @@
 
 #define PMIC_GPIO_BASE(num)		(0x8800 + ((num - 1) * 0x100))
 #define PMIC_GPIO_NUMBER_MIN		1
-#define PMIC_GPIO_NUMBER_MAX		12
+#define PMIC_GPIO_NUMBER_MAX		14
 #define PMIC_PMK_GPIO_OFFSET		0x3000
 
 #define PMIC_GPIO_MODE_CTL		0x40

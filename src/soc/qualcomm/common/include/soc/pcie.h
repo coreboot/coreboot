@@ -32,6 +32,18 @@
 #define PCIE_PARF_LTSSM			0x1B0
 #define LTSSM_EN			BIT(8)
 #define PCIE_PARF_DBI_BASE_ADDR		0x350
+#define PCIE_PARF_DBI_BASE_ADDR_HI	0x354
+#define PCIE_PARF_SLV_ADDR_SPACE_SIZE	0x358
+#define PCIE_PARF_SLV_ADDR_SPACE_SIZE_HI 0x35C
+#define PCIE_PARF_ATU_BASE_ADDR_LO	0x634
+#define PCIE_PARF_ATU_BASE_ADDR_HI	0x638
+#define PCIE_PARF_DMA_BASE_ADDR_LO	0x64C
+#define PCIE_PARF_DMA_BASE_ADDR_HI	0x650
+#define PCIE_PARF_L1SUB_AHB_CLK_MAX_TIMER 0x180
+#define AUX_PWR_DET			BIT(4)	/* PCIE_PARF_SYS_CTRL */
+#define L1SUB_CNT_MAX			0x7FFFFFFF
+/* L1SS timeout: 19.2 MHz * 20 ms = 384000 cycles */
+#define L1SS_TIMEOUT_20MS		(19200 * 20)
 #define PCIE_PARF_DEVICE_TYPE		0x1000
 #define DEVICE_TYPE_RC			0x4
 #define PCIE_PARF_BDF_TO_SID_CFG	0x2C00
@@ -49,8 +61,10 @@
 /* ELBI */
 #define PCIE3X2_ELBI_SYS_STTS		0x08
 #define XMLH_LINK_UP			0x400
+#define PCIE_ELBI_LTSSM_STATE_MASK	0x3f	/* bits 5:0 = LTSSM state */
 
 /* DBI Registers */
+#define PCIE_LINK_STATUS_REG		0x80
 #define PCIE_LINK_CAPABILITY		0x7c
 #define PCIE_LINK_CTL_2			0xa0
 #define TARGET_LINK_SPEED_MASK		0xf
@@ -58,6 +72,7 @@
 #define LINK_SPEED_GEN_2		0x2
 #define LINK_SPEED_GEN_3		0x3
 #define LINK_SPEED_GEN_4		0x4
+#define LINK_SPEED_GEN_5		0x5
 #define PCIE_LINK_UP_MS			100
 #define PCIE_PHY_POLL_US		1000
 #define LINK_WAIT_MAX_RETRIES		10
@@ -66,15 +81,112 @@
 #define PCIE_SPCIE_CAP_OFF_0CH_REG	0x154
 #define PCIE_SPCIE_CAP_OFF_10H_REG	0x158
 #define PCIE_PL16G_CAP_OFF_20H_REG	0x188
+#define PCIE_PL32G_CAP_OFF_20H_REG	0x1C4
 #define PCIE_GEN3_EQ_CONTROL_OFF	0x8A8
 #define GEN3_EQ_PSET_REQ_VEC		0x00FFFF00
 #define PCIE_GEN3_EQ_FB_MODE_DIR_CHANGE_OFF	0x8AC
-#define GEN3_EQ_FMDC_T_MIN_PHASE23	0xF
+#define GEN3_EQ_FMDC_T_MIN_PHASE23	0x1F
 #define PCIE_GEN3_RELATED_OFF		0x890
 #define RATE_SHADOW_SEL_MASK		(BIT(25)|BIT(24))
 #define RATE_SHADOW_SEL_VAL		(BIT(24))
 #define PCIE_CAP_HOT_PLUG_CAPABLE	BIT(6)
+#define PCIE_CAP_PHY_SLOT_NUM_MASK	(0x1FFFU << 19)
+#define PCIE_CAP_PHY_SLOT_NUM(n)	((u32)(n) << 19)
 #define PCIE_SLOT_CAPABILITIES_REG	0x84
+
+/* Gen5 DBI post-PHY init registers */
+#define PCIE_TYPE1_STATUS_COMMAND_REG	0x4
+#define PCIE_BME			BIT(2)	/* Bus Master Enable */
+#define PCIE_MSE			BIT(1)	/* Memory Space Enable */
+#define PCIE_TYPE1_CLASS_CODE_REV_ID_REG 0x8
+#define BASE_CLASS_CODE_MASK		0xFF000000
+#define BASE_CLASS_CODE_BRIDGE		(0x6 << 24)
+#define SUBCLASS_CODE_MASK		0x00FF0000
+#define SUBCLASS_CODE_PCI_BRIDGE	(0x4 << 16)
+#define PCIE_TYPE1_BAR0_REG		0x10
+#define PCIE_TYPE1_BAR1_REG		0x14
+#define PCIE_ROOT_CONTROL_ROOT_CAPABILITIES_REG 0x8C
+#define PCIE_CAP_CRS_SW_VISIBILITY	BIT(16)
+#define PCIE_CAP_CRS_SW_VISIBILITY_EN	BIT(4)
+#define PCIE_ACK_F_ASPM_CTRL_OFF	0x70C
+#define COMMON_CLK_N_FTS_MASK		0xFF0000
+#define COMMON_CLK_N_FTS_VAL		(0x80 << 16)
+#define ACK_N_FTS_MASK			0xFF00
+#define ACK_N_FTS_VAL			(0x80 << 8)
+#define PCIE_GEN2_CTRL_OFF		0x80C
+#define NUM_OF_LANES_MASK		PORT_LOGIC_LINK_WIDTH_MASK
+#define NUM_OF_LANES_1			PORT_LOGIC_LINK_WIDTH_1_LANES
+#define NUM_OF_LANES_4			PORT_LOGIC_LINK_WIDTH_4_LANES
+#define GEN3_ZRXDC_NONCOMPL		BIT(0)	/* PCIE_GEN3_RELATED_OFF bit 0 */
+#define RATE_SHADOW_SEL_GEN5		BIT(25)
+/* GEN3_EQ_FB_MODE_DIR_CHANGE_OFF field masks */
+#define GEN3_EQ_FMDC_T_MIN_PHASE23_MASK		0x1F
+#define GEN3_EQ_FMDC_N_EVALS_MASK		0x3E0
+#define GEN3_EQ_FMDC_MAX_PRE_CURSOR_DELTA_MASK	0x3C00
+#define GEN3_EQ_FMDC_MAX_POST_CURSOR_DELTA_MASK	0x3C000
+#define GEN3_EQ_FMDC_ALL_MASK		(GEN3_EQ_FMDC_T_MIN_PHASE23_MASK | \
+					 GEN3_EQ_FMDC_N_EVALS_MASK | \
+					 GEN3_EQ_FMDC_MAX_PRE_CURSOR_DELTA_MASK | \
+					 GEN3_EQ_FMDC_MAX_POST_CURSOR_DELTA_MASK)
+/* Named field values for GEN3_EQ_FB_MODE_DIR_CHANGE_OFF */
+#define GEN3_EQ_FMDC_T_MIN_PHASE23_VAL		0x1
+#define GEN3_EQ_FMDC_N_EVALS_VAL		(0xD << 5)
+#define GEN3_EQ_FMDC_MAX_PRE_CURSOR_DELTA_VAL	(0x5 << 10)
+#define GEN3_EQ_FMDC_MAX_POST_CURSOR_DELTA_VAL	(0x5 << 14)
+#define GEN3_EQ_FMDC_ALL_VAL		(GEN3_EQ_FMDC_T_MIN_PHASE23_VAL | \
+					 GEN3_EQ_FMDC_N_EVALS_VAL | \
+					 GEN3_EQ_FMDC_MAX_PRE_CURSOR_DELTA_VAL | \
+					 GEN3_EQ_FMDC_MAX_POST_CURSOR_DELTA_VAL)
+/* GEN3_EQ_CONTROL_OFF additional fields */
+#define GEN3_EQ_PHASE23_EXIT_MODE	BIT(4)
+#define GEN3_EQ_FB_MODE_MASK		0xF
+#define PCIE_L1SUB_CAP_HEADER_REG	0x1DC
+#define L1SUB_NEXT_OFFSET_MASK		0xFFF00000
+#define PCIE_RAS_DES_CAP_HDR_OFFSET	0x230	/* offset to skip DPC */
+#define PCIE_QUEUE_STATUS_OFF		0x73C
+#define TIMER_MOD_FLOW_CONTROL_EN	BIT(31)
+#define TIMER_MOD_FLOW_CONTROL_MASK	0x1FFF0000
+#define TIMER_MOD_FLOW_CONTROL_VAL	(64 << 16)
+/* Gen4/5 lane margining register 1 (0xB80) field masks and values */
+#define PCIE_GEN4_LANE_MARGINING_1_OFF		0xB80
+#define GEN4_MARG1_MAX_VOLT_OFF_MASK		0x3F000000
+#define GEN4_MARG1_NUM_VOLT_STEPS_MASK		0x7F0000
+#define GEN4_MARG1_MAX_TIMING_OFF_MASK		0x3F00
+#define GEN4_MARG1_NUM_TIMING_STEPS_MASK	0x3F
+#define GEN4_MARG1_ALL_MASK			(GEN4_MARG1_MAX_VOLT_OFF_MASK | \
+						 GEN4_MARG1_NUM_VOLT_STEPS_MASK | \
+						 GEN4_MARG1_MAX_TIMING_OFF_MASK | \
+						 GEN4_MARG1_NUM_TIMING_STEPS_MASK)
+#define GEN4_MARG1_ALL_VAL			((0x24 << 24) | (0x78 << 16) | \
+						 (0x32 << 8)  | 0x10)
+
+/* Gen4/5 lane margining register 2 (0xB84) field masks and values */
+#define PCIE_GEN4_LANE_MARGINING_2_OFF		0xB84
+#define GEN4_MARG2_IND_ERR_SAMPLER		BIT(28)
+#define GEN4_MARG2_SAMPLE_RPT_METHOD		BIT(27)
+#define GEN4_MARG2_IND_LR_TIMING		BIT(26)
+#define GEN4_MARG2_IND_UD_VOLTAGE		BIT(25)
+#define GEN4_MARG2_VOLTAGE_SUPPORTED		BIT(24)
+#define GEN4_MARG2_MAXLANES_MASK		0x1F0000
+#define GEN4_MARG2_SAMPLE_RATE_TIMING_MASK	0x3F00
+#define GEN4_MARG2_SAMPLE_RATE_VOLTAGE_MASK	0x3F
+#define GEN4_MARG2_ALL_MASK			(GEN4_MARG2_IND_ERR_SAMPLER | \
+						 GEN4_MARG2_SAMPLE_RPT_METHOD | \
+						 GEN4_MARG2_IND_LR_TIMING | \
+						 GEN4_MARG2_IND_UD_VOLTAGE | \
+						 GEN4_MARG2_VOLTAGE_SUPPORTED | \
+						 GEN4_MARG2_MAXLANES_MASK | \
+						 GEN4_MARG2_SAMPLE_RATE_TIMING_MASK | \
+						 GEN4_MARG2_SAMPLE_RATE_VOLTAGE_MASK)
+#define GEN4_MARG2_ALL_VAL			(GEN4_MARG2_IND_ERR_SAMPLER | \
+						 GEN4_MARG2_SAMPLE_RPT_METHOD | \
+						 GEN4_MARG2_IND_LR_TIMING | \
+						 GEN4_MARG2_VOLTAGE_SUPPORTED | \
+						 (0x3 << 16) | (0x3F << 8) | 0x3F)
+#define PCIE_AUX_CLK_FREQ_OFF		0xB40
+#define PCIE_AUX_CLK_FREQ_19_2MHZ	0x13
+#define PCIE_PL32G_CONTROL_REG		0x1AC
+#define EQ_BYPASS_HIGHEST_RATE_DISABLE	BIT(0)
 
 #define COMMAND_MASK			0xffff
 
@@ -143,6 +255,18 @@
 #define QPHY_START_CTRL			0x44
 #define SERDES_START			BIT(0)
 #define PCS_START			BIT(1)
+
+/*
+ * PCIe5 5x4 QMP PHY PCS_COM control register offsets (from PCS_COM base).
+ * Bit macros SW_RESET, SW_PWRDN, REFCLK_DRV_DSBL, SERDES_START and PCS_START
+ * are shared with the existing PHY; only the register offsets differ.
+ */
+#define QPHY5_PCS_POWER_DOWN_CTRL	0x64	/* PCS_COM_POWER_DOWN_CONTROL */
+#define QPHY5_SW_RESET			0x60	/* PCS_COM_SW_RESET */
+#define QPHY5_START_CONTROL		0x5c	/* PCS_COM_START_CONTROL */
+#define QPHY5_PCS_STATUS1		0x10	/* PCS_COM_PCS_STATUS1 */
+#define QPHY_PHYSTATUS			BIT(7)	/* PHYSTATUS in PCS_STATUS1 */
+#define QPHY5_PHY_DELAY_US		2000	/* 2ms delay before polling PCS_STATUS1 */
 
 /* Register address builder */
 #define PCIE_GET_ATU_OUTB_UNR_REG_OFFSET(region) ((region) << 9)
@@ -222,7 +346,27 @@ typedef struct {
 #endif
 
 typedef struct {
-#if !CONFIG(QMP_PHY_2X2_1X4)
+#if CONFIG(QMP_PHY_PCIE5_1X4)
+	/* Gen5 5x4 QMP PHY block base addresses */
+	void *qserdes_txrx0;
+	void *qserdes_txrx1;
+	void *qserdes_txrx2;
+	void *qserdes_txrx3;
+	void *qserdes_pll;
+	void *pcs_com;
+	void *pcs_lane0;
+	void *pcs_lane1;
+	void *pcs_lane2;
+	void *pcs_lane3;
+	void *qserdes_txrxz;
+	void *pcs_lanez;
+
+	/* Init tables for the TXRXZ and PCS_LANEZ broadcast blocks */
+	const struct qcom_qmp_phy_init_tbl *txrxz_tbl;
+	unsigned int txrxz_tbl_num;
+	const struct qcom_qmp_phy_init_tbl *pcs_lanez_tbl;
+	unsigned int pcs_lanez_tbl_num;
+#elif !CONFIG(QMP_PHY_2X2_1X4)
 	void *qmp_phy_base;
 	void *serdes;
 	void *tx0;
@@ -239,7 +383,7 @@ typedef struct {
 	pcie_qmp_phy_base_t porta;
 	pcie_qmp_phy_base_t portb;
 #endif
-	/* Init sequence for PHY blocks - serdes, tx, rx, pcs */
+	/* Init sequence table pointers shared across all PHY variants */
 	const struct qcom_qmp_phy_init_tbl *serdes_tbl;
 	unsigned int serdes_tbl_num;
 	const struct qcom_qmp_phy_init_tbl *serdes_tbl_sec;
@@ -276,6 +420,10 @@ struct qcom_pcie_cntlr_t {
 	pcie_cntlr_cfg_t	*cntlr_cfg;
 	pcie_qmp_phy_cfg_t	*qmp_phy_cfg;
 };
+
+/* TCSR PCIe clkref enable (TCSR_BASE defined in soc/addressmap.h) */
+#define TCSR_PCIE_1_CLKREF_EN_OFF		0x95048
+#define TCSR_PCIE_1_CLKREF_EN__PCIE_ENABLE	((void *)(TCSR_BASE + TCSR_PCIE_1_CLKREF_EN_OFF))
 
 int qcom_dw_pcie_enable_clock(void);
 int qcom_dw_pcie_enable_pipe_clock(void);

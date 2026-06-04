@@ -16,7 +16,10 @@
 #define ROOT_PORT_BDF		0x0
 #define ATU_CTRL2		PCIE_ATU_UNR_REGION_CTRL2
 
-#if CONFIG(QMP_PHY_2X2_1X4)
+#if CONFIG(QMP_PHY_PCIE5_1X4)
+#define LINK_SPEED_DEFAULT LINK_SPEED_GEN_4
+#define PCIE_PHY_SLOT_NUM	6
+#elif CONFIG(QMP_PHY_2X2_1X4)
 #define LINK_SPEED_DEFAULT LINK_SPEED_GEN_4
 #else
 #define LINK_SPEED_DEFAULT LINK_SPEED_GEN_2
@@ -102,6 +105,186 @@ static void qcom_dw_pcie_configure(uint32_t cap_speed)
 	printk(BIOS_INFO, "PCIe Link speed configured in Gen %d\n", cap_speed);
 }
 
+#if CONFIG(QMP_PHY_PCIE5_1X4)
+/*
+ * post_phy_pwr_up_init() - Gen5 post-PHY PARF init
+ *
+ * Re-assert RC mode and program PARF address windows after PHY BCR reset.
+ * The PHY BCR reset clears PARF_DEVICE_TYPE on Calypso; writing it here
+ * guarantees RC mode is set after all resets have completed.
+ */
+static void post_phy_pwr_up_init(struct qcom_pcie_cntlr_t *pcie)
+{
+	pcie_cntlr_cfg_t *pcierc = pcie->cntlr_cfg;
+
+	write32(pcierc->parf + PCIE_PARF_DEVICE_TYPE, DEVICE_TYPE_RC);
+
+	/* Program DBI base address window in PARF */
+	write32(pcierc->parf + PCIE_PARF_DBI_BASE_ADDR,
+		lower_32_bits((uintptr_t)pcierc->dbi_base));
+	write32(pcierc->parf + PCIE_PARF_DBI_BASE_ADDR_HI,
+		upper_32_bits((uintptr_t)pcierc->dbi_base));
+
+	/* Program ATU base address window in PARF */
+	write32(pcierc->parf + PCIE_PARF_ATU_BASE_ADDR_LO,
+		lower_32_bits((uintptr_t)pcierc->atu_base));
+	write32(pcierc->parf + PCIE_PARF_ATU_BASE_ADDR_HI,
+		upper_32_bits((uintptr_t)pcierc->atu_base));
+
+	/* Disable DMA window (set to invalid address) */
+	write32(pcierc->parf + PCIE_PARF_DMA_BASE_ADDR_LO, 0xFFFFFFFF);
+	write32(pcierc->parf + PCIE_PARF_DMA_BASE_ADDR_HI, 0xFFFFFFFF);
+
+	/* Slave address space size: 0x200_0000_0000 (2 TB) */
+	write32(pcierc->parf + PCIE_PARF_SLV_ADDR_SPACE_SIZE, 0x0);
+	write32(pcierc->parf + PCIE_PARF_SLV_ADDR_SPACE_SIZE_HI, 0x200);
+	dsb();
+
+	/* Disable SRIS mode */
+	write32(pcierc->parf + PCIE_SRIS_MODE, 0x0);
+
+	/* Detect auxiliary power */
+	setbits32(pcierc->parf + PCIE_PARF_SYS_CTRL, AUX_PWR_DET);
+
+	/* Disable AXI master write address halt */
+	write32(pcierc->parf + PCIE_PARF_AXI_MSTR_WR_ADDR_HALT, 0x0);
+
+	/* Disable AXI slave error CRS BRESP */
+	clrbits32(pcierc->parf + PCIE_PARF_SLAVE_AXI_ERR_REPORT,
+		  AXI_SLAVE_ERR_CRS_BRESP_EN);
+
+	/* L1SS AHB clock max timer: 20 ms at 19.2 MHz */
+	clrsetbits32(pcierc->parf + PCIE_PARF_L1SUB_AHB_CLK_MAX_TIMER,
+		     L1SUB_CNT_MAX, L1SS_TIMEOUT_20MS);
+
+	/* Assert app margining ready signals */
+	setbits32(pcierc->parf + PCIE_APP_MARGINING_CTRL,
+		  APP_MARGINING_SW_READY | APP_MARGINING_READY);
+	dsb();
+}
+
+/* post_phy_pwr_up_dbi_init() - Gen5 post-PHY DBI init */
+static void post_phy_pwr_up_dbi_init(struct qcom_pcie_cntlr_t *pcie)
+{
+	pcie_cntlr_cfg_t *pcierc = pcie->cntlr_cfg;
+
+	/* Set AUX clock frequency to 19.2 MHz */
+	write32(pcierc->dbi_base + PCIE_AUX_CLK_FREQ_OFF, PCIE_AUX_CLK_FREQ_19_2MHZ);
+
+	/* AMBA error response: set CRS field to 0x2 (bits [4:3]) */
+	clrsetbits32(pcierc->dbi_base + PCIE_AMBA_ERR_RESP_DEFLT_OFF,
+		     AMBA_ERR_RESP_CRS_MASK, 0x2 << 3);
+
+	/* Clear GEN3_ZRXDC_NONCOMPL */
+	clrbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF, GEN3_ZRXDC_NONCOMPL);
+
+	/* Unlock DBI read-only registers */
+	dw_pcie_dbi_rd_wr(true);
+	dsb();
+	write32(pcierc->dbi_base + PCIE_SPCIE_CAP_OFF_0CH_REG, 0x55555555);
+	write32(pcierc->dbi_base + PCIE_SPCIE_CAP_OFF_10H_REG, 0x55555555);
+	write32(pcierc->dbi_base + PCIE_PL16G_CAP_OFF_20H_REG, 0x55555555);
+	write32(pcierc->dbi_base + PCIE_PL32G_CAP_OFF_20H_REG, 0x55555555);
+	clrbits32(pcierc->dbi_base + PCIE_SLOT_CAPABILITIES_REG, PCIE_CAP_HOT_PLUG_CAPABLE);
+	clrsetbits32(pcierc->dbi_base + PCIE_SLOT_CAPABILITIES_REG,
+		     PCIE_CAP_PHY_SLOT_NUM_MASK,
+		     PCIE_CAP_PHY_SLOT_NUM(PCIE_PHY_SLOT_NUM));
+	/* Enable CRS Software Visibility in root control/capabilities */
+	setbits32(pcierc->dbi_base + PCIE_ROOT_CONTROL_ROOT_CAPABILITIES_REG,
+		  PCIE_CAP_CRS_SW_VISIBILITY | PCIE_CAP_CRS_SW_VISIBILITY_EN);
+
+	/* Set class code: Base=0x6 (Bridge), Sub=0x4 (PCI-to-PCI) */
+	clrsetbits32(pcierc->dbi_base + PCIE_TYPE1_CLASS_CODE_REV_ID_REG,
+		     BASE_CLASS_CODE_MASK | SUBCLASS_CODE_MASK,
+		     BASE_CLASS_CODE_BRIDGE | SUBCLASS_CODE_PCI_BRIDGE);
+
+	/* Disable hot-plug capable */
+	clrbits32(pcierc->dbi_base + PCIE_SLOT_CAPABILITIES_REG,
+		  PCIE_CAP_HOT_PLUG_CAPABLE);
+
+	/*
+	 * Remove DPC from capabilities list: set L1SS NEXT_OFFSET to point
+	 * directly to RAS DES (skipping DPC at 0x1EC).
+	 */
+	clrsetbits32(pcierc->dbi_base + PCIE_L1SUB_CAP_HEADER_REG,
+		     L1SUB_NEXT_OFFSET_MASK,
+		     (uint32_t)PCIE_RAS_DES_CAP_HDR_OFFSET << 20);
+	dsb();
+
+	/* Lock DBI read-only registers */
+	dw_pcie_dbi_rd_wr(false);
+
+	/* Flow control timer: enable with 64-cycle update interval */
+	clrsetbits32(pcierc->dbi_base + PCIE_QUEUE_STATUS_OFF,
+		     TIMER_MOD_FLOW_CONTROL_EN | TIMER_MOD_FLOW_CONTROL_MASK,
+		     TIMER_MOD_FLOW_CONTROL_EN | TIMER_MOD_FLOW_CONTROL_VAL);
+
+	/* ACK/ASPM: set COMMON_CLK_N_FTS=0x80, ACK_N_FTS=0x80 */
+	clrsetbits32(pcierc->dbi_base + PCIE_ACK_F_ASPM_CTRL_OFF,
+		     COMMON_CLK_N_FTS_MASK | ACK_N_FTS_MASK,
+		     COMMON_CLK_N_FTS_VAL | ACK_N_FTS_VAL);
+
+	/* GEN3 EQ settings (RATE_SHADOW_SEL=0) */
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF,
+		     RATE_SHADOW_SEL_MASK, 0x0);
+	dsb();
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_EQ_FB_MODE_DIR_CHANGE_OFF,
+		     GEN3_EQ_FMDC_ALL_MASK, GEN3_EQ_FMDC_ALL_VAL);
+	clrbits32(pcierc->dbi_base + PCIE_GEN3_EQ_CONTROL_OFF,
+		  GEN3_EQ_PHASE23_EXIT_MODE | GEN3_EQ_PSET_REQ_VEC | GEN3_EQ_FB_MODE_MASK);
+	dsb();
+
+	/* GEN4 EQ settings (RATE_SHADOW_SEL=1) */
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF,
+		     RATE_SHADOW_SEL_MASK, RATE_SHADOW_SEL_VAL);
+	dsb();
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_EQ_FB_MODE_DIR_CHANGE_OFF,
+		     GEN3_EQ_FMDC_ALL_MASK, GEN3_EQ_FMDC_ALL_VAL);
+	clrbits32(pcierc->dbi_base + PCIE_GEN3_EQ_CONTROL_OFF,
+		  GEN3_EQ_PHASE23_EXIT_MODE | GEN3_EQ_PSET_REQ_VEC | GEN3_EQ_FB_MODE_MASK);
+	dsb();
+
+	/* GEN5 EQ settings (RATE_SHADOW_SEL=2) */
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF,
+		     RATE_SHADOW_SEL_MASK, RATE_SHADOW_SEL_GEN5);
+	dsb();
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_EQ_FB_MODE_DIR_CHANGE_OFF,
+		     GEN3_EQ_FMDC_ALL_MASK, GEN3_EQ_FMDC_ALL_VAL);
+	clrbits32(pcierc->dbi_base + PCIE_GEN3_EQ_CONTROL_OFF,
+		  GEN3_EQ_PHASE23_EXIT_MODE | GEN3_EQ_PSET_REQ_VEC | GEN3_EQ_FB_MODE_MASK);
+	dsb();
+
+	/* Restore RATE_SHADOW_SEL=0 */
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF,
+		     RATE_SHADOW_SEL_MASK, 0x0);
+
+	/* Gen4/5 lane margining capabilities */
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN4_LANE_MARGINING_1_OFF,
+		     GEN4_MARG1_ALL_MASK, GEN4_MARG1_ALL_VAL);
+
+	/* Gen4/5 lane margining control */
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN4_LANE_MARGINING_2_OFF,
+		     GEN4_MARG2_ALL_MASK, GEN4_MARG2_ALL_VAL);
+
+	/* Disable root port BARs using DBI write enable */
+	dsb();
+	dw_pcie_dbi_rd_wr(true);
+	dsb();
+	write32(pcierc->dbi_base + PCIE_TYPE1_BAR0_REG, 0x0);
+	write32(pcierc->dbi_base + PCIE_TYPE1_BAR1_REG, 0x0);
+	dsb();
+	dw_pcie_dbi_rd_wr(false);
+
+	/* Enable Bus Master and Memory Space */
+	setbits32(pcierc->dbi_base + PCIE_TYPE1_STATUS_COMMAND_REG,
+		  PCIE_BME | PCIE_MSE);
+
+	/* Disable EQ bypass for highest rate (Gen5) */
+	setbits32(pcierc->dbi_base + PCIE_PL32G_CONTROL_REG,
+		  EQ_BYPASS_HIGHEST_RATE_DISABLE);
+}
+#endif
+
 #if CONFIG(QMP_PHY_2X2_1X4)
 static void post_phy_pwr_up_init(struct qcom_pcie_cntlr_t *pcie)
 {
@@ -110,7 +293,9 @@ static void post_phy_pwr_up_init(struct qcom_pcie_cntlr_t *pcie)
 	write32(pcierc->parf + PCIE_PARF_DEVICE_TYPE, DEVICE_TYPE_RC);
 	dsb();
 	clrbits32(pcierc->parf + PCIE_PARF_SLAVE_AXI_ERR_REPORT, AXI_SLAVE_ERR_CRS_BRESP_EN);
-	clrsetbits32(pcierc->dbi_base + PCIE_AMBA_ERR_RESP_DEFLT_OFF, AMBA_ERR_RESP_CRS_MASK, 0x2);
+	/* AMBA_ERROR_RESPONSE_CRS field is bits [4:3]; value 0x2 must be shifted */
+	clrsetbits32(pcierc->dbi_base + PCIE_AMBA_ERR_RESP_DEFLT_OFF,
+		     AMBA_ERR_RESP_CRS_MASK, 0x2 << 3);
 	dsb();
 	write32(pcierc->parf + PCIE_PARF_AXI_MSTR_WR_ADDR_HALT, 0x0);
 	write32(pcierc->parf + PCIE_SRIS_MODE, 0x0);
@@ -161,7 +346,8 @@ static bool wait_link_up(struct qcom_pcie_cntlr_t *pci)
 	if (retry(LINK_WAIT_MAX_RETRIES, is_pcie_link_up(pci), mdelay(PCIE_LINK_UP_MS)))
 		return true;
 
-	printk(BIOS_ERR, "PCIe link is not up even after 1sec\n");
+	printk(BIOS_ERR, "PCIe link is not up even after 1sec (LTSSM=0x%02x)\n",
+	       read32(pci->cntlr_cfg->parf + PCIE_PARF_LTSSM) & 0x3f);
 	return false;
 }
 
@@ -328,7 +514,41 @@ static void qcom_qmp_phy_configure(void *base, const struct qcom_qmp_phy_init_tb
 {
 	qcom_qmp_phy_config_lane(base, tbl, num, 0xff);
 }
-#if !CONFIG(QMP_PHY_2X2_1X4)
+#if CONFIG(QMP_PHY_PCIE5_1X4)
+/* qcom_qmp_phy_power_on - PCIe5 5x4 QMP PHY power-on sequence */
+static enum cb_err qcom_qmp_phy_power_on(pcie_qmp_phy_cfg_t *qphy)
+{
+	uint64_t lock_us;
+
+	/* Release power-down, enable refclk */
+	write32(qphy->pcs_com + QPHY5_PCS_POWER_DOWN_CTRL, SW_PWRDN | REFCLK_DRV_DSBL);
+
+	/* Configure PLL, TXRXZ broadcast, PCS_COM, and PCS_LANEZ */
+	qcom_qmp_phy_configure(qphy->qserdes_txrxz, qphy->txrxz_tbl,   qphy->txrxz_tbl_num);
+	qcom_qmp_phy_configure(qphy->qserdes_pll,  qphy->serdes_tbl,    qphy->serdes_tbl_num);
+	qcom_qmp_phy_configure(qphy->pcs_com,      qphy->pcs_tbl,       qphy->pcs_tbl_num);
+	qcom_qmp_phy_configure(qphy->pcs_lanez,    qphy->pcs_lanez_tbl, qphy->pcs_lanez_tbl_num);
+
+	/* Release SW reset and start PCS/serdes */
+	write32(qphy->pcs_com + QPHY5_SW_RESET, 0x0);
+	write32(qphy->pcs_com + QPHY5_START_CONTROL, PCS_START | SERDES_START);
+
+	/* Wait 2ms then poll PCS_STATUS1.PHYSTATUS until clear (PHY ready) */
+	udelay(QPHY5_PHY_DELAY_US);
+	lock_us = wait_us(PCIE_PHY_POLL_US,
+			  !(read32(qphy->pcs_com + QPHY5_PCS_STATUS1) & QPHY_PHYSTATUS));
+	if (!lock_us) {
+		printk(BIOS_ERR, "PCIe5 QMP PHY PLL failed to lock\n");
+		return CB_ERR;
+	}
+
+	printk(BIOS_DEBUG, "PCIe5 QPHY Initialized\n");
+
+	qcom_dw_pcie_enable_pipe_clock();
+
+	return CB_SUCCESS;
+}
+#elif !CONFIG(QMP_PHY_2X2_1X4)
 static enum cb_err qcom_qmp_phy_power_on(pcie_qmp_phy_cfg_t *qphy)
 {
 	uint64_t lock_us;
@@ -363,7 +583,7 @@ static enum cb_err qcom_qmp_phy_power_on(pcie_qmp_phy_cfg_t *qphy)
 	 * Wait for PHY initialization to be done
 	 * PCS_STATUS: wait for 1ms for PHY STATUS bit to be set
 	 */
-	lock_us = wait_us(PCIE_PHY_POLL_US, !(read32(qphy->qmp_phy_base + QPHY_PCS_STATUS) & PHY_STATUS));
+	lock_us = wait_us(PCIE_PHY_POLL_US, !(read32(qphy->qmp_phy_base + QPHY_PCS_STATUS) & QPHY_PHYSTATUS));
 	if (!lock_us) {
 		printk(BIOS_ERR, "PCIe QMP PHY PLL failed to lock in 1ms\n");
 		return CB_ERR;
@@ -506,7 +726,7 @@ static enum cb_err qcom_dw_pcie_enable(struct qcom_pcie_cntlr_t *pcie)
 	}
 
 	qcom_dw_pcie_setup_rc(pcie);
-#if CONFIG(QMP_PHY_2X2_1X4)
+#if CONFIG(QMP_PHY_PCIE5_1X4) || CONFIG(QMP_PHY_2X2_1X4)
 	post_phy_pwr_up_init(pcie);
 	post_phy_pwr_up_dbi_init(pcie);
 #endif
@@ -631,7 +851,7 @@ void qcom_setup_pcie_host(struct device *dev)
 	 * kicked off in Romstage. Now we just verify the result.
 	 */
 	if (pcie_verify_link_status() == CB_SUCCESS)
-		printk(BIOS_NOTICE, "PCIe enumerated succussfully..\n");
+		printk(BIOS_NOTICE, "PCIe enumerated successfully\n");
 	else
 		printk(BIOS_EMERG, "Failed to enable PCIe\n");
 }

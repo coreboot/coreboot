@@ -150,7 +150,7 @@ void uart_init(unsigned int idx)
 {
 	struct am335x_uart *uart = uart_platform_baseptr(idx);
 	uint16_t div = (uint16_t)uart_baudrate_divisor(
-		get_uart_baudrate(), uart_platform_refclk(), 16);
+		get_uart_baudrate(), uart_platform_refclk(), uart_input_clock_divider());
 	am335x_uart_init(uart, div);
 }
 

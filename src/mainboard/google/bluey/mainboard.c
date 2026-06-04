@@ -12,10 +12,13 @@
 #include <device/i2c_simple.h>
 #include <ec/google/chromeec/ec.h>
 #include <edid.h>
+#include <fw_config.h>
 #include <gpio.h>
 #include <halt.h>
+#include <soc/cdt.h>
 #include <soc/clock.h>
 #include <soc/pcie.h>
+#include <soc/platform_info.h>
 #include <soc/qupv3_config_common.h>
 #include <soc/qupv3_i2c_common.h>
 #include <soc/qup_se_handlers_common.h>
@@ -336,3 +339,30 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 	.init = mainboard_init,
 };
+
+void fw_config_get_mainboard_override(uint64_t *fw_config)
+{
+	if (!CONFIG(SOC_QUALCOMM_CDT))
+		return;
+
+	uint16_t soc_id;
+	switch (platform_get_soc_id()) {
+	case SOC_ID_HAMOA:
+		soc_id = HAMOA_ID_SCP;
+		break;
+	case SOC_ID_X1P42100:
+		soc_id = X1P42100_ID_SCP;
+		break;
+	default:
+		printk(BIOS_WARNING, "CDT: Unknown SoC ID, skipping fw_config override\n");
+		return;
+	}
+
+	uint8_t platform_type = cdt_get_platform_id();
+	uint32_t soc_platform_id = ((uint32_t)soc_id << 16) | platform_type;
+
+	printk(BIOS_INFO, "CDT: soc_platform_id=0x%08x (soc_id=0x%04x, platform_type=0x%02x)\n",
+	       soc_platform_id, soc_id, platform_type);
+
+	*fw_config = soc_platform_id;
+}

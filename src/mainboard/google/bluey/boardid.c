@@ -3,6 +3,7 @@
 #include <boardid.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
+#include <soc/cdt.h>
 
 uint32_t board_id(void)
 {
@@ -20,6 +21,9 @@ uint32_t board_id(void)
 	if (CONFIG(EC_GOOGLE_CHROMEEC)) {
 		if (google_chromeec_get_board_version(&id))
 			id = BOARD_ID_UNKNOWN;
+		return id;
+	} else if (CONFIG(SOC_QUALCOMM_CDT)) {
+		id = cdt_get_hw_version();
 		return id;
 	}
 

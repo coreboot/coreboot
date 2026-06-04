@@ -8,6 +8,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/pciexp.h>
+#include <thread.h>
 
 static unsigned int ext_cap_id(unsigned int cap)
 {
@@ -902,6 +903,7 @@ void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 		}
 		has_children = true;
 		pciexp_tune_dev(child);
+		thread_yield();
 	}
 
 	/*

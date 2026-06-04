@@ -13,6 +13,7 @@
 #include <string.h>
 #include <smp/spinlock.h>
 #include <timer.h>
+#include <thread.h>
 
 /** Pointer to the last device */
 extern struct device *last_dev;
@@ -43,6 +44,7 @@ void dev_initialize_chips(void)
 			post_log_path(dev);
 			dev->chip_ops->init(dev->chip_info);
 			dev->chip_ops->initialized = 1;
+			thread_yield();
 		}
 	}
 	post_log_clear();
@@ -64,6 +66,7 @@ void dev_finalize_chips(void)
 				!dev->chip_ops->finalized) {
 			dev->chip_ops->final(dev->chip_info);
 			dev->chip_ops->finalized = 1;
+			thread_yield();
 		}
 	}
 }
@@ -203,10 +206,12 @@ static void read_resources(struct bus *bus)
 		}
 		post_log_path(curdev);
 		curdev->ops->read_resources(curdev);
+		thread_yield();
 
 		/* Read in the resources behind the current device's links. */
 		if (curdev->downstream)
 			read_resources(curdev->downstream);
+		thread_yield();
 	}
 	post_log_clear();
 	printk(BIOS_SPEW, "%s %s segment group %d bus %d done\n",
@@ -313,6 +318,7 @@ void assign_resources(struct bus *bus)
 		}
 		post_log_path(curdev);
 		curdev->ops->set_resources(curdev);
+		thread_yield();
 	}
 	post_log_clear();
 	printk(BIOS_SPEW, "%s %s, segment group %d bus %d done\n",
@@ -339,12 +345,14 @@ static void enable_resources(struct bus *link)
 		if (dev->enabled && dev->ops && dev->ops->enable_resources) {
 			post_log_path(dev);
 			dev->ops->enable_resources(dev);
+			thread_yield();
 		}
 	}
 
 	for (dev = link->children; dev; dev = dev->sibling) {
 		if (dev->downstream)
 			enable_resources(dev->downstream);
+		thread_yield();
 	}
 	post_log_clear();
 }
@@ -360,6 +368,7 @@ int reset_bus(struct bus *bus)
 	if (bus && bus->dev && bus->dev->ops && bus->dev->ops->reset_bus) {
 		bus->dev->ops->reset_bus(bus);
 		bus->reset_needed = 0;
+		thread_yield();
 		return 1;
 	}
 	return 0;
@@ -393,6 +402,7 @@ static void scan_bus(struct device *busdev)
 	while (do_scan_bus) {
 		struct bus *link = busdev->downstream;
 		busdev->ops->scan_bus(busdev);
+		thread_yield();
 		do_scan_bus = 0;
 		if (!link || !link->reset_needed)
 			continue;
@@ -454,6 +464,7 @@ void dev_enumerate(void)
 
 	if (root->chip_ops && root->chip_ops->enable_dev)
 		root->chip_ops->enable_dev(root);
+	thread_yield();
 
 	if (!root->ops || !root->ops->scan_bus) {
 		printk(BIOS_ERR, "dev_root missing scan_bus operation");
@@ -554,6 +565,7 @@ static void init_dev(struct device *dev)
 		stopwatch_init(&sw);
 		dev->initialized = 1;
 		dev->ops->init(dev);
+		thread_yield();
 
 		init_time = stopwatch_duration_msecs(&sw);
 		printk(BIOS_DEBUG, "%s init finished in %ld msecs\n", dev_path(dev),
@@ -615,6 +627,7 @@ static void final_dev(struct device *dev)
 	if (dev->ops && dev->ops->final) {
 		printk(BIOS_DEBUG, "%s final\n", dev_path(dev));
 		dev->ops->final(dev);
+		thread_yield();
 	}
 }
 

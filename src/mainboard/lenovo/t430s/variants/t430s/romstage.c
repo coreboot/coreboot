@@ -2,7 +2,6 @@
 
 #include <option.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <drivers/i2c/at24rf08c/lenovo.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <ec/lenovo/pmh7/pmh7.h>

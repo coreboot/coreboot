@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci_def.h>
 #include <drivers/intel/gma/int15.h>
 #include <gpio.h>
 #include <intelblocks/pcr.h>

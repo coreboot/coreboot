@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <drivers/i2c/at24rf08c/lenovo.h>
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>

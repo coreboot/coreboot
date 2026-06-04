@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <device/pci_ops.h>
 #include <device/pci_ehci.h>
-#include <device/pci_def.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>

@@ -5,7 +5,6 @@
 
 #include <cpu/x86/smm.h>
 #include <device/pci_type.h>
-#include <device/pci_def.h>
 #include <device/xhci.h>
 
 #include <types.h>

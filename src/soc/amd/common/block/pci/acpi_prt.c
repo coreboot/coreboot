@@ -6,7 +6,6 @@
 #include <amdblocks/amd_pci_util.h>
 #include <arch/ioapic.h>
 #include <device/device.h>
-#include <device/pci_def.h>
 
 /* GNB IO-APIC is located after the FCH IO-APIC */
 #define FCH_IOAPIC_INTERRUPTS	24

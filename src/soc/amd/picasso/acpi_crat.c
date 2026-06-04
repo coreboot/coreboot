@@ -11,7 +11,6 @@
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <device/mmio.h>
-#include <device/pci_def.h>
 #include <FspGuids.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>

@@ -3,7 +3,6 @@
 #ifndef AMD_BLOCK_PCI_DEVS_H
 #define AMD_BLOCK_PCI_DEVS_H
 
-#include <device/pci_def.h>
 
 #if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>

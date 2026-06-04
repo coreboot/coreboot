@@ -3,7 +3,6 @@
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/acpimmio.h>
 #include <console/console.h>
-#include <device/pci_def.h>
 #include <device/device.h>
 #include <device/smbus_host.h>
 #include <soc/southbridge.h>

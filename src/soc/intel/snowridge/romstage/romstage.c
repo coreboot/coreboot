@@ -16,6 +16,7 @@
 #include <intelblocks/rtc.h>
 #include <lib.h>
 #include <romstage.h>
+#include <smbios.h>
 #include <soc/intel/common/smbios.h>
 #include <soc/pci_devs.h>
 #include <spd.h>

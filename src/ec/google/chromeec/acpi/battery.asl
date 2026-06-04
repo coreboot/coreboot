@@ -40,6 +40,10 @@ Method (BTSW, 1)
 //   Arg0 = battery index
 Method (BSTA, 1, Serialized)
 {
+	If (!DFUD &&!(BATT || SBAT)) {
+		Return (0)
+	}
+
 	If (Acquire (^BATM, 1000)) {
 		Return (0)
 	}

@@ -62,6 +62,15 @@ CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE)
 		Name (_HID, "GOOG0007")
 		Name (_UID, 1)
 		Name (_DDN, "EC MKBP Device")
+
+		Method (_STA, 0)
+		{
+			If (DFUD || KEYB) {
+				Return (0xF)
+			}
+
+			Return (0)
+		}
 	}
 #endif
 

@@ -6,6 +6,7 @@
 #include <arch/vga.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/pci_def.h>
 #include <types.h>
 
 static void write_ssdt_domain_io_producer_range_helper(const char *domain_name,

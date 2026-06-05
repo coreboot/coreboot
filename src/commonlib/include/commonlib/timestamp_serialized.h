@@ -157,8 +157,8 @@ enum timestamp_id {
 
 	/* 990+ reserved for vendorcode extensions (990-997: Intel ME continued) */
 	TS_ME_ROM_START = 990,
-	TS_ISSE_DMU_LOAD_END = 991,
-	TS_ESE_LOAD_AUNIT_END = 992,
+	TS_DMU_LOAD_END = 991,
+	TS_AUNIT_LOAD_END = 992,
 
 	/* 998-999 reserved for ARM Trusted firmware) */
 	TS_TFA_LOAD_BL32_START = 998,
@@ -374,8 +374,8 @@ static const struct timestamp_id_to_name {
 
 	/* Intel ME continued */
 	TS_NAME_DEF(TS_ME_ROM_START, 0, "CSME ROM started execution"),
-	TS_NAME_DEF(TS_ISSE_DMU_LOAD_END, 0, "Die Management Unit (DMU) load completed"),
-	TS_NAME_DEF(TS_ESE_LOAD_AUNIT_END, 0, "ESE completed AUnit loading"),
+	TS_NAME_DEF(TS_DMU_LOAD_END, 0, "Die Management Unit (DMU) load completed"),
+	TS_NAME_DEF(TS_AUNIT_LOAD_END, 0, "AUnit load completed"),
 
 	TS_NAME_DEF(TS_TFA_LOAD_BL32_START, 0, "BL32(secure_os) loading start"),
 	TS_NAME_DEF(TS_TFA_LOAD_BL32_END, 0, "BL32(secure_os) loading end"),

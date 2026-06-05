@@ -77,7 +77,7 @@ chip soc/intel/alderlake
 				register "is_storage"			= "true"
 				register "add_acpi_dma_property"	= "true"
 				register "skip_on_off_support"		= "true"
-				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
+				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_L23_SRCK"
 				register "use_rp_mutex"			= "true"
 				device generic 0 on end
 			end

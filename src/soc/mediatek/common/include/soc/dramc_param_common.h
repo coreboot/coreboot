@@ -109,6 +109,5 @@ const char *get_status_string(u16 status);
 void dump_param_header(const void *blob);
 int validate_dramc_param(const void *blob);
 int is_valid_dramc_param(const void *blob);
-int initialize_dramc_param(void *blob);
 
 #endif

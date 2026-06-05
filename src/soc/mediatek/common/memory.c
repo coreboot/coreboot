@@ -229,35 +229,29 @@ static int dram_run_fast_calibration(struct dramc_param *dparam)
 	return 0;
 }
 
-static int dram_run_full_calibration(struct dramc_param *dparam)
+static int dram_run_full_calibration(struct dramc_param *dparam,
+				     const struct sdram_info *dram_info)
 {
-	initialize_dramc_param(dparam);
-
-	return run_dram_blob(dparam);
-}
-
-static void mem_init_set_default_config(struct dramc_param *dparam,
-					const struct sdram_info *dram_info)
-{
-	u32 type, geometry;
 	memset(dparam, 0, sizeof(*dparam));
 
-	type = dram_info->ddr_type;
-	geometry = dram_info->ddr_geometry;
+	dparam->dramc_datas.ddr_info.sdram.ddr_type = dram_info->ddr_type;
+	dparam->dramc_datas.ddr_info.sdram.ddr_geometry = dram_info->ddr_geometry;
 
-	dparam->dramc_datas.ddr_info.sdram.ddr_type = type;
+	/* Initialize header version and size */
+	dparam->header.version = DRAMC_PARAM_HEADER_VERSION;
+	dparam->header.size = sizeof(*dparam);
 
 	if (CONFIG(MEDIATEK_DRAM_DVFS))
 		dparam->dramc_datas.ddr_info.config_dvfs = DRAMC_ENABLE_DVFS;
 	if (CONFIG(MEDIATEK_DRAM_SCRAMBLE))
 		dparam->header.config |= DRAMC_CONFIG_SCRAMBLE;
 
-	dparam->dramc_datas.ddr_info.sdram.ddr_geometry = geometry;
-
 	printk(BIOS_INFO, "DRAM-K: ddr_type: %s, config_dvfs: %d, ddr_geometry: %s\n",
-	       get_dram_type_str(type),
+	       get_dram_type_str(dram_info->ddr_type),
 	       dparam->dramc_datas.ddr_info.config_dvfs,
-	       get_dram_geometry_str(geometry));
+	       get_dram_geometry_str(dram_info->ddr_geometry));
+
+	return run_dram_blob(dparam);
 }
 
 static void mt_mem_init_run(struct dramc_param *dparam,
@@ -299,10 +293,8 @@ static void mt_mem_init_run(struct dramc_param *dparam,
 
 	/* Run full calibration */
 	printk(BIOS_INFO, "DRAM-K: Running full calibration\n");
-	mem_init_set_default_config(dparam, dram_info);
-
 	stopwatch_init(&sw);
-	int err = dram_run_full_calibration(dparam);
+	int err = dram_run_full_calibration(dparam, dram_info);
 	if (err == 0) {
 		printk(BIOS_INFO, "DRAM-K: Full calibration passed in %lld msecs\n",
 		       stopwatch_duration_msecs(&sw));

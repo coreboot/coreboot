@@ -44,14 +44,3 @@ void dump_param_header(const void *blob)
 	      header->size, sizeof(*dparam));
 	print("header.flags = %#x\n", header->flags);
 }
-
-int initialize_dramc_param(void *blob)
-{
-	struct dramc_param *param = blob;
-	struct dramc_param_header *hdr = &param->header;
-
-	memset(hdr, 0, sizeof(*hdr));
-	hdr->version = DRAMC_PARAM_HEADER_VERSION;
-	hdr->size = sizeof(*param);
-	return 0;
-}

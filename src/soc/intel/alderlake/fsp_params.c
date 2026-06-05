@@ -841,6 +841,12 @@ static void fill_fsps_gna_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->GnaEnable = is_devfn_enabled(SA_DEVFN_GNA);
 }
 
+static void fill_fsps_trace_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	s_cfg->CpuCrashLogEnable = CONFIG(SOC_INTEL_CRASHLOG) && is_devfn_enabled(SA_DEVFN_TMT);
+}
+
 static void fill_fsps_lan_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
@@ -1311,6 +1317,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_sata_params,
 		fill_fsps_thermal_params,
 		fill_fsps_gna_params,
+		fill_fsps_trace_params,
 		fill_fsps_lan_params,
 		fill_fsps_cnvi_params,
 		fill_fsps_vmd_params,

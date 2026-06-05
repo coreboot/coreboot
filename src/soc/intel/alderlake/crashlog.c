@@ -2,6 +2,7 @@
 
 #include <arch/bert_storage.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <device/pci_ops.h>
 #include <intelblocks/crashlog.h>
 #include <intelblocks/pmc_ipc.h>
@@ -231,6 +232,14 @@ static bool cpu_cl_gen_discovery_table(void)
 bool cpu_cl_discovery(void)
 {
 	memset(&cpu_cl_devsc_cap, 0, sizeof(tel_crashlog_devsc_cap_t));
+
+	if (!is_devfn_enabled(SA_DEVFN_TMT)) {
+		printk(BIOS_DEBUG, "CPU crashlog device disabled.\n");
+		m_cpu_crashLog_support = false;
+		m_cpu_crashLog_present = false;
+		m_cpu_crashLog_size = 0;
+		return false;
+	}
 
 	if (!cpu_cl_get_capability(&cpu_cl_devsc_cap)) {
 		printk(BIOS_ERR, "CPU crashlog capability not found.\n");

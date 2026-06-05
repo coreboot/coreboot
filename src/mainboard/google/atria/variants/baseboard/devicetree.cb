@@ -10,6 +10,22 @@ chip soc/intel/novalake
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
 
+	register "usb2_ports[0]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 0
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 1
+	register "usb2_ports[2]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 2
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 3
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 4
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 5
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 6
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 7
+
+	register "usb3_ports[0]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 0
+	register "usb3_ports[1]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 1
+
+	register "tcss_ports[0]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 0
+	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 1
+	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 2
+
 	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,

@@ -155,6 +155,7 @@ xhci_set_address(hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 	}
 
 	di = &xhci->dev[slot_id];
+	memset(di, 0, sizeof(*di));
 	void *dma_buffer = dma_memalign(64, NUM_EPS * ctxsize);
 	if (!dma_buffer)
 		goto _disable_return;

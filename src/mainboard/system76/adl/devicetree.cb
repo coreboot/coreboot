@@ -20,7 +20,6 @@ chip soc/intel/alderlake
 	register "tcc_offset" = "8"
 
 	device domain 0 on
-		device ref system_agent on end
 		device ref igpu on
 			# DDIA is eDP, DDIB is HDMI
 			register "ddi_portA_config" = "1"
@@ -65,7 +64,6 @@ chip soc/intel/alderlake
 			register "serial_io_i2c_mode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
 		end
 
-		device ref heci1 on end
 		device ref sata on
 			register "sata_salp_support" = "1"
 			register "sata_ports_enable[1]" = "1" # SSD1
@@ -88,6 +86,5 @@ chip soc/intel/alderlake
 			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
 		end
 		device ref smbus on end
-		device ref fast_spi on end
 	end
 end

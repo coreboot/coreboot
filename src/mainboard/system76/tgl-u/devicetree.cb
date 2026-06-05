@@ -66,7 +66,6 @@ chip soc/intel/tigerlake
 
 # Actual device tree
 	device domain 0 on
-		device ref system_agent on end
 		device ref igpu on
 			# DDIA is eDP
 			register "DdiPortAConfig" = "DDI_PORT_CFG_EDP"
@@ -134,6 +133,5 @@ chip soc/intel/tigerlake
 			register "PchHdaAudioLinkHdaEnable" = "1"
 		end
 		device ref smbus on end
-		device ref fast_spi on end
 	end
 end

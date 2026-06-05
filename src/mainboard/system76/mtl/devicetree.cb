@@ -19,7 +19,6 @@ chip soc/intel/meteorlake
 	device cpu_cluster 0 on end
 
 	device domain 0 on
-		device ref system_agent on end
 		device ref igpu on
 			# DDIA is eDP, TCP2 is HDMI
 			register "ddi_port_A_config" = "1"
@@ -46,7 +45,6 @@ chip soc/intel/meteorlake
 			register "serial_io_i2c_mode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
 		end
 
-		device ref heci1 on end
 		device ref soc_espi on
 			register "gen1_dec" = "0x00040069" # EC PM channel
 			register "gen2_dec" = "0x00fc0e01" # AP/EC command
@@ -64,6 +62,5 @@ chip soc/intel/meteorlake
 			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
 		end
 		device ref smbus on end
-		device ref fast_spi on end
 	end
 end

@@ -342,14 +342,21 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 	if (!map)
 		return;
 
+	for (size_t i = 0; i < ARRAY_SIZE(config->cep_enable); i++) {
+		if (config->cep_enable[i])
+			m_cfg->CepEnable[i] = config->cep_enable[i];
+	}
+
+	/*
+	 * Only enable Fast Vmode when a valid IccLimit threshold exists
+	 */
 	for (size_t i = 0; i < ARRAY_SIZE(config->enable_fast_vmode); i++) {
-		if (!config->cep_enable[i])
+		if (!config->enable_fast_vmode[i])
 			continue;
-		m_cfg->CepEnable[i] = config->cep_enable[i];
-		if (config->enable_fast_vmode[i]) {
-			m_cfg->EnableFastVmode[i] = config->enable_fast_vmode[i];
-			m_cfg->IccLimit[i] = config->fast_vmode_i_trip[map->sku][i];
-		}
+		if (!config->fast_vmode_i_trip[map->sku][i])
+			continue;
+		m_cfg->EnableFastVmode[i] = config->enable_fast_vmode[i];
+		m_cfg->IccLimit[i] = config->fast_vmode_i_trip[map->sku][i];
 	}
 
 	for (size_t i = 0; i < ARRAY_SIZE(config->thermal_design_current[0]); i++) {

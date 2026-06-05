@@ -55,6 +55,7 @@ chip soc/intel/alderlake
 			}"
 		end
 		device ref gna		on  end
+		device ref crashlog	off end
 		device ref xhci		on
 			# Motherboard USB 3.0 Type-C
 			register "usb2_ports[0]"		= "USB2_PORT_MID(OC_SKIP)"

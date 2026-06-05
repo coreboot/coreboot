@@ -59,6 +59,7 @@ chip soc/intel/alderlake
 			}"
 		end
 		device ref gna		on  end
+		device ref crashlog	off end
 		device ref xhci		on
 			# Left Rear USB 2.0 Type-C		3289 mil
 			register "usb2_ports[0]"		= "USB2_PORT_SHORT(OC_SKIP)"

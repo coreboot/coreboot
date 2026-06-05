@@ -37,6 +37,7 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref gna		on  end
+		device ref crashlog	off end
 		device ref xhci		on
 			# Front USB 3.0 Type-C
 			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"

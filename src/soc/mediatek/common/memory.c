@@ -17,8 +17,6 @@
 _Static_assert(sizeof(struct dramc_param) <= FMAP_SECTION_RW_MRC_CACHE_SIZE,
 	       "sizeof(struct dramc_param) exceeds RW_MRC_CACHE size");
 
-const char *get_dram_geometry_str(u32 ddr_geometry);
-const char *get_dram_type_str(u32 ddr_type);
 
 static const struct ddr_base_info *curr_ddr_info;
 
@@ -45,7 +43,7 @@ static int mt_mem_test(const struct dramc_data *dparam)
 	return 0;
 }
 
-const char *get_dram_geometry_str(u32 ddr_geometry)
+static const char *get_dram_geometry_str(u32 ddr_geometry)
 {
 	const char *s;
 
@@ -76,7 +74,7 @@ const char *get_dram_geometry_str(u32 ddr_geometry)
 	return s;
 }
 
-const char *get_dram_type_str(u32 ddr_type)
+static const char *get_dram_type_str(u32 ddr_type)
 {
 	const char *s;
 
@@ -191,22 +189,41 @@ static int run_dram_blob(struct dramc_param *dparam)
 	return 0;
 }
 
+static u16 get_expected_config(void)
+{
+	u16 config = 0;
+
+	if (CONFIG(MEDIATEK_DRAM_DVFS))
+		config |= DRAMC_CONFIG_DVFS;
+
+	if (CONFIG(MEDIATEK_DRAM_SCRAMBLE))
+		config |= DRAMC_CONFIG_SCRAMBLE;
+
+	return config;
+}
+
 static int dram_run_fast_calibration(struct dramc_param *dparam)
 {
-	const u16 config = CONFIG(MEDIATEK_DRAM_DVFS) ? DRAMC_ENABLE_DVFS : DRAMC_DISABLE_DVFS;
+	/*
+	 * Sync old config_dvfs setting to header.config to support backward
+	 * compatibility for validation.
+	 */
+	if (dparam->dramc_datas.ddr_info.config_dvfs == DRAMC_ENABLE_DVFS)
+		dparam->header.config |= DRAMC_CONFIG_DVFS;
 
-	if (dparam->dramc_datas.ddr_info.config_dvfs != config) {
-		printk(BIOS_WARNING,
+	/* Validate config flags (scramble, DVFS, etc.) except FAST_K */
+	const u16 expected_config = get_expected_config();
+	const u16 mask = (u16)~DRAMC_CONFIG_FAST_K;
+	if ((dparam->header.config & mask) != (expected_config & mask)) {
+		printk(BIOS_INFO,
 		       "DRAM-K: Incompatible config for calibration data from flash "
 		       "(expected: %#x, saved: %#x)\n",
-		       config, dparam->dramc_datas.ddr_info.config_dvfs);
-		return -1;
+		       expected_config & mask, dparam->header.config & mask);
+		return -DRAMC_ERR_RECALIBRATE;
 	}
 
 	printk(BIOS_INFO, "DRAM-K: DRAM calibration data valid pass\n");
 
-	if (CONFIG(MEDIATEK_DRAM_SCRAMBLE))
-		dparam->header.config |= DRAMC_CONFIG_SCRAMBLE;
 	if (CONFIG(MEDIATEK_DRAM_BLOB_FAST_INIT)) {
 		printk(BIOS_INFO, "DRAM-K: Run fast calibration run in blob mode\n");
 
@@ -218,13 +235,13 @@ static int dram_run_fast_calibration(struct dramc_param *dparam)
 		dparam->header.config |= DRAMC_CONFIG_FAST_K;
 
 		if (run_dram_blob(dparam) < 0)
-			return -3;
+			return -DRAMC_ERR_FAST_CALIBRATION;
 	} else {
 		init_dram_by_params(dparam);
 	}
 
 	if (mt_mem_test(&dparam->dramc_datas) < 0)
-		return -4;
+		return -DRAMC_ERR_COMPLEX_RW_MEM_TEST;
 
 	return 0;
 }
@@ -241,14 +258,15 @@ static int dram_run_full_calibration(struct dramc_param *dparam,
 	dparam->header.version = DRAMC_PARAM_HEADER_VERSION;
 	dparam->header.size = sizeof(*dparam);
 
-	if (CONFIG(MEDIATEK_DRAM_DVFS))
-		dparam->dramc_datas.ddr_info.config_dvfs = DRAMC_ENABLE_DVFS;
-	if (CONFIG(MEDIATEK_DRAM_SCRAMBLE))
-		dparam->header.config |= DRAMC_CONFIG_SCRAMBLE;
+	dparam->header.config = get_expected_config();
+	/* Sync config_dvfs from header.config for backward compatibility. */
+	dparam->dramc_datas.ddr_info.config_dvfs =
+		(dparam->header.config & DRAMC_CONFIG_DVFS) ?
+		DRAMC_ENABLE_DVFS : DRAMC_DISABLE_DVFS;
 
-	printk(BIOS_INFO, "DRAM-K: ddr_type: %s, config_dvfs: %d, ddr_geometry: %s\n",
+	printk(BIOS_INFO, "DRAM-K: config: %#x, ddr_type: %s, ddr_geometry: %s\n",
+	       dparam->header.config,
 	       get_dram_type_str(dram_info->ddr_type),
-	       dparam->dramc_datas.ddr_info.config_dvfs,
 	       get_dram_geometry_str(dram_info->ddr_geometry));
 
 	return run_dram_blob(dparam);
@@ -272,9 +290,14 @@ static void mt_mem_init_run(struct dramc_param *dparam,
 
 		ret = dram_run_fast_calibration(dparam);
 		if (ret != 0) {
-			printk(BIOS_ERR, "DRAM-K: Failed to run fast calibration "
-			       "in %lld msecs, error: %d\n",
-			       stopwatch_duration_msecs(&sw), ret);
+			if (ret == -DRAMC_ERR_RECALIBRATE) {
+				printk(BIOS_INFO, "DRAM-K: Fast calibration cache incompatible, "
+				       "re-calibration needed\n");
+			} else {
+				printk(BIOS_ERR, "DRAM-K: Failed to run fast calibration "
+				       "in %lld msecs, error: %d\n",
+				       stopwatch_duration_msecs(&sw), ret);
+			}
 
 			/* Erase flash data after fast calibration failed */
 			memset(dparam, 0xa5, mrc_cache_size);

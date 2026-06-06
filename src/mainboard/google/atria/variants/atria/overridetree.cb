@@ -50,6 +50,14 @@ chip soc/intel/novalake
 	register "tcss_cap_policy[1]" = "TCSS_TYPE_C_PORT_FULL_FUN"
 	register "tcss_cap_policy[2]" = "TCSS_TYPE_C_PORT_FULL_FUN"
 
+	# Enable eDP in Port A & HDMI in Port 4
+	register "ddi_port_A_config" = "1"
+	register "ddi_port_B_config" = "0"
+	register "ddi_ports_config" = "{
+		[DDI_PORT_A] = DDI_ENABLE_HPD,
+		[DDI_PORT_4] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+	}"
+
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
@@ -91,6 +99,31 @@ chip soc/intel/novalake
 	register "cnvi_bt_core" = "true"
 
 	device domain 0 on
+		device ref igpu on
+			chip drivers/gfx/generic
+				register "device_count" = "5"
+				# DDIA for eDP
+				register "device[0].name" = ""LCD0""
+				register "device[0].type" = "panel"
+				# DDI4 for HDMI
+				# If HDMI is not enumerated in the kernel, then no GFX device should be added for DDI4
+				register "device[1].name" = ""DD01""
+				# TCP0 (DP-1) for port C0
+				register "device[2].name" = ""DD02""
+				register "device[2].use_pld" = "true"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+				# TCP1 (DP-2) for port C1
+				register "device[3].name" = ""DD03""
+				register "device[3].use_pld" = "true"
+				register "device[3].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+				# TCP2 (DP-3) for port C2
+				register "device[4].name" = ""DD04""
+				register "device[4].use_pld" = "true"
+				register "device[4].pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(3, 1))"
+				device generic 0 on end
+			end
+		end
+
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"

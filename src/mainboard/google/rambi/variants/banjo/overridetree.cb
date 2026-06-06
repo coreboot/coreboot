@@ -3,7 +3,7 @@ chip soc/intel/baytrail
 	register "sdcard_cap_low" = "0x0"
 
 	# Allow PCIe devices to wake system from suspend
-	register "pcie_wake_enable" = "1"
+	register "pcie_wake_enable" = "true"
 
 	device domain 0 on
 		device pci 12.0 off end # SD

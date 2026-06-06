@@ -199,7 +199,7 @@ static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],
 	}
 }
 
-void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap)
+void setup_soc_gpios(struct soc_gpio_config *config, bool enable_xdp_tap)
 {
 	if (config) {
 		setup_gpios(config->ncore, &gpncore_bank);

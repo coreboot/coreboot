@@ -3,14 +3,14 @@ chip soc/intel/baytrail
 	register "usb2_comp_bg" = "0x4700"
 
 	# Allow PCIe devices to wake system from suspend
-	register "pcie_wake_enable" = "1"
+	register "pcie_wake_enable" = "true"
 
 	# SATA port enable mask (2 ports)
 	register "sata_port_map" = "0x3"
-	register "sata_ahci" = "0x1"
+	register "sata_ahci" = "true"
 
 	# Do not route USB ports to XHCI
-	register "usb_route_to_xhci" = "0"
+	register "usb_route_to_xhci" = "false"
 
 	# USB Port Disable Mask
 	register "usb2_port_disable_mask" = "0x0"
@@ -27,7 +27,7 @@ chip soc/intel/baytrail
 	register "usb2_per_port_rcomp_hs_pullup3" = "0x0300401d"
 
 	# Disable SLP_X stretching after SUS power well fail.
-	register "disable_slp_x_stretch_sus_fail" = "1"
+	register "disable_slp_x_stretch_sus_fail" = "true"
 
 	device cpu_cluster 0 on end
 	device domain 0 on

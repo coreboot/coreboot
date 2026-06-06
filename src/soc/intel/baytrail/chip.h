@@ -7,28 +7,29 @@
 #define _BAYTRAIL_CHIP_H_
 
 #include <drivers/intel/gma/i915.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 struct soc_intel_baytrail_config {
-	uint8_t enable_xdp_tap;
+	bool enable_xdp_tap;
 	uint8_t sata_port_map;
-	uint8_t sata_ahci;
-	uint8_t ide_legacy_combined;
-	uint8_t clkreq_enable;
+	bool sata_ahci;
+	bool ide_legacy_combined;
+	bool clkreq_enable;
 
 	/* VR low power settings -- enable PS2 mode for gfx and core */
-	int vnn_ps2_enable;
-	int vcc_ps2_enable;
+	bool vnn_ps2_enable;
+	bool vcc_ps2_enable;
 
 	/* Disable SLP_X stretching after SUS power well loss. */
-	int disable_slp_x_stretch_sus_fail;
+	bool disable_slp_x_stretch_sus_fail;
 
 	/* USB Port Disable mask */
 	uint16_t usb2_port_disable_mask;
 	uint16_t usb3_port_disable_mask;
 
 	/* USB routing */
-	int usb_route_to_xhci;
+	bool usb_route_to_xhci;
 
 	/* USB PHY settings specific to the board */
 	uint32_t usb2_per_port_lane0;
@@ -50,12 +51,12 @@ struct soc_intel_baytrail_config {
 	uint32_t sdcard_cap_high;
 
 	/* Enable devices in ACPI mode */
-	int lpss_acpi_mode;
-	int scc_acpi_mode;
-	int lpe_acpi_mode;
+	bool lpss_acpi_mode;
+	bool scc_acpi_mode;
+	bool lpe_acpi_mode;
 
 	/* Allow PCIe devices to wake system from suspend. */
-	int pcie_wake_enable;
+	bool pcie_wake_enable;
 
 	uint8_t gpu_pipea_port_select;	/* Port select: 1=DP_B 2=DP_C */
 	uint16_t gpu_pipea_power_on_delay;
@@ -72,7 +73,7 @@ struct soc_intel_baytrail_config {
 	uint16_t gpu_pipeb_light_off_delay;
 	uint16_t gpu_pipeb_power_cycle_delay;
 	int gpu_pipeb_pwm_freq_hz;
-	int disable_ddr_2x_refresh_rate;
+	bool disable_ddr_2x_refresh_rate;
 
 	struct i915_gpu_controller_info gfx;
 };

@@ -1,7 +1,7 @@
 chip soc/intel/baytrail
 
 	# Allow PCIe devices to wake system from suspend
-	register "pcie_wake_enable" = "1"
+	register "pcie_wake_enable" = "true"
 
 	device domain 0 on
 		device pci 1c.1 on  end # PCIE_PORT2

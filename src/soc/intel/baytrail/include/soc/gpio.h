@@ -3,6 +3,7 @@
 #ifndef _BAYTRAIL_GPIO_H_
 #define _BAYTRAIL_GPIO_H_
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <device/mmio.h>
 #include <soc/iomap.h>
@@ -360,7 +361,7 @@ struct gpio_bank {
 	const u8 gpio_f1_range_end;
 };
 
-void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap);
+void setup_soc_gpios(struct soc_gpio_config *config, bool enable_xdp_tap);
 /* This function is weak and can be overridden by a mainboard function. */
 struct soc_gpio_config* mainboard_get_gpios(void);
 

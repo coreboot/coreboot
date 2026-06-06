@@ -74,6 +74,14 @@ enum azalia_verb_id {
 	AZALIA_SET_CONFIGURATION_DEFAULT_3 = 0x71e,
 	AZALIA_SET_CONFIGURATION_DEFAULT_4 = 0x71f,
 	AZALIA_FUNCTION_RESET              = 0x7ff,
+	AZALIA_SET_CONVERTER_FORMAT        = 0x2,
+	AZALIA_GET_CONVERTER_FORMAT        = 0xa,
+	AZALIA_SET_AMP_GAIN                = 0x3,
+	AZALIA_GET_AMP_GAIN                = 0xb,
+	AZALIA_SET_PROCESSING_COEFF        = 0x4,
+	AZALIA_GET_PROCESSING_COEFF        = 0xc,
+	AZALIA_SET_COEFF_INDEX             = 0x5,
+	AZALIA_GET_COEFF_INDEX             = 0xd,
 };
 
 /* Reference: 7.3.4 Parameters (page 198) */
@@ -197,6 +205,11 @@ enum azalia_pin_misc {
 	const u32 pc_beep_verbs_size = ARRAY_SIZE(pc_beep_verbs)
 #endif
 
+/* 4-bit verb with 16-bit payload */
+#define AZALIA_VERB_4B(codec, pin, verb, val)		\
+	((codec) << 28 | (pin) << 20 | (verb) << 16 | (val))
+
+/* 12-bit verb with 8-bit payload */
 #define AZALIA_VERB_12B(codec, pin, verb, val)		\
 	((codec) << 28 | (pin) << 20 | (verb) << 8 | (val))
 

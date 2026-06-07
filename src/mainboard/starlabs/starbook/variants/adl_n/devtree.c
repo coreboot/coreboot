@@ -17,7 +17,7 @@ void mb_devtree_update(void)
 
 	/* Enable/Disable Bluetooth based on CMOS settings */
 	if (get_uint_option("bluetooth", 1) == 0)
-		cfg->usb2_ports[9].enable = 0;
+		cfg->usb2_ports[7].enable = 0;
 
 	/* Enable/Disable Webcam based on CMOS settings */
 	if (get_uint_option("webcam", 1) == 0)

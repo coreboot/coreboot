@@ -7,6 +7,11 @@
 #include <static.h>
 #include <stdint.h>
 
+WEAK_DEV_PTR(tcss_usb3_port1);
+WEAK_DEV_PTR(tcss_usb3_port2);
+WEAK_DEV_PTR(tcss_usb3_port3);
+WEAK_DEV_PTR(tcss_usb3_port4);
+
 int retimer_get_index_for_typec(uint8_t typec_port)
 {
 	int ec_port = 0;

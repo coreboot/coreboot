@@ -6,6 +6,10 @@
 #include <intelblocks/tcss.h>
 #include <static.h>
 
+WEAK_DEV_PTR(tcss_usb3_port0);
+WEAK_DEV_PTR(tcss_usb3_port1);
+WEAK_DEV_PTR(tcss_usb3_port2);
+
 int retimer_get_index_for_typec(uint8_t typec_port)
 {
 	const struct device *tcss_port_arr[] = {
@@ -24,7 +28,7 @@ int retimer_get_index_for_typec(uint8_t typec_port)
 	for (int i = 0, ec_port = 0; i < max_port; i++) {
 		if (i == typec_port) {
 			printk(BIOS_INFO, "USB Type-C %d mapped to EC port %d\n", typec_port,
-					ec_port);
+			       ec_port);
 			return ec_port;
 		}
 

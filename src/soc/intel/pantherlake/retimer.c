@@ -6,6 +6,11 @@
 #include <intelblocks/tcss.h>
 #include <static.h>
 
+WEAK_DEV_PTR(tcss_usb3_port0);
+WEAK_DEV_PTR(tcss_usb3_port1);
+WEAK_DEV_PTR(tcss_usb3_port2);
+WEAK_DEV_PTR(tcss_usb3_port3);
+
 int retimer_get_index_for_typec(uint8_t typec_port)
 {
 	const struct device *tcss_port_arr[] = {

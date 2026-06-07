@@ -10,6 +10,15 @@
 #include <variants.h>
 #include <common/powercap.h>
 
+WEAK_DEV_PTR(tbt_pcie_rp0);
+WEAK_DEV_PTR(tcss_dma0);
+
+static void disable_dev_if_present(struct device *dev)
+{
+	if (dev)
+		dev->enabled = 0;
+}
+
 void mb_devtree_update(void)
 {
 	config_t *cfg = config_of_soc();
@@ -33,8 +42,8 @@ void mb_devtree_update(void)
 
 	/* Enable/Disable Thunderbolt based on CMOS settings */
 	if (get_uint_option("thunderbolt", 1) == 0) {
-		DEV_PTR(tbt_pcie_rp0)->enabled = 0;
-		DEV_PTR(tcss_dma0)->enabled = 0;
+		disable_dev_if_present(DEV_PTR(tbt_pcie_rp0));
+		disable_dev_if_present(DEV_PTR(tcss_dma0));
 	}
 
 	/* Enable/Disable GNA based on CMOS settings */

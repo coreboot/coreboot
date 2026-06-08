@@ -37,7 +37,7 @@ chip soc/intel/skylake
 			}"
 
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc"  = ""USB30A""
 						register "type"  = "UPC_TYPE_USB3_A"

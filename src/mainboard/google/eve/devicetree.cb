@@ -208,7 +208,7 @@ chip soc/intel/skylake
 				[1] = USB3_PORT_DEFAULT(OC1),	// Type-C Port 2
 			}"
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-C Left""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"

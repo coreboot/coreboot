@@ -124,7 +124,7 @@ chip soc/intel/skylake
 			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port
 			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Right""
 						register "type" = "UPC_TYPE_USB3_A"

@@ -37,7 +37,7 @@ chip soc/intel/skylake
 			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Rear
 
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 HDMI In""
 						register "type" = "UPC_TYPE_INTERNAL"

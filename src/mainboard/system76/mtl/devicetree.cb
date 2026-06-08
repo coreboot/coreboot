@@ -16,8 +16,6 @@ chip soc/intel/meteorlake
 	# Thermal
 	register "tcc_offset" = "8"
 
-	device cpu_cluster 0 on end
-
 	device domain 0 on
 		device ref igpu on
 			# DDIA is eDP, TCP2 is HDMI

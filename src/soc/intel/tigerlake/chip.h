@@ -371,9 +371,6 @@ struct soc_intel_tigerlake_config {
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	bool CnviBtAudioOffload;
 
-	/* TCSS USB */
-	uint8_t TcssXdciEn;
-
 	/*
 	 * Specifies which Type-C Ports are enabled on the system
 	 * each bit represents a port starting at 0

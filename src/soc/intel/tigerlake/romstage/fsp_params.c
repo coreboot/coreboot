@@ -130,7 +130,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* Tcss USB */
 	m_cfg->TcssXhciEn = is_devfn_enabled(SA_DEVFN_TCSS_XHCI);
-	m_cfg->TcssXdciEn = config->TcssXdciEn;
+	m_cfg->TcssXdciEn = is_devfn_enabled(SA_DEVFN_TCSS_XDCI);
 
 	/* TCSS DMA */
 	m_cfg->TcssDma0En = is_devfn_enabled(SA_DEVFN_TCSS_DMA0);

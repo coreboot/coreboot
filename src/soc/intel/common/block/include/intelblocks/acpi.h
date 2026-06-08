@@ -178,10 +178,10 @@ void set_dev_core_type(void);
  *	...
  * };
  *
- * const struct pad_config *variant_early_gpio_table(size_t *num)
+ * struct min_sleep_state *soc_get_min_sleep_state_array(size_t *size)
  * {
- *	*num = ARRAY_SIZE(early_gpio_table);
- *	return early_gpio_table;
+ *	*size = ARRAY_SIZE(min_pci_sleep_states);
+ *	return min_pci_sleep_states;
  * }
  *
  */

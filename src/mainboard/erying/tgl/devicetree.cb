@@ -61,9 +61,7 @@ chip soc/intel/tigerlake
 			register "PcieClkSrcClkReq[0]" = "PCIE_CLK_NOTUSED"
 		end
 
-		device ref north_xhci on
-			 register "TcssXhciEn" = "true"
-		end
+		device ref north_xhci on end
 
 		device ref south_xhci on
 			register "usb2_ports" = "{

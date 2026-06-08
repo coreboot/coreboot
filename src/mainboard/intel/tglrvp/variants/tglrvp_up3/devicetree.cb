@@ -64,7 +64,6 @@ chip soc/intel/tigerlake
 	}"
 
 	# TCSS USB3
-	register "TcssXhciEn" = "1"
 	register "TcssAuxOri" = "0"
 
 	# Enable S0ix

@@ -41,7 +41,6 @@ chip soc/intel/tigerlake
 		end
 		device ref north_xhci on
 			register "UsbTcPortEn" = "true"
-			register "TcssXhciEn" = "true"
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on
 					chip drivers/usb/acpi

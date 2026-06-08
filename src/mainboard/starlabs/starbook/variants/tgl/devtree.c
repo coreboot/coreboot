@@ -33,7 +33,7 @@ void mb_devtree_update(void)
 	/* Enable/Disable Thunderbolt based on CMOS settings */
 	if (get_uint_option("thunderbolt", 1) == 0) {
 		cfg->UsbTcPortEn = 0;
-		cfg->TcssXhciEn = 0;
+		DEV_PTR(north_xhci)->enabled = 0;
 		DEV_PTR(tbt_pcie_rp0)->enabled = 0;
 		DEV_PTR(tbt_dma0)->enabled = 0;
 	}

@@ -53,7 +53,6 @@ chip soc/intel/tigerlake
 		device ref crashlog	on  end
 		device ref north_xhci	on
 			register "UsbTcPortEn"			= "1"
-			register "TcssXhciEn"			= "1"
 			register "TcssAuxOri"			= "0"
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on

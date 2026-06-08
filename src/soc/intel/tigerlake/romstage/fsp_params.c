@@ -129,7 +129,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	memset(m_cfg->ImguClkOutEn, 0, sizeof(m_cfg->ImguClkOutEn));
 
 	/* Tcss USB */
-	m_cfg->TcssXhciEn = config->TcssXhciEn;
+	m_cfg->TcssXhciEn = is_devfn_enabled(SA_DEVFN_TCSS_XHCI);
 	m_cfg->TcssXdciEn = config->TcssXdciEn;
 
 	/* TCSS DMA */

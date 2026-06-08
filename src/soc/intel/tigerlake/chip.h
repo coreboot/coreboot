@@ -372,7 +372,6 @@ struct soc_intel_tigerlake_config {
 	bool CnviBtAudioOffload;
 
 	/* TCSS USB */
-	uint8_t TcssXhciEn;
 	uint8_t TcssXdciEn;
 
 	/*

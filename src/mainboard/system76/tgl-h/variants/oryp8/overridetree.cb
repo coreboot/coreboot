@@ -39,9 +39,7 @@ chip soc/intel/tigerlake
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
 		end
 		device ref tbt_pcie_rp0 on end # TYPEC1
-		device ref north_xhci on # TYPEC1
-			register "TcssXhciEn" = "1"
-		end
+		device ref north_xhci on end # TYPEC1
 		device ref tbt_dma0 on end # TYPEC1
 		device ref south_xhci on
 			register "usb2_ports" = "{

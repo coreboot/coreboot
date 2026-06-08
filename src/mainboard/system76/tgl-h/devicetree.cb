@@ -89,10 +89,7 @@ chip soc/intel/tigerlake
 		end
 		device ref dptf on end
 		device ref gna on end
-		device ref north_xhci on
-			# TODO: No TBT, but needed for USB 2.0 on Type-C port?
-			register "TcssXhciEn" = "1"
-		end
+		device ref north_xhci on end # TODO: No TBT, but needed for USB 2.0 on Type-C port?
 
 		# From PCH EDS(615985)
 		device ref shared_ram on end

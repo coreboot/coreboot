@@ -78,6 +78,10 @@ config SOC_INTEL_ELKHARTLAKE
 
 if SOC_INTEL_ELKHARTLAKE
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/intel/elkhartlake/chipset.cb"
+
 config MAX_CPUS
 	int
 	default 4

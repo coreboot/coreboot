@@ -2,12 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10ec0262,	/* Codec Vendor / Device ID: Realtek ALC262 */
-	0x43528986,	/* Subsystem ID */
-	0x0000000c,	/* Number of entries */
-
+static const u32 realtek_alc262_verbs[] = {
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x11), S/PDIF-OUT2: not connected */
@@ -46,4 +41,15 @@ const u32 pc_beep_verbs[] = {
 	0x00c3b015,	/* set lout1 output volume -15dB */
 	0x0143b000,	/* unmute speakers */
 };
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name		= "Realtek ALC262",
+		.vendor_id	= 0x10ec0262,
+		.subsystem_id	= 0x43528986,
+		.verbs		= realtek_alc262_verbs,
+		.verb_count	= ARRAY_SIZE(realtek_alc262_verbs),
+	},
+};
+
 AZALIA_ARRAY_SIZES;

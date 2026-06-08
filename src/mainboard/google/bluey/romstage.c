@@ -129,15 +129,6 @@ static void early_setup_usb_typec(void)
 	gpio_output(GPIO_USB_C1_EN_PP3300, 0);
 	gpio_output(GPIO_USB_C1_EN_PP1800, 0);
 	gpio_output(GPIO_USB_C1_EN_PP0900, 0);
-	/*
-	 * Only disable Type-C if the battery is present and not
-	 * at a critical level, to prevent abrupt power-off.
-	 */
-	bool battery_power_ready = battery_present && (battery_cfet_status || battery_dfet_status);
-	if (!battery_below_threshold && battery_power_ready) {
-		gpio_output(GPIO_USB_C0_EN_L, 1);
-		gpio_output(GPIO_USB_C1_EN_L, 1);
-	}
 }
 
 static void early_setup_usb(void)
@@ -240,17 +231,6 @@ static void mainboard_setup_peripherals_early(void)
 	check_wdog();
 }
 
-static void late_setup_usb_typec(void)
-{
-	bool battery_power_ready = battery_present && (battery_cfet_status || battery_dfet_status);
-
-	if (battery_below_threshold || !battery_power_ready)
-		return;
-
-	gpio_output(GPIO_USB_C0_EN_L, 0);
-	gpio_output(GPIO_USB_C1_EN_L, 0);
-}
-
 /*
  * Perform romstage late hardware initialization based on boot mode.
  * Handles PCIe host setup and fingerprint sensor power rails.
@@ -349,8 +329,6 @@ void platform_romstage_main(void)
 		printk(BIOS_INFO, "Issuing board reset to come out of Ramdump mode\n");
 		do_board_reset();
 	}
-
-	late_setup_usb_typec();
 }
 
 void platform_romstage_postram(void)

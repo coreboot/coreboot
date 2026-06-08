@@ -123,10 +123,13 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 			printf("Access to BAR6 is currently disabled, "
 			       "attempting to enable.\n");
 			pci_write_long(nb_device6, 0x04, pcicmd6 | (1 << 1));
-			if (pci_read_long(nb_device6, 0x04) & (1 << 1))
+			if (pci_read_long(nb_device6, 0x04) & (1 << 1)) {
 				printf("Enabled successfully.\n");
-			else
+			}
+			else {
 				printf("Enable FAILED!\n");
+				return 1;
+			}
 		}
 		mchbar_phys &= 0xfffff000; /* Bits 31:12 from BAR6 */
 		break;
@@ -165,10 +168,13 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 				   "attempting to enable.\n");
 			mchbar_phys |= 0x1;
 			pci_write_long(nb, 0x48, mchbar_phys);
-			if(pci_read_long(nb, 0x48) & 1)
+			if(pci_read_long(nb, 0x48) & 1) {
 				printf("Enabled successfully.\n");
-			else
+			}
+			else {
 				printf("Enable FAILED!\n");
+				return 1;
+			}
 		}
 		mchbar_phys &= 0xfffffffe;
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
@@ -216,10 +222,13 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 				   "attempting to enable.\n");
 			mchbar_phys |= 0x1;
 			pci_write_long(nb, 0x48, mchbar_phys);
-			if(pci_read_long(nb, 0x48) & 1)
+			if(pci_read_long(nb, 0x48) & 1) {
 				printf("Enabled successfully.\n");
-			else
+			}
+			else {
 				printf("Enable FAILED!\n");
+				return 1;
+			}
 		}
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
 		mchbar_phys &= 0x000003fffffe0000UL; /* 42:17 */

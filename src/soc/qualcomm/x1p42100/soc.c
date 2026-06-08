@@ -105,6 +105,9 @@ static void soc_read_resources(struct device *dev)
 			calc_acdb_carveout_size());
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_llcc_lpi, REGION_SIZE(dram_llcc_lpi));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_smem, REGION_SIZE(dram_smem));
+
+	/* Reserve PCIe region to prevent allocation */
+	mmio_range(dev, index++, (uintptr_t)_pcie, REGION_SIZE(pcie));
 }
 
 static void qtee_fw_config_load(void)

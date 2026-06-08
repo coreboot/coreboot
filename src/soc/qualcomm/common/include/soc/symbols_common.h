@@ -60,6 +60,7 @@ DECLARE_REGION(shared_imem)
 DECLARE_REGION(dram_pld_pep)
 DECLARE_REGION(dram_pld_gmu)
 DECLARE_REGION(dram_pld_pdp)
+DECLARE_OPTIONAL_REGION(pcie)
 
 /*
  * DDR_SPACE (2 GB) aka `_dram`:  0x80000000 - 0x100000000

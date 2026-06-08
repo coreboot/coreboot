@@ -35,6 +35,7 @@ chip soc/intel/novalake
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1
 	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C2
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)" # Discrete Bluetooth
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)" # Type-A Port A0
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)" # Type-A Port A1
 
@@ -106,6 +107,26 @@ chip soc/intel/novalake
 				device generic 0 on end
 			end
 		end
+
+		device ref pcie_rp3 on
+			probe WIFI_INTERFACE WIFI_INTERFACE_PCIE
+			register "pcie_rp[PCIE_RP(3)]" = "{
+			.clk_src = 2,
+			.clk_req = 2,
+			.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A10)"
+				register "srcclk_pin" = "2"
+				device generic 0 on end
+			end
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_DW2_06"
+				register "add_acpi_dma_property" = "true"
+				use usb2_port4 as bluetooth_companion
+				device pci 00.0 on end
+			end
+		end # PCIe WLAN
 
 		device ref pcie_rp5 on
 			register "pcie_rp[PCIE_RP(5)]" = "{
@@ -209,6 +230,14 @@ chip soc/intel/novalake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group" = "ACPI_PLD_GROUP(3, 1)"
 						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A15)"
+						device ref usb2_port4 on
+							probe WIFI_INTERFACE WIFI_INTERFACE_PCIE
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port 1""

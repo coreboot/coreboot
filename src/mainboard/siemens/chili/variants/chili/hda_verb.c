@@ -2,12 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10ec0255,	/* Codec Vendor / Device ID: Realtek ALC255 */
-	0xffffffff,	/* Subsystem ID */
-	12,		/* Number of entries below */
-
+static const u32 realtek_alc255_verbs[] = {
 	/* Reset Codec First */
 	AZALIA_RESET(0x1),
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table */
@@ -49,12 +44,9 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1b, AZALIA_PIN_CFG_NC(4)),	/* 0x1b LINE2 */
 	AZALIA_PIN_CFG(0, 0x1d, AZALIA_PIN_CFG_NC(5)),	/* 0x1d PCBEEP */
 	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(6)),	/* 0x1e S/PDIF OUT */
+};
 
-	/* HDMI/DP audio codec */
-	0x8086280b,	/* Codec Vendor / Device ID: Intel Kabylake HDMI */
-	0xffffffff,	/* Subsystem ID */
-	5,		/* Number of entries below */
-
+static const u32 intel_kabylake_hdmi_verbs[] = {
 	/* Enable 2nd & 3rd pin widgets first */
 	0x20878101,
 	0x20878101,
@@ -78,7 +70,25 @@ const u32 cim_verb_data[] = {
 	0x20878100,
 };
 
-const u32 pc_beep_verbs[] = {
+const u32 pc_beep_verbs[] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC255",
+		.vendor_id    = 0x10ec0255,
+		.subsystem_id = 0xffffffff,
+		.address      = 0,
+		.verbs        = realtek_alc255_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc255_verbs),
+	},
+	{
+		.name         = "Intel Kaby Lake HDMI",
+		.vendor_id    = 0x8086280b,
+		.subsystem_id = 0xffffffff,
+		.address      = 2,
+		.verbs        = intel_kabylake_hdmi_verbs,
+		.verb_count   = ARRAY_SIZE(intel_kabylake_hdmi_verbs),
+	},
 };
 
 AZALIA_ARRAY_SIZES;

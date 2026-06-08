@@ -231,8 +231,6 @@ chip soc/intel/jasperlake
 		end
 		device ref south_xhci on
 			chip drivers/usb/acpi
-				register "desc" = ""Root Hub""
-				register "type" = "UPC_TYPE_HUB"
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""USB3/2 Type-A Left Lower""

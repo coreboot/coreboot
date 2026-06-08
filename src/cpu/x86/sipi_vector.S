@@ -220,6 +220,15 @@ load_msr:
 	orl	$(CR4_OSFXSR | CR4_OSXMMEXCPT), %eax
 	mov	%eax, %cr4
 #endif
+#if CONFIG(AVX)
+	orl	$(CR4_OSXSAVE), %eax
+	mov	%eax, %cr4
+	xor	%ecx, %ecx
+	xgetbv
+	orl	$7, %eax
+	xsetbv
+#endif
+
 
 	pop	%edi /* Retrieve cpu index */
 	andl	$0xfffffff0, %esp /* ensure stack alignment */

@@ -72,6 +72,13 @@ enable_sse:
 	or	$CR4_OSFXSR, %ax
 	mov	%eax, %cr4
 #endif /* CONFIG(SSE) */
-
+#if CONFIG(AVX)
+	orl	$(CR4_OSXSAVE), %eax
+	mov	%eax, %cr4
+	xor	%ecx, %ecx
+	xgetbv
+	orl	$7, %eax
+	xsetbv
+#endif
 	/* We're done. Now it's up to platform-specific code */
 	jmp	bootblock_pre_c_entry

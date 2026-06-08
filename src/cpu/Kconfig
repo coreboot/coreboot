@@ -44,6 +44,14 @@ config SSE2
 	  streaming SIMD instructions. Some parts of coreboot can be built
 	  with more efficient code if SSE2 instructions are available.
 
+config AVX
+	bool
+	default n
+	select SSE2
+	help
+	  Select AVX in your socket or model Kconfig if your CPU has AVX
+	  streaming SIMD instructions. Some parts of coreboot can be built
+	  with more efficient code if AVX instructions are available.
 endif # ARCH_X86
 
 config SUPPORT_CPU_UCODE_IN_CBFS

@@ -37,8 +37,6 @@ chip soc/intel/skylake
 			}"
 
 			chip drivers/usb/acpi
-				register "desc" = ""xHCI Root Hub""
-				register "type" = "UPC_TYPE_HUB"
 				device usb 0.0 on
 					chip drivers/usb/acpi
 						register "desc"  = ""USB30A""

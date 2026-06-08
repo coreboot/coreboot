@@ -22,7 +22,7 @@ chip soc/intel/cannonlake
 	device domain 0 on
 		device ref xhci on
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Front Left Upper""
 						register "type" = "UPC_TYPE_A"

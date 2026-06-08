@@ -37,7 +37,7 @@ chip soc/intel/cannonlake
 		end
 		device ref xhci on
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""Right Type-A Port""
 						register "type" = "UPC_TYPE_A"

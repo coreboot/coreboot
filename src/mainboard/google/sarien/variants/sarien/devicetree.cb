@@ -221,7 +221,7 @@ chip soc/intel/cannonlake
 		device ref thermal on  end
 		device ref xhci on
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""Left Type-C Port""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"

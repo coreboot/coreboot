@@ -267,7 +267,7 @@ chip soc/intel/cannonlake
 		end
 		device ref xhci		on
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Front Left""
 						register "type" = "UPC_TYPE_A"

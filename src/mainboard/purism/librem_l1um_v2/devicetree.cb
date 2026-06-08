@@ -71,7 +71,7 @@ chip soc/intel/cannonlake
 			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB 3.1 front right
 
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""USB 2.0 Type-A Front Left""
 						register "type" = "UPC_TYPE_A"

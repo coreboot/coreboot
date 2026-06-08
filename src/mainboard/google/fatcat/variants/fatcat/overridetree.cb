@@ -636,7 +636,7 @@ chip soc/intel/pantherlake
 			chip drivers/wifi/generic
 				register "add_acpi_dma_property" = "true"
 				register "wake" = "GPE0_DW0_12" # GPP_A12
-				use usb2_port7 as bluetooth_companion
+				use usb2_port8 as bluetooth_companion
 				device pci 00.0 on
 					probe WIFI WIFI_PCIE_6
 					probe WIFI WIFI_PCIE_7

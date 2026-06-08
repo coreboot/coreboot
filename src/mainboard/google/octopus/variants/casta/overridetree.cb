@@ -85,8 +85,6 @@ chip soc/intel/apollolake
 	device domain 0 on
 		device ref xhci		on
 			chip drivers/usb/acpi
-				register "desc" = ""Root Hub""
-				register "type" = "UPC_TYPE_HUB"
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""Right Type-A Port""

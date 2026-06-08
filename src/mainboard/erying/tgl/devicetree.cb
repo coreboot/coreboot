@@ -38,7 +38,6 @@ chip soc/intel/tigerlake
 		.vnn_sx_voltage_mv = 1050,
 	}"
 
-	device cpu_cluster 0 on end
 	device domain 0 on
 		device ref igpu on
 			register "DdiPortBConfig" = "DDI_PORT_CFG_NO_LFP" # DP

@@ -92,7 +92,7 @@ static void fch_spi_set_spi100(uint8_t norm, uint8_t fast, uint8_t alt, uint8_t 
 	spi_write16(SPI100_ENABLE, SPI_USE_SPI100 | spi_read16(SPI100_ENABLE));
 }
 
-static void fch_spi_configure_4dw_burst(void)
+void fch_spi_configure_4dw_burst(void)
 {
 	uint16_t val = spi_read16(SPI100_HOST_PREF_CONFIG);
 

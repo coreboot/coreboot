@@ -30,6 +30,9 @@ const struct region_device *boot_device_ro(void)
 	if (!rom_armor && fch_spi_rom_remapping() != 0)
 		die("Non default SPI ROM remapping is not supported!");
 
+	/* FSP might reconfigure it, so initialize again in every stage */
+	fch_spi_configure_4dw_burst();
+
 	return &boot_dev.rdev;
 }
 

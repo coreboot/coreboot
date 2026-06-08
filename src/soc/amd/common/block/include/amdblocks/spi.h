@@ -140,6 +140,9 @@ void spi_write_block(uint8_t reg, const uint8_t *src, size_t len);
 /* Returns the active SPI ROM remapping */
 uint8_t fch_spi_rom_remapping(void);
 
+/* Configures 4DW burst mode */
+void fch_spi_configure_4dw_burst(void);
+
 void fch_spi_config_modes(void);
 void fch_spi_backup_registers(void);
 void fch_spi_restore_registers(void);

@@ -1879,6 +1879,22 @@ bool google_chromeec_is_battery_present(void)
 	return false;
 }
 
+bool google_chromeec_is_battery_data_valid(void)
+{
+	struct ec_params_battery_dynamic_info params = {
+		.index = 0,
+	};
+	struct ec_response_battery_dynamic_info resp;
+
+	if (ec_cmd_battery_get_dynamic(PLAT_EC, &params, &resp) == 0) {
+		/* Check if battery data is valid */
+		if (resp.flags & EC_BATT_FLAG_INVALID_DATA)
+			return false;
+	}
+
+	return true;
+}
+
 /*
  * Performs early power off.
  *

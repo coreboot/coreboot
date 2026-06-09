@@ -489,6 +489,14 @@ bool google_chromeec_is_below_critical_threshold(void);
 bool google_chromeec_is_battery_present(void);
 
 /**
+ * Check if battery data is valid.
+ *
+ * @return		true: if the battery data is valid
+ *			false: if the battery data is invalid
+ */
+bool google_chromeec_is_battery_data_valid(void);
+
+/**
  * Determine if the UCSI stack is currently active.
  *
  * @return true if EC implements the UCSI stack

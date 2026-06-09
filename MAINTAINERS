@@ -297,6 +297,13 @@ F:	src/mainboard/facebook/monolith/
 
 
 
+FRAMEWORK MAINBOARDS
+M:	Daniel Schaefer <dhs@frame.work>
+S:	Maintained
+F:	src/mainboard/framework/
+
+
+
 FOXCONN MAINBOARDS
 S:	Orphan
 F:	src/mainboard/foxconn/

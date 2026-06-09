@@ -169,6 +169,18 @@ Device (EC0)
 	}
 #endif /* EC_ENABLE_LID_SWITCH */
 
+#ifdef EC_ENABLE_POWER_BUTTON
+	/* Power Button */
+	Device (PWRB)
+	{
+		Name (_HID, EisaId ("PNP0C0C"))
+
+#ifdef EC_ENABLE_WAKE_PIN
+		Name (_PRW, Package () { EC_ENABLE_WAKE_PIN, 0x5 })
+#endif
+	}
+#endif /* EC_ENABLE_POWER_BUTTON */
+
 	Method (TINS, 1, Serialized)
 	{
 		Switch (ToInteger (Arg0))
@@ -341,6 +353,9 @@ Device (EC0)
 	Method (_Q03, 0, NotSerialized)
 	{
 		Printf ("EC: POWER BUTTON")
+#ifdef EC_ENABLE_POWER_BUTTON
+		Notify (PWRB, 0x80)
+#endif
 	}
 
 	// AC Connected

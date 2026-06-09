@@ -6,7 +6,7 @@
 
 Device (CREC)
 {
-	Name (_HID, "GOOG0004")
+	Name (_HID, CONFIG_EC_GOOGLE_CHROMEEC_ACPI_HID)
 	Name (_UID, 1)
 	Name (_DDN, "EC Command Device")
 #ifdef EC_ENABLE_WAKE_PIN

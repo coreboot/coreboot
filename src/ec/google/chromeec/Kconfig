@@ -17,6 +17,14 @@ config EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
 	  not defined, the memmap data is instead accessed on 900h-9ffh via
 	  the LPC bus.
 
+config EC_GOOGLE_CHROMEEC_ACPI_HID
+	string
+	default "GOOG0004"
+	help
+	  Allow customizing the ACPI HID name to allow the OSPM to match on
+	  different CrosEC implementations (e.g. Framework Computer's
+	  FRMWC004).
+
 config EC_GOOGLE_CHROMEEC_ACPI_USB_PORT_POWER
 	def_bool n
 	help

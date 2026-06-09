@@ -122,6 +122,37 @@ Device (EC0)
 		#include "emem.asl"
 	}
 
+#ifdef EC_FRAMEWORK_ACPI_SHARED_MEM_IO
+	/*
+	 * Framework EC custom shared-memory
+	 *   byte 0 (EC memmap 0x100): system flags
+	 *   byte 1 (EC memmap 0x101): power state
+	 */
+	OperationRegion (FRMW, SystemIO, EC_FRAMEWORK_ACPI_SHARED_MEM_IO, 0x02)
+	Field (FRMW, ByteAcc, NoLock, Preserve)
+	{
+		ADRD, 1,	// ACPI driver ready (exit EC preOS mode)
+		Offset (0x01),	// power-state byte
+		    , 6,	// EC_PS_{ENTER,RESUME}_S3/S4/S5
+		ENS0, 1,	// EC_PS_ENTER_S0ix  (BIT6)
+		RES0, 1,	// EC_PS_RESUME_S0ix (BIT7)
+	}
+
+	/*
+	 * S0ix entry/exit notification invoked by PEP LPS0 _DSM
+	 */
+	Method (S0IX, 1, Serialized)
+	{
+		If (Arg0 == 1) {
+			ENS0 = 1	// notify EC: entering S0ix (ENTER_CS)
+			/* Let EC settle before proceeding, same as vendor firmware */
+			Sleep (0xD2)
+		} Else {
+			RES0 = 1	// notify EC: resuming from S0ix (RESUME_CS)
+		}
+	}
+#endif
+
 #ifdef EC_ENABLE_LID_SWITCH
 	/* LID Switch */
 	Device (LID0)
@@ -174,6 +205,15 @@ Device (EC0)
 
 	Method (_REG, 2, NotSerialized)
 	{
+#ifdef EC_FRAMEWORK_ACPI_SHARED_MEM_IO
+		/*
+		 * When OSPM's ACPI EC driver connects the EmbeddedControl region,
+		 * the OS is up: tell the Framework EC to leave "preOS" mode
+		 */
+		If ((Arg0 == 0x03) && (Arg1 == 0x01)) {
+			ADRD = 1
+		}
+#endif
 		// Initialize AC power state
 		\PWRS = ACEX
 		/*
@@ -205,6 +245,20 @@ Device (EC0)
 		Notify (\_SB.DPTF, INT3400_ODVP_CHANGED)
 #endif
 	}
+
+#ifdef EC_FRAMEWORK_ACPI_SHARED_MEM_IO
+	Method (_INI, 0, NotSerialized)
+	{
+		/*
+		 * The vendor firmware signals driver-ready from _INI as well as
+		 * from _REG (for ACPI 2.0+ OSes), so the EC reliably leaves
+		 * "preOS" mode even when the EC region is connected late.
+		 */
+		If (_REV >= 0x02) {
+			ADRD = 1
+		}
+	}
+#endif
 
 	/* Read requested temperature and check against EC error values */
 	Method (TSRD, 1, Serialized)

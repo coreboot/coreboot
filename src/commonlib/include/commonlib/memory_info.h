@@ -146,4 +146,13 @@ struct memory_info {
 	struct dimm_info dimm[DIMM_INFO_TOTAL];
 } __packed;
 
+union bus_width_struct {
+	uint8_t raw_data;
+	struct {
+		uint8_t primary_bus_width_per_subchan : 3; // Bits 0-2: Primary bus width per sub-channel
+		uint8_t bus_width_ext_per_subchannel : 2; // Bits 3-4: Bus width Extension per sub-channel
+		uint8_t number_of_subchannel_per_dimm : 3; // Bits 5-7: Number of sub-channels per dimm
+	} bits;
+} __packed;
+
 #endif /* _COMMONLIB_MEMORY_INFO_H_ */

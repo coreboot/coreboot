@@ -10,6 +10,9 @@ ramstage-y += gpio.c
 ramstage-y += port_descriptors.c
 ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
+all-$(CONFIG_PSP_AB_RECOVERY) += recovery.c
+smm-$(CONFIG_PSP_AB_RECOVERY) += recovery.c
+
 APCB_SOURCES_RECOVERY = $(src)/mainboard/$(MAINBOARDDIR)/APCB_FP8_LPDDR5_DefaultRecovery.apcb
 
 ifeq ($(CONFIG_JAGUAR_HAVE_MCHP_FW),y)

@@ -8,6 +8,26 @@
 _Static_assert(CONFIG_MAX_CPUS == 16, "Do not override MAX_CPUS. To reduce the number of "
 	"available cores, use the downcore_mode and disable_smt devicetree settings instead.");
 
+unsigned int smbios_cache_error_correction_type(u8 level)
+{
+	return SMBIOS_CACHE_ERROR_CORRECTION_MULTI_BIT;
+}
+
+unsigned int smbios_cache_sram_type(void)
+{
+	return SMBIOS_CACHE_SRAM_TYPE_PIPELINE_BURST;
+}
+
+unsigned int smbios_cache_conf_operation_mode(u8 level)
+{
+	return SMBIOS_CACHE_OP_MODE_WRITE_BACK;
+}
+
+u8 smbios_cache_speed(u8 level)
+{
+	return 1;
+}
+
 static struct device_operations cpu_dev_ops = {
 	.init = amd_cpu_init,
 };

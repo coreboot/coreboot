@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <amdblocks/psp_efs.h>
+#include <amdblocks/psp.h>
 #include <boot_device.h>
 #include <commonlib/region.h>
 #include <device/mmio.h>
+#include <vendorcode/amd/psp/psp_efs.h>
 #include <types.h>
 
 bool read_efs_spi_settings(uint8_t *mode, uint8_t *speed)
@@ -11,7 +12,7 @@ bool read_efs_spi_settings(uint8_t *mode, uint8_t *speed)
 	bool ret = false;
 	struct embedded_firmware *efs;
 
-	efs = rdev_mmap(boot_device_ro(), EFS_OFFSET, sizeof(*efs));
+	efs = rdev_mmap(boot_device_ro(), CONFIG_AMD_FWM_POSITION, sizeof(*efs));
 	if (!efs)
 		return false;
 

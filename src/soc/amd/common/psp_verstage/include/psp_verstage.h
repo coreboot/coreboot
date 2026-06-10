@@ -4,13 +4,12 @@
 #define PSP_VERSTAGE_H
 
 #include <2crypto.h>
-#include <amdblocks/psp_efs.h>
+#include <vendorcode/amd/psp/psp_efs.h>
 #include <bl_uapp/bl_syscall_public.h>
 #include <stdint.h>
 #include <psp_verstage/psp_transfer.h>
 #include <psp_post_code.h>
 
-#define EMBEDDED_FW_SIGNATURE			0x55aa55aa
 #define PSP_COOKIE				0x50535024	/* 'PSP$' */
 #define BHD_COOKIE				0x44484224	/* 'DHB$ */
 

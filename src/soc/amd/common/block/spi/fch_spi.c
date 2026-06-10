@@ -2,7 +2,6 @@
 
 #include <amdblocks/chip.h>
 #include <amdblocks/lpc.h>
-#include <amdblocks/psp_efs.h>
 #include <amdblocks/psp.h>
 #include <amdblocks/spi.h>
 #include <console/console.h>
@@ -10,6 +9,7 @@
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <stdint.h>
+#include <vendorcode/amd/psp/psp_efs.h>
 
 static const char *spi_speed_str[8] = {
 	"66.66 Mhz",

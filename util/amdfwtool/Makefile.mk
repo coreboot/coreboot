@@ -9,6 +9,7 @@ amdfwheader = amdfwtool.h
 WERROR ?= -Werror
 AMDFWTOOLCFLAGS :=-O2 -Wall -Wextra -Wshadow $(WERROR)
 AMDFWTOOLCFLAGS += -I $(top)/src/commonlib/bsd/include
+AMDFWTOOLCFLAGS += -I $(top)/src/
 AMDFWTOOLCFLAGS += -D_GNU_SOURCE # memmem() from string.h
 AMDFWTOOLCFLAGS += -ffunction-sections -fdata-sections
 

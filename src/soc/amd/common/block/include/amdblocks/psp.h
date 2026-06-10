@@ -131,4 +131,11 @@ extern const struct region_device rom_armor_apm_call_rw;
  */
 int psp_ab_recovery_toggle_bootpartition(void);
 
+/*
+ * Parse the EFS region in flash to get the SPI read mode and speed settings.
+ * These settings are configured by AMD's factory firmware and can be used to
+ * override the default SPI read mode and speed settings in Kconfig.
+ */
+bool read_efs_spi_settings(uint8_t *mode, uint8_t *speed);
+
 #endif /* AMD_BLOCK_PSP_H */

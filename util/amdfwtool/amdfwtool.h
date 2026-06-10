@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include <vendorcode/amd/psp/psp_efs.h>
+
 /* An address can be relative to the image/file start but it can also be the address when
  * the image is mapped at 0xff000000. Used to ensure that we only attempt to read within
  * the limits of the file. */
@@ -169,56 +171,6 @@ enum _amd_addr_mode {
 	AMD_ADDR_REL_TAB,	/* Relative to table */
 	AMD_ADDR_REL_SLOT,	/* Relative to slot */
 };
-
-struct second_gen_efs { /* todo: expand for Server products */
-	uint32_t gen:1; /* Client products only use bit 0 */
-	uint32_t reserved:31;
-} __attribute__((packed));
-
-#define EFS_SECOND_GEN 0
-#define EFS_BEFORE_SECOND_GEN 1
-
-struct embedded_firmware {
-	uint32_t signature; /* 0x55aa55aa */
-	uint32_t imc_entry;
-	uint32_t gec_entry;
-	uint32_t xhci_entry;
-	uint32_t psp_directory;
-	uint32_t new_psp_directory; /* also used as combo_psp_directory */
-	uint32_t bios0_entry; /* todo: add way to select correct entry */
-	uint32_t bios1_entry;
-	uint32_t bios2_entry;
-	union {
-		struct second_gen_efs efs_gen;	/* Client SoC */
-		uint32_t multi_gen_efs;		/* Server SoC */
-	};
-	uint32_t bios3_entry;
-	uint32_t psp_bak_directory;
-	uint32_t promontory_fw_ptr;
-	uint32_t lp_promontory_fw_ptr;
-	uint32_t promontory19_fw_ptr;
-	uint32_t reserved_3Ch;
-	uint8_t spi_readmode_f15_mod_60_6f;
-	uint8_t fast_speed_new_f15_mod_60_6f;
-	uint8_t reserved_42h;
-	uint8_t spi_readmode_f17_mod_00_2f;
-	uint8_t spi_fastspeed_f17_mod_00_2f;
-	uint8_t qpr_dummy_cycle_f17_mod_00_2f;
-	uint8_t reserved_46h;
-	uint8_t spi_readmode_f17_mod_30_3f;
-	uint8_t spi_fastspeed_f17_mod_30_3f;
-	uint8_t micron_detect_f17_mod_30_3f;
-	uint8_t reserved_4Ah;
-	uint8_t reserved_4Bh;
-	uint16_t vendor_id;
-	uint16_t board_id;
-	uint8_t espi0_config0;
-	uint8_t espi1_config0;
-	uint8_t espi0_config1;
-	uint8_t espi1_config1;
-	uint32_t ubu_table;
-	uint8_t bios_size;
-} __attribute__((packed, aligned(16)));
 
 struct psp_directory_header {
 	uint32_t cookie;

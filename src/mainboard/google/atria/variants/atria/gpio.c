@@ -31,7 +31,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_A10: 	WLAN_RST_N */
 	PAD_CFG_GPO(GPP_A10, 1, PLTRST),
 	/* GPP_A11: 	SOC_M2_GEN4_SSD3_RESET_N */
-	PAD_CFG_GPO(GPP_A11, 1, PLTRST),
+	PAD_CFG_GPO(GPP_A11, 0, DEEP),
 	/* GPP_A13: 	PM_SLP_S0_N_GPP_CNTRL */
 	PAD_CFG_GPO(GPP_A13, 1, PLTRST),
 	/* GPP_A14: 	ESPI_ALERT3_AIC_N */
@@ -65,7 +65,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B09: FPS_RST_N; not used */
 	PAD_NC(GPP_B09, NONE),
 	/* GPP_B10: 	SOC_M2_GEN4_SSD3_PWREN */
-	PAD_CFG_GPO(GPP_B10, 1, DEEP),
+	PAD_CFG_GPO(GPP_B10, 0, DEEP),
 	/* GPP_B11: 	SOC_PDB_CTRL */
 	PAD_CFG_GPO(GPP_B11, 1, PLTRST),
 	/* GPP_B12: 	PM_SLP_S0_N */
@@ -93,7 +93,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B24: 	ESPI_ALERT0_AIC_N */
 	PAD_CFG_NF(GPP_B24, NONE, DEEP, NF1),
 	/* GPP_B25: 	UFS_RST_N */
-	PAD_CFG_GPO(GPP_B25, 1, PLTRST),
+	PAD_CFG_GPO(GPP_B25, 0, DEEP),
 
 	/* GPP_C */
 	/* GPP_C03: 	TCP_LAN_SML0_SCL_R */
@@ -177,7 +177,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_D20: 	CLKREQ7_X4_GEN5_M2_SSD_N */
 	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),
 	/* GPP_D21: 	GPP_D21_UFS_REFCLK */
-	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF1),
+	PAD_CFG_GPO(GPP_D21, 0, DEEP),
 	/* GPP_D22: 	M.2_WWAN_DISABLE_N */
 	PAD_CFG_GPO(GPP_D22, 1, PLTRST),
 	/* GPP_D23: 	WIFI_RF_KILL_N */
@@ -189,17 +189,17 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E02: 	PEG_SLOT_WAKE_N */
 	PAD_CFG_GPI_SCI_LOW(GPP_E02, NONE, DEEP, LEVEL),
 	/* GPP_E03: 	SOC_M2_GEN5_SSD2_RESET_N */
-	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
+	PAD_CFG_GPO(GPP_E03, 0, DEEP),
 	/* GPP_E04: 	SOC_M2_GEN5_SSD2_PWREN */
-	PAD_CFG_GPO(GPP_E04, 1, DEEP),
+	PAD_CFG_GPO(GPP_E04, 0, DEEP),
 	/* GPP_E05: 	M.2_WWAN_PERST_GPIO_N */
 	PAD_CFG_GPO(GPP_E05, 1, PLTRST),
 	/* GPP_E06: 	GPP_E6 */
 	PAD_NC(GPP_E06, NONE),
 	/* GPP_E07: 	SOC_M2_GEN5_SSD1_PWREN */
-	PAD_CFG_GPO(GPP_E07, 1, DEEP),
+	PAD_CFG_GPO(GPP_E07, 0, DEEP),
 	/* GPP_E08: 	M2_GEN5_SSD_RESET_N */
-	PAD_CFG_GPO(GPP_E08, 1, PLTRST),
+	PAD_CFG_GPO(GPP_E08, 0, DEEP),
 	/* GPP_E09: 	USB32_TYPEA_CONN1_OC0_N */
 	PAD_CFG_NF(GPP_E09, NONE, DEEP, NF1),
 	/* GPP_E10: 	CRD1_RST_N */
@@ -388,12 +388,22 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H07, NONE, DEEP, NF1),
 	/* GPP_F16: SPI_TPM_INT_N */
 	PAD_CFG_GPI_APIC(GPP_F16, NONE, PLTRST, LEVEL, INVERT),
+
+	/* Put all storage media in reset and then disable power. */
+	/* GPP_A11: 	SOC_M2_GEN4_SSD3_RESET_N */
+	PAD_CFG_GPO(GPP_A11, 0, DEEP),
+	/* GPP_E03: 	SOC_M2_GEN5_SSD2_RESET_N */
+	PAD_CFG_GPO(GPP_E03, 0, DEEP),
+	/* GPP_E08: 	M2_GEN5_SSD_RESET_N */
+	PAD_CFG_GPO(GPP_E08, 0, DEEP),
+	/* GPP_B25: 	UFS_RST_N */
+	PAD_CFG_GPO(GPP_B25, 0, DEEP),
 	/* GPP_B10:     SOC_M2_GEN4_SSD3_PWREN */
-	PAD_CFG_GPO(GPP_B10, 0, PLTRST),
+	PAD_CFG_GPO(GPP_B10, 0, DEEP),
 	/* GPP_E04:     SOC_M2_GEN5_SSD2_PWREN */
-	PAD_CFG_GPO(GPP_E04, 0, PLTRST),
+	PAD_CFG_GPO(GPP_E04, 0, DEEP),
 	/* GPP_E07:     SOC_M2_GEN5_SSD1_PWREN */
-	PAD_CFG_GPO(GPP_E07, 0, PLTRST),
+	PAD_CFG_GPO(GPP_E07, 0, DEEP),
 };
 
 /* Pad configuration in romstage */

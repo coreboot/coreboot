@@ -7,6 +7,11 @@
 #include <device/device.h>
 #include <variant/ec.h>
 
+void __weak fw_config_gpio_padbased_override(struct pad_config *padbased_table)
+{
+	/* default implementation does nothing */
+}
+
 static void mainboard_init(void *chip_info)
 {
 	mainboard_ec_init();
@@ -21,6 +26,7 @@ static void mainboard_early(void *unused)
 	padbased_table = new_padbased_table();
 	base_pads = variant_gpio_table(&base_num);
 	gpio_padbased_override(padbased_table, base_pads, base_num);
+	fw_config_gpio_padbased_override(padbased_table);
 	gpio_configure_pads_with_padbased(padbased_table);
 	free(padbased_table);
 }

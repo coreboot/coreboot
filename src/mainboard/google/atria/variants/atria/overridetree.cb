@@ -191,6 +191,8 @@ chip soc/intel/novalake
 		end # PCIe WLAN
 
 		device ref pcie_rp5 on
+			probe STORAGE_TYPE STORAGE_TYPE_NVME_GEN4
+			probe unprovisioned
 			register "pcie_rp[PCIE_RP(5)]" = "{
 			.clk_src = 4,
 			.clk_req = 4,
@@ -198,13 +200,16 @@ chip soc/intel/novalake
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				register "is_storage" = "true"
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E04)"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B10)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A11)"
 				register "srcclk_pin" = "4"
 				device generic 0 on end
 			end
 		end # Gen4 M.2 SSD
+
 		device ref pcie_rp9 on
+			probe STORAGE_TYPE STORAGE_TYPE_NVME_GEN5
+			probe unprovisioned
 			register "pcie_rp[PCIE_RP(9)]" = "{
 			.clk_src = 0,
 			.clk_req = 0,
@@ -329,7 +334,10 @@ chip soc/intel/novalake
 			end
 		end
 
-		device ref ufs on end
+		device ref ufs on
+			probe STORAGE_TYPE STORAGE_TYPE_UFS
+			probe unprovisioned
+		end
 
 	end # domain
 end # chip soc/intel/novalake

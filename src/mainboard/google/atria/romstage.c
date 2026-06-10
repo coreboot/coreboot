@@ -4,6 +4,17 @@
 #include <baseboard/variants.h>
 #include <soc/romstage.h>
 
+/*
+ * Placeholder to configure GPIO early from romstage relying on the FW_CONFIG.
+ *
+ * If any platform would like to override early GPIOs, they should override from
+ * the variant directory.
+ */
+__weak void fw_config_configure_pre_mem_gpio(void)
+{
+	/* Nothing to do */
+}
+
 __weak void variant_update_soc_memory_init_params(FSPM_UPD *memupd)
 {
 	/* Nothing to do */
@@ -20,6 +31,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	pads = variant_romstage_gpio_table(&pads_num);
 	if (pads_num)
 		gpio_configure_pads(pads, pads_num);
+	fw_config_configure_pre_mem_gpio();
 
 	memset(&spd_info, 0, sizeof(spd_info));
 	variant_get_spd_info(&spd_info);

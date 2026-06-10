@@ -45,9 +45,8 @@ bootblock_pre_c_entry:
 	/* Copy .data section content */
 #include <cpu/x86/copy_data_section.inc>
 
-	/* Align the stack and keep aligned for call to bootblock_c_entry() */
+	/* Align the stack for call to bootblock_c_entry(). */
 	and	$0xfffffff0, %esp
-	sub	$8, %esp
 
 #if ENV_X86_64
 	movd	%mm2, %rdi
@@ -55,6 +54,9 @@ bootblock_pre_c_entry:
 	movd	%mm1, %rsi
 	or	%rsi, %rdi
 #else
+	/* Keep stack aligned by accounting for the next to push instructions */
+	sub	$8, %esp
+
 	movd	%mm2, %eax
 	pushl	%eax		/* tsc[63:32] */
 	movd	%mm1, %eax

@@ -5,6 +5,8 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <device/pnp_ops.h>
+#include <ec/acpi/ec.h>
+#include <ec/lenovo/h8/h8.h>
 #include "dock.h"
 #include <southbridge/intel/i82801hx/i82801hx.h>
 #include <superio/nsc/pc87382/pc87382.h>
@@ -32,6 +34,25 @@ static void dock_gpio_set_mode(int port, int mode, int irq)
 	pnp_write_config(dock_gpio, 0xf0, port);
 	pnp_write_config(dock_gpio, 0xf1, mode);
 	pnp_write_config(dock_gpio, 0xf2, irq);
+}
+
+static void dock_set_usb_power(bool enable)
+{
+	if (enable) {
+		outb(inb(0x1628) | 0x02, 0x1628);
+		ec_set_bit(H8_CONFIG2, 0);
+	} else {
+		outb(inb(0x1628) & ~0x02, 0x1628);
+		ec_clr_bit(H8_CONFIG2, 0);
+	}
+}
+
+static void dock_set_ultrabay_power(bool enable)
+{
+	if (enable)
+		outb(inb(0x1628) | 0x01, 0x1628);
+	else
+		outb(inb(0x1628) & ~0x01, 0x1628);
 }
 
 static void dlpc_gpio_init(void)
@@ -141,7 +162,8 @@ int dock_connect(void)
 	dock_gpio_set_mode(0x04, PC87392_GPIO_PIN_PULLUP, 0x00);
 	dock_gpio_set_mode(0x05, PC87392_GPIO_PIN_PULLUP, 0x00);
 	dock_gpio_set_mode(0x06, PC87392_GPIO_PIN_PULLUP, 0x00);
-	dock_gpio_set_mode(0x07, PC87392_GPIO_PIN_PULLUP, 0x02);
+	dock_gpio_set_mode(0x07, PC87392_GPIO_PIN_PULLUP | PC87392_GPIO_PIN_DEBOUNCE,
+			   PC87392_GPIO_PIN_TRIGGERS_SMI);
 
 	dock_gpio_set_mode(0x10, PC87392_GPIO_PIN_DEBOUNCE | PC87392_GPIO_PIN_PULLUP,
 			   PC87392_GPIO_PIN_TRIGGERS_SMI);
@@ -180,13 +202,15 @@ int dock_connect(void)
 	/* enable GPIO */
 	pnp_set_enable(dock_gpio, 1);
 
-	outb(0x00, 0x1628);
+	/* Enable UltraBay power if a device is present, preserving other dock power bits. */
+	dock_set_ultrabay_power(dock_ultrabay_device_present());
+
 	outb(0x00, 0x1623);
 	outb(0x82, 0x1622);
-	outb(0xff, 0x1624);
+	outb(inb(0x1624) | 0x40, 0x1624);
 
-	/* Enable USB and Ultrabay power */
-	outb(0x03, 0x1628);
+	/* Enable dock USB power and mirror slice/dock state into the EC. */
+	dock_set_usb_power(true);
 
 	select_logical_device(dock_parallel);
 	pnp_set_iobase(dock_parallel, PNP_IDX_IO0, 0x3bc);
@@ -207,8 +231,9 @@ void dock_disconnect(void)
 	outb(inb(0x1680) & 0xfc, 0x1680);
 	mdelay(10);
 
-	/* Disable Ultrabay and USB power. */
-	outb(0x00, 0x1628);
+	/* Disable dock USB and UltraBay power. */
+	dock_set_usb_power(false);
+	dock_set_ultrabay_power(false);
 	udelay(10000);
 
 	/* Disconnect LPC bus. */

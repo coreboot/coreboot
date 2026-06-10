@@ -328,5 +328,8 @@ chip soc/intel/novalake
 				end
 			end
 		end
+
+		device ref ufs on end
+
 	end # domain
 end # chip soc/intel/novalake

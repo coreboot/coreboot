@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Glinda */
-
 #include <amdblocks/cpu.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
@@ -41,7 +39,7 @@ static struct cpu_device_id cpu_table[] = {
 	CPU_TABLE_END
 };
 
-static const struct cpu_driver zen_2_3 __cpu_driver = {
+static const struct cpu_driver zen_5 __cpu_driver = {
 	.ops      = &cpu_dev_ops,
 	.id_table = cpu_table,
 };

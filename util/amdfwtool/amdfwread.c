@@ -233,14 +233,14 @@ static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 			uint64_t fuse;
 
 			switch (type) {
-			case AMD_PSP_FUSE_CHAIN:
+			case AMD_FW_PSP_FUSE_CHAIN:
 				fuse = mode << 62 | addr;
 
 				printf("Soft-fuse:0x%lx\n", fuse);
 				free(current_entries);
 				return 0;
 
-			case AMD_FW_L2_PTR:
+			case AMD_FW_PSP_L2_PTR:
 				/* There's a second level PSP directory to read */
 				if (l2_dir_offset != 0) {
 					ERR("Duplicate PSP L2 Entry, prior offset: %08x\n",
@@ -252,7 +252,7 @@ static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 				l2_dir_offset = relative_offset(psp_offset, addr, mode);
 				break;
 
-			case AMD_FW_RECOVERYAB_A:
+			case AMD_FW_PSP_RECOVERYAB_A:
 				if (l2_dir_offset != 0) {
 					ERR("Duplicate PSP L2 Entry, prior offset: %08x\n",
 										l2_dir_offset);
@@ -448,10 +448,10 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 			mode = dir_mode;
 
 		/* RECOVERY_AB is always relative to BIOS */
-		if (type == AMD_FW_RECOVERYAB_B || type == AMD_FW_RECOVERYAB_A)
+		if (type == AMD_FW_PSP_RECOVERYAB_B || type == AMD_FW_PSP_RECOVERYAB_A)
 			mode = AMD_ADDR_REL_BIOS;
 
-		if (type == AMD_PSP_FUSE_CHAIN)
+		if (type == AMD_FW_PSP_FUSE_CHAIN)
 			printf("%sPSP%s: 0x%02x 0x%lx(Soft-fuse)\n",
 				indent, cookie == PSP_COOKIE ? "L1" : "L2",
 				type, (uint64_t)current_entries[i].address_mode << 62 | addr);
@@ -462,7 +462,7 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 				current_entries[i].size);
 
 		switch (type) {
-		case AMD_FW_L2_PTR:
+		case AMD_FW_PSP_L2_PTR:
 			/* There's a second level PSP directory to read */
 			if (l2_dir_offset != 0) {
 				ERR("Duplicate PSP L2 Entry, prior offset: %08x\n",
@@ -480,7 +480,7 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 			amdfw_psp_dir_walk(fw, l2_dir_offset, PSPL2_COOKIE, level + 2);
 			break;
 
-		case AMD_FW_RECOVERYAB_B:
+		case AMD_FW_PSP_RECOVERYAB_B:
 			if (l2b_dir_offset != 0) {
 				ERR("Duplicate PSP L2B Entry, prior offset: %08x\n",
 					l2b_dir_offset);
@@ -517,7 +517,7 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 
 			break;
 
-		case AMD_FW_RECOVERYAB_A:
+		case AMD_FW_PSP_RECOVERYAB_A:
 			if (l2_dir_offset != 0) {
 				ERR("Duplicate PSP L2 Entry, prior offset: %08x\n",
 									l2_dir_offset);
@@ -552,7 +552,7 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 			do_indentation_string(indent, level);
 			break;
 
-		case AMD_FW_BIOS_TABLE:
+		case AMD_FW_PSP_BIOS_TABLE:
 			bios_dir_offset = relative_offset(psp_offset, addr, mode);
 			if (amdfw_bios_dir_size(fw, bios_dir_offset, BHDL2_COOKIE, &dir_size) == 0)
 				printf("    %sBIOSL2: Dir  [0x%08x-0x%08x)\n", indent, bios_dir_offset, bios_dir_offset + dir_size);

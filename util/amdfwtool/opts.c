@@ -238,7 +238,7 @@ static void register_amd_psp_fw_addr(amd_fw_type type, int sub,
 {
 	unsigned int i;
 
-	for (i = 0; amd_psp_fw_table[i].type != AMD_FW_INVALID; i++) {
+	for (i = 0; amd_psp_fw_table[i].type != AMD_FW_PSP_INVALID; i++) {
 		if (amd_psp_fw_table[i].type != type)
 			continue;
 
@@ -275,8 +275,8 @@ static void register_fw_token_unlock(void)
 {
 	uint32_t i;
 
-	for (i = 0; amd_psp_fw_table[i].type != AMD_FW_INVALID; i++) {
-		if (amd_psp_fw_table[i].type != AMD_TOKEN_UNLOCK)
+	for (i = 0; amd_psp_fw_table[i].type != AMD_FW_PSP_INVALID; i++) {
+		if (amd_psp_fw_table[i].type != AMD_FW_PSP_TOKEN_UNLOCK)
 			continue;
 
 		amd_psp_fw_table[i].other = 1;
@@ -288,14 +288,14 @@ static void register_fw_filename(amd_fw_type type, uint8_t sub, char filename[])
 {
 	unsigned int i;
 
-	for (i = 0; amd_fw_table[i].type != AMD_FW_INVALID; i++) {
+	for (i = 0; amd_fw_table[i].type != AMD_FW_PSP_INVALID; i++) {
 		if (amd_fw_table[i].type == type) {
 			amd_fw_table[i].filename = strdup(filename);
 			return;
 		}
 	}
 
-	for (i = 0; amd_psp_fw_table[i].type != AMD_FW_INVALID; i++) {
+	for (i = 0; amd_psp_fw_table[i].type != AMD_FW_PSP_INVALID; i++) {
 		if (amd_psp_fw_table[i].type != type)
 			continue;
 
@@ -324,8 +324,8 @@ static void register_fw_fuse(char *str)
 {
 	uint32_t i;
 
-	for (i = 0; amd_psp_fw_table[i].type != AMD_FW_INVALID; i++) {
-		if (amd_psp_fw_table[i].type != AMD_PSP_FUSE_CHAIN)
+	for (i = 0; amd_psp_fw_table[i].type != AMD_FW_PSP_INVALID; i++) {
+		if (amd_psp_fw_table[i].type != AMD_FW_PSP_FUSE_CHAIN)
 			continue;
 
 		amd_psp_fw_table[i].other = strtoull(str, NULL, 16);
@@ -354,15 +354,15 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 
 		switch (c) {
 		case AMDFW_OPT_XHCI:
-			register_fw_filename(AMD_FW_XHCI, sub, optarg);
+			register_fw_filename(AMD_FW_PSP_XHCI, sub, optarg);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_IMC:
-			register_fw_filename(AMD_FW_IMC, sub, optarg);
+			register_fw_filename(AMD_FW_PSP_IMC, sub, optarg);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_GEC:
-			register_fw_filename(AMD_FW_GEC, sub, optarg);
+			register_fw_filename(AMD_FW_PSP_GEC, sub, optarg);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_RECOVERY_AB:
@@ -468,7 +468,7 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 			cb_config->s0i3 = true;
 			break;
 		case AMDFW_OPT_SPL_TABLE:
-			register_fw_filename(AMD_FW_SPL, sub, optarg);
+			register_fw_filename(AMD_FW_PSP_SPL, sub, optarg);
 			sub = instance = 0;
 			cb_config->have_mb_spl = true;
 			break;
@@ -482,7 +482,7 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_VERSTAGE_SIG:
-			register_fw_filename(AMD_FW_VERSTAGE_SIG, sub, optarg);
+			register_fw_filename(AMD_FW_PSP_VERSTAGE_SIG, sub, optarg);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_OUTPUT_MANIFEST:
@@ -554,12 +554,12 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 			break;
 		case LONGOPT_RPMC_NVRAM_BASE:
 			/* PSP RPMC NV base */
-			register_amd_psp_fw_addr(AMD_RPMC_NVRAM, sub, optarg, 0);
+			register_amd_psp_fw_addr(AMD_FW_PSP_RPMC_NVRAM, sub, optarg, 0);
 			sub = instance = 0;
 			break;
 		case LONGOPT_RPMC_NVRAM_SIZE:
 			/* PSP RPMC NV size */
-			register_amd_psp_fw_addr(AMD_RPMC_NVRAM, sub, 0, optarg);
+			register_amd_psp_fw_addr(AMD_FW_PSP_RPMC_NVRAM, sub, 0, optarg);
 			sub = instance = 0;
 			break;
 		case LONGOPT_AB_NVRAM_BASE:

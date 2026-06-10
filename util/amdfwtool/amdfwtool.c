@@ -156,114 +156,114 @@ amd_fw_entry amd_psp_fw_table[] = {
 	  .skip_hashing = true },
 	{ .type = AMD_FW_PSP_TEEIPKEY, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB,
 	  .skip_hashing = true },
-	{ .type = AMD_FW_ABL_PUBKEY, .level = PSP_BOTH | PSP_BOTH_AB },
-	{ .type = AMD_PSP_FUSE_CHAIN, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_ABL_PUBKEY, .level = PSP_BOTH | PSP_BOTH_AB },
+	{ .type = AMD_FW_PSP_FUSE_CHAIN, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_TRUSTLETS, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_TRUSTLETKEY, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 2, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_BOOT_DRIVER, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_SOC_DRIVER, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_DEBUG_DRIVER, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_INTERFACE_DRIVER, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_DEBUG_UNLOCK, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_HW_IPCFG, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_HW_IPCFG, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_HW_IPCFG, .subprog = 2, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_WRAPPED_IKEK, .level = PSP_BOTH | PSP_LVL2_AB, .skip_hashing = true },
-	{ .type = AMD_TOKEN_UNLOCK, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_SEC_GASKET, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_SEC_GASKET, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_SEC_GASKET, .subprog = 2, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_MP2_FW, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_MP2_FW, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_MP2_FW, .subprog = 2, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_DRIVER_ENTRIES, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_KVM_IMAGE, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_MP5, .subprog = 0, .level = PSP_BOTH | PSP_BOTH_AB },
-	{ .type = AMD_FW_MP5, .subprog = 1, .level = PSP_BOTH | PSP_BOTH_AB },
-	{ .type = AMD_FW_MP5, .subprog = 2, .level = PSP_BOTH | PSP_BOTH_AB },
-	{ .type = AMD_S0I3_DRIVER, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_ABL0, .level = PSP_BOTH | PSP_LVL2_AB,
+	{ .type = AMD_FW_PSP_BOOT_DRIVER, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SOC_DRIVER, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_DEBUG_DRIVER, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_INTERFACE_DRIVER, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_DEBUG_UNLOCK, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_HW_IPCFG, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_HW_IPCFG, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_HW_IPCFG, .subprog = 2, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_WRAPPED_IKEK, .level = PSP_BOTH | PSP_LVL2_AB, .skip_hashing = true },
+	{ .type = AMD_FW_PSP_TOKEN_UNLOCK, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SEC_GASKET, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SEC_GASKET, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SEC_GASKET, .subprog = 2, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MP2_FW, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MP2_FW, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MP2_FW, .subprog = 2, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_DRIVER_ENTRIES, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_KVM_IMAGE, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MP5, .subprog = 0, .level = PSP_BOTH | PSP_BOTH_AB },
+	{ .type = AMD_FW_PSP_MP5, .subprog = 1, .level = PSP_BOTH | PSP_BOTH_AB },
+	{ .type = AMD_FW_PSP_MP5, .subprog = 2, .level = PSP_BOTH | PSP_BOTH_AB },
+	{ .type = AMD_FW_PSP_S0I3_DRIVER, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_ABL0, .level = PSP_BOTH | PSP_LVL2_AB,
 		.generate_manifest = true },
-	{ .type = AMD_ABL1, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_ABL2, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_ABL3, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_ABL4, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_ABL5, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_ABL6, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_ABL7, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_SEV_DATA, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_SEV_CODE, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_ABL1, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_ABL2, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_ABL3, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_ABL4, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_ABL5, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_ABL6, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_ABL7, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SEV_DATA, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SEV_CODE, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_WHITELIST, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_VBIOS_BTLOADER, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_DXIO, .level = PSP_BOTH | PSP_BOTH_AB },
-	{ .type = AMD_FW_USB_PHY, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_TOS_SEC_POLICY, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_DRTM_TA, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_BIOS_TABLE, .level = PSP_LVL2_AB },
-	{ .type = AMD_FW_KEYDB_BL, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_KEYDB_TOS, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_VBIOS_BTLOADER, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_DXIO, .level = PSP_BOTH | PSP_BOTH_AB },
+	{ .type = AMD_FW_PSP_USB_PHY, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_TOS_SEC_POLICY, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_DRTM_TA, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_BIOS_TABLE, .level = PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_KEYDB_BL, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_KEYDB_TOS, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_VERSTAGE, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_VERSTAGE_SIG, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_RPMC_NVRAM, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_SPL, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_DMCU_ERAM, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_DMCU_ISR, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_MSMU, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_MSMU, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_SPIROM_CFG, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_MPIO, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_VERSTAGE_SIG, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_RPMC_NVRAM, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SPL, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_DMCU_ERAM, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_DMCU_ISR, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MSMU, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MSMU, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SPIROM_CFG, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MPIO, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMUSCS, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_DMCUB, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_DMCUB, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_AB_NVRAM, .level = PSP_LVL1_AB },
 	{ .type = AMD_FW_PSP_BOOTLOADER_AB, .level = PSP_LVL2 | PSP_LVL2_AB,
 		.generate_manifest = true },
-	{ .type = AMD_RIB, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_RIB, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_RIB, .subprog = 2, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_MPDMA_TF, .level = PSP_BOTH | PSP_BOTH_AB },
-	{ .type = AMD_TA_IKEK, .level = PSP_BOTH | PSP_LVL2_AB, .skip_hashing = true },
-	{ .type = AMD_FW_SFDR, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_GMI3_PHY, .level = PSP_BOTH | PSP_BOTH_AB },
-	{ .type = AMD_FW_MPDMA_PM, .level = PSP_BOTH | PSP_BOTH_AB },
-	{ .type = AMD_FW_AMF_SRAM, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_AMF_DRAM, .inst = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_AMF_DRAM, .inst = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_MFD_MPM, .inst = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_MFD_MPM, .inst = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_FCFG_TABLE, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_AMF_WLAN, .inst = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_AMF_WLAN, .inst = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_AMF_WLAN, .inst = 2, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_AMF_WLAN, .inst = 3, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_AMF_MFD, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_MPCCX, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_MPCCX, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_LSDMA, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_C20_MP, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_MINIMSMU, .inst = 0, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_MINIMSMU, .inst = 1, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_MINIMSMU, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_GFXIMU_0, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_GFXIMU_0, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_GFXIMU_1, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_GFXIMU_1, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_SRAM_FW_EXT, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_UMSMU, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_S3IMG, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_USBDP, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_USBSS, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_USB4, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_INVALID },
+	{ .type = AMD_FW_PSP_RIB, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_RIB, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_RIB, .subprog = 2, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MPDMA_TF, .level = PSP_BOTH | PSP_BOTH_AB },
+	{ .type = AMD_FW_PSP_TA_IKEK, .level = PSP_BOTH | PSP_LVL2_AB, .skip_hashing = true },
+	{ .type = AMD_FW_PSP_SFDR, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_GMI3_PHY, .level = PSP_BOTH | PSP_BOTH_AB },
+	{ .type = AMD_FW_PSP_MPDMA_PM, .level = PSP_BOTH | PSP_BOTH_AB },
+	{ .type = AMD_FW_PSP_AMF_SRAM, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_AMF_DRAM, .inst = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_AMF_DRAM, .inst = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MFD_MPM, .inst = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MFD_MPM, .inst = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_FCFG_TABLE, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_AMF_WLAN, .inst = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_AMF_WLAN, .inst = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_AMF_WLAN, .inst = 2, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_AMF_WLAN, .inst = 3, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_AMF_MFD, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MPCCX, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MPCCX, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_LSDMA, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_C20_MP, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MINIMSMU, .inst = 0, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MINIMSMU, .inst = 1, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_MINIMSMU, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_GFXIMU_0, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_GFXIMU_0, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_GFXIMU_1, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_GFXIMU_1, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SRAM_FW_EXT, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_UMSMU, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_S3IMG, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_USBDP, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_USBSS, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_USB4, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_INVALID },
 };
 
 amd_fw_entry amd_fw_table[] = {
-	{ .type = AMD_FW_XHCI },
-	{ .type = AMD_FW_IMC },
-	{ .type = AMD_FW_GEC },
-	{ .type = AMD_FW_INVALID },
+	{ .type = AMD_FW_PSP_XHCI },
+	{ .type = AMD_FW_PSP_IMC },
+	{ .type = AMD_FW_PSP_GEC },
+	{ .type = AMD_FW_PSP_INVALID },
 };
 
 amd_bios_entry amd_bios_table[] = {
@@ -411,7 +411,7 @@ static void free_psp_firmware_filenames(amd_fw_entry *fw_table)
 {
 	amd_fw_entry *index;
 
-	for (index = fw_table; index->type != AMD_FW_INVALID; index++) {
+	for (index = fw_table; index->type != AMD_FW_PSP_INVALID; index++) {
 		if (index->filename) {
 			free(index->filename);
 			index->filename = NULL;
@@ -729,17 +729,17 @@ static void integrate_firmwares(context *ctx,
 
 	adjust_current_pointer(ctx, 0, BLOB_ALIGNMENT);
 
-	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+	for (i = 0; fw_table[i].type != AMD_FW_PSP_INVALID; i++) {
 		if (fw_table[i].filename != NULL) {
 			switch (fw_table[i].type) {
-			case AMD_FW_IMC:
+			case AMD_FW_PSP_IMC:
 				adjust_current_pointer(ctx, 0, 0x10000U);
 				romsig->imc_entry = RUN_CURRENT(*ctx);
 				break;
-			case AMD_FW_GEC:
+			case AMD_FW_PSP_GEC:
 				romsig->gec_entry = RUN_CURRENT(*ctx);
 				break;
-			case AMD_FW_XHCI:
+			case AMD_FW_PSP_XHCI:
 				romsig->xhci_entry = RUN_CURRENT(*ctx);
 				break;
 			default:
@@ -798,7 +798,7 @@ static void dump_blob_version(char *manifest_file, amd_fw_entry *fw_table)
 		return;
 	}
 
-	for (index = fw_table; index->type != AMD_FW_INVALID; index++) {
+	for (index = fw_table; index->type != AMD_FW_PSP_INVALID; index++) {
 		if (!(index->filename))
 			continue;
 
@@ -815,8 +815,8 @@ static void dump_psp_firmwares(amd_fw_entry *fw_table)
 	amd_fw_entry *index;
 
 	printf("PSP firmware components:\n");
-	for (index = fw_table; index->type != AMD_FW_INVALID; index++) {
-		if (index->type == AMD_PSP_FUSE_CHAIN)
+	for (index = fw_table; index->type != AMD_FW_PSP_INVALID; index++) {
+		if (index->type == AMD_FW_PSP_FUSE_CHAIN)
 			printf("  %2x: level=%x, subprog=%x, inst=%x\n",
 				index->type, index->level, index->subprog, index->inst);
 		else if (index->filename)
@@ -893,7 +893,7 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 	pspdir->entries[count].rsvd = 0;
 	if (ish != NULL) {
 		ish->pl2_location = BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
-		ish->boot_priority = ab == AMD_FW_RECOVERYAB_A ? 0xFFFFFFFF : 1;
+		ish->boot_priority = ab == AMD_FW_PSP_RECOVERYAB_A ? 0xFFFFFFFF : 1;
 		ish->update_retry_count = 2;
 		ish->glitch_retry_count = 0;
 		ish->psp_id = platform_get_psp_id(soc_id);
@@ -941,13 +941,13 @@ static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
 	if (recovery_ab) {
 		integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
-			AMD_FW_RECOVERYAB_A, cb_config->soc_id);
+			AMD_FW_PSP_RECOVERYAB_A, cb_config->soc_id);
 		if (pspdir2_b != NULL)
 			integrate_psp_ab(ctx, pspdir, pspdir2_b, ctx->ish_b_dir,
-				AMD_FW_RECOVERYAB_B, cb_config->soc_id);
+				AMD_FW_PSP_RECOVERYAB_B, cb_config->soc_id);
 		else
 			integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
-				AMD_FW_RECOVERYAB_B, cb_config->soc_id);
+				AMD_FW_PSP_RECOVERYAB_B, cb_config->soc_id);
 
 		/*
 		 * The PSP L1(B) can only be used on ISH platforms. On those platforms, there
@@ -958,7 +958,7 @@ static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 			copy_psp_header(ctx->pspdir_bak, ctx->pspdir);
 	} else if (pspdir2 != NULL) {
 		assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
-		pspdir->entries[count].type = AMD_FW_L2_PTR;
+		pspdir->entries[count].type = AMD_FW_PSP_L2_PTR;
 		pspdir->entries[count].subprog = 0;
 		pspdir->entries[count].rsvd = 0;
 		pspdir->entries[count].size = sizeof(pspdir2->header)
@@ -1016,13 +1016,13 @@ static psp_directory_table *integrate_psp_firmwares(context *ctx,
 	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
 	adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
 
-	for (i = 0, count = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+	for (i = 0, count = 0; fw_table[i].type != AMD_FW_PSP_INVALID; i++) {
 		if (!(fw_table[i].level & level))
 			continue;
 
 		assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
 
-		if (fw_table[i].type == AMD_TOKEN_UNLOCK) {
+		if (fw_table[i].type == AMD_FW_PSP_TOKEN_UNLOCK) {
 			if (!fw_table[i].other)
 				continue;
 			adjust_current_pointer(ctx, 0, ERASE_ALIGNMENT);
@@ -1034,7 +1034,7 @@ static psp_directory_table *integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].rsvd = 0;
 			adjust_current_pointer(ctx, 4096, 0x100U);
 			count++;
-		} else if (fw_table[i].type == AMD_PSP_FUSE_CHAIN) {
+		} else if (fw_table[i].type == AMD_FW_PSP_FUSE_CHAIN) {
 			pspdir->entries[count].type = fw_table[i].type;
 			pspdir->entries[count].subprog = fw_table[i].subprog;
 			pspdir->entries[count].rsvd = 0;
@@ -1072,7 +1072,7 @@ static psp_directory_table *integrate_psp_firmwares(context *ctx,
 
 			count++;
 		} else if (fw_table[i].type == AMD_FW_PSP_NVRAM ||
-			   fw_table[i].type == AMD_RPMC_NVRAM) {
+			   fw_table[i].type == AMD_FW_PSP_RPMC_NVRAM) {
 			if (fw_table[i].filename == NULL) {
 				if (fw_table[i].size == 0)
 					continue;
@@ -1108,7 +1108,7 @@ static psp_directory_table *integrate_psp_firmwares(context *ctx,
 				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
 
 			count++;
-		} else if (fw_table[i].type == AMD_FW_BIOS_TABLE) {
+		} else if (fw_table[i].type == AMD_FW_PSP_BIOS_TABLE) {
 			/* Updated after BHD table was written */
 			pspdir->entries[count].type = fw_table[i].type;
 			pspdir->entries[count].subprog = 0;
@@ -1304,10 +1304,10 @@ static void integrate_bios_levels(context *ctx, amd_cb_config *cb_config)
 
 	if (cb_config->recovery_ab) {
 		add_psp_firmware_entry(ctx, ctx->pspdir2, ctx->biosdir2,
-			AMD_FW_BIOS_TABLE, TABLE_L2_SIZE_MAX);
+			AMD_FW_PSP_BIOS_TABLE, TABLE_L2_SIZE_MAX);
 		if (ctx->pspdir2_b != NULL)
 			add_psp_firmware_entry(ctx, ctx->pspdir2_b,
-				ctx->biosdir2_b, AMD_FW_BIOS_TABLE,
+				ctx->biosdir2_b, AMD_FW_PSP_BIOS_TABLE,
 				TABLE_L2_SIZE_MAX);
 	} else if (ctx->biosdir2) {
 		current_table_save = ctx->current_table;

@@ -22,7 +22,7 @@ static const struct psp_fw_name_entry psp_fw_name_table[] = {
 	{ "PSPBTLDR_AB_STAGE1_FILE",		AMD_FW_PSP_BOOTLOADER,		0, 0 },
 	{ "PSPBTLDR_FILE",			AMD_FW_PSP_BOOTLOADER,		0, 0 },
 	{ "AMD_PUBKEY_FILE",			AMD_FW_PSP_PUBKEY,		0, 0 },
-	{ "AMD_FUSE_CHAIN",			AMD_PSP_FUSE_CHAIN,		0, 0 },
+	{ "AMD_FUSE_CHAIN",			AMD_FW_PSP_FUSE_CHAIN,		0, 0 },
 	{ "PSPRCVR_FILE",			AMD_FW_PSP_RECOVERY,		0, 0 },
 	{ "PUBSIGNEDKEY_FILE",			AMD_FW_PSP_RTM_PUBKEY,		0, 0 },
 	{ "PSPNVRAM_FILE",			AMD_FW_PSP_NVRAM,		0, 0 },
@@ -30,105 +30,105 @@ static const struct psp_fw_name_entry psp_fw_name_table[] = {
 	{ "PSPTRUSTLETS_FILE",			AMD_FW_PSP_TRUSTLETS,		0, 0 },
 	{ "PSPSECUREDEBUG_FILE",		AMD_FW_PSP_SECURED_DEBUG,	0, 0 },
 	{ "PSP_SMUFW1_SUB0_FILE",		AMD_FW_PSP_SMU_FIRMWARE,	0, 0 },
-	{ "PSP_HW_IPCFG_FILE_SUB0",		AMD_HW_IPCFG,			0, 0 },
-	{ "PSP_HW_IPCFG_FILE_SUB1",		AMD_HW_IPCFG,			1, 0 },
-	{ "PSP_HW_IPCFG_FILE_SUB2",		AMD_HW_IPCFG,			2, 0 },
+	{ "PSP_HW_IPCFG_FILE_SUB0",		AMD_FW_PSP_HW_IPCFG,			0, 0 },
+	{ "PSP_HW_IPCFG_FILE_SUB1",		AMD_FW_PSP_HW_IPCFG,			1, 0 },
+	{ "PSP_HW_IPCFG_FILE_SUB2",		AMD_FW_PSP_HW_IPCFG,			2, 0 },
 	{ "PSP_SMUFW1_SUB1_FILE",		AMD_FW_PSP_SMU_FIRMWARE,	1, 0 },
 	{ "PSP_SMUFW1_SUB2_FILE",		AMD_FW_PSP_SMU_FIRMWARE,	2, 0 },
 	{ "PSP_SMUFW2_SUB0_FILE",		AMD_FW_PSP_SMU_FIRMWARE2,	0, 0 },
 	{ "PSP_SMUFW2_SUB1_FILE",		AMD_FW_PSP_SMU_FIRMWARE2,	1, 0 },
 	{ "PSP_TEEIPKEY_FILE",			AMD_FW_PSP_TEEIPKEY,		0, 0 },
 	{ "PSP_SMUFW2_SUB2_FILE",		AMD_FW_PSP_SMU_FIRMWARE2,	2, 0 },
-	{ "PSP_BOOT_DRIVER_FILE",		AMD_BOOT_DRIVER,		0, 0 },
-	{ "PSP_SOC_DRIVER_FILE",		AMD_SOC_DRIVER,			0, 0 },
-	{ "PSP_DEBUG_DRIVER_FILE",		AMD_DEBUG_DRIVER,		0, 0 },
-	{ "PSP_INTERFACE_DRIVER_FILE",		AMD_INTERFACE_DRIVER,		0, 0 },
+	{ "PSP_BOOT_DRIVER_FILE",		AMD_FW_PSP_BOOT_DRIVER,		0, 0 },
+	{ "PSP_SOC_DRIVER_FILE",		AMD_FW_PSP_SOC_DRIVER,			0, 0 },
+	{ "PSP_DEBUG_DRIVER_FILE",		AMD_FW_PSP_DEBUG_DRIVER,		0, 0 },
+	{ "PSP_INTERFACE_DRIVER_FILE",		AMD_FW_PSP_INTERFACE_DRIVER,		0, 0 },
 	{ "PSP_SEC_DBG_KEY_FILE",		AMD_FW_PSP_SECURED_DEBUG,	0, 0 },
-	{ "PSP_SEC_DEBUG_FILE",			AMD_DEBUG_UNLOCK,		0, 0 },
-	{ "PSP_ABL0_FILE",			AMD_ABL0,			0, 0 },
-	{ "PSP_ABL1_FILE",			AMD_ABL1,			0, 0 },
-	{ "PSP_ABL2_FILE",			AMD_ABL2,			0, 0 },
-	{ "PSP_ABL3_FILE",			AMD_ABL3,			0, 0 },
-	{ "PSP_ABL4_FILE",			AMD_ABL4,			0, 0 },
-	{ "PSP_ABL5_FILE",			AMD_ABL5,			0, 0 },
-	{ "PSP_ABL6_FILE",			AMD_ABL6,			0, 0 },
-	{ "PSP_ABL7_FILE",			AMD_ABL7,			0, 0 },
+	{ "PSP_SEC_DEBUG_FILE",			AMD_FW_PSP_DEBUG_UNLOCK,		0, 0 },
+	{ "PSP_ABL0_FILE",			AMD_FW_PSP_ABL0,			0, 0 },
+	{ "PSP_ABL1_FILE",			AMD_FW_PSP_ABL1,			0, 0 },
+	{ "PSP_ABL2_FILE",			AMD_FW_PSP_ABL2,			0, 0 },
+	{ "PSP_ABL3_FILE",			AMD_FW_PSP_ABL3,			0, 0 },
+	{ "PSP_ABL4_FILE",			AMD_FW_PSP_ABL4,			0, 0 },
+	{ "PSP_ABL5_FILE",			AMD_FW_PSP_ABL5,			0, 0 },
+	{ "PSP_ABL6_FILE",			AMD_FW_PSP_ABL6,			0, 0 },
+	{ "PSP_ABL7_FILE",			AMD_FW_PSP_ABL7,			0, 0 },
 	{ "PSPSECUREOS_FILE",			AMD_FW_PSP_SECURED_OS,		0, 0 },
 	{ "TRUSTLETKEY_FILE",			AMD_FW_PSP_TRUSTLETKEY,		0, 0 },
-	{ "PSP_IKEK_FILE",			AMD_WRAPPED_IKEK,		0, 0 },
-	{ "PSP_SECG0_FILE",			AMD_SEC_GASKET,			0, 0 },
-	{ "PSP_SECG1_FILE",			AMD_SEC_GASKET,			1, 0 },
-	{ "PSP_SECG2_FILE",			AMD_SEC_GASKET,			2, 0 },
-	{ "PSP_MP2FW0_FILE",			AMD_MP2_FW,			0, 0 },
-	{ "PSP_MP2FW1_FILE",			AMD_MP2_FW,			1, 0 },
-	{ "PSP_MP2FW2_FILE",			AMD_MP2_FW,			2, 0 },
-	{ "PSP_C20MP_FILE",			AMD_FW_C20_MP,			0, 0 },
-	{ "AMF_SRAM_FILE",			AMD_FW_AMF_SRAM,		0, 0 },
-	{ "AMF_DRAM_FILE_INS0",			AMD_FW_AMF_DRAM,		0, 0 },
-	{ "AMF_DRAM_FILE_INS1",			AMD_FW_AMF_DRAM,		0, 1 },
-	{ "MFD_MPM_TEE_INS0",			AMD_FW_MFD_MPM,			0, 0 },
-	{ "MFD_MPM_TEE_INS1",			AMD_FW_MFD_MPM,			0, 1 },
-	{ "AMF_WLAN_FILE_INS0",			AMD_FW_AMF_WLAN,		0, 0 },
-	{ "AMF_WLAN_FILE_INS1",			AMD_FW_AMF_WLAN,		0, 1 },
-	{ "AMF_WLAN_FILE_INS2",			AMD_FW_AMF_WLAN,		0, 2 },
-	{ "AMF_WLAN_FILE_INS3",			AMD_FW_AMF_WLAN,		0, 3 },
-	{ "AMF_MFD_FILE",			AMD_FW_AMF_MFD,			0, 0 },
-	{ "MPCCX_FILE",				AMD_FW_MPCCX,			0, 0 },
-	{ "MPCCX_FILE_SUB1_FILE",		AMD_FW_MPCCX,			1, 0 },
-	{ "LSDMA_FILE",				AMD_FW_LSDMA,			0, 0 },
-	{ "MINIMSMU_FILE",			AMD_FW_MINIMSMU,		0, 0 },
-	{ "MINIMSMU_FILE_SUB1_FILE",		AMD_FW_MINIMSMU,		1, 0 },
-	{ "PSP_GFX_IMMU_FILE_0",		AMD_FW_GFXIMU_0,		0, 0 },
-	{ "PSP_GFX_IMMU_FILE_0_SUB1",		AMD_FW_GFXIMU_0,		1, 0 },
-	{ "PSP_GFX_IMMU_FILE_1",		AMD_FW_GFXIMU_1,		0, 0 },
-	{ "PSP_GFX_IMMU_FILE_1_SUB1",		AMD_FW_GFXIMU_1,		1, 0 },
-	{ "MINIMSMU_FILE_INS1",			AMD_FW_MINIMSMU,		0, 1 },
-	{ "SRAM_FW_EXT_FILE",			AMD_FW_SRAM_FW_EXT,		0, 0 },
-	{ "PSP_DRIVERS_FILE",			AMD_DRIVER_ENTRIES,		0, 0 },
-	{ "PSP_S0I3_FILE",			AMD_S0I3_DRIVER,		0, 0 },
-	{ "AMD_DRIVER_ENTRIES",			AMD_DRIVER_ENTRIES,		0, 0 },
-	{ "VBIOS_BTLOADER_FILE",		AMD_VBIOS_BTLOADER,		0, 0 },
-	{ "SECURE_POLICY_L1_FILE",		AMD_FW_TOS_SEC_POLICY,		0, 0 },
-	{ "UNIFIEDUSB_FILE",			AMD_FW_USB_PHY,			0, 0 },
-	{ "DRTMTA_FILE",			AMD_FW_DRTM_TA,			0, 0 },
-	{ "KEYDBBL_FILE",			AMD_FW_KEYDB_BL,		0, 0 },
-	{ "KEYDB_TOS_FILE",			AMD_FW_KEYDB_TOS,		0, 0 },
-	{ "SPL_TABLE_FILE",			AMD_FW_SPL,			0, 0 },
-	{ "DMCUERAMDCN21_FILE",			AMD_FW_DMCU_ERAM,		0, 0 },
-	{ "DMCUINTVECTORSDCN21_FILE",		AMD_FW_DMCU_ISR,		0, 0 },
-	{ "MSMU_FILE",				AMD_FW_MSMU,			0, 0 },
-	{ "MSMU_FILE_SUB1_FILE",		AMD_FW_MSMU,			1, 0 },
-	{ "DMCUB_FILE",				AMD_FW_DMCUB,			0, 0 },
-	{ "SPIROM_CONFIG_FILE",			AMD_FW_SPIROM_CFG,		0, 0 },
-	{ "MPIO_FILE",				AMD_FW_MPIO,			0, 0 },
-	{ "TPMLITE_FILE",			AMD_FW_TPMLITE,			0, 0 },
-	{ "PSP_KVM_ENGINE_DUMMY_FILE",		AMD_FW_KVM_IMAGE,		0, 0 },
-	{ "RPMC_FILE",				AMD_RPMC_NVRAM,			0, 0 },
+	{ "PSP_IKEK_FILE",			AMD_FW_PSP_WRAPPED_IKEK,		0, 0 },
+	{ "PSP_SECG0_FILE",			AMD_FW_PSP_SEC_GASKET,			0, 0 },
+	{ "PSP_SECG1_FILE",			AMD_FW_PSP_SEC_GASKET,			1, 0 },
+	{ "PSP_SECG2_FILE",			AMD_FW_PSP_SEC_GASKET,			2, 0 },
+	{ "PSP_MP2FW0_FILE",			AMD_FW_PSP_MP2_FW,			0, 0 },
+	{ "PSP_MP2FW1_FILE",			AMD_FW_PSP_MP2_FW,			1, 0 },
+	{ "PSP_MP2FW2_FILE",			AMD_FW_PSP_MP2_FW,			2, 0 },
+	{ "PSP_C20MP_FILE",			AMD_FW_PSP_C20_MP,			0, 0 },
+	{ "AMF_SRAM_FILE",			AMD_FW_PSP_AMF_SRAM,		0, 0 },
+	{ "AMF_DRAM_FILE_INS0",			AMD_FW_PSP_AMF_DRAM,		0, 0 },
+	{ "AMF_DRAM_FILE_INS1",			AMD_FW_PSP_AMF_DRAM,		0, 1 },
+	{ "MFD_MPM_TEE_INS0",			AMD_FW_PSP_MFD_MPM,			0, 0 },
+	{ "MFD_MPM_TEE_INS1",			AMD_FW_PSP_MFD_MPM,			0, 1 },
+	{ "AMF_WLAN_FILE_INS0",			AMD_FW_PSP_AMF_WLAN,		0, 0 },
+	{ "AMF_WLAN_FILE_INS1",			AMD_FW_PSP_AMF_WLAN,		0, 1 },
+	{ "AMF_WLAN_FILE_INS2",			AMD_FW_PSP_AMF_WLAN,		0, 2 },
+	{ "AMF_WLAN_FILE_INS3",			AMD_FW_PSP_AMF_WLAN,		0, 3 },
+	{ "AMF_MFD_FILE",			AMD_FW_PSP_AMF_MFD,			0, 0 },
+	{ "MPCCX_FILE",				AMD_FW_PSP_MPCCX,			0, 0 },
+	{ "MPCCX_FILE_SUB1_FILE",		AMD_FW_PSP_MPCCX,			1, 0 },
+	{ "LSDMA_FILE",				AMD_FW_PSP_LSDMA,			0, 0 },
+	{ "MINIMSMU_FILE",			AMD_FW_PSP_MINIMSMU,		0, 0 },
+	{ "MINIMSMU_FILE_SUB1_FILE",		AMD_FW_PSP_MINIMSMU,		1, 0 },
+	{ "PSP_GFX_IMMU_FILE_0",		AMD_FW_PSP_GFXIMU_0,		0, 0 },
+	{ "PSP_GFX_IMMU_FILE_0_SUB1",		AMD_FW_PSP_GFXIMU_0,		1, 0 },
+	{ "PSP_GFX_IMMU_FILE_1",		AMD_FW_PSP_GFXIMU_1,		0, 0 },
+	{ "PSP_GFX_IMMU_FILE_1_SUB1",		AMD_FW_PSP_GFXIMU_1,		1, 0 },
+	{ "MINIMSMU_FILE_INS1",			AMD_FW_PSP_MINIMSMU,		0, 1 },
+	{ "SRAM_FW_EXT_FILE",			AMD_FW_PSP_SRAM_FW_EXT,		0, 0 },
+	{ "PSP_DRIVERS_FILE",			AMD_FW_PSP_DRIVER_ENTRIES,		0, 0 },
+	{ "PSP_S0I3_FILE",			AMD_FW_PSP_S0I3_DRIVER,		0, 0 },
+	{ "AMD_DRIVER_ENTRIES",			AMD_FW_PSP_DRIVER_ENTRIES,		0, 0 },
+	{ "VBIOS_BTLOADER_FILE",		AMD_FW_PSP_VBIOS_BTLOADER,		0, 0 },
+	{ "SECURE_POLICY_L1_FILE",		AMD_FW_PSP_TOS_SEC_POLICY,		0, 0 },
+	{ "UNIFIEDUSB_FILE",			AMD_FW_PSP_USB_PHY,			0, 0 },
+	{ "DRTMTA_FILE",			AMD_FW_PSP_DRTM_TA,			0, 0 },
+	{ "KEYDBBL_FILE",			AMD_FW_PSP_KEYDB_BL,		0, 0 },
+	{ "KEYDB_TOS_FILE",			AMD_FW_PSP_KEYDB_TOS,		0, 0 },
+	{ "SPL_TABLE_FILE",			AMD_FW_PSP_SPL,			0, 0 },
+	{ "DMCUERAMDCN21_FILE",			AMD_FW_PSP_DMCU_ERAM,		0, 0 },
+	{ "DMCUINTVECTORSDCN21_FILE",		AMD_FW_PSP_DMCU_ISR,		0, 0 },
+	{ "MSMU_FILE",				AMD_FW_PSP_MSMU,			0, 0 },
+	{ "MSMU_FILE_SUB1_FILE",		AMD_FW_PSP_MSMU,			1, 0 },
+	{ "DMCUB_FILE",				AMD_FW_PSP_DMCUB,			0, 0 },
+	{ "SPIROM_CONFIG_FILE",			AMD_FW_PSP_SPIROM_CFG,		0, 0 },
+	{ "MPIO_FILE",				AMD_FW_PSP_MPIO,			0, 0 },
+	{ "TPMLITE_FILE",			AMD_FW_PSP_TPMLITE,			0, 0 },
+	{ "PSP_KVM_ENGINE_DUMMY_FILE",		AMD_FW_PSP_KVM_IMAGE,		0, 0 },
+	{ "RPMC_FILE",				AMD_FW_PSP_RPMC_NVRAM,			0, 0 },
 	{ "PSPBTLDR_AB_FILE",			AMD_FW_PSP_BOOTLOADER_AB,	0, 0 },
-	{ "TA_IKEK_FILE",			AMD_TA_IKEK,			0, 0 },
-	{ "SFDR_FILE",				AMD_FW_SFDR,			0, 0 },
-	{ "UMSMU_FILE",				AMD_FW_UMSMU,			0, 0 },
-	{ "PSP_S3_IMG",				AMD_FW_S3IMG,			0, 0 },
-	{ "PSP_USB_DP",				AMD_FW_USBDP,			0, 0 },
-	{ "PSP_USB_SS",				AMD_FW_USBSS,			0, 0 },
-	{ "PSP_USB_4",				AMD_FW_USB4,			0, 0 },
-	{ "PSP_OEM_ABL_KEY_FILE",		AMD_FW_ABL_PUBKEY,		0, 0 },
-	{ "PSP_MP5FW_SUB0_FILE",		AMD_FW_MP5,			0, 0 },
-	{ "PSP_MP5FW_SUB1_FILE",		AMD_FW_MP5,			1, 0 },
-	{ "PSP_MP5FW_SUB2_FILE",		AMD_FW_MP5,			2, 0 },
-	{ "PSP_DXIOFW_FILE",			AMD_FW_DXIO,			0, 0 },
-	{ "PSP_MPIOFW_FILE",			AMD_FW_MPIO,			0, 0 },
-	{ "PSP_RIB_FILE_SUB0",			AMD_RIB,			0, 0 },
-	{ "PSP_RIB_FILE_SUB1",			AMD_RIB,			1, 0 },
-	{ "PSP_RIB_FILE_SUB2",			AMD_RIB,			2, 0 },
-	{ "FEATURE_TABLE_FILE",			AMD_FW_FCFG_TABLE,		0, 0 },
-	{ "PSP_MPDMATFFW_FILE",			AMD_FW_MPDMA_TF,		0, 0 },
-	{ "PSP_GMI3PHYFW_FILE",			AMD_FW_GMI3_PHY,		0, 0 },
-	{ "PSP_MPDMAPMFW_FILE",			AMD_FW_MPDMA_PM,		0, 0 },
-	{ "PSP_TOKEN_UNLOCK_FILE",		AMD_TOKEN_UNLOCK,		0, 0 },
-	{ "SEV_DATA_FILE",			AMD_SEV_DATA,			0, 0 },
-	{ "SEV_CODE_FILE",			AMD_SEV_CODE,			0, 0 },
-	{ NULL,					AMD_FW_INVALID,			0, 0 },
+	{ "TA_IKEK_FILE",			AMD_FW_PSP_TA_IKEK,			0, 0 },
+	{ "SFDR_FILE",				AMD_FW_PSP_SFDR,			0, 0 },
+	{ "UMSMU_FILE",				AMD_FW_PSP_UMSMU,			0, 0 },
+	{ "PSP_S3_IMG",				AMD_FW_PSP_S3IMG,			0, 0 },
+	{ "PSP_USB_DP",				AMD_FW_PSP_USBDP,			0, 0 },
+	{ "PSP_USB_SS",				AMD_FW_PSP_USBSS,			0, 0 },
+	{ "PSP_USB_4",				AMD_FW_PSP_USB4,			0, 0 },
+	{ "PSP_OEM_ABL_KEY_FILE",		AMD_FW_PSP_ABL_PUBKEY,		0, 0 },
+	{ "PSP_MP5FW_SUB0_FILE",		AMD_FW_PSP_MP5,			0, 0 },
+	{ "PSP_MP5FW_SUB1_FILE",		AMD_FW_PSP_MP5,			1, 0 },
+	{ "PSP_MP5FW_SUB2_FILE",		AMD_FW_PSP_MP5,			2, 0 },
+	{ "PSP_DXIOFW_FILE",			AMD_FW_PSP_DXIO,			0, 0 },
+	{ "PSP_MPIOFW_FILE",			AMD_FW_PSP_MPIO,			0, 0 },
+	{ "PSP_RIB_FILE_SUB0",			AMD_FW_PSP_RIB,			0, 0 },
+	{ "PSP_RIB_FILE_SUB1",			AMD_FW_PSP_RIB,			1, 0 },
+	{ "PSP_RIB_FILE_SUB2",			AMD_FW_PSP_RIB,			2, 0 },
+	{ "FEATURE_TABLE_FILE",			AMD_FW_PSP_FCFG_TABLE,		0, 0 },
+	{ "PSP_MPDMATFFW_FILE",			AMD_FW_PSP_MPDMA_TF,		0, 0 },
+	{ "PSP_GMI3PHYFW_FILE",			AMD_FW_PSP_GMI3_PHY,		0, 0 },
+	{ "PSP_MPDMAPMFW_FILE",			AMD_FW_PSP_MPDMA_PM,		0, 0 },
+	{ "PSP_TOKEN_UNLOCK_FILE",		AMD_FW_PSP_TOKEN_UNLOCK,		0, 0 },
+	{ "SEV_DATA_FILE",			AMD_FW_PSP_SEV_DATA,			0, 0 },
+	{ "SEV_CODE_FILE",			AMD_FW_PSP_SEV_CODE,			0, 0 },
+	{ NULL,					AMD_FW_PSP_INVALID,			0, 0 },
 };
 
 static amd_fw_type psp_fw_type_lookup(const char *fw_name, uint8_t *subprog, uint8_t *instance)
@@ -146,7 +146,7 @@ static amd_fw_type psp_fw_type_lookup(const char *fw_name, uint8_t *subprog, uin
 
 	*subprog = 0;
 	*instance = 0;
-	return AMD_FW_INVALID;
+	return AMD_FW_PSP_INVALID;
 }
 
 /* TODO: a empty line does not matched. */
@@ -265,7 +265,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	uint8_t instance;
 
 	fw_type = psp_fw_type_lookup(fw_name, &subprog, &instance);
-	if (fw_type == AMD_FW_INVALID)
+	if (fw_type == AMD_FW_PSP_INVALID)
 		return 0;
 
 	/* Apply quirks based on cb_config. Returning 1 means skip the entry. */
@@ -288,7 +288,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		if (strcmp(fw_name, "PSP_SEC_DBG_KEY_FILE") == 0 &&
 		    !cb_config->unlock_secure)
 			return 1;
-	} else if (fw_type == AMD_DEBUG_UNLOCK) {
+	} else if (fw_type == AMD_FW_PSP_DEBUG_UNLOCK) {
 		if (!cb_config->unlock_secure)
 			return 1;
 	} else if (fw_type == AMD_FW_PSP_SECURED_OS) {
@@ -300,25 +300,25 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (fw_type == AMD_FW_PSP_TRUSTLETS) {
 		if (!cb_config->use_secureos)
 			return 1;
-	} else if (fw_type == AMD_MP2_FW) {
+	} else if (fw_type == AMD_FW_PSP_MP2_FW) {
 		if (!cb_config->load_mp2_fw)
 			return 1;
-	} else if (fw_type == AMD_S0I3_DRIVER) {
+	} else if (fw_type == AMD_FW_PSP_S0I3_DRIVER) {
 		if (!cb_config->s0i3)
 			return 1;
-	} else if (fw_type == AMD_FW_SPL) {
+	} else if (fw_type == AMD_FW_PSP_SPL) {
 		if (cb_config->have_mb_spl)
 			return 1;
 	}
 
 	/* Search and fill the filename */
 	psp_tableptr = &amd_psp_fw_table[0];
-	while (psp_tableptr->type != AMD_FW_INVALID) {
+	while (psp_tableptr->type != AMD_FW_PSP_INVALID) {
 		/* instance are not used in PSP table */
 		if (psp_tableptr->type == fw_type &&
 		    psp_tableptr->subprog == subprog &&
 		    psp_tableptr->inst  == instance) {
-			if (psp_tableptr->type != AMD_PSP_FUSE_CHAIN) {
+			if (psp_tableptr->type != AMD_FW_PSP_FUSE_CHAIN) {
 				psp_tableptr->filename = filename;
 				psp_tableptr->hash_tbl_id = hash_tbl_id;
 				psp_tableptr->fwid_type = fwid_type;

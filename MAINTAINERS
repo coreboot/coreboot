@@ -379,7 +379,7 @@ S:	Maintained
 F:	src/mainboard/google/volteer/
 
 GOOGLE MAINBOARDS (Intel-based, legacy/inactive)
-M:	Matt DeVillier <MrChromebox@gmail.com>
+M:	Matt DeVillier <matt.devillier@gmail.com>
 S:	Maintained
 F:	src/mainboard/google/auron/
 F:	src/mainboard/google/beltino/
@@ -606,7 +606,7 @@ F:	src/mainboard/roda/
 
 
 SAMSUNG CHROMEOS MAINBOARDS
-M:	Matt DeVillier <MrChromebox@gmail.com>
+M:	Matt DeVillier <matt.devillier@gmail.com>
 S:	Maintained
 F:	src/mainboard/samsung/lumpy/
 F:	src/mainboard/samsung/stumpy/
@@ -1237,7 +1237,7 @@ M:	Felix Singer <felixsinger@posteo.net>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Angel Pons <th3fanbus@gmail.com>
 M:	Martin Roth <gaumless@gmail.com>
-M:	Matt DeVillier <MrChromebox@gmail.com>
+M:	Matt DeVillier <matt.devillier@gmail.com>
 S:	Maintained
 F:	Documentation/releases/
 F:	util/release/

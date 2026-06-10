@@ -1338,10 +1338,11 @@ static void integrate_bios_levels(context *ctx, amd_cb_config *cb_config)
 		ctx->current_table = current_table_save;
 	}
 }
-static void integrate_bios_firmwares(context *ctx,
-					amd_bios_entry *fw_table,
-					uint32_t cookie,
-					amd_cb_config *cb_config)
+
+static bios_directory_table *integrate_bios_firmwares(context *ctx,
+						      amd_bios_entry *fw_table,
+						      uint32_t cookie,
+						      amd_cb_config *cb_config)
 {
 	ssize_t bytes;
 	unsigned int i, count;
@@ -1353,15 +1354,6 @@ static void integrate_bios_firmwares(context *ctx,
 	bios_directory_table *biosdir;
 
 	biosdir = new_bios_dir(ctx, cb_config, cookie);
-
-	if (cookie == BHD_COOKIE)
-		ctx->biosdir = biosdir;
-	else if (cookie == BHDL2_COOKIE) {
-		if (ctx->biosdir2 == NULL)
-			ctx->biosdir2 = biosdir;
-		else if (ctx->biosdir2_b == NULL)
-			ctx->biosdir2_b = biosdir;
-	}
 
 	/* This function can create a primary table, a secondary table, or a
 	 * flattened table which contains all applicable types.  These if-else
@@ -1587,6 +1579,7 @@ static void integrate_bios_firmwares(context *ctx,
 
 	fill_dir_header(biosdir, count, ctx);
 	ctx->current_table = current_table_save;
+	return biosdir;
 }
 
 static int integrate_efs_table(context *ctx, amd_cb_config *cb_config)
@@ -1808,8 +1801,8 @@ int main(int argc, char **argv)
 		/* PSP L2 & BIOS L2 (if AB recovery) */
 		ctx.pspdir2 = integrate_psp_firmwares(&ctx, amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 		if (cb_config.recovery_ab) {
-			integrate_bios_firmwares(&ctx, amd_bios_table, BHDL2_COOKIE,
-						 &cb_config);
+			ctx.biosdir2 = integrate_bios_firmwares(&ctx, amd_bios_table, BHDL2_COOKIE,
+								&cb_config);
 			ctx.current_a_pointer = ctx.current;
 
 			if (!cb_config.recovery_ab_single_copy) {
@@ -1818,8 +1811,8 @@ int main(int argc, char **argv)
 
 				ctx.pspdir2_b = integrate_psp_firmwares(&ctx, amd_psp_fw_table, PSPL2_COOKIE,
 							&cb_config);
-				integrate_bios_firmwares(&ctx, amd_bios_table, BHDL2_COOKIE,
-							 &cb_config);
+				ctx.biosdir2_b = integrate_bios_firmwares(&ctx, amd_bios_table, BHDL2_COOKIE,
+									  &cb_config);
 				ctx.current_b_pointer = ctx.current;
 			}
 			integrate_bios_levels(&ctx, &cb_config);
@@ -1841,12 +1834,12 @@ int main(int argc, char **argv)
 
 	if (have_bios_tables(amd_bios_table) && !cb_config.recovery_ab) {
 		if (platform_is_multi_level(cb_config.soc_id)) {
-			integrate_bios_firmwares(&ctx, amd_bios_table, BHD_COOKIE, &cb_config);
-			integrate_bios_firmwares(&ctx, amd_bios_table, BHDL2_COOKIE, &cb_config);
+			ctx.biosdir = integrate_bios_firmwares(&ctx, amd_bios_table, BHD_COOKIE, &cb_config);
+			ctx.biosdir2 = integrate_bios_firmwares(&ctx, amd_bios_table, BHDL2_COOKIE, &cb_config);
 			integrate_bios_levels(&ctx, &cb_config);
 		} else {
 			/* flat: BHD1 cookie and no pointer to 2nd table */
-			integrate_bios_firmwares(&ctx, amd_bios_table, BHD_COOKIE, &cb_config);
+			ctx.biosdir = integrate_bios_firmwares(&ctx, amd_bios_table, BHD_COOKIE, &cb_config);
 		}
 
 		fill_bios_directory_to_efs(ctx.amd_romsig_ptr, ctx.biosdir, &ctx, &cb_config);

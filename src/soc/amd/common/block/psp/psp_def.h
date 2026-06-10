@@ -242,11 +242,6 @@ int psp_ab_recovery_set_bootpartition(const uint32_t partition);
  */
 int psp_ab_recovery_get_bootpartition(void);
 
-/* psp_ab_recovery_toggle_bootpartition - Toggle active partition on next boot.
- * @return 0 on success
- */
-int psp_ab_recovery_toggle_bootpartition(void);
-
 struct mbox_rom_armor_flash_command;
 /*
  * psp_rom_armor_spi_transaction - Send PSP ROM Armor SPI transaction command to PSP firmware

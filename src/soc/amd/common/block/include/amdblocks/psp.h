@@ -126,4 +126,9 @@ uint32_t rom_armor_exec(uint8_t command, void *param);
 /* Region device accessing the ROM through APMC SMI handler */
 extern const struct region_device rom_armor_apm_call_rw;
 
+/* psp_ab_recovery_toggle_bootpartition - Toggle active partition on next boot.
+ * @return 0 on success
+ */
+int psp_ab_recovery_toggle_bootpartition(void);
+
 #endif /* AMD_BLOCK_PSP_H */

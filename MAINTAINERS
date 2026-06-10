@@ -339,6 +339,7 @@ M:	Kapil Porwal <kapilporwal@google.com>
 M:	Jakub Czapiga <czapiga@google.com>
 M:	Eran Mitrani <mitrani@google.com>
 M:	Dinesh Gehlot <digehlot@google.com>
+M:	Matt DeVillier <matt.devillier@gmail.com>
 S:	Maintained
 F:	src/mainboard/google/rex/
 
@@ -349,6 +350,7 @@ M:	Eric Lai <ericllai@google.com>
 M:	Kapil Porwal <kapilporwal@google.com>
 M:	Dinesh Gehlot <digehlot@google.com>
 M:	Jayvik Desai <jayvik@google.com>
+M:	Matt DeVillier <matt.devillier@gmail.com>
 S:	Maintained
 F:	src/mainboard/google/brya/
 
@@ -364,6 +366,7 @@ F:	src/mainboard/google/fatcat/
 GOOGLE HATCH MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
 M:	Nick Vaccaro <nvaccaro@chromium.org>
+M:	Matt DeVillier <matt.devillier@gmail.com>
 S:	Maintained
 F:	src/mainboard/google/hatch/
 
@@ -375,6 +378,7 @@ F:	src/mainboard/google/ocelot/
 
 GOOGLE VOLTEER MAINBOARDS
 M:	Nick Vaccaro <nvaccaro@chromium.org>
+M:	Matt DeVillier <matt.devillier@gmail.com>
 S:	Maintained
 F:	src/mainboard/google/volteer/
 

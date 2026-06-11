@@ -138,7 +138,7 @@ Device (BAT0)
 	})
 	Method (_BST, 0, NotSerialized)
 	{
-		PKG1[0] = (ECRD(RefOf(B1ST)) & 0x07)
+		PKG1[0] = (ECRD(RefOf(B1ST)) & 0x0f)
 		PKG1[1] = ECRD(RefOf(B1PR))
 
 		PKG1[2] = 0xffffffff

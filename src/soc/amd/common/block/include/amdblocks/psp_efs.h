@@ -10,17 +10,6 @@
 
 #define EMBEDDED_FW_SIGNATURE			0x55aa55aa
 
-#if CONFIG(SOC_AMD_STONEYRIDGE)
-  #define SPI_MODE_FIELD spi_readmode_f15_mod_60_6f
-  #define SPI_SPEED_FIELD fast_speed_new_f15_mod_60_6f
-#elif CONFIG(SOC_AMD_PICASSO)
-  #define SPI_MODE_FIELD spi_readmode_f17_mod_00_2f
-  #define SPI_SPEED_FIELD  spi_fastspeed_f17_mod_00_2f
-#elif CONFIG(SOC_AMD_CEZANNE) | CONFIG(SOC_AMD_MENDOCINO)
-  #define SPI_MODE_FIELD spi_readmode_f17_mod_30_3f
-  #define SPI_SPEED_FIELD spi_fastspeed_f17_mod_30_3f
-#endif
-
 struct second_gen_efs { /* todo: expand for Server products */
 	uint32_t gen:1; /* Client products only use bit 0 */
 	uint32_t reserved:31;

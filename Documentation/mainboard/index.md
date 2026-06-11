@@ -119,6 +119,13 @@ FBG-1701 <facebook/fbg1701.md>
 Monolith <facebook/monolith.md>
 ```
 
+## Framework
+
+```{toctree}
+:maxdepth: 1
+
+Laptop 13 Intel Core Ultra Series 1 (Marigold) <framework/marigold.md>
+```
 ## Foxconn
 
 ```{toctree}

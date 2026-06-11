@@ -30,7 +30,7 @@ struct embedded_firmware {
 	uint32_t bios2_entry;
 	struct second_gen_efs efs_gen;
 	uint32_t bios3_entry;
-	uint32_t reserved_2Ch;
+	uint32_t psp_bak_directory;
 	uint32_t promontory_fw_ptr;
 	uint32_t lp_promontory_fw_ptr;
 	uint32_t reserved_38h;

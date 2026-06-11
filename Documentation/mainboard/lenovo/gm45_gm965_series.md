@@ -1,4 +1,4 @@
-# Lenovo X200 / T400 / T500 / X301 common
+# Lenovo X200 / T400 / T500 / X301 / X61 common
 
 These models are sold with either 8 MiB or 4 MiB flash chip. You can identify
 the chip in your machine through flashrom:
@@ -26,7 +26,7 @@ touch any other regions:
    ``gbe`` region), so the process would be a little different for that model.
 ```
 
-On Montevina machines it's possible to disable ME and remove its firmware from
+On these machines it's possible to disable ME and remove its firmware from
 SPI flash by modifying the flash descriptor. This also makes it possible to use
 the flash region the ME used for `bios` region, allowing for much larger
 payloads.

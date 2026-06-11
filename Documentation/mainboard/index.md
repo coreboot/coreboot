@@ -205,12 +205,12 @@ M920 Tiny <lenovo/m920q.md>
 vboot <lenovo/vboot.md>
 ```
 
-### GM45 series
+### GM45 / GM965 series
 
 ```{toctree}
 :maxdepth: 1
 
-X200 / T400 / T500 / X301 common <lenovo/montevina_series.md>
+X200 / T400 / T500 / X301 / X61 common <lenovo/gm45_gm965_series.md>
 X301 <lenovo/x301.md>
 ```
 

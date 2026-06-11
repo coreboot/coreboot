@@ -100,10 +100,10 @@ static uint32_t nb_max_chan_capacity_mib(const uint32_t capid0_a)
 static void setup_sdram_meminfo(ramctr_timing *ctrl)
 {
 	int channel, slot;
-	const u16 ddr_freq = (1000 << 8) / ctrl->tCK;
+	const u16 ddr_clock_mhz = NS2MHZ_DIV256 / ctrl->tCK;
 
 	FOR_ALL_CHANNELS for (slot = 0; slot < NUM_SLOTS; slot++) {
-		enum cb_err ret = spd_add_smbios17(channel, slot, ddr_freq,
+		enum cb_err ret = spd_add_smbios17(channel, slot, ddr_clock_mhz,
 					&ctrl->info.dimm[channel][slot]);
 		if (ret != CB_SUCCESS)
 			printk(BIOS_ERR, "RAMINIT: Failed to add SMBIOS17\n");

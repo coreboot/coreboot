@@ -4,10 +4,8 @@
 - Birman for Phoenix SoC using FSP
 - Birman for Phoenix SoC using openSIL
 - Birman for Glinda SoC
-- BirmanPlus for Phoenix SoC
-- BirmanPlus for Glinda SoC
 - Chausie
-- Crater for Renoir SoC
+- Crater for V2000A SoC
 - Majolica
 - Mayan for Phoenix SoC
 
@@ -26,6 +24,8 @@
 - Asurada
 - Hayato (ASUS Chromebook Flip CM3 (CM3200))
 - Spherion (Acer Chromebook 514 (CB514-2H, CB514-2HT))
+- Atria
+- Penghu
 - Auron_Paine (Acer C740 Chromebook)
 - Auron_Yuna (Acer Chromebook 15 (C910/CB5-531))
 - Buddy (Acer Chromebase 24)
@@ -65,6 +65,7 @@
 - Constitution (Google Meet Series Two)
 - Crota (Multiple devices - See help text)
 - Dirks (Acer Chromebox Mini CXM2 (TWL))
+- Dirkson
 - Dochi (Acer Chromebook Plus Spin 514)
 - Domika (Multiple devices - See help text)
 - Felwinter (ASUS Chromebook Flip CX5(CX5601))
@@ -134,6 +135,9 @@
 - Epic
 - Pujjocento
 - Butterfly (HP Pavilion Chromebook 14)
+- Calypso
+- Mensa
+- C1nv
 - Cherry
 - Dojo (HP Chromebook x360 (13b-ca0002sa))
 - Tomato (Acer Chromebook Spin 513 (CP513-2H))
@@ -330,6 +334,8 @@
 - Mace
 - Obiwan
 - Padme
+- R2d2
+- Sheev
 - Skywalker
 - Tarkin
 - Vader
@@ -469,6 +475,7 @@
 - ThinkPad X230s
 - ThinkPad X230 eDP Mod (2K/FHD)
 - ThinkPad X60 / X60s / X60t
+- ThinkPad X61 / X61s
 
 ## MSI
 - PRO Z690-A (WIFI) DDR4

@@ -5,8 +5,6 @@
  * connector types connected to the SOC.
  */
 
-/* TODO: Update for Glinda */
-
 #ifndef PI_PLATFORM_DESCRIPTORS_H
 #define PI_PLATFORM_DESCRIPTORS_H
 

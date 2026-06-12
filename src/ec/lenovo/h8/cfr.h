@@ -47,16 +47,33 @@ static const struct sm_object uwb = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
+enum {
+	H8_SECONDARY_BATTERY,
+	H8_PRIMARY_BATTERY,
+};
+
+/* Battery charge priority */
+static const struct sm_object first_battery = SM_DECLARE_ENUM({
+	.opt_name	= "first_battery",
+	.ui_name	= "Battery Charge Priority",
+	.ui_helptext	= "Select which battery to charge first.",
+	.default_value	= H8_PRIMARY_BATTERY,
+	.values		= (const struct sm_enum_value[]) {
+				{ "Secondary", H8_SECONDARY_BATTERY	},
+				{ "Primary",   H8_PRIMARY_BATTERY	},
+				SM_ENUM_VALUE_END			},
+});
+
 /* Volume control */
-static const struct sm_object volume = SM_DECLARE_ENUM({
+static const struct sm_object volume = SM_DECLARE_NUMBER({
 	.opt_name	= "volume",
 	.ui_name	= "Volume",
-	.ui_helptext	= "TBD",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",	0	},
-				{ "Enabled",	1	},
-				SM_ENUM_VALUE_END	},
+	.ui_helptext	= "EC volume register value to restore at boot.",
+	.default_value	= 3,
+	.min		= 0,
+	.max		= 0xff,
+	.step		= 1,
+	.display_flags	= CFR_NUM_OPT_DISPFLAG_HEX,
 });
 
 /* WLAN */

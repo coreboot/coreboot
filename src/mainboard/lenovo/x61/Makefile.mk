@@ -12,4 +12,4 @@ romstage-y += gpio.c
 ramstage-y += gpio.c
 bootblock-y += early_init.c
 romstage-y += early_init.c
-#romstage-y += romstage.c
+all-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c

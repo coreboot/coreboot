@@ -74,6 +74,7 @@ const char *soc_acpi_name(const struct device *dev)
 
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN_ROOT:		return "MCHC";
+	case PCI_DEVFN_DPTF:		return "TCPU";
 	case PCI_DEVFN_IGD:		return "GFX0";
 	case PCI_DEVFN_TCSS_XHCI:	return "TXHC";
 	case PCI_DEVFN_TCSS_XDCI:	return "TXDC";

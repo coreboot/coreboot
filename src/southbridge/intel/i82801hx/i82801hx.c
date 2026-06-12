@@ -34,6 +34,8 @@
 #include "chip.h"
 #include "i82801hx.h"
 
+#define NMI_OFF	0
+
 /* ================================================================== */
 /* chip_operations: enable_dev callback                                */
 /* ================================================================== */
@@ -329,7 +331,14 @@ static void lpc_power_options(struct device *dev)
 	outb(reg8, 0x61);
 
 	reg8 = inb(0x74); /* Read from 0x74 as 0x70 is write only. */
-	reg8 |= (1 << 7); /* Can't mask NMI from PCI-E and NMI_NOW */
+	const unsigned int nmi_option = get_uint_option("nmi", NMI_OFF);
+	if (nmi_option) {
+		printk(BIOS_INFO, "NMI sources enabled.\n");
+		reg8 &= ~(1 << 7); /* Set NMI. */
+	} else {
+		printk(BIOS_INFO, "NMI sources disabled.\n");
+		reg8 |= (1 << 7); /* Can't mask NMI from PCI-E and NMI_NOW */
+	}
 	outb(reg8, 0x70);
 
 	/* Enable CPU_SLP# and Intel Speedstep, set SMI# rate down */

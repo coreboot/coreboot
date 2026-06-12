@@ -267,6 +267,7 @@ chip soc/intel/pantherlake
 		end
 
 		device ref ish on
+			probe SENSOR_HUB ISH_PRESENT
 			chip drivers/intel/ish
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end

@@ -68,6 +68,40 @@ static const struct pad_config cnvi_disable_pads[] = {
 	PAD_NC(GPP_F05, NONE),
 };
 
+static const struct pad_config ish_disable_pads[] = {
+	/* GPP_B05:     C_EC_ISH_ALRT */
+	PAD_NC(GPP_B05, NONE),
+	/* GPP_B18:     ISH_I2C2_SDA_SNSR_HDR */
+	PAD_NC(GPP_B18, NONE),
+	/* GPP_B19:     ISH_I2C2_SCL_SNSR_HDR */
+	PAD_NC(GPP_B19, NONE),
+	/* GPP_B22:     ISH_GP_5_SNSR_HDR */
+	PAD_NC(GPP_B22, NONE),
+	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
+	PAD_NC(GPP_B23, NONE),
+	/* GPP_D06:     ISH_UART0_ECAIC_TXD */
+	PAD_NC(GPP_D06, NONE),
+	/* GPP_F23:     SMC_LID / ISH_GP9A*/
+	PAD_NC(GPP_F23, NONE),
+};
+
+static const struct pad_config ish_enable_pads[] = {
+	/* GPP_B05:     C_EC_ISH_ALRT */
+	PAD_CFG_NF(GPP_B05, NONE, DEEP, NF4),
+	/* GPP_B18:     ISH_I2C2_SDA_SNSR_HDR */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B18, NONE, DEEP, NF1),
+	/* GPP_B19:     ISH_I2C2_SCL_SNSR_HDR */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B19, NONE, DEEP, NF1),
+	/* GPP_B22:     ISH_GP_5_SNSR_HDR */
+	PAD_CFG_NF(GPP_B22, NONE, DEEP, NF4),
+	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
+	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF4),
+	/* GPP_D06:     ISH_UART0_ECAIC_TXD */
+	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF2),
+	/* GPP_F23:     SMC_LID / ISH_GP9A*/
+	PAD_CFG_NF(GPP_F23, NONE, DEEP, NF8),
+};
+
 void fw_config_configure_pre_mem_gpio(void)
 {
 	if (!fw_config_is_provisioned()) {
@@ -89,5 +123,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	} else if (fw_config_probe(FW_CONFIG(WIFI_INTERFACE, WIFI_INTERFACE_CNVI_7))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, cnvi_enable_pads);
 		GPIO_PADBASED_OVERRIDE(padbased_table, pcie_wlan_disable_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(SENSOR_HUB, ISH_PRESENT))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, ish_enable_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, ish_disable_pads);
 	}
 }

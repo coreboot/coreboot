@@ -33,6 +33,11 @@ void jaguar_ec_init(void);
 #define  EC_M2_POWER_PWR_EN			BIT(0)
 #define  EC_M2_POWER_PERST_N			BIT(4)
 
+#define EC_WLAN_POWER				0x20
+#define EC_WLAN_POWER_PWR_EN			BIT(0)
+#define EC_WLAN_POWER_PERST_N			BIT(1)
+#define EC_WLAN_POWER_SDIO_RST_N		BIT(2)
+
 #define EC_XGBE_CTRL				0x22
 #define  EC_XGBE_MDIO0_1_XGBE			BIT(0)
 #define  EC_XGBE_MDIO2_3_XGBE			BIT(1)

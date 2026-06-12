@@ -27,6 +27,13 @@ static void configure_ec_gpio(void)
 	ec_write(EC_FORCE_PWR, tmp);
 	printk(BIOS_SPEW, "EC: 0x%02x = %02x\n", EC_FORCE_PWR, tmp);
 
+	/* Power on WLAN */
+	tmp = 0;
+	if (CONFIG(ENABLE_NVME_WLAN_2LANES))
+		tmp |= EC_WLAN_POWER_PWR_EN | EC_WLAN_POWER_PERST_N | EC_WLAN_POWER_SDIO_RST_N;
+	ec_write(EC_WLAN_POWER, tmp);
+	printk(BIOS_SPEW, "EC: 0x%02x = %02x\n", EC_WLAN_POWER, tmp);
+
 	/* Configure PCIe mux */
 	if (CONFIG(ENABLE_NVME_PCIE_2LANES)) {
 		tmp = EC_PCIE_MUX_M2_SLOT_2X2X;

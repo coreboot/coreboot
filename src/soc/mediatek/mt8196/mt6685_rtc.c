@@ -540,6 +540,14 @@ void rtc_boot(void)
 	rtc_write(RTC_AL_YEA, ((rtc_al_yea | RTC_K_EOSC_RSV_0) &
 		  (~RTC_K_EOSC_RSV_1)) & (~RTC_K_EOSC_RSV_2));
 
+	/* Defensive patch: Check and enable EOSC HW calibration if disabled */
+	rtc_read(RTC_OSC32CON, &rdata);
+	if (!(rdata & RTC_EMBCK_SEL_K_EOSC)) {
+		printk(BIOS_WARNING, "EOSC HW calibration was disabled, re-enabling\n");
+		rdata |= RTC_EMBCK_SEL_K_EOSC;
+		rtc_xosc_write(rdata);
+	}
+
 	/* Write Protection Key to unlock RG_OCT1_RTC32K_1V8_0 */
 	config_interface(TMA_KEY, 0x7a, TMA_KEY_MASK, TMA_KEY_SHIFT);
 	config_interface(TMA_KEY_H, 0x99, TMA_KEY_H_MASK, TMA_KEY_H_SHIFT);

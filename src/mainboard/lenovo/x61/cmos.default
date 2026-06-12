@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+boot_option=Fallback
+debug_level=Debug
+nmi=Disable
+power_on_after_fail=Disable
+sata_mode=AHCI
+volume=0x3
+first_battery=Primary
+bluetooth=Enable
+wlan=Enable
+wwan=Enable
+trackpoint=Enable
+sticky_fn=Disable
+power_management_beeps=Enable
+low_battery_beep=Enable
+gfx_uma_size=32M

@@ -10,6 +10,8 @@ config SOC_AMD_STRIX_HALO_BASE
 	select BOOT_DEVICE_SUPPORTS_WRITES if BOOT_DEVICE_SPI_FLASH
 	select DRIVERS_USB_ACPI
 	select DRIVERS_USB_PCI_XHCI
+	# TODO: uncomment as soon as FSP blobs are available
+	# select ADD_FSP_BINARIES if USE_AMD_BLOBS
 	select FSP_COMPRESS_FSP_M_LZMA
 	select FSP_COMPRESS_FSP_S_LZ4
 	select GENERIC_GPIO_LIB
@@ -175,6 +177,20 @@ config ROMSTAGE_SIZE
 
 config FSP_HEADER_PATH
 	default "src/vendorcode/amd/fsp/strix_halo"
+
+config FSP_M_FILE
+	string "FSP-M (memory init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	default "3rdparty/amd_blobs/strixhalo/STXH_M.fd"
+	help
+	  The path and filename of the FSP-M binary for this platform.
+
+config FSP_S_FILE
+	string "FSP-S (silicon init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	default "3rdparty/amd_blobs/strixhalo/STXH_S.fd"
+	help
+	  The path and filename of the FSP-S binary for this platform.
 
 config FSP_M_ADDR
 	hex

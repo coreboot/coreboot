@@ -3,6 +3,7 @@
 #ifndef CPU_INTEL_SPEEDSTEP_H
 #define CPU_INTEL_SPEEDSTEP_H
 
+#include <acpi/acpi.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -93,5 +94,7 @@ void speedstep_gen_pstates(sst_table_t *);
 bool southbridge_support_c5(void);
 bool southbridge_support_c6(void);
 bool northbridge_support_slfm(void);
+const char *speedstep_cst_ac_power_name(void);
+int get_bat_cst_entries(const acpi_cstate_t **entries);
 
 #endif /* CPU_INTEL_SPEEDSTEP_H */

@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
+#include <commonlib/bsd/compiler.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/fsb.h>
@@ -70,6 +71,40 @@ static uint8_t get_p_state_coordination(void)
 	return SW_ANY;
 }
 
+int __weak get_bat_cst_entries(const acpi_cstate_t **entries)
+{
+	*entries = NULL;
+	return 0;
+}
+
+const char *__weak speedstep_cst_ac_power_name(void)
+{
+	/*
+	 * Default global AC power state object from dsdt_top.asl:
+	 * AC = 1, battery = 0.
+	 */
+	return "PWRS";
+}
+
+static void write_cst_entries(const acpi_cstate_t *cstates, int num_cstates,
+			      const acpi_cstate_t *bat_cstates, int num_bat_cstates)
+{
+	if (num_bat_cstates <= 0) {
+		acpigen_write_CST_package(cstates, num_cstates);
+		return;
+	}
+
+	acpigen_write_method("_CST", 0);
+	acpigen_write_if();
+	acpigen_emit_namestring(speedstep_cst_ac_power_name());
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_CST_package_entries(cstates, num_cstates);
+	acpigen_write_if_end();
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_CST_package_entries(bat_cstates, num_bat_cstates);
+	acpigen_write_method_end();
+}
+
 static void generate_cpu_entry(int cpu, int core, int cores_per_package)
 {
 	int pcontrol_blk = PMB0_BASE, plen = 6;
@@ -79,6 +114,8 @@ static void generate_cpu_entry(int cpu, int core, int cores_per_package)
 		uint8_t coordination;
 		int num_cstates;
 		const acpi_cstate_t *cstates;
+		int num_bat_cstates;
+		const acpi_cstate_t *bat_cstates;
 		sst_table_t pstates;
 	} s;
 
@@ -86,6 +123,7 @@ static void generate_cpu_entry(int cpu, int core, int cores_per_package)
 		s.once = 1;
 		s.coordination = get_p_state_coordination();
 		s.num_cstates = get_cst_entries(&s.cstates);
+		s.num_bat_cstates = get_bat_cst_entries(&s.bat_cstates);
 		speedstep_gen_pstates(&s.pstates);
 	}
 
@@ -102,7 +140,8 @@ static void generate_cpu_entry(int cpu, int core, int cores_per_package)
 
 	/* Generate c-state entries. */
 	if (s.num_cstates > 0)
-		acpigen_write_CST_package(s.cstates, s.num_cstates);
+		write_cst_entries(s.cstates, s.num_cstates,
+				  s.bat_cstates, s.num_bat_cstates);
 
 	acpigen_pop_len();
 }

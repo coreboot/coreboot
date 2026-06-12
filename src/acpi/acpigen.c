@@ -1073,10 +1073,9 @@ void acpigen_write_CST_package_entry(const acpi_cstate_t *cstate)
 	acpigen_pop_len();
 }
 
-void acpigen_write_CST_package(const acpi_cstate_t *cstate, int nentries)
+void acpigen_write_CST_package_entries(const acpi_cstate_t *cstate, int nentries)
 {
 	int i;
-	acpigen_write_name("_CST");
 	acpigen_write_package(nentries+1);
 	acpigen_write_integer(nentries);
 
@@ -1084,6 +1083,12 @@ void acpigen_write_CST_package(const acpi_cstate_t *cstate, int nentries)
 		acpigen_write_CST_package_entry(cstate + i);
 
 	acpigen_pop_len();
+}
+
+void acpigen_write_CST_package(const acpi_cstate_t *cstate, int nentries)
+{
+	acpigen_write_name("_CST");
+	acpigen_write_CST_package_entries(cstate, nentries);
 }
 
 void acpigen_write_CSD_package(u32 domain, u32 numprocs, CSD_coord coordtype,

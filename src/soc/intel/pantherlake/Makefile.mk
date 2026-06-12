@@ -6,6 +6,12 @@ subdirs-y += romstage
 subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 
+ifeq ($(CONFIG_SOC_INTEL_PANTHERLAKE_U_H),y)
+cpu_microcode_bins += \
+       3rdparty/intel-microcode/intel-ucode/06-cc-02 \
+       3rdparty/intel-microcode/intel-ucode/06-cc-03
+endif
+
 # all (bootblock, verstage, romstage, postcar, ramstage)
 all-y += gpio.c
 all-y += isclk.c

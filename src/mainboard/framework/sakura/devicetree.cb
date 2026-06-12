@@ -343,6 +343,9 @@ chip soc/intel/pantherlake
 			register "gen3_dec" = "0x00fc0f01"
 			# EC NPCX shared memory: 0x800-0x8FF
 			register "gen4_dec" = "0x00fc0801"
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
 		end
 
 		chip drivers/crb

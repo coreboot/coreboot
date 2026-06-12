@@ -3,6 +3,7 @@
 // HACK: MISCCFG_GPIO_PM_CONFIG_BITS are missing
 #include <acpi/acpi.h>
 #include <soc/gpio.h>
+#include <mainboard/ec.h>
 
 DefinitionBlock(
 	"dsdt.aml",
@@ -26,4 +27,35 @@ DefinitionBlock(
 	}
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
+
+	/* Framework EC over eSPI */
+	Scope (\_SB.PCI0.LPCB)
+	{
+		/* PS/2 keyboard + mouse, and EC host-command/memmap I/O reservations */
+		#include <ec/google/chromeec/acpi/superio.asl>
+		/* EC0: lid switch, AC adapter, battery, cros_ec command device */
+		#include <ec/google/chromeec/acpi/ec.asl>
+	}
+
+	/*
+	 * Clear ACPI driver ready before entering suspend, same as the vendor
+	 * firmware, so the EC returns to preOS mode across the power transition.
+	 */
+	Method (\_SB.MPTS, 1, Serialized)
+	{
+		If (Arg0) {
+			\_SB.PCI0.LPCB.EC0.ADRD = 0
+		}
+	}
+
+	/*
+	 * Signal ACPI driver ready to EC again, after resume from suspend,
+	 * same as on boot, to make sure function keys, etc. are working.
+	 */
+	Method (\_SB.MWAK, 1, Serialized)
+	{
+		If ((Arg0 == 0x03) || (Arg0 == 0x04)) {
+			\_SB.PCI0.LPCB.EC0.ADRD = 1
+		}
+	}
 }

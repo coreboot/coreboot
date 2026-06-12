@@ -188,9 +188,7 @@ static bool rtc_frequency_meter_check(void)
 	osc32con = OSC32CON_ANALOG_SETTING | RTC_REG_XOSC32_ENB;
 	val = (val & RTC_XOSCCALI_MASK) | osc32con;
 	printk(BIOS_DEBUG, "after set ENB_HW_Mode: EOSC cali val = %#x\n", val);
-	rtc_xosc_write(val);
-
-	return true;
+	return rtc_xosc_write(val);
 }
 
 bool rtc_gpio_init(void)
@@ -354,8 +352,8 @@ static void rtc_recovery_flow(void)
 	udelay(100);
 
 	if (!retry(RECOVERY_RETRY_COUNT,
-		   rtc_frequency_meter_check() &&
-		   rtc_init_after_recovery())) {
+		   rtc_init_after_recovery() &&
+		   rtc_frequency_meter_check())) {
 		printk(BIOS_ERR, "%s: rtc recovery retry failed!!\n", __func__);
 	}
 }

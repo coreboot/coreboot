@@ -48,4 +48,10 @@ smm-y += xhci.c
 CPPFLAGS_common += -I$(src)/soc/intel/pantherlake
 CPPFLAGS_common += -I$(src)/soc/intel/pantherlake/include
 
+# FSP repo is missing some PTL headers, so add the vendorcode headers as a
+# fallback. See: https://github.com/intel/FSP/issues/129
+ifeq ($(CONFIG_FSP_TYPE_IOT),y)
+CPPFLAGS_common += -idirafter $(top)/src/vendorcode/intel/fsp/fsp2_0/pantherlake
+endif
+
 endif

@@ -3,7 +3,9 @@
 #ifndef JAGUAR_EC_H
 #define JAGUAR_EC_H
 
+#ifndef __ACPI__
 void jaguar_ec_init(void);
+#endif
 
 #define JAGUAR_EC_CMD	0x666
 #define JAGUAR_EC_DATA	0x662

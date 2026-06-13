@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include "ec.h"
+
 Device (EC0)
 {
 	Name (_HID, EISAID ("PNP0C09"))  // ACPI Embedded Controller
@@ -8,19 +10,19 @@ Device (EC0)
 
 	Name (_CRS, ResourceTemplate ()
 	{
-		IO (Decode16, 0x662, 0x662, 1, 1)
-		IO (Decode16, 0x666, 0x666, 1, 1)
+		IO (Decode16, JAGUAR_EC_DATA, JAGUAR_EC_DATA, 1, 1)
+		IO (Decode16, JAGUAR_EC_CMD, JAGUAR_EC_CMD, 1, 1)
 	})
 
 	// Access once OKEC returns 1
 	OperationRegion (RAM, EmbeddedControl, 0, 0xFF)
 	Field (RAM, ByteAcc, Lock, Preserve)
 	{
-		Offset(0x15),
+		Offset(EC_M2_POWER),
 		MPWR, 1,
 		, 3,
 		MRST, 1,
-		Offset(0x31),
+		Offset(EC_PAGE_SELECT),
 		PAGE, 8,
 	}
 
@@ -64,7 +66,7 @@ Scope (\_SB.PCI0.GP11)
 				Return (Zero)
 			}
 
-			\_SB.PCI0.LPCB.EC0.PAGE = 0xC2
+			\_SB.PCI0.LPCB.EC0.PAGE = EC_GPIO_PAGE
 			Local0 = \_SB.PCI0.LPCB.EC0.MPWR
 			Local1 = \_SB.PCI0.LPCB.EC0.MRST
 			Local0 &= Local1
@@ -89,7 +91,7 @@ Scope (\_SB.PCI0.GP11)
 				Return ()
 			}
 
-			\_SB.PCI0.LPCB.EC0.PAGE = 0xC2
+			\_SB.PCI0.LPCB.EC0.PAGE = EC_GPIO_PAGE
 
 			\_SB.PCI0.LPCB.EC0.MPWR = One
 			Sleep (10)
@@ -110,7 +112,7 @@ Scope (\_SB.PCI0.GP11)
 				Return ()
 			}
 
-			\_SB.PCI0.LPCB.EC0.PAGE = 0xC2
+			\_SB.PCI0.LPCB.EC0.PAGE = EC_GPIO_PAGE
 
 			\_SB.PCI0.LPCB.EC0.MRST = Zero
 			\_SB.PCI0.LPCB.EC0.MPWR = Zero

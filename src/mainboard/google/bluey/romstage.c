@@ -173,10 +173,10 @@ static void update_battery_status(void)
 		return;
 
 	/*
-	 * Force a board reset if the EC reports invalid battery data to
-	 * prevent downstream configuration issues with bad telemetry.
+	 * Force a board reset if the EC reports invalid battery data and crashlog mode
+	 * is not set to prevent downstream configuration issues with bad telemetry.
 	 */
-	if (!google_chromeec_is_battery_data_valid()) {
+	if (!google_chromeec_is_battery_data_valid() && !chipset_dload_mode_active) {
 		printk(BIOS_INFO, "Battery data invalid! doing board reset.\n");
 		do_board_reset();
 	}
@@ -308,9 +308,9 @@ void platform_romstage_main(void)
 	if (check_ramdump_mode_is_set())
 		ramdump_mode = true;
 
-	mainboard_setup_peripherals_early();
-
 	chipset_dload_mode_active = qclib_check_dload_mode();
+
+	mainboard_setup_peripherals_early();
 
 	if (!chipset_dload_mode_active)
 		shrm_fw_load_reset();

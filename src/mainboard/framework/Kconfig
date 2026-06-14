@@ -14,4 +14,7 @@ source "src/mainboard/framework/*/Kconfig"
 config MAINBOARD_VENDOR
 	default "Framework"
 
+config EC_GOOGLE_CHROMEEC_ACPI_HID
+	default "FRMWC004"
+
 endif # VENDOR_FRAMEWORK

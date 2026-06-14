@@ -9,9 +9,9 @@
 /* Early pad configuration in bootblock. */
 const struct pad_config early_gpio_table[] = {
 	/* GPIO_64:	UART2_TXD	*/
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_64, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD),
+	PAD_CFG_NF(GPIO_64, UP_20K, DEEP, NF1),
 	/* GPIO_65:	UART2_RXD	*/
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_65, UP_20K, DEEP, NF1, TxLASTRxE, DISPUPD),
+	PAD_CFG_NF(GPIO_65, UP_20K, DEEP, NF1),
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)
@@ -24,70 +24,69 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 /* clang-format off */
 const struct pad_config gpio_table[] = {
 	/* General Purpose I/O Deep */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_99, UP_20K, DEEP, NF1),                                /* Power Button */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_100, NONE, DEEP, NF1),                                 /* Sleep S0 */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_101, NONE, DEEP, NF1),                                 /* Sleep S3 */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_102, NONE, DEEP, NF1),                                 /* Sleep S4 */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_103, NONE, DEEP, NF1),                                 /* Suspend Power Ack */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_106, UP_20K, DEEP, NF1),                               /* Battery Low */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_108, NONE, DEEP, NF1),                                 /* Suspend Clock */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_109, NONE, DEEP, NF1),                                 /* Suspend Status */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_142, 1, DEEP, UP_20K, IGNORE, SAME),                  /* Wake */
+	PAD_CFG_NF(GPIO_99, UP_20K, DEEP, NF1),                                                 /* Power Button */
+	PAD_CFG_NF(GPIO_100, NONE, DEEP, NF1),                                                  /* Sleep S0 */
+	PAD_CFG_NF(GPIO_101, NONE, DEEP, NF1),                                                  /* Sleep S3 */
+	PAD_CFG_NF(GPIO_102, NONE, DEEP, NF1),                                                  /* Sleep S4 */
+	PAD_CFG_NF(GPIO_103, NONE, DEEP, NF1),                                                  /* Suspend Power Ack */
+	PAD_CFG_NF(GPIO_106, UP_20K, DEEP, NF1),                                                /* Battery Low */
+	PAD_CFG_NF(GPIO_108, NONE, DEEP, NF1),                                                  /* Suspend Clock */
+	PAD_CFG_NF(GPIO_109, NONE, DEEP, NF1),                                                  /* Suspend Status */
+	PAD_CFG_TERM_GPO(GPIO_142, 1, UP_20K, DEEP),                                            /* Wake */
 
 	/* SPI Flash */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_90, NATIVE, DEEP, NF1),                                /* Chip Select */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_92, DN_20K, DEEP, NF1),                                /* MOSI */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_93, NATIVE, DEEP, NF1),                                /* MISO */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_94, NATIVE, DEEP, NF1),                                /* IO 2 */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_95, NATIVE, DEEP, NF1),                                /* IO 3 */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_96, NATIVE, DEEP, NF1),                                /* Clock */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_97, NATIVE, DEEP, NF1),                                /* Clock Feedback */
+	PAD_CFG_NF(GPIO_90, NATIVE, DEEP, NF1),                                                 /* Chip Select */
+	PAD_CFG_NF(GPIO_92, DN_20K, DEEP, NF1),                                                 /* MOSI */
+	PAD_CFG_NF(GPIO_93, NATIVE, DEEP, NF1),                                                 /* MISO */
+	PAD_CFG_NF(GPIO_94, NATIVE, DEEP, NF1),                                                 /* IO 2 */
+	PAD_CFG_NF(GPIO_95, NATIVE, DEEP, NF1),                                                 /* IO 3 */
+	PAD_CFG_NF(GPIO_96, NATIVE, DEEP, NF1),                                                 /* Clock */
+	PAD_CFG_NF(GPIO_97, NATIVE, DEEP, NF1),                                                 /* Clock Feedback */
 
 	/* Touchpad */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_114, NONE, DEEP, NF1, HIZCRx1, DISPUPD),               /* Data */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_115, NONE, DEEP, NF1, HIZCRx1, DISPUPD),               /* Clock */
+	PAD_CFG_NF(GPIO_114, NONE, DEEP, NF1),                                                  /* Data */
+	PAD_CFG_NF(GPIO_115, NONE, DEEP, NF1),                                                  /* Clock */
 	PAD_CFG_GPI_GPIO_DRIVER(GPIO_177, NONE, PLTRST),                                        /* Interrupt */
 
 	/* Wireless */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_33, 1, DEEP, UP_20K, TxLASTRxE, DISPUPD),             /* Bluetooth RF Kill */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_34, 1, DEEP, NONE, IGNORE, DISPUPD),                  /* WiFi RF Kill */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_191, NONE, DEEP, NF1),                                 /* BRI Data */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_192, UP_20K, DEEP, NF1),                               /* BRI Response */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_193, NONE, DEEP, NF1),                                 /* RGI Data */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_194, UP_20K, DEEP, NF1),                               /* RGI Response */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_195, NONE, DEEP, NF1),                                 /* RF Reset */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_196, NONE, DEEP, NF1),                                 /* XTAL Clock Request */
+	PAD_CFG_TERM_GPO(GPIO_33, 1, UP_20K, DEEP),                                             /* Bluetooth RF Kill */
+	PAD_CFG_GPO(GPIO_34, 1, DEEP),                                                          /* WiFi RF Kill */
+	PAD_CFG_NF(GPIO_191, NONE, DEEP, NF1),                                                  /* BRI Data */
+	PAD_CFG_NF(GPIO_192, UP_20K, DEEP, NF1),                                                /* BRI Response */
+	PAD_CFG_NF(GPIO_193, NONE, DEEP, NF1),                                                  /* RGI Data */
+	PAD_CFG_NF(GPIO_194, UP_20K, DEEP, NF1),                                                /* RGI Response */
+	PAD_CFG_NF(GPIO_195, NONE, DEEP, NF1),                                                  /* RF Reset */
+	PAD_CFG_NF(GPIO_196, NONE, DEEP, NF1),                                                  /* XTAL Clock Request */
 
 	/* Display */
-	PAD_CFG_NF_IOSSTATE(GPIO_124, UP_20K, DEEP, NF1, HIZCRx0),                              /* DDC Data */
-	PAD_CFG_NF_IOSSTATE(GPIO_125, UP_20K, DEEP, NF1, HIZCRx0),                              /* DDC Clock */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_128, NONE, DEEP, NF1, Tx0RxDCRx0, DISPUPD),            /* Panel Power */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_129, NONE, DEEP, NF1, Tx0RxDCRx0, DISPUPD),            /* Backlight Enable */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_130, NONE, DEEP, NF1, Tx0RxDCRx0, DISPUPD),            /* Backlight PWM */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_131, NONE, DEEP, NF1, HIZCRx1, DISPUPD),               /* HDMI Hot Plug */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_132, NONE, DEEP, NF1, HIZCRx1, DISPUPD),               /* DDI1 Hot Plug */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_133, NONE, DEEP, NF1, HIZCRx1, DISPUPD),               /* eDP Hot Plug */
+	PAD_CFG_NF(GPIO_124, UP_20K, DEEP, NF1),                                                /* DDC Data */
+	PAD_CFG_NF(GPIO_125, UP_20K, DEEP, NF1),                                                /* DDC Clock */
+	PAD_CFG_NF(GPIO_128, NONE, DEEP, NF1),                                                  /* Panel Power */
+	PAD_CFG_NF(GPIO_129, NONE, DEEP, NF1),                                                  /* Backlight Enable */
+	PAD_CFG_NF(GPIO_130, NONE, DEEP, NF1),                                                  /* Backlight PWM */
+	PAD_CFG_NF(GPIO_131, NONE, DEEP, NF1),                                                  /* HDMI Hot Plug */
+	PAD_CFG_NF(GPIO_132, NONE, DEEP, NF1),                                                  /* DDI1 Hot Plug */
+	PAD_CFG_NF(GPIO_133, NONE, DEEP, NF1),                                                  /* eDP Hot Plug */
 
 	/* High-Definition Audio */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_166, NONE, DEEP, NF1, HIZCRx0, DISPUPD),               /* Clock */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_167, NONE, DEEP, NF1, HIZCRx0, DISPUPD),               /* Sync */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_168, NONE, DEEP, NF1, HIZCRx0, DISPUPD),               /* Data Input */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_169, NONE, DEEP, NF1, HIZCRx0, DISPUPD),               /* Data Output */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_170, NONE, DEEP, NF1, HIZCRx0, DISPUPD),               /* Reset */
+	PAD_CFG_NF(GPIO_166, NONE, DEEP, NF1),                                                  /* Clock */
+	PAD_CFG_NF(GPIO_167, NONE, DEEP, NF1),                                                  /* Sync */
+	PAD_CFG_NF(GPIO_168, NONE, DEEP, NF1),                                                  /* Data Input */
+	PAD_CFG_NF(GPIO_169, NONE, DEEP, NF1),                                                  /* Data Output */
+	PAD_CFG_NF(GPIO_170, NONE, DEEP, NF1),                                                  /* Reset */
 
 	/* PCH */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_98, NONE, DEEP, NF1),                                  /* Platform Reset */
-	PAD_CFG_GPI_APIC_IOS(GPIO_19, UP_20K, DEEP, EDGE_SINGLE, NONE, TxDRxE, SAME),           /* Interrupt */
-	_PAD_CFG_STRUCT(GPIO_74, PAD_FUNC(NF1) | PAD_RESET(DEEP) | PAD_TRIG(OFF),
-		PAD_PULL(UP_20K) | PAD_IOSSTATE(IGNORE) | PAD_IOSTERM(ENPU)),                    /* Thermal Trip */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_75, NONE, DEEP, NF1, TxDRxE, DISPUPD),                 /* Processor Hot */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_107, UP_20K, DEEP, NF1),                               /* Reset Button */
-	PAD_CFG_GPI_SCI_IOS(GPIO_38, UP_20K, DEEP, EDGE_SINGLE, INVERT, IGNORE, SAME),          /* SCI */
-	PAD_CFG_GPI_SMI_IOS(GPIO_67, UP_20K, DEEP, EDGE_SINGLE, NONE, IGNORE, SAME),            /* SMI */
+	PAD_CFG_NF(GPIO_98, NONE, DEEP, NF1),                                                   /* Platform Reset */
+	PAD_CFG_GPI_APIC(GPIO_19, UP_20K, DEEP, EDGE_SINGLE, NONE),                             /* Interrupt */
+	PAD_CFG_NF(GPIO_74, UP_20K, DEEP, NF1),                                                 /* Thermal Trip */
+	PAD_CFG_NF(GPIO_75, NONE, DEEP, NF1),                                                   /* Processor Hot */
+	PAD_CFG_NF(GPIO_107, UP_20K, DEEP, NF1),                                                /* Reset Button */
+	PAD_CFG_GPI_SCI(GPIO_38, UP_20K, DEEP, EDGE_SINGLE, INVERT),                            /* SCI */
+	PAD_CFG_GPI_SMI(GPIO_67, UP_20K, DEEP, EDGE_SINGLE, NONE),                              /* SMI */
 
 	/* SMBus */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_49, UP_1K, DEEP, NF1),                                 /* Clock */
-	PAD_CFG_NF_IOSTANDBY_IGNORE(GPIO_48, UP_1K, DEEP, NF1),                                 /* Data */
+	PAD_CFG_NF(GPIO_49, UP_1K, DEEP, NF1),                                                  /* Clock */
+	PAD_CFG_NF(GPIO_48, UP_1K, DEEP, NF1),                                                  /* Data */
 
 	/* Config Straps									[ Low      / High     ] */
 	PAD_CFG_GPO(GPIO_27, 0, DEEP),                                                          /* eMMC		[ Disabled / Enabled  ] */

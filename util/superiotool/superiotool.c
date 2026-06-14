@@ -176,7 +176,7 @@ static void dump_regs(const struct superio_registers_ldn *reg_table_ldn,
 			for (int reg = reg_begin; reg < reg_limit; reg++) {
 				if (!reg_dumped[reg]) {
 					val = regval(port, reg);
-					if (val != 0x00 && val != 0xff) {
+					if (val != 0xff) {
 						printf("0x%02x:  ", reg);
 						printf("       0x%02x\n", val);
 					}

@@ -251,7 +251,6 @@ func (b lynxpoint) Scan(ctx Context, addr PCIDevData) {
 	})
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{
 		File:    "southbridge/intel/lynxpoint/acpi/globalnvs.asl",
-		Comment: "global NVS and variables",
 	})
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{
 		File: "southbridge/intel/common/acpi/sleepstates.asl",

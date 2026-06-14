@@ -110,8 +110,8 @@ int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr)
 	return acpi_create_madt_ioapic(ioapic, id, addr, my_base);
 }
 
-static int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
-		u8 bus, u8 source, u32 gsirq, u16 flags)
+int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
+				  u8 bus, u8 source, u32 gsirq, u16 flags)
 {
 	irqoverride->type = IRQ_SOURCE_OVERRIDE; /* Interrupt source override */
 	irqoverride->length = sizeof(acpi_madt_irqoverride_t);

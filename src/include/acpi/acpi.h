@@ -796,6 +796,9 @@ typedef struct acpi_madt_irqoverride {
 	u16 flags;			/* MPS INTI flags */
 } __packed acpi_madt_irqoverride_t;
 
+int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride, u8 bus, u8 source,
+				 u32 gsirq, u16 flags);
+
 /* MADT: Processor Local x2APIC Structure */
 typedef struct acpi_madt_lx2apic {
 	u8 type;			/* Type (9) */

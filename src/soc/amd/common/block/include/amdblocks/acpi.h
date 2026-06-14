@@ -66,4 +66,6 @@ void acpi_log_events(const struct chipset_power_state *ps);
 unsigned long acpi_add_crat_table(unsigned long current, acpi_rsdp_t *rsdp);
 unsigned long acpi_add_ivrs_table(unsigned long current, acpi_rsdp_t *rsdp);
 
+unsigned long mainboard_write_madt_irq_overrides(unsigned long current);
+
 #endif /* AMD_BLOCK_ACPI_H */

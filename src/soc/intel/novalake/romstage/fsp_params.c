@@ -15,6 +15,7 @@
 #include <soc/msr.h>
 #include <soc/pcie.h>
 #include <soc/romstage.h>
+#include <tdp.h>
 #include <static.h>
 
 #include "ux.h"
@@ -303,19 +304,59 @@ static void fill_fspm_thermal_params(FSP_M_CONFIG *m_cfg, const config_t *config
 	m_cfg->TccOffsetLock = 0;
 }
 
+static const struct soc_intel_novalake_power_map *get_map(const struct soc_intel_novalake_config *config)
+{
+	uint16_t sa_pci_id = pci_read_config16(PCI_DEVFN_ROOT, PCI_DEVICE_ID);
+	if (sa_pci_id == 0xffff) {
+		printk(BIOS_WARNING, "Unknown SA PCI Device!\n");
+		return NULL;
+	}
+
+	enum soc_intel_novalake_cpu_tdps tdp = soc_get_cpu_tdp();
+	for (size_t i = 0; i < ARRAY_SIZE(cpuid_to_nvl); i++) {
+		const struct soc_intel_novalake_power_map *current = &cpuid_to_nvl[i];
+		if (current->cpu_id == sa_pci_id && current->cpu_tdp == tdp)
+			return current;
+	}
+
+	printk(BIOS_ERR, "Could not find the SKU power map\n");
+	return NULL;
+}
+
 static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 {
+	const struct soc_intel_novalake_power_map *map = get_map(config);
+	if (!map)
+		return;
+
 	for (size_t i = 0; i < ARRAY_SIZE(config->enable_fast_vmode); i++) {
 		if (!config->cep_enable[i])
 			continue;
 		m_cfg->CepEnable[i] = config->cep_enable[i];
-		if (config->enable_fast_vmode[i])
+		if (config->enable_fast_vmode[i]) {
 			m_cfg->EnableFastVmode[i] = config->enable_fast_vmode[i];
+			m_cfg->IccLimit[i] = config->fast_vmode_i_trip[map->sku][i];
+		}
+	}
+
+	for (size_t i = 0; i < ARRAY_SIZE(config->thermal_design_current[0]); i++) {
+		if (!config->thermal_design_current[map->tdc][i])
+			continue;
+		m_cfg->TdcEnable[i] = 1;
+		m_cfg->TdcCurrentLimit[i] = config->thermal_design_current[map->tdc][i];
+	}
+
+	for (size_t i = 0; i < ARRAY_SIZE(config->icc_max[0]); i++) {
+		if (!config->icc_max[map->sku][i])
+			continue;
+		m_cfg->IccMax[i] = config->icc_max[map->sku][i];
 	}
 
 	for (size_t i = 0; i < ARRAY_SIZE(config->tdc_mode); i++) {
-		m_cfg->TdcMode[i] = config->tdc_mode[i];
-		m_cfg->TdcTimeWindow[i] = config->tdc_time_window_ms[i];
+		if (config->tdc_mode[i])
+			m_cfg->TdcMode[i] = config->tdc_mode[i];
+		if (config->tdc_time_window_ms[i])
+			m_cfg->TdcTimeWindow[i] = config->tdc_time_window_ms[i];
 	}
 
 	for (size_t i = 0; i < ARRAY_SIZE(config->ps1_threshold); i++) {

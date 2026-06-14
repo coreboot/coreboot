@@ -53,6 +53,50 @@ enum soc_intel_novalake_sagv_gears {
 	GEAR_4 = 4,
 };
 
+/* Types of different SKUs */
+enum soc_intel_novalake_power_limits {
+	NVL_CORE_1,
+	NVL_CORE_2,
+	NVL_CORE_3,
+	NVL_POWER_LIMITS_COUNT,
+};
+
+/* TDP values for different SKUs */
+enum soc_intel_novalake_cpu_tdps {
+	TDP_15W = 15,
+	TDP_25W = 25,
+	TDP_45W = 45,
+};
+
+
+enum soc_intel_novalake_sku {
+	NVL_SKU_1,
+	NVL_SKU_2,
+	NVL_SKU_3,
+	MAX_NVL_SKUS
+};
+
+/* Thermal Design Current for different SKUs */
+enum soc_intel_novalake_tdc {
+	NVL_TDC_1,
+	NVL_TDC_2,
+	NVL_TDC_3,
+	MAX_NVL_TDC
+};
+
+/* Mapping of different SKUs based on CPU ID and TDP values */
+static const struct soc_intel_novalake_power_map {
+	unsigned int cpu_id;
+	enum soc_intel_novalake_power_limits limits;
+	enum soc_intel_novalake_cpu_tdps cpu_tdp;
+	enum soc_intel_novalake_sku sku;
+	enum soc_intel_novalake_tdc tdc;
+} cpuid_to_nvl[] = {
+	{ PCI_DID_INTEL_NVL_ID_1, NVL_CORE_1, TDP_15W, NVL_SKU_1, NVL_TDC_1 },
+	{ PCI_DID_INTEL_NVL_ID_2, NVL_CORE_2, TDP_15W, NVL_SKU_2, NVL_TDC_2 },
+	{ PCI_DID_INTEL_NVL_ID_3, NVL_CORE_3, TDP_15W, NVL_SKU_3, NVL_TDC_3 },
+};
+
 /* Types of display ports */
 enum ddi_ports {
 	DDI_PORT_A,
@@ -160,6 +204,9 @@ struct soc_intel_novalake_config {
 
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
+
+	/* Common struct containing power limits configuration information */
+	struct soc_power_limits_config power_limits_config[NVL_POWER_LIMITS_COUNT];
 
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form PMC_GPP_[A:U] or GPD. */
@@ -313,6 +360,23 @@ struct soc_intel_novalake_config {
 	bool cep_enable[NUM_VR_DOMAINS];
 
 	/*
+	 * Fast Vmode I_TRIP Thresholds for VR Domains
+	 *
+	 * This two-dimensional array represents the Fast Vmode I_TRIP thresholds
+	 * for various Voltage Regulator (VR) domains across different SKUs
+	 * in Nova Lake SoCs.
+	 *
+	 * The Fast Vmode I_TRIP threshold is used to override the default current
+	 * threshold settings, ensuring optimal power management by adapting to
+	 * specific VR domain requirements for each SKU's hardware capabilities.
+	 *
+	 * 0-255A in 1/4 A units. Example: 400 = 100A
+	 * This setting overrides the default value set by FSPs when Fast VMode
+	 * is enabled.
+	 */
+	uint16_t fast_vmode_i_trip[MAX_NVL_SKUS][NUM_VR_DOMAINS];
+
+	/*
 	 * Power state current threshold 1.
 	 * Defined in 1/4 A increments. A value of 400 = 100A. Range 0-512,
 	 * which translates to 0-128A. 0 = AUTO. [0] for IA, [1] for GT, [2] for
@@ -335,6 +399,23 @@ struct soc_intel_novalake_config {
 	 * SA, [3] through [5] are Reserved.
 	 */
 	uint16_t ps_cur_3_threshold[NUM_VR_DOMAINS];
+
+	/*
+	 * Thermal Design Current (TDC) settings for various SKUs.
+	 *
+	 * This multidimensional array stores the Thermal Design Current (TDC)
+	 * values for different power limit configurations across multiple SKUs
+	 * and Voltage Regulator (VR) domains. TDC values indicate the maximum
+	 * allowable current for a given thermal configuration, which helps in
+	 * managing thermal constraints for each VR domain under specific power
+	 * limit scenarios.
+	 *
+	 * Each entry in the array is indexed by SKU and VR domain, providing
+	 * tailored TDC values for specific power management requirements.
+	 *
+	 * The TDC unit is defined 1/8A increments.
+	 */
+	uint16_t thermal_design_current[MAX_NVL_SKUS][NUM_VR_DOMAINS];
 
 	/*
 	 * Thermal Design Current (TDC) mode for each Voltage Regulator (VR) domain.
@@ -361,6 +442,17 @@ struct soc_intel_novalake_config {
 	uint32_t tdc_time_window_ms[NUM_VR_DOMAINS];
 
 	/*
+	 * Maximum Integrated Current Capability (ICC) settings for various SKUs.
+	 *
+	 * ICC values represent the maximum allowable current for a given SKU
+	 * and VR domain configuration.
+	 *
+	 * ICC unit is defined in 1/4A increments. For example, a value of 400
+	 * corresponds to 100A.
+	 */
+	uint16_t icc_max[MAX_NVL_SKUS][NUM_VR_DOMAINS];
+
+	/*
 	 * Power State Current Thresholds for VR Domains.
 	 *
 	 * These arrays define the current thresholds for different power states (PS1,
@@ -373,6 +465,15 @@ struct soc_intel_novalake_config {
 	uint16_t ps1_threshold[NUM_VR_DOMAINS];
 	uint16_t ps2_threshold[NUM_VR_DOMAINS];
 	uint16_t ps3_threshold[NUM_VR_DOMAINS];
+
+	/*
+	 * Thermal Design Power setting.
+	 *
+	 * Certain Nova Lake SKUs are compatible with multiple TDP options. For these
+	 * SKUs, the following field can be set to choose the TDP that best fits the
+	 * board's power and thermal requirements.
+	 */
+	enum soc_intel_novalake_cpu_tdps tdp;
 
 	/* HeciEnabled decides the state of Heci1 at end of boot
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */

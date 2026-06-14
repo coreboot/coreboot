@@ -15,6 +15,7 @@ bootblock-y += bootblock/report_platform.c
 romstage-$(CONFIG_SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY) += cse_telemetry.c
 romstage-y += meminit.c
 romstage-y += pcie_rp.c
+romstage-y += tdp.c
 romstage-y += reset.c
 
 ramstage-y += acpi.c
@@ -30,6 +31,7 @@ ramstage-y += retimer.c
 ramstage-y += systemagent.c
 ramstage-y += tcss.c
 ramstage-$(CONFIG_DRIVERS_INTEL_TOUCH) += touch.c
+ramstage-y += tdp.c
 ramstage-y += xhci.c
 
 smm-y += gpio.c

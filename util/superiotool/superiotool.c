@@ -118,6 +118,10 @@ static void dump_regs(const struct superio_registers_ldn *reg_table_ldn,
 	// yet it should not be displayed as "unknown register" in the dump.
 	reg_dumped[ldn_sel] = 1;
 
+	// Writing 0xAA as the index will often exit conf mode, so don't
+	// display it as an "unknown register" in the dump.
+	reg_dumped[0xAA] = 1;
+
 	if (reg_table_ldn->ldn != NOLDN) {
 		printf("LDN 0x%02x", reg_table_ldn->ldn);
 		if (reg_table_ldn->name != NULL)

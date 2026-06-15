@@ -13,7 +13,7 @@ DefinitionBlock (
 	#include <acpi/dsdt_top.asl>
 
 	#include <soc.asl>
-
+	#include "acpi/acp.asl"
 	Scope(\_SB.PCI0.LPCB)
 	{
 		#include "acpi/ec.asl"

@@ -152,10 +152,8 @@ static void cgpll_clock_gate_init(void)
 	t = misc_read32(MISC_CLKGATEDCNTL);
 	t |= ALINKCLK_GATEOFFEN;
 	t |= BLINKCLK_GATEOFFEN;
-
-	if (!CONFIG(SOC_AMD_ACP_KEEP_RUNNING_IN_S3)) {
+	if (!CONFIG(SOC_AMD_ACP_KEEP_RUNNING_IN_S3))
 		t |= XTAL_PAD_S3_TURNOFF_EN;
-	}
 
 	t |= XTAL_PAD_S5_TURNOFF_EN;
 	misc_write32(MISC_CLKGATEDCNTL, t);

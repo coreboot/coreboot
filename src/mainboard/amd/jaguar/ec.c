@@ -51,7 +51,8 @@ static void configure_ec_gpio(void)
 	if (CONFIG(XGBE_LED_TURN_ON))
 		tmp |= EC_XGBE_LED_ENABLE;
 
-	if (CONFIG(XGBE_EN))
+	/* Only SFP+ needs MDIO. xGBE in backplane mode doesn't use MDIO. */
+	if (CONFIG(XGBE_SFP_PLUS_CONNECTION))
 		tmp |= EC_XGBE_MDIO0_1_XGBE | EC_XGBE_SFPP_MUX_ENABLE;
 
 	ec_write(EC_XGBE_CTRL, tmp);

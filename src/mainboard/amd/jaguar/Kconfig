@@ -113,19 +113,21 @@ config ENABLE_S0I3_SUPPORT
 	  Apply quirks to allow board to enter S0i3.
 
 choice
-	prompt "XGBE"
+	prompt "Slot2 xGBE/PCIe"
 	default XGBE_EN
 	help
-	  Select to Use ETH  Slot 1-0  as XGBE.
+	  Must match board configuration. The mainboard can be reworked to support either
+	  xGBE or GPP2 on PCIe lanes 4+5, but not both.
 config XGBE_EN
 	bool "XGBE Enablement"
 	depends on !ENABLE_S0I3_SUPPORT
 	help
-	  Use ETH  Slot 1-0  as XGBE.
+	  The mainboard has been reworked to support xGBE on PCIe lanes 4+5.
+
 config GPP2_EN
 	bool "GPP2 Enablement"
 	help
-	  Use of slot GPP2 5-4 as PCIe.
+	  The mainboard uses PCIe lanes 4+5 for GPP2 (PCIe Slot2) instead of xGBE.
 endchoice
 
 choice
@@ -143,7 +145,8 @@ config XGBE_BACKPLANE_CONNECTION
 config XGBE_SFP_PLUS_CONNECTION
 	bool "XGBE SFP PLUS Connection Enablement"
 	help
-	  XGBE SFP PLUS Connection Enablement. Needs board rework.
+	  XGBE SFP PLUS Connection Enablement. Needs board rework as MDIO is by default
+	  not routed to SFP+ connectors.
 endchoice
 
 choice
@@ -215,18 +218,19 @@ menu "XGBE LED Options"
 choice
 	prompt "XGBE LED Enable"
 	default XGBE_LED_TURN_ON
+	depends on XGBE_EN
 	help
 	  Turn XGBE LED on or off.
 
 config XGBE_LED_TURN_OFF
 	bool "Turn Off XGBE Led"
 	help
-	  Turn Off XGBE LED
+	  Turn Off XGBE LEDs. UART2 and UART4 are usable.
 
 config XGBE_LED_TURN_ON
-	bool "Tunr On XGBE Led"
+	bool "Turn On XGBE Led"
 	help
-	  Tunr On XGBE LED
+	  Turn On XGBE LEDs. Disables UART2 and UART4.
 endchoice
 
 choice
@@ -244,7 +248,7 @@ config TURN_ON_PORT_0_LINK_STATUS_LED
 config TURN_OFF_PORT_0_LINK_STATUS_LED
 	bool "Disable"
 	help
-	  Tunr Off link status LED.
+	  Turn Off link status LED.
 endchoice
 
 choice
@@ -262,7 +266,7 @@ config TURN_ON_PORT_0_LINK_SPEED_LED
 config TURN_OFF_PORT_0_LINK_SPEED_LED
 	bool "Disable"
 	help
-	  Tunr Off link speed LED.
+	  Turn Off link speed LED.
 endchoice
 
 choice
@@ -326,7 +330,7 @@ config TURN_ON_PORT_1_LINK_SPEED_LED
 config TURN_OFF_PORT_1_LINK_SPEED_LED
 	bool "Disable"
 	help
-	  Tunr Off link speed LED.
+	  Turn Off link speed LED.
 endchoice
 
 choice

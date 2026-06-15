@@ -137,7 +137,11 @@ Device (EC0)
 		ENS0, 1,	// EC_PS_ENTER_S0ix  (BIT6)
 		RES0, 1,	// EC_PS_RESUME_S0ix (BIT7)
 	}
-
+#else
+	/* Dummy vars to avoid guarding in S0ix() */
+	Name (ENS0, 0)
+	Name (RES0, 0)
+#endif
 	/*
 	 * S0ix entry/exit notification invoked by PEP LPS0 _DSM
 	 */
@@ -147,11 +151,12 @@ Device (EC0)
 			ENS0 = 1	// notify EC: entering S0ix (ENTER_CS)
 			/* Let EC settle before proceeding, same as vendor firmware */
 			Sleep (0xD2)
+			Notify (^CREC, ACPI_NOTIFY_CROS_EC_S0IX_ENTER)
 		} Else {
 			RES0 = 1	// notify EC: resuming from S0ix (RESUME_CS)
+			Notify (^CREC, ACPI_NOTIFY_CROS_EC_S0IX_EXIT)
 		}
 	}
-#endif
 
 #ifdef EC_ENABLE_LID_SWITCH
 	/* LID Switch */
@@ -304,16 +309,6 @@ Device (EC0)
 		Local0 *= 10
 
 		Return (Local0)
-	}
-
-	Method (S0IX, 1, Serialized)
-	{
-		If (Arg0) {
-			Notify (^CREC, ACPI_NOTIFY_CROS_EC_S0IX_ENTER)
-		}
-		Else {
-			Notify (^CREC, ACPI_NOTIFY_CROS_EC_S0IX_EXIT)
-		}
 	}
 
 	// Lid Closed Event

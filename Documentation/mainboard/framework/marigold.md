@@ -58,19 +58,17 @@ binaries, flashing will not result in a bootable system.
 The following commands will build a working image:
 
 ```bash
-# Select board
-make nconfig
-
-# Build
-make distclean
+make distclean # Note: this will remove your current config, if it exists.
+touch .config
+./util/scripts/config --enable VENDOR_FRAMEWORK
+./util/scripts/config --enable BOARD_FRAMEWORK_MARIGOLD
+make olddefconfig
 make -j$(nproc)
 ```
 
-Flashing example with BusPirate 5 connected to socketed ROM:
+If you don’t plan on using coreboot’s serial console to collect logs, you might want to disable it at this point (./util/scripts/config --disable CONSOLE_SERIAL). It should reduce the boot time by several seconds.
 
-```
-flashrom --ifd -i bios --noverify-all -w build/coreboot.rom --progress -p buspirate_spi:dev=/dev/ttyACM1,serialspeed=115200
-```
+If you would like to boot your existing SSD with UEFI compatible Linux/Windows installation, enable EDK2 Payload (./util/scripts/config --enable PAYLOAD_EDK2).
 
 ## Flashing coreboot
 
@@ -93,3 +91,15 @@ flashrom --ifd -i bios --noverify-all -w build/coreboot.rom --progress -p buspir
 | External flashing   | yes        |
 +---------------------+------------+
 ```
+
+Flashing example with BusPirate 5 connected to socketed ROM:
+
+```
+flashrom --ifd -i bios --noverify-all -w build/coreboot.rom --progress -p buspirate_spi:dev=/dev/ttyACM1,serialspeed=115200
+```
+
+## Serial Console
+
+Serial console is available through JECDB header (unpopulated on MP) or Type-C CCD UART on the front right port.
+
+See [FrameworkDebugger](https://github.com/frameworkComputer/FrameworkDebugger) for details.

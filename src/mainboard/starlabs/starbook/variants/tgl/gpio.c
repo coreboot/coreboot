@@ -95,14 +95,14 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),				/* HDMI Hot Plug */
 	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),				/* HDMI Clock */
 	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),				/* HDMI Data */
-	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF1),				/* PMC Interrupt */
-	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),				/* SML Clock */
-	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),				/* SML Data */
 
 	/* Webcam */
 	PAD_CFG_TERM_GPO(GPP_D19, 1, UP_20K, DEEP),			/* Power */
 
-	/* Retimer */
+	/* Type-C/Thunderbolt */
+	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF1),				/* PD Interrupt */
+	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),				/* PD I2C Clock */
+	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),				/* PD I2C Data */
 	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF2),				/* TBT0 TXD */
 	PAD_CFG_NF(GPP_E19, NONE, DEEP, NF2),				/* TBT0 RXD */
 	PAD_CFG_GPO(GPP_A23, 0, DEEP),					/* Force Power */
@@ -144,6 +144,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_B23, 0, DEEP),					/* CPUNSSC		[ 19.2MHz  / 38.4MHz  ] */
 	PAD_CFG_GPO(GPP_F10, 0, DEEP),					/* XTAL Mode		[ Attached / Single   ] */
 
+	/* Unused pads */
 	PAD_NC(GPD2, NONE),
 	PAD_NC(GPD6, NONE),
 	PAD_NC(GPD9, NONE),

@@ -8,10 +8,10 @@
 void setup_chromeos_gpios(void)
 {
 	if (CONFIG(EC_GOOGLE_CHROMEEC))
-		gpio_input_pullup(GPIO_AP_EC_INT);
+		gpio_input(GPIO_AP_EC_INT);
 
 	if (CONFIG(TPM_GOOGLE_TI50))
-		gpio_input_irq(GPIO_GSC_AP_INT, IRQ_TYPE_RISING_EDGE, GPIO_PULL_UP);
+		gpio_input_irq(GPIO_GSC_AP_INT, IRQ_TYPE_RISING_EDGE, GPIO_NO_PULL);
 
 	if (CONFIG(MAINBOARD_HAS_FINGERPRINT)) {
 		gpio_output(GPIO_FP_RST_L, 0);

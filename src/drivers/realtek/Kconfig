@@ -1,0 +1,10 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config DRIVERS_REALTEK_RTSX_PCI_CARDREADER
+	bool
+	help
+	  Apply the vendor PHY/init sequence to the Realtek RTS5227/RTS5229 PCIe
+	  SD card reader after PCIe enumeration, replicating what the Lenovo DXE
+	  module DxeRealtekCrcInit does. Without this, the controller's command
+	  engine times out on every SD command (rtsx_pci_send_cmd error -110) on
+	  boards with this chip, such as the ThinkPad T440p (coreboot issue #297).

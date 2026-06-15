@@ -843,8 +843,6 @@ static void pch_pcie_enable(struct device *dev)
 		root_port_commit_config();
 }
 
-/* TODO: Figure out LTR max latencies for LPT */
-#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
 static void pcie_get_ltr_max_latencies(u16 *max_snoop, u16 *max_nosnoop)
 {
 	*max_snoop = PCIE_LTR_MAX_SNOOP_LATENCY_3146US;
@@ -855,7 +853,6 @@ static struct pci_operations pcie_ops_with_ltr = {
 	.set_subsystem = pci_dev_set_subsystem,
 	.get_ltr_max_latencies = pcie_get_ltr_max_latencies,
 };
-#endif
 
 static struct device_operations device_ops = {
 	.read_resources		= pci_bus_read_resources,
@@ -864,12 +861,7 @@ static struct device_operations device_ops = {
 	.init			= pch_pcie_init,
 	.enable			= pch_pcie_enable,
 	.scan_bus		= pciexp_scan_bridge,
-/* TODO: Figure out LTR max latencies for LPT */
-#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
 	.ops_pci		= &pcie_ops_with_ltr,
-#else
-	.ops_pci		= &pci_dev_ops_pci,
-#endif
 };
 
 static const unsigned short pci_device_ids[] = {

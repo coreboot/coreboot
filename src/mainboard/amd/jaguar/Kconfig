@@ -19,6 +19,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_TPM2
 	select SMBIOS_TYPE4_SOCKETED_CPU
 	select SOC_AMD_COMMON_BLOCK_SPI_BACKUP_SPI_FLASH
+	select SOC_AMD_ACP_KEEP_RUNNING_IN_S0IX
 
 config FMDFILE
 	default "src/mainboard/amd/jaguar/board_faegan_ab.fmd" if PSP_AB_RECOVERY

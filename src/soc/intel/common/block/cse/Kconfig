@@ -213,6 +213,15 @@ config SOC_INTEL_CSE_RW_FILE
 	help
 	 Intel CSE CBFS RW blob path and file name
 
+config SOC_INTEL_CSE_RW_VERSION_FILE
+	string "Path to Intel CSE RW version file" if SOC_INTEL_CSE_RW_UPDATE
+	default ""
+	help
+	 Path to the file containing the CSE RW version string in
+	 major.minor.hotfix.build format (e.g. 21.50.1.1271). When set,
+	 this file is used directly instead of extracting the version from
+	 the CSE RW binary at build time.
+
 config SOC_INTEL_CSE_RW_VERSION
 	string "Intel CSE RW firmware version (deprecated)" if SOC_INTEL_CSE_RW_UPDATE
 	default ""

@@ -92,6 +92,16 @@ $(CSE_LITE_ME_RW)-compression := LZMA
 endif
 
 ifeq ($(CONFIG_SOC_INTEL_CSE_RW_VERSION),"")
+ME_RW_VERSION_FILE := $(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_RW_VERSION_FILE))
+ifneq ($(ME_RW_VERSION_FILE),)
+$(obj)/cse_rw.version: $(ME_RW_VERSION_FILE)
+	@tr -d '\r' < $< | sed 's/[[:space:]]*$$//' > $@
+	@[ -s $@ ] || { \
+		rm -f $@; \
+		echo "CSE RW version file '$<' is empty" 1>&2; \
+		exit 1; \
+	}
+else
 INPUT_FILE := $(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_RW_FILE))
 TEMP_FILE := $(shell mktemp)
 OFFSETS := 16 18 20 22 # Offsets for CSE version components
@@ -106,6 +116,7 @@ $(obj)/cse_rw.version:
 	rm -f $(TEMP_FILE)
 	$(eval CSE_RW_CBFS_VERSION := $(shell printf "%d.%d.%d.%d" $(CSE_VERSION_MAJOR)$(CSE_VERSION_MINOR)$(CSE_VERSION_HOTFIX)$(CSE_VERSION_BUILD)))
 	@echo '$(CSE_RW_CBFS_VERSION)' > $@
+endif # ME_RW_VERSION_FILE
 else
 $(obj)/cse_rw.version:
 	@echo '$(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_RW_VERSION))' > $@

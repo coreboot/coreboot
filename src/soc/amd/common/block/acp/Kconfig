@@ -11,3 +11,10 @@ config SOC_AMD_COMMON_BLOCK_ACP_GEN2
 	help
 	  Select this option to perform Audio Co-Processor(ACP) configuration.
 	  Used by the ACP in AMD mendocino (family 17h) and possibly newer CPUs.
+
+config SOC_AMD_ACP_KEEP_RUNNING_IN_S3
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_ACP_GEN1 || SOC_AMD_COMMON_BLOCK_ACP_GEN2
+	help
+	  Enables AMD Audio Co-Processor (ACP) to remain operational in ACPI
+	  S3 (sleep) state for continued audio processing support.

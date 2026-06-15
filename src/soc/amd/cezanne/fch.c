@@ -153,7 +153,7 @@ static void cgpll_clock_gate_init(void)
 	t |= ALINKCLK_GATEOFFEN;
 	t |= BLINKCLK_GATEOFFEN;
 
-	if (!CONFIG(KEEP_ACP_RUNNING_IN_S3)) {
+	if (!CONFIG(SOC_AMD_ACP_KEEP_RUNNING_IN_S3)) {
 		t |= XTAL_PAD_S3_TURNOFF_EN;
 	}
 

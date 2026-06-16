@@ -3,6 +3,8 @@
 #ifndef PINEVIEW_RAMINIT_H
 #define PINEVIEW_RAMINIT_H
 
+#include <types.h>
+
 #define SYSINFO_DIMM_NOT_POPULATED	0x00
 #define SYSINFO_DIMM_X16SS		0x01
 #define SYSINFO_DIMM_X16DS		0x02
@@ -39,6 +41,12 @@ enum chip_cap { /* as in DDR3 spd */
 	CHIP_CAP_4G	= 4,
 	CHIP_CAP_8G	= 5,
 	CHIP_CAP_16G	= 6,
+};
+
+enum dimm_type {
+	DIMM_TYPE_UNKNOWN = 0,
+	DIMM_TYPE_UDIMM,
+	DIMM_TYPE_SODIMM,
 };
 
 struct timings {
@@ -96,6 +104,8 @@ struct sysinfo {
 	u16 readptrdelay;
 
 	int		boot_path;
+	bool		is_mobile;
+	enum dimm_type	dimm_type;
 	u16		ggc;
 
 	int		dimm_config[2];

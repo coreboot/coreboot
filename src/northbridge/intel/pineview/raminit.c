@@ -2,6 +2,7 @@
 
 #include <cf9_reset.h>
 #include <device/mmio.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/smbus_host.h>
 #include <commonlib/helpers.h>
@@ -37,8 +38,10 @@
 #define CBR_CMD		((1 << 3) | (1 << 2))
 #define NORMAL_OP_CMD	((1 << 3) | (1 << 2) | (1 << 1))
 
-#define UBDIMM 1
-#define SODIMM 2
+#define PINEVIEW_DID_MASK   0xfff0
+#define PINEVIEW_MOBILE_DID 0xa010
+#define SPD_DDR2_REFERENCE_RAW_CARD_USED 62
+#define SPD_DDR2_REFERENCE_RAW_CARD_MASK 0x1f
 
 #define TOTAL_CHANNELS 1
 #define TOTAL_DIMMS 2
@@ -90,14 +93,30 @@ static inline void barrier(void)
 	 __asm__ __volatile__("": : :"memory");
 }
 
+static bool detect_platform_is_mobile(void)
+{
+	u16 did = pci_read_config16(HOST_BRIDGE, PCI_DEVICE_ID) & PINEVIEW_DID_MASK;
+
+	return did == PINEVIEW_MOBILE_DID;
+}
+
+static bool sdram_is_sodimm(const struct sysinfo *s)
+{
+	return s->dimm_type == DIMM_TYPE_SODIMM;
+}
+
 static int decode_spd(struct dimminfo *d, int i)
 {
-	d->type = 0;
+	d->type = DIMM_TYPE_UNKNOWN;
 	if (d->spd_data[20] == 0x2) {
-		d->type = UBDIMM;
+		d->type = DIMM_TYPE_UDIMM;
 	} else if (d->spd_data[20] == 0x4) {
-		d->type = SODIMM;
+		d->type = DIMM_TYPE_SODIMM;
+	} else {
+		return 1;
 	}
+	if (d->spd_data[11] & 0x02)
+		return 1;
 	d->sides = (d->spd_data[5] & 0x7) + 1;
 	d->banks = (d->spd_data[17] >> 2) - 1;
 	d->chip_capacity = d->banks;
@@ -110,16 +129,18 @@ static int decode_spd(struct dimminfo *d, int i)
 	d->tAAmin = d->spd_data[26];
 	d->tCKmin = d->spd_data[25];
 	d->width = (d->spd_data[13] >> 3) - 1;
+	/* Supported DDR2: 4 or 8 banks, x8 or x16, 1 or 2 ranks */
+	if (d->banks > 1 || d->width > 1 || d->sides > 2)
+		return 1;
+	if (d->rows < 12 || d->rows > 15 || d->cols < 9 || d->cols > 10)
+		return 1;
 	d->page_size = (d->width+1) * (1 << d->cols); // Bytes
 	d->tRAS = d->spd_data[30];
 	d->tRP = d->spd_data[27];
 	d->tRCD = d->spd_data[29];
 	d->tWR = d->spd_data[36];
 	d->ranks = d->sides; // XXX
-#if CONFIG(DEBUG_RAM_SETUP)
-	const char *ubso[2] = { "UB", "SO" };
-#endif
-	PRINTK_DEBUG("%s-DIMM %d\n", &ubso[d->type][0], i);
+	PRINTK_DEBUG("%s-DIMM %d\n", d->type == DIMM_TYPE_UDIMM ? "UDIMM" : "SODIMM");
 	PRINTK_DEBUG("  Sides     : %d\n", d->sides);
 	PRINTK_DEBUG("  Banks     : %d\n", d->banks);
 	PRINTK_DEBUG("  Ranks     : %d\n", d->ranks);
@@ -131,93 +152,86 @@ static int decode_spd(struct dimminfo *d, int i)
 	return 0;
 }
 
+static u8 find_dimm_config_dt(const struct dimminfo *d)
+{
+	if (!d->card_type)
+		return 0;
+	if (d->ranks == 1 && d->width == 0)
+		return 1;
+	if (d->ranks == 2 && d->width == 0)
+		return 2;
+	if (d->ranks == 1 && d->width == 1)
+		return 3;
+
+	die("Unsupported UDIMM rank/width config\n");
+}
+
 /*
- * RAM Config:    DIMMB-DIMMA
- *		0 EMPTY-EMPTY
- *		1 EMPTY-x16SS
- *		2 EMPTY-x16DS
- *		3 x16SS-x16SS
- *		4 x16DS-x16DS
- *		5 EMPTY- x8DS
- *		6 x8DS - x8DS
+ * DIMM configuration encoding from vendor MRC.
+ *
+ * Desktop/UDIMM:
+ *   0 NC_NC
+ *   1 x8SS_NC
+ *   2 x8DS_NC
+ *   3 x16SS_NC
+ *   4 NC_x8SS
+ *   5 x8SS_x8SS
+ *   6 x8DS_x8SS
+ *   7 x16SS_x8SS
+ *   8 NC_x8DS
+ *   9 x8SS_x8DS
+ *   A x8DS_x8DS
+ *   B x16SS_x8DS
+ *   C NC_x16SS
+ *   D x8SS_x16SS
+ *   E x8DS_x16SS
+ *   F x16SS_x16SS
+ *
+ * DDR2 SO-DIMM/mobile:
+ *   0 NC_NC
+ *   1 NC_x16SS
+ *   2 NC_x16DS
+ *   3 x16SS_x16SS
+ *   4 x16DS_x16DS
+ *   5 NC_x8DS
+ *   6 x8DS_x8DS
  */
 static void find_ramconfig(struct sysinfo *s, u32 chan)
 {
-	if (s->dimms[chan>>1].sides == 0) {
-		// NC
-		if (s->dimms[(chan>>1) + 1].sides == 0) {
-			// NC/NC
-			s->dimm_config[chan] = 0;
-		} else if (s->dimms[(chan>>1) + 1].sides == 1) {
-			// NC/{8,16}SS
-			s->dimm_config[chan] = 1;
-		} else {
-			// NC/DS
-			if (s->dimms[(chan>>1) + 1].width == 0) {
-				// NC/8DS
+	u8 dimma = chan >> 1;
+	u8 dimmb = dimma + 1;
+
+	if (!sdram_is_sodimm(s)) {
+		u8 dimma_config = find_dimm_config_dt(&s->dimms[dimma]);
+		u8 dimmb_config = find_dimm_config_dt(&s->dimms[dimmb]);
+
+		s->dimm_config[chan] = dimma_config | (dimmb_config << 2);
+		return;
+	}
+
+	/*
+	 * Match the vendor MB/SO-DIMM encoding. A single populated SO-DIMM is
+	 * encoded as NC_xxx regardless of which physical socket is populated.
+	 */
+	if (DIMM_IS_POPULATED(s->dimms, dimma) && DIMM_IS_POPULATED(s->dimms, dimmb)) {
+		s->dimm_config[chan] = 3;
+		if (s->dimms[dimma].sides > 1)
+			s->dimm_config[chan]++;
+		if (s->dimms[dimma].width == 0 && s->dimms[dimma].sides > 1)
+			s->dimm_config[chan] = 6;
+	} else if (DIMM_IS_POPULATED(s->dimms, dimma) || DIMM_IS_POPULATED(s->dimms, dimmb)) {
+		const struct dimminfo *dimm = DIMM_IS_POPULATED(s->dimms, dimma) ?
+						      &s->dimms[dimma] :
+						      &s->dimms[dimmb];
+
+		s->dimm_config[chan] = 1;
+		if (dimm->sides > 1) {
+			s->dimm_config[chan]++;
+			if (dimm->width == 0)
 				s->dimm_config[chan] = 5;
-			} else {
-				// NC/16DS
-				s->dimm_config[chan] = 2;
-			}
-		}
-	} else if (s->dimms[chan>>1].sides == 1) {
-		// SS
-		if (s->dimms[(chan>>1) + 1].sides == 0) {
-			// {8,16}SS/NC
-			s->dimm_config[chan] = 1;
-		} else if (s->dimms[(chan>>1) + 1].sides == 1) {
-			// SS/SS
-			if (s->dimms[chan>>1].width == 0) {
-				if (s->dimms[(chan>>1) + 1].width == 0) {
-					// 8SS/8SS
-					s->dimm_config[chan] = 3;
-				} else {
-					// 8SS/16SS
-					die("Mixed Not supported\n");
-				}
-			} else {
-				if (s->dimms[(chan>>1) + 1].width == 0) {
-					// 16SS/8SS
-					die("Mixed Not supported\n");
-				} else {
-					// 16SS/16SS
-					s->dimm_config[chan] = 3;
-				}
-			}
-		} else {
-			// {8,16}SS/8DS
-			die("Mixed Not supported\n");
 		}
 	} else {
-		// DS
-		if (s->dimms[(chan>>1) + 1].sides == 0) {
-			// DS/NC
-			if (s->dimms[chan>>1].width == 0) {
-				// 8DS/NC
-				s->dimm_config[chan] = 5;
-			} else {
-				s->dimm_config[chan] = 4;
-			}
-		} else if (s->dimms[(chan>>1) + 1].sides == 1) {
-			// 8DS/{8,16}SS
-			if (s->dimms[chan>>1].width == 0) {
-				die("Mixed Not supported\n");
-			} else {
-				if (s->dimms[(chan>>1) + 1].width == 0) {
-					die("Mixed Not supported\n");
-				} else {
-					// 16DS/16DS
-					s->dimm_config[chan] = 4;
-				}
-			}
-		} else {
-			// DS/DS
-			if (s->dimms[chan>>1].width == 0 && s->dimms[(chan>>1)+1].width == 0) {
-				// 8DS/8DS
-				s->dimm_config[chan] = 6;
-			}
-		}
+		s->dimm_config[chan] = 0;
 	}
 }
 
@@ -229,8 +243,10 @@ static void sdram_read_spds(struct sysinfo *s)
 		if (i2c_eeprom_read(s->spd_map[i], 0, 64, s->dimms[i].spd_data) != 64)
 			s->dimms[i].card_type = 0;
 
-		s->dimms[i].card_type = s->dimms[i].spd_data[62] & 0x1f;
+		s->dimms[i].card_type = s->dimms[i].spd_data[SPD_DDR2_REFERENCE_RAW_CARD_USED] &
+					SPD_DDR2_REFERENCE_RAW_CARD_MASK;
 		hexdump(s->dimms[i].spd_data, 64);
+
 	}
 
 	s->spd_type = 0;
@@ -249,6 +265,12 @@ static void sdram_read_spds(struct sysinfo *s)
 	int err = 1;
 	FOR_EACH_POPULATED_DIMM(s->dimms, i) {
 		err = decode_spd(&s->dimms[i], i);
+		if (err)
+			break;
+		if (s->dimm_type == DIMM_TYPE_UNKNOWN)
+			s->dimm_type = s->dimms[i].type;
+		else if (s->dimm_type != s->dimms[i].type)
+			die("Mixed DIMM types not supported\n");
 		s->dt0mode |= (s->dimms[i].spd_data[49] & 0x2) >> 1;
 	}
 	if (err) {
@@ -2501,6 +2523,7 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	memset(&si, 0, sizeof(si));
 
 	si.boot_path = boot_path;
+	si.is_mobile = detect_platform_is_mobile();
 	printk(BIOS_DEBUG, "Boot path: %s\n", boot_str[boot_path]);
 	si.spd_map[0] = spd_addresses[0];
 	si.spd_map[1] = spd_addresses[1];

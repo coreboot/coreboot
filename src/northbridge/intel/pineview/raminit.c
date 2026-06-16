@@ -1345,7 +1345,7 @@ static void sdram_dlltiming(struct sysinfo *s)
 static void sdram_rcomp(struct sysinfo *s)
 {
 	u8 i, j, reg8, rcompp, rcompn, srup, srun;
-	u16 reg16;
+	u16 reg16, lutpbase, lutnbase;
 	u32 reg32, rcomp1, rcomp2;
 
 	static const u8  rcompslew = 0x0a;
@@ -1552,52 +1552,80 @@ static void sdram_rcomp(struct sysinfo *s)
 			srup = (mchbar_read8(C0RCOMPCTRLx(i) + 1) & 0xc0) >> 6;
 			srun = (mchbar_read8(C0RCOMPCTRLx(i) + 1) & 0x30) >> 4;
 
+			if (rcompp < (1 << (srup + 1)))
+				die("RCOMP group %u P base underflow: raw=%u granularity=%u\n",
+				    i, rcompp, srup);
+			if (rcompn < (1 << (srun + 1)))
+				die("RCOMP group %u N base underflow: raw=%u granularity=%u\n",
+				    i, rcompn, srun);
+
 			/* FIXME: Why not do a single word write? */
-			reg16 = (u16)(rcompp - (1 << (srup + 1))) << 8;
+			lutpbase = rcompp - (1 << (srup + 1));
+			reg16 = lutpbase << 8;
 			mchbar_clrsetbits16(C0SLEWBASEx(i), 0x7f << 8, reg16);
 
-			reg16 = (u16)(rcompn - (1 << (srun + 1)));
-			mchbar_clrsetbits8(C0SLEWBASEx(i), 0x7f, (u8)reg16);
+			lutnbase = rcompn - (1 << (srun + 1));
+			mchbar_clrsetbits8(C0SLEWBASEx(i), 0x7f, (u8)lutnbase);
 		}
 
-		reg8 = rcompp - (1 << (srup + 1));
-		for (i = 0, j = reg8; i < 4; i++, j += (1 << srup)) {
+		lutpbase = rcompp - (1 << (srup + 1));
+		for (i = 0, j = lutpbase; i < 4; i++, j += (1 << srup)) {
+			if (j >= ARRAY_SIZE(rcomplut))
+				die("RCOMP P LUT index out of range: %u\n", j);
 			mchbar_clrsetbits8(C0SLEWPULUTx(0) + i, 0x3f, rcomplut[j][0]);
 		}
 
-		for (i = 0, j = reg8; i < 4; i++, j += (1 << srup)) {
-			if (s->dimm_config[0] < 3 || s->dimm_config[0] == 5) {
+		for (i = 0, j = lutpbase; i < 4; i++, j += (1 << srup)) {
+			if (j >= ARRAY_SIZE(rcomplut))
+				die("RCOMP P LUT index out of range: %u\n", j);
+			if (!sdram_is_sodimm(s)) {
+				mchbar_clrsetbits8(C0SLEWPULUTx(2) + i, 0x3f, rcomplut[j][4]);
+			} else if (s->dimm_config[0] < 3 || s->dimm_config[0] == 5) {
 				mchbar_clrsetbits8(C0SLEWPULUTx(2) + i, 0x3f, rcomplut[j][10]);
 			}
 		}
 
-		for (i = 0, j = reg8; i < 4; i++, j += (1 << srup)) {
+		for (i = 0, j = lutpbase; i < 4; i++, j += (1 << srup)) {
+			if (j >= ARRAY_SIZE(rcomplut))
+				die("RCOMP P LUT index out of range: %u\n", j);
 			mchbar_clrsetbits8(C0SLEWPULUTx(3) + i, 0x3f, rcomplut[j][6]);
 			mchbar_clrsetbits8(C0SLEWPULUTx(4) + i, 0x3f, rcomplut[j][6]);
 		}
 
-		for (i = 0, j = reg8; i < 4; i++, j += (1 << srup)) {
+		for (i = 0, j = lutpbase; i < 4; i++, j += (1 << srup)) {
+			if (j >= ARRAY_SIZE(rcomplut))
+				die("RCOMP P LUT index out of range: %u\n", j);
 			mchbar_clrsetbits8(C0SLEWPULUTx(5) + i, 0x3f, rcomplut[j][8]);
 			mchbar_clrsetbits8(C0SLEWPULUTx(6) + i, 0x3f, rcomplut[j][8]);
 		}
 
-		reg8 = rcompn - (1 << (srun + 1));
-		for (i = 0, j = reg8; i < 4; i++, j += (1 << srun)) {
+		lutnbase = rcompn - (1 << (srun + 1));
+		for (i = 0, j = lutnbase; i < 4; i++, j += (1 << srun)) {
+			if (j >= ARRAY_SIZE(rcomplut))
+				die("RCOMP N LUT index out of range: %u\n", j);
 			mchbar_clrsetbits8(C0SLEWPDLUTx(0) + i, 0x3f, rcomplut[j][1]);
 		}
 
-		for (i = 0, j = reg8; i < 4; i++, j += (1 << srun)) {
-			if (s->dimm_config[0] < 3 || s->dimm_config[0] == 5) {
+		for (i = 0, j = lutnbase; i < 4; i++, j += (1 << srun)) {
+			if (j >= ARRAY_SIZE(rcomplut))
+				die("RCOMP N LUT index out of range: %u\n", j);
+			if (!sdram_is_sodimm(s)) {
+				mchbar_clrsetbits8(C0SLEWPDLUTx(2) + i, 0x3f, rcomplut[j][5]);
+			} else if (s->dimm_config[0] < 3 || s->dimm_config[0] == 5) {
 				mchbar_clrsetbits8(C0SLEWPDLUTx(2) + i, 0x3f, rcomplut[j][11]);
 			}
 		}
 
-		for (i = 0, j = reg8; i < 4; i++, j += (1 << srun)) {
+		for (i = 0, j = lutnbase; i < 4; i++, j += (1 << srun)) {
+			if (j >= ARRAY_SIZE(rcomplut))
+				die("RCOMP N LUT index out of range: %u\n", j);
 			mchbar_clrsetbits8(C0SLEWPDLUTx(3) + i, 0x3f, rcomplut[j][7]);
 			mchbar_clrsetbits8(C0SLEWPDLUTx(4) + i, 0x3f, rcomplut[j][7]);
 		}
 
-		for (i = 0, j = reg8; i < 4; i++, j += (1 << srun)) {
+		for (i = 0, j = lutnbase; i < 4; i++, j += (1 << srun)) {
+			if (j >= ARRAY_SIZE(rcomplut))
+				die("RCOMP N LUT index out of range: %u\n", j);
 			mchbar_clrsetbits8(C0SLEWPDLUTx(5) + i, 0x3f, rcomplut[j][9]);
 			mchbar_clrsetbits8(C0SLEWPDLUTx(6) + i, 0x3f, rcomplut[j][9]);
 		}
@@ -1823,17 +1851,17 @@ static void sdram_rcompupdate(struct sysinfo *s)
 		;
 }
 
-static void __attribute__((noinline))
-sdram_jedec(struct sysinfo *s, u8 rank, u8 jmode, u16 jval)
+static void __attribute__((noinline)) sdram_jedec(struct sysinfo *s, u8 jedec_rank, u8 jmode,
+						  u16 jval)
 {
 	u32 reg32;
 
 	reg32 = jval << 3;
-	reg32 |= rank * (1 << 27);
+	reg32 |= jedec_rank * (1 << 27);
 	mchbar_clrsetbits8(C0JEDEC, 0x3e, jmode);
 	read32p(reg32);
 	barrier();
-	hpet_udelay(1); // 1us
+	hpet_udelay(2);
 }
 
 static void sdram_zqcl(struct sysinfo *s)
@@ -1848,7 +1876,7 @@ static void sdram_zqcl(struct sysinfo *s)
 
 static void sdram_jedecinit(struct sysinfo *s)
 {
-	u8 r, i, ch;
+	u8 r, i, ch, jedec_rank;
 	u16 reg16, mrs, rttnom;
 	struct jedeclist {
 		char debug[15];
@@ -1881,6 +1909,7 @@ static void sdram_jedecinit(struct sysinfo *s)
 
 	hpet_udelay(200); // 200us
 	reg16 = 0;
+	jedec_rank = 0;
 	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
 		for (i = 0; i < 12; i++) {
 			PRINTK_DEBUG("Rank:%d Jedec:%14s...", r, jedec[i].debug);
@@ -1895,9 +1924,10 @@ static void sdram_jedecinit(struct sysinfo *s)
 			default:
 				break;
 			}
-			sdram_jedec(s, r, jedec[i].cmd, reg16);
+			sdram_jedec(s, jedec_rank, jedec[i].cmd, reg16);
 			PRINTK_DEBUG("done\n");
 		}
+		jedec_rank++;
 	}
 }
 
@@ -2033,6 +2063,7 @@ static void sdram_dradrb(struct sysinfo *s)
 static u8 sampledqs(u32 dqshighaddr, u32 strobeaddr, u8 highlow, u8 count)
 {
 	u8 dqsmatches = 1;
+
 	while (count--) {
 		mchbar_clrbits8(C0RSTCTL, 1 << 1);
 		hpet_udelay(1);
@@ -2043,25 +2074,35 @@ static u8 sampledqs(u32 dqshighaddr, u32 strobeaddr, u8 highlow, u8 count)
 		barrier();
 		hpet_udelay(1);
 
-		if (((mchbar_read8(dqshighaddr) & (1 << 6)) >> 6) != highlow) {
+		if (((mchbar_read8(dqshighaddr) & (1 << 6)) >> 6) != highlow)
 			dqsmatches = 0;
-		}
 	}
 
 	return dqsmatches;
 }
 
-static void rcvenclock(u8 *coarse, u8 *medium, u8 lane)
+static bool rcvenclock(u8 *coarse, u8 *medium, u8 lane)
 {
 	if (*medium < 3) {
 		(*medium)++;
 		mchbar_clrsetbits16(C0RCVMISCCTL2, 3 << (lane * 2), *medium << (lane * 2));
-	} else {
-		*medium = 0;
-		(*coarse)++;
-		mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, *coarse << 16);
-		mchbar_clrsetbits16(C0RCVMISCCTL2, 3 << (lane * 2), *medium << (lane * 2));
+		return true;
 	}
+
+	*medium = 0;
+	if (*coarse == 0xf)
+		return false;
+
+	(*coarse)++;
+	mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, *coarse << 16);
+	mchbar_clrsetbits16(C0RCVMISCCTL2, 3 << (lane * 2), *medium << (lane * 2));
+	return true;
+}
+
+static void rcven_fail(const char *step, u8 lane, u8 coarse, u8 medium, u8 pi)
+{
+	die("RCVEN lane %u failed %s: coarse=%u medium=%u pi=%u\n", lane, step, coarse, medium,
+	    pi);
 }
 
 static void sdram_rcven(struct sysinfo *s)
@@ -2070,6 +2111,7 @@ static void sdram_rcven(struct sysinfo *s)
 	u8 medium, savemedium;
 	u8 pi, savepi;
 	u8 lane;
+	bool lane_failed;
 	u8 lanecoarse[8] = {0};
 	u8 minlanecoarse = 0xff;
 	u8 offset;
@@ -2085,10 +2127,10 @@ static void sdram_rcven(struct sysinfo *s)
 	PRINTK_DEBUG("rcven 0\n");
 	for (lane = 0; lane < maxlane; lane++) {
 		PRINTK_DEBUG("rcven lane %d\n", lane);
-// trylaneagain:
+		lane_failed = false;
 		dqshighaddr = C0MISCCTLy(lane);
 
-		coarse = s->selected_timings.CAS + 1;
+		coarse = s->selected_timings.CAS;
 		pi = 0;
 		medium = 0;
 
@@ -2108,31 +2150,34 @@ static void sdram_rcven(struct sysinfo *s)
 
 		while (sampledqs(dqshighaddr, strobeaddr, 0, 3) == 0) {
 			// printk(BIOS_DEBUG, "coarse=%d medium=%d\n", coarse, medium);
-			rcvenclock(&coarse, &medium, lane);
-			if (coarse > 0xf) {
+			if (!rcvenclock(&coarse, &medium, lane)) {
 				PRINTK_DEBUG("Error: coarse > 0xf\n");
-				// goto trylaneagain;
+				lane_failed = true;
 				break;
 			}
 		}
 		PRINTK_DEBUG("rcven 0.2\n");
+		if (lane_failed)
+			rcven_fail("before DQS-low search", lane, coarse, medium, pi);
 
 		savecoarse = coarse;
 		savemedium = medium;
-		rcvenclock(&coarse, &medium, lane);
+		if (!rcvenclock(&coarse, &medium, lane))
+			rcven_fail("before DQS-high search", lane, coarse, medium, pi);
 
 		while (sampledqs(dqshighaddr, strobeaddr, 1, 3) == 0) {
 			savecoarse = coarse;
 			savemedium = medium;
-			rcvenclock(&coarse, &medium, lane);
-			if (coarse > 0xf) {
+			if (!rcvenclock(&coarse, &medium, lane)) {
 				PRINTK_DEBUG("Error: coarse > 0xf\n");
-				//goto trylaneagain;
+				lane_failed = true;
 				break;
 			}
 		}
 
 		PRINTK_DEBUG("rcven 0.3\n");
+		if (lane_failed)
+			rcven_fail("before PI search", lane, coarse, medium, pi);
 		coarse = savecoarse;
 		medium = savemedium;
 		mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, coarse << 16);
@@ -2142,10 +2187,11 @@ static void sdram_rcven(struct sysinfo *s)
 			savepi = pi;
 			pi++;
 			if (pi > s->maxpi) {
-				// if (s->nodll) {
+				if (s->nodll) {
 					pi = savepi = s->maxpi;
 					break;
-				// }
+				}
+				rcven_fail("during PI search", lane, coarse, medium, savepi);
 			}
 			mchbar_clrsetbits8(C0RXRCVyDLL(lane), 0x3f, pi << s->pioffset);
 		}
@@ -2153,24 +2199,23 @@ static void sdram_rcven(struct sysinfo *s)
 
 		pi = savepi;
 		mchbar_clrsetbits8(C0RXRCVyDLL(lane), 0x3f, pi << s->pioffset);
-		rcvenclock(&coarse, &medium, lane);
+		if (!rcvenclock(&coarse, &medium, lane))
+			rcven_fail("after PI search", lane, coarse, medium, pi);
 
-		if (sampledqs(dqshighaddr, strobeaddr, 1, 1) == 0) {
-			PRINTK_DEBUG("Error: DQS not high\n");
-			// goto trylaneagain;
-		}
+		if (sampledqs(dqshighaddr, strobeaddr, 1, 3) == 0)
+			rcven_fail("after centering", lane, coarse, medium, pi);
 		PRINTK_DEBUG("rcven 0.5\n");
 		while (sampledqs(dqshighaddr, strobeaddr, 0, 3) == 0) {
+			if (coarse == 0)
+				rcven_fail("finding final DQS-low edge", lane, coarse, medium,
+					   pi);
 			coarse--;
 			mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, coarse << 16);
-			if (coarse == 0) {
-				PRINTK_DEBUG("Error: DQS did not hit 0\n");
-				break;
-			}
 		}
 
 		PRINTK_DEBUG("rcven 0.6\n");
-		rcvenclock(&coarse, &medium, lane);
+		if (!rcvenclock(&coarse, &medium, lane))
+			rcven_fail("at final clock step", lane, coarse, medium, pi);
 		s->pi[lane] = pi;
 		lanecoarse[lane] = coarse;
 	}
@@ -2189,6 +2234,9 @@ static void sdram_rcven(struct sysinfo *s)
 	do {
 		lane--;
 		offset = lanecoarse[lane] - minlanecoarse;
+		if (offset > 3)
+			die("RCVEN lane %u coarse offset too large: offset=%u coarse=%u min=%u\n",
+			    lane, offset, lanecoarse[lane], minlanecoarse);
 		mchbar_clrsetbits16(C0COARSEDLY0, 3 << (lane * 2), offset << (lane * 2));
 	} while (lane != 0);
 
@@ -2405,13 +2453,13 @@ static void sdram_enhancedmode(struct sysinfo *s)
 	mchbar_clrbits8(HIT4, 1 << 1);
 }
 
-static void sdram_periodic_rcomp(void)
+static void sdram_periodic_rcomp(struct sysinfo *s)
 {
-	mchbar_clrbits8(COMPCTRL1, 1 << 1);
-	while ((mchbar_read32(COMPCTRL1) & (1 << 31)) > 0) {
-		;
+	if (s->boot_path != BOOT_PATH_RESET) {
+		mchbar_clrbits8(COMPCTRL1, 1 << 1);
+		do {} while ((mchbar_read32(COMPCTRL1) & (1 << 31)) > 0);
+		mchbar_clrbits16(CSHRMISCCTL, 3 << 12);
 	}
-	mchbar_clrbits16(CSHRMISCCTL, 3 << 12);
 	mchbar_setbits8(CMNDQFIFORST, 1 << 7);
 	mchbar_clrsetbits16(XCOMPDFCTRL, 0x0f, 0x09);
 
@@ -2730,6 +2778,21 @@ static void sdram_programdqdqs(struct sysinfo *s)
 		mchbar_clrbits8(CLOCKGATINGI, 3);
 		return;
 	}
+
+	pimdclk = tmaxunmask / mdclk;
+	feature = 0;
+	for (repeat = 0; repeat < 4; repeat++) {
+		reg32 = pimdclk * mdclk + (mdclk * repeat) / 4;
+		if (reg32 >= (dqdqs_delay + tpi) && reg32 <= tmaxunmask) {
+			feature = 1;
+			push = repeat;
+		}
+	}
+	if (!feature) {
+		mchbar_clrbits8(CLOCKGATINGI, 3);
+		return;
+	}
+
 	mchbar_setbits8(CLOCKGATINGI, 3);
 	mchbar_clrsetbits16(CLOCKGATINGIII, 0xf << 12, pimdclk << 12);
 	mchbar_clrsetbits8(CSHWRIOBONUSX, 0x77, push << 4 | push);
@@ -2806,8 +2869,10 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	mchbar_clrsetbits8(C0IOBUFACTCTL, 0x3f, 0x08);
 	mchbar_setbits8(C0RSTCTL, 1 << 0);
 
-	sdram_rcompupdate(&si);
-	PRINTK_DEBUG("Done RCOMP update\n");
+	if (si.boot_path != BOOT_PATH_RESET) {
+		sdram_rcompupdate(&si);
+		PRINTK_DEBUG("Done RCOMP update\n");
+	}
 
 	mchbar_setbits8(HIT4, 1 << 1);
 
@@ -2852,7 +2917,7 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	sdram_programdqdqs(&si);
 	PRINTK_DEBUG("Done programming dqdqs\n");
 
-	sdram_periodic_rcomp();
+	sdram_periodic_rcomp(&si);
 	PRINTK_DEBUG("Done periodic RCOMP\n");
 
 	/* Set init done */

@@ -11,7 +11,7 @@ DefinitionBlock(
 	ACPI_DSDT_REV_2,
 	OEM_ID,
 	ACPI_TABLE_CREATOR,
-	0x20110725	// OEM revision
+	COREBOOT_OEM_REVISION
 )
 {
 	#include <acpi/dsdt_top.asl>

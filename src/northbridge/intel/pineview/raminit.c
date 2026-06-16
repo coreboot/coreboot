@@ -350,6 +350,9 @@ static void sdram_detect_smallest_params(struct sysinfo *s)
 		3000, // 667
 		2500, // 800
 	};
+	static const u32 trfc_extension[6] = {
+		0, 250, 333, 500, 667, 750,
+	};
 
 	u8 i;
 	u32 maxtras = 0;
@@ -366,8 +369,14 @@ static void sdram_detect_smallest_params(struct sysinfo *s)
 		maxtrp  = MAX(maxtrp,  (s->dimms[i].spd_data[27] * 1000) >> 2);
 		maxtrcd = MAX(maxtrcd, (s->dimms[i].spd_data[29] * 1000) >> 2);
 		maxtwr  = MAX(maxtwr,  (s->dimms[i].spd_data[36] * 1000) >> 2);
-		maxtrfc = MAX(maxtrfc, (s->dimms[i].spd_data[42] * 1000) +
-				       (s->dimms[i].spd_data[40] & 0xf));
+		const u8 trfc_ext = s->dimms[i].spd_data[40];
+		const u8 trfc_idx = (trfc_ext >> 1) & 0x7;
+		if (trfc_idx >= ARRAY_SIZE(trfc_extension))
+			die("Unsupported DDR2 tRFC extension\n");
+		u32 add_trfc = trfc_extension[trfc_idx];
+		if (trfc_ext & 1)
+			add_trfc += 256000;
+		maxtrfc = MAX(maxtrfc, (s->dimms[i].spd_data[42] * 1000) + add_trfc);
 		maxtwtr = MAX(maxtwtr, (s->dimms[i].spd_data[37] * 1000) >> 2);
 		maxtrrd = MAX(maxtrrd, (s->dimms[i].spd_data[28] * 1000) >> 2);
 		maxtrtp = MAX(maxtrtp, (s->dimms[i].spd_data[38] * 1000) >> 2);
@@ -410,11 +419,41 @@ static void sdram_detect_smallest_params(struct sysinfo *s)
 	PRINTK_DEBUG("\ttRTP: %d\n", s->selected_timings.tRTP);
 }
 
+static void sdram_update_clock_dependent_vars(struct sysinfo *s)
+{
+	if (s->selected_timings.mem_clock == MEM_CLOCK_800MHz) {
+		s->nodll = 0;
+		s->maxpi = 63;
+		s->pioffset = 0;
+	} else {
+		s->nodll = 1;
+		s->maxpi = 15;
+		s->pioffset = 1;
+	}
+}
+
+static enum mem_clk get_max_mem_clock(void)
+{
+	u8 ddr_freq_cap = 0;
+
+	ddr_freq_cap |= (pci_read_config8(HOST_BRIDGE, 0xe3) & 0x80) >> 7;
+	ddr_freq_cap |= (pci_read_config8(HOST_BRIDGE, 0xe4) & 0x03) << 1;
+
+	switch (ddr_freq_cap) {
+	case 6:
+		return MEM_CLOCK_667MHz;
+	case 5:
+	case 0: /* No limit */
+		return MEM_CLOCK_800MHz;
+	default:
+		die("Unknown CAPID max DDR frequency %u\n", ddr_freq_cap);
+	}
+}
+
 static void sdram_detect_ram_speed(struct sysinfo *s)
 {
 	u8 cas, reg8;
 	u32 reg32;
-	u32 freq = 0;
 	u32 fsb = 0;
 	u8 i;
 	u8 commoncas = 0;
@@ -422,21 +461,22 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 	u8 lowcas    = 0;
 
 	// Core frequency
-	fsb = (pci_read_config8(HOST_BRIDGE, 0xe3) & 0x70) >> 4;
-	if (fsb) {
-		fsb = 5 - fsb;
-	} else {
+	switch (mchbar_read8(CLKCFG) & 0x07) {
+	case 0x2:
 		fsb = FSB_CLOCK_800MHz;
+		break;
+	case 0x3:
+		fsb = FSB_CLOCK_667MHz;
+		break;
+	default:
+		die("Unsupported core frequency\n");
 	}
 
 	// DDR frequency
-	freq  = (pci_read_config8(HOST_BRIDGE, 0xe3) & 0x80) >> 7;
-	freq |= (pci_read_config8(HOST_BRIDGE, 0xe4) & 0x03) << 1;
-	if (freq) {
-		freq = 6 - freq;
-	} else {
-		freq = MEM_CLOCK_800MHz;
-	}
+	enum mem_clk freq = get_max_mem_clock();
+	// FIXME ddr3...
+	if (sdram_is_sodimm(s))
+		freq = MEM_CLOCK_667MHz;
 
 	// Detect a common CAS latency
 	commoncas = 0xff;
@@ -532,21 +572,16 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 	reg32 |= reg8 << 4;
 	mchbar_write32(CLKCFG, reg32);
 
-	s->selected_timings.mem_clock = ((mchbar_read32(CLKCFG) >> 4) & 0x7) - 2;
-	if (s->selected_timings.mem_clock == MEM_CLOCK_800MHz) {
+	reg8 = ((mchbar_read32(CLKCFG) >> 4) & 0x7) - 2;
+	if (reg8 == MEM_CLOCK_800MHz) {
 		PRINTK_DEBUG("MCH validated at 800MHz\n");
-		s->nodll = 0;
-		s->maxpi = 63;
-		s->pioffset = 0;
-	} else if (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) {
+	} else if (reg8 == MEM_CLOCK_667MHz) {
 		PRINTK_DEBUG("MCH validated at 667MHz\n");
-		s->nodll = 1;
-		s->maxpi = 15;
-		s->pioffset = 1;
 	} else {
-		PRINTK_DEBUG("MCH set to unknown (%02x)\n",
-			(uint8_t)s->selected_timings.mem_clock & 0xff);
+		die("MCH set to unsupported DDR frequency (%02x)\n", reg8);
 	}
+
+	s->selected_timings.mem_clock = reg8;
 }
 
 static void sdram_clk_crossing(struct sysinfo *s)
@@ -2563,6 +2598,7 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 
 	/* Choose Common Frequency */
 	sdram_detect_ram_speed(&si);
+	sdram_update_clock_dependent_vars(&si);
 
 	/* Determine smallest common tRAS, tRP, tRCD, etc */
 	sdram_detect_smallest_params(&si);

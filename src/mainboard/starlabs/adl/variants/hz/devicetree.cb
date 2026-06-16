@@ -116,14 +116,56 @@ chip soc/intel/alderlake
 						register "type"			= "UPC_TYPE_HUB"
 						register "use_custom_pld"	= "true"
 						register "custom_pld"		= "ACPI_PLD_TYPE_C(RIGHT, CENTER, ACPI_PLD_GROUP(0, 2))"
-						device ref usb2_port7 on end
+						device ref usb2_port7 on
+							chip drivers/usb/hub
+								register "name"		= ""GL3510""
+								register "desc"		= ""Right USB 3.0 Hub""
+								register "port_count"	= "4"
+								device usb 0.0 on
+									chip drivers/usb/acpi
+										register "desc"			= ""Right USB Type-C""
+										register "type"			= "UPC_TYPE_C_USB2_SS_SWITCH"
+										register "use_custom_pld"	= "true"
+										register "custom_pld"		= "ACPI_PLD_TYPE_C(RIGHT, CENTER, ACPI_PLD_GROUP(0, 2))"
+										device usb 2.0 on end
+									end
+									chip drivers/usb/acpi
+										register "desc"		= ""Right USB 2.0 Type-A""
+										register "type"		= "UPC_TYPE_A"
+										register "group"	= "ACPI_PLD_GROUP(0, 5)"
+										device usb 2.3 on end
+									end
+								end
+							end
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc"			= ""Right USB 3.0 Hub""
 						register "type"			= "UPC_TYPE_HUB"
 						register "use_custom_pld"	= "true"
 						register "custom_pld"		= "ACPI_PLD_TYPE_C(RIGHT, CENTER, ACPI_PLD_GROUP(0, 2))"
-						device ref usb3_port1 on end
+						device ref usb3_port1 on
+							chip drivers/usb/hub
+								register "name"		= ""GL3510""
+								register "desc"		= ""Right USB 3.0 Hub""
+								register "port_count"	= "4"
+								device usb 0.0 on
+									chip drivers/usb/acpi
+										register "desc"			= ""Right USB Type-C""
+										register "type"			= "UPC_TYPE_C_USB2_SS_SWITCH"
+										register "use_custom_pld"	= "true"
+										register "custom_pld"		= "ACPI_PLD_TYPE_C(RIGHT, CENTER, ACPI_PLD_GROUP(0, 2))"
+										device usb 3.0 on end
+									end
+									chip drivers/usb/acpi
+										register "desc"		= ""Right USB 3.0 Type-A""
+										register "type"		= "UPC_TYPE_USB3_A"
+										register "group"	= "ACPI_PLD_GROUP(0, 5)"
+										device usb 3.3 on end
+									end
+								end
+							end
+						end
 					end
 
 					chip drivers/usb/acpi

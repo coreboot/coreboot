@@ -175,13 +175,53 @@ chip soc/intel/alderlake
 						register "desc"			= ""USB 3.0 Hub""
 						register "type"			= "UPC_TYPE_HUB"
 						register "group"		= "ACPI_PLD_GROUP(0, 3)"
-						device ref usb2_port6 on end
+						device ref usb2_port6 on
+							chip drivers/usb/hub
+								register "name"		= ""GL3510""
+								register "desc"		= ""USB 3.0 Hub""
+								register "port_count"	= "4"
+								device usb 0.0 on
+									chip drivers/usb/acpi
+										register "desc"		= ""Right Front USB 2.0 Type-A""
+										register "type"		= "UPC_TYPE_A"
+										register "group"	= "ACPI_PLD_GROUP(0, 3)"
+										device usb 2.0 on end
+									end
+									chip drivers/usb/acpi
+										register "desc"		= ""Right Rear USB 2.0 Type-A""
+										register "type"		= "UPC_TYPE_A"
+										register "group"	= "ACPI_PLD_GROUP(0, 6)"
+										device usb 2.1 on end
+									end
+								end
+							end
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc"			= ""USB 3.0 Hub""
 						register "type"			= "UPC_TYPE_HUB"
 						register "group"		= "ACPI_PLD_GROUP(0, 3)"
-						device ref usb3_port2 on end
+						device ref usb3_port2 on
+							chip drivers/usb/hub
+								register "name"		= ""GL3510""
+								register "desc"		= ""USB 3.0 Hub""
+								register "port_count"	= "4"
+								device usb 0.0 on
+									chip drivers/usb/acpi
+										register "desc"		= ""Right Front USB 3.0 Type-A""
+										register "type"		= "UPC_TYPE_USB3_A"
+										register "group"	= "ACPI_PLD_GROUP(0, 3)"
+										device usb 3.0 on end
+									end
+									chip drivers/usb/acpi
+										register "desc"		= ""Right Rear USB 3.0 Type-A""
+										register "type"		= "UPC_TYPE_USB3_A"
+										register "group"	= "ACPI_PLD_GROUP(0, 6)"
+										device usb 3.1 on end
+									end
+								end
+							end
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc"			= ""Card Reader""

@@ -156,7 +156,27 @@ chip soc/intel/alderlake
 						register "desc"			= ""USB 2.0 Hub""
 						register "type"			= "UPC_TYPE_HUB"
 						register "group"		= "ACPI_PLD_GROUP(0, 4)"
-						device ref usb2_port6 on end
+						device ref usb2_port6 on
+							chip drivers/usb/hub
+								register "name"		= ""Terminus USB 2.0 Hub""
+								register "desc"		= ""USB 2.0 Hub""
+								register "port_count"	= "4"
+								device usb 0.0 on
+									chip drivers/usb/acpi
+										register "desc"		= ""Internal Front Camera""
+										register "type"		= "UPC_TYPE_INTERNAL"
+										register "group"	= "ACPI_PLD_GROUP(0, 4)"
+										device usb 2.0 on end
+									end
+									chip drivers/usb/acpi
+										register "desc"		= ""Internal Rear Camera""
+										register "type"		= "UPC_TYPE_INTERNAL"
+										register "group"	= "ACPI_PLD_GROUP(0, 4)"
+										device usb 2.1 on end
+									end
+								end
+							end
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc"			= ""CNVi Bluetooth""

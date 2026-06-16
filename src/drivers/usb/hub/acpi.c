@@ -42,6 +42,9 @@ static void usb_hub_add_ports(const struct device *dev)
 	unsigned int child_count = 0;
 
 	while ((port = dev_bus_each_child(dev->downstream, port)) != NULL) {
+		if (!port->enabled)
+			continue;
+
 		if (child_count++ >= config->port_count) {
 			printk(BIOS_WARNING, "%s cannot be added. Port Count limit reached.\n",
 			       dev_name(port));

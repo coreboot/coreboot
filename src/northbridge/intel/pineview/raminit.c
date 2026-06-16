@@ -222,14 +222,10 @@ static void find_ramconfig(struct sysinfo *s, u32 chan)
 		if (s->dimms[dimma].width == 0 && s->dimms[dimma].sides > 1)
 			s->dimm_config[chan] = 6;
 	} else if (DIMM_IS_POPULATED(s->dimms, dimma) || DIMM_IS_POPULATED(s->dimms, dimmb)) {
-		const struct dimminfo *dimm = DIMM_IS_POPULATED(s->dimms, dimma) ?
-						      &s->dimms[dimma] :
-						      &s->dimms[dimmb];
-
 		s->dimm_config[chan] = 1;
-		if (dimm->sides > 1) {
+		if (s->dimms[dimma].sides > 1 || s->dimms[dimmb].sides > 1) {
 			s->dimm_config[chan]++;
-			if (dimm->width == 0)
+			if (s->dimms[dimma].width == 0 || s->dimms[dimmb].width == 0)
 				s->dimm_config[chan] = 5;
 		}
 	} else {
@@ -695,7 +691,7 @@ static void sdram_clkmode(struct sysinfo *s)
 
 static void sdram_timings(struct sysinfo *s)
 {
-	u8 i, j, ch, r, ta1, ta2, ta3, ta4, trp, bank, page, flag;
+	u8 i, j, ta1, ta2, ta3, ta4, trp, bank, page, flag;
 	u8 reg8, wl;
 	u16 reg16;
 	u32 reg32, reg2;
@@ -717,13 +713,12 @@ static void sdram_timings(struct sysinfo *s)
 
 	mchbar_write8(C0LATCTRL, (wl - 3) << 4 | (s->selected_timings.CAS - 3));
 
-	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
-		i = ch << 1;
+	FOR_EACH_POPULATED_DIMM(s->dimms, i) {
 		if (s->dimms[i].banks == 1) {
 			trp = 1;
 			bank = 0;
 		}
-		if (s->dimms[i].page_size == 2048) {
+		if ((s->dimms[i].width + s->dimms[i].cols - 9) > 1) {
 			page = 1;
 		}
 	}

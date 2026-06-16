@@ -104,7 +104,7 @@ endchoice
 
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
-	default 3	# Quad IO (1-1-4)
+	default 5	# Quad IO (1-4-4)
 
 config EFS_SPI_SPEED
 	default 0	# 66MHz

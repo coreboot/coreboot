@@ -3,6 +3,7 @@
 #include <amdblocks/mca.h>
 #include <cpu/x86/msr.h>
 #include <console/console.h>
+#include <smp/node.h>
 #include <types.h>
 #include "mca_common_defs.h"
 
@@ -11,8 +12,12 @@ static void mca_check_all_banks(void)
 	struct mca_bank_status mci;
 	const unsigned int num_banks = mca_get_bank_count();
 
-	if (!mca_has_expected_bank_count())
-		printk(BIOS_WARNING, "CPU has an unexpected number of MCA banks!\n");
+	/*
+	 * Only the BSP has access to non CPU (Cache, UMC, ..) MCA banks.
+	 * APs can only access their own CPU MCA banks.
+	 */
+	if (boot_cpu() && !mca_has_expected_bank_count())
+		printk(BIOS_WARNING, "CPU has an unexpected number of MCA banks %d!\n", mca_get_bank_count());
 
 	if (mca_skip_check())
 		return;

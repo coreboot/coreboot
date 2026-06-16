@@ -35,7 +35,7 @@ static unsigned long add_agesa_fsp_acpi_table(guid_t guid, const char *name, acp
 		return current;
 	}
 
-	printk(BIOS_INFO, "ACPI:    * %s (AGESA).\n", name);
+	printk(BIOS_DEBUG, "ACPI:    * %s (AGESA).\n", name);
 
 	memcpy(table, data->hob_payload, data->table_size_in_bytes);
 

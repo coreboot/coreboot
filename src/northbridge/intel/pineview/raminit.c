@@ -7,6 +7,8 @@
 #include <device/smbus_host.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <cpu/x86/cache.h>
+#include <cpu/x86/mtrr.h>
 #include <delay.h>
 #include <lib.h>
 #include <southbridge/intel/common/hpet.h>
@@ -2081,6 +2083,143 @@ static u8 sampledqs(u32 dqshighaddr, u32 strobeaddr, u8 highlow, u8 count)
 	return dqsmatches;
 }
 
+#define VREF_PATTERN_SIZE 1024
+
+static u8 vref_pattern(u32 addr, bool inverse)
+{
+	u8 pattern_a, pattern_b, pattern;
+	u8 isi_left, isi_total;
+
+	pattern_a = 0xff;
+	pattern_a &= ~((u8)((1 << ((addr >> 13) & 0xf)) >> 1));
+	if (addr & 0x100)
+		pattern_a = ~pattern_a;
+	pattern_b = ~pattern_a;
+
+	isi_left = ((addr >> 11) & 0x3) + 1;
+	isi_total = isi_left + ((addr >> 9) & 0x3) + 1;
+
+	pattern = pattern_a;
+	if ((((addr & 0xff) >> 3) % isi_total) >= isi_left)
+		pattern = pattern_b;
+
+	if (inverse)
+		return ~pattern;
+	return pattern;
+}
+
+static void vref_write_pattern(u32 addr)
+{
+	u16 i;
+
+	for (i = 0; i < VREF_PATTERN_SIZE; i++)
+		write8p(addr + i, vref_pattern(addr + i, true));
+}
+
+static void vref_flush(u32 addr)
+{
+	u16 offset;
+
+	for (offset = 0; offset < 0x2000; offset += 64)
+		clflush((void *)(uintptr_t)(addr + offset));
+}
+
+struct vref_mtrr_save {
+	msr_t base;
+	msr_t mask;
+};
+
+static void vref_temp_cache_enable(u32 addr, struct vref_mtrr_save *save)
+{
+	msr_t base = {0};
+	msr_t mask = {0};
+
+	save->base = rdmsr(MTRR_PHYS_BASE(3));
+	save->mask = rdmsr(MTRR_PHYS_MASK(3));
+
+	base.lo = addr | MTRR_TYPE_WRPROT;
+	mask.lo = (~(0x2000 - 1)) | MTRR_PHYS_MASK_VALID;
+	mask.hi = 0x0f;
+	wrmsr(MTRR_PHYS_BASE(3), base);
+	wrmsr(MTRR_PHYS_MASK(3), mask);
+}
+
+static void vref_temp_cache_disable(const struct vref_mtrr_save *save)
+{
+	wrmsr(MTRR_PHYS_BASE(3), save->base);
+	wrmsr(MTRR_PHYS_MASK(3), save->mask);
+}
+
+static bool vref_read_aligned(u32 addr, u8 vref)
+{
+	u16 retry, i;
+	volatile u8 data;
+	struct vref_mtrr_save save;
+
+	mchbar_clrsetbits8(CSHRMISCCTL1, 0x3f, vref);
+
+	for (retry = 0; retry < 3; retry++) {
+		vref_temp_cache_enable(addr, &save);
+		vref_flush(addr);
+		for (i = 0; i < VREF_PATTERN_SIZE; i++) {
+			data = read8p(addr + i);
+			if (data != vref_pattern(addr + i, true)) {
+				vref_temp_cache_disable(&save);
+				PRINTK_DEBUG(
+					"Vref 0x%02x failed at 0x%08x: wr=0x%02x rd=0x%02x\n",
+					vref, addr + i, vref_pattern(addr + i, true), data);
+				return false;
+			}
+		}
+		vref_temp_cache_disable(&save);
+	}
+
+	return true;
+}
+
+static void update_vref_value(u8 vref_value)
+{
+	mchbar_clrsetbits8(CSHRMISCCTL1, 0x3f, vref_value);
+}
+
+static void sdram_vref_margining(struct sysinfo *s)
+{
+	static const u8 positive[4] = {0x07, 0x0e, 0x15, 0x1c};
+	static const u8 negative[4] = {0x27, 0x2e, 0x35, 0x3c};
+	static const u8 lookup[5][5] = {
+		{0x00, 0x03, 0x04, 0x05, 0x05},
+		{0x23, 0x00, 0x03, 0x04, 0x05},
+		{0x24, 0x23, 0x00, 0x03, 0x04},
+		{0x25, 0x24, 0x23, 0x00, 0x03},
+		{0x25, 0x25, 0x24, 0x23, 0x00},
+	};
+	u8 i, pos_pass = 0, neg_pass = 0;
+	u8 vref_offset = s->spd_type == DDR3 ? 2 : 0;
+	u32 addr = 0;
+
+	mchbar_clrbits16(CSHRMISCCTL1, 1 << 8);
+	vref_write_pattern(addr);
+
+	for (i = 0; i < ARRAY_SIZE(positive); i++) {
+		if (!vref_read_aligned(addr, positive[i]))
+			break;
+		pos_pass++;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(negative); i++) {
+		if (!vref_read_aligned(addr, negative[i]))
+			break;
+		neg_pass++;
+	}
+
+	if (pos_pass == 0 && neg_pass == 0)
+		die("Vref margining failed\n");
+
+	s->vref_value = lookup[neg_pass][pos_pass] + vref_offset;
+	PRINTK_DEBUG("Vref margining pos=%u neg=%u value=0x%02x\n", pos_pass, neg_pass,
+		     s->vref_value);
+}
+
 static bool rcvenclock(u8 *coarse, u8 *medium, u8 lane)
 {
 	if (*medium < 3) {
@@ -2898,6 +3037,14 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 
 	sdram_rcven(&si);
 	PRINTK_DEBUG("Done rcven\n");
+
+	if (!sdram_is_sodimm(&si)) {
+		if (si.boot_path != BOOT_PATH_RESUME) {
+			sdram_vref_margining(&si);
+			PRINTK_DEBUG("Done Vref margining\n");
+		}
+		update_vref_value(si.vref_value);
+	}
 
 	sdram_new_trd(&si);
 	PRINTK_DEBUG("Done tRD\n");

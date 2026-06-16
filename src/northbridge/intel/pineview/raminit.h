@@ -102,6 +102,7 @@ struct sysinfo {
 	u16 coarsedelay;
 	u16 mediumphase;
 	u16 readptrdelay;
+	u8 vref_value;
 
 	int		boot_path;
 	bool		is_mobile;

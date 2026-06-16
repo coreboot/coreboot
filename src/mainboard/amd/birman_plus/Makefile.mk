@@ -11,11 +11,15 @@ ramstage-y += gpio.c
 ramstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_PHOENIX) += port_descriptors_phoenix.c
 ramstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_GLINDA) += port_descriptors_glinda.c
 
+ifeq ($(CONFIG_BOARD_AMD_BIRMANPLUS_GLINDA),y)
+APCB_SOURCES_RECOVERY = $(src)/mainboard/$(MAINBOARDDIR)/APCB_FP8_LPDDR5_DefaultRecovery_glinda.apcb
+else
 ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5.bin),)
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5.bin
 APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5_DefaultRecovery.bin
 else
 show_notices:: warn_no_apcb
+endif
 endif
 
 ifeq ($(CONFIG_BIRMANPLUS_HAVE_MCHP_FW),y)

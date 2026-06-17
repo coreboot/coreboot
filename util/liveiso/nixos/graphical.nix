@@ -38,16 +38,13 @@
 		};
 	};
 
-	services.xserver = {
-		enable = true;
-		displayManager = {
-			gdm = {
-				enable = true;
-				autoSuspend = false;
-			};
+	services.displayManager = {
+		gdm = {
+			enable = true;
+			autoSuspend = false;
 		};
-		desktopManager.gnome.enable = true;
 	};
+	services.desktopManager.gnome.enable = true;
 	services.displayManager = {
 		autoLogin = {
 			enable = true;
@@ -55,7 +52,7 @@
 		};
 	};
 
-	hardware.pulseaudio.enable = false;
+	services.pulseaudio.enable = false;
 	services.pipewire = {
 		enable = true;
 		pulse.enable = true;
@@ -75,23 +72,21 @@
 		gnome = {
 			evolution-data-server.enable = lib.mkForce false;
 			gnome-online-accounts.enable = lib.mkForce false;
-			gnome-online-miners.enable = lib.mkForce false;
 			gnome-initial-setup.enable = lib.mkForce false;
 			gnome-browser-connector.enable = lib.mkForce false;
 		};
 		telepathy.enable = lib.mkForce false;
-		dleyna-renderer.enable = lib.mkForce false;
-		dleyna-server.enable = lib.mkForce false;
+		dleyna.enable = lib.mkForce false;
 	};
 
 	programs.geary.enable = lib.mkForce false;
 
 	environment.gnome.excludePackages = with pkgs; [
-		gnome.gnome-weather
-		gnome.epiphany
-		gnome.gnome-contacts
+		gnome-weather
+		epiphany
+		gnome-contacts
 		gnome-photos
-		gnome.gnome-music
+		gnome-music
 		yelp
 	];
 }

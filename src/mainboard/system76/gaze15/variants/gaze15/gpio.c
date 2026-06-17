@@ -2,7 +2,7 @@
 
 #include <soc/gpe.h>
 #include <soc/gpio.h>
-#include <variant/gpio.h>
+#include <mainboard/gpio.h>
 
 static const struct pad_config gpio_table[] = {
 	/* ------- GPIO Group GPD ------- */
@@ -271,7 +271,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_K23, NONE, DEEP), // DGPU_PRSNT#
 };
 
-void variant_configure_gpios(void)
+void mainboard_configure_gpios(void)
 {
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

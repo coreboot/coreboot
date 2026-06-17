@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/gpio.h>
-#include <variant/gpio.h>
+#include <mainboard/gpio.h>
 
 static const struct pad_config gpio_table[] = {
 	/* ------- GPIO Group GPD ------- */
@@ -260,7 +260,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_K23, NONE, DEEP), // DGPU_PWRGD_R
 };
 
-void variant_configure_gpios(void)
+void mainboard_configure_gpios(void)
 {
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

@@ -116,6 +116,9 @@ chip northbridge/intel/haswell
 						irq 0xe1 = 0		# + GPIOA value
 					end
 				end
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end	# TPM
+				end
 			end
 			device pci 1f.2 on # SATA Controller (AHCI)
 				subsystemid 0x1849 0x8c02

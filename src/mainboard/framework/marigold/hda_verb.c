@@ -3,10 +3,6 @@
 #include <device/azalia_device.h>
 
 static const u32 realtek_alc285_verbs[] = {
-	/* Realtek ALC285 */
-	/* Vendor ID: 0x10ec0285 */
-	/* Subsystem ID: 0xf1110009 */
-
 	AZALIA_SUBVENDOR(0, 0xf1110009),
 	AZALIA_RESET(1),
 
@@ -127,10 +123,6 @@ static const u32 realtek_alc285_verbs[] = {
 };
 
 static const u32 intel_mtl_hdmi_verbs[] = {
-	/* Intel Meteor Lake HDMI */
-	/* Vendor ID: 0x8086281d */
-	/* Subsystem ID: 0x80860101 */
-
 	AZALIA_SUBVENDOR(2, 0x80860101),
 	AZALIA_PIN_CFG(2, 0x04, AZALIA_PIN_DESC(
 		AZALIA_JACK,

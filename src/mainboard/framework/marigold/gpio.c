@@ -17,18 +17,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_V04, NONE, DEEP, NF1),				/* SLP_S3# */
 	PAD_CFG_NF(GPP_V05, NONE, DEEP, NF1),				/* SLP_S4# */
 	PAD_CFG_NF(GPP_V06, NONE, DEEP, NF1),				/* SLP_A# */
-	PAD_NC(GPP_V07, NONE),						/* Does not exist */
 	PAD_CFG_NF(GPP_V08, NONE, DEEP, NF1),				/* SUSCLK (Suspend Clock) */
 	PAD_CFG_NF(GPP_V09, NONE, DEEP, NF1),				/* SLP_WLAN# / PM_SLP_WLAN# */
 	PAD_CFG_NF(GPP_V10, NONE, DEEP, NF1),				/* SLP_S5# */
 	PAD_NC(GPP_V11, NONE),						/* LANPHYPC (not connected) */
 	PAD_NC(GPP_V12, NONE),						/* SLP_LAN# (only testpoint TP3) */
-	PAD_NC(GPP_V13, NONE),						/* Does not exist */
 	PAD_CFG_NF(GPP_V14, NONE, DEEP, NF1),				/* WAKE# / SOC_WL_WAKE# */
-	PAD_NC(GPP_V15, NONE),						/* Does not exist */
-	PAD_NC(GPP_V16, NONE),						/* Does not exist */
-	PAD_NC(GPP_V17, NONE),						/* Does not exist */
-	PAD_NC(GPP_V18, NONE),						/* Does not exist */
 	PAD_NC(GPP_V22, NONE),
 	PAD_NC(GPP_V23, NONE),
 
@@ -47,7 +41,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C11, NONE, DEEP, NF1),				/* SRCCLKREQ2# (WLAN) */
 	PAD_NC(GPP_C12, NONE),
 	PAD_NC(GPP_C13, NONE),
-	PAD_NC(GPP_C14, NONE),						/* Does not exist */
 	PAD_NC(GPP_C15, NONE),						/* GPP_C15_STRAP (Reserved) */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),				/* TBT_LSX0_TXD */
 	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),				/* TBT_LSX0_RXD */
@@ -66,10 +59,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A04, UP_20K, DEEP, NF1),	/* ESPI_CS0# */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A05, UP_20K, DEEP, NF1),	/* ESPI_CLK */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A06, NONE, DEEP, NF1),		/* ESPI_RESET# */
-	PAD_NC(GPP_A07, NONE),						/* Does not exist */
-	PAD_NC(GPP_A08, NONE),						/* Does not exist */
-	PAD_NC(GPP_A09, NONE),						/* Does not exist */
-	PAD_NC(GPP_A10, NONE),						/* Does not exist */
 	PAD_CFG_GPO(GPP_A11, 1, DEEP),					/* RTD3_WLAN_PLT_RST# (10k to 1.8VS) */
 	PAD_NC(GPP_A12, NONE),
 	PAD_NC(GPP_A13, NONE),
@@ -81,8 +70,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A19, NONE),
 	PAD_NC(GPP_A20, NONE),
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A21, NONE, DEEP, NF1),		/* PMCALERT# / SOC_PD_INT# */
-	PAD_NC(GPP_A22, NONE),						/* Does not exist */
-	PAD_NC(GPP_A23, NONE),						/* Does not exist */
 
 	/* ------- GPP_E ------- */
 	PAD_NC(GPP_E00, NONE),
@@ -103,19 +90,13 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E15, NONE),
 	PAD_CFG_NF(GPP_E16, NONE, DEEP, NF2),				/* VRALERT# connected to H_PROCHOT# */
 	PAD_NC(GPP_E17, NONE),
-	PAD_NC(GPP_E18, NONE),						/* Does not exist */
-	PAD_NC(GPP_E19, NONE),						/* Does not exist */
-	PAD_NC(GPP_E20, NONE),						/* Does not exist */
-	PAD_NC(GPP_E21, NONE),						/* Does not exist */
 	PAD_CFG_NF(GPP_E22, NONE, DEEP, NF2),				/* DNX_FORCE_RELOAD (NP resistor RC1 to 1.8V+PRIM) */
-	PAD_NC(GPP_E23, NONE),						/* Does not exist */
 
 	/* ------- GPP_H - UART, I2C1 ------- */
 	/* TODO: Maybe explicitly drive these low instead of relying in "weak internal PD 20K" */
 	PAD_NC(GPP_H00, NONE),						/* GPP_H00_STRAP (eSPI flash sharing mode, no external pull) */
 	PAD_NC(GPP_H01, NONE),						/* GPP_H01_STRAP (Flash descriptor recovery, no external pull) */
 	PAD_NC(GPP_H02, NONE),						/* GPP_H02_STRAP (Reserved, no external pull) */
-	PAD_NC(GPP_H03, NONE),						/* Does not exist */
 	PAD_NC(GPP_H04, NONE),
 	PAD_NC(GPP_H05, NONE),
 	PAD_NC(GPP_H06, NONE),						/* I2C_3_SDA (Touchscreen, unused) */
@@ -124,7 +105,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),				/* UART0_TXD (BIOS, OS UART) */
 	PAD_NC(GPP_H10, NONE),
 	PAD_NC(GPP_H11, NONE),
-	PAD_NC(GPP_H12, NONE),						/* Does not exist */
 	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF1),				/* CPU_C10_GATE# (unused) */
 	PAD_NC(GPP_H14, NONE),
 	PAD_NC(GPP_H15, NONE),
@@ -135,7 +115,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H20, NONE),
 	PAD_CFG_NF(GPP_H21, NONE, DEEP, NF1),				/* I2C1_SDA (EC HID) */
 	PAD_CFG_NF(GPP_H22, NONE, DEEP, NF1),				/* I2C1_SCL (EC HID) */
-	PAD_NC(GPP_H23, NONE),						/* Does not exist */
 
 	/* ------- GPP_F - CNVi ------- */
 	PAD_CFG_NF(GPP_F00, NONE, DEEP, NF1),				/* CNV_BRI_DT */
@@ -209,7 +188,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_D06, NONE, DEEP, LEVEL, INVERT),		/* SOC_EC_INT2# */
 	PAD_NC(GPP_D07, NONE),
 	PAD_NC(GPP_D08, NONE),						/* SML0B_ALERT# (TODO: This may need to be NF. It just has a pullup to +1.8V_PRIM) */
-	PAD_NC(GPP_D09, NONE),						/* Does not exist */
 	PAD_CFG_NF(GPP_D10, NATIVE, DEEP, NF1),				/* HDA_BCLK */
 	PAD_CFG_NF(GPP_D11, NATIVE, DEEP, NF1),				/* HDA_SYNC */
 	PAD_CFG_NF(GPP_D12, NATIVE, DEEP, NF1),				/* HDA_SDO */

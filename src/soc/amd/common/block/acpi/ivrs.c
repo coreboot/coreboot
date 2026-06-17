@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <acpi/acpi_ivrs.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/cpu.h>
@@ -19,6 +20,9 @@
 static unsigned long acpi_fill_ivrs_ioapic(unsigned long current, uintptr_t ioapic_base,
 					    uint16_t src_devid, uint8_t dte_setting)
 {
+	if (!check_acpi_tables_write_limit(current, sizeof(ivrs_ivhd_special_t)))
+		return current;
+
 	ivrs_ivhd_special_t *ivhd_ioapic = (ivrs_ivhd_special_t *)current;
 	memset(ivhd_ioapic, 0, sizeof(*ivhd_ioapic));
 
@@ -34,6 +38,9 @@ static unsigned long acpi_fill_ivrs_ioapic(unsigned long current, uintptr_t ioap
 
 static unsigned long ivhd_describe_hpet(unsigned long current, uint8_t hndl, uint16_t src_devid)
 {
+	if (!check_acpi_tables_write_limit(current, sizeof(ivrs_ivhd_special_t)))
+		return current;
+
 	ivrs_ivhd_special_t *ivhd_hpet = (ivrs_ivhd_special_t *)current;
 	memset(ivhd_hpet, 0, sizeof(*ivhd_hpet));
 
@@ -49,6 +56,9 @@ static unsigned long ivhd_describe_hpet(unsigned long current, uint8_t hndl, uin
 static unsigned long ivhd_describe_f0_device(unsigned long current, uint16_t dev_id,
 					     const char acpi_hid[8], uint8_t datasetting)
 {
+	if (!check_acpi_tables_write_limit(current, sizeof(ivrs_ivhd_f0_entry_t)))
+		return current;
+
 	ivrs_ivhd_f0_entry_t *ivhd_f0 = (ivrs_ivhd_f0_entry_t *)current;
 	memset(ivhd_f0, 0, sizeof(*ivhd_f0));
 
@@ -65,10 +75,14 @@ static unsigned long ivhd_describe_f0_device(unsigned long current, uint16_t dev
 static unsigned long ivhd_dev_range(unsigned long current, uint16_t start_devid,
 				    uint16_t end_devid, uint8_t setting)
 {
+	unsigned long next = ALIGN_UP(current, 4);
+	if (!check_acpi_tables_write_limit(next, 2 * sizeof(ivrs_ivhd_generic_t)))
+		return current;
+
 	/* 4-byte IVHD structures must be aligned to the 4-byte boundary. */
-	current = ALIGN_UP(current, 4);
+	current = next;
 	ivrs_ivhd_generic_t *ivhd_range = (ivrs_ivhd_generic_t *)current;
-	memset(ivhd_range, 0, sizeof(*ivhd_range));
+	memset(ivhd_range, 0, 2 * sizeof(*ivhd_range));
 
 	/* Create the start range IVHD entry */
 	ivhd_range->type = IVHD_DEV_4_BYTE_START_RANGE;
@@ -90,8 +104,12 @@ static unsigned long add_ivhd_dev_entry(struct device *parent, struct device *de
 					unsigned long *current, uint8_t type, uint8_t data)
 {
 	if (type == IVHD_DEV_4_BYTE_SELECT) {
+		unsigned long next = ALIGN_UP(*current, 4);
+		if (!check_acpi_tables_write_limit(next, sizeof(ivrs_ivhd_generic_t)))
+			return *current;
+
 		/* 4-byte IVHD structures must be aligned to the 4-byte boundary. */
-		*current = ALIGN_UP(*current, 4);
+		*current = next;
 		ivrs_ivhd_generic_t *ivhd_entry = (ivrs_ivhd_generic_t *)*current;
 		memset(ivhd_entry, 0, sizeof(*ivhd_entry));
 
@@ -100,6 +118,9 @@ static unsigned long add_ivhd_dev_entry(struct device *parent, struct device *de
 		ivhd_entry->dte_setting = data;
 		*current += sizeof(ivrs_ivhd_generic_t);
 	} else if (type == IVHD_DEV_8_BYTE_ALIAS_SELECT) {
+		if (!check_acpi_tables_write_limit(*current, sizeof(ivrs_ivhd_alias_t)))
+			return *current;
+
 		ivrs_ivhd_alias_t *ivhd_entry = (ivrs_ivhd_alias_t *)*current;
 		memset(ivhd_entry, 0, sizeof(*ivhd_entry));
 

@@ -32,6 +32,21 @@ is
             when others => No_Rotation);
    end Screen_Rotation;
 
+   function Default_Framebuffer_Pipe return Pipe_Index
+   is
+   begin
+      -- On i945, LVDS has to use Pipe B.  Display probing swaps it from
+      -- Primary to Secondary when LVDS is the only active display; that
+      -- swap is the only way Primary can be disabled with Secondary active.
+      if configs (Primary).Port = Disabled and then
+         configs (Secondary).Port /= Disabled
+      then
+         return Secondary;
+      else
+         return Primary;
+      end if;
+   end Default_Framebuffer_Pipe;
+
    procedure gfxinit (lightup_ok : out Interfaces.C.int)
    is
       use type pos32;
@@ -53,6 +68,8 @@ is
 
       fbinfo : Interfaces.C.int;
 
+      fb_pipe : Pipe_Index;
+
    begin
       lightup_ok := 0;
 
@@ -62,15 +79,21 @@ is
          ports := Mainboard.ports;
          HW.GFX.GMA.Display_Probing.Scan_Ports (configs, ports);
 
-         if configs (Primary).Port /= Disabled then
-            for i in Pipe_Index loop
-               exit when configs (i).Port = Disabled;
+         fb_pipe := Default_Framebuffer_Pipe;
+         if configs (fb_pipe).Port /= Disabled then
+            if fb_pipe = Secondary then
+               min_h := pos32'min (min_h, configs (Secondary).Mode.H_Visible);
+               min_v := pos32'min (min_v, configs (Secondary).Mode.V_Visible);
+            else
+               for i in Pipe_Index loop
+                  exit when configs (i).Port = Disabled;
 
-               min_h := pos32'min (min_h, configs (i).Mode.H_Visible);
-               min_v := pos32'min (min_v, configs (i).Mode.V_Visible);
-            end loop;
+                  min_h := pos32'min (min_h, configs (i).Mode.H_Visible);
+                  min_v := pos32'min (min_v, configs (i).Mode.V_Visible);
+               end loop;
+            end if;
 
-            fb := configs (Primary).Framebuffer;
+            fb := configs (fb_pipe).Framebuffer;
             Screen_Rotation (fb.Rotation);
 
             if fb.Rotation = Rotated_90 or fb.Rotation = Rotated_270 then
@@ -87,11 +110,15 @@ is
                fb.V_Stride := fb.Height;
             end if;
 
-            for i in Pipe_Index loop
-               exit when configs (i).Port = Disabled;
+            if fb_pipe = Secondary then
+               configs (Secondary).Framebuffer := fb;
+            else
+               for i in Pipe_Index loop
+                  exit when configs (i).Port = Disabled;
 
-               configs (i).Framebuffer := fb;
-            end loop;
+                  configs (i).Framebuffer := fb;
+               end loop;
+            end if;
 
             pragma Debug (HW.GFX.GMA.Dump_Configs (configs));
 
@@ -122,8 +149,9 @@ is
 
    procedure gfxstop
    is
+      fb_pipe : constant Pipe_Index := Default_Framebuffer_Pipe;
    begin
-      if configs (Primary).Port /= Disabled then
+      if configs (fb_pipe).Port /= Disabled then
          for i in Pipe_Index loop
             configs (i).Port := Disabled;
          end loop;

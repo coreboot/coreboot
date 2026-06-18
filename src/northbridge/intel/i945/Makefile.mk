@@ -8,6 +8,14 @@ ramstage-y += memmap.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c
 
+i945-gma-mainboard-ads := \
+	$(wildcard $(src)/mainboard/$(MAINBOARDDIR)/gma-mainboard.ads) \
+	$(wildcard $(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/gma-mainboard.ads)
+
+ifeq ($(strip $(i945-gma-mainboard-ads)),)
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
+endif
+
 romstage-y += romstage.c
 romstage-y += memmap.c
 romstage-y += raminit.c

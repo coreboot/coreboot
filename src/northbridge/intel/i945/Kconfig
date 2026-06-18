@@ -7,7 +7,7 @@ config NORTHBRIDGE_INTEL_I945
 	select INTEL_GMA_ACPI
 	select INTEL_GMA_SSC_ALTERNATE_REF
 	select INTEL_EDID
-	select HAVE_VGA_TEXT_FRAMEBUFFER if MAINBOARD_DO_NATIVE_VGA_INIT
+	select MAINBOARD_HAS_LIBGFXINIT
 	select DRAM_SUPPORT_DDR2
 	select NEED_SMALL_2MB_PAGE_TABLES
 
@@ -24,15 +24,6 @@ config VGA_BIOS_ID
 	string
 	default "8086,27a2" if NORTHBRIDGE_INTEL_SUBTYPE_I945GM
 	default "8086,2772" if NORTHBRIDGE_INTEL_SUBTYPE_I945GC
-
-config I945_LVDS
-	def_bool n
-	select MAINBOARD_HAS_NATIVE_VGA_INIT
-	select HAVE_LINEAR_FRAMEBUFFER if MAINBOARD_DO_NATIVE_VGA_INIT
-	help
-	  Selected by mainboards that use native graphics initialization
-	  for the LVDS port. A linear framebuffer is only supported for
-	  LVDS.
 
 config ECAM_MMCONF_BASE_ADDRESS
 	default 0xf0000000

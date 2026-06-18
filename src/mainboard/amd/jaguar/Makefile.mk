@@ -8,6 +8,7 @@ romstage-y += port_descriptors.c
 
 ramstage-y += gpio.c
 ramstage-y += port_descriptors.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
 APCB_SOURCES_RECOVERY = $(src)/mainboard/$(MAINBOARDDIR)/APCB_FP8_LPDDR5_DefaultRecovery.apcb
 

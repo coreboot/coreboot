@@ -235,18 +235,47 @@ static void find_ramconfig(struct sysinfo *s, u32 chan)
 	}
 }
 
+#define USED_DDR2_SPD_DATA_SIZE 64
+
+static bool sdram_read_spd(u8 spd_addr, u8 *spd_data)
+{
+	int val;
+	u8 byte, retry;
+
+	if (spd_addr == 0)
+		return false;
+
+	if (i2c_eeprom_read(spd_addr, 0, USED_DDR2_SPD_DATA_SIZE, spd_data)
+	    == USED_DDR2_SPD_DATA_SIZE)
+		return true;
+
+	for (byte = 0; byte < USED_DDR2_SPD_DATA_SIZE; byte++) {
+		for (retry = 0; retry < 3; retry++) {
+			val = smbus_read_byte(spd_addr, byte);
+			if (val >= 0)
+				break;
+		}
+		if (val < 0)
+			return false;
+		spd_data[byte] = val;
+	}
+
+	return true;
+}
+
 static void sdram_read_spds(struct sysinfo *s)
 {
 	u8 i, chan;
 	s->dt0mode = 0;
 	FOR_EACH_DIMM(i) {
-		if (i2c_eeprom_read(s->spd_map[i], 0, 64, s->dimms[i].spd_data) != 64)
+		if (!sdram_read_spd(s->spd_map[i], s->dimms[i].spd_data)) {
 			s->dimms[i].card_type = 0;
+			continue;
+		}
 
 		s->dimms[i].card_type = s->dimms[i].spd_data[SPD_DDR2_REFERENCE_RAW_CARD_USED] &
-					SPD_DDR2_REFERENCE_RAW_CARD_MASK;
-		hexdump(s->dimms[i].spd_data, 64);
-
+						SPD_DDR2_REFERENCE_RAW_CARD_MASK;
+		hexdump(s->dimms[i].spd_data, USED_DDR2_SPD_DATA_SIZE);
 	}
 
 	s->spd_type = 0;

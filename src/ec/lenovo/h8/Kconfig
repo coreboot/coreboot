@@ -49,6 +49,14 @@ config H8_HAS_BAT_THRESHOLDS_IMPL
 	bool
 	default n
 
+config H8_HAS_BAT_INFO_EXTENDED
+	bool
+	default n
+	help
+	  Enable ACPI _BIX() method for extended battery information.
+	  Selected by boards where the Embedded Controller is known to
+	  provide hardware support for the "Cycle Count" register.
+
 config H8_FN_KEY_AS_VBOOT_RECOVERY_SW
 	bool "Enable Fn-Key as VBOOT recovery switch"
 	depends on VBOOT

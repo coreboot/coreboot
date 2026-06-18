@@ -33,6 +33,10 @@ Field (ERAM, ByteAcc, NoLock, Preserve)
 {
 	Offset(0xa0),
 			BAMA, 16,		/* 16-bit read required; 8-bit access at 0xa1 returns garbage! */
+#if CONFIG(H8_HAS_BAT_INFO_EXTENDED)
+	Offset(0xa4),
+			BACC, 16,		/* Battery Cycle Count */
+#endif
 }
 
 /* PAGE == 0x02 */
@@ -94,7 +98,7 @@ Method(BSTA, 4, NotSerialized)
 {
 	Acquire(ECLK, 0xffff)
 	Local0 = 0
-	^BPAG(Arg0 | 1) /* Battery static information */
+	^BPAG(Arg0 | 1) /* Battery management */
 	Local1 = BAMA
 	Local1 >>= 0x0f
 	^BPAG(Arg0) /* Battery dynamic information */
@@ -135,7 +139,7 @@ Method(BSTA, 4, NotSerialized)
 
 	/*
 	 * Values are in mAh but we want mWh.
-	 * This is required to match PowerUnit!
+	 * This is required to match power unit!
 	 */
 	if (Local1) {
 		Arg1 [2] = BARC * 10
@@ -150,30 +154,98 @@ Method(BSTA, 4, NotSerialized)
 	Return (Arg1)
 }
 
-Method(BINF, 2, Serialized)
+/*
+ * (Get) Battery Information
+ *
+ * Arg0: BATS template for legacy _BIF method
+ * Arg1: BATX template for modern _BIX method
+ * Arg2: Battery ID (0x1=BAT0; 0x2=BAT1)
+ */
+Method(BINF, 3, Serialized)
+{
+	BINX(Arg1, Arg2)
+
+	Arg0 [0x00] = DerefOf(Arg1 [0x01]) // Power Unit
+	Arg0 [0x01] = DerefOf(Arg1 [0x02]) // Design Capacity
+	Arg0 [0x02] = DerefOf(Arg1 [0x03]) // Last Full Charge Capacity
+	Arg0 [0x03] = DerefOf(Arg1 [0x04]) // Battery Technology
+
+	// Design Voltage (keep different default value!)
+	Local0 = DerefOf(Arg1 [0x05])
+	If (Local0 != 0xffffffff)
+	{
+		Arg0 [0x04] = Local0
+	}
+
+	Arg0 [0x05] = DerefOf(Arg1 [0x06]) // Design Capacity of Warning
+	Arg0 [0x06] = DerefOf(Arg1 [0x07]) // Design Capacity of Low
+
+	// Battery Capacity Granularity 1 (keep different default value!)
+	Local0 = DerefOf(Arg1 [0x0e])
+	If (Local0 != 0xffffffff)
+	{
+		Arg0 [0x07] = Local0
+	}
+
+	// Battery Capacity Granularity 2 (keep different default value!)
+	Local0 = DerefOf(Arg1 [0x0f])
+	If (Local0 != 0xffffffff)
+	{
+		Arg0 [0x08] = Local0
+	}
+
+	Arg0 [0x09] = DerefOf(Arg1 [0x10]) // Model Number
+	Arg0 [0x0a] = DerefOf(Arg1 [0x11]) // Serial Number
+	Arg0 [0x0b] = DerefOf(Arg1 [0x12]) // Battery Type
+	Arg0 [0x0c] = DerefOf(Arg1 [0x13]) // OEM Information
+
+	Return (Arg0)
+}
+
+/*
+ * (Get) Battery Information Extended
+ *
+ * Arg0: Template with default values
+ * Arg1: Battery ID (0x1=BAT0; 0x2=BAT1)
+ */
+Method(BINX, 2, Serialized)
 {
 	Acquire(ECLK, 0xffff)
-	^BPAG(1 | Arg1) /* Battery static information */
+	^BPAG(Arg1 | 1) /* Battery management */
 	Local0 = BAMA
 	Local0 >>= 0x0f
-	^BPAG(Arg1)
+#if CONFIG(H8_HAS_BAT_INFO_EXTENDED)
+	Local5 = BACC
+#endif
+	^BPAG(Arg1) /* Battery dynamic information */
 	Local2 = BAFC
-	^BPAG(Arg1 | 2)
+	^BPAG(Arg1 | 2) /* Battery static design data */
 	Local1 = BADC
+	Local3 = BADV
+	Local4 = 0
 
-	if (Local0)
+	If (Local0)
 	{
 		Local1 *= 10
 		Local2 *= 10
+		Local4 = 200
+	}
+	ElseIf (Local3)
+	{
+		Local4 = 200000 / Local3
 	}
 
-	Arg0 [0] = Local0 ^ 1	// PowerUnit (mWh/mAh)
-	Arg0 [1] = Local1	// Design Capacity
-	Arg0 [2] = Local2	// Last full charge capacity
-	Arg0 [4] = BADV		// Design Voltage
-	Local0 = Local2 % 20	// FIXME: Local0 not used
-	Arg0 [5] = Local2 / 20	// Warning capacity
+	Arg0 [0x01] = Local0 ^ 1	// Power Unit
+	Arg0 [0x02] = Local1		// Design Capacity
+	Arg0 [0x03] = Local2		// Last Full Charge Capacity
+	Arg0 [0x05] = Local3		// Design Voltage
+	Arg0 [0x06] = Local2 / 20	// Design Capacity of Warning
+	Arg0 [0x07] = Local4		// Design Capacity of Low
+#if CONFIG(H8_HAS_BAT_INFO_EXTENDED)
+	Arg0 [0x08] = Local5		// Cycle Count
+#endif
 
+	// Serial Number
 	Local0 = BASN
 	Name (SERN, Buffer (0x06) { "     " })
 	Local1 = 4
@@ -184,16 +256,22 @@ Method(BINF, 2, Serialized)
 		SERN [Local1] = Local2 + 48
 		Local1--
 	}
-	Arg0 [10] = SERN // Serial Number
+	Arg0 [0x11] = SERN
 
-	^BPAG(4 | Arg1)
+	// Battery Type
+	^BPAG(Arg1 | 4)
 	Name (TYPE, Buffer() { 0, 0, 0, 0, 0 })
 	TYPE = BATY
-	Arg0 [11] = TYPE // Battery type
+	Arg0 [0x12] = TYPE
+
+	// OEM Information
 	^BPAG(Arg1 | 5)
-	Arg0 [12] = BAOE // OEM information
+	Arg0 [0x13] = BAOE
+
+	// Model Number
 	^BPAG(Arg1 | 6)
-	Arg0 [9] = BANA  // Model number
+	Arg0 [0x10] = BANA
+
 	Release(ECLK)
 	Return (Arg0)
 }
@@ -204,27 +282,61 @@ Device (BAT0)
 	Name (_UID, 0x00)
 	Name (_PCL, Package () { \_SB })
 
+	// Template for _BIF
 	Name (BATS, Package ()
 	{
-		0x00,			// 0: PowerUnit: Report in mWh
-		0xFFFFFFFF,		// 1: Design cap
-		0xFFFFFFFF,		// 2: Last full charge cap
-		0x01,			// 3: Battery Technology
-		10800,			// 4: Design Voltage (mV)
-		0x00,			// 5: Warning design capacity
-		200,			// 6: Low design capacity
-		1,			// 7: granularity1
-		1,			// 8: granularity2
-		"",			// 9: Model number
-		"",			// A: Serial number
-		"",			// B: Battery Type
-		""			// C: OEM information
+		0x00,			// 00: Power Unit (report in mWh)
+		0xFFFFFFFF,		// 01: Design Capacity
+		0xFFFFFFFF,		// 02: Last Full Charge Capacity
+		0x01,			// 03: Battery Technology
+		10800,			// 04: Design Voltage (mV)
+		0x00,			// 05: Design Capacity of Warning
+		0x00,			// 06: Design Capacity of Low
+		1,			// 07: Battery Capacity Granularity 1
+		1,			// 08: Battery Capacity Granularity 2
+		"",			// 09: Model Number
+		"",			// 0A: Serial Number
+		"",			// 0B: Battery Type
+		""			// 0C: OEM Information
+	})
+
+	// Template for _BIX
+	Name (BATX, Package ()
+	{
+		0x00,			// 00: Revision
+		0x00,			// 01: Power Unit (report in mWh)
+		0xFFFFFFFF,		// 02: Design Capacity
+		0xFFFFFFFF,		// 03: Last Full Charge Capacity
+		0x01,			// 04: Battery Technology
+		0xFFFFFFFF,		// 05: Design Voltage (mV)
+		0x00,			// 06: Design Capacity of Warning
+		0x00,			// 07: Design Capacity of Low
+		0xFFFFFFFF,		// 08: Cycle Count
+		0x00017318,		// 09: Measurement Accuracy
+		0xFFFFFFFF,		// 0A: Max Sampling Time
+		0xFFFFFFFF,		// 0B: Min Sampling Time
+		0x03E8,			// 0C: Max Averaging Interval
+		0x01F4,			// 0D: Min Averaging Interval
+		0xFFFFFFFF,		// 0E: Battery Capacity Granularity 1
+		0xFFFFFFFF,		// 0F: Battery Capacity Granularity 2
+		"",			// 10: Model Number
+		"",			// 11: Serial Number
+		"",			// 12: Battery Type
+		""			// 13: OEM Information
+					// 14: Battery Swapping Capability (not available in revision 0!)
 	})
 
 	Method (_BIF, 0, NotSerialized)
 	{
-		Return (BINF(BATS, 0))
+		Return (BINF(BATS, BATX, 0x00))
 	}
+
+#if CONFIG(H8_HAS_BAT_INFO_EXTENDED)
+	Method (_BIX, 0, NotSerialized)
+	{
+		Return (BINX(BATX, 0x00))
+	}
+#endif
 
 	Name (BATI, Package ()
 	{
@@ -262,27 +374,61 @@ Device (BAT1)
 	Name (_UID, 0x00)
 	Name (_PCL, Package () { \_SB })
 
+	// Template for _BIF
 	Name (BATS, Package ()
 	{
-		0x00,			// 0: PowerUnit: Report in mWh
-		0xFFFFFFFF,		// 1: Design cap
-		0xFFFFFFFF,		// 2: Last full charge cap
-		0x01,			// 3: Battery Technology
-		10800,			// 4: Design Voltage (mV)
-		0x00,			// 5: Warning design capacity
-		200,			// 6: Low design capacity
-		1,			// 7: granularity1
-		1,			// 8: granularity2
-		"",			// 9: Model number
-		"",			// A: Serial number
-		"",			// B: Battery Type
-		""			// C: OEM information
+		0x00,			// 00: Power Unit (report in mWh)
+		0xFFFFFFFF,		// 01: Design Capacity
+		0xFFFFFFFF,		// 02: Last Full Charge Capacity
+		0x01,			// 03: Battery Technology
+		10800,			// 04: Design Voltage (mV)
+		0x00,			// 05: Design Capacity of Warning
+		0x00,			// 06: Design Capacity of Low
+		1,			// 07: Battery Capacity Granularity 1
+		1,			// 08: Battery Capacity Granularity 2
+		"",			// 09: Model Number
+		"",			// 0A: Serial Number
+		"",			// 0B: Battery Type
+		""			// 0C: OEM Information
+	})
+
+	// Template for _BIX
+	Name (BATX, Package ()
+	{
+		0x00,			// 00: Revision
+		0x00,			// 01: Power Unit (report in mWh)
+		0xFFFFFFFF,		// 02: Design Capacity
+		0xFFFFFFFF,		// 03: Last Full Charge Capacity
+		0x01,			// 04: Battery Technology
+		0xFFFFFFFF,		// 05: Design Voltage (mV)
+		0x00,			// 06: Design Capacity of Warning
+		0x00,			// 07: Design Capacity of Low
+		0xFFFFFFFF,		// 08: Cycle Count
+		0x00017318,		// 09: Measurement Accuracy
+		0xFFFFFFFF,		// 0A: Max Sampling Time
+		0xFFFFFFFF,		// 0B: Min Sampling Time
+		0x03E8,			// 0C: Max Averaging Interval
+		0x01F4,			// 0D: Min Averaging Interval
+		0xFFFFFFFF,		// 0E: Battery Capacity Granularity 1
+		0xFFFFFFFF,		// 0F: Battery Capacity Granularity 2
+		"",			// 10: Model Number
+		"",			// 11: Serial Number
+		"",			// 12: Battery Type
+		""			// 13: OEM Information
+					// 14: Battery Swapping Capability (not available in revision 0!)
 	})
 
 	Method (_BIF, 0, NotSerialized)
 	{
-		Return (BINF(BATS, 0x10))
+		Return (BINF(BATS, BATX, 0x10))
 	}
+
+#if CONFIG(H8_HAS_BAT_INFO_EXTENDED)
+	Method (_BIX, 0, NotSerialized)
+	{
+		Return (BINX(BATX, 0x10))
+	}
+#endif
 
 	Name (BATI, Package ()
 	{

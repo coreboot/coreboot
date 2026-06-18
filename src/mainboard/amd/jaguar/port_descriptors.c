@@ -19,28 +19,10 @@ bool devtree_xgbe_dev_enabled(uint8_t port_num);
 #define XGBE_PORT_1 1
 #define ETHERNET_PORT_COUNT 2
 
-/* Eval slot / PCIe SLOT-0 (CLK_REQ4) */
-#define jaguar_mxm_dxio_descriptor {				\
-	.engine_type = PCIE_ENGINE,				\
-	.port_present = true,					\
-	.start_logical_lane = 12,				\
-	.end_logical_lane = 19,					\
-	.device_number = 3,					\
-	.function_number = 1,					\
-	.link_speed_capability = GEN_MAX,			\
-	.turn_off_unused_lanes = true,				\
-	.link_aspm = ASPM_L1,					\
-	.link_aspm_L1_1 = true,					\
-	.link_aspm_L1_2 = true,					\
-	.link_hotplug = HOTPLUG_ENHANCED,			\
-	.clk_req = CLK_REQ4,					\
-	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133},	\
-}
-
-/* 2(x4)  Eval slot / PCIe SLOT-0 (CLK_REQ4) */
+/* x8:x4 Eval slot / PCIe SLOT-0 (CLK_REQ4) */
 #define jaguar_mxm_v0_dxio_descriptor {			\
-	.engine_type = PCIE_ENGINE,				\
-	.port_present = true,					\
+	.engine_type = UNUSED_ENGINE,				\
+	.port_present = false,					\
 	.start_logical_lane = 12,				\
 	.end_logical_lane = 15,					\
 	.device_number = 3,					\
@@ -53,10 +35,10 @@ bool devtree_xgbe_dev_enabled(uint8_t port_num);
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133},	\
 }
 
-/* 4x - 8x  Eval slot / PCIe SLOT-0 (CLK_REQ4) */
+/* x4 Eval slot / PCIe SLOT-0 (CLK_REQ4) */
 #define jaguar_mxm_v1_dxio_descriptor {			\
-	.engine_type = PCIE_ENGINE,				\
-	.port_present = true,					\
+	.engine_type = UNUSED_ENGINE,				\
+	.port_present = false,					\
 	.start_logical_lane = 16,				\
 	.end_logical_lane = 19,					\
 	.device_number = 3,					\
@@ -205,15 +187,8 @@ void mainboard_get_dxio_ddi_descriptors(
 		jaguar_nvme0_dxio_descriptor,
 		jaguar_gpp1_dxio_descriptor,
 		jaguar_wlan_dxio_descriptor,
-#if CONFIG(ENABLE_EVAL_CARD)
-#if CONFIG(PCIE_SLOT0_1X8)
-		jaguar_mxm_dxio_descriptor,
-#endif
-#if CONFIG(PCIE_SLOT0_2X4)
 		jaguar_mxm_v0_dxio_descriptor,
 		jaguar_mxm_v1_dxio_descriptor,
-#endif
-#endif
 #if CONFIG(XGBE_EN)
 		jaguar_xgbe0_dxio_descriptor,
 		jaguar_xgbe1_dxio_descriptor,
@@ -224,6 +199,8 @@ void mainboard_get_dxio_ddi_descriptors(
 	fsp_dxio_descriptor *nvme_desc = &jaguar_dxio_descriptors[0];
 	fsp_dxio_descriptor *gpp1_desc = &jaguar_dxio_descriptors[1];
 	fsp_dxio_descriptor *wlan_desc = &jaguar_dxio_descriptors[2];
+	fsp_dxio_descriptor *mxm0 = &jaguar_dxio_descriptors[3];
+	fsp_dxio_descriptor *mxm1 = &jaguar_dxio_descriptors[4];
 
 	switch (mb_cfg_pcie_bifurcation()) {
 	case EC_PCIE_MUX_NVMEX4:
@@ -255,6 +232,25 @@ void mainboard_get_dxio_ddi_descriptors(
 		break;
 	default:
 		break;
+	}
+
+	if (mb_cfg_pcie_slot0_bif_x8()) {
+		mxm0->engine_type = PCIE_ENGINE;
+		mxm0->port_present = true;
+		mxm0->start_logical_lane = 12;
+		mxm0->end_logical_lane = 19;
+		mxm0->link_aspm_L1_1 = true;
+		mxm0->link_aspm_L1_2 = true;
+	} else if (mb_cfg_pcie_slot0_bif_x4x4()) {
+		mxm0->engine_type = PCIE_ENGINE;
+		mxm0->port_present = true;
+		mxm0->start_logical_lane = 12;
+		mxm0->end_logical_lane = 15;
+
+		mxm1->engine_type = PCIE_ENGINE;
+		mxm1->port_present = true;
+		mxm1->start_logical_lane = 16;
+		mxm1->end_logical_lane = 19;
 	}
 
 	*dxio_descs = jaguar_dxio_descriptors;

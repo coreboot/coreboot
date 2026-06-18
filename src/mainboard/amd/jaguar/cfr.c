@@ -45,15 +45,18 @@ static struct sm_obj_form uart = {
 	},
 };
 
+static const struct sm_object slot0_enable = SM_DECLARE_BOOL({
+	.opt_name	= OPTION_NAME_SLOT_PCIE_ENABLE,
+	.ui_name	= "Enable PCIe Slot0",
+	.default_value	= CONFIG(ENABLE_EVAL_CARD),
+});
+
 static const struct sm_object slot0_force_pwr = SM_DECLARE_BOOL({
 	.opt_name	= OPTION_NAME_PCIE_SLOT0_FORCE_PWR,
 	.ui_name	= "PCIe Slot0 Force Power",
 	.ui_helptext	= "Force power on PCIe Slot0",
 	.default_value	= CONFIG(ENABLE_FORCE_POWER_GPP0) && CONFIG(PCIE_SLOT0_2X4),
-#if !CONFIG(ENABLE_EVAL_CARD)
-	.flags		= CFR_OPTFLAG_SUPPRESS,
-#endif
-});
+}, WITH_DEP_VALUES(&slot0_enable, true));
 
 static struct sm_obj_form pcie_force_pwr = {
 	.ui_name = "PCIe Force Power",
@@ -83,11 +86,36 @@ static const struct sm_object slot1_pcie_mux = SM_DECLARE_ENUM({
 		{ "x2:x2:x0", EC_PCIE_MUX_M2_SLOT_2X2X},
 		SM_ENUM_VALUE_END
 	},
-});
+}, WITH_DEP_VALUES(&slot0_enable, true));
+
+static const struct sm_object slot0_pcie_4x4x = SM_DECLARE_ENUM({
+	.opt_name	= OPTION_NAME_SLOT0_PCIE_BIF,
+	.ui_name	= "Slot0 (Eval slot) bifurcation",
+	.ui_helptext	= "Select how PCIe is bifurcated",
+#if CONFIG(PCIE_SLOT0_1X8)
+	.default_value	= 0,
+#else
+	.default_value	= 1,
+#endif
+	.values		= (const struct sm_enum_value[]) {
+		{ "x8", 0},
+		{ "x4:x4", 1},
+		SM_ENUM_VALUE_END
+	},
+}, WITH_DEP_VALUES(&slot0_enable, true));
+
+static struct sm_obj_form pcie_enable = {
+	.ui_name = "PCIe enablement",
+	.obj_list = (const struct sm_object *[]) {
+		&slot0_enable,
+		NULL
+	},
+};
 
 static struct sm_obj_form pcie_bif = {
 	.ui_name = "PCIe bifurcation",
 	.obj_list = (const struct sm_object *[]) {
+		&slot0_pcie_4x4x,
 		&slot1_pcie_mux,
 		NULL
 	},
@@ -205,6 +233,7 @@ static struct sm_obj_form xgbe = {
 
 static struct sm_obj_form *sm_root[] = {
 	&uart,
+	&pcie_enable,
 	&pcie_bif,
 	&pcie_force_pwr,
 	&xgbe,

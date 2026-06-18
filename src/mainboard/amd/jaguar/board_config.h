@@ -57,6 +57,27 @@ static inline int mb_cfg_pcie_bifurcation(void)
 	return get_uint_option(OPTION_NAME_PCIE_BIF, bif);
 }
 
+#define OPTION_NAME_SLOT_PCIE_ENABLE "pcie_slot0_enable"
+static inline bool mb_cfg_pcie_slot0_enable(void)
+{
+	return get_uint_option(OPTION_NAME_SLOT_PCIE_ENABLE, CONFIG(ENABLE_EVAL_CARD));
+}
+
+#define OPTION_NAME_SLOT0_PCIE_BIF "pcie_slot0_bifurcation"
+static inline bool mb_cfg_pcie_slot0_bif_x8(void)
+{
+	if (!mb_cfg_pcie_slot0_enable())
+		return false;
+	return !get_uint_option(OPTION_NAME_SLOT0_PCIE_BIF, CONFIG(PCIE_SLOT0_1X8) ? 0 : 1);
+}
+
+static inline bool mb_cfg_pcie_slot0_bif_x4x4(void)
+{
+	if (!mb_cfg_pcie_slot0_enable())
+		return false;
+	return get_uint_option(OPTION_NAME_SLOT0_PCIE_BIF, CONFIG(PCIE_SLOT0_2X4));
+}
+
 /* xGBE */
 
 #define OPTION_NAME_XGBE_LEDS "xgbe_leds_enable"

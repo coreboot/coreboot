@@ -205,12 +205,14 @@ void mainboard_get_dxio_ddi_descriptors(
 		jaguar_nvme0_dxio_descriptor,
 		jaguar_gpp1_dxio_descriptor,
 		jaguar_wlan_dxio_descriptor,
-#if CONFIG(DISABLE_FORCE_POWER_GPP0) && CONFIG(PCIE_SLOT0_1X8)
+#if CONFIG(ENABLE_EVAL_CARD)
+#if CONFIG(PCIE_SLOT0_1X8)
 		jaguar_mxm_dxio_descriptor,
 #endif
-#if CONFIG(ENABLE_EVAL_CARD) && CONFIG(ENABLE_FORCE_POWER_GPP0) && CONFIG(PCIE_SLOT0_2X4)
+#if CONFIG(PCIE_SLOT0_2X4)
 		jaguar_mxm_v0_dxio_descriptor,
 		jaguar_mxm_v1_dxio_descriptor,
+#endif
 #endif
 #if CONFIG(XGBE_EN)
 		jaguar_xgbe0_dxio_descriptor,

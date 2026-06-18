@@ -1560,6 +1560,19 @@ u8 acpi_checksum(u8 *table, u32 length);
 
 void acpi_add_table(acpi_rsdp_t *rsdp, void *table);
 
+/**
+ * @brief Check if writing to ACPI table exceeds the allocated buffer limit.
+ *
+ * This function checks if writing 'size' bytes at 'current' address would
+ * exceed the ACPI table buffer limit. The buffer limit is retrieved from
+ * CBMEM and cached for subsequent calls.
+ *
+ * @param current The current write pointer address.
+ * @param size The size of the data to be written.
+ * @return true if write is within limit, false otherwise.
+ */
+bool check_acpi_tables_write_limit(unsigned long current, size_t size);
+
 /* Create CXL Early Discovery Table */
 void acpi_create_cedt(acpi_cedt_t *cedt,
 	unsigned long (*acpi_fill_cedt_func)(unsigned long current));

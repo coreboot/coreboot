@@ -15,9 +15,9 @@ void setup_chromeos_gpios(void)
 
 	if (CONFIG(MAINBOARD_HAS_FINGERPRINT)) {
 		gpio_output(GPIO_FP_RST_L, 0);
+		gpio_output(GPIO_EN_FP_RAILS, 0);
 		if (CONFIG(MAINBOARD_HAS_FINGERPRINT_VIA_SPI)) {
 			gpio_output(GPIO_FPMCU_BOOT0, 0);
-			gpio_output(GPIO_EN_FP_RAILS, 0);
 			gpio_input_irq(GPIO_FPMCU_INT, IRQ_TYPE_LEVEL, GPIO_PULL_UP);
 		}
 	}

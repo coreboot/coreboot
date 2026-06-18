@@ -34,7 +34,7 @@ Scope (\_SB.PCI0) {
 	 * Arg0: Clock source select (0 .. 5 => IMGCLKOUT_0 .. IMGCLKOUT_5)
 	 * Arg1: Frequency select
 	 *  2'b00 - 19p2 XTAL
-	 *  2'b01 - 19p2 IMG
+	 *  2'b01 - Reserved
 	 *  2'b10 - 19p2 RTC
 	 *  2'b11 - 24 IMG
 	 */

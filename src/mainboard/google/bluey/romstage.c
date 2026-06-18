@@ -259,7 +259,7 @@ static void mainboard_setup_peripherals_late(int mode)
 	 * its reset being deasserted in ramstage.
 	 * Requires >=200ms delay after its pin was driven low in bootblock.
 	 */
-	if (CONFIG(MAINBOARD_HAS_FINGERPRINT_VIA_SPI)) {
+	if (CONFIG(MAINBOARD_HAS_FINGERPRINT)) {
 		if (mode == LB_BOOT_MODE_NORMAL || mode == LB_BOOT_MODE_NO_BATTERY)
 			gpio_output(GPIO_EN_FP_RAILS, 1);
 	}

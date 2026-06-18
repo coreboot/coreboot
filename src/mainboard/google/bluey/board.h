@@ -17,14 +17,13 @@
 /* Fingerprint-specific GPIOs. Only for fingerprint-enabled devices. */
 #if CONFIG(MAINBOARD_HAS_FINGERPRINT)
 #define GPIO_FP_RST_L		GPIO(25)
+#define GPIO_EN_FP_RAILS	GPIO(22)
 #if CONFIG(MAINBOARD_HAS_FINGERPRINT_VIA_SPI)
 #define GPIO_FPMCU_BOOT0	GPIO(24)
 #define GPIO_FPMCU_INT		GPIO(23)
-#define GPIO_EN_FP_RAILS	GPIO(22)
 #else
 #define GPIO_FPMCU_BOOT0	dead_code_t(gpio_t)
 #define GPIO_FPMCU_INT		dead_code_t(gpio_t)
-#define GPIO_EN_FP_RAILS	dead_code_t(gpio_t)
 #endif
 #endif
 

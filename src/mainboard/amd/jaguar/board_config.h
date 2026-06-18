@@ -67,6 +67,16 @@ static inline bool mb_cfg_xgbe_leds(void)
 	return get_uint_option(OPTION_NAME_XGBE_LEDS, CONFIG(XGBE_LED_TURN_ON));
 }
 
+static inline bool mb_cfg_uart2_disabled(void)
+{
+	return mb_cfg_xgbe_leds();
+}
+
+static inline bool mb_cfg_uart4_disabled(void)
+{
+	return mb_cfg_xgbe_leds();
+}
+
 #define OPTION_NAME_XGBE_P0_LINK_LEDS "xgbe_p0_link_speed_leds_enable"
 static inline bool mb_cfg_xgbe_p0_link_speed_leds(void)
 {

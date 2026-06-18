@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <types.h>
 
+#include "board_config.h"
+
 bool devtree_xgbe_dev_enabled(uint8_t port_num);
 
 #define ECRAM_MACID_OFFSET 0x50
@@ -69,9 +71,9 @@ bool devtree_xgbe_dev_enabled(uint8_t port_num);
 
 /* 4x or 2x PCIe M.2 SSD0, muxed with GPP1/Wifi (CLKREQ0) */
 #define jaguar_nvme0_dxio_descriptor {					\
-	.engine_type = PCIE_ENGINE,					\
-	.port_present = true,						\
-	.start_logical_lane = CONFIG(ENABLE_NVME_4LANES) ? 0 : 2,	\
+	.engine_type = UNUSED_ENGINE,					\
+	.port_present = false,						\
+	.start_logical_lane = 0,					\
 	.end_logical_lane = 3,						\
 	.device_number = 2,						\
 	.function_number = 1,						\
@@ -87,10 +89,10 @@ bool devtree_xgbe_dev_enabled(uint8_t port_num);
 
 /* 4x or 2x PCIe GPP1, muxed with NVMe0 (CLKREQ1) */
 #define jaguar_gpp1_dxio_descriptor {				\
-	.engine_type = PCIE_ENGINE,				\
-	.port_present = true,					\
+	.engine_type = UNUSED_ENGINE,				\
+	.port_present = false,					\
 	.start_logical_lane = 0,				\
-	.end_logical_lane = CONFIG(ENABLE_PCIE_4LANES) ? 3 : 1,	\
+	.end_logical_lane = 1,					\
 	.device_number = 2,					\
 	.function_number = 2,					\
 	.link_speed_capability = GEN_MAX,			\
@@ -126,8 +128,8 @@ bool devtree_xgbe_dev_enabled(uint8_t port_num);
  * only if CONFIG(ENABLE_NVME_WLAN_2LANES)
  */
 #define jaguar_wlan_dxio_descriptor {				\
-	.engine_type = PCIE_ENGINE,				\
-	.port_present = true,					\
+	.engine_type = UNUSED_ENGINE,				\
+	.port_present = false,					\
 	.start_logical_lane = 0,				\
 	.end_logical_lane = 1,					\
 	.device_number = 2,					\
@@ -199,8 +201,10 @@ void mainboard_get_dxio_ddi_descriptors(
 		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
-	static const fsp_dxio_descriptor jaguar_dxio_descriptors[] = {
-
+	static fsp_dxio_descriptor jaguar_dxio_descriptors[] = {
+		jaguar_nvme0_dxio_descriptor,
+		jaguar_gpp1_dxio_descriptor,
+		jaguar_wlan_dxio_descriptor,
 #if CONFIG(DISABLE_FORCE_POWER_GPP0) && CONFIG(PCIE_SLOT0_1X8)
 		jaguar_mxm_dxio_descriptor,
 #endif
@@ -208,16 +212,6 @@ void mainboard_get_dxio_ddi_descriptors(
 		jaguar_mxm_v0_dxio_descriptor,
 		jaguar_mxm_v1_dxio_descriptor,
 #endif
-#if CONFIG(ENABLE_NVME_PCIE_2LANES) || CONFIG(ENABLE_NVME_WLAN_2LANES) || CONFIG(ENABLE_NVME_4LANES)
-		jaguar_nvme0_dxio_descriptor,
-#endif
-#if CONFIG(ENABLE_NVME_PCIE_2LANES) || CONFIG(ENABLE_PCIE_4LANES)
-		jaguar_gpp1_dxio_descriptor,
-#endif
-#if CONFIG(ENABLE_NVME_WLAN_2LANES)
-		jaguar_wlan_dxio_descriptor,
-#endif
-
 #if CONFIG(XGBE_EN)
 		jaguar_xgbe0_dxio_descriptor,
 		jaguar_xgbe1_dxio_descriptor,
@@ -225,6 +219,41 @@ void mainboard_get_dxio_ddi_descriptors(
 		jaguar_gpp2_dxio_descriptor,
 #endif
 	};
+	fsp_dxio_descriptor *nvme_desc = &jaguar_dxio_descriptors[0];
+	fsp_dxio_descriptor *gpp1_desc = &jaguar_dxio_descriptors[1];
+	fsp_dxio_descriptor *wlan_desc = &jaguar_dxio_descriptors[2];
+
+	switch (mb_cfg_pcie_bifurcation()) {
+	case EC_PCIE_MUX_NVMEX4:
+		nvme_desc->engine_type = PCIE_ENGINE;
+		nvme_desc->port_present = true;
+		nvme_desc->start_logical_lane = 0;
+		break;
+	case EC_PCIE_MUX_SLOT1X4:
+		gpp1_desc->engine_type = PCIE_ENGINE;
+		gpp1_desc->port_present = true;
+		gpp1_desc->end_logical_lane = 3;
+		break;
+	case EC_PCIE_MUX_M2_SLOT_2X2X:
+		nvme_desc->engine_type = PCIE_ENGINE;
+		nvme_desc->port_present = true;
+		nvme_desc->start_logical_lane = 2;
+
+		gpp1_desc->engine_type = PCIE_ENGINE;
+		gpp1_desc->port_present = true;
+		gpp1_desc->end_logical_lane = 1;
+		break;
+	case EC_PCIE_MUX_M2_WLAN_2X2X:
+		nvme_desc->engine_type = PCIE_ENGINE;
+		nvme_desc->port_present = true;
+		nvme_desc->start_logical_lane = 2;
+
+		wlan_desc->engine_type = PCIE_ENGINE;
+		wlan_desc->port_present = true;
+		break;
+	default:
+		break;
+	}
 
 	*dxio_descs = jaguar_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(jaguar_dxio_descriptors);
@@ -279,14 +308,14 @@ static void xgbe_init(FSP_M_CONFIG *mcfg)
 		mcfg->XgbeDisable = 1;
 	}
 
-	if (CONFIG(XGBE_LED_TURN_ON)) {
-		mcfg->xgbe_led_en = CONFIG(XGBE_LED_TURN_ON);
-		mcfg->xgbe_led_link_status0 = CONFIG(TURN_ON_PORT_0_LINK_STATUS_LED);
-		mcfg->xgbe_led_link_status1 = CONFIG(TURN_ON_PORT_1_LINK_STATUS_LED);
-		mcfg->xgbe_led_link_speed0 = CONFIG(TURN_ON_PORT_0_LINK_SPEED_LED);
-		mcfg->xgbe_led_link_speed1 = CONFIG(TURN_ON_PORT_1_LINK_SPEED_LED);
-		mcfg->xgbe_led_tx_rx_blink_rate0 = CONFIG_PORT_0_TX_RX_LED_BLINK_RATE;
-		mcfg->xgbe_led_tx_rx_blink_rate1 = CONFIG_PORT_1_TX_RX_LED_BLINK_RATE;
+	if (mb_cfg_xgbe_leds()) {
+		mcfg->xgbe_led_en = 1;
+		mcfg->xgbe_led_link_status0 = mb_cfg_xgbe_p0_link_status_leds();
+		mcfg->xgbe_led_link_status1 = mb_cfg_xgbe_p1_link_status_leds();
+		mcfg->xgbe_led_link_speed0 = mb_cfg_xgbe_p0_link_speed_leds();
+		mcfg->xgbe_led_link_speed1 = mb_cfg_xgbe_p1_link_speed_leds();
+		mcfg->xgbe_led_tx_rx_blink_rate0 = mb_cfg_xgbe_p0_led_blink_rate();
+		mcfg->xgbe_led_tx_rx_blink_rate1 = mb_cfg_xgbe_p1_led_blink_rate();
 	}
 
 	static struct xgbe_port_table xgbe_port[2];
@@ -359,12 +388,16 @@ static void xgbe_init(FSP_M_CONFIG *mcfg)
 void mb_pre_fspm(FSP_M_CONFIG *mcfg)
 {
 	/* fch_rt_device_enable_map is already set by SoC code. Update as needed. */
-	if (CONFIG(XGBE_LED_TURN_ON))
-		mcfg->fch_rt_device_enable_map &= ~(BIT(FCH_AOAC_DEV_UART2) | BIT(FCH_AOAC_DEV_UART4));
-	if (CONFIG(UART_0_2_4_FOUR_WIRE))
-		mcfg->fch_rt_device_enable_map &= ~(BIT(FCH_AOAC_DEV_UART1) | BIT(FCH_AOAC_DEV_UART3));
+	if (mb_cfg_uart1_disabled())
+		mcfg->fch_rt_device_enable_map &= ~BIT(FCH_AOAC_DEV_UART1);
+	if (mb_cfg_uart2_disabled())
+		mcfg->fch_rt_device_enable_map &= ~BIT(FCH_AOAC_DEV_UART2);
+	if (mb_cfg_uart3_disabled())
+		mcfg->fch_rt_device_enable_map &= ~BIT(FCH_AOAC_DEV_UART3);
+	if (mb_cfg_uart4_disabled())
+		mcfg->fch_rt_device_enable_map &= ~BIT(FCH_AOAC_DEV_UART4);
 
-	if (CONFIG(I2C_ENABLE)) {
+	if (mb_cfg_i2c_enabled()) {
 		/* Disable I3C */
 		mcfg->fch_rt_device_enable_map &= ~BIT(FCH_AOAC_DEV_I3C0);
 		mcfg->fch_rt_device_enable_map &= ~BIT(FCH_AOAC_DEV_I3C1);

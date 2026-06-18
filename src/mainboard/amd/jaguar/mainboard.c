@@ -10,6 +10,7 @@
 #include <static.h>
 #include <types.h>
 
+#include "board_config.h"
 #include "ec.h"
 
 /* The IRQ mapping in fch_irq_map ends up getting written to the indirect address space that is
@@ -64,19 +65,20 @@ const struct fch_irq_routing *mb_get_fch_irq_mapping(size_t *length)
 
 static void mainboard_configure_uarts(void)
 {
-	if (CONFIG(XGBE_LED_TURN_ON)) {
-		DEV_PTR(uart_2)->enabled = 0;
-		DEV_PTR(uart_4)->enabled = 0;
-	}
-	if (CONFIG(UART_0_2_4_FOUR_WIRE)) {
+	if (mb_cfg_uart1_disabled())
 		DEV_PTR(uart_1)->enabled = 0;
+	if (mb_cfg_uart2_disabled())
+		DEV_PTR(uart_2)->enabled = 0;
+	if (mb_cfg_uart3_disabled())
 		DEV_PTR(uart_3)->enabled = 0;
-	}
+	if (mb_cfg_uart4_disabled())
+		DEV_PTR(uart_4)->enabled = 0;
+
 }
 
 static void mainboard_configure_i2c(void)
 {
-	if (!CONFIG(I2C_ENABLE)) {
+	if (!mb_cfg_i2c_enabled()) {
 		DEV_PTR(i2c_0)->enabled = 0;
 		DEV_PTR(i2c_1)->enabled = 0;
 		DEV_PTR(i2c_2)->enabled = 0;
@@ -88,7 +90,7 @@ static void mainboard_configure_i3c(void)
 {
 	struct soc_amd_glinda_config *cfg = config_of_soc();
 
-	if (CONFIG(I2C_ENABLE)) {
+	if (mb_cfg_i2c_enabled()) {
 		/* I2C mode - disable I3C devices, use devicetree defaults (I2C_PAD_RX_1_8V) */
 		DEV_PTR(i3c_0)->enabled = 0;
 		DEV_PTR(i3c_1)->enabled = 0;
@@ -120,6 +122,7 @@ static void mainboard_configure_ec(void)
 static void mainboard_init(void *chip_info)
 {
 	mainboard_program_gpios();
+	/* Update devicetree */
 	mainboard_configure_uarts();
 	mainboard_configure_i2c();
 	mainboard_configure_i3c();

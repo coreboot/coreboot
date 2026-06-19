@@ -41,11 +41,18 @@ if BOARD_FRAMEWORK_MARIGOLD_COMMON
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
+config VBOOT
+	default y
+	select VBOOT_ALWAYS_ENABLE_DISPLAY
+	select VBOOT_CLEAR_RECOVERY_IN_RAMSTAGE
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_SLOTS_RW_AB
+
 config MAINBOARD_DIR
 	default "framework/marigold"
 
 config MAINBOARD_PART_NUMBER
-	default "Framework Laptop 13 (Intel Core Ultra Series 1)"
+	default "Marigold"
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
 	default "Laptop 13 (Intel Core Ultra Series 1)"

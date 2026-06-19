@@ -46,7 +46,8 @@ int spd_read_word(u8 slave_addr, u8 bus_addr);
 void spd_write_byte(u8 slave_addr, u8 bus_addr, u8 value);
 
 /*
- * get_spd_sn returns the SODIMM serial number. It only supports DDR3 and DDR4.
+ * get_spd_sn returns the SODIMM serial number. It supports DDR3, DDR4
+ * and DDR5/LPDDR5(X).
  *  return CB_SUCCESS, sn is the serial number and sn=0xffffffff if the dimm is not present.
  *  return CB_ERR, if dram_type is not supported or addr is a zero.
  */

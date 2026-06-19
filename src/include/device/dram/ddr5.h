@@ -24,6 +24,7 @@
 #define DDR5_SPD_MODULE_ORG		234
 #define DDR5_SPD_CHANNEL_BUS_WIDTH	235
 #define DDR5_SPD_MIN_LEN		236
+#define DDR5_SPD_SN_OFF			517
 #define SPD_DDR5_PART_OFF		521
 
 enum spd_dimm_type_ddr5 {

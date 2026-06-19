@@ -70,7 +70,8 @@ __attribute__((unused)) static void fill_spd_cache_ddr3(uint8_t *spd_cache, size
 	assert_true(spd_cache_sz >= (spd_data_ddr3_1_sz + sizeof(uint16_t)));
 
 	memcpy(spd_cache, spd_data_ddr3_1, spd_data_ddr3_1_sz);
-	memset(spd_cache + spd_data_ddr3_1_sz, 0, spd_cache_sz - spd_data_ddr3_1_sz);
+	/* update_spd_cache() pads the slots of absent DIMMs with 0xff. */
+	memset(spd_cache + spd_data_ddr3_1_sz, 0xff, spd_cache_sz - spd_data_ddr3_1_sz);
 	calc_spd_cache_crc(spd_cache);
 }
 
@@ -81,7 +82,8 @@ __attribute__((unused)) static void fill_spd_cache_ddr4(uint8_t *spd_cache, size
 
 	memcpy(spd_cache, spd_data_ddr4_1, spd_data_ddr4_1_sz);
 	memcpy(spd_cache + spd_data_ddr4_1_sz, spd_data_ddr4_2, spd_data_ddr4_2_sz);
-	memset(spd_cache + spd_data_ddr4_1_sz + spd_data_ddr4_2_sz, 0,
+	/* update_spd_cache() pads the slots of absent DIMMs with 0xff. */
+	memset(spd_cache + spd_data_ddr4_1_sz + spd_data_ddr4_2_sz, 0xff,
 	       spd_cache_sz - (spd_data_ddr4_1_sz + spd_data_ddr4_2_sz));
 	calc_spd_cache_crc(spd_cache);
 }
@@ -204,8 +206,8 @@ __attribute__((unused)) static void test_check_if_dimm_changed_new_sodimm(void *
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);
 	assert_int_equal(CB_SUCCESS, spd_fill_from_cache(spd_cache, &blk));
 	get_sn_from_spd_cache(spd_cache, get_spd_sn_ret_sn);
-	memcpy(spd_cache + spd_data_ddr4_1_sz + spd_data_ddr4_2_sz, spd_data_ddr4_2,
-	       spd_data_ddr4_2_sz);
+	/* A DIMM shows up in a slot that the cache records as empty. */
+	get_spd_sn_ret_sn[2] = 0x43211234;
 
 	get_spd_sn_ret_sn_idx = 0;
 	will_return_always(get_spd_sn, CB_SUCCESS);

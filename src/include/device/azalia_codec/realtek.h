@@ -46,4 +46,17 @@ enum alc887_pin_widget {
 	ALC887_SPDIF_IN		= 0x1f,
 };
 
+enum alc1150_pin_widget {
+	ALC1150_SPDIF_OUT2	= 0x11,
+	ALC1150_FRONT		= 0x14, // Port-D
+	ALC1150_SURROUND	= 0x15, // Port-A
+	ALC1150_CENTER_LFE	= 0x16, // Port-G
+	ALC1150_SIDE_SURROUND	= 0x17, // Port-H
+	ALC1150_MIC1		= 0x18, // Port-B
+	ALC1150_MIC2		= 0x19, // Port-F
+	ALC1150_LINE1		= 0x1a, // Port-C
+	ALC1150_LINE2		= 0x1b, // Port-E
+	ALC1150_SPDIF_OUT1	= 0x1e,
+};
+
 #endif /* DEVICE_AZALIA_CODEC_REALTEK_H */

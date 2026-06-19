@@ -1,10 +1,10 @@
-Upcoming release - coreboot 26.06
+coreboot 26.06
 ========================================================================
 
 The coreboot project is pleased to announce the release of coreboot
 26.06. In the roughly three months since the 26.03 release, 101 authors
-(including 22 new authors) have landed well over a thousand commits of
-new features, platform enablement, cleanup, and bug fixes across the
+(including 22 new authors) have landed well over eleven hundred commits
+of new features, platform enablement, cleanup, and bug fixes across the
 tree.
 
 This release exists because of the people who wrote, reviewed, tested,
@@ -53,10 +53,10 @@ commit (ee148cc689) introduces the SoC based on a rename of glinda, and
 subsequent patches adjust it for the new part: the maximum CPU count was
 tuned (c108ccb930), the fw.cfg was adapted (29f93567c5), the APOB region
 was grown from 256K to 576K (eedd292f32), and the CPUID match was
-updated (7982c6e172). A dummy FSP was added to keep builds working until
-the real binaries are available (bddc56d7fe), and the VBIOS path was
-hooked up (d381d33a39). The new SoC also picked up maintainers
-(847b42fa69).
+updated (7982c6e172). Dummy FSP headers were added to keep builds going
+until binaries and real headers are available (bddc56d7fe), and the
+VBIOS path washooked up (d381d33a39). The new SoC also picked up
+maintainers (847b42fa69).
 
 The first board to use Strix Halo is the AMD Maple reference mainboard,
 introduced in this release (47f124abba) with its EC, GPIO, and blob
@@ -89,7 +89,7 @@ directory as the work matured (201392d363, e187893fa9).
 AMD platforms gained a substantial expansion of firmware-integrity and
 recovery tooling. ROM Armor 2 support was implemented in the PSP common
 block (16a69e9619), backed by a PSP mailbox interface (8121a3dd72),
-HSTI- based state reporting (cd8072191d), and enforcement checks in the
+HSTI-based state reporting (cd8072191d), and enforcement checks in the
 SPI path (3bc8a9fec1, 2ff5b9c0ff, d72d7d1ba0). The PSP now talks to the
 SPI controller through the ROM Armor mailbox interface (c4bd58b02d), and
 the AMD fTPM driver learned to operate under ROM Armor with backup SPI
@@ -133,13 +133,14 @@ reboot changes pending further work (a2f401da5b, 0b2d5a6e7a).
 
 Two goals drove this work: unifying the Haswell and Broadwell codebases,
 and getting Broadwell "trad" (non-ULT) parts working in coreboot. The
-latter only works with native raminit (NRI), since neither the Haswell
-nor the Broadwell MRC supports those parts. As part of this effort,
-Broadwell's native graphics init was backported to Haswell: the driver
-gained Broadwell device IDs (6e95ade0cb), GT power-management init
-(aa9ff8895f), and CDCLK programming (f7412bf209), along with a series of
-cleanups that bring the two graphics paths closer together (b75d086f86,
-892d68a8c8, f2e24e5230).
+latter is still a work in progress as of this release and will only work
+with native raminit (NRI), since neither the Haswell nor the Broadwell
+MRC supports those parts. As part of this effort, Broadwell's native
+graphics init was backported to Haswell: the driver gained Broadwell
+device IDs (6e95ade0cb), GT power-management init (aa9ff8895f), and
+CDCLK programming (f7412bf209), along with a series of cleanups that
+bring the two graphics paths closer together (b75d086f86, 892d68a8c8,
+f2e24e5230).
 
 On the CPU side, a new OC mailbox undervolt driver was introduced
 (fa68b66686) and wired up for Haswell (aaa396d571), Skylake
@@ -306,8 +307,8 @@ Platform Updates
 * Google R2d2
 * Google Sheev
 * Lenovo ThinkPad X61 / X61s
-* Star Labs Star Labs Byte Mk I (Ryzen 7 5800U)
-* Star Labs Star Labs StarBook Mk VI (Ryzen 7 5800U)
+* Star Labs Byte Mk I (Ryzen 7 5800U)
+* Star Labs StarBook Mk VI (Ryzen 7 5800U)
 * System76 bonw15-b
 * System76 gaze20
 
@@ -330,15 +331,15 @@ Platform Updates
 Statistics from the 26.03 to the 26.06 release
 --------------------------------------------
 
-* Total Commits: 1141
-* Average Commits per day: 12.61
-* Total lines added: 121779
-* Average lines added per commit: 106.73
-* Number of patches adding more than 100 lines: 114
-* Average lines added per small commit: 37.88
-* Total lines removed: 20660
-* Average lines removed per commit: 18.11
-* Total difference between added and removed: 101119
+* Total Commits: 1163
+* Average Commits per day: 12.69
+* Total lines added: 139996
+* Average lines added per commit: 120.37
+* Number of patches adding more than 100 lines: 118
+* Average lines added per small commit: 37.83
+* Total lines removed: 20972
+* Average lines removed per commit: 18.03
+* Total difference between added and removed: 119024
 * Total authors: 101
 * New authors: 22
 

@@ -92,6 +92,15 @@ static void update_battery_status(void)
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
 		return;
 
+	/*
+	 * Force a board reset if the EC reports invalid battery data and crashlog mode
+	 * is not set to prevent downstream configuration issues with bad telemetry.
+	 */
+	if (!google_chromeec_is_battery_data_valid() && !chipset_dload_mode_active) {
+		printk(BIOS_INFO, "Battery data invalid! doing board reset.\n");
+		do_board_reset();
+	}
+
 	struct ec_response_battery_get_misc_info misc_info;
 	bool misc_info_valid = false;
 

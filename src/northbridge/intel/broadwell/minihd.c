@@ -76,16 +76,13 @@ static const u32 display_audio_verbs[] = {
 	0x00878100,
 };
 
-static struct azalia_codec minihd_codecs[] = {
-	{
-		.name         = "Intel Display Audio (HDMI/DP)",
-		.vendor_id    = 0x80862808,
-		.subsystem_id = 0x80860101,
-		.address      = 0,
-		.verbs        = display_audio_verbs,
-		.verb_count   = ARRAY_SIZE(display_audio_verbs),
-	},
-	{ /* terminator */ }
+static struct azalia_codec minihd_codec = {
+	.name         = "Intel Display Audio (HDMI/DP)",
+	.vendor_id    = 0x80862808,
+	.subsystem_id = 0x80860101,
+	.address      = 0,
+	.verbs        = display_audio_verbs,
+	.verb_count   = ARRAY_SIZE(display_audio_verbs),
 };
 #endif
 
@@ -121,18 +118,19 @@ static void minihd_init(struct device *dev)
 	/* Init the codec and write the verb table */
 	codec_mask = hda_codec_detect(base);
 
-#if CONFIG(AZALIA_USE_LEGACY_VERB_TABLE)
+	/*
+	 * The mini-HD audio controller is dedicated to the display audio codec
+	 * and therefore we can attempt to load the codec directly without the
+	 * usual address and vendor ID checks.
+	 */
 	if (codec_mask) {
-		for (int i = 3; i >= 0; i--) {
-			if (codec_mask & (1 << i))
-				azalia_codec_init(base, i, minihd_verb_table,
-						  sizeof(minihd_verb_table));
-		}
-	}
+#if CONFIG(AZALIA_USE_LEGACY_VERB_TABLE)
+		azalia_codec_init(base, 0, minihd_verb_table,
+		                  sizeof(minihd_verb_table));
 #else
-	if (codec_mask)
-		azalia_custom_codecs_init(base, minihd_codecs, codec_mask);
+		azalia_codec_init(base, &minihd_codec);
 #endif
+	}
 
 	/* Set EM4/EM5 registers */
 	write32(base + 0x0100c, igd_get_reg_em4());

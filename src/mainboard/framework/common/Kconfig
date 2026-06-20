@@ -1,0 +1,9 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+if VENDOR_FRAMEWORK
+
+config MB_COMMON_DIR
+	string
+	default "framework/common" if EC_GOOGLE_CHROMEEC
+
+endif # VENDOR_FRAMEWORK

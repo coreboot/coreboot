@@ -4,7 +4,7 @@
 #include <console/console.h>
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>
-#include <mainboard/ec.h>
+#include <mainboard/framework/common/ec.h>
 
 void mainboard_ec_init(void)
 {

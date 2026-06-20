@@ -5,7 +5,7 @@
 #include <ec/google/chromeec/smm.h>
 #include <elog.h>
 #include <intelblocks/smihandler.h>
-#include <mainboard/ec.h>
+#include <mainboard/framework/common/ec.h>
 
 void mainboard_smi_sleep(u8 slp_typ)
 {

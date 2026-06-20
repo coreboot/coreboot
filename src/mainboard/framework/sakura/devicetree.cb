@@ -338,7 +338,6 @@ chip soc/intel/pantherlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 				.pcie_rp_aspm = ASPM_L0S_L1,
 				.PcieRpL1Substates = L1_SS_L1_2,
-				.pcie_rp_detect_timeout_ms = 15,
 			}"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
 				"M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"

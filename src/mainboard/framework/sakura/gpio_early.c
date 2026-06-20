@@ -11,6 +11,10 @@ static const struct pad_config gpio_table[] = {
 	/* SMBus for DDR5 SPD */
 	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),	/* SMBCLK */
 	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),	/* SMBDATA */
+
+	/* Power on SSD so that it's ready for deasserting PERST# later */
+	PAD_CFG_GPO(GPP_D05, 1, DEEP),		/* SOC_SSD_PWR_EN (active high) */
+	PAD_CFG_GPO(GPP_E03, 0, DEEP),		/* RTD3_SSD_PLT_RST# (held asserted) */
 };
 
 void mainboard_configure_early_gpios(void)

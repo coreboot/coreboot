@@ -49,9 +49,10 @@ enum cb_err cbfs_walk(cbfs_dev_t dev, enum cb_err (*walker)(cbfs_dev_t dev, size
 
 		DEBUG("Found CBFS header @%#zx (type %d, attr +%#x, data +%#x, length %#x)\n",
 		      offset, type, attr_offset, data_offset, data_length);
-		if (data_offset > sizeof(mdata) || data_length > devsize ||
+		if (data_offset < sizeof(mdata.h) || data_offset > sizeof(mdata) ||
+		    data_length > devsize ||
 		    offset + data_offset + data_length > devsize) {
-			ERROR("File @%#zx too large\n", offset);
+			ERROR("File @%#zx has invalid header\n", offset);
 			offset += CBFS_ALIGNMENT;
 			continue;
 		}

@@ -135,6 +135,36 @@ static void framework_set_battery_charge_limit(void)
 		printk(BIOS_ERR, "Failed to set battery charge limit to %u%%\n", limit);
 }
 
+static void framework_log_chassis_intrusion(void)
+{
+	/* Query only: a zero magic leaves the EC's latched status untouched. */
+	const struct ec_params_chassis_intrusion_control params = {
+		.clear_magic		= 0,
+		.clear_chassis_status	= 0,
+	};
+	struct ec_response_chassis_intrusion_control resp = {0};
+	struct chromeec_command cmd = {
+		.cmd_code	= EC_CMD_CHASSIS_INTRUSION,
+		.cmd_version	= 0,
+		.cmd_data_in	= &params,
+		.cmd_size_in	= sizeof(params),
+		.cmd_data_out	= &resp,
+		.cmd_size_out	= sizeof(resp),
+		.cmd_dev_index	= 0,
+	};
+
+	if (google_chromeec_command(&cmd)) {
+		printk(BIOS_ERR, "Failed to read chassis intrusion status\n");
+		return;
+	}
+
+	if (resp.chassis_ever_opened)
+		printk(BIOS_WARNING, "Chassis has been opened (%u time(s))\n",
+		       resp.total_open_count);
+	else
+		printk(BIOS_DEBUG, "Chassis intact\n");
+}
+
 void mainboard_ec_init(void)
 {
 	static const struct google_chromeec_event_info info = {
@@ -146,6 +176,8 @@ void mainboard_ec_init(void)
 	};
 
 	printk(BIOS_DEBUG, "mainboard: EC init\n");
+
+	framework_log_chassis_intrusion();
 
 	google_chromeec_events_init(&info, acpi_is_wakeup_s3());
 

@@ -4,7 +4,7 @@
 #define DISABLE_INHIBITCHARGE    0x1
 #define ENABLE_INHIBITCHARGE     0x2
 #define DISABLE_FORCEDISCHARGE   0x3
-#define ENABLE_FORCEDISCHARGE    0x4
+#define ENABLE_FORCEDISCHARGE    0x6 /* implicit ENABLE_INHIBITCHARGE included */
 
 /* Return values for BDSG method */
 #define FORCEDISCHARGE_SUPPORTED 0x100

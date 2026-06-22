@@ -12,6 +12,7 @@
 #include <reset.h>
 #include <soc/aop_common.h>
 #include <soc/pcie.h>
+#include <soc/pmic.h>
 #include <soc/qcom_spmi.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
@@ -40,8 +41,7 @@ static bool chipset_dload_mode_active = false; /* Mode for crashlog */
  */
 static bool is_off_mode(void)
 {
-	/* placeholder */
-	return false;
+	return is_pon_on_ac();
 }
 
 static enum boot_mode_t set_boot_mode(void)

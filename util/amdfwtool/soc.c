@@ -310,7 +310,7 @@ bool platform_has_legacy_ab_recovery(amd_cb_config *cb_config)
  * @param cb_config: Configuration struct
  * @return: number of bytes to reserve for PSB, or 0 if PSB is unsupported
  */
-bool platform_psb_reserved_size(enum platform platform_type)
+uint32_t platform_psb_reserved_size(enum platform platform_type)
 {
 	return platform_table[platform_type].psb_reserved_size;
 }

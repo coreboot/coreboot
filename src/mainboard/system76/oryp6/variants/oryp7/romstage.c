@@ -1,11 +1,29 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <variant/romstage.h>
+#include <soc/cnl_memcfg_init.h>
+#include <soc/romstage.h>
 
-void variant_configure_fspm(FSPM_UPD *memupd)
+static const struct cnl_mb_cfg memcfg = {
+	.spd[0] = {
+		.read_type = READ_SMBUS,
+		.spd_spec = {.spd_smbus_address = 0xa0},
+	},
+	.spd[2] = {
+		.read_type = READ_SMBUS,
+		.spd_spec = {.spd_smbus_address = 0xa4},
+	},
+	.rcomp_resistor = { 121, 75, 100 },
+	.rcomp_targets = { 50, 25, 20, 20, 26 },
+	.dq_pins_interleaved = 1,
+	.vref_ca_config = 2,
+};
+
+void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	// Typically, we set SaOcSupport to allow overclocking RAM,
 	// but oryp7 saw a high fail rate when using 3200 MHz DIMMs.
 	// So disable OC so modules run at the standard 2933 MHz.
 	memupd->FspmConfig.SaOcSupport = 0;
+
+	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg);
 }

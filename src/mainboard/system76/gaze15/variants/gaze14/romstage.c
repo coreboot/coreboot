@@ -2,7 +2,6 @@
 
 #include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
-#include <variant/romstage.h>
 
 static const struct cnl_mb_cfg memcfg = {
 	.spd[0] = {
@@ -21,7 +20,5 @@ static const struct cnl_mb_cfg memcfg = {
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	variant_configure_fspm(memupd);
-
 	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg);
 }

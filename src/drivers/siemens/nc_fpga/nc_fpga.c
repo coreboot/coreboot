@@ -141,6 +141,32 @@ static void set_fw_done(void *unused)
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, set_fw_done, NULL);
 #endif
 
+#if CONFIG(NC_FPGA_CFG_USER_LEDS)
+/* Set state of the user-visible LEDs in FPGA before jumping to payload. */
+static void cfg_leds(void *unused)
+{
+	struct device *dev;
+
+	if (nc_fpga_bar0) {
+		/* Clear all but RDY-LED */
+		write32(nc_fpga_bar0 + NC_LED_CTRL, 0x3);
+	}
+	/* Some of the user-visible LEDs are additionally controlled by other logic.
+	   Set the state there to get the needed result. */
+	dev = dev_find_device(PCI_VID_SIEMENS, 0x4094, 0);
+	if (dev) {
+		struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
+		if (!res) {
+			return;
+		}
+		clrsetbits32(res2mmio(res, 0x5004, 0), 0, (0xcf << 24));
+		clrsetbits32(res2mmio(res, 0x5000, 0), (0xcf << 24), 0);
+	}
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, cfg_leds, NULL);
+#endif
+
 static void nc_fpga_set_resources(struct device *dev)
 {
 	pci_dev_set_resources(dev);

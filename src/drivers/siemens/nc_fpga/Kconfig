@@ -12,3 +12,7 @@ config NC_FPGA_POST_CODE
 	bool
 	default n
 	select EARLY_PCI_BRIDGE
+
+config NC_FPGA_CFG_USER_LEDS
+	bool
+	default n

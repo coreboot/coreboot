@@ -125,6 +125,7 @@ config SOC_INTEL_NOVALAKE_BASE
 	select TSC_MONOTONIC_TIMER
 	select UDELAY_TSC
 	select UDK_202302_BINDING
+	select USE_COREBOOT_FOR_BMP_RENDERING
 	select USE_X86_64_SUPPORT
 	help
 	  Intel Nova Lake support. Mainboards should specify the SoC

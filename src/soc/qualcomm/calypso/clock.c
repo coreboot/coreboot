@@ -200,9 +200,9 @@ static enum cb_err clock_configure_gpll0(void)
 
 static void speed_up_boot_cpu(void)
 {
-	/* 1363.2 MHz */
-	if (pll_init_and_set(apss_ncc0, L_VAL_1363P2MHz) == CB_SUCCESS)
-		printk(BIOS_DEBUG, "NCC frequency bumped to 1363.2 MHz\n");
+	/* 3 GHz */
+	if (!pll_init_and_set(apss_ncc0, L_VAL_2995P2MHz))
+		printk(BIOS_DEBUG, "NCC Frequency bumped to 3.0(GHz)\n");
 	else
 		printk(BIOS_ERR, "NCC PLL initialization failed\n");
 }

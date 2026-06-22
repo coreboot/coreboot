@@ -19,6 +19,7 @@
 #define CLK_37_5MHZ             (37500 * KHz)
 
 /* CPU PLL*/
+#define L_VAL_2995P2MHz         0x9C
 #define L_VAL_1363P2MHz         0x47
 #define L_VAL_710P4MHz          0x25
 

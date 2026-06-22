@@ -77,7 +77,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E02, NONE),
 	PAD_CFG_GPI(GPP_E03, NONE, DEEP),				/* TPM_PIRQ# */
 	PAD_NC(GPP_E04, NONE),
-	PAD_NC(GPP_E05, NONE),						/* TS_INT# (Unused) */
+	PAD_CFG_GPI_INT(GPP_E05, NONE, DEEP, LEVEL),			/* TS_INT# (Touchscreen HID interrupt, GpioInt) */
 	PAD_NC(GPP_E06, NONE),						/* GPP_E6_STRAP (JTAG ODT Enable) */
 	PAD_NC(GPP_E07, NONE),
 	PAD_NC(GPP_E08, NONE),
@@ -99,8 +99,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H02, NONE),						/* GPP_H02_STRAP (Reserved, no external pull) */
 	PAD_NC(GPP_H04, NONE),
 	PAD_NC(GPP_H05, NONE),
-	PAD_NC(GPP_H06, NONE),						/* I2C_3_SDA (Touchscreen, unused) */
-	PAD_NC(GPP_H07, NONE),						/* I2C_3_SCL (Touchscreen, unused) */
+	PAD_CFG_NF(GPP_H06, NONE, DEEP, NF1),				/* I2C_3_SDA (Touchscreen) */
+	PAD_CFG_NF(GPP_H07, NONE, DEEP, NF1),				/* I2C_3_SCL (Touchscreen) */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),				/* UART0_RXD (BIOS, OS UART) */
 	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),				/* UART0_TXD (BIOS, OS UART) */
 	PAD_NC(GPP_H10, NONE),
@@ -132,7 +132,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F12, NONE),
 	PAD_NC(GPP_F13, NONE),
 	PAD_NC(GPP_F14, NONE),
-	PAD_NC(GPP_F15, NONE),						/* TS_EN (Touchscreen, unused) */
+	PAD_CFG_GPO(GPP_F15, 1, DEEP),					/* TS_EN (Touchscreen enable, active high) */
 	PAD_NC(GPP_F16, NONE),
 	PAD_NC(GPP_F17, NONE),
 	PAD_NC(GPP_F18, NONE),
@@ -160,8 +160,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B04, NONE),						/* GPP_B04_STRAP# (No Reboot) */
 	PAD_CFG_GPI_INT(GPP_B05, NONE, DEEP, LEVEL),			/* SOC_EC_INT# */
 	PAD_CFG_GPO(GPP_B06, 1, DEEP),					/* RTD3_SSD_PLT_RST# */
-	PAD_NC(GPP_B07, NONE),						/* TS_RESET (Touchscreen, unused) */
-	PAD_NC(GPP_B08, NONE),
+	PAD_NC(GPP_B07, NONE),
+	PAD_CFG_GPO(GPP_B08, 1, DEEP),					/* TS_RST# (active low; drive high = out of reset) */
 	PAD_NC(GPP_B09, NONE),
 	PAD_NC(GPP_B10, NONE),
 	PAD_NC(GPP_B11, NONE),

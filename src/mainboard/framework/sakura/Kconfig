@@ -101,4 +101,15 @@ config UART_FOR_CONSOLE
 config USE_PM_ACPI_TIMER
 	default n
 
+# The EC firmware lives in its own flash descriptor region (SI_EC, see
+# board.fmd), outside the BIOS region. Unless the image is built with a flash
+# descriptor (HAVE_IFD_BIN), the EC region has to be flashed explicitly, e.g.
+# with flashrom and a layout file. If left empty, the region stays empty (0xff).
+config FRAMEWORK_EC_FW_FILE
+	string "EC firmware blob"
+	default ""
+	help
+	  Path to the Embedded Controller firmware. Must fit the SI_EC FMAP
+	  region (512K). Leave empty to not touch the EC region.
+
 endif

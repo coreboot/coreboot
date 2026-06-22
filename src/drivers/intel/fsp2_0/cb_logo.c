@@ -24,7 +24,7 @@
  * for the IGD, programs the LMEMBAR with the provided base address, and then
  * re-enables the PCI command bits.
  */
-static void program_igd_lmembar(uint32_t base)
+static void program_igd_lmembar(uintptr_t base)
 {
 	const uint16_t disable_mask = ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 	const uint16_t enable_mask = (PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
@@ -32,8 +32,15 @@ static void program_igd_lmembar(uint32_t base)
 	/* Disable response in IO, MMIO space and Bus Master. */
 	pci_and_config16(SA_DEV_IGD, PCI_COMMAND, disable_mask);
 
-	/* Program IGD Base Address Register 2 aka LMEMBAR */
-	pci_write_config32(SA_DEV_IGD, PCI_BASE_ADDRESS_2, base);
+	/*
+	 * Program IGD Base Address Register 2 aka LMEMBAR
+	 * This is a 64-bit BAR, so write both lower and upper parts
+	 */
+	pci_write_config32(SA_DEV_IGD, PCI_BASE_ADDRESS_2, (uint32_t)(base & 0xFFFFFFFF));
+
+	/* Write upper 32 bits to PCI_BASE_ADDRESS_3 for 64-bit BAR */
+	if (sizeof(base) > sizeof(uint32_t))
+		pci_write_config32(SA_DEV_IGD, PCI_BASE_ADDRESS_3, (uint32_t)(base >> 32));
 
 	/* Enable response in IO, MMIO space and Bus Master. */
 	pci_or_config16(SA_DEV_IGD, PCI_COMMAND, enable_mask);

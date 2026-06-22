@@ -34,12 +34,8 @@ int get_free_var_mtrr(void)
  * Sets the specified variable MTRR (as per index) with the
  * given base, size, and memory type.
  */
-void set_var_mtrr(
-	unsigned int index, unsigned int base, unsigned int size,
-	unsigned int type)
+void set_var_mtrr(unsigned int index, uintptr_t base, unsigned int size, unsigned int type)
 {
-	/* Bit 32-35 of MTRRphysMask should be set to 1 */
-	/* FIXME: It only support 4G less range */
 	msr_t basem, maskm;
 
 	if (type == MTRR_TYPE_WRBACK && !is_cache_sets_power_of_two() && ENV_CACHE_AS_RAM)
@@ -50,12 +46,16 @@ void set_var_mtrr(
 	if (size < 4 * KiB)
 		printk(BIOS_ERR, "MTRR Error: size %#x smaller than 4KiB\n", size);
 	if (base % size != 0)
-		printk(BIOS_ERR, "MTRR Error: base %#x must be aligned to size %#x\n", base,
-		       size);
+		printk(BIOS_ERR, "MTRR Error: base %#lx must be aligned to size %#x\n",
+		       (unsigned long)base, size);
 
-	basem.lo = base | type;
-	basem.hi = 0;
+	/* Split 64-bit base address into low and high 32-bit parts */
+	basem.lo = ((uint32_t)base) | type;
+	basem.hi = (sizeof(base) > sizeof(uint32_t)) ? (uint32_t)(base >> 32) : 0;
+
 	wrmsr(MTRR_PHYS_BASE(index), basem);
+
+	/* Set mask with proper high bits based on physical address size */
 	maskm.lo = ~(size - 1) | MTRR_PHYS_MASK_VALID;
 	maskm.hi = (1 << (cpu_phys_address_size() - 32)) - 1;
 	wrmsr(MTRR_PHYS_MASK(index), maskm);
@@ -74,7 +74,7 @@ void clear_var_mtrr(int index)
  * Acquires a free variable MTRR, configures it with the given base, size, and type.
  * Returns the MTRR index if successful (>=0), or an error code (<0) if acquisition failed.
  */
-int acquire_and_configure_mtrr(unsigned int base, unsigned int size, unsigned int type)
+int acquire_and_configure_mtrr(uintptr_t base, unsigned int size, unsigned int type)
 {
 	int index = get_free_var_mtrr();
 

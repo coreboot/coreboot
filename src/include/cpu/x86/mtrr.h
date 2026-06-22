@@ -124,8 +124,8 @@ static inline int get_var_mtrr_count(void)
 	return rdmsr(MTRR_CAP_MSR).lo & MTRR_CAP_VCNT;
 }
 
-int acquire_and_configure_mtrr(unsigned int base, unsigned int size, unsigned int type);
-void set_var_mtrr(unsigned int index, unsigned int base, unsigned int size,
+int acquire_and_configure_mtrr(uintptr_t base, unsigned int size, unsigned int type);
+void set_var_mtrr(unsigned int index, uintptr_t base, unsigned int size,
 	unsigned int type);
 int get_free_var_mtrr(void);
 void clear_var_mtrr(int index);

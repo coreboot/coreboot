@@ -25,6 +25,8 @@ DefinitionBlock(
 	Device (\_SB.PCI0) {
 		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 		#include <soc/intel/novalake/acpi/southbridge.asl>
+		#include <soc/intel/novalake/acpi/tcss.asl>
+		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 	}
 
 	/* ChromeOS Embedded Controller */

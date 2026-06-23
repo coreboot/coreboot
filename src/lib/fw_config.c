@@ -188,6 +188,13 @@ static void fw_config_init(void *unused)
 	for (dev = all_devices; dev; dev = dev->next) {
 		const struct fw_config *probe;
 
+		/* If parent is disabled, disable this device too. */
+		if (dev->upstream && dev->upstream->dev && !dev->upstream->dev->enabled) {
+			printk(BIOS_INFO, "%s disabled recursively\n", dev_path(dev));
+			dev->enabled = 0;
+			continue;
+		}
+
 		if (!fw_config_probe_dev(dev, &probe)) {
 			printk(BIOS_INFO, "%s disabled by fw_config\n", dev_path(dev));
 			dev->enabled = 0;

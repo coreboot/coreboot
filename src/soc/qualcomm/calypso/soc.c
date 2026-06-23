@@ -13,6 +13,8 @@
 #include <soc/variant.h>
 #include <program_loading.h>
 
+#define ACDB_CARVEOUT_OFFSET 0x40000000
+
 /* TODO: Add any housekeeping stuffs before handing over to the BL31 */
 void soc_prepare_bl31_handoff(void)
 {
@@ -51,6 +53,11 @@ static struct device_operations pci_domain_ops = {
 	.enable = &qcom_setup_pcie_host,
 };
 
+static uint64_t calc_acdb_carveout_size(void)
+{
+	return ((((REGION_SIZE(dram_space_1) / GiB) * 1) / 2 + 3) * MiB);
+}
+
 static void soc_read_resources(struct device *dev)
 {
 	int index = 0;
@@ -67,6 +74,8 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_xbl_log, REGION_SIZE(dram_xbl_log));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_ramdump, REGION_SIZE(dram_ramdump));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz, REGION_SIZE(dram_tz));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz_ac, REGION_SIZE(dram_tz_ac));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_hyp_ac, REGION_SIZE(dram_hyp_ac));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_aop, REGION_SIZE(dram_aop));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_aop_config, REGION_SIZE(dram_aop_config));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_tme_crashdump, REGION_SIZE(dram_tme_crashdump));
@@ -81,6 +90,10 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_ta, REGION_SIZE(dram_ta));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_llcc_lpi, REGION_SIZE(dram_llcc_lpi));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_smem, REGION_SIZE(dram_smem));
+	/* ACDB carveout region located at 0x8C0000000 - (n*0.5 +3) where n is size of DDR */
+	reserved_ram_range(dev, index++,
+		(uintptr_t)_dram_space_1 + ACDB_CARVEOUT_OFFSET - calc_acdb_carveout_size(),
+		calc_acdb_carveout_size());
 }
 
 static void qtee_fw_config_load(void)

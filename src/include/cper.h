@@ -79,6 +79,42 @@ typedef struct cper_timestamp { /* BCD values */
 		GUID_INIT(0x036f84e1, 0x7f37, 0x428c,	\
 		0xa7, 0x9e, 0x57, 0x5f, 0xdf, 0xaa, 0x84, 0xec)
 
+typedef struct cper_pcie_error_section {
+#define CPER_PCIE_VALID_PORT_TYPE          BIT(0)
+#define CPER_PCIE_VALID_VERSION            BIT(1)
+#define CPER_PCIE_VALID_COMMAND_STATUS     BIT(2)
+#define CPER_PCIE_VALID_DEVICE_ID          BIT(3)
+#define CPER_PCIE_VALID_DEVICE_SERIAL_NUM  BIT(4)
+#define CPER_PCIE_VALID_BRIDGE_CNTL_STS    BIT(5)
+#define CPER_PCIE_VALID_CAP_STRUCT_STS     BIT(6)
+#define CPER_PCIE_VALID_AER_INFO           BIT(7)
+	u64 validation_bits;
+	u32 port_type;
+	u32 revision;
+	u16 command;
+	u16 status;
+	u32 reserved1;
+	struct {
+		u16 vendor_id;
+		u16 device_id;
+		u8  class_code[3];
+		u8  function;
+		u8  device;
+		u16 segment;
+		u8  primary_bus;
+		u8  secondary_bus;
+		u16 slot;
+		u8  reserved2;
+	} __packed device_id;
+	u8  serial_num[8];
+	struct {
+		u16	secondary_status;
+		u16	control;
+	} __packed bridge;
+	u32 capability_data[15];
+	u32 aer_info_data[24];
+} __packed cper_pcie_error_section_t;
+
 /*
  * Processor Generic Error Section (Table N.6)
  */

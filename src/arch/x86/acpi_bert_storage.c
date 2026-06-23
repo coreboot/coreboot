@@ -194,6 +194,8 @@ static size_t sizeof_error_section(guid_t *guid)
 		return sizeof(cper_fw_err_rec_section_t);
 	else if (!guidcmp(guid, &CPER_SEC_PLATFORM_MEM_GUID))
 		return sizeof(cper_mem_section_t);
+	else if (!guidcmp(guid, &CPER_SEC_PCIE_GUID))
+		return sizeof(cper_pcie_error_section_t);
 	/* else if ... sizeof(structures not yet defined) */
 	else if (CONFIG(SOC_BERT_SIZEOF_ERROR_SECTION)) {
 		size_t size = soc_bert_sizeof_error_section(guid);

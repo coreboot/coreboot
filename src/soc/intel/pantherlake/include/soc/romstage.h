@@ -8,6 +8,7 @@
 
 void mainboard_memory_init_params(FSPM_UPD *memupd);
 void systemagent_early_init(void);
+bool mainboard_can_allow_flex_ratio_override(void);
 
 /* Board type */
 enum board_type {

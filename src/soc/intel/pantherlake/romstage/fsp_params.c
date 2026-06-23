@@ -96,11 +96,18 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->LowerBasicMemTestSize = config->lower_basic_mem_test_size;
 }
 
+/* Default weak implementation that mainboards can override */
+__attribute__((weak)) bool mainboard_can_allow_flex_ratio_override(void)
+{
+    return true;
+}
+
 static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,
 				 const struct soc_intel_pantherlake_config *config)
 {
-	/* CpuRatio Settings */
-	if (config->cpu_ratio_override)
+	/* Skip CpuRatio override in recovery mode */
+	if (mainboard_can_allow_flex_ratio_override() && config->cpu_ratio_override)
+		/* CpuRatio Settings */
 		m_cfg->CpuRatio = config->cpu_ratio_override;
 	else
 		/* Set CpuRatio to match existing MSR value */

@@ -13,6 +13,7 @@
 #include <vendorcode/amd/psp/psp_directory.h>
 #include <vendorcode/amd/psp/bios_directory.h>
 #include <vendorcode/amd/psp/combo_directory.h>
+#include <vendorcode/amd/psp/ish.h>
 
 /* An address can be relative to the image/file start but it can also be the address when
  * the image is mapped at 0xff000000. Used to ensure that we only attempt to read within
@@ -71,18 +72,6 @@ struct amd_bios_entry {
 	size_t size;
 	int level;
 };
-
-struct ish_directory_table {
-	uint32_t checksum;
-	uint32_t boot_priority;
-	uint32_t update_retry_count;
-	uint8_t  glitch_retry_count;
-	uint8_t  glitch_higherbits_reserved[3];
-	uint32_t pl2_location;
-	uint32_t psp_id;
-	uint32_t slot_max_size;
-	uint32_t reserved;
-} __attribute__((packed));
 
 #define PSP_LVL1 (1 << 0)
 #define PSP_LVL2 (1 << 1)

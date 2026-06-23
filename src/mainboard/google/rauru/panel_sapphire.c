@@ -16,17 +16,23 @@ static void mipi_panel_power_on(void)
 	gpio_output(GPIO_EN_PPVAR_MIPI_DISP, 1); /* AVEE */
 	mdelay(2);
 	mdelay(10); /* tRW */
+}
+
+static void mipi_panel_reset(void)
+{
 	gpio_output(GPIO_LCM_RST_1V8_L, 1); /* RESX */
-	mdelay(5);
+	udelay(150);
 	gpio_output(GPIO_LCM_RST_1V8_L, 0);
-	mdelay(5);
+	udelay(150);
 	gpio_output(GPIO_LCM_RST_1V8_L, 1);
+	mdelay(10);
 }
 
 static struct panel_description sapphire_panels[] = {
 	[0x09] = {
 		.configure_backlight = configure_backlight,
 		.power_on = mipi_panel_power_on,
+		.reset = mipi_panel_reset,
 		.name = "BOE_NS130069_M00",
 		.disp_path = DISP_PATH_DUAL_MIPI,
 		.orientation = LB_FB_ORIENTATION_NORMAL,

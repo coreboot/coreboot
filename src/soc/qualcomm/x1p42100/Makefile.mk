@@ -77,6 +77,7 @@ ramstage-y += tsens_map.c
 ramstage-y += ../common/pmic_gpio.c
 ramstage-y += platform_info.c
 ramstage-$(CONFIG_SOC_QUALCOMM_CDT) += ../common/cdt.c
+ramstage-y += ufs.c
 
 ################################################################################
 

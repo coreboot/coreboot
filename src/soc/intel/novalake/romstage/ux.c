@@ -91,7 +91,7 @@ static bool ux_inform_user_of_operation(const char *name, enum ux_locale_msg id,
 	}
 
 	m_cfg->VgaInitControl = VGA_INIT_CONTROL_ENABLE;
-	if (config->disable_progress_bar)
+	if (!config->enable_progress_bar)
 		m_cfg->VgaInitControl |= VGA_INIT_DISABLE_ANIMATION;
 	m_cfg->VbtPtr = (efi_uintn_t)vbt;
 	m_cfg->VbtSize = vbt_size;

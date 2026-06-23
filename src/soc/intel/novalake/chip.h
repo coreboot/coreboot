@@ -614,8 +614,8 @@ struct soc_intel_novalake_config {
 	 */
 	bool thc_wake_on_touch[NUM_THC];
 
-	/* Disable the progress bar during MRC training operations. */
-	bool disable_progress_bar;
+	/* Enable the progress bar during MRC training operations (disabled by default). */
+	bool enable_progress_bar;
 
 	/* USB overcurrent pin mapping */
 	uint8_t pch_usb_oc_enable;

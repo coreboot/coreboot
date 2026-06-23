@@ -43,6 +43,9 @@ chip soc/intel/pantherlake
                 .tdp_pl2_override = 35,
         }"
 
+	# VCCSA Shutdown configuration
+	register "vccsa_shutdown" = "1"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP1
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)" # USB3.2 Gen2x1 Type-A Port

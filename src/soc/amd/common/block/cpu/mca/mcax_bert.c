@@ -26,14 +26,14 @@ static inline size_t mca_report_size_reqd(int used_registers_per_bank)
 	size += cper_ia32x64_check_sz();
 
 	/* Context of MCG_CAP, MCG_STAT, MCG_CTL */
-	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, 3);
+	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, 3 * sizeof(msr_t));
 
 	/* Context of CTL, STATUS, ADDR, MISC0, CONFIG, IPID, SYND, RESERVED, DESTAT, DEADDR,
 	   MISC1, MISC2, MISC3, MISC4, SYND0, SYND1 */
-	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, used_registers_per_bank);
+	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, used_registers_per_bank * sizeof(msr_t));
 
 	/* Context of CTL_MASK */
-	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, 1);
+	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, 1 * sizeof(msr_t));
 
 	return size;
 }

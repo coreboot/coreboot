@@ -5,6 +5,7 @@
 #include <bootmode.h>
 #include <ec/google/chromeec/ec.h>
 #include <fsp/api.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 #include <static.h>
@@ -69,4 +70,15 @@ void platform_romstage_pre_mem(void)
 	 */
 	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
 		google_chromeec_lightbar_on();
+}
+
+bool mainboard_can_allow_flex_ratio_override(void)
+{
+    if (!CONFIG(VBOOT))
+        return false;
+
+    if (vboot_recovery_mode_enabled() || vboot_check_recovery_request())
+        return false;
+
+    return true;
 }

@@ -24,7 +24,10 @@ static void i2c_hid_fill_dsm(const struct device *dev)
 static void i2c_hid_fill_ssdt_generator(const struct device *dev)
 {
 	struct drivers_i2c_hid_config *config = dev->chip_info;
-	config->generic.cid = I2C_HID_CID;
+
+	if (!config->generic.cid)
+		config->generic.cid = I2C_HID_CID;
+
 	i2c_generic_fill_ssdt(dev, &i2c_hid_fill_dsm, &config->generic);
 }
 

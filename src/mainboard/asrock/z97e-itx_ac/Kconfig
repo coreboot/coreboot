@@ -17,6 +17,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_NUVOTON_NCT6776
 	select USE_BROADWELL_MRC if !USE_NATIVE_RAMINIT
 
+config CBFS_SIZE
+	default 0x600000
+
 config MAINBOARD_DIR
 	default "asrock/z97e-itx_ac"
 

@@ -22,7 +22,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_NUVOTON_NCT6776
 
 config CBFS_SIZE
-	default 0x200000
+	default 0x280000
 
 config MAINBOARD_DIR
 	default "asrock/h81m-hds"

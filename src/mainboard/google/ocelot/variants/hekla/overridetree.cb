@@ -1,0 +1,428 @@
+fw_config
+	field AUDIO_CODEC 0 2
+		option AUDIO_CODEC_UNKNOWN	0
+		option AUDIO_CODEC_ALC721	1
+	end
+	field STORAGE_TYPE 12 14
+		option STORAGE_TYPE_UNKNOWN	0
+		option STORAGE_TYPE_NVME_GEN4	1
+		option STORAGE_TYPE_NVME_GEN5	2
+	end
+	field TOUCHSCREEN 17 18
+		option TOUCHSCREEN_UNKNOWN	0
+		option TOUCHSCREEN_PJTQ	1
+	end
+	field SENSOR_HUB 23 23
+		option ISH_ABSENT	0
+		option ISH_PRESENT	1
+	end
+	field FINGERPRINT_INTERFACE 24 25
+		option FINGERPRINT_INTERFACE_UNKNOWN	0
+		option FINGERPRINT_INTERFACE_SPI	1
+		option FINGERPRINT_INTERFACE_USB	2
+	end
+	field WIFI_INTERFACE 26 27
+		option WIFI_INTERFACE_UNKNOWN	0
+		option WIFI_INTERFACE_CNVI	1
+	end
+	field TRACKPAD 32 34
+		option TRACKPAD_UNKNOWN	0
+		option TRACKPAD_PCT4802QR	1
+	end
+	field KB_BACKLIGHT 43 43
+		option KB_BACKLIGHT_ABSENT	0
+		option KB_BACKLIGHT_PRESENT	1
+	end
+	field AP_OEM_3BIT_FIELD0 56 58
+		option WIFI_SAR_ID0	0
+		option WIFI_SAR_ID1	1
+	end
+	field AP_OEM_1BIT_FIELD0 63 63
+		option FINGERPRINT_UNKNOWN	0
+		option FINGERPRINT_FT9001C_FT9849	1
+	end
+end
+
+chip soc/intel/pantherlake
+	# GPE configuration override
+	register "pmc_gpe0_dw0" = "GPP_VGPIO"
+	register "pmc_gpe0_dw1" = "GPP_F"
+	register "pmc_gpe0_dw2" = "GPP_E"
+
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C0
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)" # Type-A Port
+	register "usb2_ports[4]" = "USB2_PORT_LONG(OC_SKIP)" # USB HUB (USB2 Camera)
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Discrete Bluetooth
+
+	register "usb3_ports[0]" = "USB3_PORT_TX_CFG(OC_SKIP, 0x4)" # USB3.2 x1 Type-A/
+
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)" # Type-C Port 1 (Virtual OC)
+	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)" # Type-C Port 2 (Virtual OC)
+
+	register "tcss_cap_policy[0]" = "TCSS_TYPE_C_PORT_FULL_FUN"
+	register "tcss_cap_policy[1]" = "TCSS_TYPE_C_PORT_FULL_FUN"
+
+	# Enable EDP in PortA & HDMI in PortB
+	register "ddi_port_A_config" = "1"
+	register "ddi_port_B_config" = "1"
+	register "ddi_ports_config" = "{
+		[DDI_PORT_A] = DDI_ENABLE_HPD,
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+	}"
+
+	# VCCSA Shutdown configuration
+	register "vccsa_shutdown" = "1"  # enable (set to 0 for disable)
+
+	# Enable CNVi Wi-Fi and Bluetooth
+	register "cnvi_wifi_core" = "true"
+	register "cnvi_bt_core" = "true"
+
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+	}"
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C1              | TPM(cr50)                 |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		/* Render OEM footer logo 200px above from the edge */
+		.logo_bottom_margin = 200,
+		.i2c[1] = {
+			.early_init=1,
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
+	device domain 0 on
+		subsystemid 0x1043 0x15e4 inherit
+		device ref dtt on
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""VR""
+				register "options.tsr[1].desc" = ""DDR""
+				register "options.tsr[2].desc" = ""Top""
+				register "options.tsr[3].desc" = ""SSD""
+				register "options.tsr[4].desc" = ""Charger""
+
+				## Active Policy
+				# FIXME: below values are initial reference values only
+				register "policies.active" = "{
+						[0] = {
+							.target = DPTF_TEMP_SENSOR_0,
+							.thresholds = {
+									TEMP_PCT(70, 97),
+									TEMP_PCT(65, 90),
+									TEMP_PCT(60, 80),
+									TEMP_PCT(55, 75),
+									TEMP_PCT(50, 65),
+									TEMP_PCT(45, 45),
+									TEMP_PCT(43, 30),
+								}
+							},
+						[1] = {
+							.target = DPTF_TEMP_SENSOR_1,
+							.thresholds = {
+									TEMP_PCT(70, 97),
+									TEMP_PCT(65, 90),
+									TEMP_PCT(60, 80),
+									TEMP_PCT(55, 75),
+									TEMP_PCT(50, 65),
+									TEMP_PCT(45, 45),
+									TEMP_PCT(43, 30),
+								}
+							},
+						[2] = {
+							.target = DPTF_TEMP_SENSOR_2,
+							.thresholds = {
+									TEMP_PCT(75, 90),
+									TEMP_PCT(70, 80),
+									TEMP_PCT(65, 70),
+									TEMP_PCT(60, 50),
+								}
+							},
+						[3] = {
+							.target = DPTF_TEMP_SENSOR_3,
+							.thresholds = {
+									TEMP_PCT(75, 90),
+									TEMP_PCT(70, 80),
+									TEMP_PCT(65, 70),
+									TEMP_PCT(60, 60),
+									TEMP_PCT(55, 50),
+									TEMP_PCT(50, 40),
+									TEMP_PCT(45, 30),
+								}
+							},
+						[4] = {
+							.target = DPTF_TEMP_SENSOR_4,
+							.thresholds = {
+									TEMP_PCT(75, 90),
+									TEMP_PCT(70, 80),
+									TEMP_PCT(65, 70),
+									TEMP_PCT(60, 60),
+									TEMP_PCT(55, 50),
+									TEMP_PCT(50, 40),
+									TEMP_PCT(45, 30),
+								}
+							}
+				}"
+
+				## Passive Policy
+				# TODO: below values are initial reference values only
+				register "policies.passive" = "{
+						[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+						[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 80, 5000),
+						[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 80, 5000),
+						[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 75, 5000),
+						[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 80, 5000),
+						[5] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_4, 80, 5000),
+				}"
+
+				## Critical Policy
+				# TODO: below values are initial reference values only
+				register "policies.critical" = "{
+						[0] = DPTF_CRITICAL(CPU,          105, SHUTDOWN),
+						[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 91, SHUTDOWN),
+						[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 91, SHUTDOWN),
+						[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 91, SHUTDOWN),
+						[4] = DPTF_CRITICAL(TEMP_SENSOR_3, 91, SHUTDOWN),
+						[5] = DPTF_CRITICAL(TEMP_SENSOR_4, 91, SHUTDOWN),
+				}"
+
+				## Power Limits Control
+				register "controls.power_limits" = "{
+						.pl1 = {
+							.min_power = 25000,
+							.max_power = 25000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 200,
+						},
+						.pl2 = {
+							.min_power = 95000,
+							.max_power = 95000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 1000,
+						}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+						[0] = { 255, 3000 },
+						[1] = {  24, 1500 },
+						[2] = {  16, 1000 },
+						[3] = {   8,  500 }
+				}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+						[0] = {  90, 6700, 220, 2200, },
+						[1] = {  80, 5800, 180, 1800, },
+						[2] = {  70, 5000, 145, 1450, },
+						[3] = {  60, 4900, 115, 1150, },
+						[4] = {  50, 3838,  90,  900, },
+						[5] = {  40, 2904,  55,  550, },
+						[6] = {  30, 2337,  30,  300, },
+						[7] = {  20, 1608,  15,  150, },
+						[8] = {  10,  800,  10,  100, },
+						[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "true"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 alias dptf_policy on end
+			end
+		end
+		device ref igpu on
+			chip drivers/gfx/generic
+				register "device_count" = "4"
+				# DDIA for eDP
+				register "device[0].name" = ""LCD0""
+				register "device[0].type" = "panel"
+				# DDIB for HDMI
+				# If HDMI is not enumerated in the kernel, then no GFX device should be added for DDIB
+				register "device[1].name" = ""DD01""
+				# TCP0 (DP-1) for port C0
+				register "device[2].name" = ""DD02""
+				register "device[2].use_pld" = "true"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+				# TCP1 (DP-2) for port C1
+				register "device[3].name" = ""DD03""
+				register "device[3].use_pld" = "true"
+				register "device[3].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+				device generic 0 on end
+			end
+		end
+
+		device ref iaa off end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device ref tcss_usb3_port0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device ref tcss_usb3_port1 on end
+					end
+				end
+			end
+		end
+
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(4, 1)"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""User Facing Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "has_power_resource" = "true"
+						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H04)"
+						register "enable_delay_ms" = "20"
+						device ref usb2_port5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Fingerprint""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "group" = "ACPI_PLD_GROUP(6, 1)"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B09)"
+						device ref usb2_port8 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(4, 2)"
+						device ref usb3_port1 on end
+					end
+				end
+			end
+		end
+
+		device ref pcie_rp1 on
+			probe STORAGE_TYPE STORAGE_TYPE_UNKNOWN
+			probe STORAGE_TYPE STORAGE_TYPE_NVME_GEN4
+			register "pcie_rp[PCIE_RP(1)]" = "{
+			.clk_src = 3,
+			.clk_req = 3,
+			.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end # Gen4 M.2 SSD
+
+		device ref cnvi_wifi on
+			probe WIFI_INTERFACE WIFI_INTERFACE_CNVI
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "add_acpi_dma_property" = "true"
+				register "enable_cnvi_ddr_rfim" = "true"
+				use cnvi_bluetooth as bluetooth_companion
+				device generic 0 on end
+			end
+		end # CNVi
+
+		device ref cnvi_bluetooth on
+			probe WIFI_INTERFACE WIFI_INTERFACE_CNVI
+			chip soc/intel/common/block/cnvi
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end
+
+		device ref thc0 on
+			register "thc_wake_on_touch[0]" = "true"
+			register "thc_mode[0]" = "THC_HID_I2C_MODE"
+			probe TRACKPAD TRACKPAD_PCT4802QR
+			# THC0 is function 0; hence it needs to be enabled when THC1 is to be enabled.
+			chip drivers/intel/touch
+				register "name" = "INTEL_THC0_NAME"
+				register "mode" = "THC_HID_I2C_MODE"
+				register "dev_hidi2c.intf.hidi2c.addr" = "0x15"
+				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0x01"
+				register "dev_hidi2c.intf.hidi2c.interrupt_delay_value" = "100"
+				register "dev_hidi2c.intf.hidi2c.max_frame_size_value" = "128"
+				register "soc_hidi2c.fm_scl_low_period" = "160"
+				register "soc_hidi2c.fm_scl_high_period" = "146"
+				register "wake_on_touch" = "true"
+				# NOTE: Use GpioInt() in _CRS and does not use GPE.
+				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC0)"
+				register "active_ltr" = "1"
+				register "idle_ltr" = "0"
+				register "connected_device" = "TH_SENSOR_GENERIC"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
+		end #Trackpad
+		device ref thc1 on
+			register "thc_wake_on_touch[1]" = "false"
+			register "thc_mode[1]" = "THC_HID_I2C_MODE"
+			probe TOUCHSCREEN TOUCHSCREEN_PJTQ
+			chip drivers/intel/touch
+				register "name" = "INTEL_THC1_NAME"
+				register "mode" = "THC_HID_I2C_MODE"
+				register "dev_hidi2c.hid" = ""RAYD0001""
+				register "dev_hidi2c.cid" = ""PNP0C50""
+				register "dev_hidi2c.intf.hidi2c.addr" = "0x39"
+				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0"
+				register "dev_hidi2c.intf.hidi2c.interrupt_delay_value" = "100"
+				register "dev_hidi2c.intf.hidi2c.max_frame_size_value" = "128"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F08)"
+				register "wake_on_touch" = "false"
+				# NOTE: Use GpioInt() in _CRS and does not use GPE.
+				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC1)"
+				register "active_ltr" = "1"
+				register "idle_ltr" = "0"
+				register "connected_device" = "TH_SENSOR_GENERIC"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on	end
+			end
+		end #Touchscreen
+
+		device ref smbus on end
+
+		# NOTE: i2c0 is function 0; hence it needs to be enabled when any of i2c1-5 is enabled.
+		# TPM device is under i2c1. Therefore, i2c0 needs to be enabled anyways.
+		device ref i2c0 on end
+		device ref i2c1 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E14_IRQ)"
+				device i2c 50 on end
+			end
+		end #I2C1
+	end
+end

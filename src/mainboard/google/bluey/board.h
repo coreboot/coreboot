@@ -88,5 +88,6 @@ bool platform_get_battery_soc_information(uint32_t *batt_pct);
 void enable_fast_battery_charging(void);
 void init_sdam_config(void);
 void configure_dead_battery_boot(void);
+void clear_pending_ec_events(void);
 
 #endif /* MAINBOARD_GOOGLE_BLUEY_BOARD_H */

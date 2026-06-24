@@ -244,6 +244,9 @@ static void mainboard_init(void *chip_info)
 	if ((boot_mode == LB_BOOT_MODE_LOW_BATTERY) ||
 			 (boot_mode == LB_BOOT_MODE_LOW_BATTERY_CHARGING) ||
 			 (boot_mode == LB_BOOT_MODE_OFFMODE_CHARGING)) {
+		/* Clear pending events before entering low-power boot */
+		clear_pending_ec_events();
+
 		/*
 		 * Manual delay for panel readiness; required because standard SOC IP
 		 * initialization is bypassed to prioritize fast-charging boot speeds.

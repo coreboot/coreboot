@@ -160,6 +160,17 @@ static int detect_ac_unplug_event(void)
 	return 0;
 }
 
+void clear_pending_ec_events(void)
+{
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return;
+
+	/* Reset AC-unplug detection state and lightbar status before entering loop */
+	clear_ac_unplug_event();
+	/* clear any pending power button press and lid open event */
+	clear_ec_manual_poweron_event();
+}
+
 /*
  * Provides visual feedback via the LEDs and clears the AC unplug
  * event to acknowledge the transition into a charging state.
@@ -188,13 +199,12 @@ void launch_charger_applet(void)
 
 	printk(BIOS_INFO, "Inside %s. Initiating charging\n", __func__);
 
-	/* Reset AC-unplug detection state and lightbar status before entering loop */
-	clear_ac_unplug_event();
-	/* clear any pending power button press and lid open event */
-	clear_ec_manual_poweron_event();
-
 	stopwatch_init_msecs_expire(&sw, charging_enable_timeout_ms);
 	while (!get_battery_icurr_ma()) {
+		if (detect_ec_manual_poweron_event()) {
+			printk(BIOS_INFO, "Exiting charging applet to boot to OS\n");
+			do_board_reset();
+		}
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_WARNING, "Charging not enabled %ld ms. Abort.\n",
 					charging_enable_timeout_ms);

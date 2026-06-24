@@ -28,6 +28,10 @@ bool read_efs_spi_settings(uint8_t *mode, uint8_t *speed)
 			*mode = efs->spi_readmode_f17_mod_30_3f;
 			*speed = efs->spi_fastspeed_f17_mod_30_3f;
 			ret = true;
+		} else if (CONFIG(SOC_AMD_GENOA_POC) || CONFIG(SOC_AMD_TURIN_POC)) {
+			*mode = efs->spi_readmode_f15_mod_60_6f;
+			*speed = efs->fast_speed_new_f15_mod_60_6f;
+			ret = true;
 		} else {
 			printk(BIOS_ERR, "Unknown cpu in psp_efs.h\n");
 			printk(BIOS_ERR, "SPI speed/mode not set.\n");

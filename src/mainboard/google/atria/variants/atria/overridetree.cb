@@ -244,6 +244,14 @@ chip soc/intel/novalake
 			end
 		end # Gen5 M.2 SSD
 
+		device ref ish on
+			probe SENSOR_HUB ISH_PRESENT
+			chip drivers/intel/ish
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
+		end
+
 		# NOTE: i2c0 is function 0; hence it needs to be enabled when any of i2c1-5 is enabled.
 		# TPM device is under i2c3. Therefore, i2c0 needs to be enabled anyways.
 		device ref i2c0 on end

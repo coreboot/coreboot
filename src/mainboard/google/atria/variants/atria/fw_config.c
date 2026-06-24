@@ -43,6 +43,52 @@ static const struct pad_config ufs_enable_pads[] = {
 	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF1),
 };
 
+static const struct pad_config ish_disable_pads[] = {
+	/* GPP_B02: 	ISH_I3C0_SDA_SNSR_HDR_R */
+	PAD_NC(GPP_B02, NONE),
+	/* GPP_B03: 	ISH_I3C0_SCL_SNSR_HDR_R */
+	PAD_NC(GPP_B03, NONE),
+	/* GPP_B04: 	ISH_GP_0_SNSR_HDR */
+	PAD_NC(GPP_B04, NONE),
+	/* GPP_B05: 	ISH_GP_1_SNSR_HDR */
+	PAD_NC(GPP_B05, NONE),
+	/* GPP_B06: 	ISH_GP_2_SNSR_HDR */
+	PAD_NC(GPP_B06, NONE),
+	/* GPP_B07: 	ISH_GP_3_SNSR_HDR */
+	PAD_NC(GPP_B07, NONE),
+	/* GPP_B08: 	ISH_GP_4_SNSR_HDR */
+	PAD_NC(GPP_B08, NONE),
+	/* GPP_B18: 	ISH_I2C2_SDA_SNSR_HDR */
+	PAD_NC(GPP_B18, NONE),
+	/* GPP_B19: 	ISH_I2C2_SCL_SNSR_HDR */
+	PAD_NC(GPP_B19, NONE),
+	/* GPP_B22: 	ISH_GP_5_SNSR_HDR */
+	PAD_NC(GPP_B22, NONE),
+	/* GPP_B23: 	ISH_GP_6_SNSR_HDR */
+	PAD_NC(GPP_B23, NONE),
+
+	/* GPP_D05: 	ISH_SPI_CS_N_SNSR_HDR */
+	PAD_NC(GPP_D05, NONE),
+	/* GPP_D06: 	ISH_SPI_CLK_SNSR_HDR */
+	PAD_NC(GPP_D06, NONE),
+	/* GPP_D07: 	ISH_SPI_MISO_SNSR_HDR */
+	PAD_NC(GPP_D07, NONE),
+	/* GPP_D08: 	ISH_SPI_MOSI_SNSR_HDR */
+	PAD_NC(GPP_D08, NONE),
+
+	/* GPP_F08: 	ISH_GP_7A_SNSR_HDR_R */
+	PAD_NC(GPP_F08, NONE),
+	/* GPP_F09: 	ISH_INT_GP11_CVS */
+	PAD_NC(GPP_F09, NONE),
+	/* GPP_F23:     ISH_GP_9A; NOTE: ISH will handle SMC_LID; not AP */
+	PAD_NC(GPP_F23, NONE),
+
+	/* GPP_H14: 	ISH_I2C1_ISH_I3C1_SDA_SNSR_HDR */
+	PAD_NC(GPP_H14, NONE),
+	/* GPP_H15: 	ISH_I2C1_ISH_I3C1_SCL_SNSR_HDR */
+	PAD_NC(GPP_H15, NONE),
+};
+
 void fw_config_configure_pre_mem_gpio(void)
 {
 	if (!fw_config_is_provisioned()) {
@@ -75,5 +121,9 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, gen5_ssd_pads);
 	} else if (fw_config_probe(FW_CONFIG(STORAGE_TYPE, STORAGE_TYPE_UFS))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, ufs_enable_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(SENSOR_HUB, ISH_ABSENT))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, ish_disable_pads);
 	}
 }

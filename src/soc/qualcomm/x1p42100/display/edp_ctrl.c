@@ -79,7 +79,7 @@ enum cb_err edp_ctrl_init(struct edid *edid)
 	printk(BIOS_DEBUG, "DPCD power read address=%x\n", DP_SET_POWER);
 	if (ret < 0) {
 		printk(BIOS_ERR, "edp native read failure\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	value &= ~DP_SET_POWER_MASK;
@@ -89,7 +89,7 @@ enum cb_err edp_ctrl_init(struct edid *edid)
 	printk(BIOS_DEBUG, "DPCD power Set address=%x : %x\n", DP_SET_POWER, value);
 	if (ret < 0) {
 		printk(BIOS_ERR, "edp native read failure\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	udelay(1000);
@@ -126,7 +126,8 @@ enum cb_err edp_ctrl_init(struct edid *edid)
 	printk(BIOS_INFO, ":%02x", v[4]);
 
 	struct edp_ctrl ctrl;
-	edp_ctrl_on(&ctrl, edid, dpcd);
+	if (edp_ctrl_on(&ctrl, edid, dpcd) < 0)
+		return CB_ERR;
 
 	return CB_SUCCESS;
 }

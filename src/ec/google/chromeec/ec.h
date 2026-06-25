@@ -617,6 +617,17 @@ int google_chromeec_lightbar_off(void);
 int google_chromeec_lightbar_on(void);
 
 /*
+ * Sends a command to set the Chrome EC lightbar sequence.
+ *
+ * This function wraps the LIGHTBAR_CMD_SEQ sub-command into a standard
+ * EC_CMD_LIGHTBAR_CMD host command to trigger a predefined LED pattern.
+ *
+ * @param seq_num The sequence number to trigger.
+ * @return 0 on success, or a non-zero EC transport error code on failure.
+ */
+int google_chromeec_lightbar_sequence(uint8_t seq_num);
+
+/*
  * Check if the battery is critically low and AC is not present.
  *
  * Return true if battery is below threshold and AC is not present.

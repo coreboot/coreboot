@@ -2146,6 +2146,34 @@ int google_chromeec_lightbar_on(void)
 	return google_chromeec_command(&cmd);
 }
 
+/*
+ * Sends a command to set the Chrome EC lightbar sequence.
+ *
+ * This function wraps the LIGHTBAR_CMD_SEQ sub-command into a standard
+ * EC_CMD_LIGHTBAR_CMD host command to trigger a predefined LED pattern.
+ *
+ * @param seq_num The sequence number to trigger.
+ * @return 0 on success, or a non-zero EC transport error code on failure.
+ */
+int google_chromeec_lightbar_sequence(uint8_t seq_num)
+{
+	const struct ec_params_lightbar req = {
+		.cmd = LIGHTBAR_CMD_SEQ,
+		.seq = {
+			.num = seq_num,
+		},
+	};
+
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_LIGHTBAR_CMD,
+		.cmd_size_out = 0,
+		.cmd_data_out = NULL,
+		.cmd_size_in = sizeof(req),
+		.cmd_data_in = &req,
+	};
+
+	return google_chromeec_command(&cmd);
+}
 
 /*
  * Check if the battery is critically low and not currently charging.

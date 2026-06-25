@@ -12,10 +12,12 @@ void sanitize_cmos(void);
  * The UEFI variable store option backend cannot be used in verstage because:
  * - Verstage runs before SMM is available (needed for SMMSTORE access)
  * - EDK2 headers required for UEFI variables are x86-specific and not available
- *   in ARM verstage (PSP verstage). */
+ *   in ARM verstage (PSP verstage).
+ * Postcar does not need runtime options, and pulling in the UEFI variable store
+ * backend there also pulls in SPI flash probing/programming code. */
 #if CONFIG(OPTION_BACKEND_NONE) || \
 	(CONFIG(USE_CBFS_FILE_OPTION_BACKEND) && ENV_SMM) || \
-	(CONFIG(USE_UEFI_VARIABLE_STORE) && ENV_SEPARATE_VERSTAGE)
+	(CONFIG(USE_UEFI_VARIABLE_STORE) && (ENV_SEPARATE_VERSTAGE || ENV_POSTCAR))
 
 static inline unsigned int get_uint_option(const char *name, const unsigned int fallback)
 {

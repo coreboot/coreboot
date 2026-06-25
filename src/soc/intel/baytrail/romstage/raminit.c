@@ -94,6 +94,9 @@ void raminit(struct memory_init_params *memory_init_params, int prev_sleep_state
 	mrc_params.prev_sleep_state = prev_sleep_state;
 	mrc_params.rmt_enabled = CONFIG(MRC_RMT);
 	mrc_params.io_hole_mb = 2048;
+	/* The MRC carves the TXE UMA below BMBOUND but does not run the TXE ROM
+	   handshake itself; that is done around raminit() in romstage.c. */
+	mrc_params.txe_size_mb = memory_init_params->txe_uma_size_mb;
 
 	/* Transcribe params into MRC format. */
 	switch (memory_init_params->dram_type) {
@@ -185,6 +188,9 @@ void raminit(struct memory_init_params *memory_init_params, int prev_sleep_state
 	mrc_entry = (void *)(uintptr_t)CONFIG_MRC_BIN_ADDRESS;
 
 	mrc_ret = mrc_entry(&mrc_params);
+
+	/* Report the base the MRC carved the TXE UMA at back to romstage. */
+	memory_init_params->txe_uma_base_mb = mrc_params.txe_base_mb;
 
 	bool cbmem_was_initted = !cbmem_recovery(s3resume);
 	if (s3resume && !cbmem_was_initted) {

@@ -110,8 +110,12 @@ void mainboard_romstage_entry(void)
 
 	elog_boot_notify(s3resume);
 
-	/* Initialize RAM */
+	memory_init_params.txe_uma_size_mb = txe_uma_get_size_mb();
+
 	raminit(&memory_init_params, prev_sleep_state);
+
+	txe_uma_did(memory_init_params.txe_uma_base_mb,
+		    memory_init_params.txe_uma_size_mb);
 
 	timestamp_add_now(TS_INITRAM_END);
 

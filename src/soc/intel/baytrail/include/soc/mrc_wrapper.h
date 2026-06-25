@@ -2,6 +2,8 @@
 #ifndef _MRC_WRAPPER_H_
 #define _MRC_WRAPPER_H_
 
+#include <stdint.h>
+
 #define MRC_PARAMS_VER  5
 
 #define MRC_NUM_CHANNELS 2
@@ -70,7 +72,7 @@ struct mrc_params {
 	int io_hole_mb;  /* Size of IO hole in MiB. */
 
 	/* Outputs */
-	void *txe_base_address;
+	uint32_t txe_base_mb; /* TXE memory base in megabytes. */
 	int data_to_save_size;
 	void *data_to_save;
 } __packed;

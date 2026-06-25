@@ -3,6 +3,7 @@
 #ifndef _BAYTRAIL_ROMSTAGE_H_
 #define _BAYTRAIL_ROMSTAGE_H_
 
+#include <stdint.h>
 #include <device/dram/ddr3.h>
 
 #define NUM_CHANNELS 2
@@ -57,6 +58,10 @@ struct memory_init_params {
 	enum dram_odt dram_odt_value;
 	/* SPD configurations for each channel. */
 	struct spd_cfg spd_cfgs[NUM_CHANNELS];
+	/* TXE UMA in MB: size the TXE ROM requested (carve input), and the
+	   base raminit carved it at (output). 0 = no UMA. */
+	uint32_t txe_uma_size_mb;
+	uint32_t txe_uma_base_mb;
 };
 
 void mainboard_memory_init_params(struct memory_init_params *memory_init_params);
@@ -64,5 +69,13 @@ void mainboard_memory_init_params(struct memory_init_params *memory_init_params)
 void raminit(struct memory_init_params *memory_init_params, int prev_sleep_state);
 void gfx_init(void);
 void punit_init(void);
+
+/*
+ * TXE UMA register handshake (B0:D26:F0 config space). Read the size the TXE
+ * ROM wants before memory init, carve that much DRAM, then bridge the carved
+ * base to the TXE and signal DRAM Init Done.
+ */
+uint32_t txe_uma_get_size_mb(void);			/* poll TXE_MEM_REQ for size */
+void txe_uma_did(uint32_t base_mb, uint32_t size_mb);	/* program SATT1, send DID */
 
 #endif /* _BAYTRAIL_ROMSTAGE_H_ */

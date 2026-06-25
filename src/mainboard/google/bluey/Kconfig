@@ -88,6 +88,7 @@ config BOARD_GOOGLE_MODEL_MICA
 	select MAINBOARD_HAS_CHROME_EC
 	select MAINBOARD_HAS_FINGERPRINT_VIA_USB
 	select MAINBOARD_HAS_GOOGLE_TPM
+	select MAINBOARD_LCD_FAIL_DETECT
 	select SPI_FREQ_75MHZ
 
 config BOARD_GOOGLE_MICA
@@ -135,6 +136,23 @@ config MAINBOARD_HAS_PS8820_RETIMER
 	default n
 	help
 	  Enable this option if your mainboard is equipped with a PS8820 retimer.
+
+config MAINBOARD_LCD_FAIL_DETECT
+	bool "Enable LCD failure detection via LED"
+	default n
+	help
+	  Execute a hardware status check on the LCD panel during the preboot
+	  phase. The SoC attempts to read EDID/DPCD information from the display
+	  and performs Link Training. If either operation fails, the SoC sends
+	  a diagnostic command to the EC via SPI to signal the failure state.
+
+config MAINBOARD_LIGHTBAR_CMD_SEQ_DIAG_LCD
+	depends on MAINBOARD_LCD_FAIL_DETECT
+	int
+	default 101 if BOARD_GOOGLE_MODEL_MICA
+	default 0
+	help
+	  The lightbar command sequence for triggering LCD diagnosis lightbar pattern.
 
 config MAINBOARD_NO_USB_A_PORT
 	bool

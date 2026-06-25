@@ -18,6 +18,7 @@
 #include <soc/rpmh_config.h>
 #include <timer.h>
 #include <timestamp.h>
+#include <ec/google/chromeec/ec.h>
 
 #include "board.h"
 #include "display.h"
@@ -70,8 +71,16 @@ static void edp_enable_backlight(void)
 
 static void qcom_mdss_edp_init(struct edid *edid, uintptr_t fb_addr)
 {
-	if (edp_ctrl_init(edid) != CB_SUCCESS)
+	if (edp_ctrl_init(edid) != CB_SUCCESS) {
+		if (CONFIG(MAINBOARD_LCD_FAIL_DETECT)) {
+			if (google_chromeec_lightbar_sequence(
+				CONFIG_MAINBOARD_LIGHTBAR_CMD_SEQ_DIAG_LCD))
+				printk(BIOS_ERR,
+					"Failed to send LED/lightbar(0x%x) command to EC.\n",
+					CONFIG_MAINBOARD_LIGHTBAR_CMD_SEQ_DIAG_LCD);
+		}
 		return;
+	}
 
 	configure_vbif_qos();
 	mdss_layer_mixer_setup(edid);

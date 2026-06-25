@@ -25,6 +25,7 @@
 #include <soc/symbols_common.h>
 #include <soc/usb/usb.h>
 #include <soc/variant.h>
+#include <soc/rpmh_config.h>
 
 #include "board.h"
 #include "display.h"
@@ -317,6 +318,8 @@ void mainboard_soc_init(void)
 
 	if (boot_mode == LB_BOOT_MODE_NORMAL || boot_mode == LB_BOOT_MODE_NO_BATTERY)
 		display_startup();
+
+	ufs_rpmh_init();
 
 	/* Enable touchpad power */
 	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_TOUCHPAD_POWER)

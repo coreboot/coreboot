@@ -197,7 +197,7 @@ static void handle_battery_shipping_recovery(bool board_reset)
 
 static void check_first_boot_and_reset(enum boot_mode_t mode)
 {
-	if ((mode != LB_BOOT_MODE_NORMAL) && (boot_count_read() == 1)) {
+	if ((mode == LB_BOOT_MODE_RTC_WAKE) && (boot_count_read() == 1)) {
 		printk(BIOS_INFO, "First boot detected in non-normal mode; triggering reset.\n");
 		do_board_reset();
 	}

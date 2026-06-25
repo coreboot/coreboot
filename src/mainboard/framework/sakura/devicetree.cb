@@ -31,7 +31,8 @@ chip soc/intel/pantherlake
 	register "pch_slp_a_min_assertion_width" = "SLP_A_ASSERTION_98_MS"
 
 	# SOC Aux orientation override for Type-C retimers:
-	# All 4 ports have Hayden Bridge retimers, aux lines not swapped.
+	# Two ports each have one Hayden Bridge retimer, aux lines not swapped.
+	# Even bits (0,2,4,6): 0 = retimer present; Odd bits (1,3,5,7): 0 = aux not swapped.
 	register "tcss_aux_ori" = "0x00"
 
 	# Enable all four TCSS Type-C ports with full functionality
@@ -126,11 +127,8 @@ chip soc/intel/pantherlake
 		device ref tcss_dma0 on
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
-				use tcss_usb3_port0 as dfp[0].typec_port
-				device generic 0 on end
-			end
-			chip drivers/intel/usb4/retimer
 				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
+				use tcss_usb3_port0 as dfp[0].typec_port
 				use tcss_usb3_port1 as dfp[1].typec_port
 				device generic 0 on end
 			end
@@ -138,11 +136,8 @@ chip soc/intel/pantherlake
 		device ref tcss_dma1 on
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
-				use tcss_usb3_port2 as dfp[0].typec_port
-				device generic 0 on end
-			end
-			chip drivers/intel/usb4/retimer
 				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
+				use tcss_usb3_port2 as dfp[0].typec_port
 				use tcss_usb3_port3 as dfp[1].typec_port
 				device generic 0 on end
 			end

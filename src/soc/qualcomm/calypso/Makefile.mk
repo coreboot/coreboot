@@ -86,10 +86,12 @@ endif # CONFIG_QC_SDI_ENABLE
 ifeq ($(CONFIG_QC_QDUTT_ENABLE),y)
 QCLIB_FILE := $(CALYPSO_BLOB)/QDUTT/boot/QcDdi.elf
 DCB_FILE := $(CALYPSO_BLOB)/QDUTT/boot/$(DTB_DCB_BLOB_PATH)/dcb.bin
+DELTA_DCB_FILE := $(CALYPSO_BLOB)/QDUTT/boot/$(DTB_DCB_BLOB_PATH)/delta_dcb.bin
 SHRM_FILE := $(CALYPSO_BLOB)/QDUTT/$(BLOB_VARIANT)/shrm/shrm.elf
 else
 QCLIB_FILE := $(CALYPSO_BLOB)/boot/QcLib.elf
 DCB_FILE := $(CALYPSO_BLOB)/boot/$(DTB_DCB_BLOB_PATH)/dcb.bin
+DELTA_DCB_FILE := $(CALYPSO_BLOB)/boot/$(DTB_DCB_BLOB_PATH)/delta_dcb.bin
 SHRM_FILE := $(CALYPSO_BLOB)/$(BLOB_VARIANT)/shrm/shrm.elf
 endif # CONFIG_QC_QDUTT_ENABLE
 
@@ -134,7 +136,6 @@ $(DCB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(DCB_CBFS)
 
 ################################################################################
-DELTA_DCB_FILE := $(CALYPSO_BLOB)/boot/$(DTB_DCB_BLOB_PATH)/delta_dcb.bin
 DELTA_DCB_CBFS := $(CONFIG_CBFS_PREFIX)/delta_dcb
 $(DELTA_DCB_CBFS)-file := $(DELTA_DCB_FILE)
 $(DELTA_DCB_CBFS)-type := raw

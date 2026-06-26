@@ -66,7 +66,7 @@
 #define DEAD_BATT_STS	BIT(6)
 
 #define DELAY_CHARGING_APPLET_MS 2000 /* 2sec */
-#define CHARGING_RAIL_STABILIZATION_DELAY_MS 5000 /* 5sec */
+#define CHARGING_RAIL_STABILIZATION_DELAY_MS 15000 /* 15sec */
 #define LOW_BATTERY_CHARGING_LOOP_EXIT_MS (3 * 60 * 1000) /* 3min */
 #define DELAY_CHARGING_ACTIVE_LB_MS 4000 /* 4sec */
 
@@ -200,11 +200,23 @@ void launch_charger_applet(void)
 	printk(BIOS_INFO, "Inside %s. Initiating charging\n", __func__);
 
 	stopwatch_init_msecs_expire(&sw, charging_enable_timeout_ms);
+
+	/* Clear the event to prevent re-triggering in the next iteration */
+	clear_ac_unplug_event();
+
 	while (!get_battery_icurr_ma()) {
 		if (detect_ec_manual_poweron_event()) {
 			printk(BIOS_INFO, "Exiting charging applet to boot to OS\n");
 			do_board_reset();
 		}
+
+		if (detect_ac_unplug_event()) {
+			printk(BIOS_INFO, "Issuing power-off due to changer disconnection.\n");
+			indicate_charging_status();
+			google_chromeec_offmode_heartbeat();
+			google_chromeec_ap_poweroff();
+		}
+
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_WARNING, "Charging not enabled %ld ms. Abort.\n",
 					charging_enable_timeout_ms);

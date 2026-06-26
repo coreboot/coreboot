@@ -1,0 +1,187 @@
+From 25f0d08bafa447b4d02a24bb7472ba187bc3b823 Mon Sep 17 00:00:00 2001
+From: Mythreya Kuricheti <git@mythreya.dev>
+Date: Thu, 19 Mar 2026 14:00:38 -0700
+Subject: [PATCH] [clang] add x86_64 baremetal triple include search paths
+ (#183453)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+when compiling for i386 / x86_64 baremetal targets, the include path for
+the triple-specific directory is not added. This is the layout I'm
+currently using, which from my understanding is the multi-target layout
+that clang supports.
+
+Sysroot layout:
+```
+sysroot
+    └── usr
+        ├── bin
+        ├── include
+        │   ├── c++
+        │   ├── [other dirs]
+        │   ├── i386-pc-linux-musl
+        │   │   ├── linux
+        │   │   ├── c++
+        │   │   │   └── v1
+        │   │   ├── [other triple dirs]
+        │   │   ├── [other dirs, headers]
+        │   ├── i386-unknown-none-elf
+        │   │   ├── linux
+        │   │   ├── c++
+        │   │   │   └── v1
+        │   │   ├── [other triple dirs]
+        │   │   ├── [other dirs, headers]
+        │   ├── x86_64-pc-linux-musl
+        │   │   ├── linux
+        │   │   ├── c++
+        │   │   │   └── v1
+        │   │   ├── [other triple dirs]
+        │   │   ├── [other dirs, headers]
+        │   ├── x86_64-unknown-none-elf
+        │   │   ├── linux
+        │   │   ├── c++
+        │   │   │   └── v1
+        │   │   ├── [other triple dirs]
+        │   │   ├── [other dirs, headers]
+        │   └── [triple]
+        ├── lib
+        │   ├── clang
+        │   ├── cmake
+        │   ├── ...
+        │   ├── i386-pc-linux-musl
+        │   ├── i386-unknown-none-elf
+        │   ├── x86_64-pc-linux-musl
+        │   ├── x86_64-unknown-none-elf
+        │   └── [triple]
+```
+
+For a musl triple, these directories are searched,
+
+```
+/sysroot/usr/bin/../include/i386-pc-linux-musl/c++/v1
+/sysroot/usr/bin/../include/c++/v1
+/sysroot/usr/bin/../include/i386-pc-linux-musl
+/sysroot/usr/include
+/sysroot/usr/lib/clang/23/include
+```
+
+but not for the baremetal triple
+
+```
+# before
+/sysroot/usr/bin/../include/x86_64-unknown-none-elf/c++/v1
+/sysroot/usr/bin/../include/c++/v1
+# <missing triple dir>
+/sysroot/usr/lib/clang/23/include
+/sysroot/usr/include
+
+# after
+/sysroot/usr/bin/../include/x86_64-unknown-none-elf/c++/v1
+/sysroot/usr/include/c++/v1
+/sysroot/usr/bin/../include/x86_64-unknown-none-elf   # <-- added
+/sysroot/usr/lib/clang/23/include
+# missing /sysroot/usr/include
+```
+
+I'm using newlib for the baremetal target, so those headers install to
+`/sysroot/usr/include/x86_64-unknown-none-elf`, just like how the musl
+headers install to `/sysroot/usr/include/i386-pc-linux-musl`.
+---
+ clang/lib/Driver/ToolChains/BareMetal.cpp |  8 +++-
+ clang/test/Driver/baremetal.cpp           | 46 +++++++++++++++++++++++
+ 2 files changed, 53 insertions(+), 1 deletion(-)
+
+diff --git a/clang/lib/Driver/ToolChains/BareMetal.cpp b/clang/lib/Driver/ToolChains/BareMetal.cpp
+index 5e974527774e..769da2b107e2 100644
+--- a/clang/lib/Driver/ToolChains/BareMetal.cpp
++++ b/clang/lib/Driver/ToolChains/BareMetal.cpp
+@@ -51,6 +51,12 @@ static bool isPPCBareMetal(const llvm::Triple &Triple) {
+          Triple.getEnvironment() == llvm::Triple::EABI;
+ }
+ 
++/// Is the triple {ix86,x86_64}-*-none-elf?
++static bool isX86BareMetal(const llvm::Triple &Triple) {
++  return Triple.isX86() && Triple.getOS() == llvm::Triple::UnknownOS &&
++         Triple.getEnvironmentName() == "elf";
++}
++
+ static bool findRISCVMultilibs(const Driver &D,
+                                const llvm::Triple &TargetTriple,
+                                const ArgList &Args, DetectedMultilibs &Result) {
+@@ -351,7 +357,7 @@ void BareMetal::findMultilibs(const Driver &D, const llvm::Triple &Triple,
+ bool BareMetal::handlesTarget(const llvm::Triple &Triple) {
+   return arm::isARMEABIBareMetal(Triple) ||
+          aarch64::isAArch64BareMetal(Triple) || isRISCVBareMetal(Triple) ||
+-         isPPCBareMetal(Triple);
++         isPPCBareMetal(Triple) || isX86BareMetal(Triple);
+ }
+ 
+ Tool *BareMetal::buildLinker() const {
+diff --git a/clang/test/Driver/baremetal.cpp b/clang/test/Driver/baremetal.cpp
+index 1ab676fd390f..70e74743c133 100644
+--- a/clang/test/Driver/baremetal.cpp
++++ b/clang/test/Driver/baremetal.cpp
+@@ -263,6 +263,22 @@
+ // CHECK-RISCV64-NO-HOST-INC-SAME: "-internal-isystem" "[[RESOURCE]]{{[/\\]+}}include"
+ // CHECK-RISCV64-NO-HOST-INC-SAME: "-internal-isystem" "[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}include"
+ 
++// RUN: %clang -no-canonical-prefixes %s -### --target=i386-unknown-elf 2>&1 \
++// RUN:   | FileCheck --check-prefix=CHECK-PCX86-NO-HOST-INC %s
++// CHECK-PCX86-NO-HOST-INC: InstalledDir: [[INSTALLEDDIR:.+]]
++// CHECK-PCX86-NO-HOST-INC: "-resource-dir" "[[RESOURCE:[^"]+]]"
++// CHECK-PCX86-NO-HOST-INC-SAME: "-internal-isystem" "[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}include{{[/\\]+}}c++{{[/\\]+}}v1"
++// CHECK-PCX86-NO-HOST-INC-SAME: "-internal-isystem" "[[RESOURCE]]{{[/\\]+}}include"
++// CHECK-PCX86-NO-HOST-INC-SAME: "-internal-isystem" "[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}include"
++
++// RUN: %clang -no-canonical-prefixes %s -### --target=x86_64-unknown-elf 2>&1 \
++// RUN:   | FileCheck --check-prefix=CHECK-PCX86_64-NO-HOST-INC %s
++// CHECK-PCX86_64-NO-HOST-INC: InstalledDir: [[INSTALLEDDIR:.+]]
++// CHECK-PCX86_64-NO-HOST-INC: "-resource-dir" "[[RESOURCE:[^"]+]]"
++// CHECK-PCX86_64-NO-HOST-INC-SAME: "-internal-isystem" "[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}include{{[/\\]+}}c++{{[/\\]+}}v1"
++// CHECK-PCX86_64-NO-HOST-INC-SAME: "-internal-isystem" "[[RESOURCE]]{{[/\\]+}}include"
++// CHECK-PCX86_64-NO-HOST-INC-SAME: "-internal-isystem" "[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}include"
++
+ // RUN: %clang %s -### --target=riscv64-unknown-elf -o %t.out -L some/directory/user/asked/for \
+ // RUN:     --sysroot=%S/Inputs/basic_riscv64_tree/riscv64-unknown-elf 2>&1 \
+ // RUN:   | FileCheck --check-prefix=CHECK-RV64 %s
+@@ -579,6 +595,36 @@
+ // CHECK-PPC64LEEABI-SAME: "-lc"
+ // CHECK-PPC64LEEABI-SAME: "-o" "a.out"
+ 
++// RUN: %clang -no-canonical-prefixes %s -### --target=i386-unknown-elf 2>&1 \
++// RUN:   | FileCheck --check-prefix=CHECK-PCX86ELF %s
++// CHECK-PCX86ELF: InstalledDir: [[INSTALLEDDIR:.+]]
++// CHECK-PCX86ELF: "-nostdsysteminc"
++// CHECK-PCX86ELF-SAME: "-resource-dir" "[[RESOURCE:[^"]+]]"
++// CHECK-PCX86ELF-SAME: "-internal-isystem" "[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}include{{[/\\]+}}c++{{[/\\]+}}v1"
++// CHECK-PCX86ELF-SAME: "-internal-isystem" "[[RESOURCE]]{{[/\\]+}}include"
++// CHECK-PCX86ELF-SAME: "-internal-isystem" "[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}include"
++// CHECK-PCX86ELF-NEXT: ld{{(.exe)?}}" "-Bstatic" "-m" "elf_i386"
++// CHECK-PCX86ELF-SAME: "-L[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}lib"
++// CHECK-PCX86ELF-SAME:"{{.*}}.o"
++// CHECK-PCX86ELF-SAME: "{{[^"]*}}libclang_rt.builtins.a"
++// CHECK-PCX86ELF-SAME: "-lc"
++// CHECK-PCX86ELF-SAME: "-o" "a.out"
++
++// RUN: %clang -no-canonical-prefixes %s -### --target=x86_64-unknown-elf 2>&1 \
++// RUN:   | FileCheck --check-prefix=CHECK-PCX86_64ELF %s
++// CHECK-PCX86_64ELF: InstalledDir: [[INSTALLEDDIR:.+]]
++// CHECK-PCX86_64ELF: "-nostdsysteminc"
++// CHECK-PCX86_64ELF-SAME: "-resource-dir" "[[RESOURCE:[^"]+]]"
++// CHECK-PCX86_64ELF-SAME: "-internal-isystem" "[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}include{{[/\\]+}}c++{{[/\\]+}}v1"
++// CHECK-PCX86_64ELF-SAME: "-internal-isystem" "[[RESOURCE]]{{[/\\]+}}include"
++// CHECK-PCX86_64ELF-SAME: "-internal-isystem" "[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}include"
++// CHECK-PCX86_64ELF-NEXT: ld{{(.exe)?}}" "-Bstatic" "-m" "elf_x86_64"
++// CHECK-PCX86_64ELF-SAME: "-L[[INSTALLEDDIR]]{{[/\\]+}}..{{[/\\]+}}lib{{[/\\]+}}clang-runtimes{{[/\\]+[^"]*}}lib"
++// CHECK-PCX86_64ELF-SAME:"{{.*}}.o"
++// CHECK-PCX86_64ELF-SAME: "{{[^"]*}}libclang_rt.builtins.a"
++// CHECK-PCX86_64ELF-SAME: "-lc"
++// CHECK-PCX86_64ELF-SAME: "-o" "a.out"
++
+ // Check that compiler-rt library without the arch filename suffix will
+ // be used if present.
+ // RUN: rm -rf %t.dir/baremetal_clang_rt_noarch
+-- 
+2.47.3
+

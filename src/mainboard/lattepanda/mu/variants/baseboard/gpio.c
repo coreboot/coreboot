@@ -3,20 +3,19 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <types.h>
 
-/* Pad configuration in ramstage*/
-static const struct pad_config gpio_table[] = {
+static const struct pad_config base_gpio_table[] = {
 	/* CORE_VID0 */
 	PAD_CFG_NF(GPP_B0, NONE, DEEP, NF1),
 	/* CORE_VID1 */
 	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),
 	/* VR_ALERT_N */
 	PAD_CFG_NF(GPP_B2, NONE, DEEP, NF1),
-	/* SLP_S0_N */
+	/* PM_SLP_S0_N */
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
-	/* PLTRST_N */
+	/* PLT_RST_N */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
-	PAD_CFG_GPO(GPP_B14, 0, PLTRST),
 
 	/* ESPI_IO0_EC_R / ESPI_IO0_HDR */
 	PAD_CFG_NF(GPP_A0, NONE, DEEP, NF1),
@@ -36,11 +35,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A9, NONE, DEEP, NF1),
 	/* ESPI_RST_EC_R_N / ESPI_RST_HDR_N */
 	PAD_CFG_NF(GPP_A10, NONE, DEEP, NF1),
-
-	/* H15 : DDPB_CTRLCLK ==> DDIB_HDMI_CTRLCLK */
-	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
-	/* H17 : DDPB_CTRLDATA ==> DDIB_HDMI_CTRLDATA */
-	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
 
 	/* I5  : NC */
 	PAD_NC(GPP_I5, NONE),
@@ -71,18 +65,11 @@ static const struct pad_config gpio_table[] = {
 
 	/* EDP1_HPD_MIPI_PNL_RST */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
-
-	/* PM_SLP_S0_N */
-	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
-	/* PLT_RST_N */
-	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 	/* PM_SLP_DRAM_N */
 	PAD_CFG_NF(GPP_E8, NONE, DEEP, NF2),
 	/* CPU_C10_GATE_N_R */
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),
 
-	/* DDIB_DP_HDMI_ALS_HDP */
-	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 	/* PM_BATLOW_N */
 	PAD_CFG_NF(GPD0, UP_20K, PWROK, NF1),
 	/* AC_PRESENT */
@@ -110,24 +97,27 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPD_WAKEB, NONE, PWROK, NF1),
 	PAD_CFG_NF(GPD_DRAM_RESETB, NONE, PWROK, NF1),
 
-	/* SMB_CLK */
-	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),
-	/* SMB_DATA */
-	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
-	/* SMB_ALERT_N */
-	PAD_CFG_NF(GPP_C2, NONE, DEEP, NF1),
 	/* SML0_CLK */
 	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),
-	/* SML1_DATA */
+	/* SML0_DATA */
 	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),
 	PAD_CFG_TERM_GPO(GPP_C5, 1, DN_20K, PLTRST),
-	/* SML1_CLK */
-	PAD_CFG_NF(GPP_C6, NONE, RSMRST, NF1),
-	/* SML1_DATA */
-	PAD_CFG_NF(GPP_C7, NONE, RSMRST, NF1),
 };
 
-void variant_configure_gpio_pads(void)
+const struct pad_config *baseboard_gpio_table(size_t *num)
 {
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+	*num = ARRAY_SIZE(base_gpio_table);
+	return base_gpio_table;
+}
+
+__weak const struct pad_config *variant_early_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
+
+__weak const struct pad_config *variant_override_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
 }

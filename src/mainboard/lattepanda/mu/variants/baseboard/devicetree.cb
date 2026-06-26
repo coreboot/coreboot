@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+# LattePanda Mu compute module SOM only
+
+chip soc/intel/alderlake
+
+	# FSP configuration
+	# SaGv Configuration
+	register "sagv" = "SaGv_Enabled"
+
+	register "s0ix_enable" = "1"
+
+	# Configure external V1P05/Vnn/VnnSx Rails
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX & ~FIVR_ENABLE_S0,
+		.vnn_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.vnn_sx_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.v1p05_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL,
+		.vnn_supported_voltage_bitmap = FIVR_VOLTAGE_MIN_ACTIVE,
+		.v1p05_voltage_mv = 1050,
+		.vnn_voltage_mv = 780,
+		.vnn_sx_voltage_mv = 1050,
+		.v1p05_icc_max_ma = 500,
+		.vnn_icc_max_ma = 500,
+	}"
+
+	device domain 0 on
+
+		device ref crashlog off end
+
+		device ref emmc on
+			register "emmc_enable_hs400_mode" = "1"
+		end
+
+		device ref hda on
+			# HD Audio
+			register "pch_hda_dsp_enable" = "true"
+			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+			register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_codec_enable" = "1"
+		end
+
+		device ref pch_espi on
+			register "gen1_dec" = "0x00fc0201"
+			register "gen2_dec" = "0x003c0a01"
+			register "gen3_dec" = "0x000c03f1"
+			register "gen4_dec" = "0x000c0081"
+			chip superio/ite/it8613e
+				device pnp 2e.0 off end
+				device pnp 2e.1 on	# COM 1
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+					irq 0xf0 = 0x1
+				end
+				device pnp 2e.4 on	# Environment Controller
+					io 0x60 = 0xa40
+					io 0x62 = 0xa30
+					irq 0x70 = 0x00
+				end
+				device pnp 2e.5 off end # Keyboard
+				device pnp 2e.6 off end # Mouse
+				device pnp 2e.7 off end # GPIO
+				device pnp 2e.a off end # CIR
+			end
+		end
+
+		chip drivers/crb
+			device mmio 0xfed40000 on end
+		end
+	end
+end

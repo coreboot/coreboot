@@ -8,8 +8,9 @@
 #include <stdint.h>
 
 /* Functions to configure GPIO as per variant schematics */
-void variant_configure_gpio_pads(void);
-void variant_configure_early_gpio_pads(void);
+const struct pad_config *baseboard_gpio_table(size_t *num);
+const struct pad_config *variant_override_gpio_table(size_t *num);
+const struct pad_config *variant_early_gpio_table(size_t *num);
 
 size_t variant_memory_sku(void);
 const struct mb_cfg *variant_memory_params(void);

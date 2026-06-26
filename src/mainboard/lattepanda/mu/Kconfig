@@ -1,9 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-if BOARD_LATTEPANDA_MU
-
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_LATTEPANDA_MU_COMMON
+	def_bool n
 	select BOARD_ROMSIZE_KB_16384
 	select CRB_TPM
 	select DRIVERS_INTEL_PMC
@@ -17,20 +15,43 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_INTEL_PTT
 	select INTEL_GMA_HAVE_VBT
 	select PMC_IPC_ACPI_INTERFACE
-	select REALTEK_8168_RESET
-	select RT8168_GEN_ACPI_POWER_RESOURCE
-	select SOC_INTEL_ALDERLAKE
 	select SOC_INTEL_ALDERLAKE_PCH_N
 	select SUPERIO_ITE_IT8613E
+
+config BOARD_LATTEPANDA_MU
+	select BOARD_LATTEPANDA_MU_COMMON
+
+config BOARD_LATTEPANDA_MU_DFR1142
+	select BOARD_LATTEPANDA_MU_COMMON
+	select REALTEK_8168_RESET
+	select RT8168_GEN_ACPI_POWER_RESOURCE
+
+if BOARD_LATTEPANDA_MU_COMMON
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
+
 config MAINBOARD_DIR
 	default "lattepanda/mu"
 
+config MAINBOARD_SMBIOS_MANUFACTURER
+	default "DFRobot"
+
 config MAINBOARD_PART_NUMBER
-	default "MU_8G"
+	default "LattePanda Mu (SOM only)" if BOARD_LATTEPANDA_MU
+	default "LattePanda Mu with DFR1142" if BOARD_LATTEPANDA_MU_DFR1142
+
+config VARIANT_DIR
+	default "dfr1142" if BOARD_LATTEPANDA_MU_DFR1142
+
+config DEVICETREE
+	default "variants/baseboard/devicetree.cb"
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb" if (!BOARD_LATTEPANDA_MU)
 
 config UART_FOR_CONSOLE
 	default 0

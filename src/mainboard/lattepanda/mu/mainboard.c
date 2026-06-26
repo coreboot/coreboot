@@ -23,7 +23,14 @@ const char *smbios_system_sku(void)
 
 static void mainboard_init(void *chip_info)
 {
-	variant_configure_gpio_pads();
+	const struct pad_config *base_pads, *override_pads;
+	size_t base_num, override_num;
+
+	base_pads = baseboard_gpio_table(&base_num);
+	override_pads = variant_override_gpio_table(&override_num);
+
+	gpio_configure_pads_with_override(base_pads, base_num, override_pads, override_num);
+
 	variant_devtree_update();
 }
 

@@ -245,9 +245,14 @@ static void it8613e_init(const u16 p_idx, const u16 p_dat, const struct initdata
 
 void bootblock_mainboard_early_init(void)
 {
+	const struct pad_config *early_pads;
+	size_t early_num;
+
 	/* fixed io decode of espi */
 	pci_write_config32(PCH_DEV_ESPI, ESPI_IO_DEC, 0x3c030070);
-	variant_configure_early_gpio_pads();
+
+	early_pads = variant_early_gpio_table(&early_num);
+	gpio_configure_pads(early_pads, early_num);
 
 	/* initial IT8613e/LX from table */
 	sio_init(init_values, ARRAY_SIZE(init_values));

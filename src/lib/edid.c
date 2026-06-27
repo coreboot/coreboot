@@ -681,6 +681,11 @@ cea_hdmi_block(struct edid *out, unsigned char *x)
 	out->hdmi_monitor_detected = 1;
 
 	printk(BIOS_SPEW, " (HDMI)\n");
+
+	/* Source physical address requires 2 bytes beyond the 3-byte OUI. */
+	if (length < 5)
+		return;
+
 	printk(BIOS_SPEW,
 	       "    Source physical address %d.%d.%d.%d\n",
 	       x[4] >> 4, x[4] & 0x0f, x[5] >> 4, x[5] & 0x0f);
@@ -704,28 +709,42 @@ cea_hdmi_block(struct edid *out, unsigned char *x)
 	if (length > 6)
 		printk(BIOS_SPEW, "    Maximum TMDS clock: %dMHz\n", x[7] * 5);
 
-	/* XXX the walk here is really ugly, and needs to be length-checked */
+	/*
+	 * The rest of the HDMI VSDB contains optional latency and 3D-capability
+	 * fields accessed via a dynamically-growing byte offset `b`. Every
+	 * access is bounds-checked against `length` (the block's declared data
+	 * byte count) to prevent out-of-bounds reads on truncated or malformed
+	 * blocks.
+	 */
 	if (length > 7) {
 		int b = 0;
 
 		if (x[8] & 0x80) {
-			printk(BIOS_SPEW, "    Video latency: %d\n", x[9 + b]);
-			printk(BIOS_SPEW, "    Audio latency: %d\n", x[10 + b]);
+			if (10 + b <= length) {
+				printk(BIOS_SPEW, "    Video latency: %d\n", x[9 + b]);
+				printk(BIOS_SPEW, "    Audio latency: %d\n", x[10 + b]);
+			}
 			b += 2;
 		}
 
 		if (x[8] & 0x40) {
-			printk(BIOS_SPEW,
-				"    Interlaced video latency: %d\n", x[9 + b]);
-			printk(BIOS_SPEW,
-				"    Interlaced audio latency: %d\n",
-				x[10 + b]);
+			if (10 + b <= length) {
+				printk(BIOS_SPEW,
+					"    Interlaced video latency: %d\n", x[9 + b]);
+				printk(BIOS_SPEW,
+					"    Interlaced audio latency: %d\n",
+					x[10 + b]);
+			}
 			b += 2;
 		}
 
 		if (x[8] & 0x20) {
 			int mask = 0, formats = 0;
-			int len_xx, len_3d;
+			int len_xx = 0, len_3d = 0;
+
+			if (9 + b > length)
+				goto hdmi_done;
+
 			printk(BIOS_SPEW, "    Extended HDMI video details:\n");
 			if (x[9 + b] & 0x80)
 				printk(BIOS_SPEW, "      3D present\n");
@@ -753,6 +772,9 @@ cea_hdmi_block(struct edid *out, unsigned char *x)
 				printk(BIOS_SPEW, "      Base EDID image size is in units of 5cm\n");
 				break;
 			}
+
+			if (10 + b > length)
+				goto hdmi_done;
 			len_xx = (x[10 + b] & 0xe0) >> 5;
 			len_3d = (x[10 + b] & 0x1f) >> 0;
 			b += 2;
@@ -765,6 +787,8 @@ cea_hdmi_block(struct edid *out, unsigned char *x)
 
 			if (len_3d) {
 				if (formats) {
+					if (10 + b > length)
+						goto hdmi_done;
 					if (x[9 + b] & 0x01)
 						printk(BIOS_SPEW, "      Side-by-side 3D supported\n");
 					if (x[10 + b] & 0x40)
@@ -775,6 +799,8 @@ cea_hdmi_block(struct edid *out, unsigned char *x)
 				}
 				if (mask) {
 					int i;
+					if (10 + b > length)
+						goto hdmi_done;
 					printk(BIOS_SPEW,
 						"      3D VIC indices:");
 					/* worst bit ordering ever */
@@ -798,6 +824,7 @@ cea_hdmi_block(struct edid *out, unsigned char *x)
 				 */
 			}
 		}
+hdmi_done:
 		/* Tell static analysis we know index b is left unused. */
 		(void)b;
 	}

@@ -3,8 +3,10 @@
 #include <acpi/acpi_device.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <option.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>
@@ -12,6 +14,8 @@
 #include <string.h>
 #include <drivers/intel/dptf/chip.h>
 #include <intelblocks/power_limit.h>
+
+WEAK_DEV_PTR(touchscreen);
 
 const struct cpu_power_limits limits[] = {
 	/* SKU_ID, TDP (Watts), pl1_min, pl1_max, pl2_min, pl2_max, PL4 */
@@ -59,5 +63,10 @@ void variant_update_power_limits(void)
 
 void variant_devtree_update(void)
 {
+	struct device *dev = DEV_PTR(touchscreen);
+
+	if (get_uint_option("touchscreen", 1) == 0 && dev)
+		dev->enabled = 0;
+
 	variant_update_power_limits();
 }

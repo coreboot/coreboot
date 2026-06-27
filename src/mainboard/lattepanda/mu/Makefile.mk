@@ -11,6 +11,7 @@ romstage-y += memory.c
 
 ramstage-y += mainboard.c
 ramstage-y += ramstage.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
 smm-y += smihandler.c
 

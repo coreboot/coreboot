@@ -1638,7 +1638,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	 * by v1.3 and we are unlikely to use any EDID 2.0 panels, we ignore
 	 * that case now and can fix it when we need to use a real 2.0 panel.
 	 */
-	for (i = 128; i < size; i += 128)
+	for (i = 128; i + 128 <= size; i += 128)
 		c.nonconformant_extension +=
 				parse_extension(out, &edid[i], &c);
 

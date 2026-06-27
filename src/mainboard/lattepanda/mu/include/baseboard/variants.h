@@ -12,11 +12,7 @@ const struct pad_config *baseboard_gpio_table(size_t *num);
 const struct pad_config *variant_override_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 
-size_t variant_memory_sku(void);
 const struct mb_cfg *variant_memory_params(void);
-void rpl_memory_params(FSPM_UPD *memupd);
-
-/* Modify devictree settings during ramstage */
 void variant_devtree_update(void);
 struct cpu_power_limits {
 	uint16_t mchid;

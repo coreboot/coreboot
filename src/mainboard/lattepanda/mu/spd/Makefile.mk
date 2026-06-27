@@ -1,4 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-SPD_SOURCES =  mu_lp5_8gb	# 0b000
-SPD_SOURCES += mu_lp5_16gb	# 0b002
+ifeq ($(CONFIG_BOARD_LATTEPANDA_MU_MEMORY_8GB),y)
+SPD_SOURCES = mu_lp5_8gb
+else
+SPD_SOURCES = mu_lp5_16gb
+endif

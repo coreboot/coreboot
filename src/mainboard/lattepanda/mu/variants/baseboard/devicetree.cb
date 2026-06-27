@@ -87,10 +87,48 @@ chip soc/intel/alderlake
 
 		device ref pch_espi on
 			register "gen1_dec" = "0x00fc0201"
-			register "gen2_dec" = "0x003c0a01"
+			register "gen2_dec" = "0x007c0a01"
 			register "gen3_dec" = "0x000c03f1"
 			register "gen4_dec" = "0x000c0081"
 			chip superio/ite/it8613e
+				register "ec.vin_mask" = "VIN_ALL"
+				register "TMPIN3.mode" = "THERMAL_PECI"
+				register "FAN1" = "{
+					.mode = FAN_SMART_AUTOMATIC,
+					.smart = {
+						.tmpin     =  3,
+						.tmp_off   =  0,
+						.tmp_start = 40,
+						.tmp_full  = 85,
+						.tmp_delta =  2,
+						.pwm_start = 40,
+						.slope     =  4,
+					},
+				}"
+				register "FAN2" = "{
+					.mode = FAN_SMART_AUTOMATIC,
+					.smart = {
+						.tmpin     =  3,
+						.tmp_off   =  0,
+						.tmp_start = 40,
+						.tmp_full  = 85,
+						.tmp_delta =  2,
+						.pwm_start = 40,
+						.slope     =  4,
+					},
+				}"
+				register "FAN3" = "{
+					.mode = FAN_SMART_AUTOMATIC,
+					.smart = {
+						.tmpin     =  3,
+						.tmp_off   =  0,
+						.tmp_start = 40,
+						.tmp_full  = 85,
+						.tmp_delta =  2,
+						.pwm_start = 40,
+						.slope     =  4,
+					},
+				}"
 				device pnp 2e.0 off end
 				device pnp 2e.1 on	# COM 1
 					io 0x60 = 0x3f8
@@ -104,7 +142,27 @@ chip soc/intel/alderlake
 				end
 				device pnp 2e.5 off end # Keyboard
 				device pnp 2e.6 off end # Mouse
-				device pnp 2e.7 off end # GPIO
+				device pnp 2e.7 on	# GPIO
+					# Multi-function / special-function pin select
+					irq 0x2b = 0x08		# global special function 2
+					irq 0x26 = 0x00		# GPIO set 2 -> all GPIO
+					irq 0x2c = 0x40
+					irq 0x2d = 0x02		# S0ix gating / FAN_TAC5
+					# SMI# and Simple I/O window bases
+					io 0x60 = 0xa10		# SMI# base
+					io 0x62 = 0xa00		# Simple I/O base
+					irq 0x70 = 0x00
+					# Watchdog disabled
+					irq 0x72 = 0x90
+					irq 0x73 = 0x00
+					# GPIO set output / polarity state
+					irq 0xbc = 0xc0
+					irq 0xbd = 0x03
+					irq 0xc8 = 0x00
+					# Breath LED control
+					irq 0xda = 0xb0
+					irq 0xdb = 0x44
+				end
 				device pnp 2e.a off end # CIR
 			end
 		end

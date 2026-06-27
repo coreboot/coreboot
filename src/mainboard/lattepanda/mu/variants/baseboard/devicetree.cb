@@ -25,21 +25,65 @@ chip soc/intel/alderlake
 		.vnn_icc_max_ma = 500,
 	}"
 
+	register "pmc_gpe0_dw0" = "GPP_B"
+	register "pmc_gpe0_dw1" = "GPP_D"
+	register "pmc_gpe0_dw2" = "GPP_E"
+
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
+	}"
+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
 	device domain 0 on
 
 		device ref crashlog off end
+
+		device ref shared_sram on end
+
+		device ref igpu on
+			register "ddi_ports_config" = "{
+				[DDI_PORT_A] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_C] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+			}"
+		end
 
 		device ref emmc on
 			register "emmc_enable_hs400_mode" = "1"
 		end
 
 		device ref hda on
-			# HD Audio
 			register "pch_hda_dsp_enable" = "true"
 			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
 			register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
 			register "pch_hda_idisp_codec_enable" = "1"
 		end
+
+		device ref i2c0 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GDIX1001""
+				register "generic.cid" = ""GDIX1001""
+				register "generic.desc" = ""Goodix Touchscreen""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E17)"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 14 alias touchscreen on end
+			end
+		end
+
+		device ref i2c1 on end
 
 		device ref pch_espi on
 			register "gen1_dec" = "0x00fc0201"
@@ -64,6 +108,10 @@ chip soc/intel/alderlake
 				device pnp 2e.a off end # CIR
 			end
 		end
+
+		device ref smbus on end
+
+		device ref fast_spi on end
 
 		chip drivers/crb
 			device mmio 0xfed40000 on end

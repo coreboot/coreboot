@@ -1271,9 +1271,9 @@ int set_display_mode(struct edid *edid, enum edid_modes mode)
  * Given a raw edid block, decode it into a form
  * that other parts of coreboot can use -- mainly
  * graphics bringup functions. The raw block is
- * required to be 128 bytes long, per the standard,
- * but we have no way of checking this minimum length.
- * We accept what we are given.
+ * required to be at least 128 bytes long per the
+ * standard; buffers shorter than that are rejected
+ * before any parsing begins.
  */
 int decode_edid(unsigned char *edid, int size, struct edid *out)
 {
@@ -1292,6 +1292,11 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 
 	if (!edid) {
 		printk(BIOS_ERR, "No EDID found\n");
+		return EDID_ABSENT;
+	}
+
+	if (size < 128) {
+		printk(BIOS_ERR, "EDID buffer too short: %d bytes\n", size);
 		return EDID_ABSENT;
 	}
 

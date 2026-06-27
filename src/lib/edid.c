@@ -935,6 +935,10 @@ parse_cea(struct edid *out, unsigned char *x, struct edid_context *c)
 	int offset = x[2];
 	unsigned char *detailed;
 
+	/* CEA extension block is exactly 128 bytes. Don't read past that. */
+	if (offset > 128)
+		offset = 128;
+
 	if (version >= 1)
 		do {
 			if (version == 1 && x[3] != 0)
@@ -951,8 +955,16 @@ parse_cea(struct edid *out, unsigned char *x, struct edid_context *c)
 				int i;
 				printk(BIOS_SPEW,
 					"%d bytes of CEA data\n", offset - 4);
-				for (i = 4; i < offset; i += (x[i] & 0x1f) + 1)
+				for (i = 4; i < offset;) {
+					int block_len = (x[i] & 0x1f) + 1;
+					/* A block may legitimately run past the DTD
+					   offset in non-conformant EDIDs; only stop it
+					   from reading past the 128-byte extension block. */
+					if (i + block_len > 128)
+						break;
 					cea_block(out, x + i);
+					i += block_len;
+				}
 			}
 
 			if (version >= 2) {

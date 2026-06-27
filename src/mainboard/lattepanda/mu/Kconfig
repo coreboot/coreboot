@@ -67,4 +67,39 @@ config OVERRIDE_DEVICETREE
 config UART_FOR_CONSOLE
 	default 0
 
+if BOARD_LATTEPANDA_MU_DFR1141
+
+choice
+	prompt "HSIO configuration (x4 slot mux)"
+	default DFR1141_HSIO_PCIE_X4
+	help
+	  On the DFR1141 carrier, HSIO10+11 are multiplexed with the x4 slot connector:
+
+	  - PCIe 3.0 x4: all four lanes to the slot.
+	    SATA is disabled in ramstage.
+	  - PCIe 3.0 x2 + SATA: HSIO10+11 to SATA, slot runs x2.
+
+	  This option only controls the ramstage/devicetree side of the mux. The
+	  actual lane routing is fixed by soft straps in the Intel Flash Descriptor,
+	  which cannot be changed at runtime. You MUST build with a matching
+	  IFD (set CONFIG_IFD_BIN_PATH to the descriptor extracted from the
+	  corresponding vendor stock firmware branch: PCIe/Default for x4,
+	  SATA for x2 + SATA). A mismatched descriptor leaves the slot and/or
+	  SATA port non-functional.
+
+config DFR1141_HSIO_PCIE_X4
+	bool "PCIe 3.0 x4"
+	help
+	  Route all four lanes to the x4 slot and disable SATA. Requires an IFD
+	  built from the vendor PCIe/Default (SR-B) firmware branch.
+
+config DFR1141_HSIO_PCIE_X2_SATA
+	bool "PCIe 3.0 x2 + SATA"
+	help
+	  Route HSIO10+11 to SATA; the slot runs x2. Requires an IFD built from
+	  the vendor SATA (SR-B-SATA) firmware branch.
+endchoice
+
+endif
+
 endif

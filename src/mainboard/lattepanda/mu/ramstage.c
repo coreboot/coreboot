@@ -9,6 +9,7 @@
 #include <option.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/pci_devs.h>
+#include <soc/ramstage.h>
 #include <soc/soc_chip.h>
 #include <static.h>
 #include <string.h>
@@ -16,6 +17,26 @@
 #include <intelblocks/power_limit.h>
 
 WEAK_DEV_PTR(touchscreen);
+WEAK_DEV_PTR(sata);
+
+void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+{
+	if (!CONFIG(DFR1141_HSIO_PCIE_X4))
+		return;
+
+	/*
+	 * HSIO10+11 mux with the x4 slot: SATA must be off before FSP-S runs.
+	 * soc_silicon_init_params() may already have set SataEnable from the
+	 * devicetree; override here before silicon init.
+	 */
+
+	config_t *cfg = config_of_soc();
+	cfg->sata_ports_enable[0] = 0;
+	cfg->sata_ports_enable[1] = 0;
+
+	params->SataEnable = 0;
+	memset(params->SataPortsEnable, 0, sizeof(params->SataPortsEnable));
+}
 
 const struct cpu_power_limits limits[] = {
 	/* SKU_ID, TDP (Watts), pl1_min, pl1_max, pl2_min, pl2_max, PL4 */
@@ -64,9 +85,13 @@ void variant_update_power_limits(void)
 void variant_devtree_update(void)
 {
 	struct device *dev = DEV_PTR(touchscreen);
+	struct device *sata_dev = DEV_PTR(sata);
 
 	if (get_uint_option("touchscreen", 1) == 0 && dev)
 		dev->enabled = 0;
+
+	if (CONFIG(DFR1141_HSIO_PCIE_X4) && sata_dev)
+		sata_dev->enabled = 0;
 
 	variant_update_power_limits();
 }

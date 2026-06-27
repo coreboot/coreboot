@@ -868,6 +868,12 @@ cea_block(struct edid *out, unsigned char *x)
 		break;
 	case 0x07:
 		printk(BIOS_SPEW, "  Extended tag: ");
+		/* The extended-tag code is the first data byte; the block
+		 * must declare at least 1 data byte before we read it. */
+		if ((x[0] & 0x1f) < 1) {
+			printk(BIOS_SPEW, "(too short)\n");
+			break;
+		}
 		switch (x[1]) {
 		case 0x00:
 			printk(BIOS_SPEW, "video capability data block\n");

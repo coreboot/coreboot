@@ -818,6 +818,12 @@ cea_block(struct edid *out, unsigned char *x)
 		cea_video_block(x);
 		break;
 	case 0x03:
+		/* The OUI is 3 bytes of data (x[1..3]); require at least 3
+		 * data bytes before reading to avoid an out-of-bounds access. */
+		if ((x[0] & 0x1f) < 3) {
+			printk(BIOS_SPEW, "  Vendor-specific data block (too short)\n");
+			break;
+		}
 		/* yes really, endianness lols */
 		oui = (x[3] << 16) + (x[2] << 8) + x[1];
 		printk(BIOS_SPEW, "  Vendor-specific data block, OUI %06x",

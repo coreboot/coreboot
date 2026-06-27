@@ -3,5 +3,8 @@
 config BOARD_LATTEPANDA_MU
 	bool "LattePanda Mu (SOM only)"
 
+config BOARD_LATTEPANDA_MU_DFR1141
+	bool "LattePanda Mu with DFR1141 full eval carrier"
+
 config BOARD_LATTEPANDA_MU_DFR1142
 	bool "LattePanda Mu with DFR1142 lite carrier"

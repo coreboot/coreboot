@@ -8,7 +8,7 @@ ramstage-y += memmap.c
 ramstage-y += northbridge.c
 ramstage-y += pcie.c
 ramstage-y += gma.c
-
+ramstage-$(CONFIG_CBFS_PRELOAD) += preload.c
 ramstage-y += acpi.c
 
 romstage-y += memmap.c

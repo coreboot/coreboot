@@ -92,74 +92,74 @@ chip soc/intel/alderlake
 			register "gen4_dec" = "0x000c0081"
 			chip superio/ite/it8613e
 				register "ec.vin_mask" = "VIN_ALL"
-				register "TMPIN3.mode" = "THERMAL_PECI"
-				register "FAN1" = "{
-					.mode = FAN_SMART_AUTOMATIC,
-					.smart = {
-						.tmpin     =  3,
-						.tmp_off   =  0,
-						.tmp_start = 40,
-						.tmp_full  = 85,
-						.tmp_delta =  2,
-						.pwm_start = 40,
-						.slope     =  4,
-					},
-				}"
+				register "TMPIN1.mode" = "THERMAL_PECI"
+				register "TMPIN1.offset" = "0x68"
+				# CPU_FAN
 				register "FAN2" = "{
 					.mode = FAN_SMART_AUTOMATIC,
 					.smart = {
-						.tmpin     =  3,
-						.tmp_off   =  0,
+						.tmpin     =  1,
+						.tmp_off   = 35,
 						.tmp_start = 40,
-						.tmp_full  = 85,
-						.tmp_delta =  2,
-						.pwm_start = 40,
-						.slope     =  4,
+						.tmp_full  = 100,
+						.tmp_delta =  4,
+						.pwm_start = 31,
+						.slope     = 16,
 					},
 				}"
+				# SYS_FAN
 				register "FAN3" = "{
 					.mode = FAN_SMART_AUTOMATIC,
 					.smart = {
-						.tmpin     =  3,
-						.tmp_off   =  0,
+						.tmpin     =  1,
+						.tmp_off   = 35,
 						.tmp_start = 40,
-						.tmp_full  = 85,
-						.tmp_delta =  2,
-						.pwm_start = 40,
-						.slope     =  4,
+						.tmp_full  = 100,
+						.tmp_delta =  4,
+						.pwm_start = 31,
+						.slope     = 16,
 					},
 				}"
 				device pnp 2e.0 off end
 				device pnp 2e.1 on	# COM 1
 					io 0x60 = 0x3f8
-					irq 0x70 = 4
+					irq 0x70 = 0x4
 					irq 0xf0 = 0x1
 				end
 				device pnp 2e.4 on	# Environment Controller
 					io 0x60 = 0xa40
 					io 0x62 = 0xa30
 					irq 0x70 = 0x00
+					# APC/PME control 1: PME# output disabled
+					irq 0xf2 = 0x40
+					# APC/PME control 2: AC-resume / PSON# policy
+					irq 0xf4 = 0xe0
 				end
 				device pnp 2e.5 off end # Keyboard
 				device pnp 2e.6 off end # Mouse
 				device pnp 2e.7 on	# GPIO
-					# Multi-function / special-function pin select
-					irq 0x2b = 0x08		# global special function 2
-					irq 0x26 = 0x00		# GPIO set 2 -> all GPIO
-					irq 0x2c = 0x40
-					irq 0x2d = 0x02		# S0ix gating / FAN_TAC5
-					# SMI# and Simple I/O window bases
-					io 0x60 = 0xa10		# SMI# base
-					io 0x62 = 0xa00		# Simple I/O base
+					# Special Function Select 2: PWRGD sourced from ATXPG,
+					# PCH_D0B on pin 8, PANSWH# mask time 0s
+					irq 0x2b = 0x08
+					# GPIO Set 2 mux: 0 = native function (not GPIO)
+					irq 0x26 = 0x00
+					# FAN_TAC5/FAN_CTL5 disabled, S0ix gating off
+					irq 0x2d = 0x02
+					# SMI# normal-run access window base
+					io 0x60 = 0xa10
+					# Simple I/O window base
+					io 0x62 = 0xa00
+					# Panel-button de-bounce interrupt level: none
 					irq 0x70 = 0x00
-					# Watchdog disabled
+					# Watchdog: timeout 0 (disabled); 0x72 sets unit/PWRGD routing
 					irq 0x72 = 0x90
 					irq 0x73 = 0x00
-					# GPIO set output / polarity state
+					# GPIO Set 5/6: enable internal pull-up
 					irq 0xbc = 0xc0
 					irq 0xbd = 0x03
+					# GPIO Set 1: all inputs
 					irq 0xc8 = 0x00
-					# Breath LED control
+					# Breath LED control: max duty FFh, 1s ramp delays, blink off
 					irq 0xda = 0xb0
 					irq 0xdb = 0x44
 				end

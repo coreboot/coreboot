@@ -324,8 +324,9 @@ static int block_cmd_loop(uintptr_t base, u8 *buf, size_t max_bytes, int flags)
 			 * has been reached or LAST_BYTE was set.
 			 */
 			host_outb(base, SMBHSTSTAT, SMBHSTSTS_BYTE_DONE);
+		} else {
+			udelay(1);
 		}
-
 	} while (--loops && !host_completed(status));
 
 	dprintk("%s: status = %02x, len = %zd / %zd, loops = %d\n",

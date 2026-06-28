@@ -22,7 +22,6 @@ entries
 409	2	e	7	power_on_after_fail
 
 # coreboot config options: EC
-411	1	e	8	first_battery
 415	1	e	1	wlan
 416	1	e	1	trackpoint
 417	1	e	1	fn_ctrl_swap

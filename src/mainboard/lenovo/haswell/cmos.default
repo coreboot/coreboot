@@ -5,7 +5,6 @@ debug_level=Debug
 power_on_after_fail=Disable
 nmi=Enable
 volume=0x3
-first_battery=Primary
 wlan=Enable
 fn_ctrl_swap=Disable
 f1_to_f12_as_primary=Enable

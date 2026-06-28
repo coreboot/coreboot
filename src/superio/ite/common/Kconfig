@@ -73,7 +73,16 @@ config SUPERIO_ITE_ENV_CTRL_EXT_ANY_TMPIN
 	bool
 	help
 	  Temperature can be read to any TMPIN from an external sensor via SST/PECI
-	  (instead of TMPIN3 only).
+	  (instead of TMPIN3 only). Mutually exclusive with TMPIN_SRC_SEL.
+
+config SUPERIO_ITE_ENV_CTRL_TMPIN_SRC_SEL
+	bool
+	depends on !SUPERIO_ITE_ENV_CTRL_EXT_ANY_TMPIN
+	help
+	  An external sensor (e.g. PECI) is routed to a TMPIN reading register
+	  through a bank-2 source-select nibble (TSS1) instead of the "reports
+	  to" field of the temperature channel enable register (which is reserved
+	  on these parts). Mutually exclusive with EXT_ANY_TMPIN.
 
 config SUPERIO_ITE_ENV_CTRL_NO_FULLSPEED_SETTING
 	bool

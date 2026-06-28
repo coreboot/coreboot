@@ -55,6 +55,30 @@ static void enable_peci(const u16 base)
 }
 
 /*
+ * Route a TMPIN reading register to the given source via the bank-2 TMPIN
+ * Source Selection register (TSS1). Used for parts that do not have the
+ * "reports to" field in the temperature channel enable register.
+ */
+static void set_tmpin_source(const u16 base, const u8 tmpin, const u8 src)
+{
+	const u8 reg = ITE_EC_TMPIN_SRC_SEL(tmpin);
+	const u8 shift = ITE_EC_TMPIN_SRC_SEL_SHIFT(tmpin);
+	u8 bank;
+
+	/* TSS1 lives in bank 2; preserve the rest of the bank-select register. */
+	bank = pnp_read_hwm5_index(base, ITE_EC_BANK_SELECT);
+	pnp_write_hwm5_index(base, ITE_EC_BANK_SELECT,
+		(bank & ~ITE_EC_BANK_SELECT_MASK) | ITE_EC_BANK_SELECT_BANK(2));
+
+	pnp_unset_and_set_hwm5_index(base, reg,
+		ITE_EC_TMPIN_SRC_SEL_MASK << shift,
+		(src & ITE_EC_TMPIN_SRC_SEL_MASK) << shift);
+
+	/* Restore the previous bank so the remaining bank-0 access is correct. */
+	pnp_write_hwm5_index(base, ITE_EC_BANK_SELECT, bank);
+}
+
+/*
  * Set up External Temperature to read via PECI or thermal diode/resistor
  * into TMPINx register
  */
@@ -71,10 +95,13 @@ static void enable_tmpin(const u16 base, const u8 tmpin,
 	case THERMAL_MODE_DISABLED:
 		return;
 	case THERMAL_PECI:
-		/* Some chips can set any TMPIN as the target for PECI readings
-		   while others can only read to TMPIN3. In the latter case a
-		   different register is used for enabling it. */
-		if (CONFIG(SUPERIO_ITE_ENV_CTRL_EXT_ANY_TMPIN)) {
+		/* Route the external (PECI) reading into the desired TMPIN.
+		   Chips differ in how this is done: some use a bank-2 source-
+		   select nibble (TSS1), some a "reports to" field in 0x51, and
+		   others can only target TMPIN3. */
+		if (CONFIG(SUPERIO_ITE_ENV_CTRL_TMPIN_SRC_SEL)) {
+			set_tmpin_source(base, tmpin, ITE_EC_TMPIN_SRC_PECI0);
+		} else if (CONFIG(SUPERIO_ITE_ENV_CTRL_EXT_ANY_TMPIN)) {
 			/* IT8721F is an exception, it cannot use TMPIN2 for PECI. */
 			if (CONFIG(SUPERIO_ITE_IT8721F) && tmpin == 2) {
 				printk(BIOS_WARNING,

@@ -16,6 +16,10 @@
 #define ITE_EC_CONFIGURATION			0x00
 #define   ITE_EC_CONFIGURATION_START		(1 << 0)
 
+#define ITE_EC_BANK_SELECT			0x06
+#define   ITE_EC_BANK_SELECT_MASK		(3 << 5)
+#define   ITE_EC_BANK_SELECT_BANK(x)		(((x) & 3) << 5)
+
 #define ITE_EC_INTERFACE_SELECT			0x0a
 #define   ITE_EC_INTERFACE_PSEUDO_EOC		(1 << 7)
 #define   ITE_EC_INTERFACE_SMB_ENABLE		(1 << 6)
@@ -130,6 +134,18 @@
 #define   ITE_EC_ADC_TEMP_DIODE_MODE(x)		(1 << ((x)-1))
 #define ITE_EC_ADC_TEMP_EXTRA_CHANNEL_ENABLE	0x55
 #define   ITE_EC_ADC_TEMP_EXTRA_TMPIN3_EXT	(1 << 7)
+
+/*
+ * TMPIN Source Selection 1 (TSS1), located in bank 2. Two TMPINs share one
+ * register (low nibble: odd TMPIN, high nibble: even TMPIN). The nibble selects
+ * the source (own thermal diode/resistor, PECI, SM-Link, ...) reported in the
+ * corresponding TMPINx reading register. Used by parts that route the external
+ * sensor here instead of through the 0x51 "reports to" field.
+ */
+#define ITE_EC_TMPIN_SRC_SEL(tmpin)		(0x1d + ((tmpin) - 1) / 2)
+#define   ITE_EC_TMPIN_SRC_SEL_SHIFT(tmpin)	((((tmpin) - 1) % 2) * 4)
+#define   ITE_EC_TMPIN_SRC_SEL_MASK		0xf
+#define   ITE_EC_TMPIN_SRC_PECI0		0x4	/* PECI client 0x30, domain 0 */
 
 /* Matches length of ITE_EC_TMPIN_CNT */
 static const u8 ITE_EC_TEMP_ADJUST[] = { 0x56, 0x57, 0x59 };

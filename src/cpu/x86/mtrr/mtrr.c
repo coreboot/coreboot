@@ -865,7 +865,17 @@ void x86_mtrr_check(void)
 
 static bool put_back_original_solution;
 
-void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
+static struct temp_range {
+	uintptr_t begin;
+	size_t size;
+	int type;
+} temp_ranges[10];
+
+/*
+ * Attempt to use the temporary ranges in the MTRR solution. If it fails, it
+ * will drop above 4GiB ranges and try again. If it still fails, it will return false.
+ */
+static bool mtrr_use_temp_range_internal(bool use_wrcomb, bool *wrcomb_seen)
 {
 	const struct range_entry *r;
 	const struct memranges *orig;
@@ -874,28 +884,7 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	bool above4gb = true; /* Cover above 4GiB by default. */
 	int address_bits;
 	int num_mtrrs_used;
-	static struct temp_range {
-		uintptr_t begin;
-		size_t size;
-		int type;
-	} temp_ranges[10];
-
-	if (size == 0)
-		return;
-
-	int i;
-	for (i = 0; i < ARRAY_SIZE(temp_ranges); i++) {
-		if (temp_ranges[i].size == 0) {
-			temp_ranges[i].begin = begin;
-			temp_ranges[i].size = size;
-			temp_ranges[i].type = type;
-			break;
-		}
-	}
-	if (i == ARRAY_SIZE(temp_ranges)) {
-		printk(BIOS_ERR, "Out of temporary ranges for MTRR use\n");
-		return;
-	}
+	bool ret = false;
 
 	/* Make a copy of the original address space and tweak it with the
 	 * provided range. */
@@ -904,9 +893,11 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	memranges_each_entry(r, orig) {
 		unsigned long tag = range_entry_tag(r);
 
+		if (wrcomb_seen && tag == MTRR_TYPE_WRCOMB)
+			*wrcomb_seen = true;
 		/* Remove any write combining MTRRs from the temporary
-		 * solution as it just fragments the address space. */
-		if (tag == MTRR_TYPE_WRCOMB)
+		 * solution as it fragments the address space. */
+		if (!use_wrcomb && tag == MTRR_TYPE_WRCOMB)
 			tag = MTRR_TYPE_UNCACHEABLE;
 
 		memranges_insert(&addr_space, range_entry_base(r),
@@ -914,7 +905,7 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	}
 
 	/* Place new range into the address space. */
-	for (i = 0; i < ARRAY_SIZE(temp_ranges); i++) {
+	for (size_t i = 0; i < ARRAY_SIZE(temp_ranges); i++) {
 		if (temp_ranges[i].size != 0)
 			memranges_insert(&addr_space, temp_ranges[i].begin,
 					 temp_ranges[i].size, temp_ranges[i].type);
@@ -939,13 +930,57 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	else
 		printk(BIOS_ERR, "Not enough MTRRs: %d needed vs %d available\n", num_mtrrs_used, total_mtrrs);
 
-	if (num_mtrrs_used > total_mtrrs || commit_var_mtrrs(&sol) < 0)
-		printk(BIOS_ERR, "Unable to insert temporary MTRR range: 0x%016llx - 0x%016llx size 0x%08llx type %d\n",
-				(long long)begin, (long long)begin + size - 1, (long long)size, type);
-	else
+	if (num_mtrrs_used <= total_mtrrs && commit_var_mtrrs(&sol) == 0) {
 		put_back_original_solution = true;
+		ret = true;
+	}
 
 	memranges_teardown(&addr_space);
+	return ret;
+}
+
+/*
+ * Use a temporary range in the MTRR solution. The original MTRR solution
+ * will be restored on payload boot or OS resume.
+ */
+void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
+{
+	bool wrcomb_seen = false;
+	int i;
+
+	if (size == 0)
+		return;
+
+	for (i = 0; i < ARRAY_SIZE(temp_ranges); i++) {
+		if (temp_ranges[i].size == 0) {
+			temp_ranges[i].begin = begin;
+			temp_ranges[i].size = size;
+			temp_ranges[i].type = type;
+			break;
+		}
+	}
+	if (i == ARRAY_SIZE(temp_ranges)) {
+		printk(BIOS_ERR, "Out of temporary ranges for MTRR use\n");
+		return;
+	}
+
+	/*
+	 * Try with WRCOMB (write-combining) MTRRs first.
+	 * WRCOMB MTRRs speed up framebuffer access a lot and should be used if possible.
+	 * However, they can be dropped if the MTRR solution runs out of variable MTRRs.
+	 */
+	if (mtrr_use_temp_range_internal(true, &wrcomb_seen))
+		return;
+
+	if (wrcomb_seen) {
+		/* Try again by removing WRCOMB MTRRs */
+		printk(BIOS_DEBUG, "MTRR: Temporarily disabling WRCOMB MTRRs\n");
+		if (mtrr_use_temp_range_internal(false, NULL))
+			return;
+	}
+
+	printk(BIOS_ERR, "Unable to insert temporary MTRR range: 0x%016llx - 0x%016llx size 0x%08llx type %d\n",
+	       (long long)begin, (long long)begin + size - 1, (long long)size, type);
 }
 
 static void remove_temp_solution(void *unused)

@@ -6,6 +6,8 @@ ramstage-y += variants/$(VARIANT_DIR)/hda_verb.c
 
 romstage-y += early_init.c
 
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
+
 ifeq ($(CONFIG_BOARD_LENOVO_X230_EDP),y)
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += variants/x230_edp/gma-mainboard.ads
 else

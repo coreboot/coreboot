@@ -67,8 +67,14 @@ static struct device_tree_property *alloc_prop(void)
 static size_t read_reg_prop(struct fdt_property *prop, u32 addr_cells, u32 size_cells,
 			    struct device_tree_region regions[], size_t regions_count)
 {
+	u32 entry_size = 4 * addr_cells + 4 * size_cells;
+	if (entry_size == 0) {
+		printk(BIOS_ERR, "reg property with zero address and size cells\n");
+		return 0;
+	}
+
 	// we found the reg property, no need to parse all regions in 'reg'
-	size_t count = prop->size / (4 * addr_cells + 4 * size_cells);
+	size_t count = prop->size / entry_size;
 	if (count > regions_count) {
 		printk(BIOS_ERR, "reg property has more entries (%zd) than regions array can hold (%zd)\n", count, regions_count);
 		count = regions_count;

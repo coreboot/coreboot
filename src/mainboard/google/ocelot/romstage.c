@@ -2,8 +2,10 @@
 
 #include <baseboard/variants.h>
 #include <fsp/api.h>
+#include <ec/google/chromeec/ec.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 #include <string.h>
 
 /*
@@ -47,6 +49,15 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	/* Override FSP-M UPD per board if required. */
 	variant_update_soc_memory_init_params(memupd);
+
+	/* Disable CPU ratio override for unstable power scenarios */
+	if (CONFIG(EC_GOOGLE_CHROMEEC) && (!google_chromeec_is_battery_present() ||
+			google_chromeec_is_below_critical_threshold())) {
+	        const struct soc_intel_pantherlake_config *config = config_of_soc();
+	        FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
+	        if (config->cpu_ratio_override)
+	                m_cfg->CpuRatio = 0;
+	}
 
 	variant_post_gpio_configure();
 }

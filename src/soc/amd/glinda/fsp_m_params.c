@@ -15,6 +15,7 @@
 #include <soc/platform_descriptors.h>
 #include <soc/pci_devs.h>
 #include <soc/aoac_defs.h>
+#include <soc/soc_util.h>
 #include <static.h>
 #include <string.h>
 #include <types.h>
@@ -161,7 +162,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->hda_enable = is_dev_enabled(DEV_PTR(hda));
 
 	/* Faegan only: RAS Config Options */
-	if (CONFIG(SOC_AMD_FAEGAN)) {
+	if (get_soc_type() == SOC_FAEGAN) {
 		if (CONFIG(AMD_PCIE_AER_OS_FIRST_HANDLING))
 			mcfg->amd_pcie_aer_report_mechanism = 1;
 		else if (CONFIG(AMD_PCIE_AER_FIRMWARE_FIRST_HANDLING))
@@ -183,6 +184,15 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		       mcfg->amd_nbio_ras_controlv2);
 		printk(BIOS_SPEW, "mcfg->pcie_ecrc_enablement %x\n",
 		       mcfg->pcie_ecrc_enablement);
+
+		mcfg->xgbe_port0_config_en = is_dev_enabled(DEV_PTR(xgbe_0));
+		mcfg->xgbe_port1_config_en = is_dev_enabled(DEV_PTR(xgbe_1));
+		mcfg->XgbeDisable = !mcfg->xgbe_port0_config_en && !mcfg->xgbe_port1_config_en;
+	} else {
+		/* Strix has no xGBE */
+		mcfg->xgbe_port0_config_en = 0;
+		mcfg->xgbe_port1_config_en = 0;
+		mcfg->XgbeDisable = 1;
 	}
 
 	if (config->usb_phy_custom) {

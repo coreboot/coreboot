@@ -91,6 +91,7 @@ config SOC_AMD_GLINDA_BASE
 	select USE_FSP_NOTIFY_PHASE_END_OF_FIRMWARE
 	select X86_AMD_FIXED_MTRRS
 	select HAVE_X86_64_SUPPORT
+	select HAVE_CF9_RESET_PREPARE
 	help
 	  AMD Glinda support
 
@@ -124,6 +125,22 @@ config VGA_BIOS_ID
 	default "1002,150e"
 	help
 	  The default VGA BIOS PCI vendor/device ID of the GPU and VBIOS.
+
+if SOC_AMD_FAEGAN && SOC_AMD_GLINDA
+# Add both VGA BIOS when supporting multiple SoCs
+config VGA_BIOS_SECOND
+	def_bool y
+
+config VGA_BIOS_SECOND_ID
+	string
+	default "1002,150e"
+	help
+	  VGA BIOS for glinda.
+
+config VGA_BIOS_SECOND_FILE
+	string
+	default "3rdparty/amd_blobs/strix_krackan/StrixKrackan_Generic_VBIOS.sbin"
+endif
 
 config CPU_PT_ROM_MAP_GB
 	default 1024
@@ -293,6 +310,7 @@ menu "PSP Configuration Options"
 
 config AMDFW_CONFIG_FILE
 	string "AMD PSP Firmware config file"
+	default "src/soc/amd/glinda/fw_stx_krackan_lpddr5.cfg" if SOC_AMD_FAEGAN && SOC_AMD_GLINDA
 	default "src/soc/amd/glinda/fw_krackan2e_lpddr5.cfg" if SOC_AMD_FAEGAN
 	default "src/soc/amd/glinda/fw_stx_lpddr5.cfg"
 	help

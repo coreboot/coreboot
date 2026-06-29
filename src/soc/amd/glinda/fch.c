@@ -17,6 +17,7 @@
 #include <soc/i2c.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
+#include <soc/soc_util.h>
 #include <static.h>
 #include "chip.h"
 
@@ -161,7 +162,7 @@ static void cgpll_clock_gate_init(void)
 
 void fch_init(void *chip_info)
 {
-	if (!CONFIG(SOC_AMD_SUPPORTS_WARM_RESET))
+	if (get_soc_type() == SOC_GLINDA)
 		set_resets_to_cold();
 	i2c_soc_init();
 	fch_init_acpi_ports();

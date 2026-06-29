@@ -204,6 +204,19 @@ static const struct platform_info platform_table[] = {
 		.psp_ids = {0xbc0e1100},
 		.psb_reserved_size = 0x200,
 	},
+	[PLATFORM_STRIXKRACKAN] = {
+		.name = "StrixKrackan",
+		.needs_ish = true,
+		.is_multi_level = true,
+		.has_apob_nv_quirk = false,
+		.is_initial_alignment_required = false,
+		.is_second_gen = true,
+		.has_dir_header_v1 = true,
+		/* Supports multiple PSP at once */
+		.num_psp_ids = 3,
+		.psp_ids = {0xbc0e0200, 0xbc0e0b00, 0xbc0e1000},
+		.psb_reserved_size = 0x200,
+	},
 };
 
 /**

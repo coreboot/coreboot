@@ -714,6 +714,7 @@ static void fill_psp_directory_to_efs(embedded_firmware *amd_romsig, void *pspdi
 	case PLATFORM_GENOA:
 	case PLATFORM_KRACKAN2E:
 	case PLATFORM_STRIXHALO:
+	case PLATFORM_STRIXKRACKAN:
 	case PLATFORM_TURIN:
 	default:
 		/* for combo, it is also combo_psp_directory */
@@ -1728,6 +1729,7 @@ static int integrate_efs_table(context *ctx, amd_cb_config *cb_config)
 	case PLATFORM_STRIX:
 	case PLATFORM_KRACKAN2E:
 	case PLATFORM_STRIXHALO:
+	case PLATFORM_STRIXKRACKAN:
 		amd_romsig->spi_readmode_f17_mod_30_3f = cb_config->efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_30_3f = cb_config->efs_spi_speed;
 		switch (cb_config->efs_spi_micron_flag) {

@@ -39,6 +39,7 @@ enum platform {
 	PLATFORM_KRACKAN2E,
 	PLATFORM_STRIXHALO,
 	PLATFORM_TURIN,
+	PLATFORM_STRIXKRACKAN,
 };
 
 typedef enum _amd_fw_type {

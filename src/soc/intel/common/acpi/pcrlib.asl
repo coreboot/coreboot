@@ -23,7 +23,6 @@ Method (GPCR, 2, NotSerialized)
 		if (Arg0 == IOE_P2SB) {
 			Local0 = CONFIG_IOE_PCR_BASE_ADDRESS;
 		} else {
-			Printf ("Invalid Die index (%o)\n", Arg0)
 			Return (0)
 		}
 	}

@@ -246,7 +246,6 @@ Method (_CRS, 0, Serialized)
 Method (GMHB, 0, Serialized)
 {
 	Local0 = \_SB.PCI0.MCHC.MHBR << 15
-	Printf ("GMHB: %o", ToHexString(Local0))
 	Return (Local0)
 }
 

@@ -903,10 +903,12 @@ static void dump_image_addresses(context *ctx)
 		dump_psp_table(ctx, ctx->pspdir_bak, "L1 backup offset");
 	if (ctx->pspdir2 != NULL)
 		dump_psp_table(ctx, ctx->pspdir2, "L2(A) offset");
-	if (ctx->ish_a_dir != NULL)
-		printf("ISH %-20s: %lx\n", "ISHA offset", BUFF_TO_RUN(*ctx, ctx->ish_a_dir));
-	if (ctx->ish_b_dir != NULL)
-		printf("ISH %-20s: %lx\n", "ISHB offset", BUFF_TO_RUN(*ctx, ctx->ish_b_dir));
+	for (size_t i = 0; i < ctx->num_ish_tables; i++) {
+		if (ctx->ish_a_dirs[i] != NULL)
+			printf("ISH %-20s: %lx\n", "ISHA offset", BUFF_TO_RUN(*ctx, ctx->ish_a_dirs[i]));
+		if (ctx->ish_b_dirs[i] != NULL)
+			printf("ISH %-20s: %lx\n", "ISHB offset", BUFF_TO_RUN(*ctx, ctx->ish_b_dirs[i]));
+	}
 	if (ctx->pspdir2_b != NULL)
 		dump_psp_table(ctx, ctx->pspdir2_b, "L2B offset");
 	if (ctx->biosdir != NULL)
@@ -1000,27 +1002,34 @@ static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
 	if (recovery_ab) {
 		if (platform_needs_ish(cb_config->soc_id)) {
-			integrate_psp_ab_ish(ctx, pspdir, pspdir2, ctx->ish_a_dir,
-				AMD_FW_PSP_RECOVERYAB_A, platform_get_psp_id(cb_config->soc_id));
+			for (size_t i = 0; i < ctx->num_ish_tables; i++) {
+				integrate_psp_ab_ish(ctx, pspdir, pspdir2, ctx->ish_a_dirs[i],
+						     AMD_FW_PSP_RECOVERYAB_A,
+						     platform_get_psp_id(cb_config->soc_id, i));
+			}
 		} else {
 			integrate_psp_ab(ctx, pspdir, pspdir2,
 					 AMD_FW_PSP_RECOVERYAB_A);
 		}
 
 		if (pspdir2_b != NULL) {
-			/* Implies !cb_config.recovery_ab_single_copy, thus ish_b_dir exists. */
+			/* Implies !cb_config.recovery_ab_single_copy, thus ish_b_dirs[] are non NULL. */
 			if (platform_needs_ish(cb_config->soc_id)) {
-				integrate_psp_ab_ish(ctx, pspdir, pspdir2_b, ctx->ish_b_dir,
-						     AMD_FW_PSP_RECOVERYAB_B,
-						     platform_get_psp_id(cb_config->soc_id));
+				for (size_t i = 0; i < ctx->num_ish_tables; i++) {
+					integrate_psp_ab_ish(ctx, pspdir, pspdir2_b, ctx->ish_b_dirs[i],
+							AMD_FW_PSP_RECOVERYAB_B,
+							platform_get_psp_id(cb_config->soc_id, i));
+				}
 			} else {
 				integrate_psp_ab(ctx, pspdir, pspdir2_b, AMD_FW_PSP_RECOVERYAB_B);
 			}
 		} else {
 			if (platform_needs_ish(cb_config->soc_id)) {
-				integrate_psp_ab_ish(ctx, pspdir, pspdir2, ctx->ish_a_dir,
-						     AMD_FW_PSP_RECOVERYAB_B,
-						     platform_get_psp_id(cb_config->soc_id));
+				for (size_t i = 0; i < ctx->num_ish_tables; i++) {
+					integrate_psp_ab_ish(ctx, pspdir, pspdir2, ctx->ish_a_dirs[i],
+							AMD_FW_PSP_RECOVERYAB_B,
+							platform_get_psp_id(cb_config->soc_id, i));
+				}
 			} else {
 				integrate_psp_ab(ctx, pspdir, pspdir2, AMD_FW_PSP_RECOVERYAB_B);
 			}
@@ -1873,8 +1882,11 @@ int main(int argc, char **argv)
 	ctx.biosdir = NULL;
 	ctx.biosdir2 = NULL;
 	ctx.biosdir2_b = NULL;
-	ctx.ish_a_dir = NULL;
-	ctx.ish_b_dir = NULL;
+	for (size_t i = 0; i < MAX_ISH_TABLES; i++) {
+		ctx.ish_a_dirs[i] = NULL;
+		ctx.ish_b_dirs[i] = NULL;
+	}
+	ctx.num_ish_tables = 0;
 
 	if (cb_config.recovery_ab_single_copy) {
 		if (!platform_is_multi_level(cb_config.soc_id) ||
@@ -1901,9 +1913,16 @@ int main(int argc, char **argv)
 		if (platform_needs_ish(cb_config.soc_id)) {
 			/* Only on ISH platforms the backup PSP L1 directory can be used. */
 			ctx.pspdir_bak = new_psp_dir(&ctx, &cb_config, PSP_COOKIE);
-			ctx.ish_a_dir = new_ish_dir(&ctx);
-			if (!cb_config.recovery_ab_single_copy)
-				ctx.ish_b_dir = new_ish_dir(&ctx);
+
+			ctx.num_ish_tables = platform_get_num_psp_ids(cb_config.soc_id);
+			assert(ctx.num_ish_tables <= MAX_ISH_TABLES);
+			assert(ctx.num_ish_tables > 0);
+
+			for (size_t i = 0; i < ctx.num_ish_tables; i++) {
+				ctx.ish_a_dirs[i] = new_ish_dir(&ctx);
+				if (!cb_config.recovery_ab_single_copy)
+					ctx.ish_b_dirs[i] = new_ish_dir(&ctx);
+			}
 		}
 		ctx.current_l1_pointer = ctx.current;
 

@@ -8,6 +8,8 @@
 
 /* This file contains the SoC quirks. */
 
+#define PLATFORM_MAX_PSP_IDS 4
+
 struct platform_info {
 	const char *name;
 	bool needs_ish;
@@ -16,7 +18,8 @@ struct platform_info {
 	bool is_initial_alignment_required;
 	bool is_second_gen;
 	bool has_dir_header_v1;
-	uint32_t psp_id;
+	uint32_t num_psp_ids;
+	uint32_t psp_ids[PLATFORM_MAX_PSP_IDS];
 	uint32_t psb_reserved_size;
 };
 
@@ -29,7 +32,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = true,
 		.is_second_gen = false,
 		.has_dir_header_v1 = false,
-		.psp_id = 0,
+		.num_psp_ids = 0,
+		.psp_ids = {0},
 		.psb_reserved_size = 0,
 	},
 	[PLATFORM_CARRIZO] = {
@@ -40,7 +44,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = true,
 		.is_second_gen = false,
 		.has_dir_header_v1 = false,
-		.psp_id = 0,
+		.num_psp_ids = 0,
+		.psp_ids = {0},
 		.psb_reserved_size = 0,
 	},
 	[PLATFORM_STONEYRIDGE] = {
@@ -51,7 +56,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = true,
 		.is_second_gen = false,
 		.has_dir_header_v1 = false,
-		.psp_id = 0x10220B00,
+		.num_psp_ids = 1,
+		.psp_ids = {0x10220B00},
 		.psb_reserved_size = 0,
 	},
 	[PLATFORM_RAVEN] = {
@@ -62,7 +68,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = true,
 		.is_second_gen = false,
 		.has_dir_header_v1 = false,
-		.psp_id = 0xBC0A0000,
+		.num_psp_ids = 1,
+		.psp_ids = {0xBC0A0000},
 		.psb_reserved_size = 0x100,
 	},
 	[PLATFORM_PICASSO] = {
@@ -73,7 +80,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = true,
 		.is_second_gen = false,
 		.has_dir_header_v1 = false,
-		.psp_id = 0xBC0A0000,
+		.num_psp_ids = 1,
+		.psp_ids = {0xBC0A0000},
 		.psb_reserved_size = 0x100,
 	},
 	[PLATFORM_RENOIR] = {
@@ -84,7 +92,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = true,
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
-		.psp_id = 0xBC0C0000,
+		.num_psp_ids = 1,
+		.psp_ids = {0xBC0C0000},
 		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_LUCIENNE] = {
@@ -95,7 +104,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = true,
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
-		.psp_id = 0xBC0C0000,
+		.num_psp_ids = 1,
+		.psp_ids = {0xBC0C0000},
 		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_CEZANNE] = {
@@ -106,7 +116,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = true,
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
-		.psp_id = 0xBC0C0140,
+		.num_psp_ids = 1,
+		.psp_ids = {0xBC0C0140},
 		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_MENDOCINO] = {
@@ -117,7 +128,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = false,
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
-		.psp_id = 0xBC0D0900,
+		.num_psp_ids = 1,
+		.psp_ids = {0xBC0D0900},
 		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_PHOENIX] = {
@@ -128,7 +140,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = false,
 		.is_second_gen = true,
 		.has_dir_header_v1 = false,
-		.psp_id = 0xBC0D0400,
+		.num_psp_ids = 1,
+		.psp_ids = {0xBC0D0400},
 		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_STRIX] = {
@@ -139,7 +152,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = false,
 		.is_second_gen = true,
 		.has_dir_header_v1 = true,
-		.psp_id = 0xBC0E0200,
+		.num_psp_ids = 1,
+		.psp_ids = {0xBC0E0200},
 		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_GENOA] = {
@@ -150,7 +164,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = true,
 		.is_second_gen = false, /* Client SoC only flag */
 		.has_dir_header_v1 = false,
-		.psp_id = 0xBC0C0111,
+		.num_psp_ids = 1,
+		.psp_ids = {0xBC0C0111},
 		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_KRACKAN2E] = {
@@ -161,7 +176,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = false,
 		.is_second_gen = true,
 		.has_dir_header_v1 = true,
-		.psp_id = 0xbc0e1000,
+		.num_psp_ids = 1,
+		.psp_ids = {0xbc0e1000},
 		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_STRIXHALO] = {
@@ -172,7 +188,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = false,
 		.is_second_gen = true,
 		.has_dir_header_v1 = true,
-		.psp_id = 0xbc0e0900,
+		.num_psp_ids = 1,
+		.psp_ids = {0xbc0e0900},
 		.psb_reserved_size = 0x200,
 	},
 	[PLATFORM_TURIN] = {
@@ -183,7 +200,8 @@ static const struct platform_info platform_table[] = {
 		.is_initial_alignment_required = false,
 		.is_second_gen = false, /* Client SoC only flag */
 		.has_dir_header_v1 = true,
-		.psp_id = 0xbc0e1100,
+		.num_psp_ids = 1,
+		.psp_ids = {0xbc0e1100},
 		.psb_reserved_size = 0x200,
 	},
 };
@@ -291,6 +309,19 @@ bool platform_has_dir_header_v1(enum platform platform_type)
 }
 
 /**
+ * Get the number of PSP (Platform Security Processor) IDs for the platform.
+ * Older platforms might not insert a PSP ID in the directory, in which case
+ * this function returns 0.
+ *
+ * @param platform_type: Platform enum to query
+ * @return: number of PSP IDs, or 0 if not applicable
+ */
+uint32_t platform_get_num_psp_ids(enum platform platform_type)
+{
+	return platform_table[platform_type].num_psp_ids;
+}
+
+/**
  * Get the PSP (Platform Security Processor) ID for the platform.
  * Older platforms might not insert a PSP ID in the directory, in which case
  * this function returns 0.
@@ -298,9 +329,11 @@ bool platform_has_dir_header_v1(enum platform platform_type)
  * @param platform_type: Platform enum to query
  * @return: 32-bit PSP ID value, or 0 if not applicable
  */
-uint32_t platform_get_psp_id(enum platform platform_type)
+uint32_t platform_get_psp_id(enum platform platform_type, const unsigned int index)
 {
-	return platform_table[platform_type].psp_id;
+	if (index >= platform_get_num_psp_ids(platform_type))
+		return 0;
+	return platform_table[platform_type].psp_ids[index];
 }
 
 /**

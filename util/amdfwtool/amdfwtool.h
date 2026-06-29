@@ -492,6 +492,7 @@ typedef struct _amd_cb_config {
 	int debug;
 } amd_cb_config;
 
+#define MAX_ISH_TABLES 4
 typedef struct _context {
 	char *rom;		/* target buffer, size of flash device */
 	uint32_t rom_size;	/* size of flash device */
@@ -505,7 +506,9 @@ typedef struct _context {
 	embedded_firmware *amd_romsig_ptr;
 	psp_directory_table *pspdir, *pspdir_bak, *pspdir2, *pspdir2_b;
 	bios_directory_table *biosdir, *biosdir2, *biosdir2_b;
-	ish_directory_table *ish_a_dir, *ish_b_dir;
+	size_t num_ish_tables;
+	ish_directory_table *ish_a_dirs[MAX_ISH_TABLES];
+	ish_directory_table *ish_b_dirs[MAX_ISH_TABLES];
 } context;
 
 uint8_t process_config(FILE *config, amd_cb_config *cb_config);
@@ -540,7 +543,8 @@ bool platform_is_multi_level(enum platform platform_type);
 bool platform_is_second_gen(enum platform platform_type);
 bool platform_has_dir_header_v1(enum platform platform_type);
 bool platform_has_apob_nv_quirk(enum platform platform_type);
-uint32_t platform_get_psp_id(enum platform platform_type);
+uint32_t platform_get_num_psp_ids(enum platform platform_type);
+uint32_t platform_get_psp_id(enum platform platform_type, const unsigned int index);
 bool platform_is_initial_alignment_required(enum platform platform_type);
 bool platform_has_legacy_ab_recovery(amd_cb_config *cb_config);
 uint32_t platform_psb_reserved_size(enum platform platform_type);

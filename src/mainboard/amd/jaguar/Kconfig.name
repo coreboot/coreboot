@@ -1,4 +1,4 @@
 comment "Jaguar"
 
 config BOARD_AMD_JAGUAR
-	bool "->  Jaguar for Faegan SoC"
+	bool "->  Jaguar"

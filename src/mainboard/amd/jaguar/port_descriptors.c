@@ -4,6 +4,7 @@
 #include <soc/platform_descriptors.h>
 #include <static.h>
 #include <soc/aoac_defs.h>
+#include <soc/soc_util.h>
 #include <stdint.h>
 #include <types.h>
 
@@ -409,5 +410,11 @@ void mb_pre_fspm(FSP_M_CONFIG *mcfg)
 		mcfg->fch_rt_device_enable_map &= ~BIT(FCH_AOAC_DEV_I2C3);
 	}
 
-	xgbe_init(mcfg);
+	if (get_soc_type() == SOC_FAEGAN) {
+		xgbe_init(mcfg);
+	} else {
+		mcfg->XgbeDisable = 1;
+		mcfg->xgbe_port0_config_en = 0;
+		mcfg->xgbe_port1_config_en = 0;
+	}
 }

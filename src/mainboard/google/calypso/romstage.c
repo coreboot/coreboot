@@ -229,18 +229,18 @@ void platform_romstage_main(void)
 	/* Underlying PMIC registers are accessible only at this point */
 	set_boot_mode();
 
-	if (!chipset_dload_mode_active)
-		aop_fw_load_reset();
-
 	mainboard_setup_peripherals_late(boot_mode);
-
-	qclib_rerun();
 
 	check_first_boot_and_reset(boot_mode);
 }
 
 void platform_romstage_postram(void)
 {
+	if (!chipset_dload_mode_active)
+		aop_fw_load_reset();
+
+	qclib_rerun();
+
 	enum boot_mode_t *boot_mode_ptr = cbmem_add(CBMEM_ID_BOOT_MODE, sizeof(*boot_mode_ptr));
 	if (boot_mode_ptr) {
 		*boot_mode_ptr = boot_mode;

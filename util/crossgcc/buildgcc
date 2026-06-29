@@ -45,7 +45,7 @@ BINUTILS_VERSION=2.46.1
 LIBSTDCXX_VERSION="${GCC_VERSION}"	# GCC-specific C++ library
 
 # Low-level Tools (built after GCC)
-NASM_VERSION=3.01	# x86 assembly
+NASM_VERSION=3.02	# x86 assembly
 IASL_VERSION=20251212	# ACPI compiler
 
 # Clang/LLVM Toolchain (alternative to GCC, built separately)

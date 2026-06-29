@@ -918,8 +918,7 @@ static void dump_image_addresses(context *ctx)
 }
 
 static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
-		psp_directory_table *pspdir2, ish_directory_table *ish,
-		amd_fw_type ab, enum platform soc_id)
+			     psp_directory_table *pspdir2, amd_fw_type type)
 {
 	uint32_t count;
 	uint32_t current_table_save;
@@ -928,37 +927,57 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
 	count = pspdir->header.num_entries;
 	assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
-	pspdir->entries[count].type = (uint8_t)ab;
+	pspdir->entries[count].type = (uint8_t)type;
 	pspdir->entries[count].subprog = 0;
 	pspdir->entries[count].rsvd = 0;
-	if (ish != NULL) {
-		ish->pl2_location = BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
-		ish->boot_priority = ab == AMD_FW_PSP_RECOVERYAB_A ? 0xFFFFFFFF : 1;
-		ish->update_retry_count = 2;
-		ish->glitch_retry_count = 0;
-		ish->psp_id = platform_get_psp_id(soc_id);
-		ish->checksum = fletcher32(&ish->boot_priority,
-				sizeof(ish_directory_table) - sizeof(uint32_t));
-		pspdir->entries[count].addr =
-				BUFF_TO_RUN_MODE(*ctx, ish, AMD_ADDR_REL_BIOS);
-		pspdir->entries[count].address_mode =
-				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
-		pspdir->entries[count].size = TABLE_GRANULARITY;
-	} else {
-		pspdir->entries[count].addr =
-				BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
-		pspdir->entries[count].address_mode =
-				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
-		pspdir->entries[count].size = _MAX(TABLE_L2_SIZE_MAX,
-				pspdir2->header.num_entries *
-				sizeof(psp_directory_entry) +
-				sizeof(psp_directory_header));
-	}
+
+	pspdir->entries[count].addr =
+			BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
+	pspdir->entries[count].address_mode =
+			SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
+	pspdir->entries[count].size = _MAX(TABLE_L2_SIZE_MAX,
+			pspdir2->header.num_entries *
+			sizeof(psp_directory_entry) +
+			sizeof(psp_directory_header));
 
 	count++;
 	fill_dir_header(pspdir, count, ctx);
 	ctx->current_table = current_table_save;
 }
+
+static void integrate_psp_ab_ish(context *ctx, psp_directory_table *pspdir,
+				 psp_directory_table *pspdir2, ish_directory_table *ish,
+				 amd_fw_type type, uint32_t psp_id)
+{
+	uint32_t count;
+	uint32_t current_table_save;
+
+	current_table_save = ctx->current_table;
+	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
+	count = pspdir->header.num_entries;
+	assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
+	pspdir->entries[count].type = (uint8_t)type;
+	pspdir->entries[count].subprog = 0;
+	pspdir->entries[count].rsvd = 0;
+
+	ish->pl2_location = BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
+	ish->boot_priority = type == AMD_FW_PSP_RECOVERYAB_A ? 0xFFFFFFFF : 1;
+	ish->update_retry_count = 2;
+	ish->glitch_retry_count = 0;
+	ish->psp_id = psp_id;
+	ish->checksum = fletcher32(&ish->boot_priority,
+			sizeof(ish_directory_table) - sizeof(uint32_t));
+	pspdir->entries[count].addr =
+			BUFF_TO_RUN_MODE(*ctx, ish, AMD_ADDR_REL_BIOS);
+	pspdir->entries[count].address_mode =
+			SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
+	pspdir->entries[count].size = TABLE_GRANULARITY;
+
+	count++;
+	fill_dir_header(pspdir, count, ctx);
+	ctx->current_table = current_table_save;
+}
+
 
 static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 {
@@ -980,14 +999,32 @@ static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 	current_table_save = ctx->current_table;
 	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
 	if (recovery_ab) {
-		integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
-			AMD_FW_PSP_RECOVERYAB_A, cb_config->soc_id);
-		if (pspdir2_b != NULL)
-			integrate_psp_ab(ctx, pspdir, pspdir2_b, ctx->ish_b_dir,
-				AMD_FW_PSP_RECOVERYAB_B, cb_config->soc_id);
-		else
-			integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
-				AMD_FW_PSP_RECOVERYAB_B, cb_config->soc_id);
+		if (platform_needs_ish(cb_config->soc_id)) {
+			integrate_psp_ab_ish(ctx, pspdir, pspdir2, ctx->ish_a_dir,
+				AMD_FW_PSP_RECOVERYAB_A, platform_get_psp_id(cb_config->soc_id));
+		} else {
+			integrate_psp_ab(ctx, pspdir, pspdir2,
+					 AMD_FW_PSP_RECOVERYAB_A);
+		}
+
+		if (pspdir2_b != NULL) {
+			/* Implies !cb_config.recovery_ab_single_copy, thus ish_b_dir exists. */
+			if (platform_needs_ish(cb_config->soc_id)) {
+				integrate_psp_ab_ish(ctx, pspdir, pspdir2_b, ctx->ish_b_dir,
+						     AMD_FW_PSP_RECOVERYAB_B,
+						     platform_get_psp_id(cb_config->soc_id));
+			} else {
+				integrate_psp_ab(ctx, pspdir, pspdir2_b, AMD_FW_PSP_RECOVERYAB_B);
+			}
+		} else {
+			if (platform_needs_ish(cb_config->soc_id)) {
+				integrate_psp_ab_ish(ctx, pspdir, pspdir2, ctx->ish_a_dir,
+						     AMD_FW_PSP_RECOVERYAB_B,
+						     platform_get_psp_id(cb_config->soc_id));
+			} else {
+				integrate_psp_ab(ctx, pspdir, pspdir2, AMD_FW_PSP_RECOVERYAB_B);
+			}
+		}
 
 		/*
 		 * The PSP L1(B) can only be used on ISH platforms. On those platforms, there

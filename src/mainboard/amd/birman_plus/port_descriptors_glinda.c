@@ -4,6 +4,7 @@
 #include <device/i2c_simple.h>
 #include <gpio.h>
 #include <soc/platform_descriptors.h>
+#include <soc/soc_util.h>
 #include <types.h>
 
 
@@ -24,7 +25,7 @@
 
 #define glinda_ssd1_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
-	.port_present = true,				\
+	.port_present = CONFIG(ENABLE_SSD1_BIRMANPLUS), \
 	.start_logical_lane = 4,				\
 	.end_logical_lane = 7,					\
 	.device_number = 3,				\
@@ -185,11 +186,9 @@ void mainboard_get_dxio_ddi_descriptors(
 {
 	birmanplus_glinda_ddi_descriptors[1].connector_type = get_ddi1_type();
 
-	static const fsp_dxio_descriptor birmanplus_glinda_dxio_descriptors[] = {
+	static fsp_dxio_descriptor birmanplus_glinda_dxio_descriptors[] = {
 		glinda_mxm_dxio_descriptor,
-#if CONFIG(ENABLE_SSD1_BIRMANPLUS)
 		glinda_ssd1_dxio_descriptor,
-#endif
 		glinda_ssd0_dxio_descriptor,
 		glinda_wlan_dxio_descriptor,
 		glinda_wwan_dxio_descriptor,
@@ -200,6 +199,14 @@ void mainboard_get_dxio_ddi_descriptors(
 		glinda_sd_dxio_descriptor,
 #endif
 	};
+	fsp_dxio_descriptor *mxm_desc = &birmanplus_glinda_dxio_descriptors[0];
+	fsp_dxio_descriptor *ssd1_desc = &birmanplus_glinda_dxio_descriptors[1];
+
+	if (get_soc_type() == SOC_FAEGAN) {
+		/* Lanes 6 and 7 aren't usable */
+		mxm_desc->end_logical_lane = 3;
+		ssd1_desc->end_logical_lane = 5;
+	}
 
 	*dxio_descs = birmanplus_glinda_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(birmanplus_glinda_dxio_descriptors);

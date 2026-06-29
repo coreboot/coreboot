@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Strix Halo */
-
 #include <amdblocks/mca.h>
 #include <cpu/x86/msr.h>
 #include <types.h>
@@ -22,23 +20,20 @@ static const char *const mca_bank_name[] = {
 	[12] = "L3 cache unit",
 	[13] = "L3 cache unit",
 	[14] = "L3 cache unit",
-	[15] = "UMC",
+	[15] = "MP5",
 	[16] = "UMC",
 	[17] = "UMC",
 	[18] = "UMC",
-	[19] = "CS",
+	[19] = "UMC",
 	[20] = "CS",
 	[21] = "CS",
 	[22] = "CS",
-	[23] = "",
-	[24] = "",
-	[25] = "",
-	[26] = "",
-	[27] = "PIE",
-	[28] = "NBIO",
-	[29] = "KPX_SERDES",
-	[30] = "KPX_SERDES",
-	[31] = "",
+	[23] = "CS",
+	[24] = "MALL",
+	[25] = "MALL",
+	[26] = "MALL",
+	[27] = "MALL",
+	[28] = "PIE",
 };
 
 bool mca_has_expected_bank_count(void)

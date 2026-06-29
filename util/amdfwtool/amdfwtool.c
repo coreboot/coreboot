@@ -566,9 +566,10 @@ static void *new_psp_dir(context *ctx, const amd_cb_config *cb_config,
 static void *new_ish_dir(context *ctx)
 {
 	void *ptr;
-	adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
+
+	adjust_current_pointer(ctx, 0, BLOB_ALIGNMENT);
 	ptr = BUFF_CURRENT(*ctx);
-	adjust_current_pointer(ctx, TABLE_GRANULARITY, 1);
+	adjust_current_pointer(ctx, sizeof(ish_directory_table), BLOB_ALIGNMENT);
 
 	return ptr;
 }
@@ -974,7 +975,7 @@ static void integrate_psp_ab_ish(context *ctx, psp_directory_table *pspdir,
 			BUFF_TO_RUN_MODE(*ctx, ish, AMD_ADDR_REL_BIOS);
 	pspdir->entries[count].address_mode =
 			SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
-	pspdir->entries[count].size = TABLE_GRANULARITY;
+	pspdir->entries[count].size = BLOB_ALIGNMENT;
 
 	count++;
 	fill_dir_header(pspdir, count, ctx);
@@ -1920,11 +1921,18 @@ int main(int argc, char **argv)
 			assert(ctx.num_ish_tables <= MAX_ISH_TABLES);
 			assert(ctx.num_ish_tables > 0);
 
-			for (size_t i = 0; i < ctx.num_ish_tables; i++) {
+			/* Align ISH on erase boundary */
+			adjust_current_pointer(&ctx, 0, TABLE_ERASE_ALIGNMENT);
+			for (size_t i = 0; i < ctx.num_ish_tables; i++)
 				ctx.ish_a_dirs[i] = new_ish_dir(&ctx);
-				if (!cb_config.recovery_ab_single_copy)
+
+			/* Ensure ISH A and ISH B reside on different pages! */
+			if (!cb_config.recovery_ab_single_copy) {
+				adjust_current_pointer(&ctx, 0, TABLE_ERASE_ALIGNMENT);
+				for (size_t i = 0; i < ctx.num_ish_tables; i++)
 					ctx.ish_b_dirs[i] = new_ish_dir(&ctx);
 			}
+			adjust_current_pointer(&ctx, 0, TABLE_ERASE_ALIGNMENT);
 		}
 		ctx.current_l1_pointer = ctx.current;
 

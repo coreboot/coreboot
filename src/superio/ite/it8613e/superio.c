@@ -23,6 +23,7 @@ static void it8613e_init(struct device *dev)
 		if (!conf || !res)
 			break;
 		ite_ec_init(res->base, &conf->ec);
+		ite_ec_set_power_state(dev);
 		break;
 	case IT8613E_KBCK:
 		pc_keyboard_init(NO_AUX_DEVICE);

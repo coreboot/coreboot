@@ -290,6 +290,13 @@ bool cse_is_hfs1_com_soft_temp_disable(void)
 	return cse_check_hfs1_com(ME_HFS1_COM_SOFT_TEMP_DISABLE);
 }
 
+bool cse_is_hfs1_cos_default(void)
+{
+	union me_hfsts1 hfs1;
+	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
+	return hfs1.fields.operation_state == ME_HFS1_COS_DEFAULT;
+}
+
 bool cse_is_me_operational(void)
 {
 	return cse_is_hfs1_cws_normal() && cse_is_hfs1_com_normal();

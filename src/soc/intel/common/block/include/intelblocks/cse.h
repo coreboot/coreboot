@@ -66,6 +66,15 @@ enum mkhi_group_id {
 #define ME_HFS1_COM_SOFT_TEMP_DISABLE	0x3
 #define ME_HFS1_COM_SECOVER_MEI_MSG	0x5
 
+/* ME Current Operation State */
+#define ME_HFS1_COS_DEFAULT	0x0
+#define ME_HFS1_COS_M0_UMA	0x1
+#define ME_HFS1_COS_M0_PG	0x2
+#define ME_HFS1_COS_M3_NO_UMA	0x4
+#define ME_HFS1_COS_M0_NO_UMA	0x5
+#define ME_HFS1_COS_BUP	0x6
+#define ME_HFS1_COS_M0_NO_UMA_ERROR	0x7
+
 /* ME Disable Rule */
 #define ME_DISABLE_RULE_ID	6
 #define ME_DISABLE_RULE_LENGTH	4
@@ -484,6 +493,12 @@ bool cse_is_hfs1_com_secover_mei_msg(void);
  * Returns true if CSE's current operation mode is Soft Disable Mode, otherwise false.
  */
 bool cse_is_hfs1_com_soft_temp_disable(void);
+
+/*
+ * Checks CSE's current operation state is default or not.
+ * Returns true if CSE's current operation state is default, otherwise false.
+ */
+bool cse_is_hfs1_cos_default(void);
 
 /*
  * Check whether ME/CSME is operational (HFSTS1 current working state and

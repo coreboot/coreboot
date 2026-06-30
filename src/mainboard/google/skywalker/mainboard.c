@@ -13,6 +13,7 @@
 #include <fw_config.h>
 #include <gpio.h>
 #include <soc/bl31.h>
+#include <soc/cpu_id.h>
 #include <soc/display.h>
 #include <soc/dpm_v2.h>
 #include <soc/i2c.h>
@@ -196,4 +197,18 @@ void lb_board(struct lb_header *header)
 	panel_poweroff->size = ALIGN_UP(sizeof(*panel_poweroff) + cmd_len,
 					LB_ENTRY_ALIGN);
 	memcpy(panel_poweroff->cmd, mipi_data->poweroff, cmd_len);
+}
+
+void fw_config_get_mainboard_override(uint64_t *fw_config)
+{
+	/* Handle unprovisioned fw_config. */
+	if (*fw_config == UNDEFINED_FW_CONFIG)
+		*fw_config = 0;
+
+	uint64_t fw_config_mt8189r = FW_CONFIG_VALUE(MT8189R, FALSE);
+	if (get_cpu_segment_id() == MTK_CPU_SEG_ID_MT8189R)
+		fw_config_mt8189r = FW_CONFIG_VALUE(MT8189R, TRUE);
+
+	printk(BIOS_INFO, "Overriding fw_config MT8189R with %llu\n", fw_config_mt8189r);
+	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(MT8189R), fw_config_mt8189r);
 }

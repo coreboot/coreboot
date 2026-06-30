@@ -5,6 +5,11 @@ chip soc/mediatek/mt8189
 end
 
 fw_config
+	field MT8189R 21 21
+		option FALSE 0
+		option TRUE 1
+	end
+
 	field AUDIO_AMP 25 27
 		option AMP_RT9123 0
 		option AMP_RT1019 1

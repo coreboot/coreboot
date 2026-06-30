@@ -50,6 +50,8 @@ chip soc/intel/pantherlake
 	register "sagv_freq_mhz[3]" = "7467"
 	register "sagv_gear[3]" = "GEAR_4"
 
+	register "max_dram_speed_mts" = "7467"
+
 	# Enable s0ix
 	register "s0ix_enable" = "true"
 

@@ -94,7 +94,10 @@ config DRIVERS_EFI_CAPSULE_EMBED_FMP_DXE
 	depends on DRIVERS_EFI_CAPSULE_ACCEPT_EMBEDDED_DRIVERS
 	help
 	  When generating build/coreboot.cap, embed the built FmpDxe.efi as an
-	  embedded driver in the capsule.
+	  embedded driver in the capsule, rather than in the ROM image itself.
+
+	  Note: if Secure Boot is enabled, FmpDxe.efi must be signed by a key
+	  trusted by the running firmware (or capsule processing may fail).
 
 
 config DRIVERS_EFI_CAPSULE_INITIATE_RESET

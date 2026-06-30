@@ -1,14 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Strix Halo */
-
 #ifndef AMD_STRIX_HALO_DATA_FABRIC_H
 #define AMD_STRIX_HALO_DATA_FABRIC_H
 
 #include <amdblocks/data_fabric_defs.h>
 #include <types.h>
 
-#define IOMS0_FABRIC_ID			0x14
+#define IOMS0_FABRIC_ID			0x21
 
 #define DF_PCI_CFG_BASE0		DF_REG_ID(0, 0xc80)
 #define DF_PCI_CFG_LIMIT0		DF_REG_ID(0, 0xc84)
@@ -19,6 +17,7 @@
 #define DF_PCI_CFG_BASE(reg)		(DF_PCI_CFG_BASE0 + DF_PCI_CFG_REG_OFFSET(reg))
 #define DF_PCI_CFG_LIMIT(reg)		(DF_PCI_CFG_LIMIT0 + DF_PCI_CFG_REG_OFFSET(reg))
 
+// DF::CfgBaseAddress
 union df_pci_cfg_base {
 	struct {
 		uint32_t re		: 1; /* [ 0.. 0] */
@@ -31,6 +30,7 @@ union df_pci_cfg_base {
 	uint32_t raw;
 };
 
+// DF::CfgLimitAddress
 union df_pci_cfg_limit {
 	struct {
 		uint32_t dst_fabric_id	:  6; /* [ 0.. 5] */
@@ -50,6 +50,7 @@ union df_pci_cfg_limit {
 #define DF_IO_BASE(reg)			(DF_IO_BASE0 + DF_IO_REG_OFFSET(reg))
 #define DF_IO_LIMIT(reg)		(DF_IO_LIMIT0 + DF_IO_REG_OFFSET(reg))
 
+// DF::X86IOBaseAddress
 union df_io_base {
 	struct {
 		uint32_t re		:  1; /* [ 0.. 0] */
@@ -63,6 +64,7 @@ union df_io_base {
 	uint32_t raw;
 };
 
+// DF::X86IOLimitAddress
 union df_io_limit {
 	struct {
 		uint32_t dst_fabric_id	:  6; /* [ 0.. 5] */
@@ -83,6 +85,7 @@ union df_io_limit {
 #define DF_MMIO_REG_SET_SIZE		4
 #define DF_MMIO_REG_SET_COUNT		8
 
+// DF::MmioAddressControl
 union df_mmio_control {
 	struct {
 		uint32_t re		:  1; /* [ 0.. 0] */
@@ -100,6 +103,7 @@ union df_mmio_control {
 #define DF_FICAD_LO			DF_REG_ID(4, 0xB8)
 #define DF_FICAD_HI			DF_REG_ID(4, 0xBC)
 
+// DF::FabricIndirectConfigAccessAddress
 union df_ficaa {
 	struct {
 		uint32_t cfg_inst_acc_en :  1; /* [ 0.. 0] */

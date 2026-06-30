@@ -113,6 +113,10 @@ static void fill_dram_info(struct mem_chip_info *mc, const struct ddr_base_info 
 {
 	unsigned int c, r;
 
+	if (ddr->mrr_info.rank_nums > ARRAY_SIZE(ddr->mrr_info.mr8_density))
+		die("rank_nums (%u) exceeds mr8_density array size (%zu)\n",
+		    ddr->mrr_info.rank_nums, ARRAY_SIZE(ddr->mrr_info.mr8_density));
+
 	mc->num_entries = CHANNEL_MAX * ddr->mrr_info.rank_nums;
 	mc->struct_version = MEM_CHIP_STRUCT_VERSION;
 

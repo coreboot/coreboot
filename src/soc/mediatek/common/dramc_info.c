@@ -22,11 +22,12 @@ void reserve_buffer_for_dramc(void)
 
 	for (i = 0; i < mc->num_entries; i++) {
 		const struct mem_chip_entry *e = &mc->entries[i];
-		assert(e->rank < RANK_MAX);
+		if (e->rank >= ARRAY_SIZE(rank_size))
+			die("Invalid rank %u >= %zu in CBMEM\n", e->rank, ARRAY_SIZE(rank_size));
 		rank_size[e->rank] += mem_chip_info_entry_density_bytes(e);
 	}
 
-	for (i = 0; i < RANK_MAX; i++) {
+	for (i = 0; i < ARRAY_SIZE(rank_size); i++) {
 		if (rank_size[i] == 0)
 			continue;
 		rank_size_sum += rank_size[i];

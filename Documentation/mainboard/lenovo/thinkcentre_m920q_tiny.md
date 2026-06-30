@@ -1,16 +1,30 @@
-# Lenovo M920 Tiny
+# Lenovo M720 / M920 Tiny
 
-This page describes how to run coreboot on Lenovo M920 Tiny (M920q, M920x).
+This page describes how to run coreboot on Lenovo M720 Tiny (M720q) and
+Lenovo M920 Tiny (M920q, M920x).
 
 ## Technology
 
+M700 Tiny and M900 Tiny are twin designs using the same exact mainboard, with
+the following differences:
+
+```{eval-rst}
++------------------------+------+------+
+|        Feature         | M720 | M920 |
++========================+======+======+
+| Chipset                | B360 | Q370 |
++------------------------+------+------+
+| Intel AMT              | No   | Yes  |
++------------------------+------+------+
+```
+
 ```{eval-rst}
 +------------+---------------------------------------------------------------+
-| CPU        | Intel Core 8th Gen  or 9th Gen (Coffee Lake (Refresh))        |
+|   Type     |          Value                                                |
++============+===============================================================+
+| CPU        | Intel Core 8th Gen or 9th Gen (Coffee Lake (Refresh))         |
 +------------+---------------------------------------------------------------+
 | DRAM       | 2 SO-DIMM slots, DDR4-2400/2666                               |
-+------------+---------------------------------------------------------------+
-| Chipset    | Intel Q370                                                    |
 +------------+---------------------------------------------------------------+
 | Super I/O  | NCT6686D-L                                                    |
 +------------+---------------------------------------------------------------+
@@ -22,28 +36,28 @@ This page describes how to run coreboot on Lenovo M920 Tiny (M920q, M920x).
 +------------+---------------------------------------------------------------+
 ```
 
-More specifications on [Lenovo M920 Tiny specifications].
+More specifications on [Lenovo M720 Tiny specifications] and [Lenovo M920 Tiny specifications].
 
 ## Flashing coreboot
 
 ```{eval-rst}
-+---------------------+--------------------------+
-| Type                | Value                    |
-+=====================+==========================+
-| Socketed flash      | no                       |
-+---------------------+--------------------------+
-| Model               | W25Q128JV + W25Q64JV     |
-+---------------------+--------------------------+
-| Size                | 16 + 8 MiB               |
-+---------------------+--------------------------+
-| Package             | SOIC-8 + SOIC-8          |
-+---------------------+--------------------------+
-| Write protection    | chipset PRR              |
-+---------------------+--------------------------+
-| Dual BIOS feature   | no                       |
-+---------------------+--------------------------+
-| Internal flashing   | after flashing coreboot  |
-+---------------------+--------------------------+
++---------------------+--------------------------+--------------------------+
+| Type                | M720                     | M920                     |
++=====================+==========================+==========================+
+| Socketed flash      | no                       | no                       |
++---------------------+--------------------------+--------------------------+
+| Model               | W25Q128JV                | W25Q128JV + W25Q64JV     |
++---------------------+--------------------------+--------------------------+
+| Size                | 16                       | 16 + 8 MiB               |
++---------------------+--------------------------+--------------------------+
+| Package             | SOIC-8                   | SOIC-8 + SOIC-8          |
++---------------------+--------------------------+--------------------------+
+| Write protection    | chipset PRR              | chipset PRR              |
++---------------------+--------------------------+--------------------------+
+| Dual BIOS feature   | no                       | no                       |
++---------------------+--------------------------+--------------------------+
+| Internal flashing   | after flashing coreboot  | after flashing coreboot  |
++---------------------+--------------------------+--------------------------+
 ```
 
 ### Internal programming
@@ -99,4 +113,5 @@ Tested with edk2 payload (mrchromebox) and Ubuntu 22.04 (Linux 6.2.0):
     page if you do test it!
 
 [flashrom]: https://flashrom.org/
+[Lenovo M720 Tiny specifications]: https://psref.lenovo.com/syspool/Sys/PDF/ThinkCentre/ThinkCentre_M720_Tiny/ThinkCentre_M720_Tiny_Spec.PDF
 [Lenovo M920 Tiny specifications]: https://psref.lenovo.com/syspool/Sys/PDF/ThinkCentre/ThinkCentre_M920_Tiny/ThinkCentre_M920_Tiny_Spec.PDF

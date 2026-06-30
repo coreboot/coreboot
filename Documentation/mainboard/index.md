@@ -200,9 +200,9 @@ Hardware Maintenance Manual of ThinkPads <lenovo/thinkpad_hmm.md>
 R60 <lenovo/r60.md>
 ThinkCentre M710s <lenovo/thinkcentre_m710s.md>
 ThinkCentre M700 / M900 Tiny <lenovo/thinkcentre_m900_tiny.md>
+ThinkCentre M720 / M920 Tiny <lenovo/thinkcentre_m920q_tiny.md>
 T4xx common <lenovo/t4xx_series.md>
 X2xx common <lenovo/x2xx_series.md>
-M920 Tiny <lenovo/m920q.md>
 vboot <lenovo/vboot.md>
 ```
 

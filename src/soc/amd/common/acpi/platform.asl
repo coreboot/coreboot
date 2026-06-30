@@ -21,7 +21,7 @@ Method (\_WAK, 1, NotSerialized)
 	PNOT ()
 
 	If (CondRefOf (\_SB.MWAK)) {
-		\_SB.MWAK()
+		\_SB.MWAK (Arg0)
 	}
 	Return (Package (){ 0, 0 })
 }
@@ -30,6 +30,6 @@ Method (\_WAK, 1, NotSerialized)
 Method (\_PTS, 1, NotSerialized)
 {
 	If (CondRefOf (\_SB.MPTS)) {
-		\_SB.MPTS()
+		\_SB.MPTS (Arg0)
 	}
 }

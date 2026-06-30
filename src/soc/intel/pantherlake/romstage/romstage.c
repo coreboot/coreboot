@@ -9,12 +9,14 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smbus.h>
 #include <intelblocks/thermal.h>
+#include <soc/intel/common/reset.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 #include <string.h>
 #include <timestamp.h>
+#include <ec/google/chromeec/ec.h>
 
 void platform_fill_dimm_info_args(const DIMM_INFO *src_dimm,
 	    const MEMORY_INFO_DATA_HOB *meminfo_hob,
@@ -24,6 +26,26 @@ void platform_fill_dimm_info_args(const DIMM_INFO *src_dimm,
 	args->mfg_id_arg = src_dimm->MfgId.Data;
 }
 
+/*
+ * Checks if the Converged Security Engine (CSE) is in a malicious state.
+ *
+ * A malicious state is inferred when the CSE has been temporarily disabled via
+ * software (HFS1 COM Soft Temp Disable) but the Current Operating State (COS)
+ * is not in default aka pre-boot state.
+ *
+ * @return true if the CSE is in a malicious state, false otherwise.
+ */
+static bool cse_in_malicious_state(void)
+{
+	return cse_is_hfs1_com_soft_temp_disable() && !cse_is_hfs1_cos_default();
+}
+
+static void do_board_reset(void)
+{
+	if (CONFIG(EC_GOOGLE_CHROMEEC))
+		google_chromeec_reboot(EC_REBOOT_COLD, EC_REBOOT_FLAG_IMMEDIATE);
+}
+
 void mainboard_romstage_entry(void)
 {
 	struct chipset_power_state *ps = pmc_get_power_state();
@@ -31,6 +53,12 @@ void mainboard_romstage_entry(void)
 
 	/* Initialize HECI interface */
 	cse_init(HECI1_BASE_ADDRESS);
+
+	if (cse_in_malicious_state()) {
+		printk(BIOS_INFO, "CSE is in malicious state inside %s(), "
+		       "doing board reset\n", __func__);
+		do_board_reset();
+	}
 
 	if (!s3wake && CONFIG(SOC_INTEL_CSE_LITE_SKU)) {
 		cse_fill_bp_info();

@@ -442,4 +442,10 @@ void thread_mutex_unlock(struct thread_mutex *mutex)
 {
 	assert(mutex->locked);
 	mutex->locked = 0;
+
+	/*
+	 * There's no way to determine if the other thread is waiting on this mutex.
+	 * Allow other threads to take ownership of the mutex by yielding.
+	 */
+	thread_yield();
 }

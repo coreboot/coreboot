@@ -1,0 +1,9 @@
+Vendor name: Framework
+Board name: Dahlia (Intel Wildcat Lake)
+Category: laptop
+Board URL: https://frame.work/laptop12
+ROM package: WSON-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y
+Release year: 2026

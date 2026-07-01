@@ -134,6 +134,7 @@ D41S <foxconn/d41s.md>
 :maxdepth: 1
 
 Laptop 12 13th Gen Intel (Sunflower) <framework/sunflower.md>
+Laptop 12 Intel Core Series 3 (Dahlia) <framework/dahlia.md>
 Laptop 13 Intel Core Ultra Series 1 (Marigold) <framework/marigold.md>
 Laptop 13 Intel Core Ultra Series 3 (Sakura) <framework/sakura.md>
 Laptop 13 Ryzen 7040 Series (Azalea) <framework/azalea/azalea.md>

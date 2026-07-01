@@ -1,0 +1,91 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_FRAMEWORK_DAHLIA_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select DRIVERS_ACPI_THERMAL_ZONE
+	select DRIVERS_I2C_HID
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
+	select EC_GOOGLE_CHROMEEC_ESPI
+	select HAVE_ACPI_TABLES
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select NO_UART_ON_SUPERIO
+	select SYSTEM_TYPE_CONVERTIBLE
+	select DRIVERS_GFX_GENERIC
+	select INTEL_GMA_HAVE_VBT
+	select DRIVERS_INTEL_WIFI
+	select DRIVERS_INTEL_USB4_RETIMER
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	select SOC_INTEL_TCSS_USE_PDC_PMC_USBC_MUX_CONFIGURATION
+	select PCIEXP_SUPPORT_RESIZABLE_BARS
+	select DRIVERS_INTEL_PMC
+	select PMC_IPC_ACPI_INTERFACE
+	select CRB_TPM
+	select HAVE_INTEL_PTT
+	select MAINBOARD_HAS_TPM2
+	select MEMORY_MAPPED_TPM
+	select SPD_CACHE_ENABLE
+	select SPD_CACHE_IN_FMAP
+	select SPD_READ_BY_WORD
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+
+config BOARD_FRAMEWORK_DAHLIA
+	select BOARD_FRAMEWORK_DAHLIA_COMMON
+	select FSP_TYPE_IOT
+	select FSP_UGOP_EARLY_SIGN_OF_LIFE
+	select SOC_INTEL_WILDCATLAKE
+
+if BOARD_FRAMEWORK_DAHLIA_COMMON
+
+config MAINBOARD_DIR
+	default "framework/dahlia"
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config VBOOT
+	default y
+	select VBOOT_ALWAYS_ENABLE_DISPLAY
+	select VBOOT_CLEAR_RECOVERY_IN_RAMSTAGE
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_SLOTS_RW_AB
+
+# The PTL/WCL SoC default RAMSTAGE_CBFS_CACHE_SIZE is sized only for FSP-S
+# preloading. The UEFI payload is much larger, so enlarge the cache to fit
+# dsdt.aml + the payload (see sakura for the same workaround).
+config RAMSTAGE_CBFS_CACHE_SIZE
+	default 0x200000
+
+config MAINBOARD_PART_NUMBER
+	default "Dahlia"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "Laptop 12 (Intel Core Series 3)"
+
+config MAINBOARD_FAMILY
+	default "Laptop"
+
+config CONSOLE_POST
+	default y
+
+config D3COLD_SUPPORT
+	default y
+
+config DIMM_SPD_SIZE
+	default 1024
+
+config ONBOARD_VGA_IS_PRIMARY
+	default y
+
+config POST_DEVICE
+	default n
+
+config UART_FOR_CONSOLE
+	default 0
+
+# PM Timer disabled, saves power
+config USE_PM_ACPI_TIMER
+	default n
+
+endif

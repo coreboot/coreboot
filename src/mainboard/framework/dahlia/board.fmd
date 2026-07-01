@@ -1,0 +1,43 @@
+FLASH 32M {
+	SI_DESC 16K
+	SI_ME 10128K
+	SI_DEVICEEXP2 6240K
+	SI_BIOS@16M 16M {
+		# PD Firmware for use in updates
+		PD1(PRESERVE)@0x0 256K
+		PD2(PRESERVE)@0x40000 256K
+		# Factory-programmed serial number data
+		# Offset matches vendor layout on mass produced systems
+		# PRESERVE keeps it across coreboot reflashes.
+		RW_FACTORY(PRESERVE)@0x80000 16K
+		# Pad so that RW_MRC_CACHE and SMMSTORE start 64K-aligned
+		RW_UNUSED 28K
+		RW_SPD_CACHE(PRESERVE) 20K
+		RW_MRC_CACHE 64K
+		SMMSTORE(PRESERVE) 256K
+		RW_ELOG(PRESERVE) 4K
+		RW_NVRAM(PRESERVE) 8K
+		RW_SHARED 16K {
+			SHARED_DATA 8K
+			VBLOCK_DEV 8K
+		}
+		RW_SECTION_A 5M {
+			VBLOCK_A 8K
+			FW_MAIN_A(CBFS)
+			RW_FWID_A 128
+		}
+		RW_SECTION_B 5M {
+			VBLOCK_B 8K
+			FW_MAIN_B(CBFS)
+			RW_FWID_B 128
+		}
+		WP_RO {
+			RO_SECTION {
+				FMAP 4K
+				RO_FRID 128
+				GBB 16K
+				COREBOOT(CBFS)
+			}
+		}
+	}
+}

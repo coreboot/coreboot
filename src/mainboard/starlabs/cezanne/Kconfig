@@ -45,6 +45,9 @@ config ADD_APCB_SOURCES
 config APCB_SOURCES_PATH
 	string "Path to APCB files"
 
+config EARLY_RESERVED_DRAM_BASE
+	default 0x10000000
+
 config EC_GPE_SCI
 	default 0x17
 
@@ -53,6 +56,9 @@ config EC_STARLABS_ADD_ITE_BIN
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config FSP_M_ADDR
+	default 0x100C0000
 
 config MAINBOARD_DIR
 	default "starlabs/cezanne"
@@ -73,11 +79,20 @@ config POST_IO
 	default y			if BOARD_STARLABS_STARBOOK_CEZANNE
 	default n			if BOARD_STARLABS_BYTE_CEZANNE
 
+config PSP_APOB_DRAM_ADDRESS
+	default 0x10001000
+
 config PSP_LOAD_MP2_FW
 	default y
 
 config PSP_POSTCODES_ON_ESPI
 	default n
+
+config PSP_SHAREDMEM_BASE
+	default 0x10011000 if VBOOT_STARTS_BEFORE_BOOTBLOCK
+
+config ROMSTAGE_ADDR
+	default 0x10050000
 
 config S3_VGA_ROM_RUN
 	default n
@@ -85,6 +100,9 @@ config S3_VGA_ROM_RUN
 config VARIANT_DIR
 	default "starbook"		if BOARD_STARLABS_STARBOOK_CEZANNE
 	default "byte"			if BOARD_STARLABS_BYTE_CEZANNE
+
+config VERSTAGE_ADDR
+	default 0x10180000 if VBOOT_SEPARATE_VERSTAGE
 
 config EFS_SPI_READ_MODE
 	default 5	# Quad IO (1-4-4)

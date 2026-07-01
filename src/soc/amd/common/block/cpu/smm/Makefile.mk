@@ -8,5 +8,6 @@ ramstage-y += smm_relocate.c
 ramstage-y += smm_helper.c
 smm-y += smi_apmc.c
 smm-y += smi_handler.c
+smm-y += smi_powerbutton.c
 
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_SMM

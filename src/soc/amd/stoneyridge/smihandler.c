@@ -26,11 +26,13 @@ static void stoneyridge_fch_apmc_smi_handler(void)
 
 	switch (cmd) {
 	case APM_CNT_ACPI_ENABLE:
+		fch_disable_power_button_smi();
 		acpi_clear_pm_gpe_status();
 		acpi_enable_sci();
 		break;
 	case APM_CNT_ACPI_DISABLE:
 		acpi_disable_sci();
+		fch_enable_power_button_smi();
 		break;
 	case APM_CNT_ELOG_GSMI:
 		if (CONFIG(ELOG_GSMI))
@@ -45,7 +47,7 @@ static void stoneyridge_fch_apmc_smi_handler(void)
 	mainboard_smi_apmc(cmd);
 }
 
-static void fch_slp_typ_handler(void)
+void fch_slp_typ_handler(void)
 {
 	uint32_t pci_ctrl, reg32;
 	uint16_t pm1cnt, reg16;
@@ -136,7 +138,8 @@ static void fch_slp_typ_handler(void)
  */
 static const struct smi_sources_t smi_sources[] = {
 	{ .type = SMITYPE_SMI_CMD_PORT, .handler = stoneyridge_fch_apmc_smi_handler },
-	{ .type = SMITYPE_SLP_TYP, .handler = fch_slp_typ_handler},
+	{ .type = SMITYPE_SLP_TYP, .handler = fch_slp_typ_handler },
+	{ .type = SMITYPE_PWRBUTTON_UP, .handler = fch_power_button_handler },
 	{ .type = SMITYPE_PSP, .handler = psp_smi_handler },
 };
 

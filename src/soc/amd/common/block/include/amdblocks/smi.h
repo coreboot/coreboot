@@ -42,6 +42,8 @@ struct sci_source {
 };
 
 void configure_smi(uint8_t smi_num, uint8_t mode);
+void fch_disable_power_button_smi(void);
+void fch_enable_power_button_smi(void);
 void configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level);
 void configure_scimap(const struct sci_source *sci);
 void disable_gevent_smi(uint8_t gevent);

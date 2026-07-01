@@ -22,7 +22,7 @@
  * during the SMN accesses. Since the SMI handler is the last thing that gets called before
  * entering S3, this won't interfere with any indirect SMN accesses via the same register pair.
  */
-static void fch_slp_typ_handler(void)
+void fch_slp_typ_handler(void)
 {
 	uint32_t pci_ctrl;
 	uint16_t pm1cnt;
@@ -81,7 +81,8 @@ static void fch_slp_typ_handler(void)
  */
 static const struct smi_sources_t smi_sources[] = {
 	{ .type = SMITYPE_SMI_CMD_PORT, .handler = fch_apmc_smi_handler },
-	{ .type = SMITYPE_SLP_TYP, .handler = fch_slp_typ_handler},
+	{ .type = SMITYPE_SLP_TYP, .handler = fch_slp_typ_handler },
+	{ .type = SMITYPE_PWRBUTTON_UP, .handler = fch_power_button_handler },
 	{ .type = SMITYPE_PSP, .handler = psp_smi_handler },
 };
 

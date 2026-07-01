@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/smi.h>
 #include <amdblocks/smm.h>
 #include <bootstate.h>
 #include <console/console.h>
@@ -36,10 +37,12 @@ static void soc_finalize(void *unused)
 	if (!acpi_is_wakeup_s3()) {
 		acpi_clear_pm_gpe_status();
 
-		if (CONFIG(HAVE_SMI_HANDLER))
+		if (CONFIG(HAVE_SMI_HANDLER)) {
 			acpi_disable_sci();
-		else
+			fch_enable_power_button_smi();
+		} else {
 			acpi_enable_sci();
+		}
 	}
 
 	post_code(POSTCODE_OS_BOOT);

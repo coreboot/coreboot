@@ -3,11 +3,13 @@
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/psp.h>
+#include <amdblocks/smi.h>
 #include <amdblocks/smm.h>
 #include <arch/io.h>
 #include <cpu/amd/amd64_save_state.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
+#include <soc/smi.h>
 #include <smmstore.h>
 #include <types.h>
 
@@ -116,24 +118,26 @@ void fch_apmc_smi_handler(void)
 
 	switch (cmd) {
 	case APM_CNT_ACPI_ENABLE:
+		fch_disable_power_button_smi();
 		acpi_clear_pm_gpe_status();
 		acpi_enable_sci();
 		break;
 	case APM_CNT_ACPI_DISABLE:
 		acpi_disable_sci();
+		fch_enable_power_button_smi();
 		break;
 	case APM_CNT_ELOG_GSMI:
 		if (CONFIG(ELOG_GSMI))
 			handle_smi_gsmi();
-	break;
+		break;
 	case APM_CNT_SMMSTORE:
 		if (CONFIG(SMMSTORE))
 			handle_smi_store();
-	break;
+		break;
 	case APM_CNT_ROM_ARMOR:
 		if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_ROM_ARMOR3))
 			handle_smi_rom_armor();
-	break;
+		break;
 	case APM_CNT_SMMINFO:
 		psp_notify_smm();
 		break;

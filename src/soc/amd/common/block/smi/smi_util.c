@@ -2,12 +2,13 @@
 
 /* SMI utilities used in both SMM and normal mode */
 
-#include <console/console.h>
-#include <cpu/x86/smm.h>
-#include <soc/southbridge.h>
-#include <soc/smi.h>
+#include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/smi.h>
+#include <console/console.h>
+#include <cpu/x86/smm.h>
+#include <soc/smi.h>
+#include <soc/southbridge.h>
 
 void configure_smi(uint8_t smi_num, uint8_t mode)
 {
@@ -27,6 +28,19 @@ void configure_smi(uint8_t smi_num, uint8_t mode)
 	reg32 &= ~(0x3 << (bit_offset));
 	reg32 |= (mode & 0x3) << bit_offset;
 	smi_write32(SMI_REG_CONTROL0 + reg32_offset, reg32);
+}
+
+void fch_enable_power_button_smi(void)
+{
+	acpi_write16(MMIO_ACPI_PM1_STS, PWRBTN_STS);
+	acpi_write16(MMIO_ACPI_PM1_EN, acpi_read16(MMIO_ACPI_PM1_EN) | PWRBTN_EN);
+	pm_write16(PM_ACPI_CONF, pm_read16(PM_ACPI_CONF) | PM_ACPI_PWRBTNEN_EN);
+	configure_smi(SMITYPE_PWRBUTTON_UP, SMI_MODE_SMI);
+}
+
+void fch_disable_power_button_smi(void)
+{
+	configure_smi(SMITYPE_PWRBUTTON_UP, SMI_MODE_DISABLE);
 }
 
 /**

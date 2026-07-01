@@ -150,6 +150,9 @@ void lb_add_boot_mode(struct lb_header *header)
 
 bool mainboard_needs_pcie_init(void)
 {
+	if (CONFIG(MAINBOARD_HAS_UFS))
+		return false;
+
 	/* Skip PCIe initialization if boot mode is "low-battery" or "off-mode charging"*/
 	if (is_low_power_boot_with_charger())
 		return false;
@@ -319,7 +322,8 @@ void mainboard_soc_init(void)
 	if (boot_mode == LB_BOOT_MODE_NORMAL || boot_mode == LB_BOOT_MODE_NO_BATTERY)
 		display_startup();
 
-	ufs_rpmh_init();
+	if (CONFIG(MAINBOARD_HAS_UFS))
+		ufs_rpmh_init();
 
 	/* Enable touchpad power */
 	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_TOUCHPAD_POWER)

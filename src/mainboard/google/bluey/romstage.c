@@ -215,6 +215,13 @@ static void update_battery_status(void)
 	battery_is_cutoff = (battery_cfet_status == -1) && (battery_dfet_status == -1);
 }
 
+bool mainboard_needs_pcie_init(void)
+{
+	if (CONFIG(MAINBOARD_HAS_UFS))
+		return false;
+	return true;
+}
+
 /* Perform romstage early hardware initialization */
 static void mainboard_setup_peripherals_early(void)
 {
@@ -228,7 +235,8 @@ static void mainboard_setup_peripherals_early(void)
 	 * de-assertion in platform_romstage_postram(), satisfying the
 	 * NVMe spec requirement without a static mdelay().
 	 */
-	gcom_pcie_power_on_ep();
+	if (mainboard_needs_pcie_init())
+		gcom_pcie_power_on_ep();
 
 	edp_configure_gpios();
 
@@ -248,7 +256,7 @@ static void mainboard_setup_peripherals_early(void)
  */
 static void mainboard_setup_peripherals_late(int mode)
 {
-	if (!chipset_dload_mode_active) {
+	if (mainboard_needs_pcie_init() && !chipset_dload_mode_active) {
 		/* Perform PCIe setup early in async mode if supported to save 100ms */
 		if (mode == LB_BOOT_MODE_NORMAL || mode == LB_BOOT_MODE_NO_BATTERY)
 			qcom_setup_pcie_host(NULL);

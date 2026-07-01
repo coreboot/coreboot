@@ -131,6 +131,12 @@ config MAINBOARD_HAS_SD_CONTROLLER
 	help
 	  Enable this option if your mainboard is equipped with SD card controller.
 
+config MAINBOARD_HAS_UFS
+	bool
+	default n
+	help
+	  Enable this option if your mainboard is equipped with UFS storage.
+
 config MAINBOARD_HAS_PS8820_RETIMER
 	bool
 	default n

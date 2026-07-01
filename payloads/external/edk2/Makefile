@@ -185,24 +185,6 @@ EDK2_APPEND_RMAP_MANIFEST = $(firstword $(wildcard \
 # If FmpDxe is built, edk2 also places it in the top-level X64 output dir.
 EDK2_FMP_DXE = $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/X64/FmpDxe.efi
 
-define EDK2_ENSURE_FMP_CERT_INC
-	if [ "$(CONFIG_DRIVERS_EFI_UPDATE_CAPSULES)" = "y" ] && [ -n "$(CAPSULE_TRUSTED_PUBLIC_CERT)" ]; then \
-		type openssl > /dev/null 2>&1 || { echo "ERROR: Please install openssl."; exit 1; }; \
-		test -f "$(CAPSULE_TRUSTED_PUBLIC_CERT_PATH)"; \
-		binto_pcd="$(EDK2_PATH)/BaseTools/Scripts/BinToPcd.py"; \
-		if [ ! -f "$$binto_pcd" ]; then \
-			echo "ERROR: BinToPcd.py not found (expected EDK2 BaseTools/Scripts/BinToPcd.py)."; \
-			exit 1; \
-		fi; \
-		mkdir -p "$(WORKSPACE)/Conf"; \
-		der="$(WORKSPACE)/.capsule_fmp_cert.$$$$.der"; \
-		openssl x509 -in "$(CAPSULE_TRUSTED_PUBLIC_CERT_PATH)" -outform der -out "$$der" || exit 1; \
-		python3 "$$binto_pcd" -q -x -i "$$der" \
-			-o "$(WORKSPACE)/$(CAPSULE_FMP_PCD_INC_REL)" -p "$(CAPSULE_FMP_PCD_INC_PCD_NAME)" || exit 1; \
-		rm -f "$$der"; \
-	fi;
-endef
-
 #
 # One or more downstream edk2 repositories support the following additional options:
 #
@@ -361,9 +343,22 @@ checktools:
 		exit 1; \
 	fi
 
-ifeq ($(CONFIG_DRIVERS_EFI_UPDATE_CAPSULES)$(CONFIG_DRIVERS_EFI_GENERATE_CAPSULE),yy)
+ifeq ($(CONFIG_DRIVERS_EFI_UPDATE_CAPSULES),y)
 capsule_keys: $(EDK2_PATH)
-	$(EDK2_ENSURE_FMP_CERT_INC)
+	type openssl > /dev/null 2>&1 || { echo "ERROR: Please install openssl."; exit 1; }; \
+	test -f "$(CAPSULE_TRUSTED_PUBLIC_CERT_PATH)"; \
+	binto_pcd="$(EDK2_PATH)/BaseTools/Scripts/BinToPcd.py"; \
+	if [ ! -f "$$binto_pcd" ]; then \
+		echo "ERROR: BinToPcd.py not found (expected EDK2 BaseTools/Scripts/BinToPcd.py)."; \
+		exit 1; \
+	fi; \
+	mkdir -p "$(WORKSPACE)/Conf"; \
+	der="$(WORKSPACE)/.capsule_fmp_cert.$$$$.der"; \
+	openssl x509 -in "$(CAPSULE_TRUSTED_PUBLIC_CERT_PATH)" -outform der -out "$$der" || exit 1; \
+	python3 "$$binto_pcd" -q -x -i "$$der" \
+		-o "$(WORKSPACE)/$(CAPSULE_FMP_PCD_INC_REL)" -p "$(CAPSULE_FMP_PCD_INC_PCD_NAME)" || exit 1; \
+	rm -f "$$der";
+
 
 prep: capsule_keys
 endif
@@ -393,7 +388,6 @@ $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/FV/UEFIPAYLOAD.fd: \
 	prep print
 	cd $(WORKSPACE); \
 		source $(EDK2_PATH)/edksetup.sh; \
-		$(EDK2_ENSURE_FMP_CERT_INC) \
 		echo -n "EDK2: Building... "; \
 		build -a IA32 -a X64 -b $(RELEASE_STR) $(BUILD_STR) -D BUILD_ARCH=X64 \
 			-y $(WORKSPACE)/Build/UefiPayloadPkgX64/UEFIPAYLOAD.txt; \
@@ -407,7 +401,6 @@ $(WORKSPACE)/Build/UefiPayloadPkgIA32/UniversalPayload.fit: \
 	prep print
 	cd $(WORKSPACE); \
 		source $(EDK2_PATH)/edksetup.sh; \
-		$(EDK2_ENSURE_FMP_CERT_INC) \
 		echo -n "EDK2: Building... "; \
 		bash $(EDK2_PATH)/UefiPayloadPkg/UniversalPayloadBuild.sh -a IA32 -b $(RELEASE_STR) $(BUILD_STR) \
 			-D BUILD_ARCH=IA32 --Fit \

@@ -118,7 +118,7 @@ config DRIVERS_EFI_CAPSULE_REGIONS
 	  image prior to building the capsule.
 
 menu "Capsule signing certificates"
-	depends on DRIVERS_EFI_GENERATE_CAPSULE
+	depends on DRIVERS_EFI_UPDATE_CAPSULES
 
 config DRIVERS_EFI_CAPSULE_SIGNER_PRIVATE_CERT
 	string "PEM file used to sign generated capsules"
@@ -148,7 +148,7 @@ config DRIVERS_EFI_CAPSULE_OTHER_PUBLIC_CERT
 config DRIVERS_EFI_CAPSULE_TRUSTED_PUBLIC_CERT
 	string "Trusted root certificate for capsule signing (PEM)"
 	default "BaseTools/Source/Python/Pkcs7Sign/TestRoot.pub.pem"
-	depends on DRIVERS_EFI_GENERATE_CAPSULE
+	depends on DRIVERS_EFI_UPDATE_CAPSULES
 	help
 	  Path to the trusted root certificate (PEM) used when generating a PKCS#7
 	  signature for the capsule.

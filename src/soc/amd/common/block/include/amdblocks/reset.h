@@ -5,6 +5,7 @@
 
 #include <amdblocks/acpimmio.h>
 #include <arch/cache.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <halt.h>
 #include <soc/southbridge.h>
@@ -18,6 +19,7 @@ static inline __noreturn void warm_reset(void)
 {
 	printk(BIOS_INFO, "%s() called!\n", __func__);
 	dcache_clean_all();
+	cf9_reset_prepare();
 	do_warm_reset();
 	halt();
 }
@@ -26,6 +28,7 @@ static inline __noreturn void cold_reset(void)
 {
 	printk(BIOS_INFO, "%s() called!\n", __func__);
 	dcache_clean_all();
+	cf9_reset_prepare();
 	do_cold_reset();
 	halt();
 }

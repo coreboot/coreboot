@@ -302,7 +302,7 @@ static void *fill_blt_buffer(struct bmp_image_header *header,
 	struct bmp_color_map *color_map;
 	size_t image_index;
 
-	gop_blt_ptr = malloc(sizeof(blt_buffer_size));
+	gop_blt_ptr = malloc(blt_buffer_size);
 	if (!gop_blt_ptr)
 		die("%s: out of memory. Consider increasing the `CONFIG_HEAP_SIZE`\n",
 			 __func__);

@@ -27,12 +27,13 @@ static void dtt_acpi_fill_ssdt(const struct device *dev)
 		return;
 
 	const char *scope = acpi_device_scope(dev);
+	const char *name = soc_acpi_name(dev);
 
-	if (!scope)
+	if (!scope || !name)
 		return;
 
 	acpigen_write_scope(scope);
-	acpigen_write_device(soc_acpi_name(dev));
+	acpigen_write_device(name);
 	acpigen_write_ADR_pci_device(dev);
 	acpigen_write_STA(acpi_device_status(dev));
 	acpigen_pop_len(); /* Device */

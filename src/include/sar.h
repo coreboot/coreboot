@@ -71,6 +71,7 @@ struct dsm_profile {
 	uint32_t enablement_11be;
 	uint32_t energy_detection_threshold;
 	uint32_t rfi_mitigation;
+	uint32_t disable_wifi_bands;
 };
 
 struct sar_power_table {

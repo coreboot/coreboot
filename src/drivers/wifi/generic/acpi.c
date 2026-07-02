@@ -146,6 +146,33 @@ static void wifi_dsm_unii4_control_enable(void *args)
 }
 
 /*
+ * Function 9: Selectively Wi-Fi Bands
+ * Ability to force disable selectively Wi-Fi bands per platform.
+ *
+ * Bit 0  - 2.4 GHz
+ * Bit 1  - 5.2 GHz
+ * Bit 2  - 5.3 GHz
+ * Bit 3  - 5.5 GHz
+ * Bit 4  - 5.8 GHz
+ * Bit 5  - 5.9 GHz
+ * Bit 6  - 6.2 GHz
+ * Bit 7  - 6.5 GHz
+ * Bit 8  - 6.6 GHz
+ * Bit 9  - 6.8 GHz
+ * Bit 10 - 7.0 GHz
+ * 0 - Controlled by NIC
+ * 1 - Force disable the corresponding band
+ *
+ * Bits 31:11 - Reserved (shall be set to zeroes)
+ */
+static void wifi_dsm_disable_wifi_bands(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->disable_wifi_bands);
+}
+
+/*
  * Function 10: Energy Detection Threshold (EDT)
  * Bits 0-3: EDT revision - Default 0
  *
@@ -346,7 +373,7 @@ static void (*wifi_dsm_callbacks[])(void *) = {
 	wifi_dsm_ukrane_russia_11ax_enable,	/* Function 6 */
 	wifi_dsm_unii4_control_enable,		/* Function 7 */
 	NULL,					/* Function 8 */
-	NULL,					/* Function 9 */
+	wifi_dsm_disable_wifi_bands,		/* Function 9 */
 	wifi_dsm_energy_detection_threshold,	/* Function 10 */
 	wifi_dsm_rfi_mitigation,		/* Function 11 */
 	wifi_dsm_11be_country_enablement,	/* Function 12 */

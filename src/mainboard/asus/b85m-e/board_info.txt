@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://asus.com/supportonly/b85me/
+ROM protocol: SPI
+Flashrom support: n
+ROM package: DIP-16 (1x)
+ROM socketed: y
+Release year: 2013

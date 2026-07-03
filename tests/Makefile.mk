@@ -27,9 +27,19 @@ endif
 # Use system cmoka in default, or build from 3rdparty source code if requested
 USE_SYSTEM_CMOCKA ?= 1
 ifeq ($(USE_SYSTEM_CMOCKA),1)
+# Only probe for Cmocka (and possibly warn that it will be built from 3rdparty)
+# when the requested goals actually build or run unit tests. Otherwise every
+# unrelated 'make' invocation would run the check and print the warning.
+cmocka_goals := unit-tests build-unit-tests run-unit-tests \
+	junit.xml-unit-tests coverage-report
+need_cmocka := $(strip \
+	$(filter $(cmocka_goals),$(MAKECMDGOALS)) \
+	$(filter build-tests/% run-tests/% try-tests/% tests/%,$(MAKECMDGOALS)))
+ifneq ($(need_cmocka),)
 ifeq ($(shell $(HOSTPKG_CONFIG) --exists cmocka || echo 1),1)
 $(warning No system cmocka, build from 3rdparty instead...)
 USE_SYSTEM_CMOCKA=0
+endif
 endif
 endif
 

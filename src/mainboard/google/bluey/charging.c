@@ -222,6 +222,20 @@ static void indicate_charging_status(void)
 	clear_ac_unplug_event();
 }
 
+/*
+ * Signals the Chrome EC to register the final off-mode heartbeat
+ * and initiates the AP power-off sequence.
+ */
+static void chromeec_finalize_and_poweroff(void)
+{
+	/* Turn on the lightbar, as the charging applet may have turned it off */
+	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
+		google_chromeec_lightbar_on();
+
+	google_chromeec_offmode_heartbeat();
+	google_chromeec_ap_poweroff();
+}
+
 void launch_charger_applet(void)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
@@ -246,8 +260,7 @@ void launch_charger_applet(void)
 		if (detect_ac_unplug_event(true)) {
 			printk(BIOS_INFO, "Issuing power-off due to changer disconnection.\n");
 			indicate_charging_status();
-			google_chromeec_offmode_heartbeat();
-			google_chromeec_ap_poweroff();
+			chromeec_finalize_and_poweroff();
 		}
 
 		if (stopwatch_expired(&sw)) {
@@ -261,8 +274,7 @@ void launch_charger_applet(void)
 			printk(BIOS_INFO, "Issuing power-off.\n");
 			if (detect_ac_unplug_event(false))
 				indicate_charging_status();
-			google_chromeec_offmode_heartbeat();
-			google_chromeec_ap_poweroff();
+			chromeec_finalize_and_poweroff();
 		}
 		mdelay(200);
 	}
@@ -304,8 +316,7 @@ void launch_charger_applet(void)
 			printk(BIOS_INFO, "Issuing power-off due to change in charging state.\n");
 			if (detect_ac_unplug_event(false))
 				indicate_charging_status();
-			google_chromeec_offmode_heartbeat();
-			google_chromeec_ap_poweroff();
+			chromeec_finalize_and_poweroff();
 		}
 
 		/*
@@ -326,8 +337,7 @@ void launch_charger_applet(void)
 		qcom_tsens_monitor_all(&has_crossed_threshold);
 		if (has_crossed_threshold) {
 			printk(BIOS_INFO, "Issuing power-off due to temperature trip.\n");
-			google_chromeec_offmode_heartbeat();
-			google_chromeec_ap_poweroff();
+			chromeec_finalize_and_poweroff();
 		}
 	} while (true);
 }

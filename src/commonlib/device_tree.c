@@ -805,6 +805,7 @@ bool fdt_is_valid(const void *blob)
 	uint32_t structure_size = be32toh(header->structure_size);
 	uint32_t strings_offset = be32toh(header->strings_offset);
 	uint32_t strings_size = be32toh(header->strings_size);
+	uint32_t reserve_offset = be32toh(header->reserve_map_offset);
 
 	if (totalsize < sizeof(struct fdt_header)) {
 		printk(BIOS_ERR, "FDT totalsize %u smaller than header!\n", totalsize);
@@ -812,6 +813,14 @@ bool fdt_is_valid(const void *blob)
 	}
 	if (structure_offset > totalsize || structure_size > totalsize - structure_offset) {
 		printk(BIOS_ERR, "FDT structure block lies outside of the blob!\n");
+		return false;
+	}
+	if (structure_offset % sizeof(uint32_t) != 0) {
+		printk(BIOS_ERR, "FDT structure block is not 4-byte aligned!\n");
+		return false;
+	}
+	if (reserve_offset % sizeof(uint64_t) != 0) {
+		printk(BIOS_ERR, "FDT memory reservation block is not 8-byte aligned!\n");
 		return false;
 	}
 	if (strings_offset > totalsize || strings_size > totalsize - strings_offset) {

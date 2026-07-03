@@ -30,6 +30,7 @@ romstage-y += spi.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
+ramstage-y += display_audio.c
 ramstage-y += elog.c
 ramstage-y += fadt.c
 ramstage-y += finalize.c

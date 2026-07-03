@@ -216,13 +216,18 @@ static void spd_get_name(const uint8_t spd[], int type, const char **spd_name, s
 	/* LPDDR3, LPDDR4 and DDR4 have same part number offset and length */
 	case SPD_MEMORY_TYPE_LPDDR3_SDRAM:
 	case SPD_MEMORY_TYPE_DDR4_SDRAM:
-	case SPD_MEMORY_TYPE_DDR5_SDRAM:
-	case SPD_MEMORY_TYPE_LPDDR5_SDRAM:
 	case SPD_MEMORY_TYPE_LPDDR4_SDRAM:
 	case SPD_MEMORY_TYPE_LPDDR4X_SDRAM:
 		if (spd[SPD_DDR4_PART_OFF]) {
 			*spd_name = (const char *) &spd[SPD_DDR4_PART_OFF];
 			*len = SPD_DDR4_PART_LEN;
+		}
+		break;
+	case SPD_MEMORY_TYPE_DDR5_SDRAM:
+	case SPD_MEMORY_TYPE_LPDDR5_SDRAM:
+		if (spd[SPD_DDR5_PART_OFF]) {
+			*spd_name = (const char *) &spd[SPD_DDR5_PART_OFF];
+			*len = SPD_DDR5_PART_LEN;
 		}
 		break;
 	default:

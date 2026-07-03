@@ -69,6 +69,7 @@
 #define CHARGING_RAIL_STABILIZATION_DELAY_MS 15000 /* 15sec */
 #define LOW_BATTERY_CHARGING_LOOP_EXIT_MS (3 * 60 * 1000) /* 3min */
 #define DELAY_CHARGING_ACTIVE_LB_MS 4000 /* 4sec */
+#define AC_DISCONNECT_DEBOUNCE_MS 1000 /* 1sec */
 
 enum charging_status {
 	CHRG_DISABLE,
@@ -148,16 +149,50 @@ static void clear_ac_unplug_event(void)
 	google_chromeec_clear_events_b(ac_unplug_event);
 }
 
-static int detect_ac_unplug_event(void)
+static int detect_ac_unplug_event(bool debounce)
 {
+	static const long ac_disconnect_debounce_ms = AC_DISCONNECT_DEBOUNCE_MS;
+	static struct stopwatch unplug_event_sw;
+	static int debounce_in_progress = 0;
+	static int event_verified = 0;
+
 	const uint64_t ac_unplug_event_mask =
 		EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED);
 	uint64_t events = google_chromeec_get_events_b();
 
-	if (!!(events & ac_unplug_event_mask))
-		return 1;
+	/* Get the raw, instantaneous state of the hardware */
+	int ac_currently_unplugged = !!(events & ac_unplug_event_mask);
 
-	return 0;
+	/* Path 1: Raw evaluation */
+	if (!debounce) {
+		/* Clear state tracking in case we toggle between raw/debounced modes */
+		debounce_in_progress = 0;
+		event_verified = 0;
+		return ac_currently_unplugged;
+	}
+
+	/* Path 2: Debounced evaluation */
+	if (ac_currently_unplugged) {
+		if (event_verified)
+			return 1;
+
+		if (!debounce_in_progress) {
+			stopwatch_init_msecs_expire(&unplug_event_sw, ac_disconnect_debounce_ms);
+			debounce_in_progress = 1;
+			return 0;
+		} else {
+			if (stopwatch_expired(&unplug_event_sw)) {
+				debounce_in_progress = 0;
+				event_verified = 1;
+				return 1;
+			}
+			return 0;
+		}
+	} else {
+		debounce_in_progress = 0;
+		event_verified = 0;
+		return 0;
+	}
 }
 
 void clear_pending_ec_events(void)
@@ -201,16 +236,14 @@ void launch_charger_applet(void)
 
 	stopwatch_init_msecs_expire(&sw, charging_enable_timeout_ms);
 
-	/* Clear the event to prevent re-triggering in the next iteration */
-	clear_ac_unplug_event();
-
 	while (!get_battery_icurr_ma()) {
 		if (detect_ec_manual_poweron_event()) {
 			printk(BIOS_INFO, "Exiting charging applet to boot to OS\n");
 			do_board_reset();
 		}
 
-		if (detect_ac_unplug_event()) {
+		/* Relying on debounce logic before bailing out */
+		if (detect_ac_unplug_event(true)) {
 			printk(BIOS_INFO, "Issuing power-off due to changer disconnection.\n");
 			indicate_charging_status();
 			google_chromeec_offmode_heartbeat();
@@ -226,7 +259,7 @@ void launch_charger_applet(void)
 			 * causes a boot hang. Instead, issue a shutdown if not charging.
 			 */
 			printk(BIOS_INFO, "Issuing power-off.\n");
-			if (detect_ac_unplug_event())
+			if (detect_ac_unplug_event(false))
 				indicate_charging_status();
 			google_chromeec_offmode_heartbeat();
 			google_chromeec_ap_poweroff();
@@ -269,7 +302,7 @@ void launch_charger_applet(void)
 		 */
 		if (!get_battery_icurr_ma()) {
 			printk(BIOS_INFO, "Issuing power-off due to change in charging state.\n");
-			if (detect_ac_unplug_event())
+			if (detect_ac_unplug_event(false))
 				indicate_charging_status();
 			google_chromeec_offmode_heartbeat();
 			google_chromeec_ap_poweroff();

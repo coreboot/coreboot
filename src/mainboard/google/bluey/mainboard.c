@@ -218,7 +218,7 @@ static void handle_low_power_charging_boot(void)
 	if (board_support_dead_battery_charging())
 		configure_dead_battery_boot();
 
-	enable_fast_battery_charging();
+	display_stop();
 
 	/*
 	 * Disable the lightbar for Low-Battery or Off-Mode charging sequences.
@@ -228,7 +228,7 @@ static void handle_low_power_charging_boot(void)
 	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
 		google_chromeec_lightbar_off();
 
-	display_stop();
+	enable_fast_battery_charging();
 
 	/* Boot to charging applet; if this fails, the applet should trigger a reset */
 	launch_charger_applet();

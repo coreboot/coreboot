@@ -274,8 +274,7 @@ void mainboard_config_superio(void)
 	sb := Create(ctx, "romstage.c")
 	defer sb.Close()
 	Add_SPDX(sb, C, GPL2_only)
-	sb.WriteString(`#include <stdint.h>
-#include <northbridge/intel/haswell/haswell.h>
+	sb.WriteString(`#include <northbridge/intel/haswell/haswell.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 
 void mainboard_config_rcba(void)

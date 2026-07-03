@@ -190,6 +190,14 @@ KBLRVP11 <intel/kblrvp11.md>
 mAL-10 <kontron/mal10.md>
 ```
 
+## LattePanda
+
+```{toctree}
+:maxdepth: 1
+
+Mu <lattepanda/mu.md>
+```
+
 ## Lenovo
 
 ```{toctree}

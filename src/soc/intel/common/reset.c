@@ -4,6 +4,7 @@
 #include <bootsplash.h>
 #include <cf9_reset.h>
 #include <console/console.h>
+#include <ec/google/chromeec/ec.h>
 #include <halt.h>
 #include <reset.h>
 
@@ -26,6 +27,13 @@ void do_board_reset(void)
 void do_low_battery_poweroff(void)
 {
 	platform_handle_emergency_low_battery();
+
+	/*
+	 * Disable lightbar for visual consistency between the built-in
+	 * display indicators and the external LED status.
+	 */
+	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
+		google_chromeec_lightbar_off();
 
 	poweroff();
 	halt();

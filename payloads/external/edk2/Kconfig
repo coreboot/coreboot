@@ -280,6 +280,23 @@ config EDK2_SECURE_BOOT_SUPPORT
 	  Select this option to enable UEFI SecureBoot support in edk2.
 	  UEFI SecureBoot will be disabled by default and can be enabled from the menu option.
 
+config EDK2_USE_LVGL_RENDERER
+	bool "Use the LVGL graphical setup renderer"
+	default y if !EDK2_SERIAL_SUPPORT
+	depends on EDK2_REPO_MRCHROMEBOX
+	help
+	  Render the firmware setup and boot menu with the LVGL-based
+	  graphical HII display engine (LvglDisplayEngineDxe) instead of the
+	  default text-mode renderer (DisplayEngineDxe). This produces a
+	  modern, graphical setup UI and enables absolute-pointer (touch/
+	  mouse) input.
+
+	  A working graphics framebuffer (GOP) is required; on a text-only
+	  console the setup UI will not be usable. This option is independent
+	  of the serial terminal, but leaving the serial terminal enabled
+	  will noticeably slow down menu rendering. Enabling it also pulls
+	  the LVGL library into the payload, increasing its size.
+
 config EDK2_GOP_DRIVER
 	bool "Add a GOP driver to the Tianocore build"
 	depends on INTEL_GMA_ADD_VBT && NO_GFX_INIT && !EDK2_REPO_OFFICIAL

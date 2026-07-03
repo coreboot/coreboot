@@ -763,6 +763,9 @@ static int fdt_unflatten_node(const void *blob, uint32_t start_offset,
 static int fdt_unflatten_map_entry(const void *blob, uint32_t offset,
 				   struct device_tree_reserve_map_entry **new)
 {
+	if (!fdt_range_valid(blob, offset, 2 * sizeof(uint64_t)))
+		return 0;
+
 	const uint64_t *ptr = (const uint64_t *)(((uint8_t *)blob) + offset);
 	const uint64_t start = be64toh(ptr[0]);
 	const uint64_t size = be64toh(ptr[1]);

@@ -318,4 +318,8 @@ config FMDFILE
 config RW_REGION_ONLY
 	default "%/apdp %/apdp_meta %/ramdump %/ramdump_meta" if QC_SKIP_SOC_DEBUG_FEATURES_IN_RECOVERY
 
+config PLATFORM_POST_RENDER_DELAY_SEC
+	int
+	default 8
+
 endif # BOARD_GOOGLE_BLUEY_COMMON

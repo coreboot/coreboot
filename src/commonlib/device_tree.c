@@ -867,6 +867,11 @@ struct device_tree *fdt_unflatten(const void *blob)
 
 	fdt_unflatten_node(blob, struct_offset, tree, &tree->root);
 
+	if (!tree->root) {
+		printk(BIOS_ERR, "FDT: blob has no root node\n");
+		return NULL;
+	}
+
 	return tree;
 }
 

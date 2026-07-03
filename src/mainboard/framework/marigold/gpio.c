@@ -33,8 +33,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C03, NONE, DEEP, NF1),				/* SML0CLK (TBT, has 2.2k pullup to 1.8V_PRIM) */
 	PAD_CFG_NF(GPP_C04, NONE, DEEP, NF1),				/* SML0DATA (TBT, has 2.2k pullup to 1.8V_PRIM) */
 	PAD_CFG_GPI(GPP_C05, NONE, DEEP),				/* GPP_C5_STRAP (eSPI strap) */
-	PAD_CFG_NF(GPP_C06, NONE, RSMRST, NF1),				/* SML1CLK (PD 1/2) */
-	PAD_CFG_NF(GPP_C07, NONE, RSMRST, NF1),				/* SML1DATA (PD 1/2) */
+	PAD_CFG_NF(GPP_C06, NONE, DEEP, NF1),				/* SML1CLK (PD 1/2) */
+	PAD_CFG_NF(GPP_C07, NONE, DEEP, NF1),				/* SML1DATA (PD 1/2) */
 	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF1),				/* SML1ALERT# */
 	PAD_CFG_NF(GPP_C09, NONE, DEEP, NF1),				/* SRCCLKREQ0# (SSD) */
 	PAD_NC(GPP_C10, NONE),

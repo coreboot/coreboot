@@ -176,6 +176,13 @@ static void trigger_critical_battery_shutdown(void)
 
 	platform_handle_emergency_low_battery();
 
+	/*
+	 * Disable lightbar for visual consistency between the built-in
+	 * display indicators and the external LED status.
+	 */
+	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
+		google_chromeec_lightbar_off();
+
 	google_chromeec_ap_poweroff();
 }
 

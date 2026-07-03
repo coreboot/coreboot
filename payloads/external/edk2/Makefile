@@ -305,7 +305,7 @@ $(EDK2_PATH): $(WORKSPACE)
 		else \
 			echo "    Working directory not clean; will not overwrite"; \
 		fi; \
-		git submodule update --init --checkout
+		git submodule update --init --checkout --recursive
 
 logo: $(EDK2_PATH)
 	case "$(CONFIG_EDK2_BOOTSPLASH_FILE)" in \

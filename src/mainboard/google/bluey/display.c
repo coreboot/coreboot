@@ -23,7 +23,7 @@
 #include "board.h"
 #include "display.h"
 
-#define BATTERY_CHARGING_SPLASH_TIMEOUT_MS 5000
+#define BATTERY_CHARGING_SPLASH_TIMEOUT_MS (CONFIG_PLATFORM_POST_RENDER_DELAY_SEC * 1000)
 static struct stopwatch splash_sw;
 
 /* Threshold for selecting lower-resolution assets */

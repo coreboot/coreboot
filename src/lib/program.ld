@@ -176,6 +176,12 @@ _bogus = ASSERT(_eprogram - CONFIG_HEAP_SIZE >= _heap,
 	"HEAP_SIZE and heap misaligned");
 #endif
 
+/* Error out when ramstage size exceeds stage cache size. */
+#if ENV_RAMSTAGE && CONFIG(TSEG_STAGE_CACHE)
+_bogus2 = ASSERT((_eprogram - _program) - CONFIG_HEAP_SIZE <= CONFIG_SMM_RESERVED_SIZE,
+	"ramstage won't fit into TSEG stage cache");
+#endif
+
 /* Discard the sections we don't need/want */
 
 zeroptr = 0;

@@ -23,6 +23,7 @@ ramstage-y += acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog.c
+ramstage-y += display_audio.c
 ramstage-y += ioe_pmc.c
 ramstage-y += elog.c
 ramstage-y += fsp_params.c

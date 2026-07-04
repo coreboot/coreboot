@@ -119,13 +119,15 @@ static bool fdt_string_valid(const void *blob, uint32_t offset)
 
 static int fdt_skip_nops(const void *blob, uint32_t offset)
 {
-	const uint32_t *ptr = (const uint32_t *)(((const uint8_t *)blob) + offset);
-
 	int index = 0;
 	while (fdt_range_valid(blob, (uint64_t)offset + (uint64_t)index * sizeof(uint32_t),
-			       sizeof(uint32_t)) &&
-	       be32toh(ptr[index]) == FDT_TOKEN_NOP)
+			       sizeof(uint32_t))) {
+		const uint32_t *ptr = (const uint32_t *)((const uint8_t *)blob
+				      + offset + index * sizeof(uint32_t));
+		if (be32toh(*ptr) != FDT_TOKEN_NOP)
+			break;
 		index++;
+	}
 
 	return index * sizeof(uint32_t);
 }

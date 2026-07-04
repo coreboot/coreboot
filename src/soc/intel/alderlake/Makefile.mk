@@ -19,6 +19,7 @@ romstage-y += pcie_rp.c
 ramstage-y += acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
+ramstage-y += display_audio.c
 ramstage-y += elog.c
 ramstage-y += finalize.c
 ramstage-y += fsp_params.c

@@ -124,6 +124,9 @@ config SKIP_CSE_RBP
 config DISABLE_HECI1_AT_PRE_BOOT
 	default y
 
+config SOC_HAS_MSR_VR_CURRENT_CONFIG
+	default n
+
 config MAX_HECI_DEVICES
 	int
 	default 3

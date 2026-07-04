@@ -218,12 +218,16 @@ void set_power_limits(u8 power_limit_1_time,
 
 	/* Set Pl4 */
 	if (conf->tdp_pl4) {
-		limit = rdmsr(MSR_VR_CURRENT_CONFIG);
-		limit.lo = 0;
-		printk(BIOS_INFO, "CPU PL4 = %u Watts\n", conf->tdp_pl4);
-		limit.lo |= (conf->tdp_pl4 * power_unit) &
-				PKG_POWER_LIMIT_MASK;
-		wrmsr(MSR_VR_CURRENT_CONFIG, limit);
+		if (!CONFIG(SOC_HAS_MSR_VR_CURRENT_CONFIG)) {
+			printk(BIOS_INFO, "Skipping PL4 MSR programming on this SoC\n");
+		} else {
+			printk(BIOS_INFO, "CPU PL4 = %u Watts\n", conf->tdp_pl4);
+			limit = rdmsr(MSR_VR_CURRENT_CONFIG);
+			limit.lo = 0;
+			limit.lo |= (conf->tdp_pl4 * power_unit) &
+					PKG_POWER_LIMIT_MASK;
+			wrmsr(MSR_VR_CURRENT_CONFIG, limit);
+		}
 	}
 
 	/* Set DDR RAPL power limit by copying from MMIO to MSR */

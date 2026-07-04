@@ -6,6 +6,14 @@ config SOC_INTEL_COMMON_BLOCK_POWER_LIMIT
 	help
 	  This option allows to configure processor power limit values.
 
+config SOC_HAS_MSR_VR_CURRENT_CONFIG
+	bool
+	default y
+	depends on SOC_INTEL_COMMON_BLOCK_POWER_LIMIT
+	help
+	  Select if the SoC supports programming PL4 through
+	  MSR_VR_CURRENT_CONFIG.
+
 config SOC_INTEL_RAPL_DISABLE_VIA_MCHBAR
 	bool
 	default n

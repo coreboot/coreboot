@@ -112,6 +112,9 @@
 #define LED_REDUCED		0x01
 #define LED_OFF			0x02
 
+/* Adapter auto power-on */
+#define ADAPTER_AUTO_POWER_ON_DEFAULT	CONFIG(SYSTEM_TYPE_MINIPC)
+
 uint16_t ec_get_version(void);
 
 #endif

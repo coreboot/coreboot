@@ -104,6 +104,12 @@ config EC_STARLABS_CHARGE_LED
 	help
 	  Select if the mainboard supports reducing the charge LED brightness
 
+config EC_STARLABS_ADAPTER_AUTO_POWER_ON
+	bool "Enable powering on when the adapter is connected"
+	default y
+	help
+	  Select if the EC should expose the adapter auto power-on setting.
+
 endif # EC_STARLABS_MERLIN
 
 endif # EC_STARLABS_MERLIN || EC_STARLABS_ITE || EC_STARLABS_NUVOTON

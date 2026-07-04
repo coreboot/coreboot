@@ -3,7 +3,7 @@
 #ifndef MAINBOARD_EC_H
 #define MAINBOARD_EC_H
 
-#include <ec/google/chromeec/ec_commands.h>
+#include <mainboard/framework/common/board_host_command.h>
 #include <soc/gpe.h>
 
 /*
@@ -64,5 +64,61 @@
  * Contains a couple of flags and up-to-date system information.
  */
 #define EC_FRAMEWORK_ACPI_SHARED_MEM_IO 0xF00
+
+/*
+ * CFR option controlling the fingerprint reader LED brightness.
+ *
+ * The stored value is an enum fp_led_brightness_level (see board_host_command.h),
+ * except for FP_LED_LEVEL_EC_DEFAULT which means "don't touch the EC and keep
+ * whatever level it has stored". Any other value is sent to the EC on every
+ * boot via EC_CMD_FP_LED_LEVEL_CONTROL.
+ */
+#define FP_LED_LEVEL_OPTION_NAME	"fp_led_level"
+#define FP_LED_LEVEL_EC_DEFAULT		0x100	/* out of uint8_t range on purpose */
+
+/*
+ * CFR options for the PS/2 touchpad emulation and EC standalone mode.
+ *
+ * Both are simple on/off toggles that are sent to the EC on every boot via
+ * EC_CMD_DISABLE_PS2_EMULATION and EC_CMD_STANDALONE_MODE respectively.
+ */
+#define PS2_EMULATION_OPTION_NAME	"ps2_emulation"
+#define STANDALONE_MODE_OPTION_NAME	"standalone_mode"
+
+/*
+ * CFR option controlling the maximum battery charge level.
+ *
+ * The stored value is the maximum charge percentage (50-100) to enforce via
+ * EC_CMD_CHARGE_LIMIT_CONTROL on every boot. A value of 100 disables the limit
+ * (charge to full). BATTERY_CHARGE_LIMIT_EC_DEFAULT (0) means "don't touch the
+ * EC and keep whatever limit it has stored", e.g. one set at runtime via
+ * framework_tool, so a reboot doesn't override the user's OS-side choice. 0 is
+ * used as the sentinel because it is not a meaningful charge limit.
+ */
+#define BATTERY_CHARGE_LIMIT_OPTION_NAME	"battery_charge_limit"
+#define BATTERY_CHARGE_LIMIT_EC_DEFAULT		0
+
+/*
+ * CFR option selecting the touchscreen stylus protocol on boards with a stylus
+ * protocol switch (Framework Laptop 12).
+ *
+ * The stored value is the level written to the EC's "stylus_sw_r" GPIO via
+ * EC_CMD_GPIO_SET on every boot: HIGH selects MPP, LOW selects USI.
+ */
+#define STYLUS_PROTOCOL_OPTION_NAME	"stylus_protocol"
+#define STYLUS_PROTOCOL_GPIO_NAME	"stylus_sw_r"
+#define STYLUS_PROTOCOL_USI		0	/* GPIO low */
+#define STYLUS_PROTOCOL_MPP		1	/* GPIO high */
+
+/*
+ * CFR option controlling the input deck (input module) power mode, sent to the
+ * EC via EC_CMD_CHECK_DECK_STATE on every boot. The stored value is the mode
+ * byte: AUTO requires all input modules to be correctly installed before
+ * enabling their power, while FORCE_ON/FORCE_OFF override that check.
+ */
+#define INPUT_DECK_MODE_OPTION_NAME	"input_deck_mode"
+#define INPUT_DECK_MODE_AUTO		0x01
+#define INPUT_DECK_MODE_FORCE_ON	0x02
+#define INPUT_DECK_MODE_FORCE_OFF	0x04
 
 #endif /* MAINBOARD_EC_H */

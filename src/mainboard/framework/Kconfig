@@ -21,4 +21,18 @@ config FRAMEWORK_COMMON_CFR
 	def_bool y
 	select DRIVERS_OPTION_CFR_ENABLED if PAYLOAD_EDK2 && SMMSTORE
 
+config FRAMEWORK_TOUCHSCREEN_STYLUS
+	bool
+	help
+	  Selected by boards that have a touchscreen stylus protocol switch GPIO
+	  (stylus_sw_r), i.e. the Framework Laptop 12. Exposes a CFR option to
+	  choose between the MPP and USI stylus protocols.
+
+config FRAMEWORK_INPUT_DECK
+	bool
+	default n
+	help
+	  Selected by boards that have detectable input deck, to enable the Input
+	  Deck Mode CFR option.
+
 endif # VENDOR_FRAMEWORK

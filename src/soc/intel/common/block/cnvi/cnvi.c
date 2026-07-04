@@ -6,6 +6,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <drivers/usb/acpi/chip.h>
 #include <intelblocks/cnvi.h>
 #include <soc/cnvi.h>
 #include <soc/pcr_ids.h>
@@ -489,6 +490,92 @@ static const struct pci_driver pch_cnvi_wifi __pci_driver = {
 static const char *cnvi_bt_acpi_name(const struct device *dev)
 {
 	return "CNVB";
+}
+
+/*
+ * _RST body for a CNVi Bluetooth reaching the host as a USB device: it has no
+ * PCI function and no reset GPIO, so reset it through the sideband PLDR,
+ * serialized against Wi-Fi via \_SB.PCI0.CNMT, and report the outcome in PRRS
+ * like the PCI CNVi Bluetooth _RST above.
+ */
+void acpi_device_intel_bt_pldr_reset(void)
+{
+	/* Local0 = Acquire(\_SB.PCI0.CNMT, 1000) */
+	acpigen_write_store();
+	acpigen_write_acquire("\\_SB.PCI0.CNMT", 1000);
+	acpigen_emit_byte(LOCAL0_OP);
+
+	acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
+	{
+		acpigen_write_store_int_to_namestr(0, "PRRS");
+
+acpigen_write_store();
+		acpigen_emit_namestring("\\_SB.PCI0.PCRR");
+		acpigen_write_integer(PID_CNVI);
+		acpigen_write_integer(CNVI_ABORT_PLDR);
+		acpigen_emit_byte(LOCAL0_OP);
+
+		acpigen_emit_byte(AND_OP);
+		acpigen_emit_byte(LOCAL0_OP);
+		acpigen_write_integer(CNVI_ABORT_REQUEST);
+		acpigen_emit_byte(LOCAL0_OP);
+
+		/* Only request a PLDR if none is already pending. */
+		acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
+		{
+			acpigen_emit_namestring("\\_SB.PCI0.PCRO");
+			acpigen_write_integer(PID_CNVI);
+			acpigen_write_integer(CNVI_ABORT_PLDR);
+			acpigen_write_integer(CNVI_ABORT_REQUEST | CNVI_ABORT_ENABLE);
+
+acpigen_emit_ext_op(SLEEP_OP);
+			acpigen_emit_namestring("RDLY");
+
+acpigen_write_store();
+			acpigen_emit_namestring("\\_SB.PCI0.PCRR");
+			acpigen_write_integer(PID_CNVI);
+			acpigen_write_integer(CNVI_ABORT_PLDR);
+			acpigen_emit_byte(LOCAL0_OP);
+
+			acpigen_emit_byte(AND_OP);
+			acpigen_emit_byte(LOCAL0_OP);
+			acpigen_write_integer(CNVI_ABORT_REQUEST);
+			acpigen_emit_byte(LOCAL1_OP);
+
+			acpigen_emit_byte(AND_OP);
+			acpigen_emit_byte(LOCAL0_OP);
+			acpigen_write_integer(CNVI_READY);
+			acpigen_emit_byte(LOCAL3_OP);
+
+			acpigen_write_if_lequal_op_int(LOCAL1_OP, 0);
+			{
+				acpigen_write_if_lequal_op_int(LOCAL3_OP, CNVI_READY);
+				{
+					acpigen_write_store_int_to_namestr(CNVI_PLDR_COMPLETE,
+									   "PRRS");
+				}
+				acpigen_write_else();
+				{
+					acpigen_write_store_int_to_namestr(CNVI_PLDR_TIMEOUT,
+									   "PRRS");
+				}
+				acpigen_pop_len();
+			}
+			acpigen_write_else();
+			{
+				acpigen_write_store_int_to_namestr(CNVI_PLDR_TIMEOUT, "PRRS");
+			}
+			acpigen_pop_len();
+		}
+		acpigen_write_else();
+		{
+			acpigen_write_store_int_to_namestr(CNVI_PLDR_NOT_COMPLETE, "PRRS");
+		}
+		acpigen_pop_len();
+
+		acpigen_write_release("\\_SB.PCI0.CNMT");
+	}
+	acpigen_pop_len();
 }
 
 static void cnvb_fill_ssdt(const struct device *dev)

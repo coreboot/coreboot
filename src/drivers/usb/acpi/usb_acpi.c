@@ -114,7 +114,8 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 	if (config->is_intel_bluetooth)
 		acpi_device_intel_bt(&config->enable_gpio,
 				     &config->reset_gpio,
-				     config->cnvi_bt_audio_offload);
+				     config->cnvi_bt_audio_offload,
+				     config->is_cnvi_bluetooth);
 
 	acpigen_pop_len();
 

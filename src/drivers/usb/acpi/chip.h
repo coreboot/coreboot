@@ -50,6 +50,9 @@ struct drivers_usb_acpi_config {
 	/* Intel Bluetooth */
 	bool is_intel_bluetooth;
 	bool cnvi_bt_audio_offload;
+	/* CNVi BT over USB: no PCI function or reset GPIO, so _RST uses the CNVi
+	   PLDR. Not for a discrete Intel USB BT on a CNVi-capable platform. */
+	bool is_cnvi_bluetooth;
 
 	/* GPIO used to take device out of reset or to put it into reset. */
 	struct acpi_gpio reset_gpio;
@@ -90,9 +93,20 @@ bool usb_acpi_get_pld(const struct device *usb_device, struct acpi_pld *pld);
 /* Intel Bluetooth */
 void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 			  const struct acpi_gpio *reset_gpio,
-			  bool audio_offload);
+			  bool audio_offload,
+			  bool cnvi_bluetooth);
 
 void acpi_device_intel_bt_common(const struct acpi_gpio *enable_gpio,
 				 const struct acpi_gpio *reset_gpio);
+
+/*
+ * Emit the body of a Bluetooth _RST method that resets an Intel CNVi
+ * Bluetooth reaching the host as a USB device (no PCI function, no reset
+ * GPIO) via a Platform-Level Device Reset (PLDR) over the P2SB sideband.
+ * The default is a no-op; SoCs with a CNVi block override it. Must be called
+ * within a _RST method, with the \_SB.PCI0.CNMT mutex present (emitted by
+ * acpi_device_intel_bt_common()).
+ */
+void acpi_device_intel_bt_pldr_reset(void);
 
 #endif /* __USB_ACPI_CHIP_H__ */

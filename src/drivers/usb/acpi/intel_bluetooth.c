@@ -42,10 +42,7 @@ static void set_reset_delay(void *arg)
 
 static void set_reset_method(void *arg)
 {
-	/*
-	 * coreboot only supports WDISABLE2 (GPIO). Linux sends type in Arg3[2].
-	 * Accept and return success - _RST already implements GPIO toggle.
-	 */
+	/* _RST does the reset itself (GPIO toggle or CNVi PLDR); accept. */
 	acpigen_write_return_singleton_buffer(0x01);
 }
 
@@ -64,8 +61,12 @@ void (*reset_unsupported[])(void *) = { not_supported };
 
 void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 			  const struct acpi_gpio *reset_gpio,
-			  bool audio_offload)
+			  bool audio_offload,
+			  bool cnvi_bluetooth)
 {
+	const bool cnvi_pldr = CONFIG(SOC_INTEL_COMMON_BLOCK_CNVI) &&
+		cnvi_bluetooth && !reset_gpio->pin_count;
+
 /*
  *	Name (_S0W, 2)
  */
@@ -75,6 +76,12 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
  *	Name (RDLY, 160)  // ms, matches Linux driver default
  */
 	acpigen_write_name_integer("RDLY", 160);
+
+/*
+ *	Name (PRRS, Zero)   // only when _RST performs a PLDR
+ */
+	if (cnvi_pldr)
+		acpigen_write_name_integer("PRRS", 0);
 
 /*
  *	Method (_DSM, 4, Serialized)
@@ -114,11 +121,15 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
  *	}
  */
 
+	/* btintel arms _PRR/_RST recovery only if the _DSM reports reset
+	   support, so advertise it whenever _RST resets: GPIO, or CNVi PLDR. */
+	const bool reset_available = reset_gpio->pin_count || cnvi_pldr;
+
 	struct dsm_uuid uuid_callbacks[] = {
 		DSM_UUID("aa10f4e0-81ac-4233-abf6-3b2ac50e28d9",
-			reset_gpio->pin_count ?
+			reset_available ?
 				reset_supported : reset_unsupported,
-			reset_gpio->pin_count ?
+			reset_available ?
 				ARRAY_SIZE(reset_supported) : ARRAY_SIZE(reset_unsupported),
 			NULL),
 	};
@@ -225,6 +236,11 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 				}
 				acpigen_pop_len();
 			}
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_CNVI)
+			/* The #if only avoids an unresolved symbol on non-CNVi boards. */
+			else if (cnvi_pldr)
+				acpi_device_intel_bt_pldr_reset();
+#endif
 		}
 		acpigen_pop_len();
 	}

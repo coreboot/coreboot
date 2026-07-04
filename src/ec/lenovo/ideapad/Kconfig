@@ -1,0 +1,11 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config EC_LENOVO_IDEAPAD
+	bool
+	select EC_ACPI
+	help
+	  ACPI support for the embedded controller interface used by Lenovo
+	  IdeaPad (and related MIIX) laptops. Provides the standard ACPI EC
+	  device, battery, AC adapter and lid objects, plus the Lenovo VPC
+	  (VPC2004) hotkey/feature device consumed by the ideapad-laptop
+	  Linux driver.

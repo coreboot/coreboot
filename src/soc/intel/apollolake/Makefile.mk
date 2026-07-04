@@ -52,6 +52,7 @@ ramstage-y += ahci.c
 ramstage-y += cpu.c
 ramstage-y += chip.c
 ramstage-y += cse.c
+ramstage-y += display_audio.c
 ramstage-y += elog.c
 ramstage-y += graphics.c
 ramstage-y += gspi.c

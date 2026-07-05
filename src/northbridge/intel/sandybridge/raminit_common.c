@@ -14,6 +14,8 @@
 #include "raminit_tables.h"
 #include "sandybridge.h"
 
+#define _DIV_32_ROUND_UP(n)	(((n) + 31) / 32)
+
 /* FIXME: no support for 3-channel chipsets */
 
 static void sfence(void)
@@ -1063,21 +1065,27 @@ struct run {
 	int length;
 };
 
-static struct run get_longest_zero_run(int *seq, int sz)
+static inline bool zero_run_get_bit(uint32_t *seq, size_t i)
 {
-	int i, ls;
-	int bl = 0, bs = 0;
+	return seq[i / 32] & BIT(i % 32);
+}
+
+static struct run get_longest_zero_run_bm(uint32_t *seq, size_t sz)
+{
+	size_t i, ls;
+	size_t bl = 0, bs = 0;
 	struct run ret;
 
 	ls = 0;
-	for (i = 0; i < 2 * sz; i++)
-		if (seq[i % sz]) {
+	for (i = 0; i < 2 * sz; i++) {
+		if (zero_run_get_bit(seq, i % sz)) {
 			if (i - ls > bl) {
 				bl = i - ls;
 				bs = ls;
 			}
 			ls = i + 1;
 		}
+	}
 	if (bl == 0) {
 		ret.middle = sz / 2;
 		ret.start  = 0;
@@ -1096,12 +1104,21 @@ static struct run get_longest_zero_run(int *seq, int sz)
 	return ret;
 }
 
+static void zero_run_bm_set(uint32_t *seq, const unsigned int off, const bool bit)
+{
+	uint32_t *dword = &seq[off / 32];
+	if (bit)
+		*dword |= BIT(off % 32);
+	else
+		*dword &= ~BIT(off % 32);
+}
+
 #define RCVEN_COARSE_PI_LENGTH	(2 * QCLK_PI)
 
 static void find_rcven_pi_coarse(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
 {
+	uint32_t statistics_bm[NUM_LANES][_DIV_32_ROUND_UP(RCVEN_COARSE_PI_LENGTH)] = {0};
 	int rcven;
-	int statistics[NUM_LANES][RCVEN_COARSE_PI_LENGTH];
 	int lane;
 
 	for (rcven = 0; rcven < RCVEN_COARSE_PI_LENGTH; rcven++) {
@@ -1113,12 +1130,13 @@ static void find_rcven_pi_coarse(ramctr_timing *ctrl, int channel, int slotrank,
 		test_rcven(ctrl, channel, slotrank);
 
 		FOR_ALL_LANES {
-			statistics[lane][rcven] =
-				!does_lane_work(ctrl, channel, slotrank, lane);
+			const bool failed = !does_lane_work(ctrl, channel, slotrank, lane);
+			zero_run_bm_set(statistics_bm[lane], rcven, failed);
 		}
 	}
 	FOR_ALL_LANES {
-		struct run rn = get_longest_zero_run(statistics[lane], RCVEN_COARSE_PI_LENGTH);
+		struct run rn = get_longest_zero_run_bm(statistics_bm[lane], RCVEN_COARSE_PI_LENGTH);
+
 		ctrl->timings[channel][slotrank].lanes[lane].rcven = rn.middle;
 		upperA[lane] = rn.end;
 		if (upperA[lane] < rn.middle)
@@ -1423,30 +1441,18 @@ static void test_tx_dq(ramctr_timing *ctrl, int channel, int slotrank)
 	iosav_run_once_and_wait(channel);
 }
 
-static void tx_dq_threshold_process(int *data, const int count)
-{
-	int min = data[0];
-	int max = min;
-	int i;
-	for (i = 1; i < count; i++) {
-		if (min > data[i])
-			min = data[i];
-
-		if (max < data[i])
-			max = data[i];
-	}
-	int threshold = min / 2 + max / 2;
-	for (i = 0; i < count; i++)
-		data[i] = data[i] > threshold;
-
-	printram("threshold=%d min=%d max=%d\n", threshold, min, max);
-}
-
 static int tx_dq_write_leveling(ramctr_timing *ctrl, int channel, int slotrank)
 {
-	int tx_dq;
-	int stats[NUM_LANES][MAX_TX_DQ + 1];
+	uint32_t stats_bm[NUM_LANES][_DIV_32_ROUND_UP(MAX_TX_DQ)] = {0};
+	uint16_t stat_min[NUM_LANES];
+	uint16_t stat_max[NUM_LANES];
 	int lane;
+	int tx_dq;
+
+	FOR_ALL_LANES {
+		stat_min[lane] = UINT16_MAX;
+		stat_max[lane] = 0;
+	}
 
 	wait_for_iosav(channel);
 
@@ -1461,12 +1467,14 @@ static int tx_dq_write_leveling(ramctr_timing *ctrl, int channel, int slotrank)
 		test_tx_dq(ctrl, channel, slotrank);
 
 		FOR_ALL_LANES {
-			stats[lane][tx_dq] = mchbar_read32(
-				IOSAV_By_ERROR_COUNT_ch(channel, lane));
+			uint16_t stat = mchbar_read32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
+			stat_min[lane] = MIN(stat_min[lane], stat);
+			stat_max[lane] = MAX(stat_max[lane], stat);
+			zero_run_bm_set(stats_bm[lane], tx_dq, stat);
 		}
 	}
 	FOR_ALL_LANES {
-		struct run rn = get_longest_zero_run(stats[lane], ARRAY_SIZE(stats[lane]));
+		struct run rn = get_longest_zero_run_bm(stats_bm[lane], MAX_TX_DQ + 1);
 
 		if (rn.all || rn.length < 8) {
 			printk(BIOS_EMERG, "tx_dq write leveling failed: %d, %d, %d\n",
@@ -1475,8 +1483,20 @@ static int tx_dq_write_leveling(ramctr_timing *ctrl, int channel, int slotrank)
 			 * With command training not being done yet, the lane can be erroneous.
 			 * Take the average as reference and try again to find a run.
 			 */
-			tx_dq_threshold_process(stats[lane], ARRAY_SIZE(stats[lane]));
-			rn = get_longest_zero_run(stats[lane], ARRAY_SIZE(stats[lane]));
+			const int threshold = stat_min[lane] / 2 + stat_max[lane] / 2;
+			printram("threshold=%d min=%d max=%d\n", threshold, stat_min[lane], stat_max[lane]);
+
+			for (tx_dq = 0; tx_dq <= MAX_TX_DQ; tx_dq++) {
+				ctrl->timings[channel][slotrank].lanes[lane].tx_dq = tx_dq;
+				program_timings(ctrl, channel);
+
+				test_tx_dq(ctrl, channel, slotrank);
+
+				zero_run_bm_set(stats_bm[lane], tx_dq, mchbar_read32(
+					IOSAV_By_ERROR_COUNT_ch(channel, lane)) > threshold);
+			}
+
+			rn = get_longest_zero_run_bm(stats_bm[lane], MAX_TX_DQ + 1);
 
 			if (rn.all || rn.length < 8) {
 				printk(BIOS_EMERG, "tx_dq recovery failed\n");
@@ -1554,8 +1574,8 @@ static void fill_pattern1(ramctr_timing *ctrl, int channel)
 
 static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 {
+	uint32_t statistics_bm[NUM_LANES][_DIV_32_ROUND_UP(TX_DQS_PI_LENGTH)] = {0};
 	int tx_dqs;
-	int statistics[NUM_LANES][TX_DQS_PI_LENGTH];
 	int lane;
 
 	const union gdcr_training_mod_reg training_mod = {
@@ -1585,14 +1605,19 @@ static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 
 		iosav_run_once_and_wait(channel);
 
-		FOR_ALL_LANES {
-			statistics[lane][tx_dqs] =  !((mchbar_read32(lane_base[lane] +
-				GDCRTRAININGRESULT(channel, (tx_dqs / 32) & 1)) >>
-				(tx_dqs % 32)) & 1);
+		if ((tx_dqs + 1) % QCLK_PI == 0) {
+			const size_t qclk = tx_dqs / QCLK_PI;
+
+			FOR_ALL_LANES {
+				statistics_bm[lane][2 * qclk + 0] = ~mchbar_read32(lane_base[lane] +
+					GDCRTRAININGRESULT(channel, 0));
+				statistics_bm[lane][2 * qclk + 1] = ~mchbar_read32(lane_base[lane] +
+					GDCRTRAININGRESULT(channel, 1));
+			}
 		}
 	}
 	FOR_ALL_LANES {
-		struct run rn = get_longest_zero_run(statistics[lane], TX_DQS_PI_LENGTH);
+		struct run rn = get_longest_zero_run_bm(statistics_bm[lane], TX_DQS_PI_LENGTH);
 		/*
 		 * tx_dq is a direct function of tx_dqs's 6 LSBs. Some tests increment the value
 		 * of tx_dqs by a small value, which might cause the 6-bit value to overflow if
@@ -1987,9 +2012,9 @@ static void reprogram_320c(ramctr_timing *ctrl)
 static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 {
 	struct ram_rank_timings saved_timings[NUM_CHANNELS][NUM_SLOTRANKS];
+	uint32_t stats_bm[NUM_SLOTRANKS][_DIV_32_ROUND_UP(CT_PI_LENGTH)] = {0};
 	int slotrank;
 	int command_pi;
-	int stat[NUM_SLOTRANKS][CT_PI_LENGTH];
 	int delta = 0;
 
 	printram("Trying cmd_stretch %d on channel %d\n", cmd_stretch, channel);
@@ -2027,12 +2052,12 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 		program_timings(ctrl, channel);
 		reprogram_320c(ctrl);
 		FOR_ALL_POPULATED_RANKS {
-			stat[slotrank][command_pi - CT_MIN_PI] =
-				test_command_training(ctrl, channel, slotrank);
+			zero_run_bm_set(stats_bm[slotrank], command_pi - CT_MIN_PI,
+					test_command_training(ctrl, channel, slotrank));
 		}
 	}
 	FOR_ALL_POPULATED_RANKS {
-		struct run rn = get_longest_zero_run(stat[slotrank], CT_PI_LENGTH - 1);
+		struct run rn = get_longest_zero_run_bm(stats_bm[slotrank], CT_PI_LENGTH - 1);
 
 		ctrl->timings[channel][slotrank].pi_coding = rn.middle + CT_MIN_PI;
 		printram("cmd_stretch: %d, %d: % 4d-% 4d-% 4d\n",
@@ -2106,8 +2131,8 @@ int command_training(ramctr_timing *ctrl)
 
 static int find_read_mpr_margin(ramctr_timing *ctrl, int channel, int slotrank, int *edges)
 {
+	uint32_t stats_bm[NUM_LANES][_DIV_32_ROUND_UP(MAX_EDGE_TIMING + 1)] = {0};
 	int dqs_pi;
-	int stats[NUM_LANES][MAX_EDGE_TIMING + 1];
 	int lane;
 
 	for (dqs_pi = 0; dqs_pi <= MAX_EDGE_TIMING; dqs_pi++) {
@@ -2130,13 +2155,13 @@ static int find_read_mpr_margin(ramctr_timing *ctrl, int channel, int slotrank, 
 		iosav_run_once_and_wait(channel);
 
 		FOR_ALL_LANES {
-			stats[lane][dqs_pi] = mchbar_read32(
-				IOSAV_By_ERROR_COUNT_ch(channel, lane));
+			zero_run_bm_set(stats_bm[lane], dqs_pi, mchbar_read32(
+				IOSAV_By_ERROR_COUNT_ch(channel, lane)));
 		}
 	}
 
 	FOR_ALL_LANES {
-		struct run rn = get_longest_zero_run(stats[lane], MAX_EDGE_TIMING + 1);
+		struct run rn = get_longest_zero_run_bm(stats_bm[lane], MAX_EDGE_TIMING + 1);
 		edges[lane] = rn.middle;
 
 		if (rn.all) {
@@ -2316,14 +2341,13 @@ static int find_agrsv_read_margin(ramctr_timing *ctrl, int channel, int slotrank
 			}
 
 			FOR_ALL_LANES {
-				int stats[MAX_EDGE_TIMING + 1];
+				uint32_t stats_bm[_DIV_32_ROUND_UP(MAX_EDGE_TIMING + 1)] = {0};
 				struct run rn;
 
 				for (read_pi = 0; read_pi <= MAX_EDGE_TIMING; read_pi++)
-					stats[read_pi] = !!(raw_stats[read_pi] & (1 << lane));
+					zero_run_bm_set(stats_bm, read_pi, raw_stats[read_pi] & BIT(lane));
 
-				rn = get_longest_zero_run(stats, MAX_EDGE_TIMING + 1);
-
+				rn = get_longest_zero_run_bm(stats_bm, MAX_EDGE_TIMING + 1);
 				printram("edges: %d, %d, %d: % 4d-% 4d-% 4d, "
 					 "% 4d-% 4d\n", channel, slotrank, i, rn.start,
 					 rn.middle, rn.end, rn.start + ctrl->edge_offset[i],
@@ -2446,11 +2470,11 @@ int aggressive_write_training(ramctr_timing *ctrl)
 			for (pat = 0; pat < NUM_PATTERNS; pat++) {
 				FOR_ALL_POPULATED_RANKS {
 					int tx_dq;
-					u32 raw_stats[MAX_TX_DQ + 1];
-					int stats[MAX_TX_DQ + 1];
+					uint32_t stats_bm[_DIV_32_ROUND_UP(MAX_TX_DQ + 1)] = {0};
+					u8 raw_stats[MAX_TX_DQ + 1] = {0};
 
 					/* Make sure rn.start < rn.end */
-					stats[MAX_TX_DQ] = 1;
+					zero_run_bm_set(stats_bm, MAX_TX_DQ, 1);
 
 					fill_pattern5(ctrl, channel, pat);
 
@@ -2468,12 +2492,10 @@ int aggressive_write_training(ramctr_timing *ctrl)
 					}
 					FOR_ALL_LANES {
 						struct run rn;
-						for (tx_dq = 0; tx_dq < MAX_TX_DQ; tx_dq++) {
-							stats[tx_dq] = !!(raw_stats[tx_dq]
-									& (1 << lane));
-						}
+						for (tx_dq = 0; tx_dq < MAX_TX_DQ; tx_dq++)
+							zero_run_bm_set(stats_bm, tx_dq, raw_stats[tx_dq] & BIT(lane));
 
-						rn = get_longest_zero_run(stats, MAX_TX_DQ + 1);
+						rn = get_longest_zero_run_bm(stats_bm, MAX_TX_DQ + 1);
 						if (rn.all) {
 							printk(BIOS_EMERG, "Aggressive "
 								"write training failed: "

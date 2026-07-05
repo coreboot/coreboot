@@ -76,16 +76,20 @@
 			ISWC=0 \
 			POD=1 \
 \
-			While (!PRBS || !RCOS || !RBS) { \
+			Local0 = 1000 \
+			While ((!PRBS || !RCOS || !RBS) && Local0) { \
 				Stall (100) \
+				Local0-- \
 			} \
 		} \
 		Method(_OFF, 0, Serialized) { \
 			ISWC=0 \
 			POD=0 \
 \
-			While (PRBS || RCOS || RBS) { \
+			Local0 = 1000 \
+			While ((PRBS || RCOS || RBS) && Local0) { \
 				Stall (100) \
+				Local0-- \
 			} \
 		} \
 		Method(_RST, 0, Serialized) { \
@@ -98,9 +102,11 @@
 			SRB=0 \
 			ISWC=0 \
 \
-			While (!PRBS || !RCOS || !RBS) { \
+			Local0 = 1000 \
+			While ((!PRBS || !RCOS || !RBS) && Local0) { \
 				Printf ("Waiting for device to complete reset") \
 				Stall (100) \
+				Local0-- \
 			} \
 		} \
 	} \

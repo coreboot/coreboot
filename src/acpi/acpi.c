@@ -876,6 +876,22 @@ static unsigned long acpi_write_dbg2_uart(acpi_rsdp_t *rsdp, unsigned long curre
 	address.addrl = (uint32_t)base;
 	address.addrh = (uint32_t)((base >> 32) & 0xffffffff);
 	address.access_size = access_size;
+	switch (access_size) {
+	case ACPI_ACCESS_SIZE_BYTE_ACCESS:
+		address.bit_width = 8;
+		break;
+	case ACPI_ACCESS_SIZE_WORD_ACCESS:
+		address.bit_width = 16;
+		break;
+	case ACPI_ACCESS_SIZE_DWORD_ACCESS:
+		address.bit_width = 32;
+		break;
+	case ACPI_ACCESS_SIZE_QWORD_ACCESS:
+		address.bit_width = 64;
+		break;
+	default:
+		break;
+	}
 
 	int subtype;
 	/* 16550-compatible with parameters defined in Generic Address Structure */

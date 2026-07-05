@@ -97,6 +97,12 @@ bool google_chromeec_has_fan(void);
 void google_chromeec_post(uint8_t postcode);
 uint8_t google_chromeec_get_switches(void);
 bool google_chromeec_get_ap_watchdog_flag(void);
+/*
+ * Check whether the EC is in manual recovery mode, i.e. the user held the
+ * recovery key while powering on. The flag stays set until the system shuts
+ * down.
+ */
+bool google_chromeec_in_manual_recovery(void);
 
 /* Temporary secure storage commands */
 int google_chromeec_vstore_supported(void);

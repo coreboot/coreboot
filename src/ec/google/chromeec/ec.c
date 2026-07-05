@@ -999,6 +999,16 @@ static bool google_chromeec_get_uptime_info(
 	return ec_cmd_get_uptime_info(PLAT_EC, resp) == 0;
 }
 
+bool google_chromeec_in_manual_recovery(void)
+{
+	struct ec_response_sysinfo resp;
+
+	if (ec_cmd_sysinfo(PLAT_EC, &resp) != 0)
+		return false;
+
+	return !!(resp.flags & SYSTEM_IN_MANUAL_RECOVERY);
+}
+
 bool google_chromeec_get_ap_watchdog_flag(void)
 {
 	int i;

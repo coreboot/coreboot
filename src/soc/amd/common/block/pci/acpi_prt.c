@@ -6,6 +6,7 @@
 #include <amdblocks/amd_pci_util.h>
 #include <arch/ioapic.h>
 #include <device/device.h>
+#include <device/pci_def.h>
 
 /* GNB IO-APIC is located after the FCH IO-APIC */
 #define FCH_IOAPIC_INTERRUPTS	24
@@ -203,9 +204,9 @@ static void acpigen_write_root_PRT_GSI(const struct pci_routing_info *routing_ta
 		 * The HOB's bridge_irq/map byte is not an OS-visible APIC GSI here.
 		 * Route the root port's own INTx through its GNB group/swizzle instead.
 		 */
-		acpigen_write_PRT_GSI_entry_devfn(routing_table[i].devfn,
-						  0, /* root port interrupt pin A */
-						  GNB_GSI_BASE + pci_calculate_irq(&routing_table[i], 0));
+		acpigen_write_PRT_GSI_entry(PCI_SLOT(routing_table[i].devfn),
+					    0, /* root port interrupt pin A */
+					    GNB_GSI_BASE + pci_calculate_irq(&routing_table[i], 0));
 	}
 	acpigen_pop_len(); /* Package - APIC Routing */
 }
@@ -237,10 +238,10 @@ static void acpigen_write_root_PRT_PIC(const struct pci_routing_info *routing_ta
 
 		irq = pci_calculate_irq(&routing_table[i], 0);
 		link_template[8] = 'A' + (irq % 8);
-		acpigen_write_PRT_source_entry_devfn(routing_table[i].devfn,
-						     0, /* root port interrupt pin A */
-						     link_template,
-						     0);
+		acpigen_write_PRT_source_entry(PCI_SLOT(routing_table[i].devfn),
+					       0, /* root port interrupt pin A */
+					       link_template,
+					       0);
 	}
 	acpigen_pop_len(); /* Package - PIC Routing */
 }

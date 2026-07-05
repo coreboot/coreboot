@@ -1,0 +1,93 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Attribution manifest for third-party software that can be part of a coreboot
+# image - whether compiled into it, borrowed from, or stitched in as a binary.
+# util/attribution/Makefile.mk selects which of these projects are actually
+# included in a build (based on the enabled Kconfig options) and
+# util/attribution/gen_attribution.sh renders the selected rows into the
+# 'attribution' CBFS file.
+#
+# One project per line, pipe-delimited:
+#   key | Project name | license (SPDX id where applicable) | upstream URL | copyright/notes | kind
+#
+# The license field is an SPDX identifier for open-source components; for
+# proprietary vendor blobs with no SPDX id it is free text (e.g. "Intel FSP
+# EULA (binary)").
+#
+# 'key' must match the key used in Makefile.mk. Lines starting with '#' and
+# blank lines are ignored. Do not use '|' inside a field.
+#
+# The optional 6th field 'kind' controls which section an entry renders under:
+#   (empty)  source compiled into the coreboot image (a library/component)
+#   binary   a standalone binary the build adds to the image but does NOT
+#            compile from coreboot source: payloads, vendor firmware blobs
+#            (FSP, ME, PSP, microcode) and separately-built programs (ATF, OpenSBI)
+#   used     code borrowed/derived from a larger project we don't otherwise
+#            bundle whole (rendered under its own heading)
+#
+# Full license texts live in the coreboot source tree under LICENSES/.
+
+coreboot|coreboot|GPL-2.0-only|https://coreboot.org|Copyright the coreboot project authors (see coreboot's AUTHORS file)
+
+agesa|AMD AGESA (Platform Initialization)|BSD-3-Clause|https://www.amd.com|Copyright Advanced Micro Devices, Inc.; AMD Generic Encapsulated Software Architecture (src/vendorcode/amd/pi)
+cavium_bdk|Cavium Board Development Kit (BDK)|BSD-3-Clause|https://github.com/MarvellEmbeddedProcessors|Copyright Cavium Inc. (now Marvell); ARM64 SoC init (src/vendorcode/cavium/bdk) and OCTEONTX-SDK-derived soc/cavium code
+edk2|TianoCore EDK II|BSD-2-Clause-Patent|https://github.com/tianocore/edk2|Copyright TianoCore contributors (Intel Corporation and others); UEFI/PI reference headers and code (src/vendorcode/intel/edk2)
+fonts|Google Sans Flex font glyphs|OFL-1.1|https://fonts.google.com/specimen/Google+Sans+Flex|Console font table generated from the Google Sans Flex TTF
+gnat|GNAT Ada runtime|GPL-3.0-or-later WITH GCC-exception-3.1|https://gcc.gnu.org|Copyright Free Software Foundation, Inc.; GNAT runtime support for coreboot's Ada code (libhwbase/libgfxinit)
+libgfxinit|libgfxinit|GPL-2.0-only|https://github.com/coreboot/libgfxinit|Copyright secunet Security Networks AG; Ada/SPARK Intel graphics init library (3rdparty/libgfxinit)
+libhwbase|libhwbase|GPL-2.0-only|https://github.com/coreboot/libhwbase|Copyright secunet Security Networks AG; Ada/SPARK hardware access base library (3rdparty/libhwbase)
+lz4|LZ4|BSD-2-Clause|https://lz4.org|Copyright 2011-2020 Yann Collet
+lzma|LZMA SDK (Igor Pavlov)|LGPL-2.1-or-later OR CPL-1.0|https://www.7-zip.org/sdk.html|Copyright 1999-2006 Igor Pavlov; reference implementation, static-linking exception
+mediatek_dram|MediaTek DRAM calibration|BSD-3-Clause|https://www.mediatek.com|Copyright MediaTek Inc.; DRAM controller init (src/vendorcode/mediatek)
+opensil|AMD openSIL|MIT|https://github.com/openSIL/openSIL|Copyright Advanced Micro Devices, Inc.; open Silicon Initialization Library (src/vendorcode/amd/opensil)
+tcg_storage|TCG Storage / Opal core (from EDK II)|BSD-2-Clause-Patent|https://github.com/tianocore/edk2|Copyright TianoCore contributors; TCG Opal storage unlock code (src/vendorcode/intel/tcg_storage_core)
+vboot|vboot_reference (Chromium OS verified boot)|BSD-3-Clause|https://chromium.googlesource.com/chromiumos/platform/vboot_reference|Copyright The ChromiumOS Authors
+wuffs|Wuffs|Apache-2.0 OR MIT|https://github.com/google/wuffs|Copyright the Wuffs authors (Google LLC)
+x86emu|x86emu / YABEL|BSD-3-Clause|https://gitlab.freedesktop.org/xorg/xserver|Copyright SciTech Software, Inc., David Mosberger-Tang and the XFree86 Project; x86 real-mode emulator for option ROM execution
+xxhash|xxHash|BSD-2-Clause|https://xxhash.com|Copyright 2012-2021 Yann Collet
+zstd|Zstandard (zstd)|BSD-3-Clause OR GPL-2.0-only|https://github.com/facebook/zstd|Copyright Meta Platforms, Inc. and affiliates; imported from the Linux kernel (lib/zstd) freestanding port
+
+# Standalone binaries the build stitches into the image but does not compile
+# from coreboot source: payloads, vendor firmware blobs and separately-built
+# programs (marked as 'binary').
+amd_fsp|AMD Firmware Support Package (FSP)|AMD FSP license (binary)|https://github.com/coreboot/amd_blobs|AMD proprietary FSP binary for AMD SoCs; redistributed under the AMD blobs license|binary
+amd_microcode|AMD CPU microcode|AMD microcode license (binary)|https://github.com/coreboot/amd_blobs|AMD proprietary binary microcode updates (added to CBFS by the build)|binary
+amd_psp|AMD Platform Security Processor (PSP) firmware|AMD PSP license (binary)|https://github.com/coreboot/amd_blobs|AMD proprietary PSP bootloader and firmware, stitched into the image by amdfwtool|binary
+arm_tf|ARM Trusted Firmware (TF-A)|BSD-3-Clause|https://www.trustedfirmware.org|Copyright Arm Limited and Contributors; BL31 built from source and added to CBFS as a separate program|binary
+intel_fsp|Intel Firmware Support Package (FSP)|Intel FSP EULA (binary)|https://github.com/intel/FSP|Intel proprietary binary; redistributed under the Intel FSP license|binary
+intel_me|Intel Management Engine (ME/CSME) firmware|Intel proprietary (binary)|https://www.intel.com|Intel proprietary ME/CSME firmware placed in the flash descriptor ME region|binary
+intel_microcode|Intel CPU microcode|Intel microcode license (binary)|https://github.com/intel/Intel-Linux-Processor-Microcode-Data-Files|Intel proprietary binary microcode updates (added to CBFS by the build)|binary
+intel_gbe|Intel Gigabit Ethernet (GbE) firmware|Intel proprietary (binary)|https://www.intel.com|Intel proprietary GbE firmware region added to the flash image|binary
+intel_acm|Intel TXT Authenticated Code Modules (ACM)|Intel proprietary (binary)|https://www.intel.com|Intel proprietary BIOS/SINIT ACMs for Trusted Execution Technology (src/security/intel/txt)|binary
+opensbi|RISC-V OpenSBI|BSD-2-Clause|https://github.com/riscv-software-src/opensbi|Copyright Western Digital Corporation and contributors; built from source and added to CBFS as a separate program|binary
+vga_bios|Video BIOS option ROM|proprietary (binary)|(vendor-supplied)|Proprietary VGA/video BIOS image added as a PCI option ROM (CONFIG_VGA_BIOS_FILE)|binary
+payload_bootboot|BOOTBOOT (payload)|MIT|https://gitlab.com/bztsrc/bootboot|Copyright bzt; boot protocol/loader used as the coreboot payload|binary
+payload_coredoom|coreDOOM (payload)|GPL-2.0-only|https://github.com/nic3-14159/coreDOOM|Copyright id Software and the doomgeneric/coreDOOM authors; DOOM used as a (secondary) payload|binary
+payload_coreinfo|coreinfo (payload)|GPL-2.0-only|https://coreboot.org|Copyright the coreboot project authors; libpayload-based system information payload|binary
+payload_depthcharge|depthcharge (payload)|GPL-2.0-or-later|https://chromium.googlesource.com/chromiumos/platform/depthcharge|Copyright The ChromiumOS Authors; ChromeOS bootloader used as the coreboot payload|binary
+payload_edk2|TianoCore edk2 UEFI payload|BSD-2-Clause-Patent|https://github.com/tianocore/edk2|Copyright TianoCore contributors; UEFI payload built from edk2|binary
+payload_edk2_mrchromebox|edk2 UEFI payload - MrChromebox fork|BSD-2-Clause-Patent|https://github.com/mrchromebox/edk2|MrChromebox's customized edk2 fork used to build the UEFI payload; based on TianoCore EDK II|binary
+payload_edk2_starlabs|edk2 UEFI payload - Star Labs fork|BSD-2-Clause-Patent|https://github.com/starlabsltd/edk2|Star Labs' edk2 fork (default source for the edk2 Universal Payload); based on TianoCore EDK II|binary
+# A custom edk2 repository (EDK2_REPO_CUSTOM) is credited dynamically by
+# Makefile.mk with the actual configured URL/revision; see the '--extra'
+# mechanism in gen_attribution.sh.
+payload_filo|FILO (payload)|GPL-2.0-only|https://github.com/coreboot/filo|Copyright the FILO project authors; simple bootloader used as the coreboot payload|binary
+payload_grub2|GNU GRUB 2 (payload)|GPL-3.0-or-later|https://www.gnu.org/software/grub/|Copyright Free Software Foundation, Inc.; GRUB used as the coreboot payload|binary
+payload_ipxe|iPXE (PXE ROM)|GPL-2.0-only|https://ipxe.org|Copyright Michael Brown and the iPXE project; network-boot firmware built and added as a PXE option ROM|binary
+payload_leanefi|leanefi (payload)|GPL-2.0-only|https://github.com/coreboot/leanefi|Minimal UEFI-interface payload|binary
+payload_linux|Linux kernel (payload)|GPL-2.0-only|https://www.kernel.org|Copyright Linus Torvalds and contributors; Linux kernel used directly as the coreboot payload|binary
+payload_linuxboot|LinuxBoot (payload)|GPL-2.0-only|https://www.linuxboot.org|Linux kernel plus a u-root/initramfs, used as the coreboot payload|binary
+payload_memtest|Memtest86+|GPL-2.0-only|https://www.memtest.org|Copyright the Memtest86+ authors; memory tester used as a (secondary) payload|binary
+payload_nvramcui|nvramcui (payload)|GPL-2.0-only|https://coreboot.org|Copyright the coreboot project authors; libpayload-based CMOS/NVRAM setup UI payload|binary
+payload_seabios|SeaBIOS (payload)|LGPL-3.0-or-later|https://www.seabios.org|Copyright Kevin O'Connor and contributors; legacy BIOS payload|binary
+payload_skiboot|skiboot / OPAL (payload)|Apache-2.0|https://github.com/open-power/skiboot|Copyright IBM Corp.; OpenPOWER OPAL firmware used as the coreboot payload|binary
+payload_tint|tint (TINT Is Not Tetris)|GPL-2.0-only|https://mirror.fsf.org/trisquel/pool/main/t/tint|Copyright Abraham van der Merwe; Tetris-like demo used as a (secondary) payload|binary
+payload_uboot|Das U-Boot (payload)|GPL-2.0-or-later|https://source.denx.de/u-boot/u-boot|Copyright Wolfgang Denk and contributors; U-Boot used as the coreboot payload|binary
+
+# coreboot has integrated individual files from these projects, but does not directly use the project (marked as 'used')
+chromeec|ChromiumOS Embedded Controller (EC)|BSD-3-Clause|https://chromium.googlesource.com/chromiumos/platform/ec|Copyright The ChromiumOS Authors; EC host-command protocol definitions copied from the ChromiumOS EC project|used
+depthcharge|depthcharge (ChromiumOS bootloader)|GPL-2.0-or-later|https://chromium.googlesource.com/chromiumos/platform/depthcharge|Copyright The ChromiumOS Authors; device-tree, linked-list and FIT code (src/commonlib/device_tree.c, list.c, src/lib/fit.c)|used
+etherboot|Etherboot|GPL-2.0-only|https://etherboot.org|Copyright David Greenman, Martin Renters and the Etherboot project; NE2000 network console driver (src/drivers/net/ne2k.c), with parts from the Linux 8390 driver|used
+linux|Linux kernel|GPL-2.0-only|https://www.kernel.org|Copyright Linus Torvalds and contributors; coreboot carries code derived from Linux (console printk/vtxprintf, x86 MTRR, memmove, KASAN, EHCI defs, ARM MMIO, the ASPEED AST display driver, etc.)|used
+uboot|Das U-Boot|GPL-2.0-or-later|https://source.denx.de/u-boot/u-boot|Copyright Wolfgang Denk and contributors; RTC date/time helpers (src/lib/rtc.c) and various ARM SoC init ports derived from U-Boot|used
+ubsan|Sortix libc UBSan runtime|ISC|https://sortix.org|Copyright 2014-2015 Jonas 'Sortie' Termansen|used

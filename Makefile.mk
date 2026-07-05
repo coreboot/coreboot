@@ -146,6 +146,7 @@ endif
 subdirs-y += src/security
 subdirs-y += payloads payloads/external
 subdirs-$(CONFIG_SBOM) += src/sbom
+subdirs-$(CONFIG_INCLUDE_ATTRIBUTION_FILE) += util/attribution
 subdirs-y += util/checklist util/testing
 
 #######################################################################

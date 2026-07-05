@@ -138,7 +138,7 @@ static void merlin_restore_options(void *unused)
 
 	ec_write(ECRAM_FN_LOCK_STATE,
 		 get_ec_value_from_option(
-			 "fn_lock_state", UNLOCKED, fn_lock_state, ARRAY_SIZE(fn_lock_state)));
+			 "fn_lock_state", LOCKED, fn_lock_state, ARRAY_SIZE(fn_lock_state)));
 
 	/*
 	 * Trackpad State
@@ -196,14 +196,14 @@ static void merlin_restore_options(void *unused)
 	 * Setting:	charging_speed
 	 *
 	 * Values:	1.0C, 0.5C, 0.2C
-	 * Default:	0.5C
+	 * Default:	1.0C
 	 *
 	 */
 	const uint8_t charging_speed[] = {SPEED_1_0C, SPEED_0_5C, SPEED_0_2C};
 
 	if (CONFIG(EC_STARLABS_CHARGING_SPEED))
 		ec_write(ECRAM_CHARGING_SPEED,
-			 get_ec_value_from_option("charging_speed", SPEED_0_5C, charging_speed,
+			 get_ec_value_from_option("charging_speed", SPEED_1_0C, charging_speed,
 						  ARRAY_SIZE(charging_speed)));
 
 	/*

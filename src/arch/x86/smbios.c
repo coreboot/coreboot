@@ -107,6 +107,7 @@ static size_t get_number_of_caches(size_t max_logical_cpus_sharing_cache)
 int smbios_write_type4(unsigned long *current, int handle)
 {
 	unsigned int cpu_voltage;
+	unsigned int processor_family;
 	struct cpuid_result res;
 	uint16_t characteristics = 0;
 	static unsigned int cnt = 0;
@@ -129,7 +130,14 @@ int smbios_write_type4(unsigned long *current, int handle)
 	t->processor_id[1] = res.edx;
 	t->processor_manufacturer = smbios_cpu_vendor(t->eos);
 	t->processor_version = smbios_processor_name(t->eos);
-	t->processor_family = smbios_processor_family(res);
+	processor_family = smbios_processor_family(res);
+	if (processor_family >= SMBIOS_PROCESSOR_FAMILY_FROM_FAMILY2) {
+		t->processor_family = SMBIOS_PROCESSOR_FAMILY_FROM_FAMILY2;
+		t->processor_family2 = processor_family;
+	} else {
+		t->processor_family = processor_family;
+		t->processor_family2 = processor_family;
+	}
 	t->processor_type = SMBIOS_PROCESSOR_TYPE_CENTRAL;
 	/*
 	 * If CPUID leaf 11 is available, calculate "core count" by dividing

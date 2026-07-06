@@ -24,7 +24,6 @@ struct edid_context {
 	int claims_one_point_three;
 	int claims_one_point_four;
 	int nonconformant_digital_display;
-	int nonconformant_extension;
 	int did_detailed_timing;
 	int has_name_descriptor;
 	int has_range_descriptor;
@@ -1689,9 +1688,20 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	 * by v1.3 and we are unlikely to use any EDID 2.0 panels, we ignore
 	 * that case now and can fix it when we need to use a real 2.0 panel.
 	 */
-	for (i = 128; i + 128 <= size; i += 128)
-		c.nonconformant_extension +=
-				parse_extension(out, &edid[i], &c);
+	for (i = 128; i + 128 <= size; i += 128) {
+		struct edid saved_out = *out;
+		struct edid_context saved_c = c;
+
+		int err = parse_extension(out, &edid[i], &c);
+
+		if (err || !c.has_valid_checksum) {
+			printk(BIOS_WARNING,
+			       "EDID extension block %d failed validation. Ignoring it.\n",
+			       i / 128);
+			*out = saved_out;
+			c = saved_c;
+		}
+	}
 
 	if (c.claims_one_point_four) {
 		if (c.nonconformant_digital_display ||
@@ -1778,8 +1788,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 				"\tHas descriptor blocks other than detailed timings\n");
 	}
 
-	if (c.nonconformant_extension ||
-	    !c.has_valid_checksum ||
+	if (!c.has_valid_checksum ||
 	    !c.has_valid_cvt ||
 	    !c.has_valid_year ||
 	    !c.has_valid_week ||
@@ -1790,10 +1799,6 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	    !c.manufacturer_name_well_formed) {
 		c.conformant = EDID_NOT_CONFORMANT;
 		printk(BIOS_ERR, "EDID block does not conform at all!\n");
-		if (c.nonconformant_extension)
-			printk(BIOS_ERR,
-				"\tHas %d nonconformant extension block(s)\n",
-			       c.nonconformant_extension);
 		if (!c.has_valid_checksum)
 			printk(BIOS_ERR, "\tBlock has broken checksum\n");
 		if (!c.has_valid_cvt)

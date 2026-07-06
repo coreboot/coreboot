@@ -146,6 +146,31 @@ static void wifi_dsm_unii4_control_enable(void *args)
 }
 
 /*
+ * Function 8: Device for Indoor Use Only
+ * Indoor control bits, per country or region.
+ *
+ * Bit 0 - EU - U-NII-1/5.2 GHz
+ * Bit 1 - Japan - U-NII-1/5.2 GHz
+ * Bit 2 - China Mainland - U-NII-1/5.2 GHz
+ * Bit 3 - USA - U-NII-4/5.9 GHz
+ * Bit 4 - WW - U-NII-1/5.2 GHz (any country, except where U-NII-1 is not allowed)
+ * Bit 5 - Canada - U-NII-4/5.9 GHz
+ * Bit 6 - Indoor devices exclusively sold for use in US and Canada:
+ *         enable indoor use in USA/Canada in U-NII-4 Active mode
+ *         (ignores the other U-NII-4 bits of this function for USA/Canada)
+ * 0 - No override; use device settings
+ * 1 - Enable for indoors only
+ *
+ * Bits 31:7 - Reserved (shall be set to zeroes)
+ */
+static void wifi_dsm_device_for_indoor_use(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->indoor_use_only);
+}
+
+/*
  * Function 9: Selectively Wi-Fi Bands
  * Ability to force disable selectively Wi-Fi bands per platform.
  *
@@ -372,7 +397,7 @@ static void (*wifi_dsm_callbacks[])(void *) = {
 	wifi_dsm_uart_configurations,		/* Function 5 */
 	wifi_dsm_ukrane_russia_11ax_enable,	/* Function 6 */
 	wifi_dsm_unii4_control_enable,		/* Function 7 */
-	NULL,					/* Function 8 */
+	wifi_dsm_device_for_indoor_use,		/* Function 8 */
 	wifi_dsm_disable_wifi_bands,		/* Function 9 */
 	wifi_dsm_energy_detection_threshold,	/* Function 10 */
 	wifi_dsm_rfi_mitigation,		/* Function 11 */

@@ -18,6 +18,7 @@
 #define UNSUPPORTED 0
 
 #define UNINITIALIZED ((uint64_t)-1)
+#define CPUID_FEATURES_7_HLE_RTM_MASK		(BIT(4) | BIT(11))
 
 struct core_info {
 	/* Core max boost frequency */
@@ -195,6 +196,13 @@ static void ap_stash_core_info(void)
 	core_info->max_frequency = get_max_boost_frequency();
 }
 
+static void clear_unsupported_hle_rtm(void)
+{
+	msr_t msr = rdmsr(CPU_ID_FEATURES_7_MSR);
+	msr.lo &= ~CPUID_FEATURES_7_HLE_RTM_MASK;
+	wrmsr(CPU_ID_FEATURES_7_MSR, msr);
+}
+
 void amd_cpu_init(struct device *dev)
 {
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_MCA_COMMON))
@@ -204,6 +212,9 @@ void amd_cpu_init(struct device *dev)
 
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_UCODE))
 		amd_apply_microcode_patch();
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_CLEAR_HLE_RTM))
+		clear_unsupported_hle_rtm();
 
 	if (CONFIG(SOC_FILL_CPU_CACHE_INFO))
 		ap_stash_core_info();

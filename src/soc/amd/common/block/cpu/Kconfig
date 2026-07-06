@@ -136,6 +136,12 @@ config SOC_AMD_COMMON_BLOCK_UCODE
 	help
 	  Builds in support for loading uCode.
 
+config SOC_AMD_COMMON_BLOCK_CLEAR_HLE_RTM
+	bool
+	help
+	  Clear unsupported HLE and RTM bits from the CPUID feature override
+	  after loading microcode.
+
 config SOC_AMD_COMMON_BLOCK_ENABLE_CACHE_ON_RESUME
 	bool
 	help

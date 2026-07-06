@@ -123,7 +123,27 @@ chip soc/intel/alderlake
 						register "desc"			= ""USB 2.0 Hub""
 						register "type"			= "UPC_TYPE_HUB"
 						register "group"		= "ACPI_PLD_GROUP(0, 2)"
-						device ref usb2_port3 on end
+						device ref usb2_port3 on
+							chip drivers/usb/hub
+								register "name"		= ""GL850G""
+								register "desc"		= ""USB 2.0 Hub""
+								register "port_count"	= "4"
+								device usb 0.0 on
+									chip drivers/usb/acpi
+										register "desc"		= ""Detachable Keyboard""
+										register "type"		= "UPC_TYPE_INTERNAL"
+										register "group"	= "ACPI_PLD_GROUP(0, 2)"
+										device usb 2.0 on end
+									end
+									chip drivers/usb/acpi
+										register "desc"		= ""Card Reader""
+										register "type"		= "UPC_TYPE_INTERNAL"
+										register "group"	= "ACPI_PLD_GROUP(0, 6)"
+										device usb 2.1 alias hub_card_reader on end
+									end
+								end
+							end
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc"			= ""Card Reader""

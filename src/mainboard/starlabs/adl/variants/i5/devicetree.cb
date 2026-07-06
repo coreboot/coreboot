@@ -203,7 +203,6 @@ chip soc/intel/alderlake
 		device ref i2c2		on				# Touchscreen
 			chip drivers/i2c/hid
 				register "generic.hid"			= ""GXTP7386""
-				register "generic.cid"			= ""GXTP7386""
 				register "generic.desc"			= ""Touchscreen""
 				register "generic.irq"			= "ACPI_IRQ_LEVEL_LOW(GPP_F18_IRQ)"
 				register "generic.reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F17)"

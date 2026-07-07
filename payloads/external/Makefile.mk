@@ -197,6 +197,7 @@ EDK2_CAPSULE_ARGS = \
 
 $(obj)/UEFIPAYLOAD.fd: $(DOTCONFIG) $(IPXE_EFI)
 	$(MAKE) -C payloads/external/edk2 UefiPayloadPkg \
+		EDK2_UEFIPAYLOAD_OUT="$(abspath $(obj))/UEFIPAYLOAD.fd" \
 		HOSTCC="$(HOSTCC)" \
 		CC="$(HOSTCC)" \
 		CONFIG_EDK2_REPOSITORY=$(CONFIG_EDK2_REPOSITORY) \
@@ -257,6 +258,7 @@ $(obj)/UEFIPAYLOAD.fd: $(DOTCONFIG) $(IPXE_EFI)
 
 $(obj)/ShimmedUniversalPayload.elf: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/edk2 UniversalPayload \
+		EDK2_UNIVERSAL_PAYLOAD_OUT="$(abspath $(obj))/ShimmedUniversalPayload.elf" \
 		HOSTCC="$(HOSTCC)" \
 		CC="$(HOSTCC)" \
 		CONFIG_EDK2_REPOSITORY=$(CONFIG_EDK2_REPOSITORY) \

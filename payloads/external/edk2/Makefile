@@ -35,6 +35,8 @@ export PACKAGES_PATH := $(EDK2_PATH)
 endif
 
 OBJCOPY = $(GCC_PREFIX)objcopy
+EDK2_UEFIPAYLOAD_OUT ?= ../../../build/UEFIPAYLOAD.fd
+EDK2_UNIVERSAL_PAYLOAD_OUT ?= ../../../build/ShimmedUniversalPayload.elf
 
 ifeq ($(CONFIG_EDK2_UEFIPAYLOAD),y)
 BUILD_STR += -p UefiPayloadPkg/UefiPayloadPkg.dsc
@@ -424,12 +426,14 @@ $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/IA32/UefiPayloadPkg/Shim
 			-y $(WORKSPACE)/Build/UefiPayloadPkgX64/ShimLayer.txt
 
 UefiPayloadPkg: $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/FV/UEFIPAYLOAD.fd
+	mkdir -p $(dir $(EDK2_UEFIPAYLOAD_OUT))
 	mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/FV/UEFIPAYLOAD.fd \
-		../../../build/UEFIPAYLOAD.fd
+		$(EDK2_UEFIPAYLOAD_OUT)
 
 UniversalPayload: $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/IA32/UefiPayloadPkg/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll
+	mkdir -p $(dir $(EDK2_UNIVERSAL_PAYLOAD_OUT))
 	mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/IA32/UefiPayloadPkg/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll \
-		../../../build/ShimmedUniversalPayload.elf
+		$(EDK2_UNIVERSAL_PAYLOAD_OUT)
 
 clean:
 	test -d $(WORKSPACE) && (cd $(WORKSPACE); rm -rf Build; rm -f Conf/tools_def.txt Conf/CapsuleFmpPkcs7Pcd.inc) || exit 0

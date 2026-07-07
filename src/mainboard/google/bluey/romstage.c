@@ -331,6 +331,16 @@ void platform_romstage_main(void)
 
 	chipset_dload_mode_active = qclib_check_dload_mode();
 
+	if (chipset_dload_mode_active) {
+		if (CONFIG(MAINBOARD_RAMDUMP_LED_NOTIFICATION)) {
+			if (google_chromeec_lightbar_sequence(
+				CONFIG_MAINBOARD_LIGHTBAR_CMD_SEQ_RAMDUMP))
+				printk(BIOS_ERR,
+					"Failed to send LED/lightbar(0x%x) command to EC.\n",
+					CONFIG_MAINBOARD_LIGHTBAR_CMD_SEQ_RAMDUMP);
+		}
+	}
+
 	mainboard_setup_peripherals_early();
 
 	if (!chipset_dload_mode_active)

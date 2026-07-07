@@ -57,6 +57,7 @@ config BOARD_GOOGLE_MODEL_QUARTZ
 	select MAINBOARD_HAS_CHROME_EC
 	select MAINBOARD_HAS_FINGERPRINT_VIA_USB
 	select MAINBOARD_HAS_GOOGLE_TPM
+	select MAINBOARD_RAMDUMP_LED_NOTIFICATION
 	select SPI_FREQ_75MHZ
 
 config BOARD_GOOGLE_QUENBI
@@ -89,6 +90,7 @@ config BOARD_GOOGLE_MODEL_MICA
 	select MAINBOARD_HAS_FINGERPRINT_VIA_USB
 	select MAINBOARD_HAS_GOOGLE_TPM
 	select MAINBOARD_LCD_FAIL_DETECT
+	select MAINBOARD_RAMDUMP_LED_NOTIFICATION
 	select SPI_FREQ_100MHZ
 
 config BOARD_GOOGLE_MICA
@@ -310,6 +312,23 @@ config MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_POWER
 	  The GPIO pin number used to enable/disable power to the
 	  touchscreen controller. This varies by board revision.
 	  Set to 0x0 if power is hardwired.
+
+config MAINBOARD_RAMDUMP_LED_NOTIFICATION
+	bool
+	default n
+	depends on QC_RAMDUMP_ENABLE
+	help
+	  Triggers a specific hardware LED pattern or color via the Embedded
+	  Controller (EC) when a ramdump is initiated. This provides
+	  a visual notification to the user that the system is capturing
+	  memory diagnostics (aka Ramdump) and should not be powered off.
+
+config MAINBOARD_LIGHTBAR_CMD_SEQ_RAMDUMP
+	int
+	default 55
+	depends on MAINBOARD_RAMDUMP_LED_NOTIFICATION
+	help
+	  The lightbar command sequence for triggering ramdump lightbar pattern.
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nogsc.fmd" if BOARD_GOOGLE_MODEL_BLUEY

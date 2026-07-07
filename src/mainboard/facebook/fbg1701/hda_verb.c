@@ -2,12 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10EC0298,	/* Codec Vendor - Device ID: Realtek ALC298 */
-	0x152D1165,	/* Subsystem ID Quanta */
-	0x0000000E,	/* Number of jacks */
-
+static const u32 realtek_alc298_verbs[] = {
 	/* HDA Codec Subsystem ID Verb Table */
 	AZALIA_SUBVENDOR(0, 0x152D1165),
 
@@ -61,5 +56,16 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[0] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC298",
+		.vendor_id    = 0x10EC0298,
+		.subsystem_id = 0x152D1165,	/* Quanta */
+		.address      = 0,
+		.verbs        = realtek_alc298_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc298_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

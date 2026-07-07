@@ -67,7 +67,7 @@ static bool ux_inform_user_of_operation(const char *name, enum ux_locale_msg id,
 	const struct soc_intel_pantherlake_config *config = config_of_soc();
 	timestamp_add_now(TS_ESOL_START);
 
-	if (!CONFIG(CHROMEOS_ENABLE_ESOL)) {
+	if (!CONFIG(ENABLE_ESOL)) {
 		timestamp_add_now(TS_ESOL_END);
 		return false;
 	}

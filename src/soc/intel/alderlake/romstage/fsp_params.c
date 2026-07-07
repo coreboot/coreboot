@@ -522,7 +522,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		}
 	}
 
-	if (CONFIG(CHROMEOS_ENABLE_ESOL))
+	if (CONFIG(ENABLE_ESOL))
 		fill_fspm_sign_of_life(m_cfg, arch_upd);
 
 	config = config_of_soc();

@@ -12,7 +12,7 @@ static bool ux_inform_user_of_operation(const char *name, enum ux_locale_msg id)
 {
 	timestamp_add_now(TS_ESOL_START);
 
-	if (!CONFIG(CHROMEOS_ENABLE_ESOL) || !early_graphics_init()) {
+	if (!CONFIG(ENABLE_ESOL) || !early_graphics_init()) {
 		timestamp_add_now(TS_ESOL_END);
 		return false;
 	}

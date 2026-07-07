@@ -804,6 +804,11 @@ bool fdt_is_valid(const void *blob)
 		       version, last_comp_version);
 		return false;
 	}
+	if (version < FDT_SUPPORTED_VERSION) {
+		printk(BIOS_ERR, "FDT version %u is too old, only version %u and above are supported\n",
+		       version, FDT_SUPPORTED_VERSION);
+		return false;
+	}
 	if (version > FDT_SUPPORTED_VERSION)
 		printk(BIOS_NOTICE, "FDT version %u too new, should add support!\n",
 		       version);

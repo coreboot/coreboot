@@ -23,62 +23,16 @@ static int range_check(void *start, size_t size)
 	return 0;
 }
 
-static uint32_t smmstorev1_exec(uint8_t command, void *param)
-{
-	uint32_t ret = SMMSTORE_RET_FAILURE;
-
-	switch (command) {
-	case SMMSTORE_CMD_READ: {
-		printk(BIOS_DEBUG, "Reading from SMM store\n");
-		struct smmstore_params_read *params = param;
-
-		if (range_check(params, sizeof(*params)) != 0)
-			break;
-
-		if (range_check(params->buf, params->bufsize) != 0)
-			break;
-
-		if (smmstore_read_region(params->buf, &params->bufsize) == 0)
-			ret = SMMSTORE_RET_SUCCESS;
-		break;
-	}
-
-	case SMMSTORE_CMD_APPEND: {
-		printk(BIOS_DEBUG, "Appending into SMM store\n");
-		struct smmstore_params_append *params = param;
-
-		if (range_check(params, sizeof(*params)) != 0)
-			break;
-		if (range_check(params->key, params->keysize) != 0)
-			break;
-		if (range_check(params->val, params->valsize) != 0)
-			break;
-
-		if (smmstore_append_data(params->key, params->keysize,
-					 params->val, params->valsize) == 0)
-			ret = SMMSTORE_RET_SUCCESS;
-		break;
-	}
-
-	case SMMSTORE_CMD_CLEAR: {
-		if (smmstore_clear_region() == 0)
-			ret = SMMSTORE_RET_SUCCESS;
-		break;
-	}
-	default:
-		printk(BIOS_DEBUG,
-		       "Unknown SMM store v1 command: 0x%02x\n", command);
-		ret = SMMSTORE_RET_UNSUPPORTED;
-		break;
-	}
-
-	return ret;
-}
-
-static uint32_t smmstorev2_exec(uint8_t command, void *param)
+uint32_t smmstore_exec(uint8_t command, void *param)
 {
 	uint32_t ret = SMMSTORE_RET_FAILURE;
 	static bool initialized = false;
+
+	if (smmstore_preprocess_cmd(&command, param))
+		return SMMSTORE_RET_SUCCESS;
+
+	if (!param)
+		return SMMSTORE_RET_FAILURE;
 
 	if (!initialized) {
 		uintptr_t base;
@@ -127,25 +81,10 @@ static uint32_t smmstorev2_exec(uint8_t command, void *param)
 		break;
 	}
 	default:
-		printk(BIOS_DEBUG,
-			"Unknown SMM store v2 command: 0x%02x\n", command);
+		printk(BIOS_DEBUG, "Unknown SMM store command: 0x%02x\n", command);
 		ret = SMMSTORE_RET_UNSUPPORTED;
 		break;
 	}
 
 	return ret;
-}
-
-uint32_t smmstore_exec(uint8_t command, void *param)
-{
-	if (smmstore_preprocess_cmd(&command, param))
-		return SMMSTORE_RET_SUCCESS;
-
-	if (command != SMMSTORE_CMD_CLEAR && !param)
-		return SMMSTORE_RET_FAILURE;
-
-	if (CONFIG(SMMSTORE_V2))
-		return smmstorev2_exec(command, param);
-	else
-		return smmstorev1_exec(command, param);
 }

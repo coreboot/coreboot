@@ -10,12 +10,6 @@
 #define SMMSTORE_RET_FAILURE 1
 #define SMMSTORE_RET_UNSUPPORTED 2
 
-/* Version 1 */
-#define SMMSTORE_CMD_CLEAR 1
-#define SMMSTORE_CMD_READ 2
-#define SMMSTORE_CMD_APPEND 3
-
-/* Version 2 */
 #define SMMSTORE_CMD_INIT_DEPRECATED 4
 #define SMMSTORE_CMD_RAW_READ 5
 #define SMMSTORE_CMD_RAW_WRITE 6
@@ -31,24 +25,10 @@
  */
 #define SMMSTORE_CMD_USE_FULL_FLASH 0x80
 
-/* Version 1 */
-struct smmstore_params_read {
-	void *buf;
-	ssize_t bufsize;
-};
-
-struct smmstore_params_append {
-	void *key;
-	size_t keysize;
-	void *val;
-	size_t valsize;
-};
-
-/* Version 2 */
 /*
- * The Version 2 protocol separates the SMMSTORE into 64KiB blocks, each
- * of which can be read/written/cleared in an independent manner. The
- * data format isn't specified. See documentation page for more details.
+ * The SMMSTORE protocol separates the store into 64KiB blocks, each of
+ * which can be read/written/cleared in an independent manner. The data
+ * format isn't specified. See documentation page for more details.
  */
 
 #define SMM_BLOCK_SIZE (64 * KiB)
@@ -112,12 +92,6 @@ struct smmstore_params_raw_clear {
 /* SMM handler */
 uint32_t smmstore_exec(uint8_t command, void *param);
 
-/* Implementation of Version 1 */
-int smmstore_read_region(void *buf, ssize_t *bufsize);
-int smmstore_append_data(void *key, uint32_t key_sz, void *value, uint32_t value_sz);
-int smmstore_clear_region(void);
-
-/* Implementation of Version 2 */
 int smmstore_init(void *buf, size_t len);
 int smmstore_rawread_region(uint32_t block_id, uint32_t offset, uint32_t bufsize);
 int smmstore_rawwrite_region(uint32_t block_id, uint32_t offset, uint32_t bufsize);
@@ -130,7 +104,7 @@ int smmstore_lookup_region(struct region_device *rstore);
 /* Returns 0 if normal parsing should continue, 1 otherwise */
 int smmstore_preprocess_cmd(uint8_t *cmd, void *param);
 
-/* Advertise SMMSTORE v2 support */
+/* Advertise SMMSTORE support */
 struct lb_header;
 void lb_smmstorev2(struct lb_header *header);
 

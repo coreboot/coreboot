@@ -553,8 +553,8 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 
 	add_cbmem_pointers(head);
 
-	/* SMMSTORE v2 */
-	if (CONFIG(SMMSTORE_V2))
+	/* SMMSTORE */
+	if (CONFIG(SMMSTORE))
 		lb_smmstorev2(head);
 
 	/* Add information about firmware in form suitable for EFI updates. */

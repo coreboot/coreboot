@@ -352,7 +352,7 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
 	if (CONFIG(SMM_PCI_RESOURCE_STORE))
 		smm_pci_resource_store_init(mod_params);
 
-	if (CONFIG(SMMSTORE_V2)) {
+	if (CONFIG(SMMSTORE)) {
 		struct smmstore_params_info info;
 		if (smmstore_get_info(&info) < 0) {
 			printk(BIOS_INFO, "SMMSTORE: Failed to get meta data\n");

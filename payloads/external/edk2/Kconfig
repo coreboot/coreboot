@@ -274,8 +274,8 @@ config EDK2_SERIAL_SUPPORT
 
 config EDK2_SECURE_BOOT_SUPPORT
 	bool "Enable UEFI Secure Boot support"
-	depends on !EDK2_REPO_OFFICIAL && SMMSTORE_V2
-	default y if EDK2_REPO_MRCHROMEBOX && SMMSTORE_V2
+	depends on !EDK2_REPO_OFFICIAL && SMMSTORE
+	default y if EDK2_REPO_MRCHROMEBOX && SMMSTORE
 	help
 	  Select this option to enable UEFI SecureBoot support in edk2.
 	  UEFI SecureBoot will be disabled by default and can be enabled from the menu option.

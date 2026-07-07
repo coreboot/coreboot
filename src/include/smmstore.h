@@ -26,12 +26,12 @@
 #define SMMSTORE_CMD_USE_FULL_FLASH 0x80
 
 /*
- * The SMMSTORE protocol separates the store into 64KiB blocks, each of
- * which can be read/written/cleared in an independent manner. The data
- * format isn't specified. See documentation page for more details.
+ * The SMMSTORE protocol separates the store into blocks, each of which
+ * can be read/written/cleared in an independent manner. The data format
+ * isn't specified. See documentation page for more details.
  */
 
-#define SMM_BLOCK_SIZE (64 * KiB)
+#define SMM_BLOCK_SIZE CONFIG_SMMSTORE_BLOCK_SIZE
 
 /*
  * Sets the communication buffer to use for read and write operations.

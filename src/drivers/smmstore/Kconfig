@@ -22,4 +22,11 @@ config SMMSTORE_SIZE
 	  garbage collection is implemented it is better to set this to
 	  a rather large value.
 
+config SMMSTORE_BLOCK_SIZE
+	int
+	default 65536
+	help
+	  Sets the logical block size used by the SMMSTORE protocol. This is
+	  an internal SoC or board policy value, not a user-visible option.
+
 endif

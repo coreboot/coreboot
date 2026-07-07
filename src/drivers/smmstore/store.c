@@ -12,12 +12,16 @@
 
 #define SMMSTORE_REGION "SMMSTORE"
 
+#define SMMSTORE_MIN_SIZE (64 * KiB)
 
 _Static_assert(IS_ALIGNED(FMAP_SECTION_SMMSTORE_START, SMM_BLOCK_SIZE),
-	       "SMMSTORE FMAP region not aligned to 64K");
+	       "SMMSTORE FMAP region not aligned to block size");
 
-_Static_assert(SMM_BLOCK_SIZE <= FMAP_SECTION_SMMSTORE_SIZE,
-	       "SMMSTORE FMAP region must be at least 64K");
+_Static_assert(FMAP_SECTION_SMMSTORE_SIZE >= SMMSTORE_MIN_SIZE,
+	       "SMMSTORE FMAP region must be at least 64 KiB");
+
+_Static_assert(FMAP_SECTION_SMMSTORE_SIZE >= SMM_BLOCK_SIZE,
+	       "SMMSTORE FMAP region must fit at least one logical block");
 
 static int smmstore_use_full_flash;
 static int has_capsules = -1;

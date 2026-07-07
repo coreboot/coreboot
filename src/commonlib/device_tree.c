@@ -789,6 +789,11 @@ static int fdt_unflatten_map_entry(const void *blob, uint32_t offset,
 
 bool fdt_is_valid(const void *blob)
 {
+	if ((uintptr_t)blob % 8 != 0) {
+		printk(BIOS_ERR, "FDT blob is not 8-byte aligned!\n");
+		return false;
+	}
+
 	const struct fdt_header *header = (const struct fdt_header *)blob;
 
 	uint32_t magic = be32toh(header->magic);

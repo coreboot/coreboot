@@ -100,13 +100,21 @@ static size_t read_reg_prop(struct fdt_property *prop, u32 addr_cells, u32 size_
  * Functions for picking apart flattened trees.
  */
 
+static bool fdt_range_valid(const void *blob, uint64_t offset, uint64_t len)
+{
+	uint32_t totalsize = be32toh(((const struct fdt_header *)blob)->totalsize);
+
+	return offset <= totalsize && len <= (uint64_t)totalsize - offset;
+}
 
 static int fdt_skip_nops(const void *blob, uint32_t offset)
 {
-	uint32_t *ptr = (uint32_t *)(((uint8_t *)blob) + offset);
+	const uint32_t *ptr = (const uint32_t *)(((const uint8_t *)blob) + offset);
 
 	int index = 0;
-	while (be32toh(ptr[index]) == FDT_TOKEN_NOP)
+	while (fdt_range_valid(blob, (uint64_t)offset + (uint64_t)index * sizeof(uint32_t),
+			       sizeof(uint32_t)) &&
+	       be32toh(ptr[index]) == FDT_TOKEN_NOP)
 		index++;
 
 	return index * sizeof(uint32_t);

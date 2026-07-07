@@ -2,6 +2,7 @@
 
 #include <gpio.h>
 #include "gpio.h"
+#include "board_config.h"
 
 /*
  * As a rule of thumb, GPIO pins used by coreboot should be initialized at
@@ -41,10 +42,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_17, USB_OC1_L, PULL_NONE),
 	/* PCIE_WLAN_WAKE_L */
 	PAD_SCI(GPIO_18, PULL_UP, EDGE_LOW),
-	/* I2C3_SCL */
-	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
-	/* I2C3_SDA */
-	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
 	/* KBRST_L */
 	PAD_NF(GPIO_21, KBRST_L, PULL_NONE),
 	/* ESPI_ALERT_L */
@@ -126,10 +123,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* SPI2_DAT3 */
 	PAD_NF(GPIO_107, SPI2_DAT3, PULL_NONE),
 	/* GPIO_108 - GPIO_112: Not available */
-	/* I2C2_SCL */
-	PAD_NF(GPIO_113, I2C2_SCL, PULL_NONE),
-	/* I2C2_SDA */
-	PAD_NF(GPIO_114, I2C2_SDA, PULL_NONE),
 	/* CLK_REQ1_L */
 	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
 	/* CLK_REQ2_L */
@@ -142,29 +135,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* CLK_REQ4_L */
 	PAD_NF(GPIO_132, CLK_REQ4_L, PULL_UP),
 	/* GPIO_133 - GPIO_134: Not available */
-#if CONFIG(UART_0_1_2_3_TWO_WIRE)
-	/* UART3_TXD */
-	PAD_NF(GPIO_135, UART3_TXD, PULL_NONE),
-	/* UART3_RXD */
-	PAD_NF(GPIO_137, UART3_RXD, PULL_NONE),
-	/* UART1_TXD */
-	PAD_NF(GPIO_140, UART1_TXD, PULL_NONE),
-	/* UART1_RXD */
-	PAD_NF(GPIO_142, UART1_RXD, PULL_NONE),
-#else
-	/* UART2_CTS_L */
-	PAD_NF(GPIO_135, UART2_CTS_L, PULL_NONE),
-	/* UART2_RTS_L */
-	PAD_NF(GPIO_137, UART2_RTS_L, PULL_NONE),
-	/* UART0_CTS_L */
-	PAD_NF(GPIO_140, UART0_CTS_L, PULL_NONE),
-	/* UART0_RTS_L */
-	PAD_NF(GPIO_142, UART0_RTS_L, PULL_NONE),
-#endif
-    /* UART2_RXD */
-	PAD_NF(GPIO_136, UART2_RXD, PULL_NONE),
-	/* UART2_TXD */
-	PAD_NF(GPIO_138, UART2_TXD, PULL_NONE),
 	/* UART0_RXD */
 	PAD_NF(GPIO_141, UART0_RXD, PULL_NONE),
 	/* UART0_TXD */
@@ -173,6 +143,10 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_SCI(GPIO_139, PULL_UP, EDGE_LOW),
 	/* SFP_IOEXP_INT0_L */
 	PAD_GPI(GPIO_144, PULL_UP),
+	/* GPIO_149 - GPIO_152: Not available */
+};
+
+static const struct soc_amd_gpio gpio_i2c[] = {
 	/* I2C0 SCL */
 	PAD_NF(GPIO_145, I2C0_SCL, PULL_NONE),
 	/* I2C0 SDA */
@@ -181,7 +155,57 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_147, I2C1_SCL, PULL_NONE),
 	/* I2C1 SDA */
 	PAD_NF(GPIO_148, I2C1_SDA, PULL_NONE),
-	/* GPIO_149 - GPIO_152: Not available */
+	/* I2C2_SCL */
+	PAD_NF(GPIO_113, I2C2_SCL, PULL_NONE),
+	/* I2C2_SDA */
+	PAD_NF(GPIO_114, I2C2_SDA, PULL_NONE),
+	/* I2C3_SCL */
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
+	/* I2C3_SDA */
+	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
+};
+
+static const struct soc_amd_gpio gpio_i3c[] = {
+	/* I3C0 SCL */
+	PAD_NF(GPIO_145, I3C0_SCL, PULL_NONE),
+	/* I3C0 SDA */
+	PAD_NF(GPIO_146, I3C0_SDA, PULL_NONE),
+	/* I3C1 SCL */
+	PAD_NF(GPIO_147, I3C1_SCL, PULL_NONE),
+	/* I3C1 SDA */
+	PAD_NF(GPIO_148, I3C1_SDA, PULL_NONE),
+	/* I3C2_SCL */
+	PAD_NF(GPIO_113, I3C2_SCL, PULL_NONE),
+	/* I3C2_SDA */
+	PAD_NF(GPIO_114, I3C2_SDA, PULL_NONE),
+	/* I3C3_SCL */
+	PAD_NF(GPIO_19, I3C3_SCL, PULL_NONE),
+	/* I3C3_SDA */
+	PAD_NF(GPIO_20, I3C3_SDA, PULL_NONE),
+};
+
+static const struct soc_amd_gpio gpio_uart1[] = {
+	/* UART1_TXD */
+	PAD_NF(GPIO_140, UART1_TXD, PULL_NONE),
+	/* UART1_RXD */
+	PAD_NF(GPIO_142, UART1_RXD, PULL_NONE),
+};
+
+static const struct soc_amd_gpio gpio_uart2[] = {
+	/* UART2_RXD */
+	PAD_NF(GPIO_136, UART2_RXD, PULL_NONE),
+	/* UART2_TXD */
+	PAD_NF(GPIO_138, UART2_TXD, PULL_NONE),
+};
+
+static const struct soc_amd_gpio gpio_uart3[] = {
+	/* UART3_TXD */
+	PAD_NF(GPIO_135, UART3_TXD, PULL_NONE),
+	/* UART3_RXD */
+	PAD_NF(GPIO_137, UART3_RXD, PULL_NONE),
+};
+
+static const struct soc_amd_gpio gpio_uart4[] = {
 	/* UART4_CTS_L */
 	PAD_NF(GPIO_153, UART4_CTS_L, PULL_NONE),
 	/* UART4_RTS_L */
@@ -194,7 +218,54 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_157, PULL_NONE),
 };
 
+static const struct soc_amd_gpio gpio_uart0_uart2_rtscts[] = {
+	/* UART2_CTS_L */
+	PAD_NF(GPIO_135, UART2_CTS_L, PULL_NONE),
+	/* UART2_RTS_L */
+	PAD_NF(GPIO_137, UART2_RTS_L, PULL_NONE),
+	/* UART0_CTS_L */
+	PAD_NF(GPIO_140, UART0_CTS_L, PULL_NONE),
+	/* UART0_RTS_L */
+	PAD_NF(GPIO_142, UART0_RTS_L, PULL_NONE),
+};
+
+static const struct soc_amd_gpio gpio_xgbe_led[] = {
+	/* xGBE LED0- Port 0 */
+	PAD_NF(GPIO_136, XGBE_LED0, PULL_NONE),
+	/* xGBE LED1- Port 0 */
+	PAD_NF(GPIO_138, XGBE_LED1, PULL_NONE),
+	/* xGBE LED2 - Port 0 */
+	PAD_NF(GPIO_139, XGBE_LED2, PULL_NONE),
+	/* xGBE LED3- Port 0 */
+	PAD_NF(GPIO_153, XGBE_LED3, PULL_NONE),
+	/* xGBE LED4- Port 1 */
+	PAD_NF(GPIO_154, XGBE_LED4, PULL_NONE),
+	/* xGBE LED5- Port 1 */
+	PAD_NF(GPIO_155, XGBE_LED5, PULL_NONE),
+	/* xGBE LED6- Port 1 */
+	PAD_NF(GPIO_156, XGBE_LED6, PULL_NONE),
+	/* xGBE LED7- Port 1 */
+	PAD_NF(GPIO_157, XGBE_LED7, PULL_NONE),
+};
+
 void mainboard_program_gpios(void)
 {
 	gpio_configure_pads(gpio_set_stage_ram, ARRAY_SIZE(gpio_set_stage_ram));
+
+	if (mb_cfg_xgbe_leds())
+		gpio_configure_pads(gpio_xgbe_led, ARRAY_SIZE(gpio_xgbe_led));
+	if (!mb_cfg_uart1_disabled())
+		gpio_configure_pads(gpio_uart1, ARRAY_SIZE(gpio_uart1));
+	if (!mb_cfg_uart2_disabled())
+		gpio_configure_pads(gpio_uart2, ARRAY_SIZE(gpio_uart2));
+	if (!mb_cfg_uart3_disabled())
+		gpio_configure_pads(gpio_uart3, ARRAY_SIZE(gpio_uart3));
+	if (!mb_cfg_uart4_disabled())
+		gpio_configure_pads(gpio_uart4, ARRAY_SIZE(gpio_uart4));
+	if (mb_cfg_uart024_4_wire())
+		gpio_configure_pads(gpio_uart0_uart2_rtscts, ARRAY_SIZE(gpio_uart0_uart2_rtscts));
+	if (mb_cfg_i2c_enabled())
+		gpio_configure_pads(gpio_i2c, ARRAY_SIZE(gpio_i2c));
+	else
+		gpio_configure_pads(gpio_i3c, ARRAY_SIZE(gpio_i3c));
 }

@@ -28,8 +28,10 @@ static const struct {
 } ux_locale_msg_list[] = {
 	[UX_LOCALE_MSG_MEMORY_TRAINING] = {
 		"memory_training_desc",
-		"Your device is finishing an update. This may take 1-2 minutes.\n"
-		"Please do not turn off your device."
+		CONFIG(CHROMEOS) ?
+			"Your device is finishing an update. This may take 1-2 minutes.\n"
+			"Please do not turn off your device." :
+			"Please wait for RAM to be initialized..."
 	},
 	[UX_LOCALE_MSG_LOW_BATTERY] = {
 		"low_battery_desc",

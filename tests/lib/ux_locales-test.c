@@ -130,8 +130,10 @@ static void test_ux_locales_bad_cbfs(void **state)
 	will_return(_cbfs_alloc, false);
 	will_return_maybe(vb2api_get_locale_id, 0);
 	assert_string_equal(ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING),
-		 "Your device is finishing an update. This may take 1-2 minutes.\n"
-		 "Please do not turn off your device.");
+		 CONFIG(CHROMEOS) ?
+			 "Your device is finishing an update. This may take 1-2 minutes.\n"
+			 "Please do not turn off your device." :
+			 "Please wait for RAM to be initialized...");
 }
 
 static void test_ux_locales_bad_version(void **state)
@@ -139,8 +141,10 @@ static void test_ux_locales_bad_version(void **state)
 	will_return(_cbfs_alloc, true);
 	will_return(vb2api_get_locale_id, 0);
 	assert_string_equal(ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING),
-		 "Your device is finishing an update. This may take 1-2 minutes.\n"
-		 "Please do not turn off your device.");
+		 CONFIG(CHROMEOS) ?
+			 "Your device is finishing an update. This may take 1-2 minutes.\n"
+			 "Please do not turn off your device." :
+			 "Please wait for RAM to be initialized...");
 }
 
 static void test_ux_locales_two_calls(void **state)

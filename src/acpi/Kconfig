@@ -144,5 +144,6 @@ config ACPI_HEST_ERROR_LOG_BUFFER_SIZE
 config ACPI_BDAT
 	bool
 	depends on HAVE_ACPI_TABLES
+	depends on PLATFORM_USES_FSP2_0
 	help
 	  Selected by platforms that support and implement BIOS Data ACPI Table (BDAT).

@@ -11,6 +11,7 @@
 #include <fsp/util.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/acpi_bdat.h>
+#include <rtc.h>
 #include <string.h>
 
 /*
@@ -31,6 +32,25 @@ static const uint8_t intel_fsp_bdat_schema_list_hob_guid[16] = {
 #define MAX_HOB_COUNT			256
 
 static const uint8_t bdat_header_sign[] = {'B', 'D', 'A', 'T', 'H', 'E', 'A', 'D'};
+
+static void fill_schema_list_timestamp(struct bdat_schema_list_structure *schemas)
+{
+#if CONFIG(RTC)
+	struct rtc_time time = {0};
+
+	if (rtc_get(&time) != 0 || rtc_invalid(&time)) {
+		printk(BIOS_DEBUG, "BDAT: RTC time unavailable; leaving schema timestamp empty\n");
+		return;
+	}
+
+	schemas->year = time.year;
+	schemas->month = time.mon;
+	schemas->day = time.mday;
+	schemas->hour = time.hour;
+	schemas->minute = time.min;
+	schemas->second = time.sec;
+#endif
+}
 
 static void dump_guid_extension_hobs(void)
 {
@@ -205,6 +225,7 @@ enum cb_err acpi_soc_get_bdat_region(void **region)
 	bdat_header->secondary_rev = BDAT_SECONDARY_VERSION;
 	/* Initialize the schema list. */
 	bdat->schemas.schema_list_length = schema_count;
+	fill_schema_list_timestamp(&bdat->schemas);
 
 	/* Copy the RMT data from each schema location */
 	for (int index = 0; index < schema_count; index++) {

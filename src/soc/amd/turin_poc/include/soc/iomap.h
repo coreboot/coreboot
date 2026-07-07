@@ -12,8 +12,6 @@
 
 #define SPI_BASE_ADDRESS		0xfec10000
 
-#define FCH_WATCHDOG_BASE		0xfeb00000
-
 /* FCH AL2AHB Registers */
 #define ALINK_AHB_ADDRESS		0xfedc0000
 

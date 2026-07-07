@@ -15,4 +15,8 @@
 #define IOMMU_RESERVED_MMIO_BASE		0xfd00000000
 #define IOMMU_RESERVED_MMIO_SIZE		(4ULL * GiB)
 
+/* FCH watchdog window, enabled through watchdogtmren in FCH::PM::DECODEEN */
+#define FCH_WATCHDOG_BASE	0xfeb00000
+#define FCH_WATCHDOG_SIZE	16
+
 #endif /* AMD_BLOCK_IOMAP_H */

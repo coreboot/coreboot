@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>
+#include <assert.h>
 #include <pc80/i8259.h>
 #include <console/console.h>
 #include <stdint.h>
@@ -46,6 +47,9 @@ void pic_irq_enable(u8 int_num, u8 mask)
 
 void setup_i8259(void)
 {
+	if (CONFIG(NO_PCAT_8259))
+		dead_code();
+
 	/* A write to ICW1 starts the Interrupt Controller Initialization
 	 * Sequence. This implicitly causes the following to happen:
 	 *   - Interrupt Mask register is cleared
@@ -99,6 +103,9 @@ void setup_i8259(void)
  */
 void i8259_configure_irq_trigger(int int_num, int is_level_triggered)
 {
+	if (CONFIG(NO_PCAT_8259))
+		dead_code();
+
 	u16 int_bits = inb(ELCR1) | (((u16)inb(ELCR2)) << 8);
 
 	if (is_level_triggered)

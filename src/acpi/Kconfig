@@ -22,8 +22,16 @@ config ACPI_FNKEY_GEN_SCANCODE
 	  pressed. A value of 0 is ignored, which is the default since most
 	  keyboards do not emit a scancode for the Fn key.
 
+config NO_PCAT_8259
+	bool
+	help
+	  Select this on platforms that do not expose a PC/AT 8259 PIC pair.
+
+	  Platforms without a legacy PIC should also avoid routing the PIC
+	  ExtINT output through the IOAPIC/LAPIC virtual-wire path.
+
 config ACPI_HAVE_PCAT_8259
-	def_bool y if !ACPI_NO_PCAT_8259
+	def_bool y if !NO_PCAT_8259
 
 config ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	def_bool n
@@ -64,11 +72,6 @@ config ACPI_COMMON_MADT_IOAPIC
 config ACPI_COMMON_MADT_GICC_V3
 	bool
 	depends on ARCH_ARM64
-
-config ACPI_NO_PCAT_8259
-	bool
-	help
-	  Selected by platforms that don't expose a PC/AT 8259 PIC pair.
 
 config ACPI_EINJ
 	def_bool n

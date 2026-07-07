@@ -225,7 +225,9 @@ void setup_ioapic(uintptr_t ioapic_base, u8 ioapic_id)
 {
 	set_ioapic_id(ioapic_base, ioapic_id);
 	clear_vectors(ioapic_base, 0, ioapic_get_max_vectors(ioapic_base) - 1);
-	route_i8259_irq0(ioapic_base);
+
+	if (!CONFIG(NO_PCAT_8259))
+		route_i8259_irq0(ioapic_base);
 }
 
 void register_new_ioapic_gsi0(uintptr_t ioapic_base)

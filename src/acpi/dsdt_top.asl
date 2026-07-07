@@ -12,8 +12,12 @@ External (\_SB.NAPE, MethodObj)
 /* Operating system enumeration. */
 Name (OSYS, 0)
 
-/* 0 => PIC mode, 1 => APIC Mode */
+/* 0 => PIC mode, 1 => APIC mode */
+#if CONFIG(ACPI_HAVE_PCAT_8259)
 Name (PICM, 0)
+#else
+Name (PICM, 1)
+#endif
 
 /* Power state (AC = 1) */
 Name (PWRS, 1)

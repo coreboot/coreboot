@@ -80,11 +80,11 @@ void setup_lapic_interrupts(void)
 	   be able to clear LVT register mask bits. */
 	lapic_update32(LAPIC_SPIV, ~LAPIC_VECTOR_MASK, LAPIC_SPIV_ENABLE | 0xF);
 
-	/* Put the local APIC in virtual wire mode */
 	uint32_t mask = LAPIC_LVT_MASKED | LAPIC_LVT_LEVEL_TRIGGER | LAPIC_INPUT_POLARITY |
 			LAPIC_DELIVERY_MODE_MASK;
 
-	if (boot_cpu())
+	/* Put the local APIC in virtual wire mode when using the legacy PIC. */
+	if (boot_cpu() && !CONFIG(NO_PCAT_8259))
 		lapic_update32(LAPIC_LVT0, ~mask, LAPIC_DELIVERY_MODE_EXTINT);
 	else
 		lapic_update32(LAPIC_LVT0, ~mask, LAPIC_LVT_MASKED |

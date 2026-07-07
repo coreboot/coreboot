@@ -226,7 +226,8 @@ void write_pci_cfg_irqs(void)
 		pci_write_config8(dev, PCI_INTERRUPT_LINE, int_line);
 
 		/* Set IRQ to level triggered since used by a PCI device */
-		i8259_configure_irq_trigger(int_line, IRQ_LEVEL_TRIGGERED);
+		if (!CONFIG(NO_PCAT_8259))
+			i8259_configure_irq_trigger(int_line, IRQ_LEVEL_TRIGGERED);
 
 		/*
 		 * Step 5: Print out debug info and move on to next device

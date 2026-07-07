@@ -611,7 +611,8 @@ void print_iobp(struct pci_dev *sb, volatile uint8_t *rcba);
 int print_gpios(struct pci_dev *sb, int show_all, int show_diffs);
 const struct gpio_community *const *get_gpio_communities(struct pci_dev *const sb,
 						size_t* community_count,
-						size_t* pad_stepping);
+						size_t* pad_stepping,
+						size_t* pad_mode_mask);
 void print_gpio_groups(struct pci_dev *sb);
 int print_epbar(struct pci_dev *nb);
 int print_dmibar(struct pci_dev *nb);

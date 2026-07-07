@@ -31,23 +31,25 @@
 #define PCR_PORT_SIZE	(64 * KiB)
 
 static const char *decode_pad_mode(const struct gpio_group *const group,
-				   const size_t pad, const uint32_t dw0)
+				   const size_t pad, const uint32_t dw0,
+				   const size_t pad_mode_mask)
 {
-	const size_t pad_mode = dw0 >> 10 & 7;
-	const char *const pad_name =
-		group->pad_names[pad * group->func_count + pad_mode];
+	const size_t pad_mode = dw0 >> 10 & pad_mode_mask;
 
-	if (!pad_mode)
+	if (!pad_mode) {
+		const char *const pad_name =
+			group->pad_names[pad * group->func_count];
 		return pad_name[0] == '*' ? "*GPIO" : "GPIO";
-	else if (pad_mode < group->func_count)
+	} else if (pad_mode < group->func_count) {
 		return group->pad_names[pad * group->func_count + pad_mode];
-	else
+	} else {
 		return "RESERVED";
+	}
 }
 
 static void print_gpio_group(const uint8_t pid, size_t pad_cfg,
 			     const struct gpio_group *const group,
-			     size_t pad_stepping)
+			     size_t pad_stepping, size_t pad_mode_mask)
 {
 	size_t p;
 
@@ -62,12 +64,12 @@ static void print_gpio_group(const uint8_t pid, size_t pad_cfg,
 		printf("0x%04zx: 0x%016"PRIx64" %-12s %-20s\n", pad_cfg,
 		       (uint64_t)dw1 << 32 | dw0,
 		       pad_name[0] == '*' ? &pad_name[1] : pad_name,
-		       decode_pad_mode(group, p, dw0));
+		       decode_pad_mode(group, p, dw0, pad_mode_mask));
 	}
 }
 
 static void print_gpio_community(const struct gpio_community *const community,
-				 size_t pad_stepping)
+				 size_t pad_stepping, size_t pad_mode_mask)
 {
 	size_t group, pad_count;
 	size_t pad_cfg; /* offset in bytes under this communities PCR port */
@@ -90,16 +92,19 @@ static void print_gpio_community(const struct gpio_community *const community,
 			pad_cfg = community->groups[group]->pad_offset;
 		print_gpio_group(community->pcr_port_id,
 				 pad_cfg, community->groups[group],
-				 pad_stepping);
+				 pad_stepping, pad_mode_mask);
 		pad_cfg += community->groups[group]->pad_count * pad_stepping;
 	}
 }
 
 const struct gpio_community *const *get_gpio_communities(struct pci_dev *const sb,
 						size_t* community_count,
-						size_t* pad_stepping)
+						size_t* pad_stepping,
+						size_t* pad_mode_mask)
 {
 	*pad_stepping = 8;
+	/* Most SoCs use a 3-bit pad-mode field */
+	*pad_mode_mask = 7;
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_H110:
@@ -280,8 +285,10 @@ void print_gpio_groups(struct pci_dev *const sb)
 	size_t community_count;
 	const struct gpio_community *const *communities;
 	size_t pad_stepping;
+	size_t pad_mode_mask;
 
-	communities = get_gpio_communities(sb, &community_count, &pad_stepping);
+	communities = get_gpio_communities(sb, &community_count, &pad_stepping,
+					   &pad_mode_mask);
 
 	if (!communities)
 		return;
@@ -291,5 +298,5 @@ void print_gpio_groups(struct pci_dev *const sb)
 	printf("\n============= GPIOS =============\n\n");
 
 	for (; community_count; --community_count)
-		print_gpio_community(*communities++, pad_stepping);
+		print_gpio_community(*communities++, pad_stepping, pad_mode_mask);
 }

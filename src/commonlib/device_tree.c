@@ -762,6 +762,27 @@ bool fdt_is_valid(const void *blob)
 	if (version > FDT_SUPPORTED_VERSION)
 		printk(BIOS_NOTICE, "FDT version %u too new, should add support!\n",
 		       version);
+
+	/* Verify that the FDT blob is internally consistent */
+	uint32_t totalsize = be32toh(header->totalsize);
+	uint32_t structure_offset = be32toh(header->structure_offset);
+	uint32_t structure_size = be32toh(header->structure_size);
+	uint32_t strings_offset = be32toh(header->strings_offset);
+	uint32_t strings_size = be32toh(header->strings_size);
+
+	if (totalsize < sizeof(struct fdt_header)) {
+		printk(BIOS_ERR, "FDT totalsize %u smaller than header!\n", totalsize);
+		return false;
+	}
+	if (structure_offset > totalsize || structure_size > totalsize - structure_offset) {
+		printk(BIOS_ERR, "FDT structure block lies outside of the blob!\n");
+		return false;
+	}
+	if (strings_offset > totalsize || strings_size > totalsize - strings_offset) {
+		printk(BIOS_ERR, "FDT strings block lies outside of the blob!\n");
+		return false;
+	}
+
 	return true;
 }
 

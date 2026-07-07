@@ -3,8 +3,12 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/acpimmio.h>
+#include <acpi/acpi.h>
+#include <arch/smp/mpspec.h>
 #include <commonlib/helpers.h>
 #include <device/device.h>
+
+#define CEZANNE_GPIO_IRQ 11
 
 /* The IRQ mapping in fch_irq_map ends up getting written to the indirect address space that is
    accessed via I/O ports 0xc00/0xc01. */
@@ -34,7 +38,7 @@ static const struct fch_irq_routing fch_irq_map[] = {
 	{ PIRQ_SDIO,	PIRQ_NC,	PIRQ_NC		},
 	{ PIRQ_SATA,	PIRQ_NC,	PIRQ_NC		},
 	{ PIRQ_EMMC,	PIRQ_NC,	PIRQ_NC		},
-	{ PIRQ_GPIO,	11,		11		},
+	{ PIRQ_GPIO,	CEZANNE_GPIO_IRQ, CEZANNE_GPIO_IRQ	},
 	{ PIRQ_I2C0,	10,		10		},
 	{ PIRQ_I2C1,	7,		7		},
 	{ PIRQ_I2C2,	6,		6		},
@@ -53,6 +57,16 @@ const struct fch_irq_routing *mb_get_fch_irq_mapping(size_t *length)
 {
 	*length = ARRAY_SIZE(fch_irq_map);
 	return fch_irq_map;
+}
+
+unsigned long mainboard_write_madt_irq_overrides(unsigned long current)
+{
+	/* FCH PIRQ routing maps the AMD GPIO controller to IRQ 11. */
+	current += acpi_create_madt_irqoverride((void *)current, MP_BUS_ISA,
+						CEZANNE_GPIO_IRQ, CEZANNE_GPIO_IRQ,
+						MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
+
+	return current;
 }
 
 struct chip_operations mainboard_ops = {};

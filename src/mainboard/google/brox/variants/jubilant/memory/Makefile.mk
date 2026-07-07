@@ -8,3 +8,4 @@ SPD_SOURCES += spd/lp5/set-0/spd-1.hex      # ID = 0(0b0000)  Parts = MT62F512M3
 SPD_SOURCES += spd/lp5/set-0/spd-2.hex      # ID = 1(0b0001)  Parts = MT62F1G32D4DR-031 WT:B
 SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 2(0b0010)  Parts = MT62F1G32D2DS-023 WT:B, H58G56BK8BX068, H58G56CK8BX146
 SPD_SOURCES += spd/lp5/set-0/spd-7.hex      # ID = 3(0b0011)  Parts = K3KL8L80CM-MGCT
+SPD_SOURCES += spd/lp5/set-0/spd-10.hex      # ID = 4(0b0100)  Parts = H58G66CK8BX147

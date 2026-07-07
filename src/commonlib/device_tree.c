@@ -182,11 +182,18 @@ int fdt_next_node_name(const void *blob, uint32_t offset, const char **name)
 	// skip NOP tokens
 	offset += fdt_skip_nops(blob, offset);
 
+	if (!fdt_range_valid(blob, offset, sizeof(uint32_t)))
+		return 0;
+
 	char *ptr = ((char *)blob) + offset;
 	if (be32dec(ptr) != FDT_TOKEN_BEGIN_NODE)
 		return 0;
 
-	ptr += 4;
+	offset += sizeof(uint32_t);
+	if (!fdt_string_valid(blob, offset))
+		return 0;
+
+	ptr = ((char *)blob) + offset;
 	if (name)
 		*name = ptr;
 

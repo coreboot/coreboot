@@ -107,6 +107,16 @@ static bool fdt_range_valid(const void *blob, uint64_t offset, uint64_t len)
 	return offset <= totalsize && len <= (uint64_t)totalsize - offset;
 }
 
+static bool fdt_string_valid(const void *blob, uint32_t offset)
+{
+	uint32_t totalsize = be32toh(((const struct fdt_header *)blob)->totalsize);
+
+	if (offset >= totalsize)
+		return false;
+
+	return memchr((const char *)blob + offset, '\0', totalsize - offset) != NULL;
+}
+
 static int fdt_skip_nops(const void *blob, uint32_t offset)
 {
 	const uint32_t *ptr = (const uint32_t *)(((const uint8_t *)blob) + offset);
@@ -128,6 +138,10 @@ int fdt_next_property(const void *blob, uint32_t offset,
 	// skip NOP tokens
 	offset += fdt_skip_nops(blob, offset);
 
+	// Verify that the 3 dwords for token, size and name-offsets are inside the blob.
+	if (!fdt_range_valid(blob, offset, 3 * sizeof(uint32_t)))
+		return 0;
+
 	uint32_t *ptr = (uint32_t *)(((uint8_t *)blob) + offset);
 
 	int index = 0;
@@ -137,6 +151,11 @@ int fdt_next_property(const void *blob, uint32_t offset,
 	uint32_t size = be32toh(ptr[index++]);
 	uint32_t name_offset = be32toh(ptr[index++]);
 	name_offset += be32toh(header->strings_offset);
+
+	if (!fdt_range_valid(blob, (uint64_t)offset + index * sizeof(uint32_t), size))
+		return 0;
+	if (!fdt_string_valid(blob, name_offset))
+		return 0;
 
 	if (prop) {
 		prop->name = (char *)((uint8_t *)blob + name_offset);

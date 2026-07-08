@@ -29,6 +29,9 @@
 #define   KBRSTEN			(1 << 4)
 #define PM_RST_STATUS			0xc0
 
+#define HPET_CONFIG			0x10
+#define  HPET_LEGACY_EN			(1 << 1)
+
 /*
  * Earlier devices enable the ACPIMMIO bank decodes in PMx24. All discrete FCHs
  * and the Kabini SoC fall into this category. Kabini's successor, Mullins, uses

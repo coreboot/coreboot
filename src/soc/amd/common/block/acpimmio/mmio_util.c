@@ -68,6 +68,10 @@ void fch_configure_hpet(void)
 	reg |=  HPET_EN | HPET_MSI_EN;
 	reg &= ~HPET_WIDTH_SEL; /* 32 bit HPET */
 	pm_write32(PM_DECODE_EN, reg);
+
+	reg = hpet_read32(HPET_CONFIG);
+	reg &= ~HPET_LEGACY_EN; /* Disable legacy IRQs */
+	hpet_write32(HPET_CONFIG, reg);
 }
 
 void fch_disable_kb_rst(void)

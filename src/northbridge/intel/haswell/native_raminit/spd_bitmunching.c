@@ -4,6 +4,7 @@
 #include <commonlib/bsd/clamp.h>
 #include <console/console.h>
 #include <device/dram/ddr3.h>
+#include <device/pci_ops.h>
 #include <device/smbus_host.h>
 #include <northbridge/intel/haswell/chip.h>
 #include <northbridge/intel/haswell/haswell.h>
@@ -104,6 +105,10 @@ static void decode_spd(struct raminit_dimm_info *const dimm)
 
 static enum raminit_status find_common_spd_parameters(struct sysinfo *ctrl)
 {
+	const union pci_capid0_a_reg capid0_a = {
+		.raw = pci_read_config32(HOST_BRIDGE, CAPID0_A)
+	};
+
 	ctrl->cas_supported = 0xffff;
 	ctrl->flags.raw = 0xffffffff;
 
@@ -182,18 +187,37 @@ static enum raminit_status find_common_spd_parameters(struct sysinfo *ctrl)
 		printk(BIOS_ERR, "Could not resolve common CAS latency\n");
 		return RAMINIT_STATUS_UNSUPPORTED_MEMORY;
 	}
-	/** TODO: Properly handle ECC support and ECC forced **/
-	if (yes_ecc && not_ecc) {
-		/** TODO: Test if the ECC DIMMs can be operated as non-ECC DIMMs **/
-		printk(BIOS_ERR, "Both ECC and non-ECC DIMMs present, this is unsupported\n");
+
+	/* At least one DIMM exists */
+	assert(yes_ecc || not_ecc);
+
+	/* FDEE overrides ECCDIS */
+	const bool ecc_force = capid0_a.FDEE;
+	const bool ecc_avail = !capid0_a.ECCDIS || ecc_force;
+
+	printk(BIOS_INFO, "According to CAPID0, ECC capability is %s\n",
+	       ecc_force ? "forced" : (ecc_avail ? "available" : "disabled"));
+
+	if (ecc_force && not_ecc) {
+		printk(BIOS_ERR, "ECC forced by CAPID, but non-ECC DIMMs present\n");
 		return RAMINIT_STATUS_UNSUPPORTED_MEMORY;
 	}
-	if (yes_ecc)
-		ctrl->lanes = NUM_LANES;
-	else
-		ctrl->lanes = NUM_LANES_NO_ECC;
 
-	ctrl->is_ecc = yes_ecc;
+	if (yes_ecc && not_ecc) {
+		/* ECC UDIMMs can be operated as non-ECC, ignoring the ECC lane */
+		printk(BIOS_WARNING, "Both ECC and non-ECC DIMMs present, ECC unusable\n");
+	}
+	if (!ecc_avail && yes_ecc) {
+		/* We can still continue with ECC disabled */
+		printk(BIOS_WARNING, "ECC disabled by CAPID, but ECC DIMMs present\n");
+	}
+
+	const bool all_ecc_dimms = yes_ecc && !not_ecc;
+	ctrl->is_ecc = ecc_avail && all_ecc_dimms;
+
+	printk(BIOS_INFO, "ECC is %sabled\n", ctrl->is_ecc ? "en" : "dis");
+
+	ctrl->lanes = ctrl->is_ecc ? NUM_LANES : NUM_LANES_NO_ECC;
 
 	/** TODO: Complete LPDDR support **/
 	ctrl->lpddr = false;

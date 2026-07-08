@@ -89,6 +89,47 @@ static const struct pad_config ish_disable_pads[] = {
 	PAD_NC(GPP_H15, NONE),
 };
 
+static const struct pad_config sndw_alc721_enable_pads[] = {
+	/* SNDW3_CLK   */
+	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF1),
+	/* SNDW3_DATA0 */
+	PAD_CFG_NF(GPP_S01, NONE, DEEP, NF1),
+	/* SNDW3_DATA1 */
+	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF1),
+	/* SNDW3_DATA2 */
+	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF1),
+	/* DMIC_CLK_A0 */
+	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF5),
+	/* DMIC_DATA_0 */
+	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF5),
+	/* SNDW1_CLK   */
+	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF5),
+	/* SNDW1_DATA  */
+	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF5),
+	/* DMIC_CLK (native PCH DMIC1) - unused, keep disabled */
+	PAD_NC(GPP_D16, NONE),
+	/* DMIC_DATA (native PCH DMIC1) - unused, keep disabled */
+	PAD_NC(GPP_D17, NONE),
+};
+
+static const struct pad_config audio_disable_pads[] = {
+	PAD_NC(GPP_S00, NONE),
+	PAD_NC(GPP_S01, NONE),
+	PAD_NC(GPP_S02, NONE),
+	PAD_NC(GPP_S03, NONE),
+	PAD_NC(GPP_S04, NONE),
+	PAD_NC(GPP_S05, NONE),
+	PAD_NC(GPP_S06, NONE),
+	PAD_NC(GPP_S07, NONE),
+	PAD_NC(GPP_D09, NONE),
+	PAD_NC(GPP_D10, NONE),
+	PAD_NC(GPP_D11, NONE),
+	PAD_NC(GPP_D12, NONE),
+	PAD_NC(GPP_D13, NONE),
+	PAD_NC(GPP_D16, NONE),
+	PAD_NC(GPP_D17, NONE),
+};
+
 void fw_config_configure_pre_mem_gpio(void)
 {
 	if (!fw_config_is_provisioned()) {
@@ -125,5 +166,13 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 
 	if (fw_config_probe(FW_CONFIG(SENSOR_HUB, ISH_ABSENT))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, ish_disable_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(AUDIO_CODEC, AUDIO_CODEC_ALC721))) {
+		printk(BIOS_INFO, "Configure GPIOs for ALC721/ALC722 SoundWire audio.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_alc721_enable_pads);
+	} else if (fw_config_probe(FW_CONFIG(AUDIO_CODEC, AUDIO_CODEC_ABSENT))) {
+		printk(BIOS_INFO, "Audio codec absent; disable audio GPIOs.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, audio_disable_pads);
 	}
 }

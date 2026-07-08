@@ -2,11 +2,19 @@
 
 #include <boardid.h>
 #include <ec/google/chromeec/ec.h>
+#include <soc/cdt.h>
 
 uint32_t board_id(void)
 {
 	static uint32_t id = UNDEFINED_STRAPPING_ID;
-	/* Placeholder */
+	if (id != UNDEFINED_STRAPPING_ID)
+		return id;
+
+	if (CONFIG(SOC_QUALCOMM_CDT)) {
+		id = cdt_get_hw_version();
+		return id;
+	}
+
 	return id;
 }
 

@@ -56,6 +56,8 @@ ramstage-$(CONFIG_PCI) += ../common/pcie_common.c
 ramstage-y += cpucp_load_reset.c
 ramstage-y += ../common/spmi.c
 ramstage-y += ../common/pmic_gpio.c
+ramstage-$(CONFIG_SOC_QUALCOMM_CDT) += ../common/cdt.c
+ramstage-y += platform_info.c
 
 ################################################################################
 

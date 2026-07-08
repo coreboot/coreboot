@@ -260,7 +260,6 @@ struct azalia_codec mainboard_azalia_codecs[] = {
 		.verbs        = realtek_alc1220_verbs,
 		.verb_count   = ARRAY_SIZE(realtek_alc1220_verbs),
 	},
-	{ /* terminator */ }
 };
 
 const u32 pc_beep_verbs[] = {};

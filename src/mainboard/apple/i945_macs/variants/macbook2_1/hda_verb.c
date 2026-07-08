@@ -29,7 +29,6 @@ struct azalia_codec mainboard_azalia_codecs[] = {
 		.verbs        = sigmatel_stac9221_a1_verbs,
 		.verb_count   = ARRAY_SIZE(sigmatel_stac9221_a1_verbs),
 	},
-	{ /* terminator */ }
 };
 
 AZALIA_ARRAY_SIZES;

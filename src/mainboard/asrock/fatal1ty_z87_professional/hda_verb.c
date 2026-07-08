@@ -100,7 +100,6 @@ struct azalia_codec mainboard_azalia_codecs[] = {
 		.verbs        = creative_ca0132_verbs,
 		.verb_count   = ARRAY_SIZE(creative_ca0132_verbs),
 	},
-	{ /* terminator */ }
 };
 
 AZALIA_ARRAY_SIZES;

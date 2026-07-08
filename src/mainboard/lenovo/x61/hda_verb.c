@@ -127,7 +127,6 @@ struct azalia_codec mainboard_azalia_codecs[] = {
 		.verbs        = ad1984_verbs,
 		.verb_count   = ARRAY_SIZE(ad1984_verbs),
 	},
-	{ /* terminator */ }
 };
 
 AZALIA_ARRAY_SIZES;

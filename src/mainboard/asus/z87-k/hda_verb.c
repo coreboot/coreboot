@@ -80,7 +80,6 @@ struct azalia_codec mainboard_azalia_codecs[] = {
 		.verbs        = realtek_alc887_verbs,
 		.verb_count   = ARRAY_SIZE(realtek_alc887_verbs),
 	},
-	{ /* terminator */ }
 };
 
 AZALIA_ARRAY_SIZES;

@@ -226,7 +226,6 @@ struct azalia_codec mainboard_azalia_codecs[] = {
 		.verbs        = intel_mtl_hdmi_verbs,
 		.verb_count   = ARRAY_SIZE(intel_mtl_hdmi_verbs),
 	},
-	{ /* terminator */ }
 };
 
 AZALIA_ARRAY_SIZES;

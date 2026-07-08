@@ -28,7 +28,6 @@ struct azalia_codec mainboard_azalia_codecs[] = {
 		.verbs        = via_vt1708s_verbs,
 		.verb_count   = ARRAY_SIZE(via_vt1708s_verbs),
 	},
-	{ /* terminator */ }
 };
 
 AZALIA_ARRAY_SIZES;

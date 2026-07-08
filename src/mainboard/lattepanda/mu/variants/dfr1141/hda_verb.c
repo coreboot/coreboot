@@ -46,7 +46,6 @@ struct azalia_codec mainboard_azalia_codecs[] = {
 		.verbs        = intel_idisp_verbs,
 		.verb_count   = ARRAY_SIZE(intel_idisp_verbs),
 	},
-	{ /* terminator */ }
 };
 
 const u32 pc_beep_verbs[] = {};

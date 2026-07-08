@@ -2,12 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x11060397,	/* Codec Vendor / Device ID: Via VT1708S */
-	0x11060000,	/* Subsystem ID */
-	0x0000000c,	/* Number of jacks */
-
+static const u32 via_vt1708s_verbs[] = {
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x11060000 */
 	AZALIA_SUBVENDOR(0, 0x11060000),
 
@@ -78,13 +73,9 @@ const u32 cim_verb_data[] = {
 	 * Jack     Internal    Speaker     Unknown         Grey
 	 */
 	AZALIA_PIN_CFG(0, 0x23, 0x10102114),
+};
 
-
-	/* coreboot specific header */
-	0x80862806,	/* Codec Vendor / Device ID: Intel PantherPoint HDMI */
-	0x80860101,	/* Subsystem ID */
-	0x00000004,	/* Number of jacks */
-
+static const u32 intel_pantherpoint_hdmi_verbs[] = {
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
 	AZALIA_SUBVENDOR(3, 0x80860101),
 
@@ -99,5 +90,24 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[0] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Via VT1708S",
+		.vendor_id    = 0x11060397,
+		.subsystem_id = 0x11060000,
+		.address      = 0,
+		.verbs        = via_vt1708s_verbs,
+		.verb_count   = ARRAY_SIZE(via_vt1708s_verbs),
+	},
+	{
+		.name         = "Intel PantherPoint HDMI",
+		.vendor_id    = 0x80862806,
+		.subsystem_id = 0x80860101,
+		.address      = 3,
+		.verbs        = intel_pantherpoint_hdmi_verbs,
+		.verb_count   = ARRAY_SIZE(intel_pantherpoint_hdmi_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

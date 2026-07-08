@@ -49,11 +49,10 @@ static void get_spd_for_dimm(struct raminit_dimm_info *const dimm, const uint8_t
 			memcpy(dimm->raw_spd, cbfs_spd, SPD_SIZE_MAX_DDR3);
 			dimm->valid = true;
 			printk(RAM_DEBUG, "memory-down\n");
-			return;
 		} else {
 			printk(RAM_DEBUG, "memory-down but no CBFS SPD data, ignoring\n");
-			return;
 		}
+		return;
 	}
 	printk(RAM_DEBUG, "slotted ");
 	const uint8_t spd_mem_type = smbus_read_byte(dimm->spd_addr, SPD_MEMORY_TYPE);

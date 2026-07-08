@@ -562,6 +562,10 @@ size_t reg_frame_size(void);
 uint32_t reg_frame_rev(void);
 void reg_frame_get_spd_data(const uint8_t *out_spd_data[NUM_CHANNELS][NUM_SLOTS]);
 
+uint8_t get_tCMD(uint32_t mem_clock_mhz, uint8_t dpc);
+uint8_t get_tCWL(uint32_t mem_clock_mhz);
+uint32_t get_tREFI(uint32_t mem_clock_mhz);
+uint32_t get_tXP(uint32_t mem_clock_mhz);
 uint32_t get_tCKE(uint32_t mem_clock_mhz, bool lpddr);
 uint32_t get_tXPDLL(uint32_t mem_clock_mhz);
 uint32_t get_tAONPD(uint32_t mem_clock_mhz);
@@ -698,11 +702,6 @@ void update_opt_param_offset(
 	const bool update_ctrl);
 
 uint8_t get_rx_bias(const struct sysinfo *ctrl);
-
-uint8_t get_tCMD(uint32_t mem_clock_mhz, uint8_t dpc);
-uint8_t get_tCWL(uint32_t mem_clock_mhz);
-uint32_t get_tREFI(uint32_t mem_clock_mhz);
-uint32_t get_tXP(uint32_t mem_clock_mhz);
 
 void dump_capid_values(void);
 

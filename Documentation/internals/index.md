@@ -12,4 +12,5 @@ coreboot devicetree <devicetree.md>
 coreboot devicetree language <devicetree_language.md>
 Chip Operations <chip_operations.md>
 Device Operations <device_operations>
+Malloc & Free <malloc_and_free.md>
 ```

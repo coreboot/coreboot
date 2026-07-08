@@ -285,4 +285,34 @@ static inline void aoac_write8(uint8_t reg, uint8_t value)
 	write8(acpimmio_aoac + reg, value);
 }
 
+static inline uint8_t hpet_read8(uint8_t reg)
+{
+	return read8(acpimmio_hpet + reg);
+}
+
+static inline uint16_t hpet_read16(uint8_t reg)
+{
+	return read16(acpimmio_hpet + reg);
+}
+
+static inline uint32_t hpet_read32(uint8_t reg)
+{
+	return read32(acpimmio_hpet + reg);
+}
+
+static inline void hpet_write8(uint8_t reg, uint8_t value)
+{
+	write8(acpimmio_hpet + reg, value);
+}
+
+static inline void hpet_write16(uint8_t reg, uint16_t value)
+{
+	write16(acpimmio_hpet + reg, value);
+}
+
+static inline void hpet_write32(uint8_t reg, uint32_t value)
+{
+	write32(acpimmio_hpet + reg, value);
+}
+
 #endif /* AMD_BLOCK_ACPIMMIO_H */

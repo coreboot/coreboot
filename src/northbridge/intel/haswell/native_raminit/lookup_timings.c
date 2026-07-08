@@ -42,6 +42,21 @@ uint8_t get_tCWL(const uint32_t mem_clock_mhz)
 	return lookup_timing(mem_clock_mhz, lut, ARRAY_SIZE(lut));
 }
 
+uint8_t get_tCMD(const uint32_t mem_clock_mhz, const uint8_t dpc)
+{
+	if (mem_clock_mhz > 933)
+		return 2;
+
+	/*
+	 * Do not use 1N on 2DPC without late command training.
+	 * TODO: Relax constraint once we have LCT implemented.
+	 */
+	if (dpc >= 2) // && mem_clock_mhz >= 666
+		return 2;
+
+	return 1;
+}
+
 /* tREFI = 7800 ns * DDR MHz */
 uint32_t get_tREFI(const uint32_t mem_clock_mhz)
 {

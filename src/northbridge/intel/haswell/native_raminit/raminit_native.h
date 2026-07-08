@@ -699,6 +699,7 @@ void update_opt_param_offset(
 
 uint8_t get_rx_bias(const struct sysinfo *ctrl);
 
+uint8_t get_tCMD(uint32_t mem_clock_mhz, uint8_t dpc);
 uint8_t get_tCWL(uint32_t mem_clock_mhz);
 uint32_t get_tREFI(uint32_t mem_clock_mhz);
 uint32_t get_tXP(uint32_t mem_clock_mhz);

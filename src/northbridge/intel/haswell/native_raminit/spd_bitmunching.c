@@ -295,12 +295,17 @@ enum raminit_status convert_timings(struct sysinfo *ctrl)
 	if (ctrl->tAA - ctrl->tCWL > 4)
 		ctrl->tCWL = ctrl->tAA - 4;
 
-	/* If tCMD is invalid, use a guesstimate default */
+	const union pci_capid0_a_reg capid0_a = {
+		.raw = pci_read_config32(HOST_BRIDGE, CAPID0_A)
+	};
+	const uint32_t min_tCMD = capid0_a.D1NM ? 2 : 1;
+
+	/* tCMD is only available in XMP profiles */
 	if (!ctrl->tCMD) {
-		ctrl->tCMD = MAX(ctrl->dpc[0], ctrl->dpc[1]);
-		printk(RAM_DEBUG, "tCMD was zero, picking a guesstimate value\n");
+		const uint8_t dpc = MAX(ctrl->dpc[0], ctrl->dpc[1]);
+		ctrl->tCMD = get_tCMD(ctrl->mem_clock_mhz, dpc);
 	}
-	ctrl->tCMD = clamp_u32(1, ctrl->tCMD, 3);
+	ctrl->tCMD = clamp_u32(min_tCMD, ctrl->tCMD, 3);
 
 	/*
 	 * Print final timings.

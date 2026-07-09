@@ -40,5 +40,5 @@ const char *smbios_mainboard_manufacturer(void)
 
 const char *smbios_system_manufacturer(void)
 {
-	return "Google";
+	return CONFIG_MAINBOARD_VENDOR;
 }

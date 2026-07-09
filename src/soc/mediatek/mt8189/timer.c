@@ -16,7 +16,17 @@ void timer_set_compensation(void)
 
 void init_timer(void)
 {
+	u32 saved_cntcv_l;
+	u32 saved_cntcv_h;
+
+	saved_cntcv_h = read32(&mtk_systimer->cntcv_h);
+	saved_cntcv_l = read32(&mtk_systimer->cntcv_l);
+
 	timer_prepare();
 
+	write32(&mtk_systimer->cntcv_h, saved_cntcv_h);
+	write32(&mtk_systimer->cntcv_l, saved_cntcv_l);
+
 	raw_write_cntfrq_el0(TIMER_MHZ * MHz);
+	udelay(100);
 }

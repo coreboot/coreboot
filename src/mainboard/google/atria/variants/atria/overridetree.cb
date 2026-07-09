@@ -66,6 +66,9 @@ chip soc/intel/novalake
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)" # Discrete Bluetooth
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)" # Type-A Port A0
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)" # Type-A Port A1
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # CRD-1 eUSB2 Camera
+
+	register "usb2_camera_ports[7]" = "true"
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 x1 Type-A Con #1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 x1 Type-A Con #2

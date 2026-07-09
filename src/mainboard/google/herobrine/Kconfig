@@ -48,11 +48,6 @@ config VBOOT
 config MAINBOARD_DIR
 	default "google/herobrine"
 
-config MAINBOARD_VENDOR
-	string
-	default "Google"
-
-
 ##########################################################
 #### Update below when adding a new derivative board. ####
 ##########################################################

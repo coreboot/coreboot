@@ -133,10 +133,6 @@ config MAINBOARD_HAS_CHROME_EC
 	help
 	  Enable this option if your mainboard is equipped with Chrome EC.
 
-config MAINBOARD_VENDOR
-	string
-	default "Google"
-
 config VBOOT
 	select VBOOT_ALWAYS_ENABLE_DISPLAY
 	select VBOOT_LID_SWITCH if MAINBOARD_HAS_CHROME_EC

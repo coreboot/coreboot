@@ -243,10 +243,6 @@ config MAINBOARD_HAS_CAMERA_VIA_USB
 	  Enable this option if your mainboard's onboard camera
 	  is connected via the USB interface.
 
-config MAINBOARD_VENDOR
-	string
-	default "Google"
-
 config VBOOT
 	select VBOOT_ALWAYS_ENABLE_DISPLAY
 	select VBOOT_LID_SWITCH if MAINBOARD_HAS_CHROME_EC

@@ -18,6 +18,8 @@ union mca_bank_ipid {
 	u64 raw;
 };
 
+#define MCA_NBIO_ID                     (0x018)
+#define  MCA_NBIO_EXT_ERR_PCIE_SIDEBAND       1
 #define MCA_UMC_ID                      (0x096)
 
 /* Returns the HardwareID from MSR MCAX_IPID. */
@@ -53,6 +55,19 @@ bool mca_skip_check(void)
 {
 	/* On Zen-based CPUs/APUs the MCA(X) status register have a defined state even in the
 	   cold boot path, so no need to skip the check */
+	return false;
+}
+
+bool mca_skip_error(unsigned int bank)
+{
+	msr_t status = rdmsr(MCAX_STATUS_MSR(bank));
+
+	/*
+	 * Skip NBIO PCIe_Sideband errors.
+	 */
+	if (mcax_bank_hardware_id(bank) == MCA_NBIO_ID &&
+	    mca_err_extcode(status) == MCA_NBIO_EXT_ERR_PCIE_SIDEBAND)
+		return true;
 	return false;
 }
 

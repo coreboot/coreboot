@@ -13,6 +13,11 @@ bool mca_skip_check(void)
 	return !is_warm_reset();
 }
 
+bool mca_skip_error(unsigned int bank)
+{
+	return false;
+}
+
 void mca_print_error(unsigned int bank)
 {
 	msr_t msr;

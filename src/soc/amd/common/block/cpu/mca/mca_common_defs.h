@@ -8,6 +8,7 @@
 #include <types.h>
 
 bool mca_skip_check(void);
+bool mca_skip_error(unsigned int bank);
 void mca_print_error(unsigned int bank);
 void build_bert_mca_error(struct mca_bank_status *mci);
 enum cper_x86_check_type error_to_chktype(struct mca_bank_status *mci);

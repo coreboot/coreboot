@@ -25,11 +25,12 @@ static void mca_check_all_banks(void)
 	for (unsigned int i = 0 ; i < num_banks ; i++) {
 		if (!mca_is_valid_bank(i))
 			continue;
-
 		mci.bank = i;
 		/* The MCA status register can be used in both the MCA and MCAX case */
 		mci.sts = rdmsr(IA32_MC_STATUS(i));
 		if (mci.sts.hi || mci.sts.lo) {
+			if (mca_skip_error(i))
+				continue;
 			mca_print_error(i);
 
 			if (CONFIG(ACPI_BERT) && mca_valid(mci.sts))

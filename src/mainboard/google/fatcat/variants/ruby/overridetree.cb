@@ -202,29 +202,18 @@ chip soc/intel/pantherlake
 						[0] = {
 							.target = DPTF_TEMP_SENSOR_0,
 							.thresholds = {
-									TEMP_PCT(75, 88),
-									TEMP_PCT(70, 78),
-									TEMP_PCT(65, 68),
-									TEMP_PCT(60, 58),
-
+									TEMP_PCT(50, 58),
 								}
 							},
 						[1] = {
 							.target = DPTF_TEMP_SENSOR_1,
 							.thresholds = {
-									TEMP_PCT(80, 88),
-									TEMP_PCT(75, 78),
-									TEMP_PCT(70, 68),
 									TEMP_PCT(65, 58),
-
 								}
 							},
 						[2] = {
 							.target = DPTF_TEMP_SENSOR_2,
 							.thresholds = {
-									TEMP_PCT(75, 88),
-									TEMP_PCT(70, 78),
-									TEMP_PCT(65, 68),
 									TEMP_PCT(60, 58),
 								}
 							}
@@ -258,8 +247,8 @@ chip soc/intel/pantherlake
 							.granularity = 200,
 						},
 						.pl2 = {
-							.min_power = 35000,
-							.max_power = 35000,
+							.min_power = 55000,
+							.max_power = 55000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
 							.granularity = 1000,
@@ -274,6 +263,25 @@ chip soc/intel/pantherlake
 						[3] = {   8,  500 }
 				}"
 
+				# Fan Performance Control (Percent, Speed, Noise, Power) - note
+				# that since we define fine_grained_control below, this table
+				# is for reference only.
+				register "controls.fan_perf" = "{
+					[0] = {  90, 6700, 220, 2200, },
+					[1] = {  80, 5800, 180, 1800, },
+					[2] = {  70, 5000, 145, 1450, },
+					[3] = {  60, 4900, 115, 1150, },
+					[4] = {  50, 3838,  90,  900, },
+					[5] = {  40, 2904,  55,  550, },
+					[6] = {  30, 2337,  30,  300, },
+					[7] = {  20, 1608,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				# Fan options
+				register "options.fan.fine_grained_control" = "true"
+				register "options.fan.step_size" = "2"
 				device generic 0 alias dptf_policy on end
 			end
 		end

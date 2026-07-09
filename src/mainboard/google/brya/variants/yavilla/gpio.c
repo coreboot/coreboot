@@ -26,6 +26,8 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* F6  : CNV_PA_BLANKING ==> NC */
 	PAD_NC(GPP_F6, NONE),
+	/* F7  : GPP_F7 ==> MEM_STRAP_3 */
+	PAD_CFG_GPI(GPP_F7, DN_20K, DEEP),
 	/* F12 : WWAN_RST_ODL */
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* F23 : V1P05EXT_CTRL ==> NC */

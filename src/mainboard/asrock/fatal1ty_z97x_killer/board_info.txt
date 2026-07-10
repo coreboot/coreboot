@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://asrock.com/mb/intel/fatal1ty%20z97x%20killer/
+ROM package: DIP-8 (2x)
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y
+Release year: 2014

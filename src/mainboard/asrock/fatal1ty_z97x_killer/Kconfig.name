@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_ASROCK_FATAL1TY_Z97X_KILLER
+	bool "Fatal1ty Z97X Killer"

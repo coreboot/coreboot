@@ -46,9 +46,6 @@ void read_soc_memmap_resources(struct device *domain, unsigned long *idx)
 		mmio_range(domain, (*idx)++, IOMMU_RESERVED_MMIO_BASE, 12ULL * GiB);
 		mmio_range(domain, (*idx)++, DATA_FABRIC_RESERVED_BASE,
 					     DATA_FABRIC_RESERVED_SIZE);
-
-		mmio_range(domain, (*idx)++, AMD_SB_ACPI_MMIO_ADDR, 0x2000);
-		mmio_range(domain, (*idx)++, ALINK_AHB_ADDRESS, 0x20000);
 	}
 
 	amd_opensil_add_memmap(domain, idx);

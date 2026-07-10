@@ -67,8 +67,5 @@ void read_soc_memmap_resources(struct device *dev, unsigned long *idx)
 	/* Reserve fixed IOMMU MMIO region */
 	mmio_range(dev, (*idx)++, IOMMU_RESERVED_MMIO_BASE, IOMMU_RESERVED_MMIO_SIZE);
 
-	mmio_range(dev, (*idx)++, AMD_SB_ACPI_MMIO_ADDR, 0x2000);
-	mmio_range(dev, (*idx)++, ALINK_AHB_ADDRESS, 0x20000);
-
 	read_fsp_resources(dev, idx);
 }

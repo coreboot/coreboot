@@ -13,6 +13,7 @@
 #include <pc80/i8259.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/acpimmio_map.h>
 #include <amdblocks/espi.h>
 #include <amdblocks/ioapic.h>
 #include <amdblocks/iomap.h>
@@ -132,6 +133,12 @@ static void lpc_read_resources(struct device *dev)
 
 	/* HPET */
 	mmio_range(dev, idx++, HPET_BASE_ADDRESS, 4 * KiB);
+
+	/* FCH ACPIMMIO range */
+	mmio_range(dev, idx++, AMD_SB_ACPI_MMIO_ADDR, 0x2000);
+
+	/* FCH ALINK to AHB bridge and FCH AHB devices behind it */
+	mmio_range(dev, idx++, ALINK_AHB_ADDRESS, 0x20000);
 
 	compact_resources(dev);
 }

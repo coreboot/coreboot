@@ -6,12 +6,7 @@
 #include <device/azalia_device.h>
 #include <device/azalia_codec/realtek.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10ec0887,	// Realtek 887
-	0x1458a002,	// Subsystem ID
-	0x0000000e,	// Number of entries
-
+static const u32 realtek_alc887_verbs[] = {
 	/* Pin Widget Verb Table */
 	AZALIA_PIN_CFG(0, ALC887_SPDIF_OUT2, AZALIA_PIN_CFG_NC(0)),
 	AZALIA_PIN_CFG(0, ALC887_DMIC_LR, AZALIA_PIN_CFG_NC(0)),
@@ -27,6 +22,17 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, ALC887_PC_BEEP, 0x4004c601),
 	AZALIA_PIN_CFG(0, ALC887_SPDIF_OUT1, AZALIA_PIN_CFG_NC(0)),
 	AZALIA_PIN_CFG(0, ALC887_SPDIF_IN, AZALIA_PIN_CFG_NC(0))
+};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC887",
+		.vendor_id    = 0x10ec0887,
+		.subsystem_id = 0x1458a002,
+		.address      = 0,
+		.verbs        = realtek_alc887_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc887_verbs),
+	},
 };
 
 #endif

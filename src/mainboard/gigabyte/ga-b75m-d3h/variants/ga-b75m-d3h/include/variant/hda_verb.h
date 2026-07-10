@@ -3,8 +3,7 @@
 #ifndef GA_B75M_D3H_HDA_VERB_H
 #define GA_B75M_D3H_HDA_VERB_H
 
-const u32 cim_verb_data[] = {
-	/* FIXME: Add configuration for sound */
-};
+/* FIXME: Add configuration for sound */
+static struct azalia_codec mainboard_azalia_codecs[] = {};
 
 #endif

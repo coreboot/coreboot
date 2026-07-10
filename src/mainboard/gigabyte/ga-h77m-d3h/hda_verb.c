@@ -2,10 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	0x11060441,	/* Codec Vendor / Device ID: VIA VT2020 */
-	0x1458a014,	/* Subsystem ID */
-	13,		/* Number of 4 dword sets */
+static const u32 via_vt2020_verbs[] = {
 	AZALIA_SUBVENDOR(2, 0x1458a014),
 	AZALIA_PIN_CFG(2, 0x24, 0x01014010),
 	AZALIA_PIN_CFG(2, 0x25, 0x410110f0),
@@ -19,10 +16,9 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(2, 0x2d, 0x474511f0),
 	AZALIA_PIN_CFG(2, 0x2e, 0x074521f0),
 	AZALIA_PIN_CFG(2, 0x2f, 0x47c521f0),
+};
 
-	0x80862806,	/* Codec Vendor / Device ID: Intel */
-	0x80860101,	/* Subsystem ID */
-	4,		/* Number of 4 dword sets */
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_SUBVENDOR(3, 0x80860101),
 	AZALIA_PIN_CFG(3, 0x05, 0x58560010),
 	AZALIA_PIN_CFG(3, 0x06, 0x58560020),
@@ -30,5 +26,24 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[0] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "VIA VT2020",
+		.vendor_id    = 0x11060441,
+		.subsystem_id = 0x1458a014,
+		.address      = 2,
+		.verbs        = via_vt2020_verbs,
+		.verb_count   = ARRAY_SIZE(via_vt2020_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x80862806,
+		.subsystem_id = 0x80860101,
+		.address      = 3,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

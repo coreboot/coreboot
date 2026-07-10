@@ -144,8 +144,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C3, NONE),						/* SML0CLK (NC) */
 	PAD_NC(GPP_C4, NONE),						/* SML0DATA (NC) */
 	PAD_NC(GPP_C5, NONE),						/* SOC_GPP_C5 (Strap, NC) */
-	PAD_CFG_NF(GPP_C6, NONE, RSMRST, NF1),				/* SML1CLK */
-	PAD_CFG_NF(GPP_C7, NONE, RSMRST, NF1),				/* SML1DATA */
+	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),				/* SML1CLK */
+	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),				/* SML1DATA */
 
 	/* ------- GPIO Group GPP_F ------- */
 	PAD_CFG_NF(GPP_F0, NONE, PLTRST, NF1),				/* CNV_BRI_DT / CNV_BRI_CTX_DRX */

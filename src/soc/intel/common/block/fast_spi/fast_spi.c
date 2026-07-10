@@ -7,6 +7,7 @@
 #include <arch/romstage.h>
 #include <device/mmio.h>
 #include <assert.h>
+#include <cpu/x86/smm.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
@@ -38,7 +39,14 @@ void *fast_spi_get_bar(void)
 	 * Bits 31-12 are the base address as per EDS for SPI,
 	 * Don't care about 0-11 bit
 	 */
-	return (void *)(bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK);
+	bar &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+
+	if (ENV_SMM && smm_points_to_smram((void *)bar, 4 * KiB)) {
+		printk(BIOS_EMERG, "FAST_SPI: BAR0 0x%" PRIxPTR " overlaps SMRAM!\n", bar);
+		die("SMM BAR exploitation attempt detected.");
+	}
+
+	return (void *)bar;
 }
 
 /*

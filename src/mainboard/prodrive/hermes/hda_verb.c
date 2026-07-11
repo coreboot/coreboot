@@ -5,10 +5,7 @@
 
 #include "eeprom.h"
 
-const u32 cim_verb_data[] = {
-	0x10ec0888,	/* Codec Vendor / Device ID: Realtek ALC888 */
-	0x10ec0888,	/* Subsystem ID */
-	15,		/* Number of 4 dword sets */
+static const u32 realtek_alc888_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x1d336700),
 
 	/* Pin widgets */
@@ -28,16 +25,9 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1a, 0x901001f0), /* Port C - internal speaker */
 	AZALIA_PIN_CFG(0, 0x1b, 0x01813c10), /* Port E - rear line in/mic - Blue */
 	AZALIA_PIN_CFG(0, 0x15, 0x02a19c20), /* Port A - audio hdr input */
+};
 
-	/*
-	 * VerbTable: CFL Display Audio Codec
-	 * Revision ID = 0xff
-	 * Codec Vendor: 0x8086280b
-	 */
-	0x8086280b,
-	0xffffffff,
-	5,	/* Number of 4 dword sets */
-
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_SUBVENDOR(2, 0x80860101),
 
 	/*
@@ -63,6 +53,25 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[0] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC888",
+		.vendor_id    = 0x10ec0888,
+		.subsystem_id = 0x10ec0888,
+		.address      = 0,
+		.verbs        = realtek_alc888_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc888_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x8086280b,
+		.subsystem_id = 0xffffffff,
+		.address      = 2,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;
 

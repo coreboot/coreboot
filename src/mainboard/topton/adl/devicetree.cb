@@ -101,11 +101,42 @@ chip soc/intel/alderlake
 
 		device ref pch_espi on
 			chip superio/ite/it8625e
-				device pnp 2e.1 on      # Cisco-style serial console
+				device pnp 2e.1 on		# Cisco-style serial console
 					io 0x60 = 0x3f8
-					irq 0x70 = 0x4
-					irq 0xf0 = 0x1
+					irq 0x70 = 0x04
+					irq 0xf0 = 0x01
 				end
+				device pnp 2e.2 on		# Internal header
+					io 0x60 = 0x2f8
+					irq 0x70 = 0x03
+					irq 0xf0 = 0x00
+				end
+				device pnp 2e.3 off end		# LPT, enabled in stock but unused
+				device pnp 2e.4 on		# Environment Controller
+					io 0x60 = 0x290
+					io 0x62 = 0x230
+					irq 0x70 = 0x00
+					irq 0xf0 = 0x00
+					irq 0xf1 = 0x00
+					irq 0xf4 = 0x60
+					irq 0xf6 = 0xf0
+					irq 0xfa = 0x10
+				end
+				device pnp 2e.5 off end		# PS/2 KB (unused)
+				device pnp 2e.6 off end		# PS/2 MS (unused)
+				device pnp 2e.7 on		# GPIO
+					irq 0x29 = 0x01
+					irq 0x2a = 0x01
+					io 0x60 = 0x000
+					io 0x61 = 0x000
+					irq 0x70 = 0x01
+					irq 0x71 = 0x20
+					irq 0xbc = 0xc0
+					irq 0xbd = 0x03
+					irq 0xc8 = 0x00
+					irq 0xd3 = 0x0f
+				end
+				device pnp 2e.a off end		# Consumer IR
 			end
 		end
 

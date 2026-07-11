@@ -4,11 +4,7 @@
 #include <device/azalia_device.h>
 #include <gpio.h>
 
-const u32 cim_verb_data[] = {
-	/* Realtek, ALC245 */
-	0x10ec0245, /* Vendor ID */
-	0x1558a741, /* Subsystem ID */
-	30, /* Number of entries */
+static const u32 realtek_alc245_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x1558a741),
 	AZALIA_RESET(1),
 
@@ -40,11 +36,9 @@ const u32 cim_verb_data[] = {
 	0x2050003,     0x2040002,     0x2050069,     0x2040000,
 	0x2050068,     0x2040001,     0x205002E,     0x204290E,
 	0x2050010,     0x2040020,     0x2050010,     0x2040020,
+};
 
-	/* Intel Meteor Lake HDMI */
-	0x8086281d, /* Vendor ID */
-	0x80860101, /* Subsystem ID */
-	10, /* Number of entries */
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_SUBVENDOR(2, 0x80860101),
 	AZALIA_PIN_CFG(2, 0x04, 0x18560010),
 	AZALIA_PIN_CFG(2, 0x06, 0x18560010),
@@ -58,6 +52,25 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC245",
+		.vendor_id    = 0x10ec0245,
+		.subsystem_id = 0x1558a741,
+		.address      = 0,
+		.verbs        = realtek_alc245_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc245_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x8086281d,
+		.subsystem_id = 0x80860101,
+		.address      = 2,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;
 

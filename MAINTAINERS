@@ -514,6 +514,11 @@ M:	Michał Kopeć <michal.kopec@3mdeb.com>
 S:	Maintained
 F:	src/mainboard/msi/ms7d25/
 
+MSI MS-7D98 MAINBOARD
+M:	Alicja Michalska <ahplka19@gmail.com>
+S:	Maintained
+F:	src/mainboard/msi/ms7d98/
+
 
 
 OCP DELTALAKE MAINBOARD

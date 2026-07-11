@@ -2,12 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10134210,	// Codec Vendor / Device ID: Cirrus Logic CS4210
-	0x152D0924,	// Subsystem ID
-	0x00000008,	// Number of jacks
-
+static const u32 cirrus_logic_cs4210_verbs[] = {
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x152D0924 */
 	AZALIA_SUBVENDOR(0, 0x152D0924),
 
@@ -90,4 +85,16 @@ const u32 pc_beep_verbs[] = {
 	0x00670740,			/* enable speaker output */
 	0x0023B04B,			/* set DAC gain */
 };
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Cirrus Logic CS4210",
+		.vendor_id    = 0x10134210,
+		.subsystem_id = 0x152D0924,
+		.address      = 0,
+		.verbs        = cirrus_logic_cs4210_verbs,
+		.verb_count   = ARRAY_SIZE(cirrus_logic_cs4210_verbs),
+	},
+};
+
 AZALIA_ARRAY_SIZES;

@@ -223,7 +223,7 @@ searchtool()
 	fi
 	for i in "$1" "g$1" "gnu$1"; do
 		if [ -x "$(command -v "$i" 2>/dev/null)" ]; then
-			if [ "$($i --version 2>&1 | grep -c "$search")" -gt 0 ]; then
+			if [ "$($i --version 2>&1 < /dev/null | grep -c "$search")" -gt 0 ]; then
 				echo "$i"
 				return
 			fi

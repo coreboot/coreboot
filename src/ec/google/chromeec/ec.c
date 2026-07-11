@@ -1701,7 +1701,14 @@ int google_chromeec_wait_for_dp_mode_entry(int port, long timeout_ms)
 {
 	struct stopwatch sw;
 
-	if (!google_chromeec_check_feature(EC_FEATURE_TYPEC_REQUIRE_AP_MODE_ENTRY)) {
+	/*
+	 * Without AP mode entry, some platforms skip waiting to avoid
+	 * boot-time delays. Some ECs can advertise the DP SVID before
+	 * USB_PD_MUX_DP_ENABLED is set (particularly on cold boot), so
+	 * those boards select EC_GOOGLE_CHROMEEC_POLL_DP_MUX to poll instead.
+	 */
+	if (!CONFIG(EC_GOOGLE_CHROMEEC_POLL_DP_MUX) &&
+	    !google_chromeec_check_feature(EC_FEATURE_TYPEC_REQUIRE_AP_MODE_ENTRY)) {
 		if (!google_chromeec_check_mux_flag(port, USB_PD_MUX_DP_ENABLED)) {
 			printk(BIOS_WARNING, "DP mode entry is not ready. Abort.\n");
 			return -1;
@@ -1727,7 +1734,8 @@ int google_chromeec_wait_for_hpd(int port, long timeout_ms)
 {
 	struct stopwatch sw;
 
-	if (!google_chromeec_check_feature(EC_FEATURE_TYPEC_REQUIRE_AP_MODE_ENTRY)) {
+	if (!CONFIG(EC_GOOGLE_CHROMEEC_POLL_DP_MUX) &&
+	    !google_chromeec_check_feature(EC_FEATURE_TYPEC_REQUIRE_AP_MODE_ENTRY)) {
 		if (!google_chromeec_check_mux_flag(port, USB_PD_MUX_HPD_LVL)) {
 			printk(BIOS_WARNING, "HPD not ready. Abort.\n");
 			return -1;

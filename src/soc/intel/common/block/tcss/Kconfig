@@ -27,7 +27,7 @@ config TCSS_HAS_USBC_OPS
 
 config ENABLE_TCSS_DISPLAY_DETECTION
 	bool "Enable detection of displays over USB Type-C ports with TCSS"
-	depends on TCSS_HAS_USBC_OPS && RUN_FSP_GOP
+	depends on TCSS_HAS_USBC_OPS
 	help
 	  Enable displays to be detected over Type-C ports during boot.
 

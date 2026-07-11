@@ -2,10 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	0x8086281c,	/* Vendor ID: Intel Alder Lake */
-	0x80860101,	/* Subsystem ID */
-	11,		/* Number of entries */
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_VERB_12B(2, 0x02, 0x781, 3),
 	AZALIA_VERB_12B(2, 0x00, 0xf00, 0),
 	AZALIA_VERB_12B(2, 0x00, 0xf00, 0),
@@ -23,5 +20,16 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x8086281c,
+		.subsystem_id = 0x80860101,
+		.address      = 2,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

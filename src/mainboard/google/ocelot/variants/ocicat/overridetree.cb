@@ -53,9 +53,6 @@ chip soc/intel/pantherlake
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
-	# VCCSA Shutdown configuration
-	register "vccsa_shutdown" = "1"  # enable (set to 0 for disable)
-
 	# Enable CNVi Wi-Fi and Bluetooth
 	register "cnvi_wifi_core" = "true"
 	register "cnvi_bt_core" = "true"

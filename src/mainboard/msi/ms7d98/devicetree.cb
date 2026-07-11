@@ -33,6 +33,7 @@ chip soc/intel/alderlake
 				.clk_src = 0,
 				.clk_req = 0,
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_DISABLE,
 			}"
 			smbios_slot_desc	"SlotTypePciExpressGen5x16" "SlotLengthLong"
 						"PCI_E1" "SlotDataBusWidth16X"
@@ -54,6 +55,8 @@ chip soc/intel/alderlake
 				.clk_src = 9,
 				.clk_req = 9,
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_DISABLE,
+
 			}"
 			smbios_slot_desc	"SlotTypeM2Socket3" "SlotLengthLong"
 						"M2_1" "SlotDataBusWidth4X"
@@ -118,6 +121,7 @@ chip soc/intel/alderlake
 				.clk_req = 11,
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_BUILT_IN |
 					 PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_DISABLE,
 			}"
 			device pci 00.0 on end
 		end
@@ -127,6 +131,7 @@ chip soc/intel/alderlake
 				.clk_src = 10,
 				.clk_req = 10,
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_DISABLE,
 			}"
 			smbios_slot_desc	"SlotTypePciExpressGen4x1" "SlotLengthLong"
 						"PCI_E2" "SlotDataBusWidth1X"
@@ -137,6 +142,7 @@ chip soc/intel/alderlake
 				.clk_src = 12,
 				.clk_req = 12,
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_DISABLE,
 			}"
 			smbios_slot_desc	"SlotTypePciExpressGen4x1" "SlotLengthLong"
 						"PCI_E4" "SlotDataBusWidth1X"
@@ -147,6 +153,7 @@ chip soc/intel/alderlake
 				.clk_src = 14,
 				.clk_req = 14,
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_DISABLE,
 			}"
 			smbios_slot_desc	"SlotTypePciExpressGen4x1" "SlotLengthLong"
 						"PCI_E5" "SlotDataBusWidth1X"
@@ -176,6 +183,7 @@ chip soc/intel/alderlake
 				.clk_src = 13,
 				.clk_req = 13,
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_DISABLE,
 			}"
 		end
 
@@ -184,6 +192,7 @@ chip soc/intel/alderlake
 				.clk_src = 8,
 				.clk_req = 8,
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_DISABLE,
 			}"
 			smbios_slot_desc	"SlotTypeM2Socket3" "SlotLengthLong"
 						"M2_2" "SlotDataBusWidth4X"

@@ -3,12 +3,7 @@
 #include <device/azalia_device.h>
 
 #if CONFIG(BOARD_FOXCONN_G41S_K)
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10ec0888, /* Vendor ID */
-	0x105b0dda, /* Subsystem ID */
-	0x0000000e, /* Number of entries */
-
+static const u32 realtek_alc888_verbs[] = {
 	/* Pin Widget Verb Table */
 
 	AZALIA_PIN_CFG(0, 0x11, 0x99430140),
@@ -27,12 +22,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1f, AZALIA_PIN_CFG_NC(0)),
 };
 #else /* CONFIG_BOARD_FOXCONN_G41M */
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10ec0888, /* Vendor ID */
-	0x105b0dc0, /* Subsystem ID */
-	0x0000000e, /* Number of entries */
-
+static const u32 realtek_alc888_verbs[] = {
 	/* Pin Widget Verb Table */
 
 	AZALIA_PIN_CFG(2, 0x11, 0x01441140),
@@ -53,5 +43,27 @@ const u32 cim_verb_data[] = {
 #endif
 
 const u32 pc_beep_verbs[0] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+#if CONFIG(BOARD_FOXCONN_G41S_K)
+	{
+		.name         = "Realtek ALC888",
+		.vendor_id    = 0x10ec0888,
+		.subsystem_id = 0x105b0dda,
+		.address      = 0,
+		.verbs        = realtek_alc888_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc888_verbs),
+	},
+#else /* CONFIG_BOARD_FOXCONN_G41M */
+	{
+		.name         = "Realtek ALC888",
+		.vendor_id    = 0x10ec0888,
+		.subsystem_id = 0x105b0dc0,
+		.address      = 2,
+		.verbs        = realtek_alc888_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc888_verbs),
+	},
+#endif
+};
 
 AZALIA_ARRAY_SIZES;

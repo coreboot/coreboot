@@ -2,11 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* Realtek, ALC298 */
-	0x10ec0298, /* Vendor ID */
-	0x1a586753, /* Subsystem ID */
-	12, /* Number of entries */
+static const u32 realtek_alc298_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x1a586753),
 	AZALIA_PIN_CFG(0, 0x12, 0x90a60130),
 	AZALIA_PIN_CFG(0, 0x13, 0x40000000),
@@ -19,11 +15,9 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
 	AZALIA_PIN_CFG(0, 0x1f, AZALIA_PIN_CFG_NC(0)),
 	AZALIA_PIN_CFG(0, 0x21, 0x04211020),
+};
 
-	/* Intel, Kaby Lake HDMI */
-	0x8086280b, /* Vendor ID */
-	0x80860101, /* Subsystem ID */
-	4, /* Number of entries */
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_SUBVENDOR(2, 0x80860101),
 	AZALIA_PIN_CFG(2, 0x05, 0x18560010),
 	AZALIA_PIN_CFG(2, 0x06, 0x18560010),
@@ -31,4 +25,24 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC298",
+		.vendor_id    = 0x10ec0298,
+		.subsystem_id = 0x1a586753,
+		.address      = 0,
+		.verbs        = realtek_alc298_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc298_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x8086280b,
+		.subsystem_id = 0x80860101,
+		.address      = 2,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+};
+
 AZALIA_ARRAY_SIZES;

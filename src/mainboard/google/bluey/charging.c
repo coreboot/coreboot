@@ -40,6 +40,13 @@
 #define SMB1_CHGR_CHARGING_FCC ((SMB1_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_FCC)
 #define SMB2_CHGR_CHARGING_FCC ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_FCC)
 
+#define SCHG_CHGR_PSM_CFG 0x27C0
+#define SCHG_CHGR_NORMAL_PSM_MODE 0x0
+#define SCHG_CHGR_LOW_PSM_MODE 0x3
+/* Mask for bits [5:4] -> 0b00110000 = 0x30 */
+#define SCHG_CHGR_PSM_MODE_MASK 0x30
+#define SCHG_CHGR_PSM_MODE_SHIFT 4
+
 #define FCC_3A_STEP_50MA 0x3C
 #define FCC_DISABLE 0x8c
 #define EN_DEBUG_ACCESS_SNK 0x1B
@@ -99,6 +106,46 @@ void init_sdam_config(void)
 	for (size_t i = 0; i < count; i++)
 		spmi_rmw8(default_sdam_config[i].addr, default_sdam_config[i].mask,
 				default_sdam_config[i].value);
+}
+
+/*
+ * Configures target charger to Normal PSM mode.
+ *
+ * slave_id: Raw slave ID of the target SMB (e.g., SMB1_SLAVE_ID or SMB2_SLAVE_ID)
+ */
+static void smb_config_normal_psm(uint8_t slave_id)
+{
+	uint32_t reg_addr = ((uint32_t)slave_id << 16) | SCHG_CHGR_PSM_CFG;
+	uint8_t reg_val = (SCHG_CHGR_NORMAL_PSM_MODE << SCHG_CHGR_PSM_MODE_SHIFT);
+
+	spmi_rmw8(reg_addr, SCHG_CHGR_PSM_MODE_MASK, reg_val);
+}
+
+/*
+ * Configures target charger to Low-Power PSM mode.
+ *
+ * slave_id: Raw slave ID of the target SMB (e.g., SMB1_SLAVE_ID or SMB2_SLAVE_ID)
+ */
+static void smb_config_low_power_psm(uint8_t slave_id)
+{
+	uint32_t reg_addr = ((uint32_t)slave_id << 16) | SCHG_CHGR_PSM_CFG;
+	uint8_t reg_val = (SCHG_CHGR_LOW_PSM_MODE << SCHG_CHGR_PSM_MODE_SHIFT);
+
+	spmi_rmw8(reg_addr, SCHG_CHGR_PSM_MODE_MASK, reg_val);
+}
+
+static void smb_enter_low_power_psm_at_poweroff(void)
+{
+	/* Shutdown: low power sequence */
+	smb_config_low_power_psm(SMB1_SLAVE_ID);
+	smb_config_low_power_psm(SMB2_SLAVE_ID);
+}
+
+static void smb_enter_normal_power_psm_at_offmode(void)
+{
+	/* Off-mode: charging sequence */
+	smb_config_normal_psm(SMB1_SLAVE_ID);
+	smb_config_normal_psm(SMB2_SLAVE_ID);
 }
 
 static int get_battery_icurr_ma(void)
@@ -232,6 +279,7 @@ static void chromeec_finalize_and_poweroff(void)
 	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
 		google_chromeec_lightbar_on();
 
+	smb_enter_low_power_psm_at_poweroff();
 	google_chromeec_offmode_heartbeat();
 	google_chromeec_ap_poweroff();
 }
@@ -247,6 +295,8 @@ void launch_charger_applet(void)
 	bool has_entered_dead_battery_mode = false;
 
 	printk(BIOS_INFO, "Inside %s. Initiating charging\n", __func__);
+
+	smb_enter_normal_power_psm_at_offmode();
 
 	stopwatch_init_msecs_expire(&sw, charging_enable_timeout_ms);
 

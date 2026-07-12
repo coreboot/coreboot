@@ -1,0 +1,10 @@
+chip northbridge/intel/sandybridge
+	# Support up to DDR3-1600
+	register "max_mem_clock_mhz" = "800"
+
+	device domain 0 on
+		chip southbridge/intel/bd82x6x
+			device ref xhci on end		# USB 3.0 (xHCI)
+		end
+	end
+end

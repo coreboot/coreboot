@@ -2,3 +2,6 @@
 
 config BOARD_INTEL_DCP847SKE
 	bool "Intel NUC DCP847SKE"
+
+config BOARD_INTEL_D33217GKE
+	bool "Intel NUC D33217GKE"

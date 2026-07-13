@@ -1190,7 +1190,12 @@ static psp_directory_table *integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].rsvd = 0;
 			pspdir->entries[count].size = size;
 			pspdir->entries[count].addr = addr;
-			pspdir->entries[count].writable = 1;
+			/*
+			 * writable is a ROM Armor attribute; on Gen1 (single-level)
+			 * PSP directories these bits were reserved and must stay 0.
+			 */
+			if (platform_is_multi_level(cb_config->soc_id))
+				pspdir->entries[count].writable = 1;
 
 			pspdir->entries[count].address_mode =
 				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);

@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <boot/coreboot_tables.h>
 #include <bootmem.h>
+#include <bootmode.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -735,6 +736,8 @@ void efi_parse_capsules(void)
 		       coalesce_buffer.base);
 		coalesce_capsules(block_chain, (void *)(uintptr_t)coalesce_buffer.base);
 	}
+	if (uefi_capsule_count > 0)
+		set_boot_mode(LB_BOOT_MODE_FLASH_UPDATE);
 
 exit:
 	paging_disable_pae();
@@ -791,12 +794,12 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, parse_capsules, NULL);
 static void enable_capsule_smi(void *unused)
 {
 	uint32_t ret;
-
+	const bool supported = get_boot_mode() == LB_BOOT_MODE_FLASH_UPDATE;
 	ret = call_smm(APM_CNT_SMMSTORE, SMMSTORE_CMD_USE_FULL_FLASH,
-		       (void *)(uintptr_t)uefi_capsule_count);
+		       (void *)(uintptr_t)supported);
 
 	printk(BIOS_INFO, "%sabled capsule update SMI handler\n",
 	       ret == SMMSTORE_RET_SUCCESS ? "En" : "Dis");
 }
 
-BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, enable_capsule_smi, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, enable_capsule_smi, NULL);

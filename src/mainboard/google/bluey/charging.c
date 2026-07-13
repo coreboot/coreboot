@@ -76,7 +76,7 @@
 #define CHARGING_RAIL_STABILIZATION_DELAY_MS 15000 /* 15sec */
 #define LOW_BATTERY_CHARGING_LOOP_EXIT_MS (3 * 60 * 1000) /* 3min */
 #define DELAY_CHARGING_ACTIVE_LB_MS 4000 /* 4sec */
-#define AC_DISCONNECT_DEBOUNCE_MS 1000 /* 1sec */
+#define AC_DISCONNECT_DEBOUNCE_MS 2000 /* 2sec */
 
 enum charging_status {
 	CHRG_DISABLE,

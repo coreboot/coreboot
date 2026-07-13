@@ -58,6 +58,10 @@ void lb_table_add_vbnv_cmos(struct lb_header *header);
 /* Add Boot Mode information */
 void lb_add_boot_mode(struct lb_header *header);
 
+/* Register a non-PCI SDHCI controller */
+void lb_add_sdhci_nonpci(uint32_t mmio_base, uint32_t mmio_size,
+			 uint8_t slot, uint8_t flags);
+
 /* Define this in mainboard.c to add board specific CFR entries */
 void mb_cfr_setup_menu(struct lb_cfr *cfr_root);
 

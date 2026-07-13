@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <arch/cbconfig.h>
 #include <commonlib/bsd/ipchksum.h>
+#include <commonlib/sdhci_nonpci_info.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <identity.h>
@@ -247,6 +248,52 @@ static void lb_mmc_info(struct lb_header *header)
 	rec->tag = LB_TAG_MMC_INFO;
 	rec->size = sizeof(*rec);
 	rec->early_cmd1_status = *ms_cbmem;
+}
+
+/* Accumulator for LB_TAG_SDHCI_NONPCI; filled during device init. */
+static struct sdhci_nonpci_info sdhci_nonpci_accum;
+
+void lb_add_sdhci_nonpci(uint32_t mmio_base, uint32_t mmio_size,
+			 uint8_t slot, uint8_t flags)
+{
+	struct sdhci_nonpci_control *ctrl;
+
+	if (!mmio_base)
+		return;
+
+	if (!sdhci_nonpci_accum.version)
+		sdhci_nonpci_accum.version = SDHCI_NONPCI_INFO_VERSION;
+
+	if (sdhci_nonpci_accum.count >= SDHCI_NONPCI_CTRL_MAX) {
+		printk(BIOS_ERR, "SDHCI non-PCI: no room for slot %u\n", slot);
+		return;
+	}
+
+	ctrl = &sdhci_nonpci_accum.ctrl[sdhci_nonpci_accum.count++];
+	ctrl->mmio_base = mmio_base;
+	ctrl->mmio_size = mmio_size;
+	ctrl->slot = slot;
+	ctrl->flags = flags;
+
+	printk(BIOS_INFO, "SDHCI non-PCI: slot %u BAR0=0x%x flags=0x%x\n",
+	       slot, mmio_base, flags);
+}
+
+static void lb_sdhci_nonpci(struct lb_header *header)
+{
+	struct {
+		uint32_t tag;
+		uint32_t size;
+		struct sdhci_nonpci_info info;
+	} *rec;
+
+	if (!sdhci_nonpci_accum.count)
+		return;
+
+	rec = (void *)lb_new_record(header);
+	rec->tag = LB_TAG_SDHCI_NONPCI;
+	rec->size = sizeof(*rec);
+	rec->info = sdhci_nonpci_accum;
 }
 
 static void add_cbmem_pointers(struct lb_header *header)
@@ -556,6 +603,9 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	/* SMMSTORE */
 	if (CONFIG(SMMSTORE))
 		lb_smmstorev2(head);
+
+	/* Non-PCI SDHCI controller list for payloads */
+	lb_sdhci_nonpci(head);
 
 	/* Add information about firmware in form suitable for EFI updates. */
 	if (CONFIG(DRIVERS_EFI_FW_INFO))

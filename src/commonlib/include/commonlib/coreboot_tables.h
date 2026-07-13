@@ -92,6 +92,7 @@ enum {
 	LB_TAG_CFR_ROOT			= 0x0047,
 	LB_TAG_ROOT_BRIDGE_INFO		= 0x0048,
 	LB_TAG_PANEL_POWEROFF		= 0x0049,
+	LB_TAG_SDHCI_NONPCI		= 0x004a,
 	/* The following options are CMOS-related */
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,

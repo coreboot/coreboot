@@ -198,6 +198,11 @@ uintptr_t get_coreboot_rsdp(void)
 	return ebda_base;
 }
 
+enum boot_mode_t get_boot_mode(void)
+{
+	return LB_BOOT_MODE_NORMAL;
+}
+
 struct resource mock_bootmem_ranges[] = {
 	{.base = 0x1000, .size = 0x2000, .flags = LB_MEM_RAM},
 	{.base = 0x0000, .size = 0x4000, .flags = LB_MEM_RAM},
@@ -437,6 +442,12 @@ static void test_write_tables(void **state)
 			assert_int_equal(region_device_sz(boot_dev), bmp->boot_media_size);
 			assert_int_equal(get_fmap_flash_offset(), bmp->fmap_offset);
 
+			break;
+		case LB_TAG_BOOT_MODE:
+			assert_int_equal(sizeof(struct lb_boot_mode), record->size);
+
+			const struct lb_boot_mode *boot_mode = (struct lb_boot_mode *)record;
+			assert_int_equal(LB_BOOT_MODE_NORMAL, boot_mode->boot_mode);
 			break;
 		case LB_TAG_CBMEM_ENTRY:
 			assert_int_equal(sizeof(struct lb_cbmem_entry), record->size);

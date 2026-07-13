@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <arch/cbconfig.h>
+#include <bootmode.h>
 #include <commonlib/bsd/ipchksum.h>
 #include <commonlib/sdhci_nonpci_info.h>
 #include <console/console.h>
@@ -507,12 +508,15 @@ static void lb_add_acpi_rsdp(struct lb_header *head)
 	acpi_rsdp->rsdp_pointer = get_coreboot_rsdp();
 }
 
-/*
- * Not all platform would need to fill in the boot mode information.
- * This is useful for platform that would like to implement battery
- * charging solution in AP firmware.
- */
-void __weak lb_add_boot_mode(struct lb_header *header) { /* NOOP */ }
+static void lb_add_boot_mode(struct lb_header *header)
+{
+	struct lb_boot_mode *mode = (struct lb_boot_mode *)lb_new_record(header);
+	memset(mode, 0, sizeof(*mode));
+
+	mode->tag = LB_TAG_BOOT_MODE;
+	mode->size = sizeof(*mode);
+	mode->boot_mode = get_boot_mode();
+}
 
 size_t write_coreboot_forwarding_table(uintptr_t entry, uintptr_t target)
 {

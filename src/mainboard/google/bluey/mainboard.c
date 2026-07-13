@@ -117,19 +117,6 @@ static void setup_usb_late(void)
 	setup_usb_host0();
 }
 
-void lb_add_boot_mode(struct lb_header *header)
-{
-	if (!CONFIG(EC_GOOGLE_CHROMEEC))
-		return;
-
-	struct lb_boot_mode *mode = (struct lb_boot_mode *)lb_new_record(header);
-	memset(mode, 0, sizeof(*mode));
-
-	mode->tag = LB_TAG_BOOT_MODE;
-	mode->size = sizeof(*mode);
-	mode->boot_mode = get_boot_mode();
-}
-
 bool mainboard_needs_pcie_init(void)
 {
 	if (CONFIG(MAINBOARD_HAS_UFS))

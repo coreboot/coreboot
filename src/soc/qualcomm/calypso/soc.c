@@ -63,7 +63,12 @@ static struct device_operations pci_domain_ops = {
 
 static uint64_t calc_acdb_carveout_size(void)
 {
-	return ((((REGION_SIZE(dram_space_1) / GiB) * 1) / 2 + 3) * MiB);
+	return ((((region_sz(ddr_region) / GiB) * 11) / 2 + 1 + 3) * MiB);
+}
+
+static uint64_t calc_mte_size(void)
+{
+	return (((region_sz(ddr_region) / GiB) / 32));
 }
 
 static void soc_read_resources(struct device *dev)
@@ -98,10 +103,33 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_ta, REGION_SIZE(dram_ta));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_llcc_lpi, REGION_SIZE(dram_llcc_lpi));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_smem, REGION_SIZE(dram_smem));
-	/* ACDB carveout region located at 0x8C0000000 - (n*0.5 +3) where n is size of DDR */
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_gpu_prr, REGION_SIZE(dram_gpu_prr));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_tpm_ctrl, REGION_SIZE(dram_tpm_ctrl));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_usb_ucsi, REGION_SIZE(dram_usb_ucsi));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_pld_pep, REGION_SIZE(dram_pld_pep));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_pld_gmu, REGION_SIZE(dram_pld_gmu));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_pld_pdp, REGION_SIZE(dram_pld_pdp));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_qcskext, REGION_SIZE(dram_qcskext));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_qup_fw, REGION_SIZE(dram_qup_fw));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_softsku, REGION_SIZE(dram_softsku));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_acpi_ta, REGION_SIZE(dram_acpi_ta));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_xbl_scratch_buf2, REGION_SIZE(dram_xbl_scratch_buf2));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_xbl_scratch_buf1, REGION_SIZE(dram_xbl_scratch_buf1));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_spu_secure, REGION_SIZE(dram_spu_secure));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_smmu_pt, REGION_SIZE(dram_smmu_pt));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_bert, REGION_SIZE(dram_bert));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_oob_glink_always, REGION_SIZE(dram_oob_glink_always));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_oob_glink_assist, REGION_SIZE(dram_oob_glink_assist));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_oob_mdm_assist, REGION_SIZE(dram_oob_mdm_assist));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_oob_wlan_assist, REGION_SIZE(dram_oob_wlan_assist));
+	/* ACDB carveout region located at 0x8C0000000 - (n*5.5 + 1 + 3) where n is size of DDR */
 	reserved_ram_range(dev, index++,
 		(uintptr_t)_dram_space_1 + ACDB_CARVEOUT_OFFSET - calc_acdb_carveout_size(),
 		calc_acdb_carveout_size());
+	/* MTE is located at 0x8_C000_0000 ++ MTE size */
+	reserved_ram_range(dev, index++,
+		(uintptr_t)_dram_space_1 + ACDB_CARVEOUT_OFFSET + calc_mte_size(),
+		calc_mte_size());
 }
 
 static void qtee_fw_config_load(void)

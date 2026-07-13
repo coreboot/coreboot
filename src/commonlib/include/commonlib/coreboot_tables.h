@@ -652,12 +652,19 @@ enum boot_mode_t {
 	LB_BOOT_MODE_RTC_WAKE,
 	/* Device is booting in "no-battery" */
 	LB_BOOT_MODE_NO_BATTERY,
+	/* Device is booting with flash protections disabled.
+	 *
+	 * The payload is part of the trusted code base and can be used to update the flash.
+	 * The payload is also responsible to lock down the platform or reboot in order
+	 * to re-enable flash protection mechanisms.
+	 * The payload must not allow any untrusted code (Option ROMs, Bootloaders, ...)
+	 * to run in this boot mode.
+	 */
+	LB_BOOT_MODE_FLASH_UPDATE,
 };
 
 /*
- * Boot Mode: Pass the platform boot mode information to payload about
- * booting in low-battery mode or off-mode charging. This information
- * is useful for payload to implement charger driver.
+ * Boot Mode: Pass the platform boot mode information to payload.
  */
 struct lb_boot_mode {
 	uint32_t tag;

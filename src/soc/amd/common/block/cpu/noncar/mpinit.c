@@ -4,6 +4,7 @@
 #include <amdblocks/psp.h>
 #include <amdblocks/iomap.h>
 #include <amdblocks/lpc.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
@@ -34,7 +35,7 @@ void mp_init_cpus(struct bus *cpu_bus)
 	}
 
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_ROM_ARMOR3))
-		psp_rom_armor_init(false);	/* FIXME: No capsule updates for now */
+		psp_rom_armor_init(get_boot_mode() == LB_BOOT_MODE_FLASH_UPDATE);
 
 	/* SMMINFO only needs to be set up when booting from S5 */
 	if (!acpi_is_wakeup_s3())

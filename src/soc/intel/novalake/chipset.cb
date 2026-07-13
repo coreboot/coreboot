@@ -2,6 +2,79 @@ chip soc/intel/novalake
 
 	device cpu_cluster 0 on end
 
+	# NVL Mobile Power Map (#855310) Rev 1.0
+	register "power_limits_config[NVL_CORE_1]" = "{
+		.tdp_pl1_override = 0, /* Use TDP */
+		.tdp_pl2_override = 45,
+		.tdp_pl4 = 150,
+		.tdp_pl4_fastvmode = 136,
+	}"
+	register "thermal_design_current[NVL_TDC_1]" = "{
+		[VR_DOMAIN_IA] = 19 * 8,
+		[VR_DOMAIN_GT] = 15 * 8
+	}"
+	register "icc_max[NVL_SKU_1]" = "{
+		[VR_DOMAIN_IA] = 103 * 4,
+		[VR_DOMAIN_GT] = 58 * 4,
+		[VR_DOMAIN_SA] = 68 * 4,
+		[VR_DOMAIN_ATOM] = 23 * 4
+	}"
+
+        register "power_limits_config[NVL_CORE_2]" = "{
+                .tdp_pl1_override = 0, /* Use TDP */
+                .tdp_pl2_override = 65,
+                .tdp_pl4 = 146,
+                .tdp_pl4_fastvmode = 134,
+        }"
+        register "thermal_design_current[NVL_TDC_2]" = "{
+                [VR_DOMAIN_IA] = 26 * 8,
+                [VR_DOMAIN_GT] = 15 * 8
+        }"
+        register "icc_max[NVL_SKU_2]" = "{
+                [VR_DOMAIN_IA] = 113 * 4,
+                [VR_DOMAIN_GT] = 58 * 4,
+                [VR_DOMAIN_SA] = 68 * 4,
+                [VR_DOMAIN_ATOM] = 23 * 4
+        }"
+
+        register "power_limits_config[NVL_CORE_3]" = "{
+                .tdp_pl1_override = 0, /* Use TDP */
+                .tdp_pl2_override = 65,
+                .tdp_pl4 = 146,
+                .tdp_pl4_fastvmode = 134,
+        }"
+        register "thermal_design_current[NVL_TDC_3]" = "{
+                [VR_DOMAIN_IA] = 26 * 8,
+                [VR_DOMAIN_GT] = 15 * 8
+        }"
+        register "icc_max[NVL_SKU_3]" = "{
+                [VR_DOMAIN_IA] = 113 * 4,
+                [VR_DOMAIN_GT] = 58 * 4,
+                [VR_DOMAIN_SA] = 68 * 4,
+                [VR_DOMAIN_ATOM] = 23 * 4
+        }"
+
+	register "tdc_mode[VR_DOMAIN_IA]" = "TDC_IRMS"
+	register "tdc_time_window_ms[VR_DOMAIN_IA]" = "28000"
+
+	# Set the power state thresholds according to document #855310
+	# Nova Lake Mobile Platform - Design Guide - Rev 1.0
+	register "ps1_threshold" = "{
+		[VR_DOMAIN_IA] = 15 * 4,
+		[VR_DOMAIN_GT] = 15 * 4,
+		[VR_DOMAIN_SA] = 15 * 4
+	}"
+	register "ps2_threshold" = "{
+		[VR_DOMAIN_IA] = 5 * 4,
+		[VR_DOMAIN_GT] = 5 * 4,
+		[VR_DOMAIN_SA] = 5 * 4
+	}"
+	register "ps3_threshold" = "{
+		[VR_DOMAIN_IA] = 1 * 4,
+		[VR_DOMAIN_GT] = 1 * 4,
+		[VR_DOMAIN_SA] = 1 * 4
+	}"
+
 	device domain 0 on
 		device pci 00.0 alias system_agent on end
 		device pci 02.0 alias igpu on end

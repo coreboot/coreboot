@@ -40,10 +40,9 @@ Method (BTSW, 1)
 //   Arg0 = battery index
 Method (BSTA, 1, Serialized)
 {
-	If (!DFUD && !(BATT || SBAT) && !BTEX) {
-		Return (0)
-	}
-
+#if CONFIG(SYSTEM_TYPE_MINIPC) || CONFIG(SYSTEM_TYPE_ALL_IN_ONE)
+	Return (0)
+#else
 	If (Acquire (^BATM, 1000)) {
 		Return (0)
 	}
@@ -56,6 +55,7 @@ Method (BSTA, 1, Serialized)
 
 	Release (^BATM)
 	Return (Local0)
+#endif
 }
 
 #if CONFIG(EC_GOOGLE_CHROMEEC_READ_BATTERY_LONG_STRING)

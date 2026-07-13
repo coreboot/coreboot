@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <bootmode.h>
+#include <cbmem.h>
 #include <security/vboot/misc.h>
 #include <vb2_api.h>
 
@@ -41,14 +42,25 @@ int display_init_required(void)
  */
 enum boot_mode_t get_boot_mode(void)
 {
-	static bool initialized = false;
-	static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
-	if (!initialized) {
+	enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
+	if (ENV_HAS_CBMEM && cbmem_online()) {
 		enum boot_mode_t *boot_mode_ptr = cbmem_find(CBMEM_ID_BOOT_MODE);
 		if (boot_mode_ptr)
 			boot_mode = *boot_mode_ptr;
-		printk(BIOS_INFO, "Boot mode is %d\n", boot_mode);
-		initialized = true;
 	}
+	printk(BIOS_INFO, "Boot mode is %d\n", boot_mode);
+
 	return boot_mode;
+}
+
+/*
+ * Set the boot mode in cbmem for payload.
+ */
+void set_boot_mode(const enum boot_mode_t mode)
+{
+	enum boot_mode_t *boot_mode_ptr = cbmem_add(CBMEM_ID_BOOT_MODE, sizeof(enum boot_mode_t));
+	if (boot_mode_ptr) {
+		*boot_mode_ptr = mode;
+		printk(BIOS_INFO, "Boot mode set to %d\n", mode);
+	}
 }

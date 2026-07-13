@@ -44,7 +44,7 @@ static bool is_off_mode(void)
 	return is_pon_on_ac();
 }
 
-static enum boot_mode_t set_boot_mode(void)
+static enum boot_mode_t init_boot_mode(void)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
 		return boot_mode;
@@ -66,7 +66,6 @@ static enum boot_mode_t set_boot_mode(void)
 		boot_mode_new = LB_BOOT_MODE_NORMAL;
 	}
 
-	boot_mode = boot_mode_new;
 	return boot_mode_new;
 }
 
@@ -227,7 +226,7 @@ void platform_romstage_main(void)
 		handle_battery_shipping_recovery(battery_needs_recovery);
 
 	/* Underlying PMIC registers are accessible only at this point */
-	set_boot_mode();
+	boot_mode = init_boot_mode();
 
 	mainboard_setup_peripherals_late(boot_mode);
 
@@ -241,9 +240,5 @@ void platform_romstage_postram(void)
 
 	qclib_rerun();
 
-	enum boot_mode_t *boot_mode_ptr = cbmem_add(CBMEM_ID_BOOT_MODE, sizeof(*boot_mode_ptr));
-	if (boot_mode_ptr) {
-		*boot_mode_ptr = boot_mode;
-		printk(BIOS_INFO, "Boot mode is %d\n", *boot_mode_ptr);
-	}
+	set_boot_mode(boot_mode);
 }

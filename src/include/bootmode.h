@@ -30,5 +30,6 @@ int platform_is_resuming(void);
  * Handoff buffer to the payload.
  */
 enum boot_mode_t get_boot_mode(void);
+void set_boot_mode(const enum boot_mode_t mode);
 
 #endif /* __BOOTMODE_H__ */

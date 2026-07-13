@@ -207,6 +207,9 @@ static void parse_fw(const void *buf_addr, size_t buf_size, const void **img, si
 	       hdr->magic == GPUEB_PT_MAGIC) {
 		addr = (void *)hdr + hdr->hdr_size;
 
+		if (hdr->id == PT_FW_IDX_END)
+			break;
+
 		if (hdr->id == 0 || hdr->id >= PT_FW_NUM) {
 			printk(BIOS_WARNING, "%s: unexpected hdr (%d)\n", __func__, hdr->id);
 			addr += ALIGN_UP(hdr->img_size, hdr->align);

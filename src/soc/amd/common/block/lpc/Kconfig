@@ -64,6 +64,13 @@ config SOC_AMD_COMMON_BLOCK_HAS_ESPI1
 	help
 	  Select this option if SoC has eSPI1.
 
+config SOC_AMD_COMMON_BLOCK_ESPI_USE_ESPI1
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_HAS_ESPI1
+	help
+	  Select this option if the eSPI peripheral channel is wired to the
+	  second eSPI controller (eSPI1) instead of the first (eSPI0).
+
 config SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_USE_ESPI

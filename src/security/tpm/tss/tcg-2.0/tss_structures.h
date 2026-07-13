@@ -95,6 +95,7 @@ struct tpm_header {
 #define TPM_CC_VENDOR_BIT_MASK 0x20000000
 
 /* Table 15 - TPM_RC Constants (Actions) */
+#define TPM_RC_SUCCESS         (TPM_RC)(0x000)
 #define RC_FMT1                (TPM_RC)(0x080)
 #define TPM_RC_HASH            (TPM_RC)(RC_FMT1 + 0x003)
 #define TPM_RC_P               (TPM_RC)(0x040)

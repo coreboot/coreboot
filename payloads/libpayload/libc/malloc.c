@@ -136,7 +136,7 @@ void dma_allocator_range(void **start_out, size_t *size_out)
 }
 
 /* Find free block of size >= len */
-static hdrtype_t volatile *find_free_block(int len, struct memory_type *type)
+static hdrtype_t volatile *find_free_block(size_t len, struct memory_type *type)
 {
 	hdrtype_t header;
 	hdrtype_t volatile *ptr = (hdrtype_t volatile *)type->start;
@@ -181,14 +181,14 @@ static hdrtype_t volatile *find_free_block(int len, struct memory_type *type)
 }
 
 /* Mark the block with length 'len' as used */
-static void use_block(hdrtype_t volatile *ptr, int len)
+static void use_block(hdrtype_t volatile *ptr, size_t len)
 {
 	/* Align the size. */
 	len = ALIGN_UP(len, HDRSIZE);
 
 	hdrtype_t volatile *nptr = (hdrtype_t volatile *)
 		((uintptr_t)ptr + HDRSIZE + len);
-	int size = SIZE(*ptr);
+	size_t size = SIZE(*ptr);
 	int nsize = size - (HDRSIZE + len);
 
 	/*
@@ -207,7 +207,7 @@ static void use_block(hdrtype_t volatile *ptr, int len)
 	}
 }
 
-static void *alloc(int len, struct memory_type *type)
+static void *alloc(size_t len, struct memory_type *type)
 {
 	hdrtype_t volatile *ptr = find_free_block(len, type);
 
@@ -311,7 +311,7 @@ void *realloc(void *ptr, size_t size)
 {
 	void *ret, *pptr;
 	hdrtype_t volatile *block;
-	unsigned int osize;
+	size_t osize;
 	struct memory_type *type = heap;
 
 	if (ptr == NULL)
@@ -359,10 +359,10 @@ struct align_region_t
 {
 	/* If alignment is 0 then the region represents a large region which
 	 * has no metadata for tracking subelements. */
-	int alignment;
+	size_t alignment;
 	/* start in memory, and size in bytes */
 	void* start;
-	int size;
+	size_t size;
 	/* layout within a region:
 	  - num_elements bytes, 0: free, 1: used, 2: used, combines with next
 	  - padding to alignment
@@ -389,14 +389,14 @@ static inline int addr_in_region(const struct align_region_t *r, void *addr)
 
 /* num_elements == 0 indicates a large aligned region instead of a smaller
  * region comprised of alignment-sized chunks. */
-static struct align_region_t *allocate_region(int alignment, int num_elements,
+static struct align_region_t *allocate_region(size_t alignment, int num_elements,
 					size_t size, struct memory_type *type)
 {
 	struct align_region_t *r;
 	size_t extra_space;
 
 #if CONFIG(LP_DEBUG_MALLOC)
-	printf("%s(old align_regions=%p, alignment=%u, num_elements=%u, size=%zu)\n",
+	printf("%s(old align_regions=%p, alignment=%zu, num_elements=%u, size=%zu)\n",
 		__func__, type->align_regions, alignment, num_elements, size);
 #endif
 
@@ -541,7 +541,7 @@ look_further:
 		return (void *)NULL;
 	}
 
-	int i, count = 0, target = (size+align-1)/align;
+	size_t i, count = 0, target = (size+align-1)/align;
 	for (i = 0; i < (reg->size/align); i++)
 	{
 		if (((u8*)reg->start)[i] == 0)

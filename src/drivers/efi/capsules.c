@@ -695,6 +695,14 @@ void efi_parse_capsules(void)
 	   to be necessary in practice. */
 	enum { MAX_CAPSULE_BLOCKS = MAX_CAPSULES };
 
+	static bool once;
+	if (!once) {
+		once = true;
+	} else {
+		printk(BIOS_DEBUG, "capsules: already parsed, skipping.\n");
+		return;
+	}
+
 	if (CONFIG(DRIVERS_EFI_CAPSULE_ON_DISK_SUPPORT) && efi_is_disk_capsules_boot()) {
 		set_boot_mode(LB_BOOT_MODE_FLASH_UPDATE);
 		return;

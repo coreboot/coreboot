@@ -122,6 +122,17 @@ static void *map_range(uint64_t base, uint32_t len)
 {
 	static uint64_t last_mapping_base = UINT64_MAX;
 
+	if (ENV_X86_64) {
+		assert((base + len) <= (uint64_t)CONFIG_CPU_PT_ROM_MAP_GB * GiB);
+
+		if ((base + len) <= (uint64_t)CONFIG_CPU_PT_ROM_MAP_GB * GiB)
+			/* 64-bit code can access all of memory without any mapping. */
+			return (void *)(uintptr_t)base;
+		else
+			/* For developers: Consider increasing CONFIG_CPU_PT_ROM_MAP_GB. */
+			die("capsules: memory range map request can't be satisfied.\n");
+	}
+
 	/* Using MMCONF should be safe as long as we don't do any device
 	   initialization during parsing of capsules and don't forget to call
 	   paging_disable_pae() at the end. */
@@ -677,7 +688,8 @@ void efi_parse_capsules(void)
 		       IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED |
 		       IORESOURCE_CACHEABLE, BM_MEM_RAM);
 
-	init_pae_pagetables(&pae_page_tables);
+	if (ENV_X86_32)
+		init_pae_pagetables(&pae_page_tables);
 
 	/* Blocks are collected here when traversing CapsuleUpdateData*
 	   variables, duplicates are skipped. */
@@ -740,7 +752,8 @@ void efi_parse_capsules(void)
 		set_boot_mode(LB_BOOT_MODE_FLASH_UPDATE);
 
 exit:
-	paging_disable_pae();
+	if (ENV_X86_32)
+		paging_disable_pae();
 	memranges_teardown(&memory_map);
 }
 

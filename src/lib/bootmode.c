@@ -35,3 +35,20 @@ int display_init_required(void)
 	/* By default always initialize display. */
 	return 1;
 }
+
+/*
+ * Record the boot mode in cbmem for payload.
+ */
+enum boot_mode_t get_boot_mode(void)
+{
+	static bool initialized = false;
+	static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
+	if (!initialized) {
+		enum boot_mode_t *boot_mode_ptr = cbmem_find(CBMEM_ID_BOOT_MODE);
+		if (boot_mode_ptr)
+			boot_mode = *boot_mode_ptr;
+		printk(BIOS_INFO, "Boot mode is %d\n", boot_mode);
+		initialized = true;
+	}
+	return boot_mode;
+}

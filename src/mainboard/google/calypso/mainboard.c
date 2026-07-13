@@ -2,6 +2,7 @@
 
 #include "board.h"
 
+#include <bootmode.h>
 #include <bootsplash.h>
 #include <cbmem.h>
 #include <commonlib/bsd/cbmem_id.h>
@@ -22,24 +23,6 @@
 bool mainboard_needs_pcie_init(void)
 {
 	return true;
-}
-
-/*
- * This function calls the underlying PMIC/EC function only once during the
- * first execution and caches the result for all subsequent calls.
- */
-static enum boot_mode_t get_boot_mode(void)
-{
-	static bool initialized = false;
-	static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
-	if (!initialized) {
-		enum boot_mode_t *boot_mode_ptr = cbmem_find(CBMEM_ID_BOOT_MODE);
-		if (boot_mode_ptr)
-			boot_mode = *boot_mode_ptr;
-		printk(BIOS_INFO, "Boot mode is %d\n", boot_mode);
-		initialized = true;
-	}
-	return boot_mode;
 }
 
 static void trigger_critical_battery_shutdown(void)

@@ -54,24 +54,6 @@ void mainboard_usb_typec_configure(uint8_t port_num, bool inverse_polarity)
 	i2c_writeb(bus, PS8820_SLAVE_ADDR, PS8820_USB_PORT_CONN_STATUS_REG, mode_value);
 }
 
-/*
- * This function calls the underlying PMIC/EC function only once during the
- * first execution and caches the result for all subsequent calls.
- */
-static enum boot_mode_t get_boot_mode(void)
-{
-	static bool initialized = false;
-	static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
-	if (!initialized) {
-		enum boot_mode_t *boot_mode_ptr = cbmem_find(CBMEM_ID_BOOT_MODE);
-		if (boot_mode_ptr)
-			boot_mode = *boot_mode_ptr;
-		printk(BIOS_INFO, "Boot mode is %d\n", boot_mode);
-		initialized = true;
-	}
-	return boot_mode;
-}
-
 static bool is_low_power_boot_with_charger(void)
 {
 	bool ret = false;

@@ -17,6 +17,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOUTHBRIDGE_INTEL_LYNXPOINT
 	select SUPERIO_NUVOTON_NCT6791D
 
+config CBFS_SIZE
+	default 0x680000
+
 config MAINBOARD_DIR
 	default "asus/maximus_vi_impact"
 

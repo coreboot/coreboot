@@ -17,6 +17,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_NUVOTON_COMMON_COM_A
 	select SUPERIO_NUVOTON_NCT6791D
 
+config CBFS_SIZE
+	default 0x680000
+
 config MAINBOARD_DIR
 	default "asus/z87-k"
 

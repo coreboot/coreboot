@@ -17,12 +17,13 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_NUVOTON_COMMON_COM_A
 	select SUPERIO_NUVOTON_NCT5539D
 
+config CBFS_SIZE
+	default 0x680000
+
 config MAINBOARD_DIR
 	default "asus/h81m_k"
 
 config MAINBOARD_PART_NUMBER
 	default "H81M-K"
 
-config CBFS_SIZE
-	default 0x600000
 endif

@@ -463,7 +463,6 @@ static void rtc_enable_dcxo(void)
 void rtc_boot(void)
 {
 	bool need_secure_rtc_set_ck = false;
-	struct rtc_clk_freq result;
 	u16 rdata;
 	u16 rtc_diff;
 	u16 rtc_con;
@@ -486,12 +485,6 @@ void rtc_boot(void)
 	   (rtc_pwrkey1 == RTC_POWERKEY1_KEY &&
 	   rtc_pwrkey2 == RTC_POWERKEY2_KEY))
 		rtc_enable_dcxo();
-
-	/* Check if clock sources match existing 32K */
-	rtc_measure_all_clock(&result);
-
-	if (!rtc_eosc_check_clock(&result))
-		printk(BIOS_INFO, "Enter first boot init.\n");
 
 	rtc_read(RTC_POWERKEY1, &rtc_pwrkey1);
 	rtc_read(RTC_POWERKEY2, &rtc_pwrkey2);

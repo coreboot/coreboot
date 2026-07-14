@@ -246,7 +246,6 @@ static void usage(void)
 	printf("-h|--help                       Show this help\n");
 }
 
-extern amd_fw_entry amd_psp_fw_table[];
 extern struct amd_bios_entry amd_bios_table[];
 extern amd_fw_entry amd_fw_table[];
 
@@ -350,6 +349,39 @@ static void register_fw_fuse(char *str)
 	}
 }
 
+
+int amdfwtool_getconfig(int argc, char *argv[], amd_cb_config *cb_config)
+{
+	int c;
+	int argc_local = argc;
+	char **argv_local = argv;
+
+	while (1) {
+		int optindex = 0;
+
+		c = getopt_long(argc_local, argv_local, optstring, long_options, &optindex);
+
+		if (c == -1)
+			break;
+
+		if (c == AMDFW_OPT_CONFIG) {
+			cb_config->config = optarg;
+			break;
+		}
+	}
+
+	/* Reset option scanning */
+	optind = 1;
+
+	if (!cb_config->config) {
+		fprintf(stderr, "Error: No configuration file given\n");
+		usage();
+		return 1;
+	}
+
+	return 0;
+}
+
 int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 {
 	int c;
@@ -359,12 +391,14 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 	int retval = 0;
 	bool any_location = 0;
 	int fuse_defined = 0;
+	int argc_local = argc;
+	char **argv_local = argv;
 
 	while (1) {
 		int optindex = 0;
 		int bios_tbl_index = -1;
 
-		c = getopt_long(argc, argv, optstring, long_options, &optindex);
+		c = getopt_long(argc_local, argv_local, optstring, long_options, &optindex);
 
 		if (c == -1)
 			break;
@@ -615,9 +649,6 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 			register_amd_psp_fw_addr(AMD_FW_PSP_SEV_DATA, sub, 0, optarg);
 			sub = instance = 0;
 			break;
-		case AMDFW_OPT_CONFIG:
-			cb_config->config = optarg;
-			break;
 		case AMDFW_OPT_DEBUG:
 			cb_config->debug = 1;
 			break;
@@ -641,11 +672,6 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 		default:
 			break;
 		}
-	}
-
-	if (!cb_config->config) {
-		fprintf(stderr, "Error: No configuration file given\n");
-		retval = 1;
 	}
 
 	if (!fuse_defined)

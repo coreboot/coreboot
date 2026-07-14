@@ -267,7 +267,6 @@ void compile_reg_expr(int cflags, const char *expr, regex_t *reg)
 		}                                        \
 	} while (0)
 
-extern amd_fw_entry amd_psp_fw_table[];
 extern struct amd_bios_entry amd_bios_table[];
 
 static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
@@ -559,6 +558,44 @@ static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 #define SOC_NAME "SOC_NAME"
 /*
   return value:
+	Pointer to a newly allocated copy of the SOC_NAME value, to be freed by
+	the caller, or NULL if the config file does not specify SOC_NAME.
+ */
+char *config_get_soc_name(FILE *config)
+{
+	char oneline[MAX_LINE_SIZE];
+	regmatch_t match[N_MATCHES];
+	char *platform_name = NULL;
+	int index;
+
+	for (index = 0; index < N_MATCHES; index++) {
+		match[index].rm_so = -1;
+		match[index].rm_eo = -1;
+	}
+
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE,
+		blank_or_comment_regex, &blank_or_comment_expr);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE,
+		entries_line_regex, &entries_line_expr);
+
+	/* Only look for SOC_NAME, the rest is handled by process_config() */
+	while (get_input_file_line(config, oneline, MAX_LINE_SIZE) == OK) {
+		if (skip_comment_blank_line(oneline))
+			continue;
+		if (is_valid_entry(oneline, match) &&
+		    strcmp(&(oneline[match[FW_TYPE].rm_so]), SOC_NAME) == 0) {
+			platform_name = strdup(&(oneline[match[FW_FILE].rm_so]));
+			break;
+		}
+	}
+
+	fseek(config, 0, SEEK_SET);
+
+	return platform_name;
+}
+
+/*
+  return value:
 	0: The config file can not be parsed correctly.
 	1: The config file can be parsed correctly.
  */
@@ -568,7 +605,6 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config)
 	regmatch_t match[N_MATCHES];
 	char dir[MAX_LINE_SIZE] = {'\0'};
 	uint32_t dir_len;
-	char *platform_name = NULL;
 	int index;
 
 	for (index = 0; index < N_MATCHES; index++) {
@@ -587,28 +623,14 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config)
 		/* get a line */
 		if (skip_comment_blank_line(oneline))
 			continue;
-		if (is_valid_entry(oneline, match)) {
-			if (strcmp(&(oneline[match[FW_TYPE].rm_so]), FW_LOCATION) == 0) {
-				dir_len = match[FW_FILE].rm_eo - match[FW_FILE].rm_so;
-				assert(dir_len < MAX_LINE_SIZE);
-				snprintf(dir, MAX_LINE_SIZE, "%.*s", dir_len,
-					&(oneline[match[FW_FILE].rm_so]));
-			} else if (strcmp(&(oneline[match[FW_TYPE].rm_so]), SOC_NAME) == 0) {
-				platform_name = strdup(&(oneline[match[FW_FILE].rm_so]));
-				cb_config->soc_id = platform_identify(platform_name);
-			}
+		if (is_valid_entry(oneline, match) &&
+		    strcmp(&(oneline[match[FW_TYPE].rm_so]), FW_LOCATION) == 0) {
+			dir_len = match[FW_FILE].rm_eo - match[FW_FILE].rm_so;
+			assert(dir_len < MAX_LINE_SIZE);
+			snprintf(dir, MAX_LINE_SIZE, "%.*s", dir_len,
+				&(oneline[match[FW_FILE].rm_so]));
 		}
 	}
-
-	if (!platform_name) {
-		fprintf(stderr, "AMDFWTOOL: Platform not specified in config\n");
-		return 0;
-	} else if (cb_config->soc_id == PLATFORM_UNKNOWN) {
-		fprintf(stderr, "AMDFWTOOL: Unknown platform '%s'\n", platform_name);
-		free(platform_name);
-		return 0;
-	}
-	free(platform_name);
 
 	if (platform_needs_ish(cb_config->soc_id))
 		cb_config->recovery_ab = true;

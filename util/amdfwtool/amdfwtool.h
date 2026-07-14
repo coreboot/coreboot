@@ -206,7 +206,10 @@ typedef struct _context {
 	struct ish_directory_table *ish_b_dirs[MAX_ISH_TABLES];
 } context;
 
+extern amd_fw_entry *amd_psp_fw_table;
+
 uint8_t process_config(FILE *config, amd_cb_config *cb_config);
+char *config_get_soc_name(FILE *config);
 void process_signed_psp_firmwares(const char *signed_rom,
 		amd_fw_entry *fw_table,
 		uint64_t signed_start_addr,
@@ -230,7 +233,7 @@ ssize_t copy_blob(context *ctx, const char *src_file);
 #define LINE_TOO_LONG (2)
 
 int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config);
-
+int amdfwtool_getconfig(int argc, char *argv[], amd_cb_config *cb_config);
 
 enum platform platform_identify(char *soc_name);
 bool platform_needs_ish(enum platform platform_type);
@@ -243,5 +246,6 @@ uint32_t platform_get_psp_id(enum platform platform_type, const unsigned int ind
 bool platform_is_initial_alignment_required(enum platform platform_type);
 bool platform_has_legacy_ab_recovery(amd_cb_config *cb_config);
 uint32_t platform_psb_reserved_size(enum platform platform_type);
+amd_fw_entry* platform_get_psp_fw_table(enum platform platform_type);
 
 #endif	/* _AMD_FW_TOOL_H_ */

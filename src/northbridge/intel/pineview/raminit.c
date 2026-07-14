@@ -615,41 +615,51 @@ static void sdram_clk_crossing(struct sysinfo *s)
 		mchbar_write32(CLKXSSH2MD + 4, 0);
 	}
 
-	static const u32 clkcross2[2][2][8] = {
-	{
-		{	// FSB = 667, DDR = 667
-			0x00000000, 0x08010204, 0x00000000, 0x08010204,
-			0x00000000, 0x00000000, 0x00000000, 0x04080102,
+	/* Settings for 1:1 ratio between FSB:DDR */
+	static const u32 clkcross2_same[8] = {
+		0x00000000, 0x08010204, 0x00000000, 0x08010204,
+		0x00000000, 0x00000000, 0x00000000, 0x04080102,
+	};
+	static const u32 clkcross2_dt[2][8] = {
+		{	// FSB = 667, DDR = 800
+			0x04080000, 0x10010200, 0x10000000, 0x20010408,
+			0x00000000, 0x00000200, 0x02040000, 0x08100102,
 		},
+		{	// FSB = 800, DDR = 667
+			0x10000000, 0x20010408, 0x04080000, 0x10010200,
+			0x00000000, 0x00000000, 0x08000000, 0x10200204,
+		},
+	};
+	static const u32 clkcross2_mb[2][8] = {
 		{	// FSB = 667, DDR = 800
 			0x04080000, 0x10010002, 0x10000000, 0x20010208,
 			0x00000000, 0x00000004, 0x02040000, 0x08100102,
 		},
-	},
-	{
 		{	// FSB = 800, DDR = 667
 			0x10000000, 0x20010208, 0x04080000, 0x10010002,
 			0x00000000, 0x00000000, 0x08000000, 0x10200204,
 		},
-		{	// FSB = 800, DDR = 800
-			0x00000000, 0x08010204, 0x00000000, 0x08010204,
-			0x00000000, 0x00000000, 0x00000000, 0x04080102,
-		},
-	},
 	};
+	const u32 *clkcross2;
+	if (fsb_freq == ddr_freq) {
+		clkcross2 = clkcross2_same;
+	} else {
+		const u8 cross_idx = fsb_freq > ddr_freq;
+		clkcross2 = (s->is_mobile ? clkcross2_mb : clkcross2_dt)[cross_idx];
+	}
 
-	mchbar_write32(CLKXSSH2MCBYP,       clkcross2[fsb_freq][ddr_freq][0]);
-	mchbar_write32(CLKXSSH2MCRDQ,       clkcross2[fsb_freq][ddr_freq][0]);
-	mchbar_write32(CLKXSSH2MCRDCST,     clkcross2[fsb_freq][ddr_freq][0]);
-	mchbar_write32(CLKXSSH2MCBYP + 4,   clkcross2[fsb_freq][ddr_freq][1]);
-	mchbar_write32(CLKXSSH2MCRDQ + 4,   clkcross2[fsb_freq][ddr_freq][1]);
-	mchbar_write32(CLKXSSH2MCRDCST + 4, clkcross2[fsb_freq][ddr_freq][1]);
-	mchbar_write32(CLKXSSMC2H,          clkcross2[fsb_freq][ddr_freq][2]);
-	mchbar_write32(CLKXSSMC2H + 4,      clkcross2[fsb_freq][ddr_freq][3]);
-	mchbar_write32(CLKXSSMC2HALT,       clkcross2[fsb_freq][ddr_freq][4]);
-	mchbar_write32(CLKXSSMC2HALT + 4,   clkcross2[fsb_freq][ddr_freq][5]);
-	mchbar_write32(CLKXSSH2X2MD,        clkcross2[fsb_freq][ddr_freq][6]);
-	mchbar_write32(CLKXSSH2X2MD + 4,    clkcross2[fsb_freq][ddr_freq][7]);
+	mchbar_write32(CLKXSSH2MCBYP,       clkcross2[0]);
+	mchbar_write32(CLKXSSH2MCRDQ,       clkcross2[0]);
+	mchbar_write32(CLKXSSH2MCRDCST,     clkcross2[0]);
+	mchbar_write32(CLKXSSH2MCBYP + 4,   clkcross2[1]);
+	mchbar_write32(CLKXSSH2MCRDQ + 4,   clkcross2[1]);
+	mchbar_write32(CLKXSSH2MCRDCST + 4, clkcross2[1]);
+	mchbar_write32(CLKXSSMC2H,          clkcross2[2]);
+	mchbar_write32(CLKXSSMC2H + 4,      clkcross2[3]);
+	mchbar_write32(CLKXSSMC2HALT,       clkcross2[4]);
+	mchbar_write32(CLKXSSMC2HALT + 4,   clkcross2[5]);
+	mchbar_write32(CLKXSSH2X2MD,        clkcross2[6]);
+	mchbar_write32(CLKXSSH2X2MD + 4,    clkcross2[7]);
 }
 
 static void sdram_clkmode(struct sysinfo *s)
@@ -860,12 +870,18 @@ static void sdram_timings(struct sysinfo *s)
 	mchbar_clrbits8(BYPKNRULE, 0x03);
 	mchbar_clrbits8(SHBONUSREG, 0x03);
 	mchbar_setbits8(C0BYPCTRL, 1 << 0);
-	mchbar_setbits16(CSHRMISCCTL1, 1 << 9);
+	if (s->selected_timings.mem_clock == MEM_CLOCK_667MHz)
+		mchbar_setbits16(CSHRMISCCTL1, 1 << 9);
 
-	for (i = 0; i < 8; i++) {
-		/* FIXME: Hardcoded for DDR2 SO-DIMMs */
-		mchbar_clrsetbits32(C0DLLRCVCTLy(i), 0x3f3f3f3f, 0x0c0c0c0c);
+	if (sdram_is_sodimm(s)) {
+		reg32 = 0x0c0c0c0c;
+	} else if (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) {
+		reg32 = 0x10101010;
+	} else {
+		reg32 = 0x14141414;
 	}
+	for (i = 0; i < 8; i++)
+		mchbar_clrsetbits32(C0DLLRCVCTLy(i), 0x3f3f3f3f, reg32);
 	/* RDCS to RCVEN delay: Program coarse common to all bytelanes to default tCL + 1 */
 	mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, (s->selected_timings.CAS + 1) << 16);
 
@@ -884,29 +900,29 @@ static void sdram_timings(struct sysinfo *s)
 }
 
 /* Program clkset0's register for Kcoarse, Tap, PI, DBEn and DBSel */
-static void sdram_p_clkset0(const struct pllparam *pll, u8 f, u8 i)
+static void sdram_p_clkset0(const struct pllparam *pll, u8 f, u8 i, u8 pidelay)
 {
 	mchbar_clrsetbits16(C0CKTX, 0xc440,
 			(pll->clkdelay[f][i] << 14) |
 			(pll->dben[f][i] << 10) |
 			(pll->dbsel[f][i] << 6));
 
-	mchbar_clrsetbits8(C0TXCK0DLL, 0x3f, pll->pi[f][i]);
+	mchbar_clrsetbits8(C0TXCK0DLL, 0x3f, pll->pi[f][i] + pidelay);
 }
 
 /* Program clkset1's register for Kcoarse, Tap, PI, DBEn and DBSel */
-static void sdram_p_clkset1(const struct pllparam *pll, u8 f, u8 i)
+static void sdram_p_clkset1(const struct pllparam *pll, u8 f, u8 i, u8 pidelay)
 {
 	mchbar_clrsetbits32(C0CKTX, 0x00030880,
 			(pll->clkdelay[f][i] << 16) |
 			(pll->dben[f][i] << 11) |
 			(pll->dbsel[f][i] << 7));
 
-	mchbar_clrsetbits8(C0TXCK1DLL, 0x3f, pll->pi[f][i]);
+	mchbar_clrsetbits8(C0TXCK1DLL, 0x3f, pll->pi[f][i] + pidelay);
 }
 
 /* Program CMD0 and CMD1 registers for Kcoarse, Tap, PI, DBEn and DBSel */
-static void sdram_p_cmd(const struct pllparam *pll, u8 f, u8 i)
+static void sdram_p_cmd(const struct pllparam *pll, u8 f, u8 i, u8 pidelay)
 {
 	u8 reg8;
 	/* Clock Group Index 3 */
@@ -917,13 +933,13 @@ static void sdram_p_cmd(const struct pllparam *pll, u8 f, u8 i)
 	reg8 = pll->clkdelay[f][i] << 4;
 	mchbar_clrsetbits8(C0CMDTX2, 3 << 4, reg8);
 
-	reg8 = pll->pi[f][i];
+	reg8 = pll->pi[f][i] + pidelay;
 	mchbar_clrsetbits8(C0TXCMD0DLL, 0x3f, reg8);
 	mchbar_clrsetbits8(C0TXCMD1DLL, 0x3f, reg8);
 }
 
 /* Program CTRL registers for Kcoarse, Tap, PI, DBEn and DBSel */
-static void sdram_p_ctrl(const struct pllparam *pll, u8 f, u8 i)
+static void sdram_p_ctrl(const struct pllparam *pll, u8 f, u8 i, u8 pidelay)
 {
 	u8 reg8;
 	u32 reg32;
@@ -937,7 +953,7 @@ static void sdram_p_ctrl(const struct pllparam *pll, u8 f, u8 i)
 	reg32 |= ((u32)pll->clkdelay[f][i]) << 27;
 	mchbar_clrsetbits32(C0CTLTX2, 0x01bf0000, reg32);
 
-	reg8 = pll->pi[f][i];
+	reg8 = pll->pi[f][i] + pidelay;
 	mchbar_clrsetbits8(C0TXCTL0DLL, 0x3f, reg8);
 	mchbar_clrsetbits8(C0TXCTL1DLL, 0x3f, reg8);
 
@@ -950,12 +966,12 @@ static void sdram_p_ctrl(const struct pllparam *pll, u8 f, u8 i)
 	reg32 |= ((u32)pll->clkdelay[f][i]) << 10;
 	mchbar_clrsetbits32(C0CMDTX2, 0xff << 8, reg32);
 
-	reg8 = pll->pi[f][i];
+	reg8 = pll->pi[f][i] + pidelay;
 	mchbar_clrsetbits8(C0TXCTL2DLL, 0x3f, reg8);
 	mchbar_clrsetbits8(C0TXCTL3DLL, 0x3f, reg8);
 }
 
-static void sdram_p_dqs(struct pllparam *pll, u8 f, u8 clk)
+static void sdram_p_dqs(const struct pllparam *pll, u8 f, u8 clk, u8 pidelay)
 {
 	u8 rank, dqs, reg8, j;
 	u32 reg32;
@@ -975,11 +991,11 @@ static void sdram_p_dqs(struct pllparam *pll, u8 f, u8 clk)
 	mchbar_clrsetbits32(C0DQSDQRyTX3(rank), 1 << (dqs * 2 + 17) | 1 << (dqs * 2 + 16),
 			reg32);
 
-	reg8 = pll->pi[f][clk];
+	reg8 = pll->pi[f][clk] + pidelay;
 	mchbar_clrsetbits8(C0TXDQS0R0DLL + j, 0x3f, reg8);
 }
 
-static void sdram_p_dq(struct pllparam *pll, u8 f, u8 clk)
+static void sdram_p_dq(const struct pllparam *pll, u8 f, u8 clk, u8 pidelay)
 {
 	u8 rank, dq, reg8, j;
 	u32 reg32;
@@ -998,14 +1014,14 @@ static void sdram_p_dq(struct pllparam *pll, u8 f, u8 clk)
 	reg32 = ((u32)pll->clkdelay[f][clk]) << (dq*2);
 	mchbar_clrsetbits32(C0DQSDQRyTX3(rank), 1 << (dq * 2 + 1) | 1 << (dq * 2), reg32);
 
-	reg8 = pll->pi[f][clk];
+	reg8 = pll->pi[f][clk] + pidelay;
 	mchbar_clrsetbits8(C0TXDQ0R0DLL + j, 0x3f, reg8);
 }
 
 /* WDLL programming: Perform HPLL/MPLL calibration after write levelization */
 static void sdram_calibratepll(struct sysinfo *s, u8 pidelay)
 {
-	struct pllparam pll = {
+	static const struct pllparam pll_mb = {
 		.pi = {
 		{	/* DDR = 667 */
 			3, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
@@ -1079,30 +1095,87 @@ static void sdram_calibratepll(struct sysinfo *s, u8 pidelay)
 		}}
 	};
 
+	static const struct pllparam pll_dt = {
+		.pi = {
+		{	/* DDR = 667 */
+			0, 0, 4, 4, 7, 7, 7, 7, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+			3, 3, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+			2, 2, 2, 2, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6,
+			6, 6, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6,
+		},
+		{	/* DDR = 800 */
+			53, 53, 10, 10, 0,  0,  0,  0,  35, 35, 35, 35, 41, 41, 41,
+			41, 41, 41, 41, 41, 46, 46, 46, 46, 54, 54, 54, 54, 48, 48,
+			48, 48, 48, 48, 48, 48, 45, 45, 45, 45, 3,  3,  3,  3,  10,
+			10, 10, 10, 10, 10, 10, 10, 15, 15, 15, 15, 23, 23, 23, 23,
+			18, 18, 18, 18, 18, 18, 18, 18, 15, 15, 15, 15,
+		}},
+
+		.dben = {
+		{	/* DDR = 667 */
+			0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		},
+		{	/* DDR = 800 */
+			1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		}},
+
+		.dbsel = {
+		{	/* DDR = 667 */
+			0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		},
+		{	/* DDR = 800 */
+			0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		}},
+
+		.clkdelay = {
+		{	/* DDR = 667 */
+			0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		},
+		{	/* DDR = 800 */
+			0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		}}
+	};
+
+	const struct pllparam *pll = sdram_is_sodimm(s) ? &pll_mb : &pll_dt;
+
 	u8 i, f;
 	if (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) {
 		f = 0;
 	} else {
 		f = 1;
 	}
-	for (i = 0; i < 72; i++) {
-		pll.pi[f][i] += pidelay;
-	}
-
 	/* Disable Dynamic DQS Slave Setting Per Rank */
 	mchbar_clrbits8(CSHRDQSCMN, 1 << 7);
 	mchbar_clrsetbits16(CSHRPDCTL4, 0x3fff, 0x1fff);
 
-	sdram_p_clkset0(&pll, f, 0);
-	sdram_p_clkset1(&pll, f, 1);
-	sdram_p_cmd(&pll,     f, 2);
-	sdram_p_ctrl(&pll,    f, 4);
+	sdram_p_clkset0(pll, f, 0, pidelay);
+	sdram_p_clkset1(pll, f, 1, pidelay);
+	sdram_p_cmd(pll,     f, 2, pidelay);
+	sdram_p_ctrl(pll,    f, 4, pidelay);
 
 	for (i = 0; i < 32; i++) {
-		sdram_p_dqs(&pll, f, i + 40);
+		sdram_p_dqs(pll, f, i + 40, pidelay);
 	}
 	for (i = 0; i < 32; i++) {
-		sdram_p_dq(&pll, f, i + 8);
+		sdram_p_dq(pll, f, i + 8, pidelay);
 	}
 }
 
@@ -1271,7 +1344,7 @@ static void sdram_dlltiming(struct sysinfo *s)
 /* FIXME: This only applies to DDR2 */
 static void sdram_rcomp(struct sysinfo *s)
 {
-	u8  i, j, reg8, rcompp, rcompn, srup, srun;
+	u8 i, j, reg8, rcompp, rcompn, srup, srun;
 	u16 reg16;
 	u32 reg32, rcomp1, rcomp2;
 
@@ -1291,6 +1364,7 @@ static void sdram_rcomp(struct sysinfo *s)
 	TABLE u8  rcompstr[7]    = {  0x66,   0x00,   0xaa,   0x55,   0x55,   0x77,   0x77};
 	TABLE u16 rcompscomp[7]  = {0xa22a, 0x0000, 0xe22e, 0xe22e, 0xe22e, 0xa22a, 0xa22a};
 	TABLE u8  rcompdelay[7]  = {     1,      0,      0,      0,      0,      1,      1};
+	TABLE u8  rcompscompoff[7] = {0x09,   0x00,   0x00,   0x00,   0x00,   0x07,   0x07};
 	TABLE u16 rcompf[7]      = {0x1114, 0x0000, 0x0505, 0x0909, 0x0909, 0x0a0a, 0x0a0a};
 	TABLE u8  rcompstr2[7]   = {  0x00,   0x55,   0x55,   0xaa,   0xaa,   0x55,   0xaa};
 	TABLE u16 rcompscomp2[7] = {0x0000, 0xe22e, 0xe22e, 0xe22e, 0x8228, 0xe22e, 0x8228};
@@ -1388,9 +1462,10 @@ static void sdram_rcomp(struct sysinfo *s)
 		mchbar_write8(C0RCOMPMULTx(i), rcompstr[i]);
 		mchbar_write16(C0SCOMPVREFx(i), rcompscomp[i]);
 		mchbar_clrsetbits8(C0DCOMPx(i), 0x03, rcompdelay[i]);
-		if (i == 2) {
-			/* FIXME: Why are we rewriting this? */
-			mchbar_clrsetbits16(C0RCOMPCTRLx(i), 0xf << 12, reg16 << 12);
+		if (sdram_is_sodimm(s) && i == 2) {
+			/* SO-DIMM group 2 uses config-dependent RCOMP values. */
+			if (s->dimm_config[0] == 0)
+				mchbar_clrbits16(C0RCOMPCTRLx(i), 0xf << 12);
 
 			mchbar_write8(C0RCOMPMULTx(i), rcompstr2[s->dimm_config[0]]);
 			mchbar_write16(C0SCOMPVREFx(i), rcompscomp2[s->dimm_config[0]]);
@@ -1408,15 +1483,17 @@ static void sdram_rcomp(struct sysinfo *s)
 		mchbar_clrbits16(C0SLEWPDLUTx(i) + 2, 0x3f3f);
 	}
 
-	/* FIXME: Hardcoded */
-	mchbar_clrsetbits8(C0ODTRECORDX,    0x3f, 0x36);
-	mchbar_clrsetbits8(C0DQSODTRECORDX, 0x3f, 0x36);
+	/* FIXME: DDR3 uses 0x3f here. */
+	reg8 = s->dimm_config[0] == 0 ? 0x00 : 0x36;
+	mchbar_clrsetbits8(C0ODTRECORDX, 0x3f, reg8);
+	mchbar_clrsetbits8(C0DQSODTRECORDX, 0x3f, reg8);
 
 	FOR_EACH_RCOMP_GROUP(i) {
 		mchbar_clrbits8(C0RCOMPCTRLx(i), 3 << 5);
 		mchbar_clrbits16(C0RCOMPCTRLx(i) + 2, 0x0706);
 		mchbar_clrbits16(C0RCOMPOSVx(i), 0x7f7f);
-		mchbar_clrbits16(C0SCOMPOFFx(i), 0x3f3f);
+		reg16 = rcompscompoff[i] * 0x0101;
+		mchbar_clrsetbits16(C0SCOMPOFFx(i), 0x3f3f, reg16);
 		mchbar_clrbits16(C0DCOMPOFFx(i), 0x1f1f);
 		mchbar_clrbits8(C0DCOMPOFFx(i) + 2, 0x1f);
 	}
@@ -1531,7 +1608,7 @@ static void sdram_rcomp(struct sysinfo *s)
 /* FIXME: The ODT tables are for DDR2 only! */
 static void sdram_odt(struct sysinfo *s)
 {
-	u8 rankindex = 0;
+	u8 r, rankindex = 0;
 
 	static const u16 odt_rankctrl[16] = {
 	/*	 NC_NC,  1R_NC,     NV,  2R_NC,  NC_1R,  1R_1R,     NV,  2R_1R, */
@@ -1546,58 +1623,116 @@ static void sdram_odt(struct sysinfo *s)
 		0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x4444, 0x0000, 0x4444,
 	};
 
-	switch (s->dimms[0].ranks) {
-	case 0:
-		if (s->dimms[1].ranks == 0) {
-			rankindex = 0;
-		} else if (s->dimms[1].ranks == 1) {
-			rankindex = 4;
-		} else if (s->dimms[1].ranks == 2) {
-			rankindex = 12;
-		}
-		break;
-	case 1:
-		if (s->dimms[1].ranks == 0) {
-			rankindex = 1;
-		} else if (s->dimms[1].ranks == 1) {
-			rankindex = 5;
-		} else if (s->dimms[1].ranks == 2) {
-			rankindex = 13;
-		}
-		break;
-	case 2:
-		if (s->dimms[1].ranks == 0) {
-			rankindex = 3;
-		} else if (s->dimms[1].ranks == 1) {
-			rankindex = 7;
-		} else if (s->dimms[1].ranks == 2) {
-			rankindex = 15;
-		}
-		break;
-	}
+	FOR_EACH_RANK_IN_CHANNEL(r)
+	if (rank_is_populated(s->dimms, 0, r))
+		rankindex |= 1 << r;
 
 	/* Program the ODT Matrix */
 	mchbar_write16(C0ODT, odt_matrix[rankindex]);
 
 	/* Program the ODT Rank Control */
 	mchbar_write16(C0ODTRKCTRL, odt_rankctrl[rankindex]);
+
+	mchbar_clrsetbits16(C0ODTCTRL, 0x0fff, 0x0668);
+	mchbar_clrsetbits32(C0CKECTRL, (7 << 24) | (7 << 17) | (1 << 16) | (0x0f << 10),
+			    (3 << 24) | (3 << 17) | (0x0f << 10));
+	if (s->selected_timings.mem_clock == MEM_CLOCK_800MHz && s->selected_timings.CAS == 6)
+		mchbar_write8(C0CKEDELAY, 0x89);
+	else
+		mchbar_write8(C0CKEDELAY, 0x78);
+
+	if (!sdram_is_sodimm(s))
+		mchbar_clrsetbits32(C0COARSEDLY1, 0xcccccccc, 0x44444444);
 }
 
 static void sdram_mmap(struct sysinfo *s)
 {
-	TABLE u32 w260[7] = {0, 0x400001,  0xc00001, 0x500000,  0xf00000,  0xc00001,  0xf00000};
-	TABLE u32 w208[7] = {0,  0x10000, 0x1010000,  0x10001, 0x1010101, 0x1010000, 0x1010101};
-	TABLE u32 w200[7] = {0,        0,         0,  0x20002,   0x40002,         0,   0x40002};
-	TABLE u32 w204[7] = {0,  0x20002,   0x40002,  0x40004,   0x80006,   0x40002,   0x80006};
+	TABLE u32 w260_mb[7] = {0, 0x400001,  0xc00001, 0x500000,  0xf00000,  0xc00001,  0xf00000};
+	TABLE u32 w208_mb[7] = {0,  0x10000, 0x1010000,  0x10001, 0x1010101, 0x1010000, 0x1010101};
+	TABLE u32 w200_mb[7] = {0,        0,         0,  0x20002,   0x40002,         0,   0x40002};
+	TABLE u32 w204_mb[7] = {0,  0x20002,   0x40002,  0x40004,   0x80006,   0x40002,   0x80006};
 
-	TABLE u16 tolud[7]  = {2048, 2048, 4096, 4096, 8192, 4096, 8192};
-	TABLE u16 tom[7]    = {   2,    2,    4,    4,    8,    4,    8};
-	TABLE u16 touud[7]  = { 128,  128,  256,  256,  512,  256,  512};
-	TABLE u32 gbsm[7]   = {1 << 27, 1 << 27, 1 << 28, 1 << 27, 1 << 29, 1 << 28, 1 << 29};
-	TABLE u32 bgsm[7]   = {1 << 27, 1 << 27, 1 << 28, 1 << 27, 1 << 29, 1 << 28, 1 << 29};
-	TABLE u32 tsegmb[7] = {1 << 27, 1 << 27, 1 << 28, 1 << 27, 1 << 29, 1 << 28, 1 << 29};
+	TABLE u16 tolud_mb[7]  = {2048, 2048, 4096, 4096, 8192, 4096, 8192};
+	TABLE u16 tom_mb[7]    = {   2,    2,    4,    4,    8,    4,    8};
+	TABLE u16 touud_mb[7]  = { 128,  128,  256,  256,  512,  256,  512};
+	TABLE u32 gbsm_mb[7]   = {1 << 27, 1 << 27, 1 << 28, 1 << 27, 1 << 29, 1 << 28, 1 << 29};
+	TABLE u32 bgsm_mb[7]   = {1 << 27, 1 << 27, 1 << 28, 1 << 27, 1 << 29, 1 << 28, 1 << 29};
+	TABLE u32 tsegmb_mb[7] = {1 << 27, 1 << 27, 1 << 28, 1 << 27, 1 << 29, 1 << 28, 1 << 29};
 
-	if ((s->dimm_config[0] < 3) && rank_is_populated(s->dimms, 0, 0)) {
+	/* Desktop tables are indexed by dimma_config | (dimmb_config << 2). */
+	TABLE u32 w260_dt[16] = {
+		0x000000, 0x100001, 0x300001, 0x100001,
+		0x400001, 0x500000, 0x700000, 0x500000,
+		0xc00001, 0xd00000, 0xf00000, 0xd00000,
+		0x400001, 0x500000, 0x700000, 0x500000,
+	};
+	TABLE u32 w208_dt[16] = {
+		0x00000000, 0x00000001, 0x00000101, 0x00000001,
+		0x00010000, 0x00010001, 0x00010101, 0x00010001,
+		0x01010000, 0x01010001, 0x01010101, 0x01010001,
+		0x00010000, 0x00010001, 0x00010101, 0x00010001,
+	};
+	TABLE u32 w200_dt[16] = {
+		0x00000000, 0x00020002, 0x00040002, 0x00020002,
+		0x00000000, 0x00020002, 0x00040002, 0x00020002,
+		0x00000000, 0x00020002, 0x00040002, 0x00020002,
+		0x00000000, 0x00020002, 0x00040002, 0x00020002,
+	};
+	TABLE u32 w204_dt[16] = {
+		0x00000000, 0x00020002, 0x00040004, 0x00020002,
+		0x00020002, 0x00040004, 0x00060006, 0x00040004,
+		0x00040002, 0x00060004, 0x00080006, 0x00060004,
+		0x00020002, 0x00040004, 0x00060006, 0x00040004,
+	};
+	TABLE u16 tolud_dt[16] = {
+		2048, 2048, 4096, 2048,
+		2048, 4096, 6144, 4096,
+		4096, 6144, 8192, 6144,
+		2048, 4096, 6144, 4096,
+	};
+	TABLE u16 tom_dt[16] = {
+		2, 2, 4, 2,
+		2, 4, 6, 4,
+		4, 6, 8, 6,
+		2, 4, 6, 4,
+	};
+	TABLE u16 touud_dt[16] = {
+		128, 128, 256, 128,
+		128, 256, 384, 256,
+		256, 384, 512, 384,
+		128, 256, 384, 256,
+	};
+	TABLE u32 gbsm_dt[16] = {
+		1 << 27, 1 << 27,    1 << 28, 1 << 27,
+		1 << 27, 1 << 27, 0x18000000, 1 << 27,
+		1 << 28, 0x18000000, 1 << 29, 0x18000000,
+		1 << 27, 1 << 27, 0x18000000, 1 << 27,
+	};
+	TABLE u32 bgsm_dt[16] = {
+		1 << 27, 1 << 27,    1 << 28, 1 << 27,
+		1 << 27, 1 << 28, 0x18000000, 1 << 28,
+		1 << 28, 0x18000000, 1 << 29, 0x18000000,
+		1 << 27, 1 << 28, 0x18000000, 1 << 28,
+	};
+	TABLE u32 tsegmb_dt[16] = {
+		1 << 27, 1 << 27,    1 << 28, 1 << 27,
+		1 << 27, 1 << 28, 0x18000000, 1 << 28,
+		1 << 28, 0x18000000, 1 << 29, 0x18000000,
+		1 << 27, 1 << 28, 0x18000000, 1 << 28,
+	};
+	const bool sodimm = sdram_is_sodimm(s);
+	const u32 *w260 = sodimm ? w260_mb : w260_dt;
+	const u32 *w208 = sodimm ? w208_mb : w208_dt;
+	const u32 *w200 = sodimm ? w200_mb : w200_dt;
+	const u32 *w204 = sodimm ? w204_mb : w204_dt;
+	const u16 *tolud = sodimm ? tolud_mb : tolud_dt;
+	const u16 *tom = sodimm ? tom_mb : tom_dt;
+	const u16 *touud = sodimm ? touud_mb : touud_dt;
+	const u32 *gbsm = sodimm ? gbsm_mb : gbsm_dt;
+	const u32 *bgsm = sodimm ? bgsm_mb : bgsm_dt;
+	const u32 *tsegmb = sodimm ? tsegmb_mb : tsegmb_dt;
+
+	if (sodimm && (s->dimm_config[0] < 3) && rank_is_populated(s->dimms, 0, 0)) {
 		if (s->dimms[0].sides > 1) {
 			// 2R/NC
 			mchbar_clrsetbits32(C0CKECTRL, 1, 0x300001);
@@ -1611,7 +1746,8 @@ static void sdram_mmap(struct sysinfo *s)
 			mchbar_write32(C0DRB0, 0x00020002);
 			mchbar_write32(C0DRB2, w204[s->dimm_config[0]]);
 		}
-	} else if ((s->dimm_config[0] == 5) && rank_is_populated(s->dimms, 0, 0)) {
+	} else if (sodimm && (s->dimm_config[0] == 5) &&
+		   rank_is_populated(s->dimms, 0, 0)) {
 		mchbar_clrsetbits32(C0CKECTRL, 1, 0x300001);
 		mchbar_write32(C0DRA01, 0x00000101);
 		mchbar_write32(C0DRB0, 0x00040002);
@@ -1822,7 +1958,7 @@ static void sdram_dradrb(struct sysinfo *s)
 		},
 		{
 		 {0xff, 0x01, 0xff, 0xff},
-		 {0xff, 0x03, 0xff, 0x06}
+		 {0xff, 0x03, 0xff, 0xff}
 		}
 	},
 	{
@@ -2225,13 +2361,29 @@ static void sdram_enhancedmode(struct sysinfo *s)
 	mchbar_clrsetbits8(CHDECMISC, 0xfc, reg8 & 0xfc);
 	mchbar_clrbits32(NOACFGBUSCTL, 1 << 31);
 
-	mchbar_write32(HTBONUS0, 0xf);
-	mchbar_setbits8(C0COREBONUS + 4, 1 << 0);
+	if (!s->is_mobile &&
+	    s->selected_timings.fsb_clock == FSB_CLOCK_800MHz &&
+	    s->selected_timings.mem_clock == MEM_CLOCK_667MHz) {
+		mchbar_write32(HTBONUS0, 0x0c);
+	} else {
+		mchbar_write32(HTBONUS0, 0x0f);
+		mchbar_setbits8(C0COREBONUS + 4, 1 << 0);
+	}
 
 	mchbar_clrbits32(HIT3, 7 << 25);
 	mchbar_clrsetbits32(HIT4, 3 << 18, 1 << 18);
 
-	u32 clkcx[2][2][3] = {
+	static const u32 clkcx_dt[2][2][3] = {
+	{
+		{0x00000000, 0x04080102, 0x08010204},	/* FSB = 667, DDR = 667 */
+		{0x02040000, 0x08100102, 0x10010002},	/* FSB = 667, DDR = 800 */
+	},
+	{
+		{0x08000000, 0x10200204, 0x20010208},	/* FSB = 800, DDR = 667 */
+		{0x00000000, 0x0c080302, 0x08010204},	/* FSB = 800, DDR = 800 */
+	}
+	};
+	static const u32 clkcx_mb[2][2][3] = {
 	{
 		{0x00000000, 0x0c080302, 0x08010204},	/* FSB = 667, DDR = 667 */
 		{0x02040000, 0x08100102, 0x00000000},	/* FSB = 667, DDR = 800 */
@@ -2241,6 +2393,7 @@ static void sdram_enhancedmode(struct sysinfo *s)
 		{0x00000000, 0x0c090306, 0x00000000},	/* FSB = 800, DDR = 800 */
 	}
 	};
+	const u32(*clkcx)[2][3] = s->is_mobile ? clkcx_mb : clkcx_dt;
 
 	fsb_freq = s->selected_timings.fsb_clock;
 	ddr_freq = s->selected_timings.mem_clock;
@@ -2267,11 +2420,11 @@ static void sdram_periodic_rcomp(void)
 
 static void sdram_new_trd(struct sysinfo *s)
 {
-	u8 pidelay, i, j, k, cc, trd_perphase[5];
+	u8 pidelay, i, cc, trd_perphase[5];
 	u8 bypass, freqgb, trd, reg8, txfifo;
 	u32 reg32, datadelay, tio, rcvendelay, maxrcvendelay;
-	u16 tmclk, thclk, buffertocore, postcalib;
-	static const u8 txfifo_lut[8] = { 0, 7, 6, 5, 2, 1, 4, 3 };
+	u16 buffertocore, postcalib;
+	static const u8 txfifo_lut[8] = {0, 7, 6, 5, 2, 1, 4, 3};
 	static const u16 trd_adjust[2][2][5] = {
 			{
 				{3000, 3000, 0,0,0},
@@ -2283,11 +2436,12 @@ static void sdram_new_trd(struct sysinfo *s)
 			}};
 
 	freqgb = 110;
-	buffertocore = 5000;
+	buffertocore = s->is_mobile ? 5500 : 5000;
 	postcalib = (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) ? 1250 : 500;
-	tmclk = (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) ? 3000 : 2500;
-	tmclk = tmclk * 100 / freqgb;
-	thclk = (s->selected_timings.fsb_clock == FSB_CLOCK_667MHz) ? 6000 : 5000;
+	const u16 raw_tmclk = (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) ? 3000 : 2500;
+	const u16 tmclk = raw_tmclk * 100 / freqgb;
+	const u16 raw_thclk = (s->selected_timings.fsb_clock == FSB_CLOCK_667MHz) ? 6000 : 5000;
+	const u16 thclk = raw_thclk * 100 / freqgb;
 	switch (s->selected_timings.mem_clock) {
 	case MEM_CLOCK_667MHz:
 		if (s->selected_timings.fsb_clock == FSB_CLOCK_667MHz) {
@@ -2327,22 +2481,29 @@ static void sdram_new_trd(struct sysinfo *s)
 	reg8 = (mchbar_read8(CSHRFIFOCTL) & 0x0e) >> 1;
 	txfifo = txfifo_lut[reg8] & 0x07;
 
-	datadelay = tmclk * (2*txfifo + 4*s->coarsectrl + 4*(bypass-1) + 13) / 4
-			+ tio + maxrcvendelay + pidelay + buffertocore + postcalib;
-	if (s->async) {
-		datadelay += tmclk / 2;
-	}
+	datadelay = tmclk * (2 * txfifo + 4 * s->coarsectrl + 4 * (bypass - 1) + 13) / 4 + tio +
+		    maxrcvendelay + pidelay + buffertocore + postcalib;
+	if (s->async)
+		datadelay += raw_tmclk / 2;
 
-	j = (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) ? 0 : 1;
-	k = (s->selected_timings.fsb_clock == FSB_CLOCK_667MHz) ? 0 : 1;
+	const bool ddr_800 = s->selected_timings.mem_clock == MEM_CLOCK_800MHz;
+	const bool fsb_800 = s->selected_timings.fsb_clock == FSB_CLOCK_800MHz;
 
-	if (j == 0 && k == 0) {
-		datadelay -= 3084;
+	if (s->selected_timings.CAS == 5) {
+		if (s->is_mobile) {
+			if (!ddr_800 && !fsb_800)
+				datadelay -= 3084;
+		} else {
+			if (ddr_800 && fsb_800)
+				datadelay -= 2750;
+			else if (!ddr_800 && !fsb_800)
+				datadelay -= 1848;
+		}
 	}
 
 	trd = 0;
 	for (i = 0; i < cc; i++) {
-		reg32 = datadelay - (trd_adjust[k][j][i] * 100 / freqgb);
+		reg32 = datadelay - (trd_adjust[fsb_800][ddr_800][i] * 100 / freqgb);
 		trd_perphase[i] = (u8)(reg32 / thclk) - 2;
 		trd_perphase[i] += 1;
 		if (trd_perphase[i] > trd) {
@@ -2377,10 +2538,11 @@ static void sdram_powersettings(struct sysinfo *s)
 	mchbar_clrsetbits32(HTCLKGTCTL, ~0, 0x20);
 	mchbar_clrbits8(TSMISC, 1 << 0);
 	mchbar_write8(C0WRDPYN, s->selected_timings.CAS - 1 + 0x15);
-	mchbar_clrsetbits16(CLOCKGATINGI, 0x07fc, 0x0040);
+	mchbar_clrsetbits16(CLOCKGATINGI, 0x03fc, 0x0040);
 	mchbar_clrsetbits16(CLOCKGATINGII, 0x0fff, 0x0d00);
 	mchbar_clrbits16(CLOCKGATINGIII, 0x0d80);
-	mchbar_write16(GTDPCGC + 2, 0xffff);
+	if (s->is_mobile)
+		mchbar_write16(GTDPCGC + 2, 0xffff);
 
 	/* Sequencing */
 	mchbar_clrsetbits32(HPWRCTL1, 0x1fffffff, 0x1f643fff);
@@ -2389,12 +2551,12 @@ static void sdram_powersettings(struct sysinfo *s)
 
 	/* Power */
 	mchbar_clrsetbits32(GFXC3C4, 0xffff0003, 0x10100000);
-	mchbar_clrsetbits32(PMDSLFRC, 0x0001bff7, 0x00000078);
+	mchbar_clrsetbits32(PMDSLFRC, 0x0001bff7, s->is_mobile ? 0x7c : 0x78);
 
-	if (s->selected_timings.fsb_clock == FSB_CLOCK_667MHz)
-		mchbar_clrsetbits16(PMMSPMRES, 0x03ff, 0x00c8);
-	else
-		mchbar_clrsetbits16(PMMSPMRES, 0x03ff, 0x0100);
+	u16 pmmspmres = 0;
+	if (s->is_mobile)
+		pmmspmres = s->selected_timings.fsb_clock == FSB_CLOCK_667MHz ? 0xc8 : 0x100;
+	mchbar_clrsetbits16(PMMSPMRES, 0x03ff, pmmspmres);
 
 	j = (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) ? 0 : 1;
 

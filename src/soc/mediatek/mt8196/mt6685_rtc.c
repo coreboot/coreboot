@@ -71,18 +71,10 @@ static bool rtc_eosc_check_clock(const struct rtc_clk_freq *result)
 		return false;
 }
 
-u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
+u16 rtc_measure_frequency_meter(u16 measure_src, u16 window_size)
 {
-	u16 osc32con;
 	u16 rdata;
 	u16 fqmtr_data;
-
-	if (val != 0) {
-		rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-		rtc_read(RTC_OSC32CON, &rdata);
-		osc32con = rdata & ~RTC_XOSCCALI_MASK;
-		rtc_xosc_write(osc32con | (val & RTC_XOSCCALI_MASK));
-	}
 
 	/* RG_BANK_FQMTR_RST = 1 reset FQMTR */
 	config_interface(RG_BANK_FQMTR_RST, 1, RG_BANK_FQMTR_RST_MASK,
@@ -139,8 +131,6 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 	/* Disable FQMTR */
 	config_interface(RG_FQMTR_EN, 0, RG_FQMTR_EN_MASK, RG_FQMTR_EN_SHIFT);
 
-	printk(BIOS_INFO, "%s: input=%#x, output=%u\n", __func__, val, fqmtr_data);
-
 	config_interface(RG_FQMTR_CLK_CK_PDN_SET, 1,
 			 RG_FQMTR_CLK_CK_PDN_MASK, RG_FQMTR_CLK_CK_PDN_SHIFT);
 
@@ -156,19 +146,19 @@ static void rtc_measure_all_clock(struct rtc_clk_freq *result)
 	config_interface(RG_FQMTR_CKSEL, FQMTR_FIX_CLK_26M, RG_FQMTR_CKSEL_MASK,
 			 RG_FQMTR_CKSEL_SHIFT);
 	udelay(100);
-	result->fqm26m_ck = rtc_get_frequency_meter(0, FQMTR_FQM26M_CK, 4);
+	result->fqm26m_ck = rtc_measure_frequency_meter(FQMTR_FQM26M_CK, 4);
 
 	/* Select DCXO_32 as target clock */
 	config_interface(RG_FQMTR_CKSEL, FQMTR_FIX_CLK_26M, RG_FQMTR_CKSEL_MASK,
 			 RG_FQMTR_CKSEL_SHIFT);
 	udelay(100);
-	result->dcxo_f32k_ck = rtc_get_frequency_meter(0, FQMTR_DCXO_F32K_CK, 3970);
+	result->dcxo_f32k_ck = rtc_measure_frequency_meter(FQMTR_DCXO_F32K_CK, 3970);
 
 	/* Select 26M as target clock */
 	config_interface(RG_FQMTR_CKSEL, FQMTR_FIX_CLK_EOSC_32K, RG_FQMTR_CKSEL_MASK,
 			 RG_FQMTR_CKSEL_SHIFT);
 	udelay(100);
-	result->fqm26m_target_ck = rtc_get_frequency_meter(0, FQMTR_FQM26M_CK, 4);
+	result->fqm26m_target_ck = rtc_measure_frequency_meter(FQMTR_FQM26M_CK, 4);
 }
 
 static bool rtc_frequency_meter_check(void)

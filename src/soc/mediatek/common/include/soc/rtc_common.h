@@ -108,7 +108,26 @@ u16 rtc_eosc_cali(void);
 /* Complete the RTC initialization process and register settings. */
 int rtc_init(int recover);
 void rtc_boot(void);
+
+/*
+ * Measure the frequency of a target clock source using the PMIC frequency meter.
+ *
+ * @param measure_src	The target clock source to measure (e.g. FQMTR_FQM26M_CK).
+ * @param window_size	The measurement window size (timer gate duration).
+ */
+u16 rtc_measure_frequency_meter(u16 measure_src, u16 window_size);
+
+/*
+ * Calibrate the RTC oscillator and measure the frequency of a target
+ * clock source using the PMIC frequency meter.
+ *
+ * @param val		The calibration value to write to RTC_OSC32CON before measuring.
+ *			Pass a valid trim code (RTC_XOSCCALI_START to RTC_XOSCCALI_END).
+ * @param measure_src	The target clock source to measure (e.g. FQMTR_FQM26M_CK).
+ * @param window_size	The measurement window size (timer gate duration).
+ */
 u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size);
+
 bool rtc_gpio_init(void);
 void rtc_read(u16 addr, u16 *rdata);
 void rtc_write(u16 addr, u16 wdata);

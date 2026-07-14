@@ -58,18 +58,10 @@ bool rtc_gpio_init(void)
 				  RTC_CON_GPEN | RTC_CON_GOE);
 }
 
-u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
+u16 rtc_measure_frequency_meter(u16 measure_src, u16 window_size)
 {
-	u16 osc32con;
-	u16 fqmtr_busy, fqmtr_data, fqmtr_rst, fqmtr_tcksel;
+	u16 fqmtr_busy, fqmtr_data, fqmtr_tcksel;
 	struct stopwatch sw;
-
-	if (val) {
-		rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
-		rtc_read(RTC_OSC32CON, &osc32con);
-		rtc_xosc_write((osc32con & ~RTC_XOSCCALI_MASK) |
-				(val & RTC_XOSCCALI_MASK));
-	}
 
 	/* enable FQMTR clock */
 	pwrap_write_field(PMIC_RG_TOP_CKPDN_CON0_CLR, 1, 1,
@@ -83,7 +75,6 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 		rtc_read(PMIC_RG_FQMTR_DATA, &fqmtr_data);
 		rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_busy);
 	} while (fqmtr_data && (fqmtr_busy & PMIC_FQMTR_CON0_BUSY));
-	rtc_read(PMIC_RG_FQMTR_RST, &fqmtr_rst);
 	/* FQMTR normal */
 	pwrap_write_field(PMIC_RG_FQMTR_RST, 0, 1, PMIC_FQMTR_RST_SHIFT);
 
@@ -120,7 +111,6 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 	rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_tcksel);
 	rtc_write(PMIC_RG_FQMTR_CON0,
 		  fqmtr_tcksel & ~PMIC_FQMTR_CON0_DCXO26M_EN);
-	rtc_info("input=0x%x, output=%d\n", val, fqmtr_data);
 
 	/* disable FQMTR clock */
 	pwrap_write_field(PMIC_RG_TOP_CKPDN_CON0_SET, 1, 1,

@@ -3,6 +3,24 @@
 #include <soc/rtc.h>
 #include <soc/rtc_common.h>
 
+u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
+{
+	u16 result;
+	u16 osc32con;
+
+	if (!rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD))
+		return 0;
+
+	rtc_read(RTC_OSC32CON, &osc32con);
+	if (!rtc_xosc_write((osc32con & ~RTC_XOSCCALI_MASK) |
+			    (val & RTC_XOSCCALI_MASK)))
+		return 0;
+
+	result = rtc_measure_frequency_meter(measure_src, window_size);
+	rtc_info("%s: input=0x%x, output=%d\n", __func__, val, result);
+	return result;
+}
+
 #define IS_FQMTR_IN_WINDOW(val) ((val) >= RTC_FQMTR_LOW_BASE && (val) <= RTC_FQMTR_HIGH_BASE)
 
 static u16 get_freq_meter(u16 step)

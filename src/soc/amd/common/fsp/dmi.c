@@ -201,11 +201,18 @@ static void prepare_dmi_16_17(void *unused)
 	dmi_table = fsp_find_extension_hob_by_guid(
 		(const uint8_t *)&amd_fsp_dmi_hob_guid, &amd_fsp_dmi_hob_size);
 
-	if (dmi_table == NULL || amd_fsp_dmi_hob_size == 0) {
+	if (dmi_table == NULL) {
 		printk(BIOS_ERR,
 		       "AMD_FSP_DMI_HOB not found, DMI table 17 will be incomplete\n");
 		return;
 	}
+
+	if (amd_fsp_dmi_hob_size < sizeof(DMI_INFO)) {
+		printk(BIOS_ERR, "AMD_FSP_DMI_HOB size mismatch (%zu < %zu), DMI table 17"
+		       " will be incomplete\n", amd_fsp_dmi_hob_size, sizeof(DMI_INFO));
+		return;
+	}
+
 	printk(BIOS_DEBUG, "AMD_FSP_DMI_HOB found\n");
 
 	if (CONFIG(EC_GOOGLE_CHROMEEC)) {

@@ -220,6 +220,9 @@ static void handle_low_power_charging_boot(void)
 
 	display_stop();
 
+	if (CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch())
+		mdelay(CONFIG_PLATFORM_POST_RENDER_DELAY_SEC * 1000);
+
 	/*
 	 * Disable the lightbar for Low-Battery or Off-Mode charging sequences.
 	 * This maintains visual consistency between the built-in display

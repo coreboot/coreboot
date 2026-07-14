@@ -1270,11 +1270,8 @@ if [ -z "${LANGUAGES}" ]; then
 			printf "stalled, you can point this script to the matching version through\n"
 			printf "the \`CC\` and \`CXX\` environment variables.\n\n"
 
-			printf "e.g. on Ubuntu 14.04, if \`gcc\` is \`gcc-4.8\`:\n"
-			printf "    apt-get install gnat-4.8 && make crossgcc\n\n"
-
-			printf "on Ubuntu 16.04, if \`gcc\` is \`gcc-5\`:\n"
-			printf "    apt-get install gnat-5 && make crossgcc\n"
+			printf "on Ubuntu 26.04, if \`gcc\` is \`gcc-15\`:\n"
+			printf "    apt-get install gnat-15 && make crossgcc\n"
 		fi
 		timeout 30
 		LANGUAGES="${DEFAULT_LANGUAGES}"

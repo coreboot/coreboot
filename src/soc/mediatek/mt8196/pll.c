@@ -1664,3 +1664,26 @@ void mt_pll_raise_little_cpu_freq(u32 freq)
 	clrsetbits32(&mtk_mcusys->cpu_plldiv0_cfg, GENMASK(10, 8), BIT(8));
 	setbits32(&mtk_mcusys->cpu_plldiv0_cfg, BIT(10));
 }
+
+void mt_pll_raise_cci_freq(u32 freq)
+{
+	const struct pll *pll = &mcusys_plls[CLK_CCIPLL];
+
+	/* Switch CCI clock source to the 26 MHz safe clock. */
+	clrbits32(&mtk_mcusys->bus_plldiv_cfg, GENMASK(10, 8));
+	setbits32(&mtk_mcusys->bus_plldiv_cfg, BIT(10));
+
+	/* Disable CCIPLL frequency output. */
+	clrbits32(pll->reg, MT8196_PLL_EN);
+
+	/* Raise CCIPLL frequency. */
+	pll_set_rate(pll, freq);
+
+	/* Enable CCIPLL frequency output and wait for it to stabilize. */
+	setbits32(pll->reg, MT8196_PLL_EN);
+	udelay(PLL_EN_DELAY);
+
+	/* Switch CCI clock source back to the PLL-speed muxsel. */
+	clrsetbits32(&mtk_mcusys->bus_plldiv_cfg, GENMASK(10, 8), BIT(8));
+	setbits32(&mtk_mcusys->bus_plldiv_cfg, BIT(10));
+}

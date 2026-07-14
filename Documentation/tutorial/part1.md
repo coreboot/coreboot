@@ -30,7 +30,7 @@ Download, configure, and build coreboot
 
 Debian based distros:
 `sudo apt-get install -y bison build-essential curl flex git gnat
-libncurses-dev libssl-dev zlib1g-dev pkgconf`
+libncurses-dev libssl-dev zlib1g-dev pkgconf python-is-python3`
 
 Arch based distros:
 `sudo pacman -S base-devel curl git gcc-ada ncurses zlib`

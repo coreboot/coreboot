@@ -166,7 +166,9 @@ config D3COLD_SUPPORT
 	default n
 
 config FMDFILE
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board-s-gbe.fmd" if SOC_INTEL_ALDERLAKE_PCH_S && MAINBOARD_USES_IFD_GBE_REGION
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board-s.fmd" if SOC_INTEL_ALDERLAKE_PCH_S
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
 config ONBOARD_VGA_IS_PRIMARY
 	default y

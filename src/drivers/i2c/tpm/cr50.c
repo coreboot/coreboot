@@ -241,7 +241,6 @@ static void cr50_i2c_tis_ready(void)
 {
 	uint8_t buf[4] = { TPM_STS_COMMAND_READY };
 	cr50_i2c_write(TPM_STS(tpm_dev.locality), buf, sizeof(buf));
-	mdelay(CR50_TIMEOUT_SHORT_MS);
 }
 
 /* cr50 uses bytes 3:2 of status register for burst count and

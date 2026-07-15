@@ -19,7 +19,7 @@ also bridged to [Matrix](https://matrix.to/#/#coreboot:matrix.org) and a
 [OSF Slack](https://osfw.slack.com/), which has channels on many open source
 firmware related topics. Slack requires that people come from specific domains
 or are explicitly invited. To work around that, there's an
-[invite bot](https://slack.osfw.dev/) to let people in.
+[invite bot](http://slack.osfw.foundation) to let people in.
 
 ## Fortnightly coreboot leadership meeting
 

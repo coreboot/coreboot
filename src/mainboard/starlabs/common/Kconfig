@@ -72,6 +72,11 @@ config USE_LEGACY_8254_TIMER
 config USE_PC_CMOS_ALTCENTURY
 	default n if VENDOR_STARLABS
 
+config STARLABS_NO_PCAT_8259
+	bool
+	default y
+	select NO_PCAT_8259
+
 config DRIVERS_EFI_FW_INFO
 	def_bool y
 

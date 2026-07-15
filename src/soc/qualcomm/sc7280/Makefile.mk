@@ -62,7 +62,7 @@ ramstage-$(CONFIG_SDHCI_CONTROLLER) += sdhci.c ../common/storage/sdhci_msm.c
 CPPFLAGS_common += -Isrc/soc/qualcomm/sc7280/include
 CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 
-BL31_MAKEARGS += PLAT=sc7280
+BL31_MAKEARGS += PLAT=sc7280_chrome
 
 ################################################################################
 ifeq ($(CONFIG_USE_QC_BLOBS),y)

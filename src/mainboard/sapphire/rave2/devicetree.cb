@@ -192,6 +192,19 @@ chip soc/amd/glinda
 		end
 	end
 
+	# I2C0/1: Versal connections (ignored for now)
+	device ref i2c_0 on end
+	device ref i2c_1 on end
+	device ref i2c_2 on
+		# Temperature sensor
+		chip drivers/i2c/generic
+			register "hid" = "ACPI_DT_NAMESPACE_HID"
+			register "desc" = ""Temperature Sensor""
+			register "uid" = "0"
+			register "compat_string" = ""ti,tmp432""
+			device i2c 0x4c on end
+		end
+	end
 	device ref i2c_3 on
 		chip drivers/i2c/generic
 			register "hid" = ""NVTN2023""

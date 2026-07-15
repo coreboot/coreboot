@@ -141,15 +141,6 @@ ifeq ($(shell test $(tz_size) -lt $(req_tz_size) && echo 1), 1)
      $(error "TRUSTZONE_CARVEOUT_SIZE_MB should be at least as big as TTB_SIZE_MB + SEC_COMPONENT_SIZE_MB")
 endif
 
-# BL31 component is placed towards the end of 32-bit address space. This assumes
-# that TrustZone memory is placed at the end of 32-bit address space. Within the
-# TZ memory, we place BL31 and BL32(if available) towards the beginning and TTB
-# towards the end. Calculate TZDRAM_BASE i.e. base of BL31 component by:
-#   0x1000 = end of 32-bit address space in MiB
-#   0x1000 - $(CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB) = start of TZ memory in MiB
-BL31_MAKEARGS += TZDRAM_BASE=$$(((0x1000 - $(CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB)) << 20))
-BL31_MAKEARGS += PLAT=tegra TARGET_SOC=t210
-
 # MTC fw
 MTC_DIR = $(CONFIG_MTC_DIRECTORY)
 MTC_FILE = $(MTC_DIR)/$(CONFIG_MTC_FILE)

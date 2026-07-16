@@ -52,6 +52,8 @@
 #define RTC_SPAR_MACRO			0x5d8
 #define RTC_SPAR_PROT_STAT_SHIFT	6
 #define RTC_SPAR_PROT_STAT_MASK		0x3
+/* Spare pwrkey (with reset signal); cleared by VRTC28 LPD on power loss */
+#define RTC_SPAR_PWRKEY_MATCH_LPD_SHIFT	4
 #define RTC_PROT_UNLOCK_SUCCESS		0x3
 
 #define RG_FQMTR_CLK_CK_PDN_SET		0x10c

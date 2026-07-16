@@ -497,12 +497,27 @@ void rtc_boot(void)
 	    !mt6685_writeif_unlock()) {
 		rtc_recovery_flow();
 	} else {
+		u16 rtc_spar;
+		bool spare_pwkey_lpd;
+
 		rtc_read(RTC_POWERKEY1, &rtc_pwrkey1);
 		rtc_read(RTC_POWERKEY2, &rtc_pwrkey2);
+		/*
+		 * SPAR_PWRKEY_MATCH_LPD is the powerkey that carries a reset
+		 * signal: it is cleared by VRTC28 LPD when VRTC loses power.
+		 * So a warm boot (RTC kept power) requires the main powerkeys
+		 * to match AND this LPD powerkey to still be matched.
+		 */
+		rtc_read(RTC_SPAR_MACRO, &rtc_spar);
+		spare_pwkey_lpd = !!(rtc_spar & BIT(RTC_SPAR_PWRKEY_MATCH_LPD_SHIFT));
+
 		if (rtc_pwrkey1 != RTC_POWERKEY1_KEY ||
-		    rtc_pwrkey2 != RTC_POWERKEY2_KEY) {
-			printk(BIOS_INFO, "%s: powerkey1 = %#x, powerkey2 = %#x\n", __func__,
-			       rtc_pwrkey1, rtc_pwrkey2);
+		    rtc_pwrkey2 != RTC_POWERKEY2_KEY ||
+		    !spare_pwkey_lpd) {
+			/* Cold boot / power loss: full init + calibration */
+			printk(BIOS_INFO,
+			       "%s: powerkey1 = %#x, powerkey2 = %#x, rtc_spar = %#x, lpd_pwkey = %u\n",
+			       __func__, rtc_pwrkey1, rtc_pwrkey2, rtc_spar, spare_pwkey_lpd);
 			if (!rtc_first_boot_init())
 				rtc_recovery_flow();
 		} else {

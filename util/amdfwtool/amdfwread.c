@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include "amdfwtool.h"
 
+#include <vendorcode/amd/psp/psp_fw_parser.h>
+
 #define ERR(...) fprintf(stderr, __VA_ARGS__)
 
 enum spi_frequency {
@@ -57,248 +59,44 @@ const uint32_t fw_header_offsets_4MiB[] = {
 	0x020000,
 };
 
+struct ro_list_state {
+	bool psp_l2_seen;
+	bool stop_after_psp_l2;
+};
+
 /* Size of the FW in bytes */
 static uint32_t rom_size;
 
-static uint32_t file_rel_mask(uint32_t addr)
+static bool walk_efs_psp_softfuse_callback(const struct psp_dir_region *dir_rdev,
+					   const size_t level,
+					   const size_t index,
+					   const union psp_dir_entry *entry,
+					   void *user_data)
 {
-	return addr & (rom_size - 1);
+	(void) user_data;
+	(void) index;
+	(void) level;
+
+	if (dir_rdev->type != PSP_DIR_PSP)
+		return true;
+	if (entry->psp.type == AMD_FW_PSP_FUSE_CHAIN) {
+		uint64_t fuse = (uint64_t)entry->psp.address_mode << 62 | entry->psp.addr;
+		printf("Soft-fuse:0x%lx\n", fuse);
+		return false;	/* Abort walk */
+	}
+	return true;
 }
 
-/* Converts addresses to be relative to the start of the file */
-static uint64_t relative_offset(uint32_t header_offset, uint64_t addr, uint64_t mode)
-{
-	switch (mode) {
-	/* Since this utility operates on the BIOS file, physical address is converted
-	   relative to the start of the BIOS file. */
-	case AMD_ADDR_PHYSICAL:
-		if (addr < MAX(SPI_ROM_BASE, 0xffffffff - rom_size + 1) ||
-		    addr > 0xffffffff) {
-			ERR("Invalid address(%lx) or mode(%lx)\n", addr, mode);
-			exit(1);
-		}
-		return file_rel_mask(addr);
-
-	case AMD_ADDR_REL_BIOS:
-		if (addr >= rom_size) {
-			ERR("Invalid address(%lx) or mode(%lx)\n", addr, mode);
-			exit(1);
-		}
-		return file_rel_mask(addr);
-
-	case AMD_ADDR_REL_TAB:
-		return addr + header_offset;
-
-	default:
-		ERR("Unsupported mode %lu\n", mode);
-		exit(1);
-	}
-}
-
-static int read_header(FILE *fw, uint32_t offset, void *header, size_t header_size)
-{
-	if (fseek(fw, offset, SEEK_SET) != 0) {
-		ERR("Failed to seek to file offset 0x%x\n", offset);
-		return 1;
-	}
-
-	if (fread(header, header_size, 1, fw) != 1) {
-		ERR("Failed to read header at 0x%x\n", offset);
-		return 1;
-	}
-
-	return 0;
-}
-
-static int read_fw_header(FILE *fw, uint32_t offset, struct embedded_firmware *fw_header)
-{
-	if (read_header(fw, offset, fw_header, sizeof(struct embedded_firmware))) {
-		ERR("Failed to read fw header at 0x%x\n", offset);
-		return 1;
-	}
-
-	return fw_header->signature != EMBEDDED_FW_SIGNATURE;
-}
-
-/* Returns true if there's a PSP directory with the expected cookie */
-static bool test_if_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_cookie)
-{
-	struct psp_directory_header header;
-	offset = file_rel_mask(offset);
-
-	if (read_header(fw, offset, &header, sizeof(struct psp_directory_header))) {
-		ERR("Failed to read PSP header\n");
-		return false;
-	}
-	return header.cookie == expected_cookie;
-}
-
-static int read_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_cookie,
-			      struct psp_directory_header *header,
-			      struct psp_directory_entry **entries,
-			      size_t *num_entries)
-{
-	offset = file_rel_mask(offset);
-
-	if (read_header(fw, offset, header, sizeof(struct psp_directory_header))) {
-		ERR("Failed to read PSP header\n");
-		return 1;
-	}
-
-	/* Ensure that we have a PSP directory */
-	if (header->cookie != expected_cookie) {
-		ERR("Invalid PSP header cookie value found: 0x%x, expected: 0x%x\n",
-		    header->cookie, expected_cookie);
-		return 1;
-	}
-
-	if (!entries || !num_entries)
-		return 0;
-
-	/* Read the entries */
-	*num_entries = header->num_entries;
-	*entries = malloc(sizeof(struct psp_directory_entry) * header->num_entries);
-	if (fread(*entries, sizeof(struct psp_directory_entry), header->num_entries, fw)
-		!= header->num_entries) {
-		ERR("Failed to read %d PSP entries\n", header->num_entries);
-		return 1;
-	}
-
-	return 0;
-}
-
-static int read_ish_directory(FILE *fw, uint32_t offset, struct ish_directory_table *table)
-{
-	return read_header(fw, file_rel_mask(offset), table, sizeof(*table));
-}
-
-static int read_bios_directory(FILE *fw, uint32_t offset, uint32_t expected_cookie,
-			       struct bios_directory_hdr *header, struct bios_directory_entry **entries,
-			       size_t *num_entries)
-{
-	offset = file_rel_mask(offset);
-
-	if (read_header(fw, offset, header, sizeof(struct bios_directory_hdr))) {
-		ERR("Failed to read BIOS header\n");
-		return 1;
-	}
-
-	/* Ensure that we have a BIOS directory */
-	if (header->cookie != expected_cookie) {
-		ERR("Invalid BIOS header cookie value found: 0x%x, expected: 0x%x\n",
-			header->cookie, expected_cookie);
-		return 1;
-	}
-
-	if (!entries || !num_entries)
-		return 0;
-
-	/* Read the entries */
-	*num_entries = header->num_entries;
-	*entries = malloc(sizeof(struct bios_directory_entry) * header->num_entries);
-	if (fread(*entries, sizeof(struct bios_directory_entry), header->num_entries, fw)
-		!= header->num_entries) {
-		ERR("Failed to read %d BIOS entries\n", header->num_entries);
-		return 1;
-	}
-
-	return 0;
-}
-
-static int read_soft_fuse(FILE *fw, const struct embedded_firmware *fw_header)
-{
-	struct psp_directory_entry *current_entries = NULL;
-	size_t num_current_entries = 0;
-
-	uint32_t psp_offset = 0;
-	/* 0xffffffff or 0x00000000 indicates that the offset is in new_psp_directory */
-	if (fw_header->psp_directory != 0xffffffff && fw_header->psp_directory != 0x00000000)
-		psp_offset = fw_header->psp_directory;
-	else
-		psp_offset = fw_header->new_psp_directory;
-
-	struct psp_directory_header header;
-	if (read_psp_directory(fw, psp_offset, PSP_COOKIE, &header,
-		       &current_entries, &num_current_entries) != 0)
-		return 1;
-
-	while (1) {
-		uint32_t l2_dir_offset = 0;
-		uint32_t ish_dir_offset;
-		struct ish_directory_table ish_dir;
-
-		for (size_t i = 0; i < num_current_entries; i++) {
-			uint32_t type = current_entries[i].type;
-			uint64_t mode = current_entries[i].address_mode;
-			uint64_t addr = current_entries[i].addr;
-			uint64_t fuse;
-
-			switch (type) {
-			case AMD_FW_PSP_FUSE_CHAIN:
-				fuse = mode << 62 | addr;
-
-				printf("Soft-fuse:0x%lx\n", fuse);
-				free(current_entries);
-				return 0;
-
-			case AMD_FW_PSP_L2_PTR:
-				/* There's a second level PSP directory to read */
-				if (l2_dir_offset != 0) {
-					ERR("Duplicate PSP L2 Entry, prior offset: %08x\n",
-										l2_dir_offset);
-					free(current_entries);
-					return 1;
-				}
-
-				l2_dir_offset = relative_offset(psp_offset, addr, mode);
-				break;
-
-			case AMD_FW_PSP_RECOVERYAB_A:
-				if (l2_dir_offset != 0) {
-					ERR("Duplicate PSP L2 Entry, prior offset: %08x\n",
-										l2_dir_offset);
-					free(current_entries);
-					return 1;
-				}
-
-				ish_dir_offset = relative_offset(psp_offset, addr, AMD_ADDR_REL_BIOS);
-				if (read_ish_directory(fw, ish_dir_offset, &ish_dir) != 0) {
-					ERR("Error reading ISH directory\n");
-					free(current_entries);
-					return 1;
-				}
-
-				l2_dir_offset = ish_dir.pl2_location;
-				break;
-
-			default:
-				/* No-op, continue to the next entry. */
-				break;
-			}
-		}
-
-		free(current_entries);
-
-		/* Didn't find an L2 PSP directory so we can stop */
-		if (l2_dir_offset == 0)
-			break;
-
-		/* Read the L2 PSP directory */
-		if (read_psp_directory(fw, l2_dir_offset, PSPL2_COOKIE, &header,
-			       &current_entries, &num_current_entries) != 0)
-			break;
-	}
-
-	return 1;
-}
 
 #define MAX_NUM_LEVELS 10
 #define MAX_INDENT_PER_LEVEL 4
 #define MAX_INDENTATION_LEN (MAX_NUM_LEVELS * MAX_INDENT_PER_LEVEL + 1)
 
-static void dump_directory_header(struct psp_directory_header *header, uint8_t level)
+static void dump_directory_header(const struct psp_dir_region *dir_rdev, uint8_t level)
 {
 	char indent[MAX_INDENTATION_LEN] = {0};
+
+	const struct bios_directory_hdr *header = rdev_mmap_full(psp_dir_get_rdev(dir_rdev));
 
 	for (uint8_t i = 0; i < level && i < MAX_NUM_LEVELS; i++)
 		strcat(indent, "    ");
@@ -334,6 +132,8 @@ static void dump_directory_header(struct psp_directory_header *header, uint8_t l
 		       indent, header->additional_info_fields.address_mode);
 	}
 	printf("\n\n");
+
+	rdev_munmap(psp_dir_get_rdev(dir_rdev), (void *)header);
 }
 
 static void do_indentation_string(char *dest, uint8_t level)
@@ -344,88 +144,27 @@ static void do_indentation_string(char *dest, uint8_t level)
 	strcat(dest, "+-->");
 }
 
-static int amdfw_bios_dir_walk(FILE *fw, uint32_t bios_offset, uint32_t cookie, uint8_t level)
-{
-	struct bios_directory_entry *current_entries = NULL;
-	size_t num_current_entries = 0;
-	struct bios_directory_hdr header;
-	uint32_t l2_dir_offset = 0;
-	uint64_t dir_mode = AMD_ADDR_PHYSICAL;
-	char indent[MAX_INDENTATION_LEN] = {0};
-
-	if (read_bios_directory(fw, bios_offset, cookie, &header,
-		       &current_entries, &num_current_entries) != 0)
-		return 1;
-
-	if (header.additional_info_fields.version == 1)
-		dir_mode = header.additional_info_fields_v1.address_mode;
-	else
-		dir_mode = header.additional_info_fields.address_mode;
-
-	dump_directory_header((struct psp_directory_header *)&header, level);
-
-	do_indentation_string(indent, level);
-	for (size_t i = 0; i < num_current_entries; i++) {
-		uint32_t type = current_entries[i].type;
-		uint64_t mode = current_entries[i].address_mode;
-		uint64_t addr = current_entries[i].source;
-
-		if (dir_mode < AMD_ADDR_REL_TAB)
-			mode = dir_mode;
-
-		if (type == AMD_BIOS_APOB || type == AMD_BIOS_PSP_SHARED_MEM)
-			printf("%sBIOS%s: 0x%02x 0x%lx(DRAM-Address)\n",
-				indent, cookie == BHD_COOKIE ? "L1" : "L2",
-				type, current_entries[i].dest);
-		else
-			printf("%sBIOS%s: 0x%02x 0x%08lx 0x%08x\n",
-				indent, cookie == BHD_COOKIE ? "L1" : "L2",
-				type, relative_offset(bios_offset, addr, mode),
-				current_entries[i].size);
-
-		if (type == AMD_BIOS_L2_PTR) {
-			/* There's a second level BIOS directory to read */
-			if (l2_dir_offset != 0) {
-				ERR("Duplicate BIOS L2 Entry, prior offset: %08x\n",
-									l2_dir_offset);
-				free(current_entries);
-				return 1;
-			}
-
-			l2_dir_offset = relative_offset(bios_offset, addr, mode);
-			printf("    %sBIOSL2: Dir  0x%08x\n", indent, l2_dir_offset);
-			amdfw_bios_dir_walk(fw, l2_dir_offset, BHDL2_COOKIE, level + 2);
-		}
-	}
-
-	free(current_entries);
-	return 0;
-}
-
 /*
  * Returns the size of the PSP directory.
  *
- * @param fw			File to operate on
- * @param psp_offset		Relative offset to PSP directory
- * @param cookie		Expected table cookie
- * @param size			Where to write the size to
+ * @param dir_rdev	PSP directory region
+ * @param size		Where to write the size to
  *
  * @return 0 on success, or < 0 on error.
  */
-static int amdfw_psp_dir_size(FILE *fw, uint32_t psp_offset, uint32_t cookie, uint32_t *size)
+static int amdfw_psp_dir_size(const struct psp_dir_region *dir_rdev, uint32_t *size)
 {
-	struct psp_directory_header header;
-
-	if (!fw || !size)
+	if (!dir_rdev || dir_rdev->type != PSP_DIR_PSP)
 		return -1;
 
-	if (read_psp_directory(fw, psp_offset, cookie, &header, NULL, NULL) != 0)
-		return -1;
+	const struct psp_directory_header *hdr = rdev_mmap_full(psp_dir_get_rdev(dir_rdev));
 
-	if (header.additional_info_fields.version == 1)
-		*size = header.additional_info_fields_v1.dir_size;
+	if (hdr->additional_info_fields.version == 1)
+		*size = hdr->additional_info_fields_v1.dir_size;
 	else
-		*size = header.additional_info_fields.dir_size;
+		*size = hdr->additional_info_fields.dir_size;
+
+	rdev_munmap(psp_dir_get_rdev(dir_rdev), (void *)hdr);
 
 	*size *= TABLE_GRANULARITY;
 	return 0;
@@ -434,232 +173,113 @@ static int amdfw_psp_dir_size(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 /*
  * Returns the size of the BIOS directory.
  *
- * @param fw			File to operate on
- * @param bios_offset		Relative offset to BIOS directory
- * @param cookie		Expected table cookie
- * @param size			Where to write the size to
+ * @param dir_rdev	PSP directory region
+ * @param size		Where to write the size to
  *
  * @return 0 on success, or < 0 on error.
  */
-static int amdfw_bios_dir_size(FILE *fw, uint32_t bios_offset, uint32_t cookie, uint32_t *size)
+static int amdfw_bios_dir_size(const struct psp_dir_region *dir_rdev, uint32_t *size)
 {
-	struct bios_directory_hdr header;
-
-	if (!fw || !size)
+	if (!dir_rdev || dir_rdev->type != PSP_DIR_BIOS)
 		return -1;
 
-	if (read_bios_directory(fw, bios_offset, cookie, &header, NULL, NULL) != 0)
-		return -1;
+	const struct bios_directory_hdr *hdr = rdev_mmap_full(psp_dir_get_rdev(dir_rdev));
 
-	if (header.additional_info_fields.version == 1)
-		*size = header.additional_info_fields_v1.dir_size;
+	if (hdr->additional_info_fields.version == 1)
+		*size = hdr->additional_info_fields_v1.dir_size;
 	else
-		*size = header.additional_info_fields.dir_size;
+		*size = hdr->additional_info_fields.dir_size;
+
+	rdev_munmap(psp_dir_get_rdev(dir_rdev), (void *)hdr);
 
 	*size *= TABLE_GRANULARITY;
 	return 0;
 }
 
-static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, uint8_t level)
+static bool walk_efs_list_hdr_callback(const struct psp_dir_region *dir_rdev,
+				       const size_t level,
+				       void *user_data)
 {
-	struct psp_directory_entry *current_entries = NULL;
-	size_t num_current_entries = 0;
-	struct psp_directory_header header;
-	uint32_t l2_dir_offset = 0, l2b_dir_offset = 0;
-	uint32_t bios_dir_offset = 0;
-	uint32_t ish_dir_offset = 0;
-	struct ish_directory_table ish_dir;
-	uint64_t dir_mode = AMD_ADDR_PHYSICAL;
+	struct ro_list_state *state = (struct ro_list_state *)user_data;
 	char indent[MAX_INDENTATION_LEN] = {0};
-
-	if (read_psp_directory(fw, psp_offset, cookie, &header,
-		       &current_entries, &num_current_entries) != 0)
-		return 1;
-
-	if (header.additional_info_fields.version == 1)
-		dir_mode = header.additional_info_fields_v1.address_mode;
-	else
-		dir_mode = header.additional_info_fields.address_mode;
-
-	dump_directory_header(&header, level);
+	uint32_t size;
 
 	do_indentation_string(indent, level);
-	for (size_t i = 0; i < num_current_entries; i++) {
-		uint32_t type = current_entries[i].type;
-		uint64_t mode = current_entries[i].address_mode;
-		uint64_t addr = current_entries[i].addr;
-		uint32_t dir_size = 0;
 
-		if (dir_mode < AMD_ADDR_REL_TAB)
-			mode = dir_mode;
+	if (dir_rdev->type == PSP_DIR_BIOS) {
+		if (amdfw_bios_dir_size(dir_rdev, &size) == 0) {
+			printf("%sBIOSL%zd: Dir  [0x%08zx-0x%08zx)\n", indent, dir_rdev->level,
+				psp_dir_relative_offset(dir_rdev), psp_dir_relative_offset(dir_rdev) + size);
+		} else {
+			printf("%sBIOSL%zd: Dir  @0x%08zx\n", indent, dir_rdev->level,
+				psp_dir_relative_offset(dir_rdev));
+		}
+		dump_directory_header(dir_rdev, level);
+	} else if (dir_rdev->type == PSP_DIR_PSP) {
+		if (dir_rdev->level == 2 && state->stop_after_psp_l2) {
+			if (state->psp_l2_seen)
+				return false;
+			state->psp_l2_seen = true;
+		}
+		if (amdfw_psp_dir_size(dir_rdev, &size) == 0) {
+			printf("%sPSPL%zd: Dir  [0x%08zx-0x%08zx)\n", indent, dir_rdev->level,
+				psp_dir_relative_offset(dir_rdev), psp_dir_relative_offset(dir_rdev) + size);
+		} else {
+			printf("%sPSPL%zd: Dir  @0x%08zx\n", indent, dir_rdev->level,
+				psp_dir_relative_offset(dir_rdev));
+		}
+		dump_directory_header(dir_rdev, level);
+	}
 
-		/* RECOVERY_AB is always relative to BIOS */
-		if (type == AMD_FW_PSP_RECOVERYAB_B || type == AMD_FW_PSP_RECOVERYAB_A)
-			mode = AMD_ADDR_REL_BIOS;
+	return true;
+}
 
-		if (type == AMD_FW_PSP_FUSE_CHAIN)
-			printf("%sPSP%s: 0x%02x 0x%lx(Soft-fuse)\n",
-				indent, cookie == PSP_COOKIE ? "L1" : "L2",
-				type, (uint64_t)current_entries[i].address_mode << 62 | addr);
-		else
-			printf("%sPSP%s: 0x%02x 0x%08lx 0x%08x\n",
-				indent, cookie == PSP_COOKIE ? "L1" : "L2",
-				type, relative_offset(psp_offset, addr, mode),
-				current_entries[i].size);
+static bool walk_efs_ro_list_callback(const struct psp_dir_region *dir_rdev,
+				      const size_t level,
+				      const size_t index,
+				      const union psp_dir_entry *entry,
+				      void *user_data)
+{
+	(void) index;
+	(void) user_data;
+	char indent[MAX_INDENTATION_LEN] = {0};
 
-		switch (type) {
-		case AMD_FW_PSP_L2_PTR:
-			/* There's a second level PSP directory to read */
-			if (l2_dir_offset != 0) {
-				ERR("Duplicate PSP L2 Entry, prior offset: %08x\n",
-									l2_dir_offset);
-				free(current_entries);
-				return 1;
-			}
+	do_indentation_string(indent, level);
+	uint32_t rel_offset = psp_dir_entry_offset(dir_rdev, entry);
 
-			l2_dir_offset = relative_offset(psp_offset, addr, mode);
-			if (amdfw_psp_dir_size(fw, l2_dir_offset, PSPL2_COOKIE, &dir_size) == 0)
-				printf("    %sPSPL2: Dir  [0x%08x-0x%08x)\n", indent, l2_dir_offset, l2_dir_offset + dir_size);
-			else
-				printf("    %sPSPL2: Dir  @0x%08x\n", indent, l2_dir_offset);
-			amdfw_psp_dir_walk(fw, l2_dir_offset, PSPL2_COOKIE, level + 2);
+	if (dir_rdev->type == PSP_DIR_BIOS) {
+		switch (entry->bios.type) {
+		case AMD_BIOS_APOB:
+		case AMD_BIOS_PSP_SHARED_MEM:
+			printf("%sBIOS%s: 0x%02x 0x%lx(DRAM-Address)\n",
+				indent, dir_rdev->level == 1 ? "L1" : "L2",
+				entry->bios.type, entry->bios.dest);
 			break;
-
-		case AMD_FW_PSP_RECOVERYAB_B:
-			if (l2b_dir_offset != 0) {
-				ERR("Duplicate PSP L2B Entry, prior offset: %08x\n",
-					l2b_dir_offset);
-				free(current_entries);
-				return 1;
-			}
-
-			ish_dir_offset = relative_offset(psp_offset, addr, AMD_ADDR_REL_BIOS);
-			/* Test if it points to PSP L2 */
-			if (test_if_psp_directory(fw, ish_dir_offset, PSPL2_COOKIE)) {
-				/* Legacy A/B recovery has no ISH */
-				l2b_dir_offset = ish_dir_offset;
-			} else {
-				/* Newer platforms use ISH for A/B recovery */
-				if (read_ish_directory(fw, ish_dir_offset, &ish_dir) != 0) {
-					ERR("Error reading ISH directory\n");
-					free(current_entries);
-					return 1;
-				}
-				do_indentation_string(indent, level);
-				printf("    %sISHB: PSPID 0x%08x\n", indent, ish_dir.psp_id);
-				do_indentation_string(indent, level+1);
-
-				l2b_dir_offset = ish_dir.pl2_location;
-			}
-
-			if (amdfw_psp_dir_size(fw, l2b_dir_offset, PSPL2_COOKIE, &dir_size) == 0)
-				printf("    %sPSPL2(B): Dir  [0x%08x-0x%08x)\n", indent, l2b_dir_offset, l2b_dir_offset + dir_size);
-			else
-				printf("    %sPSPL2(B): Dir  @0x%08x\n", indent, l2b_dir_offset);
-			amdfw_psp_dir_walk(fw, l2b_dir_offset, PSPL2_COOKIE, level + 3);
-
-			do_indentation_string(indent, level);
-
-			break;
-
-		case AMD_FW_PSP_RECOVERYAB_A:
-			if (l2_dir_offset != 0) {
-				ERR("Duplicate PSP L2 Entry, prior offset: %08x\n",
-									l2_dir_offset);
-				free(current_entries);
-				return 1;
-			}
-
-			ish_dir_offset = relative_offset(psp_offset, addr, AMD_ADDR_REL_BIOS);
-			/* Test if it points to PSP L2 */
-			if (test_if_psp_directory(fw, ish_dir_offset, PSPL2_COOKIE)) {
-				/* Legacy A/B recovery has no ISH */
-				l2_dir_offset = ish_dir_offset;
-			} else {
-				/* Newer platforms use ISH for A/B recovery */
-				if (read_ish_directory(fw, ish_dir_offset, &ish_dir) != 0) {
-					ERR("Error reading ISH directory\n");
-					free(current_entries);
-					return 1;
-				}
-				do_indentation_string(indent, level);
-				printf("    %sISHA: PSPID 0x%08x\n", indent, ish_dir.psp_id);
-				do_indentation_string(indent, level+1);
-
-				l2_dir_offset = ish_dir.pl2_location;
-			}
-
-			if (amdfw_psp_dir_size(fw, l2_dir_offset, PSPL2_COOKIE, &dir_size) == 0)
-				printf("    %sPSPL2: Dir  [0x%08x-0x%08x)\n", indent, l2_dir_offset, l2_dir_offset + dir_size);
-			else
-				printf("    %sPSPL2: Dir  @0x%08x\n", indent, l2_dir_offset);
-			amdfw_psp_dir_walk(fw, l2_dir_offset, PSPL2_COOKIE, level + 3);
-			do_indentation_string(indent, level);
-			break;
-
-		case AMD_FW_PSP_BIOS_TABLE:
-			bios_dir_offset = relative_offset(psp_offset, addr, mode);
-			if (amdfw_bios_dir_size(fw, bios_dir_offset, BHDL2_COOKIE, &dir_size) == 0)
-				printf("    %sBIOSL2: Dir  [0x%08x-0x%08x)\n", indent, bios_dir_offset, bios_dir_offset + dir_size);
-			else
-				printf("    %sBIOSL2: Dir  @0x%08x\n", indent, bios_dir_offset);
-			amdfw_bios_dir_walk(fw, bios_dir_offset, BHDL2_COOKIE, level + 2);
-			break;
-
 		default:
-			/* No additional processing required, continue to the next entry. */
+			printf("%sBIOS%s: 0x%02x 0x%08x 0x%08x\n",
+				indent, dir_rdev->level == 1 ? "L1" : "L2",
+				entry->bios.type, rel_offset, entry->bios.size);
 			break;
 		}
+	} else if (dir_rdev->type == PSP_DIR_PSP) {
+		switch (entry->psp.type) {
+		case AMD_FW_PSP_FUSE_CHAIN:
+			printf("%sPSP%s: 0x%02x 0x%lx(Soft-fuse)\n",
+				indent, dir_rdev->level == 1 ? "L1" : "L2",
+				entry->psp.type, (uint64_t)entry->psp.address_mode << 62 | entry->psp.addr);
+			break;
+		default:
+			printf("%sPSP%s: 0x%02x 0x%08x 0x%08x\n",
+				indent, dir_rdev->level == 1 ? "L1" : "L2",
+				entry->psp.type, rel_offset, entry->psp.size);
+			break;
+		}
+	} else if (dir_rdev->type == PSP_DIR_ISH) {
+		printf("%sISH%s: PSPID 0x%08x\n", indent,
+		      psp_fw_partition(dir_rdev) == 'A' ? "A" : "B", entry->ish.psp_id);
 	}
 
-	free(current_entries);
-	return 0;
-}
-
-static int list_amdfw_psp_dir(FILE *fw, const struct embedded_firmware *fw_header)
-{
-	uint32_t psp_offset = 0, dir_size = 0;
-
-	/* 0xffffffff or 0x00000000 indicates that the offset is in new_psp_directory */
-	if (fw_header->psp_directory != 0xffffffff && fw_header->psp_directory != 0x00000000)
-		psp_offset = fw_header->psp_directory;
-	else
-		psp_offset = fw_header->new_psp_directory;
-
-	if (amdfw_psp_dir_size(fw, psp_offset, PSP_COOKIE, &dir_size) == 0)
-		printf("PSPL1: Dir  [0x%08x-0x%08x)\n", psp_offset, psp_offset + dir_size);
-	else
-		printf("PSPL1: Dir  @0x%08x\n", psp_offset);
-
-	amdfw_psp_dir_walk(fw, psp_offset, PSP_COOKIE, 0);
-	return 0;
-}
-
-static int list_amdfw_bios_dir(FILE *fw, const struct embedded_firmware *fw_header)
-{
-	uint32_t dir_size = 0;
-
-	/* 0xffffffff or 0x00000000 implies that the SoC uses recovery A/B
-	   layout. Only BIOS L2 directory is present and that too as part of
-	   PSP L2 directory. */
-	if (fw_header->bios3_entry != 0xffffffff && fw_header->bios3_entry != 0x00000000) {
-		if (amdfw_psp_dir_size(fw, fw_header->bios3_entry, BHD_COOKIE, &dir_size) == 0)
-			printf("BIOSL1: Dir  [0x%08x-0x%08x)\n", fw_header->bios3_entry, fw_header->bios3_entry + dir_size);
-		else
-			printf("BIOSL1: Dir  @0x%08x\n", fw_header->bios3_entry);
-
-		amdfw_bios_dir_walk(fw, fw_header->bios3_entry, BHD_COOKIE, 0);
-	}
-	return 0;
-}
-
-
-static int list_amdfw_ro(FILE *fw, const struct embedded_firmware *fw_header)
-{
-	printf("Table: FW   Offset     Size\n");
-	list_amdfw_psp_dir(fw, fw_header);
-	list_amdfw_bios_dir(fw, fw_header);
-	return 0;
+	return true;
 }
 
 static void decode_spi_frequency(unsigned int freq)
@@ -885,27 +505,44 @@ int main(int argc, char **argv)
 	}
 	fseek(fw, 0, SEEK_SET);
 	rom_size = fw_size;
+	uint8_t *raw_buf = malloc(rom_size);
+	if (!raw_buf) {
+		ERR("Failed to allocate memory for FW file\n");
+		fclose(fw);
+		return -1;
+	}
+	if (fread(raw_buf, 1, rom_size, fw) != rom_size) {
+		ERR("Failed to read FW file\n");
+		fclose(fw);
+		return -1;
+	}
+
+	struct mem_region_device mem_rdev;
+	mem_region_device_ro_init(&mem_rdev, raw_buf, rom_size);
+	struct psp_dir_region rdev_efs;
 
 	/* Find the FW header by checking each possible location */
-	struct embedded_firmware fw_header;
 	int found_header = 0;
 	if (rom_size <= 4 * MiB) {
 		for (size_t i = 0; i < ARRAY_SIZE(fw_header_offsets_4MiB); i++) {
-			if (read_fw_header(fw, fw_header_offsets_4MiB[i], &fw_header) == 0) {
+			if (psp_fw_read_and_validate_table(&mem_rdev.rdev, fw_header_offsets_4MiB[i],
+							   PSP_DIR_EFS, &rdev_efs) == CB_SUCCESS) {
 				found_header = 1;
 				break;
 			}
 		}
 	} else if (rom_size <= 8 * MiB) {
 		for (size_t i = 0; i < ARRAY_SIZE(fw_header_offsets_8MiB); i++) {
-			if (read_fw_header(fw, fw_header_offsets_8MiB[i], &fw_header) == 0) {
+			if (psp_fw_read_and_validate_table(&mem_rdev.rdev, fw_header_offsets_8MiB[i],
+							   PSP_DIR_EFS, &rdev_efs) == CB_SUCCESS) {
 				found_header = 1;
 				break;
 			}
 		}
 	} else {
 		for (size_t i = 0; i < ARRAY_SIZE(fw_header_offsets); i++) {
-			if (read_fw_header(fw, fw_header_offsets[i], &fw_header) == 0) {
+			if (psp_fw_read_and_validate_table(&mem_rdev.rdev, fw_header_offsets[i],
+							   PSP_DIR_EFS, &rdev_efs) == CB_SUCCESS) {
 				found_header = 1;
 				break;
 			}
@@ -919,21 +556,15 @@ int main(int argc, char **argv)
 	}
 
 	if (mode_dump)
-		dump_efw(&fw_header);
+		dump_efw(rdev_mmap_full(psp_dir_get_rdev(&rdev_efs)));
 
-	if (selected_functions & AMDFW_OPT_SOFT_FUSE) {
-		if (read_soft_fuse(fw, &fw_header) != 0) {
-			fclose(fw);
-			return 1;
-		}
-	}
+	if (selected_functions & AMDFW_OPT_SOFT_FUSE)
+		psp_dir_walk_recursive(&rdev_efs, 0, 0, NULL, walk_efs_psp_softfuse_callback, NULL);
 
-	if (selected_functions & AMDFW_OPT_RO_LIST) {
-		if (list_amdfw_ro(fw, &fw_header) != 0) {
-			fclose(fw);
-			return 1;
-		}
-	}
+	struct ro_list_state state = { .stop_after_psp_l2 = true, .psp_l2_seen = false };
+
+	if (selected_functions & AMDFW_OPT_RO_LIST)
+		psp_dir_walk_recursive(&rdev_efs, 0, 0, walk_efs_list_hdr_callback, walk_efs_ro_list_callback, &state);
 
 	fclose(fw);
 	return 0;

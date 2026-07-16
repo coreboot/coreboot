@@ -23,6 +23,12 @@ amdfwtool: $(amdfwtoolobj)
 %.o: %.c $(amdfwheader)
 	$(HOSTCC) $(AMDFWTOOLCFLAGS) -c -o $@ $<
 
+%.o: $(top)/src/vendorcode/amd/psp/%.c
+	$(HOSTCC) $(AMDFWTOOLCFLAGS) -c -o $@ $<
+
+%.o: $(top)/src/commonlib/%.c
+	$(HOSTCC) $(AMDFWTOOLCFLAGS) -c -o $@ $<
+
 clean:
 	@rm -f $(TARGETS) $(amdfwreadobj) $(amdfwtoolobj)
 

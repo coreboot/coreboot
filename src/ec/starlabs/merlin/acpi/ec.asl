@@ -4,6 +4,8 @@
 External (\_SB.PCI0.LPCB.EC.ADP1, DeviceObj)
 External (\_SB.PCI0.LPCB.EC.BAT0, DeviceObj)
 External (\_SB.PCI0.LPCB.EC.LID0, DeviceObj)
+External (\_SB.HIDD, DeviceObj)
+External (\_SB.HIDD.HPEM, MethodObj)
 
 Scope (\_SB.PCI0.LPCB)
 {

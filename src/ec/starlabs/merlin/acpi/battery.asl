@@ -136,13 +136,23 @@ Device (BAT0)
 		If (Local0 <= 100) {
 			Local1 = BFCX()
 			If (Local1) {
-				PKG1[2] = ((Local0 * Local1) + 50) / 100
-				Local2 = 1
+				If (Local1 != 0xffff) {
+					PKG1[2] = ((Local0 * Local1) + 50) / 100
+					Local2 = 1
+				}
 			}
 		}
 		If (Local2 == 0) {
 			Local0 = ECRD(RefOf(B1RC))
 			If (Local0 != 0xffff) {
+				Local1 = BFCX()
+				If (Local1) {
+					If (Local1 != 0xffff) {
+						If (Local0 > Local1) {
+							Local0 = Local1
+						}
+					}
+				}
 				PKG1[2] = Local0
 			}
 		}

@@ -2,6 +2,22 @@
 
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include
 
+bootblock-$(CONFIG_BOARD_STARLABS_ADL_SERIES) += bootblock.c
+bootblock-$(CONFIG_BOARD_STARLABS_STARFIGHTER_SERIES) += bootblock.c
+
+ifneq ($(filter y,$(CONFIG_BOARD_STARLABS_LITE_SERIES) $(CONFIG_BOARD_STARLABS_STARBOOK_SERIES)),)
+verstage-$(CONFIG_VBOOT) += vboot.c
+romstage-$(CONFIG_VBOOT) += vboot.c
+endif
+
+ramstage-$(CONFIG_BOARD_STARLABS_STARBOOK_SERIES) += mainboard.c
+ramstage-$(CONFIG_BOARD_STARLABS_STARFIGHTER_SERIES) += mainboard.c
+
+ifneq ($(filter y,$(CONFIG_BOARD_STARLABS_LITE_SERIES) \
+		$(CONFIG_BOARD_STARLABS_LABTOP_KBL) $(CONFIG_BOARD_STARLABS_LABTOP_CML)),)
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
+endif
+
 subdirs-$(CONFIG_VENDOR_STARLABS) += cfr
 subdirs-$(CONFIG_VENDOR_STARLABS) += hda
 subdirs-$(CONFIG_BOARD_STARLABS_STARFIGHTER_SERIES) += touchpad

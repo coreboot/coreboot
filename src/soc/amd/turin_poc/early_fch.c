@@ -17,45 +17,9 @@
 #include <soc/uart.h>
 #include <soc/i2c.h>
 
-#define SMN_D18F0_BASE		0x49000000
-
-static void df_set_pci_mmconf(void)
-{
-	uint32_t reg;
-	uint64_t mmconf_base = CONFIG_ECAM_MMCONF_BASE_ADDRESS;
-	uint64_t mmconf_limit = mmconf_base + CONFIG_ECAM_MMCONF_LENGTH;
-
-	mmconf_limit--;
-	mmconf_limit &= 0xfff00000; /* Address bits [19:0] are fixed to be FFFFF */
-	mmconf_base |= 1; /* Range enable */
-
-	/*
-	 * We have to use I/O PCI access to SMN index/data, because MMCONF
-	 * will not work with our MMCONF address until this function returns.
-	 */
-	reg = smn_io_read32(SMN_D18F0_BASE + 0xc10);
-	reg &= ~1; /* Disable MMCONF range first */
-	smn_io_write32(SMN_D18F0_BASE + 0xc10, reg);
-
-	/* Now repeat the order in which ABL configured the MMCONF */
-	reg = mmconf_limit >> 32;
-	smn_io_write32(SMN_D18F0_BASE + 0xc1c, reg);
-	reg = mmconf_limit & 0xffffffff;
-	smn_io_write32(SMN_D18F0_BASE + 0xc18, reg);
-	reg = mmconf_base >> 32;
-	smn_io_write32(SMN_D18F0_BASE + 0xc14, reg);
-	reg = mmconf_base & 0xffffffff;
-	smn_io_write32(SMN_D18F0_BASE + 0xc10, reg);
-}
-
 /* Before console init */
 void fch_pre_init(void)
 {
-	/*
-	 * Before we can proceed with any initialization that touches PCI, we
-	 * have to ensure our PCI MMCONF base matches the register in DF.
-	 */
-	df_set_pci_mmconf();
 	/*
 	 * Enable_acpimmio_decode_pm04 to enable the ACPIMMIO decode which is
 	 * needed to access the GPIO registers.

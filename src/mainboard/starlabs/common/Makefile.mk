@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include
+
 subdirs-$(CONFIG_VENDOR_STARLABS) += cfr
 subdirs-$(CONFIG_VENDOR_STARLABS) += hda
 subdirs-$(CONFIG_BOARD_STARLABS_STARFIGHTER_SERIES) += touchpad

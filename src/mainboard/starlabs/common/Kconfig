@@ -6,6 +6,18 @@ config EDK2_BOOTSPLASH_FILE
 	string
 	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
 
+config CONSOLE_SERIAL
+	default n if !EDK2_DEBUG
+
+config DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config EC_STARLABS_ITE_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin" if \
+		BOARD_STARLABS_ADL_SERIES || BOARD_STARLABS_CEZANNE_SERIES || \
+		BOARD_STARLABS_STARBOOK_SERIES || BOARD_STARLABS_STARFIGHTER_SERIES
+
 config STARLABS_MEMORY_SETTINGS_VERSION
 	bool
 	default y if PLATFORM_USES_FSP2_0 && CACHE_MRC_SETTINGS

@@ -45,20 +45,11 @@ config ADD_APCB_SOURCES
 config APCB_SOURCES_PATH
 	string "Path to APCB files"
 
-config CONSOLE_SERIAL
-	default n if !EDK2_DEBUG
-
-config DEVICETREE
-	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
-
 config EC_GPE_SCI
 	default 0x17
 
 config EC_STARLABS_ADD_ITE_BIN
 	default y if BOARD_STARLABS_STARBOOK_CEZANNE
-
-config EC_STARLABS_ITE_BIN_PATH
-	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"

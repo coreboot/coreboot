@@ -42,12 +42,6 @@ config SMMSTORE_BLOCK_SIZE
 
 if BOARD_STARLABS_LITE_SERIES
 
-config CONSOLE_SERIAL
-	default n if !EDK2_DEBUG
-
-config DEVICETREE
-	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
-
 config EC_GPE_SCI
 	default 0x26
 

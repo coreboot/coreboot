@@ -1,7 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #if CONFIG(EC_STARLABS_MERLIN)
-Method (_Q0B, 0, NotSerialized)			// Event: Battery Information Update
+Method (_Q09, 0, NotSerialized)			// Event: Battery Information Update
+{
+	Notify (BAT0, 0x81)
+}
+
+Method (_Q0B, 0, NotSerialized)			// Event: Battery Status Update
 {
 	Notify (BAT0, 0x80)
 }

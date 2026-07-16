@@ -5,6 +5,8 @@ Scope (\_SB) {
 }
 
 #if CONFIG(BOARD_STARLABS_LITE_ADL)
+External (\_SB.PCI0.LPCB.EC.VBTN.UPDK, MethodObj)
+
 Scope (_GPE)
 {
 	Method (_E0F, 0, NotSerialized)

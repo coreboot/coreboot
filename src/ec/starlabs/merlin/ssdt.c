@@ -3,6 +3,10 @@
 #include <acpi/acpigen.h>
 #include <device/device.h>
 
+#if CONFIG(SYSTEM_TYPE_DETACHABLE)
+#include <soc/gpio.h>
+#endif
+
 #include "ec.h"
 
 #define EC_ACPI_PATH "\\_SB.PCI0.LPCB.EC"
@@ -295,6 +299,51 @@ static void write_hid_query_events(void)
 	acpigen_write_method_end();
 }
 
+#if CONFIG(SYSTEM_TYPE_DETACHABLE)
+static void write_virtual_button_devices(void)
+{
+	acpigen_write_device("VBTN");
+	acpigen_write_name_string("_HID", "INT33D6");
+	acpigen_write_name_integer("_UID", 1);
+	acpigen_write_name_string("_DDN", "Intel Virtual Button Driver");
+	acpigen_write_STA(0x0f);
+
+	acpigen_write_method("VBDL", 0);
+	acpigen_write_method_end();
+
+	acpigen_write_method_serialized("UPDK", 0);
+	write_method_store_op("VGBS", LOCAL0_OP);
+	acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
+	acpigen_write_debug_string("Tablet Mode");
+	acpigen_notify("\\_SB.HIDD", 0xcc);
+	acpigen_write_else();
+	acpigen_write_debug_string("Docked");
+	acpigen_notify("\\_SB.HIDD", 0xcd);
+	acpigen_write_if_end();
+	acpigen_write_return_op(LOCAL0_OP);
+	acpigen_write_method_end();
+
+	acpigen_write_method("VGBS", 0);
+	acpigen_write_if();
+	acpigen_emit_byte(LNOT_OP);
+	write_method_call("\\_SB.PCI0.GRXS");
+	acpigen_write_integer(GPP_F15);
+	acpigen_write_return_integer(0x40);
+	acpigen_write_if_end();
+	acpigen_write_return_integer(0);
+	acpigen_write_method_end();
+	acpigen_write_device_end();
+
+	acpigen_write_device("VBTO");
+	acpigen_write_name_string("_HID", "INT33D3");
+	acpigen_write_name_string("_CID", "PNP0C60");
+	acpigen_write_name_integer("_UID", 1);
+	acpigen_write_name_string("_DDN", "Laptop/tablet mode indicator driver");
+	acpigen_write_STA(0x0f);
+	acpigen_write_device_end();
+}
+#endif
+
 static void write_ac_adapter(void)
 {
 	if (CONFIG(EC_STARLABS_MERLIN)) {
@@ -563,6 +612,9 @@ void merlin_fill_ssdt(const struct device *dev)
 	acpigen_write_scope(EC_ACPI_PATH);
 	if (CONFIG(EC_STARLABS_MERLIN))
 		write_hid_query_events();
+#if CONFIG(SYSTEM_TYPE_DETACHABLE)
+	write_virtual_button_devices();
+#endif
 	write_ac_adapter();
 	if (CONFIG(EC_STARLABS_MERLIN))
 		write_shutdown_event();

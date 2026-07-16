@@ -117,10 +117,6 @@ Scope (\_SB.PCI0.LPCB)
 #if !CONFIG(EC_STARLABS_MERLIN)
 		#include "events.asl"
 #endif
-#if CONFIG(SYSTEM_TYPE_DETACHABLE)
-		#include "dock.asl"
-#endif
-
 		Method (_REG, 2, NotSerialized)
 		{
 			If ((Arg0 == 0x03) && (Arg1 == 0x01))

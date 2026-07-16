@@ -2,6 +2,7 @@
 
 #include <bootstate.h>
 #include <device/device.h>
+#include <ec/starlabs/merlin/ec.h>
 #include <variants.h>
 
 static void starlabs_configure_gpios(void *unused)
@@ -15,4 +16,11 @@ static void starlabs_configure_gpios(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, starlabs_configure_gpios, NULL);
 
-struct chip_operations mainboard_ops = {};
+static void enable_mainboard(struct device *dev)
+{
+	dev->ops->acpi_fill_ssdt = merlin_fill_ssdt;
+}
+
+struct chip_operations mainboard_ops = {
+	.enable_dev = enable_mainboard,
+};

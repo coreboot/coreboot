@@ -2,6 +2,7 @@
 
 #include <bootstate.h>
 #include <device/device.h>
+#include <ec/starlabs/merlin/ec.h>
 #include <variants.h>
 
 static void starlabs_configure_mainboard(void *unused)
@@ -20,9 +21,15 @@ void __weak starlabs_adl_mainboard_fill_ssdt(const struct device *dev)
 	(void)dev;
 }
 
+static void starlabs_mainboard_fill_ssdt(const struct device *dev)
+{
+	merlin_fill_ssdt(dev);
+	starlabs_adl_mainboard_fill_ssdt(dev);
+}
+
 static void enable_mainboard(struct device *dev)
 {
-	dev->ops->acpi_fill_ssdt = starlabs_adl_mainboard_fill_ssdt;
+	dev->ops->acpi_fill_ssdt = starlabs_mainboard_fill_ssdt;
 }
 
 struct chip_operations mainboard_ops = {

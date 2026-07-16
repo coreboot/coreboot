@@ -9,6 +9,10 @@
 
 #include <stdint.h>
 
+struct device;
+
+void merlin_fill_ssdt(const struct device *dev);
+
 /*
  * Define the expected value of the PNP base address that is fixed through
  * the BADRSEL register controlled within the EC domain by the EC Firmware.

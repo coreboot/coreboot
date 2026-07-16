@@ -1,5 +1,9 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+ifneq ($(filter y,$(CONFIG_EC_STARLABS_ITE) $(CONFIG_EC_STARLABS_NUVOTON)),)
+ramstage-y += ssdt.c
+endif
+
 ifeq ($(CONFIG_EC_STARLABS_ITE),y)
 
 PHONY+=add_ite_fw

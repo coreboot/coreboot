@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+/* Objects emitted by the runtime Merlin SSDT while query methods remain here. */
+External (\_SB.PCI0.LPCB.EC.ADP1, DeviceObj)
+
 Scope (\_SB.PCI0.LPCB)
 {
 	Device (EC)
@@ -107,7 +110,6 @@ Scope (\_SB.PCI0.LPCB)
 			}
 		}
 
-		#include "ac.asl"
 #if CONFIG(EC_STARLABS_MERLIN)
 		#include "shutdown.asl"
 #endif

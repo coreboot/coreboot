@@ -7,6 +7,7 @@
 #include <arch/smp/mpspec.h>
 #include <commonlib/helpers.h>
 #include <device/device.h>
+#include <ec/starlabs/merlin/ec.h>
 
 #define CEZANNE_GPIO_IRQ 11
 
@@ -69,4 +70,11 @@ unsigned long mainboard_write_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
-struct chip_operations mainboard_ops = {};
+static void enable_mainboard(struct device *dev)
+{
+	dev->ops->acpi_fill_ssdt = merlin_fill_ssdt;
+}
+
+struct chip_operations mainboard_ops = {
+	.enable_dev = enable_mainboard,
+};

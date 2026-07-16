@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <ec/starlabs/merlin/ec.h>
 #include <variants.h>
 
 static void init_mainboard(void *chip_info)
@@ -12,6 +13,12 @@ static void init_mainboard(void *chip_info)
 	gpio_configure_pads(pads, num);
 }
 
+static void enable_mainboard(struct device *dev)
+{
+	dev->ops->acpi_fill_ssdt = merlin_fill_ssdt;
+}
+
 struct chip_operations mainboard_ops = {
+	.enable_dev = enable_mainboard,
 	.init = init_mainboard,
 };

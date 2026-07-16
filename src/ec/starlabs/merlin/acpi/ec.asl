@@ -2,6 +2,7 @@
 
 /* Objects emitted by the runtime Merlin SSDT while query methods remain here. */
 External (\_SB.PCI0.LPCB.EC.ADP1, DeviceObj)
+External (\_SB.PCI0.LPCB.EC.BAT0, DeviceObj)
 External (\_SB.PCI0.LPCB.EC.LID0, DeviceObj)
 
 Scope (\_SB.PCI0.LPCB)
@@ -111,9 +112,6 @@ Scope (\_SB.PCI0.LPCB)
 			}
 		}
 
-#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
-		#include "battery.asl"
-#endif
 #if !CONFIG(EC_STARLABS_MERLIN)
 		#include "events.asl"
 #endif

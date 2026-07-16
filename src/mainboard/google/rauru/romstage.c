@@ -23,9 +23,11 @@
 static void raise_little_cpu_freq(void)
 {
 	mt6316_buck_set_voltage(SPMI_SLAVE_8, MT6316_BUCK_3, 1050000);
+	mt6316_buck_set_voltage(SPMI_SLAVE_15, MT6316_BUCK_1, 1200000);
 	printk(BIOS_INFO, "%s: little core voltage: %d\n",
 	       __func__, mt6316_buck_get_voltage(SPMI_SLAVE_8, MT6316_BUCK_3));
 	mt_pll_raise_little_cpu_freq(2400U * MHz);
+	mt_pll_raise_cci_freq(1900U * MHz);
 }
 
 void platform_romstage_main(void)

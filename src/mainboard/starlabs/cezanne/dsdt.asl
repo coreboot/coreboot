@@ -21,8 +21,5 @@ DefinitionBlock (
 		#include <drivers/pc80/pc/ps2_keyboard.asl>
 	}
 
-	/* Star Labs EC */
-	#include <ec/starlabs/merlin/acpi/ec.asl>
-
 	#include "acpi/mainboard.asl"
 }

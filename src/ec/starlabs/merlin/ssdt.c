@@ -12,11 +12,164 @@
 
 #include "ec.h"
 #include "query_events.h"
+#include "variant_fields.h"
 #include "variant_query_events.h"
 
 #define EC_ACPI_PATH           "\\_SB.PCI0.LPCB.EC"
 #define EC_ACPI_METHOD(method) EC_ACPI_PATH "." method
 #define EC_ACPI_FIELD(field)   EC_ACPI_PATH "." field
+
+static void write_ec_resources(void)
+{
+	static const struct fieldlist smi_field[] = {
+		FIELDLIST_NAMESTR("SMB2", 8),
+	};
+	static const struct opregion smi_region = OPREGION("SIPR", SYSTEMIO, 0xb2, 1);
+	static const struct opregion ec_region = OPREGION("ECF2", EMBEDDEDCONTROL, 0, 0x100);
+
+	acpigen_write_name("BFFR");
+	acpigen_write_resourcetemplate_header();
+	acpigen_write_io16(0x62, 0x62, 0, 1, 1);
+	acpigen_write_io16(0x66, 0x66, 0, 1, 1);
+	acpigen_write_resourcetemplate_footer();
+
+	acpigen_write_method_serialized("_CRS", 0);
+	acpigen_write_return_namestr("BFFR");
+	acpigen_write_method_end();
+
+	acpigen_write_method("_STA", 0);
+	acpigen_write_store_int_to_namestr(3, "\\LIDS");
+	acpigen_write_return_integer(0x0f);
+	acpigen_write_method_end();
+
+	acpigen_write_opregion(&smi_region);
+	acpigen_write_field("SIPR", smi_field, ARRAY_SIZE(smi_field),
+			    FIELD_BYTEACC | FIELD_LOCK | FIELD_PRESERVE);
+	acpigen_write_opregion(&ec_region);
+	acpigen_write_field("ECF2", starlabs_ec_fields, ARRAY_SIZE(starlabs_ec_fields),
+			    FIELD_BYTEACC | FIELD_LOCK | FIELD_PRESERVE);
+}
+
+static void write_ec_read_method(void)
+{
+	acpigen_write_method_serialized("ECRD", 1);
+
+	acpigen_write_if();
+	acpigen_emit_namestring("ECTK");
+	acpigen_write_if();
+	acpigen_emit_byte(LNOT_OP);
+	acpigen_emit_byte(LLESS_OP);
+	acpigen_emit_namestring("_REV");
+	acpigen_write_integer(2);
+	acpigen_write_store_int_to_namestr(1, "ECAV");
+	acpigen_write_if_end();
+	acpigen_write_store_int_to_namestr(0, "ECTK");
+	acpigen_write_if_end();
+
+	acpigen_emit_byte(STORE_OP);
+	acpigen_write_acquire("ECMT", 1000);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
+	acpigen_write_if();
+	acpigen_emit_namestring("ECAV");
+	acpigen_emit_byte(STORE_OP);
+	acpigen_emit_byte(DEREF_OP);
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_write_release("ECMT");
+	acpigen_write_return_op(LOCAL1_OP);
+	acpigen_write_else();
+	acpigen_write_release("ECMT");
+	acpigen_write_if_end();
+	acpigen_write_if_end();
+	acpigen_write_return_integer(0);
+	acpigen_write_method_end();
+}
+
+static void write_ec_write_method(void)
+{
+	acpigen_write_method_serialized("ECWR", 2);
+	acpigen_emit_byte(STORE_OP);
+	acpigen_write_acquire("ECMT", 1000);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
+	acpigen_write_if();
+	acpigen_emit_namestring("ECAV");
+	acpigen_write_store_ops(ARG0_OP, ARG1_OP);
+	acpigen_write_store_int_to_op(0, LOCAL1_OP);
+
+	acpigen_emit_byte(WHILE_OP);
+	acpigen_write_len_f();
+	acpigen_write_one();
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_emit_byte(DEREF_OP);
+	acpigen_emit_byte(ARG1_OP);
+	acpigen_emit_byte(BREAK_OP);
+	acpigen_write_if_end();
+	acpigen_write_sleep(1);
+	acpigen_write_store_ops(ARG0_OP, ARG1_OP);
+	acpigen_emit_byte(INCREMENT_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_write_if_lequal_op_int(LOCAL1_OP, 3);
+	acpigen_emit_byte(BREAK_OP);
+	acpigen_write_if_end();
+	acpigen_pop_len();
+
+	acpigen_write_if_end();
+	acpigen_write_release("ECMT");
+	acpigen_write_if_end();
+	acpigen_write_method_end();
+}
+
+static void write_ec_region_method(void)
+{
+	acpigen_write_method("_REG", 2);
+	acpigen_write_if();
+	acpigen_emit_byte(LAND_OP);
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_write_integer(3);
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(ARG1_OP);
+	acpigen_write_integer(1);
+
+	acpigen_write_store_int_to_namestr(1, "ECAV");
+	acpigen_emit_byte(STORE_OP);
+	acpigen_emit_namestring("ECRD");
+	acpigen_emit_byte(REF_OF_OP);
+	acpigen_emit_namestring("LSTE");
+	acpigen_emit_namestring("\\LIDS");
+	acpigen_emit_namestring("ECWR");
+	acpigen_write_integer(1);
+	acpigen_emit_byte(REF_OF_OP);
+	acpigen_emit_namestring("OSFG");
+	acpigen_emit_byte(AND_OP);
+	acpigen_emit_namestring("ECRD");
+	acpigen_emit_byte(REF_OF_OP);
+	acpigen_emit_namestring("ECPS");
+	acpigen_write_integer(1);
+	acpigen_emit_namestring("\\PWRS");
+	acpigen_emit_namestring("PNOT");
+
+	acpigen_write_if_end();
+	acpigen_write_method_end();
+}
+
+static void write_ec_base(void)
+{
+	acpigen_write_name("_HID");
+	acpigen_emit_eisaid("PNP0C09");
+	acpigen_write_name_integer("_UID", 1);
+	acpigen_write_name_integer("_GPE", CONFIG_EC_GPE_SCI);
+	acpigen_write_name_integer("ECAV", 0);
+	acpigen_write_name_integer("ECTK", 1);
+	acpigen_write_mutex("ECMT", 0);
+	write_ec_resources();
+	write_ec_read_method();
+	write_ec_write_method();
+}
 
 static void write_ec_read(const char *field)
 {
@@ -818,14 +971,9 @@ void merlin_fill_ssdt(const struct device *dev)
 {
 	(void)dev;
 
-	acpigen_write_scope(EC_ACPI_PATH);
-	if (CONFIG(EC_STARLABS_MERLIN))
-		write_hid_query_events();
-	else
-		write_closed_ec_query_events();
-#if CONFIG(SYSTEM_TYPE_DETACHABLE)
-	write_virtual_button_devices();
-#endif
+	acpigen_write_scope("\\_SB.PCI0.LPCB");
+	acpigen_write_device("EC");
+	write_ec_base();
 	write_ac_adapter();
 	if (CONFIG(EC_STARLABS_MERLIN))
 		write_shutdown_event();
@@ -833,6 +981,15 @@ void merlin_fill_ssdt(const struct device *dev)
 		write_battery();
 		write_lid();
 	}
+	if (!CONFIG(EC_STARLABS_MERLIN))
+		write_closed_ec_query_events();
+#if CONFIG(SYSTEM_TYPE_DETACHABLE)
+	write_virtual_button_devices();
+#endif
+	write_ec_region_method();
+	if (CONFIG(EC_STARLABS_MERLIN))
+		write_hid_query_events();
+	acpigen_write_device_end();
 	acpigen_write_scope_end();
 
 	acpigen_write_scope("\\_SB");

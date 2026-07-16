@@ -11,6 +11,8 @@
 #endif
 
 #include "ec.h"
+#include "query_events.h"
+#include "variant_query_events.h"
 
 #define EC_ACPI_PATH           "\\_SB.PCI0.LPCB.EC"
 #define EC_ACPI_METHOD(method) EC_ACPI_PATH "." method
@@ -310,6 +312,43 @@ static void write_hid_query_events(void)
 	write_method_call("\\_SB.HIDD.HPEM");
 	acpigen_write_integer(19);
 	acpigen_write_method_end();
+}
+
+static void write_query_event_action(const struct starlabs_ec_query_action *action)
+{
+	switch (action->type) {
+	case STARLABS_EC_QUERY_NONE:
+		break;
+	case STARLABS_EC_QUERY_LID:
+		write_ec_read_store("LSTE", "\\LIDS");
+		acpigen_notify("LID0", 0x80);
+		break;
+	case STARLABS_EC_QUERY_NOTIFY:
+		acpigen_notify(action->path, action->value);
+		break;
+	case STARLABS_EC_QUERY_HID:
+		write_method_call("\\_SB.HIDD.HPEM");
+		acpigen_write_integer(action->value);
+		break;
+	case STARLABS_EC_QUERY_DEBUG:
+		acpigen_write_debug_string(action->path);
+		break;
+	case STARLABS_EC_QUERY_SPC:
+		write_method_call("SPC0");
+		acpigen_write_integer(action->value);
+		acpigen_write_integer(action->value2);
+		break;
+	}
+}
+
+static void write_closed_ec_query_events(void)
+{
+	for (size_t i = 0; starlabs_ec_query_events[i].method != 0; i++) {
+		acpigen_write_method(starlabs_ec_query_events[i].method, 0);
+		for (size_t j = 0; j < ARRAY_SIZE(starlabs_ec_query_events[i].actions); j++)
+			write_query_event_action(&starlabs_ec_query_events[i].actions[j]);
+		acpigen_write_method_end();
+	}
 }
 
 #if CONFIG(SYSTEM_TYPE_DETACHABLE)
@@ -782,6 +821,8 @@ void merlin_fill_ssdt(const struct device *dev)
 	acpigen_write_scope(EC_ACPI_PATH);
 	if (CONFIG(EC_STARLABS_MERLIN))
 		write_hid_query_events();
+	else
+		write_closed_ec_query_events();
 #if CONFIG(SYSTEM_TYPE_DETACHABLE)
 	write_virtual_button_devices();
 #endif

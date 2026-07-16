@@ -1,12 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Objects emitted by the runtime Merlin SSDT while query methods remain here. */
-External (\_SB.PCI0.LPCB.EC.ADP1, DeviceObj)
-External (\_SB.PCI0.LPCB.EC.BAT0, DeviceObj)
-External (\_SB.PCI0.LPCB.EC.LID0, DeviceObj)
-External (\_SB.HIDD, DeviceObj)
-External (\_SB.HIDD.HPEM, MethodObj)
-
 Scope (\_SB.PCI0.LPCB)
 {
 	Device (EC)
@@ -114,9 +107,6 @@ Scope (\_SB.PCI0.LPCB)
 			}
 		}
 
-#if !CONFIG(EC_STARLABS_MERLIN)
-		#include "events.asl"
-#endif
 		Method (_REG, 2, NotSerialized)
 		{
 			If ((Arg0 == 0x03) && (Arg1 == 0x01))

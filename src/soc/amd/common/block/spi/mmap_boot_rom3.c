@@ -73,6 +73,32 @@ static void initialize_window(const size_t win_idx, const enum window_type type,
  *                                                                            Host address
  *                                                                            space
  */
+
+static bool is_rom2_remapped(uint32_t rom2_start, uint32_t offset)
+{
+	uint32_t rom2_mask = (CONFIG_ROM_SIZE - 1) & 0xff000000;
+
+	return ((fch_spi_get_rom2_page(rom2_start) & rom2_mask) != (offset & rom2_mask));
+}
+
+static bool is_rom3_linear(uint64_t rom3_start, uint32_t offset, uint32_t size)
+{
+	/* All ROM3 accesses map to bank 3 (last 16MiB) of flash, so not linear */
+	if (fch_spi_rom3_maps_to_bank3())
+		return false;
+
+	uint32_t bank_addr;
+	uint32_t rom3_mask = (CONFIG_ROM_SIZE - 1) & 0xff000000;
+
+	for (uint32_t bank = offset; bank < offset + size; bank += 16 * MiB) {
+		bank_addr = fch_spi_get_rom3_page(rom3_start + bank);
+		if ((bank_addr & rom3_mask) != (bank & rom3_mask))
+			return false;
+	}
+
+	return true;
+}
+
 static void bios_mmap_init(void)
 {
 	static bool init_done;
@@ -83,15 +109,6 @@ static void bios_mmap_init(void)
 		return;
 
 	const bool rom_armor = psp_get_hsti_state_rom_armor_enforced();
-	/*
-	 * The following code assumes that ROM2 is mapped at flash offset 0 and
-	 * that the ROM3 16MByte chunks are linear (0-1-2-3). This is the default
-	 * configuration currently enforced by soft-straps.
-	 * When ROM Armor is enabled, don't call fch_spi_rom_remapping()
-	 * because the SPIBAR is no longer accessible.
-	 */
-	if (!rom_armor && fch_spi_rom_remapping() != 0)
-		die("Non default SPI ROM remapping is not supported!");
 
 	/*
 	 * By default, fixed decode window (maximum size 16MiB) is mapped just
@@ -101,6 +118,16 @@ static void bios_mmap_init(void)
 	size_t rom2_size = 0;
 	const uintptr_t rom2_start = lpc_get_rom2_region(&rom2_size);
 	if (rom2_start && rom2_size) {
+		/*
+		 * The following code assumes that ROM2 is mapped at flash offset 0.
+		 * This is the default configuration currently enforced by soft-straps.
+		 * When ROM Armor is enabled, don't call FCH SPI functions because the
+		 * SPIBAR is no longer accessible.
+		 */
+		if (!rom_armor && is_rom2_remapped(rom2_start, 0))
+			die("Non default ROM2 remapping is not supported!");
+
+
 		initialize_window(win_count, ROM2_DECODE_WINDOW, rom2_start, 0, rom2_size);
 		win_count++;
 		map_win_size += rom2_size;
@@ -120,6 +147,9 @@ static void bios_mmap_init(void)
 	const uint64_t rom3_end = rom3_start + rom3_size;
 
 	if (CONFIG_ROM_SIZE > 16 * MiB) {
+		if (!rom_armor)
+			assert(fch_spi_rom_32bit())
+
 		assert(rom3_start);
 		assert(rom3_size > 16 * MiB);
 		assert(DIV_ROUND_UP(rom3_end, GiB) < CONFIG_CPU_PT_ROM_MAP_GB);
@@ -131,9 +161,32 @@ static void bios_mmap_init(void)
 	    DIV_ROUND_UP(rom3_end, GiB) < CONFIG_CPU_PT_ROM_MAP_GB) {
 
 		const size_t ext_win_size = MIN(rom3_size, CONFIG_ROM_SIZE - rom2_size);
+		const bool rom3_linear = rom_armor ? false :
+					 is_rom3_linear(rom3_start, rom2_size, ext_win_size);
+		/*
+		 * The following code assumes that the ROM3 16MiB chunks are linear.
+		 * This is the default configuration currently enforced by soft-straps.
+		 * When ROM Armor is enabled, don't call FCH SPI functions because the
+		 * SPIBAR is no longer accessible.
+		 */
+		if (!rom3_linear && (ext_win_size > 16 * MiB))
+			die("Non default ROM3 remapping is not supported!");
 
-		initialize_window(win_count, ROM3_DECODE_WINDOW,
-				  rom3_start + rom2_size, rom2_size, ext_win_size);
+		/*
+		 * If the extended window is only 16 MiB (32MiB flash) we can map one
+		 * 16MiB in ROM3 even if not linear. However, if more windows are needed
+		 * to be mapped, they must be linear.
+		 */
+		if (rom3_linear)
+			initialize_window(win_count, ROM3_DECODE_WINDOW,
+					  rom3_start + rom2_size, rom2_size, ext_win_size);
+		else if (!rom_armor && !fch_spi_rom3_maps_to_bank3())
+			initialize_window(win_count, ROM3_DECODE_WINDOW,
+					  (uintptr_t)fch_spi_get_rom3_page(rom3_start + rom2_size),
+					  rom2_size, ext_win_size);
+		else
+			die("Can not map flash in ROM3 window!");
+
 		win_count++;
 		map_win_size += ext_win_size;
 	}

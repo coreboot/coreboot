@@ -70,6 +70,17 @@ enum spi100_speed {
 #define SPI100_HOST_PREF_CONFIG		0x2c
 #define   SPI_RD4DW_EN_HOST		BIT(15)
 
+#define SPI_ROM2_OVERRIDE		0x30
+#define   SPI_ROM2_ADDR_BIT24_VAL	BIT(0)
+#define   SPI_ROM2_ADDR_BIT25_VAL	BIT(1)
+#define   SPI_ROM2_ADDR_BIT24_MASK	BIT(2)
+#define   SPI_ROM2_ADDR_BIT25_MASK	BIT(3)
+/* Below bit is only mentioned in PPRs in section
+ * "Programming for ROM Protection register".
+ * The register definition marks this bit as reserved.
+ */
+#define   SPI_FORCE_ROM3_MAP_TO_BANK3	BIT(4)
+
 #define SPI_STATUS			0x4c
 #define   SPI_DONE_BYTE_COUNT_SHIFT	0
 #define   SPI_DONE_BYTE_COUNT_MASK	0xff
@@ -77,6 +88,9 @@ enum spi100_speed {
 #define   SPI_FIFO_WR_PTR_MASK		0x7f
 #define   SPI_FIFO_RD_PTR_SHIFT		16
 #define   SPI_FIFO_RD_PTR_MASK		0x7f
+
+#define SPI_ROM_ADDR32_CTRL0		0x50
+#define   SPI_ROM_ADDR32		BIT(0)
 
 #define SPI_ROM_PAGE			0x5c
 #define   SPI_ROM_PAGE_SEL		(BIT(0) | BIT(1))
@@ -145,6 +159,10 @@ void spi_write_block(uint8_t reg, const uint8_t *src, size_t len);
 
 /* Returns the active SPI ROM remapping */
 uint8_t fch_spi_rom_remapping(void);
+uint32_t fch_spi_get_rom2_page(uint32_t rom2_base);
+uint64_t fch_spi_get_rom3_page(uint64_t rom3_base);
+bool fch_spi_rom3_maps_to_bank3(void);
+bool fch_spi_rom_32bit(void);
 
 /* Configures 4DW burst mode */
 void fch_spi_configure_4dw_burst(void);

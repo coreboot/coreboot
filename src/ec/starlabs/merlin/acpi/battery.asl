@@ -44,25 +44,13 @@ Device (BAT0)
 
 	Method (BFCX, 0, NotSerialized)
 	{
-		Local0 = ECRD(RefOf(B1DC))
-
-		Local1 = ECRD(RefOf(B1FC))
-		If (Local1) {
-			If (Local1 != 0xffff) {
-				If (Local1 > Local0) {
-					Local0 = Local1
-				}
+		Local0 = ECRD(RefOf(B1FC))
+		If (Local0) {
+			If (Local0 != 0xffff) {
+				Return (Local0)
 			}
 		}
-
-		Local1 = ECRD(RefOf(B1RC))
-		If (Local1 != 0xffff) {
-			If (Local1 > Local0) {
-				Local0 = Local1
-			}
-		}
-
-		Return (Local0)
+		Return (ECRD(RefOf(B1DC)))
 	}
 
 	Method (_BIF, 0, NotSerialized)
@@ -142,17 +130,20 @@ Device (BAT0)
 		PKG1[1] = ECRD(RefOf(B1PR))
 
 		PKG1[2] = 0xffffffff
+		Local2 = 0
 
-		Local0 = ECRD(RefOf(B1RC))
-		If (Local0 != 0xffff) {
-			PKG1[2] = Local0
-		} Else {
-			Local0 = ECRD(RefOf(B1RP))
-			If (Local0 <= 100) {
-				Local1 = BFCX()
-				If (Local1) {
-					PKG1[2] = ((Local0 * Local1) + 50) / 100
-				}
+		Local0 = ECRD(RefOf(B1RP))
+		If (Local0 <= 100) {
+			Local1 = BFCX()
+			If (Local1) {
+				PKG1[2] = ((Local0 * Local1) + 50) / 100
+				Local2 = 1
+			}
+		}
+		If (Local2 == 0) {
+			Local0 = ECRD(RefOf(B1RC))
+			If (Local0 != 0xffff) {
+				PKG1[2] = Local0
 			}
 		}
 		PKG1[3] = ECRD(RefOf(B1PV))

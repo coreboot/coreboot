@@ -223,6 +223,11 @@ static void handle_low_power_charging_boot(void)
 	if (CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch())
 		mdelay(CONFIG_PLATFORM_POST_RENDER_DELAY_SEC * 1000);
 
+	if (CONFIG(EC_GOOGLE_CHROMEEC) && detect_ac_unplug_event(false)) {
+		google_chromeec_offmode_heartbeat();
+		google_chromeec_ap_poweroff();
+	}
+
 	/*
 	 * Disable the lightbar for Low-Battery or Off-Mode charging sequences.
 	 * This maintains visual consistency between the built-in display

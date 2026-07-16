@@ -196,7 +196,14 @@ static void clear_ac_unplug_event(void)
 	google_chromeec_clear_events_b(ac_unplug_event);
 }
 
-static int detect_ac_unplug_event(bool debounce)
+/*
+ * Detect an AC unplug event with optional software debouncing.
+ *
+ * @param debounce  If true, filter out transient power-state fluctuations
+ *                  using a millisecond-resolution stopwatch.
+ * @return 1 if AC is unplugged (and debounced, if enabled), 0 otherwise.
+ */
+int detect_ac_unplug_event(bool debounce)
 {
 	static const long ac_disconnect_debounce_ms = AC_DISCONNECT_DEBOUNCE_MS;
 	static struct stopwatch unplug_event_sw;

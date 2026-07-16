@@ -89,5 +89,7 @@ void enable_fast_battery_charging(void);
 void init_sdam_config(void);
 void configure_dead_battery_boot(void);
 void clear_pending_ec_events(void);
+/* Detect an AC unplug event with optional software debouncing */
+int detect_ac_unplug_event(bool debounce);
 
 #endif /* MAINBOARD_GOOGLE_BLUEY_BOARD_H */

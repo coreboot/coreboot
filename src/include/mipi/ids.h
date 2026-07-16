@@ -26,6 +26,7 @@
 #define MIPI_DEV_ID_REALTEK_ALC722		0x0722
 #define MIPI_DEV_ID_REALTEK_ALC1308             0x1308
 #define MIPI_DEV_ID_REALTEK_ALC1320             0x1320
+#define MIPI_DEV_ID_REALTEK_ALC1321             0x1321
 
 
 #define MIPI_MFG_ID_MAXIM			0x019f

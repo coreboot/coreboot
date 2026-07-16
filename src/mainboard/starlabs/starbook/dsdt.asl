@@ -53,11 +53,5 @@ DefinitionBlock(
 	/* Star Labs EC */
 	#include <ec/starlabs/merlin/acpi/ec.asl>
 
-	Scope (\_SB)
-	{
-		/* Suspend Methods */
-		#include <ec/starlabs/merlin/acpi/suspend.asl>
-	}
-
 	#include "acpi/mainboard.asl"
 }

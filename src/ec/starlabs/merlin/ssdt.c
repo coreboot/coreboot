@@ -6,10 +6,15 @@
 #if CONFIG(SYSTEM_TYPE_DETACHABLE)
 #include <soc/gpio.h>
 #endif
+#if CONFIG(STARLABS_ACPI_EFI_OPTION_SMI)
+#include <starlabs/efi_option_smi.h>
+#endif
 
 #include "ec.h"
 
-#define EC_ACPI_PATH "\\_SB.PCI0.LPCB.EC"
+#define EC_ACPI_PATH           "\\_SB.PCI0.LPCB.EC"
+#define EC_ACPI_METHOD(method) EC_ACPI_PATH "." method
+#define EC_ACPI_FIELD(field)   EC_ACPI_PATH "." field
 
 static void write_ec_read(const char *field)
 {
@@ -112,6 +117,14 @@ static void write_method_call_package_element(const char *method, unsigned int e
 	acpigen_emit_byte(ARG3_OP);
 	acpigen_write_integer(element);
 	acpigen_emit_byte(ZERO_OP);
+}
+
+static void write_ec_write_integer(uint64_t value, const char *field)
+{
+	write_method_call(EC_ACPI_METHOD("ECWR"));
+	acpigen_write_integer(value);
+	acpigen_emit_byte(REF_OF_OP);
+	acpigen_emit_namestring(field);
 }
 
 static void write_hid_dsm_index(unsigned int index)
@@ -605,6 +618,163 @@ static void write_shutdown_event(void)
 	acpigen_write_method_end();
 }
 
+#if CONFIG(STARLABS_ACPI_EFI_OPTION_SMI)
+static void write_ec_read_path(const char *field)
+{
+	write_method_call(EC_ACPI_METHOD("ECRD"));
+	acpigen_emit_byte(REF_OF_OP);
+	acpigen_emit_namestring(field);
+}
+
+static void write_efi_option_get(const char *option)
+{
+	write_method_call("EOGT");
+	acpigen_emit_namestring(option);
+}
+
+static void write_efi_option_set_ec_read(const char *option, const char *field)
+{
+	write_method_call("EOSV");
+	acpigen_emit_namestring(option);
+	write_ec_read_path(field);
+}
+
+static void write_efi_option_field(void)
+{
+	static const struct fieldlist fields[] = {
+		FIELDLIST_NAMESTR("EOCM", 32),
+		FIELDLIST_NAMESTR("EOID", 32),
+		FIELDLIST_NAMESTR("EOVL", 32),
+		FIELDLIST_NAMESTR("EORS", 32),
+	};
+
+	acpigen_emit_ext_op(FIELD_OP);
+	acpigen_write_len_f();
+	acpigen_emit_namestring("\\DNVS");
+	acpigen_emit_byte(FIELD_BYTEACC | FIELD_NOLOCK | FIELD_PRESERVE);
+	for (size_t i = 0; i < ARRAY_SIZE(fields); i++)
+		acpigen_write_field_name(fields[i].name, fields[i].bits);
+	acpigen_pop_len();
+}
+
+static void write_efi_option_methods(void)
+{
+	write_efi_option_field();
+	acpigen_write_name_integer("EOAP", STARLABS_APMC_CMD_EFI_OPTION);
+	acpigen_write_name_integer("EOFL", STARLABS_EFIOPT_ID_FN_LOCK_STATE);
+	acpigen_write_name_integer("EOTP", STARLABS_EFIOPT_ID_TRACKPAD_STATE);
+	acpigen_write_name_integer("EOKB", STARLABS_EFIOPT_ID_KBL_BRIGHTNESS);
+	acpigen_write_name_integer("EOKS", STARLABS_EFIOPT_ID_KBL_STATE);
+	acpigen_write_mutex("EOMX", 0);
+
+	acpigen_write_method_serialized("EOGT", 1);
+	acpigen_write_if();
+	acpigen_write_acquire("EOMX", 1000);
+	acpigen_write_return_integer(0xffffffff);
+	acpigen_write_if_end();
+	acpigen_write_store_int_to_namestr(1, "EOCM");
+	acpigen_write_store_op_to_namestr(ARG0_OP, "EOID");
+	acpigen_write_store_int_to_namestr(0, "EORS");
+	acpigen_write_store_namestr_to_namestr("EOAP", EC_ACPI_FIELD("SMB2"));
+	acpigen_write_store_namestr_to_op("EOVL", LOCAL0_OP);
+	acpigen_write_release("EOMX");
+	acpigen_write_return_op(LOCAL0_OP);
+	acpigen_write_method_end();
+
+	acpigen_write_method_serialized("EOSV", 2);
+	acpigen_write_if();
+	acpigen_write_acquire("EOMX", 1000);
+	acpigen_write_return_integer(1);
+	acpigen_write_if_end();
+	acpigen_write_store_int_to_namestr(2, "EOCM");
+	acpigen_write_store_op_to_namestr(ARG0_OP, "EOID");
+	acpigen_write_store_op_to_namestr(ARG1_OP, "EOVL");
+	acpigen_write_store_int_to_namestr(0, "EORS");
+	acpigen_write_store_namestr_to_namestr("EOAP", EC_ACPI_FIELD("SMB2"));
+	acpigen_write_store_namestr_to_op("EORS", LOCAL0_OP);
+	acpigen_write_release("EOMX");
+	acpigen_write_return_op(LOCAL0_OP);
+	acpigen_write_method_end();
+}
+
+static void write_efi_option_suspend(void)
+{
+	acpigen_emit_byte(STORE_OP);
+	write_ec_read_path(EC_ACPI_FIELD("TPLE"));
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_if_lequal_op_int(LOCAL0_OP, 0x11);
+	acpigen_write_store_int_to_op(0, LOCAL0_OP);
+	acpigen_write_if_end();
+	write_method_call("EOSV");
+	acpigen_emit_namestring("EOTP");
+	acpigen_emit_byte(LOCAL0_OP);
+	write_efi_option_set_ec_read("EOFL", EC_ACPI_FIELD("FLKE"));
+	write_efi_option_set_ec_read("EOKS", EC_ACPI_FIELD("KLSE"));
+	write_efi_option_set_ec_read("EOKB", EC_ACPI_FIELD("KLBE"));
+}
+
+static void write_efi_option_restore_integer(const char *field, uint64_t valid_value)
+{
+	acpigen_write_if_lequal_op_int(LOCAL0_OP, valid_value);
+	write_ec_write_integer(valid_value, field);
+	acpigen_write_else();
+	write_ec_write_integer(0, field);
+	acpigen_write_if_end();
+}
+
+static void write_efi_option_resume(void)
+{
+	static const uint8_t brightness_values[] = {0xdd, 0xcc, 0xbb, 0xaa};
+
+	acpigen_emit_byte(STORE_OP);
+	write_efi_option_get("EOTP");
+	acpigen_emit_byte(LOCAL0_OP);
+	write_efi_option_restore_integer(EC_ACPI_FIELD("TPLE"), 0x22);
+
+	write_method_call(EC_ACPI_METHOD("ECWR"));
+	write_efi_option_get("EOFL");
+	acpigen_emit_byte(REF_OF_OP);
+	acpigen_emit_namestring(EC_ACPI_FIELD("FLKE"));
+
+	acpigen_emit_byte(STORE_OP);
+	write_efi_option_get("EOKS");
+	acpigen_emit_byte(LOCAL0_OP);
+	write_efi_option_restore_integer(EC_ACPI_FIELD("KLSE"), 0xdd);
+
+	acpigen_emit_byte(STORE_OP);
+	write_efi_option_get("EOKB");
+	acpigen_emit_byte(LOCAL0_OP);
+	for (size_t i = 0; i < ARRAY_SIZE(brightness_values); i++) {
+		acpigen_write_if_lequal_op_int(LOCAL0_OP, brightness_values[i]);
+		write_ec_write_integer(brightness_values[i], EC_ACPI_FIELD("KLBE"));
+		acpigen_write_if_end();
+	}
+}
+#endif
+
+static void write_sleep_methods(void)
+{
+#if CONFIG(STARLABS_ACPI_EFI_OPTION_SMI)
+	write_efi_option_methods();
+#endif
+
+	acpigen_write_method_serialized("RPTS", 1);
+#if CONFIG(STARLABS_ACPI_EFI_OPTION_SMI)
+	write_efi_option_suspend();
+#endif
+	write_ec_write_integer(0, EC_ACPI_FIELD("OSFG"));
+	acpigen_write_return_op(ARG0_OP);
+	acpigen_write_method_end();
+
+	acpigen_write_method_serialized("RWAK", 1);
+	write_ec_write_integer(1, EC_ACPI_FIELD("OSFG"));
+#if CONFIG(STARLABS_ACPI_EFI_OPTION_SMI)
+	write_efi_option_resume();
+#endif
+	acpigen_write_return_op(ARG0_OP);
+	acpigen_write_method_end();
+}
+
 void merlin_fill_ssdt(const struct device *dev)
 {
 	(void)dev;
@@ -626,5 +796,6 @@ void merlin_fill_ssdt(const struct device *dev)
 
 	acpigen_write_scope("\\_SB");
 	write_hid_device();
+	write_sleep_methods();
 	acpigen_write_scope_end();
 }

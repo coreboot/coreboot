@@ -659,12 +659,12 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	/* Find out the total payload size, skipping the two byte tag. */
 	payload_size = read_be32(rsp_body + 2);
 
-	if (payload_size > max_response) {
+	if (payload_size > max_response || payload_size < HEADER_SIZE + 1) {
 		/*
 		 * TODO(vbendeb): at least drain the FIFO here or somehow let
 		 * the TPM know that the response can be dropped.
 		 */
-		printk(BIOS_ERR, " TPM response too long (%zd bytes)",
+		printk(BIOS_ERR, " Incorrect size of TPM response (%zd bytes)",
 		       payload_size);
 		return 0;
 	}

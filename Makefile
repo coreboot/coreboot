@@ -599,7 +599,7 @@ distclean-utils:
 distclean: clean clean-ctags clean-cscope distclean-payloads distclean-utils
 	rm -f .config .config.old ..config.tmp* .kconfig.d .tmpconfig* .ccwrap .xcompile
 	rm -rf coreboot-builds coreboot-builds-chromeos
-	rm -f abuild*.xml junit.xml* util/lint/junit.xml
+	rm -f abuild*.xml junit.xml* util/lint/junit.xml flake.lock
 
 .PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean sphinx sphinx-lint
 .PHONY: ctags-project cscope-project clean-ctags

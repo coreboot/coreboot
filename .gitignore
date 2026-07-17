@@ -42,6 +42,9 @@ compile_commands.json
 xgcc/
 tarballs/
 
+# Nix
+/flake.lock
+
 # editor backup files, temporary files, IDE project files
 *~
 *.kate-swp

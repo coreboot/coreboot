@@ -4,6 +4,7 @@ fw_config
 		option DB_C_A		1
 		option DB_C_A_LTE	2
 		option DB_A		3
+		option DB_A_LTE		4
 		option DB_A_HDMI_LTE		6
 	end
 	field WLAN 3 4
@@ -341,6 +342,7 @@ chip soc/intel/alderlake
 				register "input_precharge_resistor_ohms" = "4000"
 				register "input_analog_gain" = "3"
 				device i2c 28 on
+					probe DB_USB DB_A_LTE
 					probe DB_USB DB_C_A_LTE
 					probe DB_USB DB_A_HDMI_LTE
 				end
@@ -497,6 +499,7 @@ chip soc/intel/alderlake
 						register "desc" = ""USB2 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port5 on
+							probe DB_USB DB_A_LTE
 							probe DB_USB DB_C_A_LTE
 							probe DB_USB DB_A_HDMI_LTE
 						end
@@ -545,6 +548,7 @@ chip soc/intel/alderlake
 						register "desc" = ""USB3 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb3_port3 on
+							probe DB_USB DB_A_LTE
 							probe DB_USB DB_C_A_LTE
 							probe DB_USB DB_A_HDMI_LTE
 						end

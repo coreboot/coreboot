@@ -31,13 +31,32 @@
 #define DQ_CONTROL_0(ch, byte)			_DDRIO_C_R_B(0x0074, ch, 0, byte)
 
 /* DDR CKE per-channel */
+#define DDR_CKE_ch_CMD_COMP(ch)			_DDRIO_C_R_B(0x1200, ch, 0, 0)
 #define DDR_CKE_ch_CMD_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x1204, ch, 0, 0)
 #define DDR_CKE_ch_CMD_PI_CODING(ch)		_DDRIO_C_R_B(0x1208, ch, 0, 0)
 
+#define DDR_CKE_ch_CTL_COMP(ch)			_DDRIO_C_R_B(0x1210, ch, 0, 0)
+#define DDR_CKE_ch_CTL_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x1214, ch, 0, 0)
+#define DDR_CKE_ch_CTL_PI_CODING(ch)		_DDRIO_C_R_B(0x1218, ch, 0, 0)
 #define DDR_CKE_ch_CTL_CONTROLS(ch)		_DDRIO_C_R_B(0x121c, ch, 0, 0)
 #define DDR_CKE_ch_CTL_RANKS_USED(ch)		_DDRIO_C_R_B(0x1220, ch, 0, 0)
 
+/* CMD North */
+#define DDR_CMD_N_ch_COMP(ch)			_DDRIO_C_R_B(0x1400, ch, 0, 0)
+#define DDR_CMD_N_ch_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x1404, ch, 0, 0)
+#define DDR_CMD_N_ch_PI_CODING(ch)		_DDRIO_C_R_B(0x1408, ch, 0, 0)
+#define DDR_CMD_N_ch_CONTROLS(ch)		_DDRIO_C_R_B(0x140c, ch, 0, 0)
+
+/* CMD South */
+#define DDR_CMD_S_ch_COMP(ch)			_DDRIO_C_R_B(0x1a00, ch, 0, 0)
+#define DDR_CMD_S_ch_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x1a04, ch, 0, 0)
+#define DDR_CMD_S_ch_PI_CODING(ch)		_DDRIO_C_R_B(0x1a08, ch, 0, 0)
+#define DDR_CMD_S_ch_CONTROLS(ch)		_DDRIO_C_R_B(0x1a0c, ch, 0, 0)
+
 /* DDR CTL per-channel */
+#define DDR_CTL_ch_CTL_COMP(ch)			_DDRIO_C_R_B(0x1c10, ch, 0, 0)
+#define DDR_CTL_ch_CTL_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x1c14, ch, 0, 0)
+#define DDR_CTL_ch_CTL_PI_CODING(ch)		_DDRIO_C_R_B(0x1c18, ch, 0, 0)
 #define DDR_CTL_ch_CTL_CONTROLS(ch)		_DDRIO_C_R_B(0x1c1c, ch, 0, 0)
 #define DDR_CTL_ch_CTL_RANKS_USED(ch)		_DDRIO_C_R_B(0x1c20, ch, 0, 0)
 
@@ -54,12 +73,14 @@
 /* DDR DATA per-channel multicast */
 #define DDR_DATA_ch_CONTROL_0(ch)		_DDRIO_C_R_B(0x3074, ch, 0, 0)
 
-/* DDR CMDN/CMDS per-channel (writes go to both CMDN and CMDS fubs) */
+/* DDR CMDN/CMDS per-channel (writes go to both CMDN and CMDS FUBs) */
+#define DDR_CMD_ch_COMP(ch)			_DDRIO_C_R_B(0x3200, ch, 0, 0)
 #define DDR_CMD_ch_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x3204, ch, 0, 0)
 #define DDR_CMD_ch_PI_CODING(ch)		_DDRIO_C_R_B(0x3208, ch, 0, 0)
 #define DDR_CMD_ch_CONTROLS(ch)			_DDRIO_C_R_B(0x320c, ch, 0, 0)
 
-/* DDR CKE/CTL per-channel (writes go to both CKE and CTL fubs) */
+/* DDR CKE/CTL per-channel (writes go to both CKE and CTL FUBs) */
+#define DDR_CKE_CTL_ch_CTL_COMP(ch)		_DDRIO_C_R_B(0x3410, ch, 0, 0)
 #define DDR_CKE_CTL_ch_CTL_COMP_OFFSET(ch)	_DDRIO_C_R_B(0x3414, ch, 0, 0)
 #define DDR_CKE_CTL_ch_CTL_PI_CODING(ch)	_DDRIO_C_R_B(0x3418, ch, 0, 0)
 

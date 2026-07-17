@@ -306,6 +306,64 @@ uint32_t get_max_margin_for_param(const enum margin_parameter param)
 	}
 }
 
+static uint32_t get_vref_done_bit(const enum dimm_vref_type vref_type)
+{
+	switch (vref_type) {
+	case VREF_DQ_CH0:
+		return (union ddr_data_vref_adjust_reg) { .ch0_slow_bw = 1 }.raw;
+	case VREF_DQ_CH1:
+		return (union ddr_data_vref_adjust_reg) { .ch1_slow_bw = 1 }.raw;
+	case VREF_CA:
+		return (union ddr_data_vref_adjust_reg) { .ca_slow_bw = 1 }.raw;
+	default:
+		die("Invalid Vref type %u\n", vref_type);
+	}
+}
+
+void update_vref_and_wait(
+	struct sysinfo *ctrl,
+	const enum dimm_vref_type vref_type,
+	const bool update_ctrl,
+	const int32_t offset,
+	const bool skip_wait)
+{
+	const uint32_t done_bit = get_vref_done_bit(vref_type);
+	const int32_t o_offset = ctrl->dimm_vref.raw[vref_type];
+
+	const int32_t new_offset = clamp_s32(MIN_VREF, offset + o_offset, MAX_VREF);
+	if (update_ctrl)
+		ctrl->dimm_vref.raw[vref_type] = new_offset;
+
+	/* Use CH1 byte 7 */
+	const uint16_t vref_reg = 0xf78; /* TODO: 0xf84 for BDW? */
+	union ddr_data_vref_adjust_reg ddr_vref_adjust = {
+		.raw = mchbar_read32(vref_reg),
+	};
+	switch (vref_type) {
+	case VREF_DQ_CH0:
+		ddr_vref_adjust.vref_dq_ch0_ctrl = new_offset;
+		break;
+	case VREF_DQ_CH1:
+		ddr_vref_adjust.vref_dq_ch1_ctrl = new_offset;
+		break;
+	case VREF_CA:
+		ddr_vref_adjust.vref_ca_ctrl = new_offset;
+		break;
+	}
+	mchbar_write32(vref_reg, ddr_vref_adjust.raw);
+
+	/* Wait for Vref to settle (note: CA Vref takes longer to settle) */
+	if (!skip_wait) {
+		struct stopwatch timer;
+		stopwatch_init_usecs_expire(&timer, 50);
+		do {
+			if (mchbar_read32(vref_reg) & done_bit)
+				return;
+		} while (!stopwatch_expired(&timer));
+		printk(BIOS_WARNING, "Vref circuit %u failed to converge\n", vref_type);
+	}
+}
+
 void change_margin(
 	struct sysinfo *ctrl,
 	const enum margin_parameter param,
@@ -365,6 +423,21 @@ void change_margin(
 		break;
 	case RdV:
 		ddr_data_offset_train.vref = v0;
+		update_offset_train = true;
+		break;
+	case WrV:
+		for (uint8_t cur_ch = 0; cur_ch < NUM_CHANNELS; cur_ch++) {
+			if (!does_ch_exist(ctrl, cur_ch))
+				continue;
+
+			const bool skip_wait = false;
+			if (en_multicast || cur_ch == channel)
+				update_vref_and_wait(ctrl, cur_ch, update_ctrl, v0, skip_wait);
+		}
+		break;
+	case WrLevel:
+		ddr_data_offset_train.tx_dq  = v0;
+		ddr_data_offset_train.tx_dqs = v0;
 		update_offset_train = true;
 		break;
 	default:

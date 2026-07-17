@@ -209,6 +209,13 @@ enum regfile_mode {
 	REG_FILE_USE_CURRENT,	/* Used when changing parameters after the test */
 };
 
+enum dimm_vref_type {
+	VREF_DQ_CH0 = 0,
+	VREF_DQ_CH1,
+	VREF_CA,
+};
+#define NUM_DIMM_VREF_TYPES (VREF_CA + 1)
+
 struct register_save_frame;
 
 struct wdb_pat {
@@ -234,15 +241,62 @@ struct reut_box {
 	struct reut_pole col;
 };
 
-enum command_training_iteration {
+enum lct_iteration {
 	CT_ITERATION_CLOCK = 0,
 	CT_ITERATION_CMD_NORTH,
 	CT_ITERATION_CMD_SOUTH,
 	CT_ITERATION_CKE,
 	CT_ITERATION_CTL,
-	CT_ITERATION_CMD_VREF,
+	CT_ITERATION_CA_VREF,
 	MAX_CT_ITERATION,
 };
+
+/* Use separate types to reduce the chances of mixing things up */
+struct clk_pi_code {
+	uint8_t pi[NUM_SLOTRANKS];
+};
+
+struct ctl_pi_code {
+	uint8_t pi[NUM_SLOTRANKS];
+};
+
+struct cmd_pi_code {
+	uint8_t pi[NUM_GROUPS];
+};
+
+struct ca_timings {
+	struct clk_pi_code clk;
+	struct ctl_pi_code ctl;
+	struct ctl_pi_code cke; /* CTL PI in CKE FUB */
+
+	struct cmd_pi_code cke_cmd; /* CMD PI in CKE FUB */
+	struct cmd_pi_code cmd_n;
+	struct cmd_pi_code cmd_s;
+};
+
+static inline uint32_t encode_pi(const uint8_t array[], size_t len)
+{
+	uint32_t val = 0;
+	for (size_t n = 0; n < len; n++) {
+		val |= array[n] << (7 * n);
+	}
+	return val;
+}
+
+static inline uint32_t encode_clk_pi(const struct clk_pi_code clk)
+{
+	return encode_pi(clk.pi, ARRAY_SIZE(clk.pi));
+}
+
+static inline uint32_t encode_ctl_pi(const struct ctl_pi_code ctl)
+{
+	return encode_pi(ctl.pi, ARRAY_SIZE(ctl.pi));
+}
+
+static inline uint32_t encode_cmd_pi(const struct cmd_pi_code cmd)
+{
+	return encode_pi(cmd.pi, ARRAY_SIZE(cmd.pi));
+}
 
 enum raminit_boot_mode {
 	BOOTMODE_COLD,
@@ -265,6 +319,7 @@ enum raminit_status {
 	RAMINIT_STATUS_JWRL_FAILURE,
 	RAMINIT_STATUS_1D_MARGINING_FAILURE,
 	RAMINIT_STATUS_INVALID_CACHE,
+	RAMINIT_STATUS_LCT_FAILURE,
 	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
 
@@ -376,7 +431,13 @@ struct sysinfo {
 	union ddr_comp_ctl_0_reg comp_ctl_0;
 	union ddr_comp_ctl_1_reg comp_ctl_1;
 
-	union ddr_data_vref_adjust_reg dimm_vref;
+	union {
+		struct {
+			int8_t dq[NUM_CHANNELS];
+			int8_t ca;
+		};
+		int8_t raw[NUM_DIMM_VREF_TYPES];
+	} dimm_vref;
 
 	union sc_roundt_lat_reg rt_latency[NUM_CHANNELS];
 
@@ -405,13 +466,7 @@ struct sysinfo {
 
 	struct vref_margin rxdqvrefpb[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES][NUM_BITS];
 
-	uint8_t clk_pi_code[NUM_CHANNELS][NUM_SLOTRANKS];
-	uint8_t ctl_pi_code[NUM_CHANNELS][NUM_SLOTRANKS];
-	uint8_t cke_pi_code[NUM_CHANNELS][NUM_SLOTRANKS];
-
-	uint8_t cke_cmd_pi_code[NUM_CHANNELS][NUM_GROUPS];
-	uint8_t cmd_north_pi_code[NUM_CHANNELS][NUM_GROUPS];
-	uint8_t cmd_south_pi_code[NUM_CHANNELS][NUM_GROUPS];
+	struct ca_timings ca[NUM_CHANNELS];
 
 	/*
 	 * BIG WARNING: The slotrank comes before the channel!
@@ -470,6 +525,12 @@ static inline bool rank_in_ch(const struct sysinfo *ctrl, uint8_t rank, uint8_t 
 static inline void clear_data_offset_train_all(struct sysinfo *ctrl)
 {
 	memset(ctrl->data_offset_train, 0, sizeof(ctrl->data_offset_train));
+}
+
+static inline void reut_disable_cadb_deselects(void)
+{
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++)
+		mchbar_write8(REUT_ch_MISC_PAT_CADB_CTRL(channel), 0);
 }
 
 static inline uint32_t get_data_train_feedback(const uint8_t channel, const uint8_t byte)
@@ -545,6 +606,7 @@ enum raminit_status train_read_timing_centering(struct sysinfo *ctrl);
 enum raminit_status train_write_timing_centering(struct sysinfo *ctrl);
 enum raminit_status train_read_voltage_centering(struct sysinfo *ctrl);
 enum raminit_status optimise_comp(struct sysinfo *ctrl);
+enum raminit_status train_late_command(struct sysinfo *ctrl);
 enum raminit_status save_training_values(struct sysinfo *ctrl);
 enum raminit_status restore_training_values(struct sysinfo *ctrl);
 enum raminit_status save_non_training(struct sysinfo *ctrl);
@@ -667,6 +729,13 @@ void download_regfile(
 
 uint32_t get_max_margin_for_param(const enum margin_parameter param);
 
+void update_vref_and_wait(
+	struct sysinfo *ctrl,
+	const enum dimm_vref_type vref_type,
+	const bool update_ctrl,
+	const int32_t offset,
+	const bool skip_wait);
+
 void change_margin(
 	struct sysinfo *ctrl,
 	const enum margin_parameter param,
@@ -702,6 +771,28 @@ void update_opt_param_offset(
 	const bool update_ctrl);
 
 uint8_t get_rx_bias(const struct sysinfo *ctrl);
+
+void shift_pi_for_cmd_training(
+	struct sysinfo *ctrl,
+	const uint8_t channel,
+	const enum lct_iteration iteration,
+	const uint8_t rankmask,
+	const uint8_t group_mask,
+	const int32_t new_val_or_off,
+	const bool update_ctrl);
+
+enum raminit_status cmd_find_edges_linear(
+	struct sysinfo *ctrl,
+	const enum lct_iteration iteration,
+	const uint8_t chanmask,
+	const uint8_t rankmask,
+	const uint8_t groupmask,
+	const int32_t lct_start,
+	const int32_t lct_stop,
+	const int32_t lct_step,
+	const bool skip_vref,
+	const bool skip_print,
+	const bool update_ctrl);
 
 void dump_capid_values(void);
 

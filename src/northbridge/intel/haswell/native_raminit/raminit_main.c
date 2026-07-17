@@ -133,6 +133,7 @@ static const struct task_entry cold_boot[] = {
 	{ train_read_voltage_centering,                           true, "RDVC1D",     },
 	{ optimise_comp,                                          true, "OPTCOMP",    },
 	{ post_training,                                          true, "POSTTRAIN",  },
+	{ train_late_command,                                     true, "LCT",        },
 	{ activate_mc,                                            true, "ACTIVATE",   },
 	{ save_training_values,                                   true, "SAVE_TRAIN", },
 	{ save_non_training,                                      true, "SAVE_NONT",  },

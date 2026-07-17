@@ -282,9 +282,9 @@ union ddr_comp_ctl_1_reg {
 
 union ddr_data_vref_adjust_reg {
 	struct __packed {
-		int32_t  ca_vref_ctrl     : 7;// Bits  6:0
-		int32_t  ch1_vref_ctrl    : 7;// Bits 13:7
-		int32_t  ch0_vref_ctrl    : 7;// Bits 20:14
+		int32_t  vref_ca_ctrl     : 7;// Bits  6:0
+		int32_t  vref_dq_ch1_ctrl : 7;// Bits 13:7
+		int32_t  vref_dq_ch0_ctrl : 7;// Bits 20:14
 		uint32_t en_dimm_vref_ca  : 1;// Bits 21:21
 		uint32_t en_dimm_vref_ch1 : 1;// Bits 22:22
 		uint32_t en_dimm_vref_ch0 : 1;// Bits 23:23
@@ -342,6 +342,38 @@ union ddr_comp_vsshi_control_reg {
 		uint32_t gain_boost      : 1; // Bits 22:22
 		uint32_t sel_code        : 1; // Bits 23:23
 		uint32_t output_code     : 8; // Bits 31:24
+	};
+	uint32_t raw;
+};
+
+union clk_pi_code_reg {
+	struct __packed {
+		uint32_t pi_0 : 7; // Bits  6:0
+		uint32_t pi_1 : 7; // Bits 13:7
+		uint32_t pi_2 : 7; // Bits 20:14
+		uint32_t pi_3 : 7; // Bits 27:21
+		uint32_t      : 4; // Bits 31:28
+	};
+	uint32_t raw;
+};
+
+union ctl_pi_code_reg {
+	struct __packed {
+		uint32_t pi_0     : 7; // Bits  6:0
+		uint32_t pi_1     : 7; // Bits 13:7
+		uint32_t pi_2     : 7; // Bits 20:14
+		uint32_t pi_3     : 7; // Bits 27:21
+		uint32_t xover_en : 1; // Bits 28:28
+		uint32_t          : 3; // Bits 31:29
+	};
+	uint32_t raw;
+};
+
+union cmd_pi_code_reg {
+	struct __packed {
+		uint32_t pi_0 :  7; // Bits  6:0
+		uint32_t pi_1 :  7; // Bits 13:7
+		uint32_t      : 18; // Bits 31:14
 	};
 	uint32_t raw;
 };

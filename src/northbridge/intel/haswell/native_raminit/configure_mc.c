@@ -293,13 +293,10 @@ static void program_dimm_vref(struct sysinfo *ctrl, const uint16_t vccio_mv, con
 		.vccddq_hi_qnnn_h = vddhi,
 		.hi_z_timer_ctrl  = 3,
 	};
-	ctrl->dimm_vref = ddr_vref_adjust;
+	ctrl->dimm_vref.dq[0] = ddr_vref_adjust.vref_dq_ch0_ctrl;
+	ctrl->dimm_vref.dq[1] = ddr_vref_adjust.vref_dq_ch1_ctrl;
+	ctrl->dimm_vref.ca    = ddr_vref_adjust.vref_ca_ctrl;
 	mchbar_write32(DDR_DATA_VREF_ADJUST, ddr_vref_adjust.raw);
-}
-
-static uint32_t pi_code(const uint32_t code)
-{
-	return code << 21 | code << 14 | code << 7 | code << 0;
 }
 
 static void program_ddr_ca(struct sysinfo *ctrl, const bool vddhi)
@@ -345,25 +342,62 @@ static void program_ddr_ca(struct sysinfo *ctrl, const bool vddhi)
 		};
 		mchbar_write32(DDR_CTL_ch_CTL_CONTROLS(channel), ddr_ctl_controls.raw);
 
-		const uint8_t cmd_pi = ctrl->lpddr ? 96 : 64;
-		mchbar_write32(DDR_CMD_ch_PI_CODING(channel), pi_code(cmd_pi));
-		mchbar_write32(DDR_CKE_ch_CMD_PI_CODING(channel), pi_code(cmd_pi));
-		mchbar_write32(DDR_CKE_CTL_ch_CTL_PI_CODING(channel), pi_code(64));
-		mchbar_write32(DDR_CLK_ch_PI_CODING(channel), pi_code(64));
+		/*
+		 * Program initial CKE/CTL/CMD/CLK PI settings
+		 */
 
+		/* Set initial CTL/CLK PI to 64 */
+		const struct clk_pi_code clk = {
+			.pi[0] = 64,
+			.pi[1] = 64,
+			.pi[2] = 64,
+			.pi[3] = 64,
+		};
+		const struct ctl_pi_code ctl = {
+			.pi[0] = 64,
+			.pi[1] = 64,
+			.pi[2] = 64,
+			.pi[3] = 64,
+		};
+
+		/*
+		 * Set CMD to 64 for DDR3 and to 96 (+1/2 QCLK) for LPDDR3, for ideal
+		 * initial command centering. Haswell MRC always uses 96 for some reason.
+		 * TODO: Would initial CMD of 85 work better for 2N mode on DDR3?
+		 */
+		const uint8_t cmd_pi_val = ctrl->lpddr ? 96 : 64;
+		const struct cmd_pi_code cmd = {
+			.pi[0] = cmd_pi_val,
+			.pi[1] = cmd_pi_val,
+		};
+
+		ctrl->ca[channel].clk     = clk;
+		ctrl->ca[channel].ctl     = ctl;
+		ctrl->ca[channel].cke     = ctl;
+		ctrl->ca[channel].cmd_n   = cmd;
+		ctrl->ca[channel].cmd_s   = cmd;
+		ctrl->ca[channel].cke_cmd = cmd;
+
+		const uint32_t clk_cr = encode_clk_pi(clk);
+		const uint32_t ctl_cr = encode_ctl_pi(ctl);
+		const uint32_t cmd_cr = encode_cmd_pi(cmd);
+
+		/* CMD PI in CMD North and CMD South FUBs */
+		mchbar_write32(DDR_CMD_ch_PI_CODING(channel), cmd_cr);
+
+		/* CMD PI in CKE FUB */
+		mchbar_write32(DDR_CKE_ch_CMD_PI_CODING(channel), cmd_cr);
+
+		/* CTL PI in CKE and CTL FUBs */
+		mchbar_write32(DDR_CKE_CTL_ch_CTL_PI_CODING(channel), ctl_cr);
+
+		/* CLK PI in CLK FUB */
+		mchbar_write32(DDR_CLK_ch_PI_CODING(channel), clk_cr);
+
+		/* CA bus COMP settings, zero for now */
 		mchbar_write32(DDR_CMD_ch_COMP_OFFSET(channel), 0);
 		mchbar_write32(DDR_CLK_ch_COMP_OFFSET(channel), 0);
 		mchbar_write32(DDR_CKE_CTL_ch_CTL_COMP_OFFSET(channel), 0);
-
-		for (uint8_t group = 0; group < NUM_GROUPS; group++) {
-			ctrl->cke_cmd_pi_code[channel][group] = cmd_pi;
-			ctrl->cmd_north_pi_code[channel][group] = cmd_pi;
-			ctrl->cmd_south_pi_code[channel][group] = cmd_pi;
-		}
-		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
-			ctrl->clk_pi_code[channel][rank] = 64;
-			ctrl->ctl_pi_code[channel][rank] = 64;
-		}
 	}
 }
 

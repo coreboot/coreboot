@@ -5,6 +5,9 @@
 
 #include <stdint.h>
 
+struct global_nvs;
+struct chipset_power_state;
+
 /*
  * SOC specific handler to provide the wake source data for ACPI _SWS.
  *
@@ -15,5 +18,10 @@
  * is provided by this function.
  */
 int soc_fill_acpi_wake(const struct chipset_power_state *ps, uint32_t *pm1, uint32_t **gpe0);
+
+#if CONFIG(SOC_INTEL_COMMON_ACPI_TIME_ALARM)
+/* Record the WADT wake status mask in GNVS. */
+void acpi_fill_wadt_wake_gnvs(struct global_nvs *gnvs, const uint32_t *gpe0);
+#endif
 
 #endif /* _INTEL_COMMON_ACPI_H_ */

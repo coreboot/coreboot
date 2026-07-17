@@ -151,3 +151,7 @@ Device (LPCB)
 		})
 	}
 }
+
+#if CONFIG(SOC_INTEL_COMMON_ACPI_TIME_ALARM)
+#include <soc/intel/common/acpi/time_alarm.asl>
+#endif

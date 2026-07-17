@@ -25,6 +25,8 @@ struct __packed global_nvs {
 	u16	u3we; /* 0x2d - 0x2e USB3 Wake Enable Bitmap */
 	u8	uior; /* 0x2f - UART debug controller init on S3 resume */
 	u64	hest_log_addr; /* 0x30 - 0x37 err log addr (used in SMM, not ASL code) */
+	u8	wadt; /* 0x38 - WADT wake status mask */
+	u8	wadt_armed; /* 0x39 - WADT armed timer mask */
 };
 
 #endif

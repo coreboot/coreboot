@@ -81,6 +81,9 @@ void acpi_fill_gnvs(void)
 int acpi_reset_gnvs_for_wake(struct global_nvs **gnvs_)
 {
 	if (!gnvs)
+		acpi_create_gnvs(NULL);
+
+	if (!gnvs)
 		return -1;
 
 	/* Set unknown wake source */

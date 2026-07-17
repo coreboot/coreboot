@@ -23,4 +23,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	U3WE,	16,	// 0x2d - 0x2e USB3 Wake Enable Bitmap
 	UIOR,	8,	// 0x2f - UART debug controller init on S3 resume
 	,	64,	// 0x30 - 0x37 Hest log buffer (used in SMM, not ASL code)
+	WATS,	8,	// 0x38 WADT wake status mask
+	WATA,	8,	// 0x39 WADT armed timer mask
 }

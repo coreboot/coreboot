@@ -20,6 +20,10 @@ static void pm_fill_gnvs(struct global_nvs *gnvs, const struct chipset_power_sta
 	if (gpe_reg_count < 0)
 		return;
 
+#if CONFIG(SOC_INTEL_COMMON_ACPI_TIME_ALARM)
+	acpi_fill_wadt_wake_gnvs(gnvs, gpe0);
+#endif
+
 	/* Scan for first set bit in PM1 */
 	for (index = 0; index < reg_size; index++) {
 		if (pm1 & 1)
@@ -61,6 +65,9 @@ static void acpi_save_wake_source(void *unused)
 
 	printk(BIOS_DEBUG, "ACPI _SWS is PM1 Index %lld GPE Index %lld\n",
 	       (long long)gnvs->pm1i, (long long)gnvs->gpei);
+#if CONFIG(SOC_INTEL_COMMON_ACPI_TIME_ALARM)
+	printk(BIOS_DEBUG, "ACPI _SWS WADT status mask %#x\n", gnvs->wadt);
+#endif
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, acpi_save_wake_source, NULL);

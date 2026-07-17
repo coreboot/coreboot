@@ -4,7 +4,6 @@
 #include <arch/io.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/wadt_wake.h>
-#include <soc/iomap.h>
 #include <soc/pm.h>
 
 bool wadt_wake_should_preserve(uint8_t slp_typ)

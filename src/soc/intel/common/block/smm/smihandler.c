@@ -21,6 +21,7 @@
 #include <intelblocks/smihandler.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
+#include <intelblocks/wadt_wake.h>
 #include <option.h>
 #include <security/lockdown/lockdown.h>
 #include <security/tcg/opal_s3_smm.h>
@@ -145,6 +146,8 @@ void smihandler_southbridge_sleep(
 {
 	uint32_t reg32;
 	uint8_t slp_typ;
+	bool wadt_enabled = false;
+	uint32_t gpe_preserve = 0;
 
 	/* First, disable further SMIs */
 	pmc_disable_smi(SLP_SMI_EN);
@@ -162,8 +165,13 @@ void smihandler_southbridge_sleep(
 	if (slp_typ >= ACPI_S3)
 		elog_gsmi_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
-	/* Clear pending GPE events */
-	pmc_clear_all_gpe_status();
+	if (wadt_wake_should_preserve(slp_typ)) {
+		wadt_enabled = wadt_wake_is_enabled();
+		gpe_preserve = wadt_wake_status_preserve_mask(wadt_enabled);
+	}
+
+	/* Clear pending GPE events, preserving an armed WADT if needed. */
+	pmc_clear_gpe_status(gpe_preserve);
 
 	/* Next, do the deed. */
 
@@ -218,6 +226,9 @@ void smihandler_southbridge_sleep(
 
 	/* Allow mainboard to restore wake sources (e.g. for S5 WOL). */
 	mainboard_smi_sleep_finalize(slp_typ);
+
+	if (wadt_wake_should_preserve(slp_typ))
+		wadt_wake_restore(wadt_enabled);
 
 	/*
 	 * Write back to the SLP register to cause the originally intended

@@ -73,6 +73,8 @@
 #define GPE_63_32    1 /**< 0x64 = GPE[63:32]. */
 #define GPE_95_64    2 /**< 0x68 = GPE[95:64]. */
 #define GPE_STD      3 /**< 0x6c = Standard GPE. */
+/* WADT uses bit 18 in both Standard GPE status and enable registers. */
+#define WADT_STS     BIT(18)
 
 #define GPE0_EN(x)     (0x70 + ((x) * 4))
 #define WADT_EN        BIT(18)

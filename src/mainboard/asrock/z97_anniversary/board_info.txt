@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://asrock.com/mb/Intel/Z97 Anniversary
+ROM package: DIP-8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y
+Release year: 2014

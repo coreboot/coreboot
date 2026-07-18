@@ -1,11 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10ec0262,	/* Codec Vendor / Device ID: Realtek ALC262 */
-	0x1a864352,	/* Subsystem ID                             */
-	0x0000000e,	/* Number of jacks                          */
-
+static const u32 realtek_alc262_verbs[] = {
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10ec0262 */
 	AZALIA_SUBVENDOR(0, 0x1a864352),
 
@@ -34,12 +29,9 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
 
 	AZALIA_PIN_CFG(0, 0x1f, AZALIA_PIN_CFG_NC(0)),
+};
 
-	/* coreboot specific header */
-	0x80862806,	/* Codec Vendor / Device ID: Intel PantherPoint HDMI */
-	0x80860101,	/* Subsystem ID                                      */
-	0x00000004,	/* Number of jacks                                   */
-
+static const u32 intel_display_audio_verbs[] = {
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
 	AZALIA_SUBVENDOR(3, 0x80860101),
 
@@ -51,4 +43,23 @@ const u32 cim_verb_data[] = {
 
 	/* Pin Complex (NID 0x07) Digital Out at Int HDMI */
 	AZALIA_PIN_CFG(3, 0x07, 0x18560030),
+};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC262",
+		.vendor_id    = 0x10ec0262,
+		.subsystem_id = 0x1a864352,
+		.address      = 0,
+		.verbs        = realtek_alc262_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc262_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x80862806,
+		.subsystem_id = 0x80860101,
+		.address      = 3,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
 };

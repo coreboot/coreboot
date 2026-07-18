@@ -52,12 +52,6 @@ config CCD_PORT
 	int
 	default 4
 
-config D3COLD_SUPPORT
-	default n
-
-config DIMM_SPD_SIZE
-	default 512
-
 config EC_STARLABS_BATTERY_MODEL
 	default "AEC617573-4S1P"
 
@@ -66,14 +60,6 @@ config EC_STARLABS_BATTERY_TYPE
 
 config EC_STARLABS_BATTERY_OEM
 	default "Apower Electronics"
-
-config FMDFILE
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/vboot.fmd" if VBOOT
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
-
-config IFD_BIN_PATH
-	string
-	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/flashdescriptor.bin"
 
 config MAINBOARD_DIR
 	default "starlabs/starfighter"
@@ -90,16 +76,6 @@ config MAINBOARD_PART_NUMBER
 config MAINBOARD_SMBIOS_PRODUCT_NAME
 	default "StarFighter"
 
-config ME_BIN_PATH
-	string
-	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/intel_me.bin"
-
-config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
-	default n
-
-config SOC_INTEL_CSE_SEND_EOP_EARLY
-	default n
-
 config TME_KEY_REGENERATION_ON_WARM_BOOT
 	default n
 
@@ -114,9 +90,6 @@ config TPM_PIRQ
 
 config UART_FOR_CONSOLE
 	default 0
-
-config USE_PM_ACPI_TIMER
-	default n
 
 config VBOOT
 	select VBOOT_VBNV_FLASH

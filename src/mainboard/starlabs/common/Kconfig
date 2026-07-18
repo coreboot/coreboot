@@ -18,6 +18,38 @@ config EC_STARLABS_ITE_BIN_PATH
 		BOARD_STARLABS_ADL_SERIES || BOARD_STARLABS_CEZANNE_SERIES || \
 		BOARD_STARLABS_STARBOOK_SERIES || BOARD_STARLABS_STARFIGHTER_SERIES
 
+if BOARD_STARLABS_ADL_SERIES || BOARD_STARLABS_STARBOOK_SERIES || \
+	BOARD_STARLABS_STARFIGHTER_SERIES
+
+config D3COLD_SUPPORT
+	default n
+
+config DIMM_SPD_SIZE
+	default 512
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/vboot.fmd" if VBOOT
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
+
+config IFD_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/flashdescriptor.bin"
+
+config ME_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/intel_me.bin"
+
+config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
+	default n
+
+config SOC_INTEL_CSE_SEND_EOP_EARLY
+	default n
+
+config USE_PM_ACPI_TIMER
+	default n
+
+endif
+
 config STARLABS_MEMORY_SETTINGS_VERSION
 	bool
 	default y if PLATFORM_USES_FSP2_0 && CACHE_MRC_SETTINGS

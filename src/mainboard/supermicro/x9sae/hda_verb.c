@@ -2,10 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	0x10ec0889,	/* Codec Vendor / Device ID: Realtek */
-	0x15d90644,	/* Subsystem ID */
-	15,		/* Number of 4 dword sets */
+static const u32 realtek_alc889_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x15d90644),
 	AZALIA_PIN_CFG(0, 0x11, 0x18561120),
 	AZALIA_PIN_CFG(0, 0x12, AZALIA_PIN_CFG_NC(0)),
@@ -21,10 +18,9 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1d, 0x4007e619),
 	AZALIA_PIN_CFG(0, 0x1e, 0x01452130),
 	AZALIA_PIN_CFG(0, 0x1f, 0x01c41150),
+};
 
-	0x80862806,	/* Codec Vendor / Device ID: Intel */
-	0x80860101,	/* Subsystem ID */
-	4,		/* Number of 4 dword sets */
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_SUBVENDOR(3, 0x80860101),
 	AZALIA_PIN_CFG(3, 0x05, 0x58560010),
 	AZALIA_PIN_CFG(3, 0x06, 0x18560020),
@@ -33,5 +29,24 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[0] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC889",
+		.vendor_id    = 0x10ec0889,
+		.subsystem_id = 0x15d90644,
+		.address      = 0,
+		.verbs        = realtek_alc889_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc889_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x80862806,
+		.subsystem_id = 0x80860101,
+		.address      = 3,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

@@ -21,5 +21,5 @@ DefinitionBlock (
 		#include <drivers/pc80/pc/ps2_keyboard.asl>
 	}
 
-	#include "acpi/mainboard.asl"
+	#include <mainboard/starlabs/common/acpi/mainboard.asl>
 }

@@ -35,5 +35,5 @@ DefinitionBlock(
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
-	#include "acpi/mainboard.asl"
+	#include <mainboard/starlabs/common/acpi/mainboard.asl>
 }

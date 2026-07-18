@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 Scope (\_SB) {
-	#include "sleep.asl"
+	#include <mainboard/starlabs/common/acpi/sleep.asl>
 }
 
 #if CONFIG(BOARD_STARLABS_LITE_ADL)

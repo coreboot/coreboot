@@ -3,12 +3,7 @@
 #include <device/azalia_device.h>
 #include <device/azalia_codec/realtek.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10ec0235,	/* Codec Vendor / Device ID: Realtek ALC235 */
-	0x20147017,	/* Subsystem ID */
-	13,		/* Number of verb entries */
-
+static const u32 realtek_alc235_verbs[] = {
 	/* Reset Codec First */
 	AZALIA_RESET(0x1),
 
@@ -77,5 +72,16 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC235",
+		.vendor_id    = 0x10ec0235,
+		.subsystem_id = 0x20147017,
+		.address      = 0,
+		.verbs        = realtek_alc235_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc235_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

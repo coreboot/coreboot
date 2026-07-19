@@ -2,12 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x14f15098, /* Codec Vendor / Device ID: Conexant CX20632 */
-	0x14f10216, /* Subsystem ID */
-	15,         /* Number of jacks (NID entries) */
-
+static const u32 conexant_cx20632_verbs[] = {
 	/* Reset Codec First */
 	AZALIA_RESET(0x1),
 
@@ -72,5 +67,16 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Conexant CX20632",
+		.vendor_id    = 0x14f15098,
+		.subsystem_id = 0x14f10216,
+		.address      = 0,
+		.verbs        = conexant_cx20632_verbs,
+		.verb_count   = ARRAY_SIZE(conexant_cx20632_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

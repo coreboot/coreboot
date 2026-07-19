@@ -3,12 +3,7 @@
 #include <device/azalia_device.h>
 #include <device/azalia_codec/realtek.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10ec0269,	/* Codec Vendor / Device ID: Realtek ALC269 */
-	0x1e507007,	/* Subsystem ID */
-	17,		/* Number of verb entries */
-
+static const u32 realtek_alc269_verbs[] = {
 	/* Reset Codec First */
 	AZALIA_RESET(0x1),
 
@@ -90,5 +85,16 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC269",
+		.vendor_id    = 0x10ec0269,
+		.subsystem_id = 0x1e507007,
+		.address      = 0,
+		.verbs        = realtek_alc269_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc269_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

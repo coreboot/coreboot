@@ -3,12 +3,7 @@
 #include <device/azalia_device.h>
 #include <stdint.h>
 
-const uint32_t cim_verb_data[] = {
-	/* coreboot specific header */
-	0x14f11f87,	/* Codec Vendor / Device ID: SoundWire SN6140 */
-	0x14f1035e,	/* Subsystem ID */
-	19,		/* Number of jacks (NID entries) */
-
+static const u32 soundwire_sn6140_verbs[] = {
 	/* Reset Codec First */
 	AZALIA_RESET(0x1),
 
@@ -72,11 +67,9 @@ const uint32_t cim_verb_data[] = {
 	0x01b30420,	/* Set EAPD */
 	0x01c31028,
 	0x01b30420,
+};
 
-	0x80862815,	/* Codec Vendor / Device ID: Intel */
-	0x80860101,	/* Subsystem ID */
-	10,		/* Number of 4 dword sets */
-
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_SUBVENDOR(2, 0x80860101),
 
 	AZALIA_PIN_CFG(2, 0x04, 0x18560010),
@@ -91,5 +84,24 @@ const uint32_t cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "SoundWire SN6140",
+		.vendor_id    = 0x14f11f87,
+		.subsystem_id = 0x14f1035e,
+		.address      = 0,
+		.verbs        = soundwire_sn6140_verbs,
+		.verb_count   = ARRAY_SIZE(soundwire_sn6140_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x80862815,
+		.subsystem_id = 0x80860101,
+		.address      = 2,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

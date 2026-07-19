@@ -68,9 +68,15 @@ int soc_mark_gfx_memory(void)
 void soc_load_logo_by_coreboot(void)
 {
 	const struct hob_graphics_info *ginfo;
-	struct soc_intel_common_config *config = chip_get_common_soc_structure();
+	struct soc_intel_common_config *config;
 	struct logo_config logo_cfg;
 	size_t size;
+
+	config = chip_get_common_soc_structure();
+	if (!config) {
+		printk(BIOS_ERR, "Failed to get Intel common SoC structure.\n");
+		return;
+	}
 
 	/* Find the graphics information HOB */
 	ginfo = fsp_find_extension_hob_by_guid(fsp_graphics_info_guid, &size);
@@ -100,6 +106,20 @@ void soc_load_logo_by_coreboot(void)
 	logo_cfg.vertical_resolution = ginfo->vertical_resolution;
 	logo_cfg.bytes_per_scanline = ginfo->pixels_per_scanline *
 				 sizeof(efi_graphics_output_blt_pixel);
+
+	const uint64_t required_fb_size = (uint64_t)logo_cfg.vertical_resolution *
+					 logo_cfg.bytes_per_scanline;
+	/*
+	 * Sanity check HOB geometry to prevent buffer overruns:
+	 * - Ensure total footprint (vres * stride) fits inside framebuffer_size.
+	 */
+	if (required_fb_size > ginfo->framebuffer_size) {
+		printk(BIOS_ERR,
+			   "CBFS Logo: Geometry footprint (%llu B) exceeds framebuffer region (%u B)\n",
+			   required_fb_size, ginfo->framebuffer_size);
+		return;
+	}
+
 	logo_cfg.panel_orientation = config->panel_orientation;
 	logo_cfg.halignment = FW_SPLASH_HALIGNMENT_CENTER;
 	logo_cfg.valignment = config->logo_valignment;

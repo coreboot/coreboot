@@ -398,14 +398,14 @@
 	_PAD_CFG_STRUCT(pad,					\
 		PAD_FUNC(GPIO) | PAD_RESET(DEEP) |		\
 		PAD_TRIG(OFF) | PAD_BUF(TX_RX_DISABLE),		\
-		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
+		PAD_PULL(pull) | PAD_IOSSTATE(IGNORE))
 
 /* No Connect configuration with lock */
 #define PAD_NC_LOCK(pad, pull, lock_action)			\
 	_PAD_CFG_STRUCT_LOCK(pad,				\
 		PAD_RESET(PWROK) | PAD_FUNC(GPIO) |		\
 		PAD_TRIG(OFF) | PAD_BUF(TX_RX_DISABLE),		\
-		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE),		\
+		PAD_PULL(pull) | PAD_IOSSTATE(IGNORE),		\
 		PAD_LOCK(lock_action))
 
 /* General purpose input, routed to APIC */

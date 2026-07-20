@@ -59,7 +59,7 @@ const uint32_t fw_header_offsets_4MiB[] = {
 	0x020000,
 };
 
-struct ro_list_state {
+struct list_state {
 	bool psp_l2_seen;
 	bool stop_after_psp_l2;
 };
@@ -200,7 +200,7 @@ static bool walk_efs_list_hdr_callback(const struct psp_dir_region *dir_rdev,
 				       const size_t level,
 				       void *user_data)
 {
-	struct ro_list_state *state = (struct ro_list_state *)user_data;
+	struct list_state *state = (struct list_state *)user_data;
 	char indent[MAX_INDENTATION_LEN] = {0};
 	uint32_t size;
 
@@ -234,11 +234,11 @@ static bool walk_efs_list_hdr_callback(const struct psp_dir_region *dir_rdev,
 	return true;
 }
 
-static bool walk_efs_ro_list_callback(const struct psp_dir_region *dir_rdev,
-				      const size_t level,
-				      const size_t index,
-				      const union psp_dir_entry *entry,
-				      void *user_data)
+static bool walk_efs_list_callback(const struct psp_dir_region *dir_rdev,
+				   const size_t level,
+				   const size_t index,
+				   const union psp_dir_entry *entry,
+				   void *user_data)
 {
 	(void) index;
 	(void) user_data;
@@ -429,6 +429,7 @@ enum {
 	AMDFW_OPT_DUMP = 'd',
 	AMDFW_OPT_SOFT_FUSE = 1UL << 0, /* Print Softfuse */
 	AMDFW_OPT_RO_LIST = 1UL << 1, /* List entries in AMDFW RO */
+	AMDFW_OPT_LIST_ALL = 1UL << 2, /* List all entries */
 };
 
 static const char optstring[] = {AMDFW_OPT_HELP, AMDFW_OPT_DUMP};
@@ -438,6 +439,8 @@ static struct option long_options[] = {
 	{"dump", no_argument, 0, AMDFW_OPT_DUMP},
 	{"soft-fuse", no_argument, 0, AMDFW_OPT_SOFT_FUSE},
 	{"ro-list", no_argument, 0, AMDFW_OPT_RO_LIST},
+	{"list-all", no_argument, 0, AMDFW_OPT_LIST_ALL},
+	{0, 0, 0, 0}
 };
 
 static void print_usage(void)
@@ -446,7 +449,8 @@ static void print_usage(void)
 	printf("Usage: amdfwread [options] <file>\n");
 	printf("-d | --dump                Dump Embedded Firmware Structure\n");
 	printf("--soft-fuse                Print soft fuse value\n");
-	printf("--ro-list                  List the programs under AMDFW in RO region\n");
+	printf("--ro-list                  List the programs until a PSP L2 directory is found\n");
+	printf("--list-all                 List all programs referenced by the EFS\n");
 }
 
 int main(int argc, char **argv)
@@ -481,6 +485,7 @@ int main(int argc, char **argv)
 
 		case AMDFW_OPT_SOFT_FUSE:
 		case AMDFW_OPT_RO_LIST:
+		case AMDFW_OPT_LIST_ALL:
 			selected_functions |= opt;
 			break;
 
@@ -565,10 +570,16 @@ int main(int argc, char **argv)
 	if (selected_functions & AMDFW_OPT_SOFT_FUSE)
 		psp_dir_walk_recursive(&rdev_efs, 0, 0, NULL, walk_efs_psp_softfuse_callback, NULL);
 
-	struct ro_list_state state = { .stop_after_psp_l2 = true, .psp_l2_seen = false };
 
-	if (selected_functions & AMDFW_OPT_RO_LIST)
-		psp_dir_walk_recursive(&rdev_efs, 0, 0, walk_efs_list_hdr_callback, walk_efs_ro_list_callback, &state);
+	if (selected_functions & AMDFW_OPT_RO_LIST) {
+		struct list_state state = { .psp_l2_seen = false, .stop_after_psp_l2 = true };
+		psp_dir_walk_recursive(&rdev_efs, 0, 0, walk_efs_list_hdr_callback, walk_efs_list_callback, &state);
+	}
+
+	if (selected_functions & AMDFW_OPT_LIST_ALL) {
+		struct list_state state = { .psp_l2_seen = false, .stop_after_psp_l2 = false };
+		psp_dir_walk_recursive(&rdev_efs, 0, 0, walk_efs_list_hdr_callback, walk_efs_list_callback, &state);
+	}
 
 	fclose(fw);
 	return 0;

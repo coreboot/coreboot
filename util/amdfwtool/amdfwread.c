@@ -277,6 +277,10 @@ static bool walk_efs_ro_list_callback(const struct psp_dir_region *dir_rdev,
 	} else if (dir_rdev->type == PSP_DIR_ISH) {
 		printf("%sISH%s: PSPID 0x%08x\n", indent,
 		      psp_fw_partition(dir_rdev) == 'A' ? "A" : "B", entry->ish.psp_id);
+	} else if (dir_rdev->type == PSP_DIR_COMBO) {
+		printf("%sCMBO: ID 0x%08x\n", indent, entry->combo.id);
+	} else if (dir_rdev->type == PSP_DIR_EFS) {
+		printf("%sEFS PTR #%zd:\n", indent, index);
 	}
 
 	return true;

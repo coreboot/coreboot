@@ -6,6 +6,9 @@
 #include <types.h>
 #include <memory_info.h>
 
+#define SMBIOS_MAJOR_VERSION 3
+#define SMBIOS_MINOR_VERSION 1
+
 #define update_max(len, max_len, stmt)		\
 	do {					\
 		int tmp = stmt;			\

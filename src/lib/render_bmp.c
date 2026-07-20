@@ -7,6 +7,7 @@
 #include <console/console.h>
 #include <stdlib.h>
 #include <string.h>
+#include <symbols.h>
 
 #include "render_bmp.h"
 
@@ -702,6 +703,34 @@ void render_logo_to_framebuffer(struct logo_config *config)
 		config->bytes_per_scanline = fb->bytes_per_line;
 	}
 
+	/* Ensure bytes_per_scanline is sufficient for the horizontal resolution */
+	const uint64_t min_scanline_bytes = (uint64_t)config->horizontal_resolution *
+				 sizeof(struct blt_pixel);
+
+	if (min_scanline_bytes > config->bytes_per_scanline) {
+		printk(BIOS_ERR, "CBFS Logo: Invalid stride %u for resolution %ux%u\n",
+		       config->bytes_per_scanline,
+		       config->horizontal_resolution,
+		       config->vertical_resolution);
+		return;
+	}
+
+	/*
+	 * Note: Intel SoC platforms validate their framebuffer geometry earlier
+	 * in cb_logo.c. For non-Intel architectures (e.g., ARM/ARM64) using
+	 * memlayout, we validate the footprint against the linker region size.
+	 */
+#if CONFIG(ARCH_ARM) || CONFIG(ARCH_ARM64)
+	const uint64_t required_fb_size = (uint64_t)config->vertical_resolution *
+					 config->bytes_per_scanline;
+
+	if (REGION_SIZE(framebuffer) > 0 && required_fb_size > REGION_SIZE(framebuffer)) {
+		printk(BIOS_ERR,
+			"CBFS Logo: Geometry footprint (%llu B) exceeds framebuffer region size (%zu B)\n",
+			   required_fb_size, REGION_SIZE(framebuffer));
+		return;
+	}
+#endif
 	/*
 	 * If the device is in low-battery mode and the low-battery splash screen is being
 	 * displayed, prevent further operation and bail out early.

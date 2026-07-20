@@ -1,13 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <arch/cache.h>
 #include <arch/mmu.h>
 #include <cbfs.h>
 #include <soc/qclib_common.h>
 #include <device/mmio.h>
-#include <soc/symbols_common.h>
 #include <soc/addressmap.h>
+#include <soc/mmu.h>
+#include <soc/mmu_common.h>
 #include <soc/platform_info.h>
+#include <soc/symbols_common.h>
 
 __weak int qclib_mainboard_override(struct qclib_cb_if_table *table) { return 0; }
 
@@ -120,4 +123,11 @@ int qclib_soc_override(struct qclib_cb_if_table *table)
 	}
 
 	return 0;
+}
+
+void smem_wipe(void)
+{
+	memset(_dram_smem, 0, REGION_SIZE(dram_smem));
+	dcache_clean_invalidate_by_mva(_dram_smem, REGION_SIZE(dram_smem));
+	mmu_config_range(_dram_smem, REGION_SIZE(dram_smem), DEV_MEM);
 }

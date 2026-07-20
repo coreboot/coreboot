@@ -92,6 +92,7 @@ int  qclib_soc_override(struct qclib_cb_if_table *table);
 const char *qclib_override_soc_file(enum qclib_cbfs_file file);
 int  qclib_mainboard_override(struct qclib_cb_if_table *table);
 bool qclib_check_dload_mode(void);
+void smem_wipe(void);
 
 const char *qclib_file_default(enum qclib_cbfs_file file);
 const char *qclib_file(enum qclib_cbfs_file file);

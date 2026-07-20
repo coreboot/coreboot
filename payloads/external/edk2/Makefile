@@ -169,6 +169,7 @@ BUILD_STR += -D FMP_DEVICE_PKCS7_PCD_INC=$(CAPSULE_FMP_PCD_INC_REL)
 endif
 endif
 
+# TODO @starlabs: Depends on unmerged EDK2 patches.
 # AppendRmapManifest.py moved from BaseTools/Scripts to UefiPayloadPkg/Tools in
 # newer edk2 trees.
 EDK2_APPEND_RMAP_MANIFEST = $(firstword $(wildcard \
@@ -449,14 +450,17 @@ coreboot_capsule: $(EDK2_PATH)
 	test -n "$(COREBOOT_ROM)"
 	test -n "$(COREBOOT_CAPSULE_OUT)"
 	test -f "$(COREBOOT_ROM)"
-	test -f "$(EDK2_APPEND_RMAP_MANIFEST)"
 	test -x "$(EDK2_PATH)/BaseTools/BinWrappers/PosixLike/GenerateCapsule"
 	test -f "$(CAPSULE_SIGNER_PRIVATE_CERT_PATH)"
 	test -f "$(CAPSULE_OTHER_PUBLIC_CERT_PATH)"
 	test -f "$(CAPSULE_TRUSTED_PUBLIC_CERT_PATH)"
 	rmap_rom="$${COREBOOT_CAPSULE_OUT%.cap}.rmap.rom"; \
 	set -e; \
-	python3 "$(EDK2_APPEND_RMAP_MANIFEST)" -o "$$rmap_rom" $(foreach r,$(CAPSULE_REGIONS),-r $(r)) "$(COREBOOT_ROM)"; \
+	if [ -f "$(EDK2_APPEND_RMAP_MANIFEST)" ]; then \
+		python3 "$(EDK2_APPEND_RMAP_MANIFEST)" -o "$$rmap_rom" $(foreach r,$(CAPSULE_REGIONS),-r $(r)) "$(COREBOOT_ROM)"; \
+	else \
+		cp "$(COREBOOT_ROM)" "$$rmap_rom"; \
+	fi; \
 	embedded_driver_args=(); \
 	if [ "$(CONFIG_DRIVERS_EFI_CAPSULE_EMBED_FMP_DXE)" = "y" ]; then \
 		test -f "$(EDK2_FMP_DXE)"; \

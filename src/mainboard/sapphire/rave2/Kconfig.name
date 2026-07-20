@@ -1,0 +1,4 @@
+comment "Rave2"
+
+config BOARD_SAPPHIRE_RAVE2
+	bool "->  Rave2 (Faegan)"

@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_SAPPHIRE_RAVE2
+	select BOARD_ROMSIZE_KB_32768
+	select SOC_AMD_FAEGAN
+	select SOC_AMD_COMMON_BLOCK_USE_ESPI
+	select SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN
+	select SPI_FLASH_EXIT_4_BYTE_ADDR_MODE
+
+if BOARD_SAPPHIRE_RAVE2
+
+config FMDFILE
+	default "src/mainboard/sapphire/rave2/rave2.fmd"
+
+config MAINBOARD_DIR
+	default "sapphire/rave2"
+
+config MAINBOARD_PART_NUMBER
+	default "Rave2"
+
+config DEVICETREE
+	default "devicetree.cb"
+
+config AMD_SOC_CONSOLE_UART
+	default y
+
+if !EM100
+config EFS_SPI_READ_MODE
+	default 5	# Quad IO (1-4-4)
+
+config EFS_SPI_SPEED
+	default 0	# 66MHz
+
+config EFS_SPI_MICRON_FLAG
+	default 0
+
+config NORMAL_READ_SPI_SPEED
+	default 1	# 33MHz
+
+config ALT_SPI_SPEED
+	default 1	# 33MHz
+
+endif # !EM100
+
+endif # BOARD_SAPPHIRE_RAVE2

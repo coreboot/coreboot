@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/amd/glinda
+	# eSPI: Quad I/O mode at 33 MHz
+	register "common_config.espi_config" = "{
+		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X60_0X64_EN,
+		.generic_io_range[0] = {
+			.base = 0x3f8,
+			.size = 8,
+		},
+		.io_mode = ESPI_IO_MODE_QUAD,
+		.op_freq_mhz = ESPI_OP_FREQ_33_MHZ,
+		.crc_check_enable = 1,
+		.alert_pin = ESPI_ALERT_PIN_PUSH_PULL,
+		.periph_ch_en = 1,
+		.vw_ch_en = 1,
+		.oob_ch_en = 1,
+		.flash_ch_en = 0,
+	}"
+
+	# TODO: verify slow/fast PPT limits against Rave2 TDP spec
+	register "slow_ppt_limit_mW" = "65000"
+	register "fast_ppt_limit_mW" = "65000"
+
+	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
+					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
+
+	# I2C voltage levels: 1.8V for all buses
+	register "i2c_pad[0].rx_level" = "I2C_PAD_RX_1_8V"
+	register "i2c_pad[1].rx_level" = "I2C_PAD_RX_1_8V"
+	register "i2c_pad[2].rx_level" = "I2C_PAD_RX_1_8V"
+	register "i2c_pad[3].rx_level" = "I2C_PAD_RX_1_8V"
+
+	register "s0ix_enable" = "true"
+
+	# TODO: verify PSPP policy in hardware
+	register "pspp_policy" = "DXIO_PSPP_DISABLED"
+
+	device domain 0 on
+		device ref iommu on end
+	end
+
+	device ref uart_0 on end # UART0 - debug header J7
+end

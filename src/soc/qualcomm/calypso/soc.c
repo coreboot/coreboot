@@ -190,6 +190,7 @@ struct chip_operations soc_qualcomm_calypso_ops = {
 static void soc_late_init(void *unused)
 {
 	/* placeholder code in sync w/ x1p42100 SoC */
+	lpass_init();
 	mainboard_soc_init();
 }
 

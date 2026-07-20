@@ -98,10 +98,10 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B25:     MEM_STRAP_2 */
 	PAD_CFG_GPI(GPP_B25, NONE, DEEP),
 
-	/* GPP_C00:     NC */
-	PAD_NC(GPP_C00, NONE),
-	/* GPP_C01:     NC */
-	PAD_NC(GPP_C01, NONE),
+	/* GPP_C00:     GPP_C0_SMBCLK */
+	PAD_CFG_NF(GPP_C00, UP_20K, DEEP, NF1),
+	/* GPP_C01:     GPP_C1_SMBDATA */
+	PAD_CFG_NF(GPP_C01, UP_20K, DEEP, NF1),
 	/* GPP_C02:     NC */
 	PAD_NC(GPP_C02, NONE),
 	/* GPP_C03:     NC */
@@ -387,9 +387,9 @@ static const struct pad_config romstage_gpio_table[] = {
 	/* GPP_B16:     GEN5_SSD_PWREN */
 	PAD_CFG_GPO(GPP_B16, 1, PLTRST),
 	/* GPP_C00:     GPP_C0_SMBCLK */
-	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_C00, UP_20K, DEEP, NF1),
 	/* GPP_C01:     GPP_C1_SMBDATA */
-	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_C01, UP_20K, DEEP, NF1),
 	/* GPP_E03:     GEN5_SSD_RESET_N */
 	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
 	/* GPP_F08:     EN_TCHSCR_PWR */

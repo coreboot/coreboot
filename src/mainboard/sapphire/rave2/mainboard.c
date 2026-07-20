@@ -5,6 +5,7 @@
 #include <commonlib/helpers.h>
 #include <device/device.h>
 #include <types.h>
+#include "gpio.h"
 
 /* IRQ routing for Rave2 (AMD Ryzen Embedded P100) - platform-standard
  * assignments for this SoC family */
@@ -41,5 +42,11 @@ const struct fch_irq_routing *mb_get_fch_irq_mapping(size_t *length)
 	return fch_irq_map;
 }
 
+static void mainboard_init(void *chip_info)
+{
+	mainboard_program_gpios();
+}
+
 struct chip_operations mainboard_ops = {
+	.init = mainboard_init,
 };

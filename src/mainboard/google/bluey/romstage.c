@@ -255,6 +255,9 @@ static void mainboard_setup_peripherals_early(void)
  */
 static void mainboard_setup_peripherals_late(int mode)
 {
+	/* USB C1 GPIO init step 1 */
+	gpio_output(GPIO_USB_C1_EN_PP3300, 1);
+
 	if (mainboard_needs_pcie_init() && !chipset_dload_mode_active) {
 		/* Perform PCIe setup early in async mode if supported to save 100ms */
 		if (mode == LB_BOOT_MODE_NORMAL || mode == LB_BOOT_MODE_NO_BATTERY)
@@ -377,4 +380,9 @@ void platform_romstage_main(void)
 void platform_romstage_postram(void)
 {
 	set_boot_mode(boot_mode);
+
+	/* USB C1 GPIO init step 2 */
+	gpio_output(GPIO_USB_C1_EN_PP1800, 1);
+	mdelay(1);
+	gpio_output(GPIO_USB_C1_EN_PP0900, 1);
 }

@@ -78,12 +78,7 @@ static void enable_usb_camera(void)
 
 static void setup_usb_typec(void)
 {
-	gpio_output(GPIO_USB_C1_EN_PP3300, 1);
-	mdelay(1);
-	gpio_output(GPIO_USB_C1_EN_PP1800, 1);
-	mdelay(1);
-	gpio_output(GPIO_USB_C1_EN_PP0900, 1);
-	mdelay(1);
+	/* USB C1 GPIO init step 3 */
 	gpio_output(GPIO_USB_C1_RETIMER_RESET_L, 1);
 }
 

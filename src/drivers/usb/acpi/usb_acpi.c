@@ -92,11 +92,6 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 					 privacy_gpio_index, 0,
 					 config->privacy_gpio.active_low);
 	}
-	if (config->is_intel_bluetooth) {
-		if (!dsd)
-			dsd = acpi_dp_new_table("_DSD");
-		acpi_device_add_hotplug_support_in_d3(dsd);
-	}
 	if (dsd)
 		acpi_dp_write(dsd);
 

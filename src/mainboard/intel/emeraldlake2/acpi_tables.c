@@ -19,9 +19,7 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->s5u0 = 1;
 	gnvs->s5u1 = 1;
 
-	gnvs->f4of = FAN4_THRESHOLD_OFF;
-	gnvs->f4on = FAN4_THRESHOLD_ON;
-	gnvs->f4pw = FAN4_PWM;
+	gnvs->f4pw = FAN_OFF_PWM;
 
 	gnvs->f3of = FAN3_THRESHOLD_OFF;
 	gnvs->f3on = FAN3_THRESHOLD_ON;

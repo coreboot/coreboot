@@ -102,19 +102,10 @@ Scope (\_TZ)
 			}
 		}
 
-		Method (_AC4) {
-			If (\FLVL <= 4) {
-				Return (CTOK (\F4OF))
-			} Else {
-				Return (CTOK (\F4ON))
-			}
-		}
-
 		Name (_AL0, Package () { FAN0 })
 		Name (_AL1, Package () { FAN1 })
 		Name (_AL2, Package () { FAN2 })
 		Name (_AL3, Package () { FAN3 })
-		Name (_AL4, Package () { FAN4 })
 
 		PowerResource (FNP0, 0, 0)
 		{
@@ -200,27 +191,6 @@ Scope (\_TZ)
 			}
 		}
 
-		PowerResource (FNP4, 0, 0)
-		{
-			Method (_STA) {
-				If (\FLVL <= 4) {
-					Return (1)
-				} Else {
-					Return (0)
-				}
-			}
-			Method (_ON)  {
-				\FLVL = 4
-				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F4PW
-				Notify (\_TZ.THRM, 0x81)
-			}
-			Method (_OFF) {
-				// FAN4 is the minimum cooling state (idle/lowest fan speed)
-				// There is no lower state to transition to, so _OFF is a no-op
-				// to maintain proper ACPI power resource state machine semantics
-			}
-		}
-
 		Device (FAN0)
 		{
 			Name (_HID, EISAID ("PNP0C0B"))
@@ -247,13 +217,6 @@ Scope (\_TZ)
 			Name (_HID, EISAID ("PNP0C0B"))
 			Name (_UID, 3)
 			Name (_PR0, Package () { FNP3 })
-		}
-
-		Device (FAN4)
-		{
-			Name (_HID, EISAID ("PNP0C0B"))
-			Name (_UID, 4)
-			Name (_PR0, Package () { FNP4 })
 		}
 	}
 }

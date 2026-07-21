@@ -4,7 +4,7 @@
 #define THERMAL_H
 
 /* Fan is OFF at idle (passive cooling) */
-#define FAN4_PWM		0x00
+#define FAN_OFF_PWM		0x00
 
 /* Fan is at LOW speed */
 #define FAN3_THRESHOLD_OFF	50

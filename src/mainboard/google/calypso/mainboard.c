@@ -149,9 +149,19 @@ static void mainboard_init(void *chip_info)
 	}
 }
 
+static void setup_audio_gpios(void)
+{
+	gpio_output(GPIO_SNDW_AMP_0_ENABLE, 0);
+	gpio_output(GPIO_SNDW_AMP_1_ENABLE, 0);
+	gpio_configure_no_egpio(GPIO_SNDW_0_SCL, GPIO_FUN_SNDW_0_SCL,
+		GPIO_NO_PULL, GPIO_16MA, GPIO_OUTPUT);
+	gpio_configure_no_egpio(GPIO_SNDW_0_SDA, GPIO_FUN_SNDW_0_SDA,
+		GPIO_NO_PULL, GPIO_16MA, GPIO_OUTPUT);
+}
+
 static void setup_audio(void)
 {
-	/* Placeholder for audio init */
+	setup_audio_gpios();
 }
 
 static void setup_usb(void)

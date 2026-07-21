@@ -121,7 +121,7 @@ int boot_device_wp_region(const struct region_device *rd,
 	uint32_t ctrlr_pr;
 
 	if (psp_get_hsti_state_rom_armor_enforced()) {
-		printk(BIOS_ERR, "%s: ROM Armor is active. Cannot access SPI flash\n");
+		printk(BIOS_ERR, "%s: ROM Armor is active. Cannot access SPI flash\n", __func__);
 		return -1;
 	}
 

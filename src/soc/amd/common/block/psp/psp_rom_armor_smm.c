@@ -45,7 +45,7 @@ static ssize_t psp_rom_armor_spi_readat(const struct region_device *rd, void *bu
 		return -1;
 	}
 
-	cmd.transaction = READ_ACCESS;
+	cmd.transaction = RA_READ;
 	cmd.buffer_ptr = (uintptr_t)transfer_buffer;
 	cmd.read_back = 0;
 	cmd.offset = offset;

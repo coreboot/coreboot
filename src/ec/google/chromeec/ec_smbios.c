@@ -40,5 +40,5 @@ const char *smbios_mainboard_manufacturer(void)
 
 const char *smbios_system_manufacturer(void)
 {
-	return CONFIG_MAINBOARD_VENDOR;
+	return CONFIG_SYSTEM_SMBIOS_MANUFACTURER;
 }

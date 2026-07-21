@@ -289,6 +289,7 @@ LT1000 <libretrend/lt1000.md>
 :maxdepth: 1
 
 MS-7707 <msi/ms7707/ms7707.md>
+MS-7D98 <msi/ms7d98/ms7d98.md>
 ```
 
 ## OCP

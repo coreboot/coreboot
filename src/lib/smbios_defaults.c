@@ -4,6 +4,7 @@
 #include <smbios.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 /* this function will fill the corresponding locator */
 __weak void smbios_fill_dimm_locator(const struct dimm_info *dimm, struct smbios_type17 *t)
@@ -121,7 +122,11 @@ __weak const char *smbios_system_version(void)
 
 __weak const char *smbios_system_manufacturer(void)
 {
-	return smbios_mainboard_manufacturer();
+	if (strcmp(CONFIG_MAINBOARD_SMBIOS_MANUFACTURER,
+			 CONFIG_SYSTEM_SMBIOS_MANUFACTURER) == 0)
+		return smbios_mainboard_manufacturer();
+
+	return CONFIG_SYSTEM_SMBIOS_MANUFACTURER;
 }
 
 __weak const char *smbios_system_product_name(void)

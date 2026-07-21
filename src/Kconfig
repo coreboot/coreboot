@@ -1081,6 +1081,19 @@ config VPD_SMBIOS_VERSION
 	  scenario of using this feature is to assign a BIOS version
 	  to a coreboot image without the need to rebuild from source.
 
+config SYSTEM_SMBIOS_MANUFACTURER
+	prompt "SMBIOS System Manufacturer" if !SMBIOS_PROVIDED_BY_MOBO
+	string
+	default MAINBOARD_VENDOR
+	help
+	  Override the default System Manufacturer string stored in SMBIOS
+	  Type 1 (System Information) tables.
+
+	  This string identifies the vendor or manufacturer of the system
+	  (e.g., "Lenovo", "Dell", or your custom board vendor). If left
+	  at default, it uses the vendor specified by the mainboard
+	  configuration.
+
 endif
 
 endmenu

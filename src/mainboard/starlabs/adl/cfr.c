@@ -204,7 +204,7 @@ static struct sm_obj_form virtualization_group = {
 
 static struct sm_obj_form wireless_group = {
 	.ui_name = "Wireless",
-	.obj_list = (const struct sm_object *[]){&bluetooth, &bluetooth_rtd3, &wifi, NULL},
+	.obj_list = (const struct sm_object *[]){&bluetooth, &wifi, NULL},
 };
 
 static struct sm_obj_form *sm_root[] = {

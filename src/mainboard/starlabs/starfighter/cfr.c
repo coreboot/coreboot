@@ -239,7 +239,6 @@ static struct sm_obj_form wireless_group = {
 	.ui_name = "Wireless",
 	.obj_list = (const struct sm_object *[]) {
 		&bluetooth,
-		&bluetooth_rtd3,
 		&wifi,
 		NULL
 	},

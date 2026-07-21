@@ -107,14 +107,6 @@ STARBOOK_CEZANNE_DECLARE_PCIE_L1SS_OBJECT(ssd, "SSD");
 #undef STARBOOK_CEZANNE_DECLARE_PCIE_PM_OBJECTS
 #undef STARBOOK_CEZANNE_DECLARE_PCIE_L1SS_OBJECT
 
-static const struct sm_object bluetooth_rtd3 = SM_DECLARE_BOOL({
-	.opt_name	= "bluetooth_rtd3",
-	.ui_name	= "Bluetooth Runtime-D3",
-	.ui_helptext	= "Enable or disable Bluetooth power optimization.\n"
-			  "Recommended to disable when booting Windows.",
-	.default_value	= false,
-});
-
 static const struct sm_object wifi = SM_DECLARE_BOOL({
 	.opt_name	= "wifi",
 	.ui_name	= "Wi-Fi",
@@ -213,7 +205,6 @@ static struct sm_obj_form suspend_lid_group = {
 static struct sm_obj_form wireless_group = {
 	.ui_name = "Wireless",
 	.obj_list = (const struct sm_object *[]) {
-		&bluetooth_rtd3,
 		&wifi,
 		NULL
 	},

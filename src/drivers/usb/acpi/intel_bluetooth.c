@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpigen.h>
-#include <option.h>
 #include "chip.h"
 
 /*
@@ -175,7 +174,7 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 
 		acpigen_write_method("_ON", 0);
 		{
-			if (get_uint_option("bluetooth_rtd3", 1) && enable_gpio->pin_count) {
+			if (enable_gpio->pin_count) {
 				acpigen_write_store();
 				acpigen_emit_namestring("\\_SB.PCI0.GBTE");
 				acpigen_emit_byte(LOCAL0_OP);
@@ -194,7 +193,7 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 
 		acpigen_write_method("_OFF", 0);
 		{
-			if (get_uint_option("bluetooth_rtd3", 1) && enable_gpio->pin_count) {
+			if (enable_gpio->pin_count) {
 				acpigen_emit_namestring("\\_SB.PCI0.SBTE");
 				acpigen_emit_byte(0);
 			}

@@ -6,7 +6,7 @@
 #define TEMPERATURE_SENSOR_ID		0	/* PECI */
 
 /* Fan is at default speed */
-#define FAN4_PWM		0x4d
+#define FAN_OFF_PWM		0x4d
 
 /* Fan is at LOW speed */
 #define FAN3_THRESHOLD_OFF	40

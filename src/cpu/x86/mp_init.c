@@ -699,32 +699,6 @@ static enum cb_err mp_init(struct bus *cpu_bus, struct mp_params *p)
 	return ret;
 }
 
-void smm_initiate_relocation_parallel(void)
-{
-	if (icr_wait_timeout() != CB_SUCCESS)
-		return;
-
-	lapic_send_ipi_self(LAPIC_INT_ASSERT | LAPIC_MT_SMI);
-
-	if (lapic_busy()) {
-		if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */) != CB_SUCCESS) {
-			printk(BIOS_DEBUG, "SMI Relocation timed out.\n");
-			return;
-		}
-	}
-	printk(BIOS_DEBUG, "Relocation complete.\n");
-}
-
-DECLARE_SPIN_LOCK(smm_relocation_lock);
-
-/* Send SMI to self with single user serialization. */
-void smm_initiate_relocation(void)
-{
-	spin_lock(&smm_relocation_lock);
-	smm_initiate_relocation_parallel();
-	spin_unlock(&smm_relocation_lock);
-}
-
 struct mp_state {
 	struct mp_ops ops;
 	int cpu_count;
@@ -748,6 +722,35 @@ static void smm_enable(void)
 {
 	if (CONFIG(HAVE_SMI_HANDLER))
 		mp_state.do_smm = true;
+}
+
+void smm_initiate_relocation_parallel(void)
+{
+	if (icr_wait_timeout() != CB_SUCCESS) {
+		smm_disable();
+		return;
+	}
+
+	lapic_send_ipi_self(LAPIC_INT_ASSERT | LAPIC_MT_SMI);
+
+	if (lapic_busy()) {
+		if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */) != CB_SUCCESS) {
+			printk(BIOS_DEBUG, "SMI Relocation timed out.\n");
+			smm_disable();
+			return;
+		}
+	}
+	printk(BIOS_DEBUG, "Relocation complete.\n");
+}
+
+DECLARE_SPIN_LOCK(smm_relocation_lock);
+
+/* Send SMI to self with single user serialization. */
+void smm_initiate_relocation(void)
+{
+	spin_lock(&smm_relocation_lock);
+	smm_initiate_relocation_parallel();
+	spin_unlock(&smm_relocation_lock);
 }
 
 /*
@@ -1210,6 +1213,13 @@ static enum cb_err do_mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops 
 
 	if (!CONFIG(X86_SMM_SKIP_RELOCATION_HANDLER))
 		restore_default_smm_area(default_smm_area);
+
+	/* If SMM is not enabled due to some initialization failure, then SMM is unlocked.
+	   So return error such that post_mp_init does not enable SMI. */
+	if (CONFIG(HAVE_SMI_HANDLER) && !is_smm_enabled()) {
+		printk(BIOS_ERR, "SMM was disabled due to initialization failure.\n");
+		return CB_ERR;
+	}
 
 	/* Signal callback on success if it's provided. */
 	if (ret == CB_SUCCESS && mp_state.ops.post_mp_init != NULL)

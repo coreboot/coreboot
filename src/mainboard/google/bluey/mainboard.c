@@ -352,11 +352,10 @@ void fw_config_get_mainboard_override(uint64_t *fw_config)
 		return;
 	}
 
-	uint8_t platform_type = cdt_get_platform_id();
-	uint32_t soc_platform_id = ((uint32_t)soc_id << 16) | platform_type;
+	uint16_t platform_id = cdt_get_platform_id();
+	uint32_t soc_platform_id = ((uint32_t)soc_id << 16) | platform_id;
 
-	printk(BIOS_INFO, "CDT: soc_platform_id=0x%08x (soc_id=0x%04x, platform_type=0x%02x)\n",
-	       soc_platform_id, soc_id, platform_type);
+	printk(BIOS_INFO, "CDT: soc_platform_id=0x%08x\n", soc_platform_id);
 
 	*fw_config = soc_platform_id;
 }

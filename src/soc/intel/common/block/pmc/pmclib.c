@@ -334,10 +334,10 @@ static void pmc_clear_gpi_gpe_status(void)
 	}
 }
 
-static uint32_t reset_std_gpe_status(void)
+static uint32_t reset_std_gpe_status(uint32_t preserve_mask)
 {
 	uint32_t gpe_sts = inl(ACPI_BASE_ADDRESS + GPE0_STS(GPE_STD));
-	outl(gpe_sts, ACPI_BASE_ADDRESS + GPE0_STS(GPE_STD));
+	outl(gpe_sts & ~preserve_mask, ACPI_BASE_ADDRESS + GPE0_STS(GPE_STD));
 	return gpe_sts;
 }
 
@@ -358,15 +358,20 @@ static uint32_t print_std_gpe_sts(uint32_t gpe_sts)
 	return gpe_sts;
 }
 
-static void pmc_clear_std_gpe_status(void)
+static void pmc_clear_std_gpe_status(uint32_t preserve_mask)
 {
-	print_std_gpe_sts(reset_std_gpe_status());
+	print_std_gpe_sts(reset_std_gpe_status(preserve_mask));
+}
+
+void pmc_clear_gpe_status(uint32_t preserve_std_mask)
+{
+	pmc_clear_std_gpe_status(preserve_std_mask);
+	pmc_clear_gpi_gpe_status();
 }
 
 void pmc_clear_all_gpe_status(void)
 {
-	pmc_clear_std_gpe_status();
-	pmc_clear_gpi_gpe_status();
+	pmc_clear_gpe_status(0);
 }
 
 __weak

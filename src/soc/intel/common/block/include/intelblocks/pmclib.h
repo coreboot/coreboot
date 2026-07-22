@@ -148,6 +148,8 @@ void pmc_enable_std_gpe(uint32_t mask);
 void pmc_disable_std_gpe(uint32_t mask);
 /* Disable all GPE's in STD and GPIO GPE registers. */
 void pmc_disable_all_gpe(void);
+/* Clear GPE status registers, preserving selected standard GPE status bits. */
+void pmc_clear_gpe_status(uint32_t preserve_std_mask);
 /* Clear STD and GPIO GPE status registers. */
 void pmc_clear_all_gpe_status(void);
 

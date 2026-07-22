@@ -47,7 +47,7 @@ config INTEL_GMA_VBT_FILE
 config MAINBOARD_DIR
 	default "lattepanda/mu"
 
-config MAINBOARD_SMBIOS_MANUFACTURER
+config MAINBOARD_VENDOR
 	default "DFRobot"
 
 config MAINBOARD_PART_NUMBER

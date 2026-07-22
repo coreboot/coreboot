@@ -1,12 +1,13 @@
 /* SPDX-License-Identifier: MIT */
 
+#include <boot/coreboot_tables.h>
+#include <commonlib/list.h>
 #include <console/console.h>
 #include <edid.h>
-#include <boot/coreboot_tables.h>
 #include <framebuffer_info.h>
-#include <string.h>
 #include <stdlib.h>
-#include <commonlib/list.h>
+#include <string.h>
+#include <symbols.h>
 
 struct fb_info {
 	struct list_node node;
@@ -45,6 +46,15 @@ fb_add_framebuffer_info_ex(const struct lb_framebuffer *fb)
 		return NULL;
 	}
 
+	const uint64_t fb_size = (uint64_t)fb->bytes_per_line * fb->y_resolution;
+	if (REGION_SIZE(framebuffer) > 0 && fb_size > REGION_SIZE(framebuffer)) {
+		printk(BIOS_ERR,
+		       "%s: Framebuffer size (%u * %u = %llu) exceeds carveout size (%zu)\n",
+		       __func__, fb->bytes_per_line, fb->y_resolution,
+		       fb_size, REGION_SIZE(framebuffer));
+		return NULL;
+	}
+
 	bpp_mask = fb->blue_mask_size + fb->green_mask_size + fb->red_mask_size +
 		fb->reserved_mask_size;
 	if (bpp_mask > fb->bits_per_pixel) {
@@ -65,9 +75,9 @@ fb_add_framebuffer_info_ex(const struct lb_framebuffer *fb)
 		return NULL;
 
 	printk(BIOS_INFO, "framebuffer_info: bytes_per_line: %d, bits_per_pixel: %d\n "
-			  "                  x_res x y_res: %d x %d, size: %d at 0x%llx\n",
+			  "                  x_res x y_res: %d x %d, size: %llu at 0x%llx\n",
 			fb->bytes_per_line, fb->bits_per_pixel, fb->x_resolution,
-			fb->y_resolution, (fb->bytes_per_line * fb->y_resolution),
+			fb->y_resolution, fb_size,
 			fb->physical_address);
 
 	/* Update */

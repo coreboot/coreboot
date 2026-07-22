@@ -29,15 +29,17 @@ struct fw_config_field {
 	uint64_t mask;
 };
 
+/* Return the unshifted option value for a given field. */
 #define FW_CONFIG_VALUE(__field, __option) \
-	(FW_CONFIG_FIELD_##__field##_OPTION_##__option##_VALUE)
+	((FW_CONFIG_FIELD_##__field##_OPTION_##__option##_VALUE) >> \
+	 __builtin_ctzll(FW_CONFIG_FIELD_##__field##_MASK))
 
 /* Generate a pointer to a compound literal of the fw_config structure. */
 #define FW_CONFIG(__field, __option)	(&(const struct fw_config) {		\
 	.field_name = FW_CONFIG_FIELD_##__field##_NAME,				\
 	.option_name = FW_CONFIG_FIELD_##__field##_OPTION_##__option##_NAME,	\
 	.mask = FW_CONFIG_FIELD_##__field##_MASK,				\
-	.value = FW_CONFIG_VALUE(__field, __option)				\
+	.value = FW_CONFIG_FIELD_##__field##_OPTION_##__option##_VALUE		\
 })
 
 #define FW_CONFIG_FIELD(__field) (&(const struct fw_config_field) {		\

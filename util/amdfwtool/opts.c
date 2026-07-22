@@ -243,11 +243,11 @@ static void usage(void)
 }
 
 extern amd_fw_entry amd_psp_fw_table[];
-extern amd_bios_entry amd_bios_table[];
+extern struct amd_bios_entry amd_bios_table[];
 extern amd_fw_entry amd_fw_table[];
 
-static void register_amd_psp_fw_addr(amd_fw_type type, int sub,
-					char *dst_str, char *size_str)
+static void register_amd_psp_fw_addr(enum amd_fw_type type, int sub,
+				     char *dst_str, char *size_str)
 {
 	unsigned int i;
 
@@ -265,8 +265,8 @@ static void register_amd_psp_fw_addr(amd_fw_type type, int sub,
 	}
 }
 
-static void register_bios_fw_addr(amd_bios_type type, char *src_str,
-					char *dst_str, char *size_str)
+static void register_bios_fw_addr(enum amd_bios_type type, char *src_str,
+				  char *dst_str, char *size_str)
 {
 	uint32_t i;
 	for (i = 0; amd_bios_table[i].type != AMD_BIOS_INVALID; i++) {
@@ -297,7 +297,7 @@ static void register_fw_token_unlock(void)
 	}
 }
 
-static void register_fw_filename(amd_fw_type type, uint8_t sub, char filename[])
+static void register_fw_filename(enum amd_fw_type type, uint8_t sub, char filename[])
 {
 	unsigned int i;
 
@@ -319,7 +319,7 @@ static void register_fw_filename(amd_fw_type type, uint8_t sub, char filename[])
 	}
 }
 
-static void register_bdt_data(amd_bios_type type, int sub, int ins, char name[])
+static void register_bdt_data(enum amd_bios_type type, int sub, int ins, char name[])
 {
 	uint32_t i;
 
@@ -674,7 +674,7 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 
 	if (cb_config->body_location != cb_config->efs_location &&
 			cb_config->body_location <
-				ALIGN(cb_config->efs_location + sizeof(embedded_firmware),
+				ALIGN(cb_config->efs_location + sizeof(struct embedded_firmware),
 					BLOB_ALIGNMENT)) {
 		fprintf(stderr, "Error: Insufficient space between EFS and Blobs.\n");
 		fprintf(stderr, "  Require safe spacing of 256 bytes\n");

@@ -280,7 +280,7 @@ amd_fw_entry amd_fw_table[] = {
 	{ .type = AMD_FW_PSP_INVALID },
 };
 
-amd_bios_entry amd_bios_table[] = {
+struct amd_bios_entry amd_bios_table[] = {
 	{ .type = AMD_BIOS_RTM_PUBKEY, .inst = 0, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_SIG, .inst = 0, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB, .inst = 0, .level = BDT_BOTH },
@@ -458,9 +458,9 @@ static void free_psp_firmware_filenames(amd_fw_entry *fw_table)
 	}
 }
 
-static void free_bdt_firmware_filenames(amd_bios_entry *fw_table)
+static void free_bdt_firmware_filenames(struct amd_bios_entry *fw_table)
 {
-	amd_bios_entry *index;
+	struct amd_bios_entry *index;
 
 	for (index = fw_table; index->type != AMD_BIOS_INVALID; index++) {
 		if (index->filename) {
@@ -524,7 +524,7 @@ static void adjust_current_pointer(context *ctx, uint32_t add, uint32_t align)
 static void *new_psp_dir(context *ctx, const amd_cb_config *cb_config,
 			 const uint32_t cookie)
 {
-	psp_directory_header *psp;
+	struct psp_directory_header *psp;
 
 	/*
 	 * Force both onto boundary when multi.  Primary table is after
@@ -536,7 +536,7 @@ static void *new_psp_dir(context *ctx, const amd_cb_config *cb_config,
 	else
 		adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
 
-	psp = (psp_directory_header *)BUFF_CURRENT(*ctx);
+	psp = (struct psp_directory_header *)BUFF_CURRENT(*ctx);
 
 	psp->cookie = cookie;
 	psp->num_entries = 0;
@@ -558,7 +558,7 @@ static void *new_psp_dir(context *ctx, const amd_cb_config *cb_config,
 	}
 
 	adjust_current_pointer(ctx,
-		sizeof(psp_directory_header) + MAX_PSP_ENTRIES * sizeof(psp_directory_entry),
+		sizeof(struct psp_directory_header) + MAX_PSP_ENTRIES * sizeof(struct psp_directory_entry),
 		1);
 	return psp;
 }
@@ -569,22 +569,22 @@ static void *new_ish_dir(context *ctx)
 
 	adjust_current_pointer(ctx, 0, BLOB_ALIGNMENT);
 	ptr = BUFF_CURRENT(*ctx);
-	adjust_current_pointer(ctx, sizeof(ish_directory_table), BLOB_ALIGNMENT);
+	adjust_current_pointer(ctx, sizeof(struct ish_directory_table), BLOB_ALIGNMENT);
 
 	return ptr;
 }
 
 static void copy_psp_header(void *bak, void *orig)
 {
-	uint32_t count = ((psp_directory_header *)orig)->num_entries;
-	memcpy(bak, orig, count * sizeof(bios_directory_entry) + sizeof(psp_directory_table));
+	uint32_t count = ((struct psp_directory_header *)orig)->num_entries;
+	memcpy(bak, orig, count * sizeof(struct bios_directory_entry) + sizeof(struct psp_directory_table));
 }
 
 /**
  * Returns the Additional Info Field struct version number part of the PSP header.
  * Currently support: 0, 1
  */
-static uint8_t psp_directory_aif_version(const psp_directory_table *dir)
+static uint8_t psp_directory_aif_version(const struct psp_directory_table *dir)
 {
 	return dir->header.additional_info_fields_v1.version;
 }
@@ -593,19 +593,19 @@ static uint8_t psp_directory_aif_version(const psp_directory_table *dir)
  * Returns the Additional Info Field struct version number part of the BDT header.
  * Currently support: 0, 1
  */
-static uint8_t bdt_directory_aif_version(const bios_directory_table *dir)
+static uint8_t bdt_directory_aif_version(const struct bios_directory_table *dir)
 {
 	return dir->header.additional_info_fields_v1.version;
 }
 
-static int psp_directory_size_from_aif(const psp_directory_table *dir)
+static int psp_directory_size_from_aif(const struct psp_directory_table *dir)
 {
 	if (psp_directory_aif_version(dir) == 1)
 		return dir->header.additional_info_fields_v1.dir_size * TABLE_GRANULARITY;
 	return dir->header.additional_info_fields.dir_size * TABLE_GRANULARITY;
 }
 
-static int bdt_directory_size_from_aif(const bios_directory_table *dir)
+static int bdt_directory_size_from_aif(const struct bios_directory_table *dir)
 {
 	if (bdt_directory_aif_version(dir) == 1)
 		return dir->header.additional_info_fields_v1.dir_size * TABLE_GRANULARITY;
@@ -619,11 +619,11 @@ static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 		return;
 	}
 
-	psp_combo_directory *cdir = directory;
-	psp_directory_table *dir = directory;
-	bios_directory_table *bdir = directory;
+	struct psp_combo_directory *cdir = directory;
+	struct psp_directory_table *dir = directory;
+	struct bios_directory_table *bdir = directory;
 	/* The cookies have same offsets. */
-	uint32_t cookie = ((psp_directory_table *)directory)->header.cookie;
+	uint32_t cookie = ((struct psp_directory_table *)directory)->header.cookie;
 	uint32_t table_size = 0;
 
 	/* The table size needs to be 0x1000 aligned. So align the end of table. */
@@ -635,7 +635,7 @@ static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 		cdir->header.num_entries = count;
 		/* checksum everything that comes after the Checksum field */
 		cdir->header.checksum = fletcher32(&cdir->header.num_entries,
-					count * sizeof(psp_combo_entry)
+					count * sizeof(struct psp_combo_entry)
 					+ sizeof(cdir->header.num_entries)
 					+ sizeof(cdir->header.lookup)
 					+ 2 * sizeof(cdir->header.reserved[0]));
@@ -652,7 +652,7 @@ static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 				exit(1);
 			}
 			if (psp_directory_aif_version(dir) == 1) {
-				u_int32_t hdr_size = sizeof(psp_directory_header) + count * sizeof(psp_directory_entry);
+				u_int32_t hdr_size = sizeof(struct psp_directory_header) + count * sizeof(struct psp_directory_entry);
 				dir->header.additional_info_fields_v1.dir_size = table_size / TABLE_GRANULARITY;
 				dir->header.additional_info_fields_v1.dir_hdr_size = DIV_ROUND_UP(hdr_size, 1024);
 			} else {
@@ -662,7 +662,7 @@ static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 		dir->header.num_entries = count;
 		/* checksum everything that comes after the Checksum field */
 		dir->header.checksum = fletcher32(&dir->header.num_entries,
-					count * sizeof(psp_directory_entry)
+					count * sizeof(struct psp_directory_entry)
 					+ sizeof(dir->header.num_entries)
 					+ sizeof(dir->header.additional_info));
 		break;
@@ -677,7 +677,7 @@ static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 			}
 
 			if (bdt_directory_aif_version(bdir) == 1) {
-				u_int32_t hdr_size = sizeof(bios_directory_table) + count * sizeof(bios_directory_entry);
+				u_int32_t hdr_size = sizeof(struct bios_directory_table) + count * sizeof(struct bios_directory_entry);
 				bdir->header.additional_info_fields_v1.dir_size = table_size / TABLE_GRANULARITY;
 				bdir->header.additional_info_fields_v1.dir_hdr_size = DIV_ROUND_UP(hdr_size, 1024);
 			} else {
@@ -687,15 +687,15 @@ static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 		bdir->header.num_entries = count;
 		/* checksum everything that comes after the Checksum field */
 		bdir->header.checksum = fletcher32(&bdir->header.num_entries,
-					count * sizeof(bios_directory_entry)
+					count * sizeof(struct bios_directory_entry)
 					+ sizeof(bdir->header.num_entries)
 					+ sizeof(bdir->header.additional_info));
 		break;
 	}
 }
 
-static void fill_psp_directory_to_efs(embedded_firmware *amd_romsig, void *pspdir,
-	context *ctx, amd_cb_config *cb_config)
+static void fill_psp_directory_to_efs(struct embedded_firmware *amd_romsig, void *pspdir,
+				      context *ctx, amd_cb_config *cb_config)
 {
 	switch (cb_config->soc_id) {
 	case PLATFORM_MULLINS:
@@ -725,8 +725,8 @@ static void fill_psp_directory_to_efs(embedded_firmware *amd_romsig, void *pspdi
 	}
 }
 
-static void fill_psp_bak_directory_to_efs(embedded_firmware *amd_romsig, void *pspdir_bak,
-	context *ctx, amd_cb_config *cb_config)
+static void fill_psp_bak_directory_to_efs(struct embedded_firmware *amd_romsig, void *pspdir_bak,
+					  context *ctx, amd_cb_config *cb_config)
 {
 	if (!pspdir_bak)
 		return;
@@ -738,8 +738,8 @@ static void fill_psp_bak_directory_to_efs(embedded_firmware *amd_romsig, void *p
 			BUFF_TO_RUN_MODE(*ctx, pspdir_bak, AMD_ADDR_REL_BIOS);
 }
 
-static void fill_bios_directory_to_efs(embedded_firmware *amd_romsig, void *biosdir,
-	context *ctx, amd_cb_config *cb_config)
+static void fill_bios_directory_to_efs(struct embedded_firmware *amd_romsig, void *biosdir,
+				       context *ctx, amd_cb_config *cb_config)
 {
 	/*
 	 * On ISH enabled platforms BIOS directory is always pointed to by PSP L2.
@@ -763,7 +763,7 @@ static void fill_bios_directory_to_efs(embedded_firmware *amd_romsig, void *bios
 }
 
 static void integrate_firmwares(context *ctx,
-				embedded_firmware *romsig,
+				struct embedded_firmware *romsig,
 				amd_fw_entry *fw_table)
 {
 	ssize_t bytes;
@@ -868,9 +868,9 @@ static void dump_psp_firmwares(amd_fw_entry *fw_table)
 	}
 }
 
-static void dump_bdt_firmwares(amd_bios_entry *fw_table)
+static void dump_bdt_firmwares(struct amd_bios_entry *fw_table)
 {
-	amd_bios_entry *index;
+	struct amd_bios_entry *index;
 
 	printf("BIOS Directory Table (BDT) components:\n");
 	for (index = fw_table; index->type != AMD_BIOS_INVALID; index++) {
@@ -880,7 +880,7 @@ static void dump_bdt_firmwares(amd_bios_entry *fw_table)
 	}
 }
 
-static void dump_psp_table(context *ctx, psp_directory_table *t, const char *name)
+static void dump_psp_table(context *ctx, struct psp_directory_table *t, const char *name)
 {
 	uint32_t s = BUFF_TO_RUN(*ctx, t);
 	uint32_t e = s + psp_directory_size_from_aif(t);
@@ -888,7 +888,7 @@ static void dump_psp_table(context *ctx, psp_directory_table *t, const char *nam
 	printf("PSP %-20s: [%06x-%06x)\n", name, s, e);
 }
 
-static void dump_bdt_table(context *ctx, bios_directory_table *t, const char *name)
+static void dump_bdt_table(context *ctx, struct bios_directory_table *t, const char *name)
 {
 	uint32_t s = BUFF_TO_RUN(*ctx, t);
 	uint32_t e = s + bdt_directory_size_from_aif(t);
@@ -921,8 +921,8 @@ static void dump_image_addresses(context *ctx)
 		dump_bdt_table(ctx, ctx->biosdir2_b, "L2B offset");
 }
 
-static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
-			     psp_directory_table *pspdir2, amd_fw_type type)
+static void integrate_psp_ab(context *ctx, struct psp_directory_table *pspdir,
+			     struct psp_directory_table *pspdir2, enum amd_fw_type type)
 {
 	uint32_t count;
 	uint32_t current_table_save;
@@ -941,17 +941,18 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 			SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
 	pspdir->entries[count].size = _MAX(TABLE_L2_SIZE_MAX,
 			pspdir2->header.num_entries *
-			sizeof(psp_directory_entry) +
-			sizeof(psp_directory_header));
+			sizeof(struct psp_directory_entry) +
+			sizeof(struct psp_directory_header));
 
 	count++;
 	fill_dir_header(pspdir, count, ctx);
 	ctx->current_table = current_table_save;
 }
 
-static void integrate_psp_ab_ish(context *ctx, psp_directory_table *pspdir,
-				 psp_directory_table *pspdir2, ish_directory_table *ish,
-				 amd_fw_type type, uint32_t psp_id)
+static void integrate_psp_ab_ish(context *ctx, struct psp_directory_table *pspdir,
+				 struct psp_directory_table *pspdir2,
+				 struct ish_directory_table *ish,
+				 enum amd_fw_type type, uint32_t psp_id)
 {
 	uint32_t count;
 	uint32_t current_table_save;
@@ -970,7 +971,7 @@ static void integrate_psp_ab_ish(context *ctx, psp_directory_table *pspdir,
 	ish->glitch_retry_count = 0;
 	ish->psp_id = psp_id;
 	ish->checksum = fletcher32(&ish->boot_priority,
-			sizeof(ish_directory_table) - sizeof(uint32_t));
+			sizeof(struct ish_directory_table) - sizeof(uint32_t));
 	pspdir->entries[count].addr =
 			BUFF_TO_RUN_MODE(*ctx, ish, AMD_ADDR_REL_BIOS);
 	pspdir->entries[count].address_mode =
@@ -988,7 +989,7 @@ static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 	uint32_t current_table_save;
 	bool recovery_ab = cb_config->recovery_ab;
 	unsigned int count;
-	psp_directory_table *pspdir, *pspdir2, *pspdir2_b;
+	struct psp_directory_table *pspdir, *pspdir2, *pspdir2_b;
 
 	/* PSP L1 must exist */
 	assert(ctx->pspdir);
@@ -1051,7 +1052,7 @@ static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 		pspdir->entries[count].rsvd = 0;
 		pspdir->entries[count].size = sizeof(pspdir2->header)
 					+ pspdir2->header.num_entries
-					* sizeof(psp_directory_entry);
+					* sizeof(struct psp_directory_entry);
 
 		pspdir->entries[count].addr =
 				BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
@@ -1063,7 +1064,7 @@ static void integrate_psp_level2(context *ctx, amd_cb_config *cb_config)
 	ctx->current_table = current_table_save;
 }
 
-static psp_directory_table *integrate_psp_firmwares(context *ctx,
+static struct psp_directory_table *integrate_psp_firmwares(context *ctx,
 						    amd_fw_entry *fw_table,
 						    uint32_t cookie,
 						    amd_cb_config *cb_config)
@@ -1072,7 +1073,7 @@ static psp_directory_table *integrate_psp_firmwares(context *ctx,
 	unsigned int i, count;
 	int level;
 	uint32_t size;
-	psp_directory_table *pspdir = NULL;
+	struct psp_directory_table *pspdir = NULL;
 	uint64_t addr;
 	uint32_t current_table_save;
 	bool recovery_ab = cb_config->recovery_ab;
@@ -1249,9 +1250,8 @@ static psp_directory_table *integrate_psp_firmwares(context *ctx,
 	return pspdir;
 }
 
-static void add_psp_firmware_entry(context *ctx,
-					psp_directory_table *pspdir,
-					void *table, amd_fw_type type, uint32_t size)
+static void add_psp_firmware_entry(context *ctx, struct psp_directory_table *pspdir,
+				   void *table, enum amd_fw_type type, uint32_t size)
 {
 	uint32_t count = pspdir->header.num_entries;
 	uint32_t index;
@@ -1282,7 +1282,7 @@ static void add_psp_firmware_entry(context *ctx,
 
 static void *new_bios_dir(context *ctx, const amd_cb_config *cb_config, const uint32_t cookie)
 {
-	bios_directory_hdr *ptr;
+	struct bios_directory_hdr *ptr;
 
 	/*
 	 * Force both onto boundary when multi.  Primary table is after
@@ -1293,7 +1293,7 @@ static void *new_bios_dir(context *ctx, const amd_cb_config *cb_config, const ui
 		adjust_current_pointer(ctx, 0, TABLE_ERASE_ALIGNMENT);
 	else
 		adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
-	ptr = (bios_directory_hdr *)BUFF_CURRENT(*ctx);
+	ptr = (struct bios_directory_hdr *)BUFF_CURRENT(*ctx);
 
 	ptr->cookie = cookie;
 
@@ -1314,13 +1314,13 @@ static void *new_bios_dir(context *ctx, const amd_cb_config *cb_config, const ui
 	}
 
 	adjust_current_pointer(ctx,
-		sizeof(bios_directory_hdr) + MAX_BIOS_ENTRIES * sizeof(bios_directory_entry),
+		sizeof(struct bios_directory_hdr) + MAX_BIOS_ENTRIES * sizeof(struct bios_directory_entry),
 		1);
 	return ptr;
 }
 
-static int locate_bdt_bios(bios_directory_table *level,
-					uint64_t *source, uint32_t *size)
+static int locate_bdt_bios(struct bios_directory_table *level,
+			   uint64_t *source, uint32_t *size)
 {
 	uint32_t i;
 
@@ -1339,7 +1339,7 @@ static int locate_bdt_bios(bios_directory_table *level,
 	return 0;
 }
 
-static int have_bios_tables(amd_bios_entry *table)
+static int have_bios_tables(struct amd_bios_entry *table)
 {
 	int i;
 
@@ -1350,7 +1350,7 @@ static int have_bios_tables(amd_bios_entry *table)
 	return 0;
 }
 
-int find_bios_entry(amd_bios_type type)
+int find_bios_entry(enum amd_bios_type type)
 {
 	int i;
 
@@ -1361,8 +1361,8 @@ int find_bios_entry(amd_bios_type type)
 	return -1;
 }
 
-static void add_bios_apcb_bk_entry(bios_directory_table *biosdir, unsigned int idx,
-						int inst, uint32_t size, uint64_t source)
+static void add_bios_apcb_bk_entry(struct bios_directory_table *biosdir, unsigned int idx,
+				   int inst, uint32_t size, uint64_t source)
 {
 	int i;
 
@@ -1411,7 +1411,7 @@ static void integrate_bios_levels(context *ctx, amd_cb_config *cb_config)
 		ctx->biosdir->entries[count].region_type = 0;
 		ctx->biosdir->entries[count].size =
 					+ MAX_BIOS_ENTRIES
-					* sizeof(bios_directory_entry);
+					* sizeof(struct bios_directory_entry);
 		ctx->biosdir->entries[count].source =
 					BUFF_TO_RUN(*ctx, ctx->biosdir2);
 		ctx->biosdir->entries[count].address_mode =
@@ -1432,10 +1432,9 @@ static void integrate_bios_levels(context *ctx, amd_cb_config *cb_config)
 	}
 }
 
-static bios_directory_table *integrate_bios_firmwares(context *ctx,
-						      amd_bios_entry *fw_table,
-						      uint32_t cookie,
-						      amd_cb_config *cb_config)
+static struct bios_directory_table *
+integrate_bios_firmwares(context *ctx, struct amd_bios_entry *fw_table,
+			 uint32_t cookie, amd_cb_config *cb_config)
 {
 	ssize_t bytes;
 	unsigned int i, count;
@@ -1444,7 +1443,7 @@ static bios_directory_table *integrate_bios_firmwares(context *ctx,
 	uint32_t size;
 	uint64_t source;
 	uint32_t current_table_save;
-	bios_directory_table *biosdir;
+	struct bios_directory_table *biosdir;
 
 	biosdir = new_bios_dir(ctx, cb_config, cookie);
 
@@ -1679,8 +1678,8 @@ static int integrate_efs_table(context *ctx, amd_cb_config *cb_config)
 {
 	set_current_pointer(ctx, cb_config->efs_location);
 	ctx->amd_romsig_ptr = BUFF_OFFSET(*ctx, cb_config->efs_location);
-	embedded_firmware *amd_romsig = (embedded_firmware *)ctx->amd_romsig_ptr;
-	adjust_current_pointer(ctx, sizeof(embedded_firmware), BLOB_ALIGNMENT);
+	struct embedded_firmware *amd_romsig = (struct embedded_firmware *)ctx->amd_romsig_ptr;
+	adjust_current_pointer(ctx, sizeof(struct embedded_firmware), BLOB_ALIGNMENT);
 
 	amd_romsig->signature = EMBEDDED_FW_SIGNATURE;
 	amd_romsig->imc_entry = 0;
@@ -2013,7 +2012,7 @@ int main(int argc, char **argv)
 		bytes = ctx.current_l1_pointer - cb_config.efs_location;
 	} else if (cb_config.efs_location != cb_config.body_location) {
 		/* Special case for VBOOT on PSP. Only write EFS. */
-		bytes = sizeof(embedded_firmware);
+		bytes = sizeof(struct embedded_firmware);
 	} else {
 		/* Write whole image (EFS + all tables) */
 		bytes = ctx.current - efs_offset;

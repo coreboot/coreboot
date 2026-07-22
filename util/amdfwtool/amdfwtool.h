@@ -42,7 +42,7 @@ enum platform {
 	PLATFORM_STRIXKRACKAN,
 };
 
-typedef enum _amd_fw_type {
+enum amd_fw_type {
 	AMD_FW_PSP_PUBKEY = 0x00,
 	AMD_FW_PSP_BOOTLOADER = 0x01,
 	AMD_FW_PSP_SECURED_OS = 0x02,
@@ -142,9 +142,9 @@ typedef enum _amd_fw_type {
 	AMD_FW_PSP_GEC,
 	AMD_FW_PSP_XHCI,
 	AMD_FW_PSP_INVALID,		/* Real last one to detect the last entry in table. */
-} amd_fw_type;
+};
 
-typedef enum _amd_bios_type {
+enum amd_bios_type {
 	AMD_BIOS_RTM_PUBKEY = 0x05,
 	AMD_BIOS_SIG = 0x07,
 	AMD_BIOS_APCB = 0x60,
@@ -161,14 +161,14 @@ typedef enum _amd_bios_type {
 	AMD_BIOS_NV_ST = 0x6d,
 	AMD_BIOS_L2_PTR =  0x70,
 	AMD_BIOS_INVALID,
-} amd_bios_type;
+};
 
-typedef enum _amd_addr_mode {
+enum _amd_addr_mode {
 	AMD_ADDR_PHYSICAL = 0,	/* Physical address */
 	AMD_ADDR_REL_BIOS,	/* Relative to beginning of image */
 	AMD_ADDR_REL_TAB,	/* Relative to table */
 	AMD_ADDR_REL_SLOT,	/* Relative to slot */
-} amd_addr_mode;
+};
 
 struct second_gen_efs { /* todo: expand for Server products */
 	uint32_t gen:1; /* Client products only use bit 0 */
@@ -178,7 +178,7 @@ struct second_gen_efs { /* todo: expand for Server products */
 #define EFS_SECOND_GEN 0
 #define EFS_BEFORE_SECOND_GEN 1
 
-typedef struct _embedded_firmware {
+struct embedded_firmware {
 	uint32_t signature; /* 0x55aa55aa */
 	uint32_t imc_entry;
 	uint32_t gec_entry;
@@ -218,9 +218,9 @@ typedef struct _embedded_firmware {
 	uint8_t espi1_config1;
 	uint32_t ubu_table;
 	uint8_t bios_size;
-} __attribute__((packed, aligned(16))) embedded_firmware;
+} __attribute__((packed, aligned(16)));
 
-typedef struct _psp_directory_header {
+struct psp_directory_header {
 	uint32_t cookie;
 	uint32_t checksum;
 	uint32_t num_entries;
@@ -242,9 +242,9 @@ typedef struct _psp_directory_header {
 			uint32_t version:1;		/* Always 1 */
 		} __attribute__((packed)) additional_info_fields_v1;
 	};
-} __attribute__((packed, aligned(16))) psp_directory_header;
+} __attribute__((packed, aligned(16)));
 
-typedef struct _psp_directory_entry {
+struct psp_directory_entry {
 	uint8_t type;
 	uint8_t subprog;
 	union {
@@ -260,35 +260,35 @@ typedef struct _psp_directory_entry {
 	uint32_t size;
 	uint64_t addr:62; /* or a value in some cases */
 	uint64_t address_mode:2;
-} __attribute__((packed)) psp_directory_entry;
+} __attribute__((packed));
 
-typedef struct _psp_directory_table {
-	psp_directory_header header;
-	psp_directory_entry entries[];
-} __attribute__((packed, aligned(16))) psp_directory_table;
+struct psp_directory_table {
+	struct psp_directory_header header;
+	struct psp_directory_entry entries[];
+} __attribute__((packed, aligned(16)));
 
 #define MAX_PSP_ENTRIES 0xff
 
-typedef struct _psp_combo_header {
+struct psp_combo_header {
 	uint32_t cookie;
 	uint32_t checksum;
 	uint32_t num_entries;
 	uint32_t lookup;
 	uint64_t reserved[2];
-} __attribute__((packed, aligned(16))) psp_combo_header;
+} __attribute__((packed, aligned(16)));
 
-typedef struct _psp_combo_entry {
+struct psp_combo_entry {
 	uint32_t id_sel;
 	uint32_t id;
 	uint64_t lvl2_addr;
-} __attribute__((packed)) psp_combo_entry;
+} __attribute__((packed));
 
-typedef struct _psp_combo_directory {
-	psp_combo_header header;
-	psp_combo_entry entries[];
-} __attribute__((packed, aligned(16))) psp_combo_directory;
+struct psp_combo_directory {
+	struct psp_combo_header header;
+	struct psp_combo_entry entries[];
+} __attribute__((packed, aligned(16)));
 
-typedef struct _bios_directory_hdr {
+struct bios_directory_hdr {
 	uint32_t cookie;
 	uint32_t checksum;
 	uint32_t num_entries;
@@ -310,9 +310,9 @@ typedef struct _bios_directory_hdr {
 			uint32_t version:1;		/* Always 1 */
 		} __attribute__((packed)) additional_info_fields_v1;
 	};
-} __attribute__((packed, aligned(16))) bios_directory_hdr;
+} __attribute__((packed, aligned(16)));
 
-typedef struct _bios_directory_entry {
+struct bios_directory_entry {
 	uint8_t type;
 	uint8_t region_type;
 	uint8_t reset:1;
@@ -328,12 +328,12 @@ typedef struct _bios_directory_entry {
 	uint64_t source:62;
 	uint64_t address_mode:2;
 	uint64_t dest;
-} __attribute__((packed)) bios_directory_entry;
+} __attribute__((packed));
 
-typedef struct _bios_directory_table {
-	bios_directory_hdr header;
-	bios_directory_entry entries[];
-} bios_directory_table;
+struct bios_directory_table {
+	struct bios_directory_hdr header;
+	struct bios_directory_entry entries[];
+};
 
 #define MAX_BIOS_ENTRIES 0x2f
 
@@ -343,8 +343,8 @@ typedef struct _bios_directory_table {
 #define BDT_LVL2_AB (1 << 3)
 #define BDT_BOTH (BDT_LVL1 | BDT_LVL2)
 #define BDT_BOTH_AB (BDT_LVL1_AB | BDT_LVL2_AB)
-typedef struct _amd_bios_entry {
-	amd_bios_type type;
+struct amd_bios_entry {
+	enum amd_bios_type type;
 	char *filename;
 	int subpr;
 	int region_type;
@@ -357,9 +357,9 @@ typedef struct _amd_bios_entry {
 	uint64_t dest;
 	size_t size;
 	int level;
-} amd_bios_entry;
+};
 
-typedef struct _ish_directory_table {
+struct ish_directory_table {
 	uint32_t checksum;
 	uint32_t boot_priority;
 	uint32_t update_retry_count;
@@ -369,7 +369,7 @@ typedef struct _ish_directory_table {
 	uint32_t psp_id;
 	uint32_t slot_max_size;
 	uint32_t reserved;
-} __attribute__((packed)) ish_directory_table;
+} __attribute__((packed));
 
 #define EMBEDDED_FW_SIGNATURE 0x55aa55aa
 #define PSP_COOKIE 0x50535024		/* 'PSP$' */
@@ -404,7 +404,7 @@ typedef struct _amd_fw_entry_hash {
 } amd_fw_entry_hash;
 
 typedef struct _amd_fw_entry {
-	amd_fw_type type;
+	enum amd_fw_type type;
 	char *filename;
 	uint8_t subprog;
 	uint8_t inst;
@@ -504,12 +504,12 @@ typedef struct _context {
 	uint32_t current_a_pointer, current_b_pointer, current_l1_pointer;
 	void *amd_psp_fw_table_clean;
 	void *amd_bios_table_clean;
-	embedded_firmware *amd_romsig_ptr;
-	psp_directory_table *pspdir, *pspdir_bak, *pspdir2, *pspdir2_b;
-	bios_directory_table *biosdir, *biosdir2, *biosdir2_b;
+	struct embedded_firmware *amd_romsig_ptr;
+	struct psp_directory_table *pspdir, *pspdir_bak, *pspdir2, *pspdir2_b;
+	struct bios_directory_table *biosdir, *biosdir2, *biosdir2_b;
 	size_t num_ish_tables;
-	ish_directory_table *ish_a_dirs[MAX_ISH_TABLES];
-	ish_directory_table *ish_b_dirs[MAX_ISH_TABLES];
+	struct ish_directory_table *ish_a_dirs[MAX_ISH_TABLES];
+	struct ish_directory_table *ish_b_dirs[MAX_ISH_TABLES];
 } context;
 
 uint8_t process_config(FILE *config, amd_cb_config *cb_config);
@@ -517,7 +517,7 @@ void process_signed_psp_firmwares(const char *signed_rom,
 		amd_fw_entry *fw_table,
 		uint64_t signed_start_addr,
 		enum platform soc_id);
-int find_bios_entry(amd_bios_type type);
+int find_bios_entry(enum amd_bios_type type);
 
 #define EFS_FILE_SUFFIX ".efs"
 #define TMP_FILE_SUFFIX ".tmp"

@@ -110,9 +110,9 @@ static int read_header(FILE *fw, uint32_t offset, void *header, size_t header_si
 	return 0;
 }
 
-static int read_fw_header(FILE *fw, uint32_t offset, embedded_firmware *fw_header)
+static int read_fw_header(FILE *fw, uint32_t offset, struct embedded_firmware *fw_header)
 {
-	if (read_header(fw, offset, fw_header, sizeof(embedded_firmware))) {
+	if (read_header(fw, offset, fw_header, sizeof(struct embedded_firmware))) {
 		ERR("Failed to read fw header at 0x%x\n", offset);
 		return 1;
 	}
@@ -123,10 +123,10 @@ static int read_fw_header(FILE *fw, uint32_t offset, embedded_firmware *fw_heade
 /* Returns true if there's a PSP directory with the expected cookie */
 static bool test_if_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_cookie)
 {
-	psp_directory_header header;
+	struct psp_directory_header header;
 	offset = file_rel_mask(offset);
 
-	if (read_header(fw, offset, &header, sizeof(psp_directory_header))) {
+	if (read_header(fw, offset, &header, sizeof(struct psp_directory_header))) {
 		ERR("Failed to read PSP header\n");
 		return false;
 	}
@@ -134,12 +134,13 @@ static bool test_if_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_c
 }
 
 static int read_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_cookie,
-			psp_directory_header *header, psp_directory_entry **entries,
-			size_t *num_entries)
+			      struct psp_directory_header *header,
+			      struct psp_directory_entry **entries,
+			      size_t *num_entries)
 {
 	offset = file_rel_mask(offset);
 
-	if (read_header(fw, offset, header, sizeof(psp_directory_header))) {
+	if (read_header(fw, offset, header, sizeof(struct psp_directory_header))) {
 		ERR("Failed to read PSP header\n");
 		return 1;
 	}
@@ -156,8 +157,8 @@ static int read_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_cooki
 
 	/* Read the entries */
 	*num_entries = header->num_entries;
-	*entries = malloc(sizeof(psp_directory_entry) * header->num_entries);
-	if (fread(*entries, sizeof(psp_directory_entry), header->num_entries, fw)
+	*entries = malloc(sizeof(struct psp_directory_entry) * header->num_entries);
+	if (fread(*entries, sizeof(struct psp_directory_entry), header->num_entries, fw)
 		!= header->num_entries) {
 		ERR("Failed to read %d PSP entries\n", header->num_entries);
 		return 1;
@@ -166,18 +167,18 @@ static int read_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_cooki
 	return 0;
 }
 
-static int read_ish_directory(FILE *fw, uint32_t offset, ish_directory_table *table)
+static int read_ish_directory(FILE *fw, uint32_t offset, struct ish_directory_table *table)
 {
 	return read_header(fw, file_rel_mask(offset), table, sizeof(*table));
 }
 
 static int read_bios_directory(FILE *fw, uint32_t offset, uint32_t expected_cookie,
-			bios_directory_hdr *header, bios_directory_entry **entries,
-			size_t *num_entries)
+			       struct bios_directory_hdr *header, struct bios_directory_entry **entries,
+			       size_t *num_entries)
 {
 	offset = file_rel_mask(offset);
 
-	if (read_header(fw, offset, header, sizeof(bios_directory_hdr))) {
+	if (read_header(fw, offset, header, sizeof(struct bios_directory_hdr))) {
 		ERR("Failed to read BIOS header\n");
 		return 1;
 	}
@@ -194,8 +195,8 @@ static int read_bios_directory(FILE *fw, uint32_t offset, uint32_t expected_cook
 
 	/* Read the entries */
 	*num_entries = header->num_entries;
-	*entries = malloc(sizeof(bios_directory_entry) * header->num_entries);
-	if (fread(*entries, sizeof(bios_directory_entry), header->num_entries, fw)
+	*entries = malloc(sizeof(struct bios_directory_entry) * header->num_entries);
+	if (fread(*entries, sizeof(struct bios_directory_entry), header->num_entries, fw)
 		!= header->num_entries) {
 		ERR("Failed to read %d BIOS entries\n", header->num_entries);
 		return 1;
@@ -204,9 +205,9 @@ static int read_bios_directory(FILE *fw, uint32_t offset, uint32_t expected_cook
 	return 0;
 }
 
-static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
+static int read_soft_fuse(FILE *fw, const struct embedded_firmware *fw_header)
 {
-	psp_directory_entry *current_entries = NULL;
+	struct psp_directory_entry *current_entries = NULL;
 	size_t num_current_entries = 0;
 
 	uint32_t psp_offset = 0;
@@ -216,7 +217,7 @@ static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 	else
 		psp_offset = fw_header->new_psp_directory;
 
-	psp_directory_header header;
+	struct psp_directory_header header;
 	if (read_psp_directory(fw, psp_offset, PSP_COOKIE, &header,
 		       &current_entries, &num_current_entries) != 0)
 		return 1;
@@ -224,7 +225,7 @@ static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 	while (1) {
 		uint32_t l2_dir_offset = 0;
 		uint32_t ish_dir_offset;
-		ish_directory_table ish_dir;
+		struct ish_directory_table ish_dir;
 
 		for (size_t i = 0; i < num_current_entries; i++) {
 			uint32_t type = current_entries[i].type;
@@ -295,7 +296,7 @@ static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 #define MAX_INDENT_PER_LEVEL 4
 #define MAX_INDENTATION_LEN (MAX_NUM_LEVELS * MAX_INDENT_PER_LEVEL + 1)
 
-static void dump_directory_header(psp_directory_header *header, uint8_t level)
+static void dump_directory_header(struct psp_directory_header *header, uint8_t level)
 {
 	char indent[MAX_INDENTATION_LEN] = {0};
 
@@ -345,9 +346,9 @@ static void do_indentation_string(char *dest, uint8_t level)
 
 static int amdfw_bios_dir_walk(FILE *fw, uint32_t bios_offset, uint32_t cookie, uint8_t level)
 {
-	bios_directory_entry *current_entries = NULL;
+	struct bios_directory_entry *current_entries = NULL;
 	size_t num_current_entries = 0;
-	bios_directory_hdr header;
+	struct bios_directory_hdr header;
 	uint32_t l2_dir_offset = 0;
 	uint64_t dir_mode = AMD_ADDR_PHYSICAL;
 	char indent[MAX_INDENTATION_LEN] = {0};
@@ -361,7 +362,7 @@ static int amdfw_bios_dir_walk(FILE *fw, uint32_t bios_offset, uint32_t cookie, 
 	else
 		dir_mode = header.additional_info_fields.address_mode;
 
-	dump_directory_header((psp_directory_header *)&header, level);
+	dump_directory_header((struct psp_directory_header *)&header, level);
 
 	do_indentation_string(indent, level);
 	for (size_t i = 0; i < num_current_entries; i++) {
@@ -413,7 +414,7 @@ static int amdfw_bios_dir_walk(FILE *fw, uint32_t bios_offset, uint32_t cookie, 
  */
 static int amdfw_psp_dir_size(FILE *fw, uint32_t psp_offset, uint32_t cookie, uint32_t *size)
 {
-	psp_directory_header header;
+	struct psp_directory_header header;
 
 	if (!fw || !size)
 		return -1;
@@ -442,7 +443,7 @@ static int amdfw_psp_dir_size(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
  */
 static int amdfw_bios_dir_size(FILE *fw, uint32_t bios_offset, uint32_t cookie, uint32_t *size)
 {
-	bios_directory_hdr header;
+	struct bios_directory_hdr header;
 
 	if (!fw || !size)
 		return -1;
@@ -461,13 +462,13 @@ static int amdfw_bios_dir_size(FILE *fw, uint32_t bios_offset, uint32_t cookie, 
 
 static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, uint8_t level)
 {
-	psp_directory_entry *current_entries = NULL;
+	struct psp_directory_entry *current_entries = NULL;
 	size_t num_current_entries = 0;
-	psp_directory_header header;
+	struct psp_directory_header header;
 	uint32_t l2_dir_offset = 0, l2b_dir_offset = 0;
 	uint32_t bios_dir_offset = 0;
 	uint32_t ish_dir_offset = 0;
-	ish_directory_table ish_dir;
+	struct ish_directory_table ish_dir;
 	uint64_t dir_mode = AMD_ADDR_PHYSICAL;
 	char indent[MAX_INDENTATION_LEN] = {0};
 
@@ -615,7 +616,7 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 	return 0;
 }
 
-static int list_amdfw_psp_dir(FILE *fw, const embedded_firmware *fw_header)
+static int list_amdfw_psp_dir(FILE *fw, const struct embedded_firmware *fw_header)
 {
 	uint32_t psp_offset = 0, dir_size = 0;
 
@@ -634,7 +635,7 @@ static int list_amdfw_psp_dir(FILE *fw, const embedded_firmware *fw_header)
 	return 0;
 }
 
-static int list_amdfw_bios_dir(FILE *fw, const embedded_firmware *fw_header)
+static int list_amdfw_bios_dir(FILE *fw, const struct embedded_firmware *fw_header)
 {
 	uint32_t dir_size = 0;
 
@@ -653,7 +654,7 @@ static int list_amdfw_bios_dir(FILE *fw, const embedded_firmware *fw_header)
 }
 
 
-static int list_amdfw_ro(FILE *fw, const embedded_firmware *fw_header)
+static int list_amdfw_ro(FILE *fw, const struct embedded_firmware *fw_header)
 {
 	printf("Table: FW   Offset     Size\n");
 	list_amdfw_psp_dir(fw, fw_header);
@@ -744,7 +745,7 @@ static void print_bios_size(uint8_t size)
 	}
 }
 
-static int dump_efw(const embedded_firmware *fw_header)
+static int dump_efw(const struct embedded_firmware *fw_header)
 {
 	printf("EFS Generation:            %s\n", fw_header->efs_gen.gen ? "first" : "second");
 
@@ -886,7 +887,7 @@ int main(int argc, char **argv)
 	rom_size = fw_size;
 
 	/* Find the FW header by checking each possible location */
-	embedded_firmware fw_header;
+	struct embedded_firmware fw_header;
 	int found_header = 0;
 	if (rom_size <= 4 * MiB) {
 		for (size_t i = 0; i < ARRAY_SIZE(fw_header_offsets_4MiB); i++) {

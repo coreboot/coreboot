@@ -11,7 +11,7 @@
 
 struct psp_fw_name_entry {
 	const char *name;
-	amd_fw_type type;
+	enum amd_fw_type type;
 	uint8_t subprog;
 	uint8_t instance;
 };
@@ -146,7 +146,7 @@ static const struct psp_fw_name_entry psp_fw_name_table[] = {
 	{ NULL,					AMD_FW_PSP_INVALID,			0, 0 },
 };
 
-static amd_fw_type psp_fw_type_lookup(const char *fw_name, uint8_t *subprog, uint8_t *instance)
+static enum amd_fw_type psp_fw_type_lookup(const char *fw_name, uint8_t *subprog, uint8_t *instance)
 {
 	const struct psp_fw_name_entry *entry = psp_fw_name_table;
 
@@ -268,13 +268,13 @@ void compile_reg_expr(int cflags, const char *expr, regex_t *reg)
 	} while (0)
 
 extern amd_fw_entry amd_psp_fw_table[];
-extern amd_bios_entry amd_bios_table[];
+extern struct amd_bios_entry amd_bios_table[];
 
 static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 						 char level_to_set, uint8_t hash_tbl_id,
 						 fwid_type_t fwid_type, amd_cb_config *cb_config)
 {
-	amd_fw_type fw_type;
+	enum amd_fw_type fw_type;
 	amd_fw_entry *psp_tableptr;
 	uint8_t subprog;
 	uint8_t instance;
@@ -355,7 +355,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 #define PMU_STR_INS_INDEX strlen(PMUI_STR_BASE"_SUBx_INS")
 #define PMU_STR_ALL_LEN  strlen(PMUI_STR_BASE"_SUBx_INSx")
 
-static amd_bios_type bios_fw_type_lookup(char *fw_name, uint8_t *subprog, uint8_t *instance)
+static enum amd_bios_type bios_fw_type_lookup(char *fw_name, uint8_t *subprog, uint8_t *instance)
 {
 	if (strncmp(fw_name, PMUI_STR_BASE, PMU_STR_BASE_LEN) == 0) {
 		assert(strlen(fw_name) == PMU_STR_ALL_LEN);
@@ -385,8 +385,8 @@ static amd_bios_type bios_fw_type_lookup(char *fw_name, uint8_t *subprog, uint8_
 static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 		char level_to_set, amd_cb_config *cb_config)
 {
-	amd_bios_type fw_type = AMD_BIOS_INVALID;
-	amd_bios_entry *bhd_tableptr;
+	enum amd_bios_type fw_type = AMD_BIOS_INVALID;
+	struct amd_bios_entry *bhd_tableptr;
 	uint8_t subprog = 0;
 	uint8_t instance = 0;
 

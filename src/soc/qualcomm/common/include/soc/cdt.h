@@ -35,7 +35,7 @@ struct platform_id_cdt {
 };
 
 ssize_t cdt_read(void *buffer, size_t buffer_size);
-uint8_t cdt_get_platform_id(void);
+uint16_t cdt_get_platform_id(void);
 uint32_t cdt_get_hw_version(void);
 
 #endif /* _SOC_QUALCOMM_CDT_H_ */

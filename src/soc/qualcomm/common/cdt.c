@@ -57,12 +57,12 @@ ssize_t cdt_read(void *buffer, size_t buffer_size)
 	return bytes_read;
 }
 
-uint8_t cdt_get_platform_id(void)
+uint16_t cdt_get_platform_id(void)
 {
 	if (!cdt_initialized)
 		cdt_init_platform_id();
 
-	return plat_id ? plat_id->platform : 0;
+	return plat_id ? (((uint16_t)plat_id->subtype << 8) | plat_id->platform) : 0;
 }
 
 uint32_t cdt_get_hw_version(void)

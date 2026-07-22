@@ -128,7 +128,7 @@ static void gma_func0_init(struct device *dev)
 {
 	int lightup_ok = 0;
 
-	intel_gma_init_igd_opregion();
+	const bool vbt_installed = intel_gma_init_igd_opregion() == CB_SUCCESS;
 
 	/* Unconditionally reset graphics */
 	pci_write_config8(dev, GDRST, 1);
@@ -158,7 +158,8 @@ static void gma_func0_init(struct device *dev)
 			return;
 		}
 
-		generate_fake_vbt(dev);
+		if (!vbt_installed)
+			generate_fake_vbt(dev);
 
 		mmio_res = find_resource(dev, PCI_BASE_ADDRESS_0);
 		if (!mmio_res || !mmio_res->base) {

@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <types.h>
 
-#define TCSR_BASE			0x01FC0000
+#define TCSR_BASE			0x01F40000
 #define AOSS_CC_BASE			0x0C2A0000
 #define QSPI_BASE			0x088DC000
 #define TLMM_TILE_BASE			0x0F100000

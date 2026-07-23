@@ -463,6 +463,80 @@ enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type)
 	return enable_and_poll_gdsc_status(gdsc_regs[gdsc_type]);
 }
 
+static struct clock_freq_config usb_core_cfg[] = {
+	{
+		.hz = CLK_200MHZ,
+		.src = SRC_GPLL0_MAIN_600MHZ,
+		.div = QCOM_CLOCK_DIV(3),
+	},
+};
+
+static u32 *usb_gdsc[MAX_USB_GDSC] = {
+	[USB30_MP_GDSC]      = &gcc->gcc_usb30_mp_gdscr,
+	[USB3_SS0_PHY_GDSC]  = &gcc->gcc_usb3_mp_ss0_phy_gdscr,
+	[USB3_SS1_PHY_GDSC]  = &gcc->gcc_usb3_mp_ss1_phy_gdscr,
+};
+
+static u32 *usb_mp_cbcr[USB_CLK_COUNT] = {
+	[USB30_MP_MASTER_CBCR]            = &gcc->gcc_usb30_mp_master_cbcr,
+	[USB30_MP_SLEEP_CBCR]             = &gcc->gcc_usb30_mp_sleep_cbcr,
+	[USB30_MP_MOCK_UTMI_CBCR]         = &gcc->gcc_usb30_mp_mock_utmi_cbcr,
+	[USB3_MP_PHY_AUX_CBCR]            = &gcc->gcc_usb3_mp_phy_aux_cbcr,
+	[USB3_MP_PHY_COM_AUX_CBCR]        = &gcc->gcc_usb3_mp_phy_com_aux_cbcr,
+	[USB3_MP_PHY_PIPE_0_CBCR]         = &gcc->gcc_usb3_mp_phy_pipe_0_cbcr,
+	[USB3_MP_PHY_PIPE_1_CBCR]         = &gcc->gcc_usb3_mp_phy_pipe_1_cbcr,
+	[CFG_NOC_USB3_MP_AXI_CBCR]        = &gcc->gcc_cfg_noc_usb3_mp_axi_cbcr,
+	[AGGRE_USB3_MP_AXI_CBCR]          = &gcc->gcc_aggre_usb3_mp_axi_cbcr,
+	[CFG_NOC_USB_ANOC_SOUTH_AHB_CBCR] = &gcc->gcc_cfg_noc_usb_anoc_south_ahb_cbcr,
+};
+
+enum cb_err clock_enable_usb_gdsc(enum clk_usb_gdsc gdsc_type)
+{
+	if (gdsc_type >= MAX_USB_GDSC)
+		return CB_ERR;
+
+	return enable_and_poll_gdsc_status(usb_gdsc[gdsc_type]);
+}
+
+enum cb_err usb_mp_clock_enable(enum clk_usb_mp clk_type)
+{
+	if (clk_type >= USB_CLK_COUNT) {
+		printk(BIOS_ERR, "USB MP clock enable failed: "
+			"clock type %d out of range\n", clk_type);
+		return CB_ERR;
+	}
+
+	return clock_enable(usb_mp_cbcr[clk_type]);
+}
+
+void usb_mp_clock_reset(enum clk_usb_mp clk_type, bool assert)
+{
+	clock_reset(usb_mp_cbcr[clk_type], assert);
+}
+
+void clock_configure_usb(void)
+{
+	clock_configure(&gcc->usb30_mp_master_rcg,
+		usb_core_cfg, CLK_200MHZ, ARRAY_SIZE(usb_core_cfg));
+
+}
+
+enum cb_err usb_clock_configure_mux(enum clk_pipe_usb clk_type, u32 src_type)
+{
+	switch (clk_type) {
+	case USB3_PHY_PIPE_0:
+		write32(&gcc->gcc_usb3_mp_phy_pipe_0_muxr, src_type);
+		break;
+	case USB3_PHY_PIPE_1:
+		write32(&gcc->gcc_usb3_mp_phy_pipe_1_muxr, src_type);
+		break;
+	default:
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
+
 /* Configure gcc_pcie_5_phy_rchng_clk to 100 MHz */
 static struct clock_freq_config pcie5_phy_rchng_cfg[] = {
 	{

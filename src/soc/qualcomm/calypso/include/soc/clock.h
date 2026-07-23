@@ -18,7 +18,7 @@
 #define CLK_575MHZ              (575 * MHz)
 #define CLK_37_5MHZ             (37500 * KHz)
 
-/* CPU PLL*/
+/* CPU PLL */
 #define L_VAL_2995P2MHz         0x9C
 #define L_VAL_1363P2MHz         0x47
 #define L_VAL_710P4MHz          0x25
@@ -46,7 +46,6 @@
 #define ADC_KLSB_VALUE_VAL                      4
 #define ADC_KMSB_VALUE_VAL                      10
 
-/* TODO: update as per datasheet */
 void clock_init(void);
 void clock_configure_qspi(uint32_t hz);
 void clock_enable_qup(int qup);
@@ -79,7 +78,8 @@ enum apcs_branch_en_vote {
 	HSCNOC_PCIE_SLAVE_SF_WEST_CLK_ENA = 26,
 	TCU_PCIE_SF_QTC_CLK_ENA = 27,
 	SMMU_PCIE_QTC_AT_CLK_ENA = 30,
-	/* VOTE_1 (apcs_clk_br_en1) - AGGRE_NOC/ANOC/CNOC/PCIE_NOC */
+	/* VOTE_1 (apcs_clk_br_en1) - AGGRE_NOC/ANOC/CNOC/PCIE_NOC/USB */
+	CFG_NOC_USB_ANOC_SOUTH_AHB_CLK_ENA = 18,
 	PCIE_NOC_PWRCTL_CLK_ENA = 7,
 	PCIE_NOC_SF_CENTER_CLK_ENA = 8,
 	PCIE_NOC_SLAVE_SF_EAST_CLK_ENA = 9,
@@ -280,92 +280,250 @@ struct calypso_gcc {
 	struct calypso_gpll gpll0;
 	u8 _res0[0x28004 - 0x3A];
 	struct qupv3_clock qup_wrap0_s[8];
-	u8 _res1[0x50000 - 0x28984];
+	u8 _res1[0x2C000 - 0x28984];
+	u32 gcc_usb3_phy_sec_bcr;
+	u32 gcc_usb3phy_phy_sec_bcr;
+	u8 _res2[0x2C010 - 0x2C008];
+	u32 gcc_usb4_1_dp0_phy_sec_bcr;
+	u8 _res3[0x3F000 - 0x2C014];
+	u32 gcc_cfg_noc_usb3_prim_axi_cbcr;
+	u32 gcc_cfg_noc_usb_anoc_ahb_cbcr;
+	u32 gcc_cfg_noc_usb_anoc_south_ahb_cbcr;
+	u32 gcc_aggre_usb3_prim_axi_cbcr;
+	u8 _res4[0x3F018 - 0x3F010];
+	u32 gcc_usb30_prim_bcr;
+	u32 gcc_usb30_prim_gdscr;
+	u8 _res5[0x3F030 - 0x3F020];
+	u32 gcc_usb30_prim_master_cbcr;
+	u8 _res6[0x3F044 - 0x3F034];
+	u32 gcc_usb30_prim_sleep_cbcr;
+	u32 gcc_usb30_prim_mock_utmi_cbcr;
+	struct clock_rcg usb30_prim_master_rcg;
+	u8 _res7[0x3F080 - 0x3F054];
+	u32 gcc_usb3_prim_phy_aux_cbcr;
+	u32 gcc_usb3_prim_phy_com_aux_cbcr;
+	u32 gcc_usb3_prim_phy_pipe_cbcr;
+	u32 gcc_usb3_prim_phy_pipe_muxr;
+	u8 _res8[0x50000 - 0x3F090];
 	u32 qspi_bcr;
 	u32 qspi_cnoc_ahb_cbcr;
 	u32 qspi_core_cbcr;
 	struct clock_rcg qspi_core;
-	u8 _res2[0x62000 - 0x50014];
+	u8 _res9[0x54000 - 0x50014];
+	u32 gcc_usb3_uniphy_mp0_bcr;
+	u32 gcc_usb3uniphy_phy_mp0_bcr;
+	u32 gcc_usb3_mp_ss0_phy_bcr;
+	u32 gcc_usb3_mp_ss0_phy_gdscr;
+	u8 _res10[0x54020 - 0x54010];
+	u32 gcc_usb3_uniphy_mp1_bcr;
+	u32 gcc_usb3uniphy_phy_mp1_bcr;
+	u32 gcc_usb3_mp_ss1_phy_bcr;
+	u32 gcc_usb3_mp_ss1_phy_gdscr;
+	u8 _res11[0x62000 - 0x54030];
 	u32 apcs_clk_br_en;
-	u8 _res3[0x62008 - 0x62004];
+	u8 _res12[0x62008 - 0x62004];
 	u32 apcs_clk_br_en1;
-	u8 _res4[0x62010 - 0x6200C];
+	u8 _res13[0x62010 - 0x6200C];
 	u32 apcs_clk_br_en2;
-	u8 _res5[0x62018 - 0x62014];
+	u8 _res14[0x62018 - 0x62014];
 	u32 apcs_clk_br_en3;
-	u8 _res6[0x62020 - 0x6201C];
+	u8 _res15[0x62020 - 0x6201C];
 	u32 apcs_clk_br_en4;
-	u8 _res7[0x62028 - 0x62024];
+	u8 _res16[0x62028 - 0x62024];
 	u32 apcs_clk_br_en5;
-	u8 _res8a[0x62030 - 0x6202C];
+	u8 _res17a[0x62030 - 0x6202C];
 	u32 apcs_clk_br_en6;
-	u8 _res8b[0x62040 - 0x62034];
+	u8 _res17b[0x62040 - 0x62034];
 	u32 apcs_pll_br_en;
-	u8 _res9a[0x82064 - 0x62044];
+	u8 _res18[0x73168 - 0x62044];
+	u32 gcc_hscnoc_east_at_cbcr;
+	u8 _res19[0x74060 - 0x7316C];
+	u32 gcc_config_noc_at_cbcr;
+	u8 _res20[0x76004 - 0x74064];
+	u32 gcc_sys_noc_axi_cbcr;
+	u8 _res21[0x82008 - 0x76008];
+	u32 gcc_aggre_noc_south_ahb_cfg_cbcr;
+	u8 _res22[0x82050 - 0x8200C];
+	u32 gcc_aggre_noc_south_2_axi_cbcr;
+	u32 gcc_aggre_noc_south_2_hs_axi_cbcr;
+	u8 _res23[0x82064 - 0x82058];
 	u32 anoc_pcie_pwrctl_cbcr;
-	u8 _res9b[0x9C030 - 0x82068];
+	u8 _res24[0x9A000 - 0x82068];
+	u32 gcc_cfg_noc_usb3_mp_axi_cbcr;
+	u32 gcc_aggre_usb3_mp_axi_cbcr;
+	u8 _res25[0x9A00C - 0x9A008];
+	u32 gcc_usb30_mp_bcr;
+	u32 gcc_usb30_mp_gdscr;
+	u8 _res26[0x9A024 - 0x9A014];
+	u32 gcc_usb30_mp_master_cbcr;
+	u8 _res27[0x9A034 - 0x9A028];
+	u32 gcc_usb30_mp_sleep_cbcr;
+	u32 gcc_usb30_mp_mock_utmi_cbcr;
+	struct clock_rcg usb30_mp_master_rcg;
+	u8 _res28[0x9A070 - 0x9A044];
+	u32 gcc_usb3_mp_phy_aux_cbcr;
+	u32 gcc_usb3_mp_phy_com_aux_cbcr;
+	u32 gcc_usb3_mp_phy_pipe_0_cbcr;
+	u32 gcc_usb3_mp_phy_pipe_0_muxr;
+	u32 gcc_usb3_mp_phy_pipe_1_cbcr;
+	u32 gcc_usb3_mp_phy_pipe_1_muxr;
+	u8 _res29[0x9C030 - 0x9A088];
 	u32 trace_noc_tcu_pcie_qtc_at_cbcr;
-	u8 _res9c[0xB3004 - 0x9C034];
+	u8 _res30[0xAD024 - 0x9C034];
+	u32 gcc_qusb2phy_prim_bcr;
+	u8 _res31[0xAE000 - 0xAD028];
+	u32 gcc_qusb2phy_sec_bcr;
+	u8 _res32[0xB3004 - 0xAE004];
 	struct qupv3_clock qup_wrap1_s[8];
-	u8 _res10[0xB4004 - 0xB3984];
+	u8 _res33[0xB4004 - 0xB3984];
 	struct qupv3_clock qup_wrap2_s[8];
-	u8 _res11[0xB8008 - 0xB4984];
+	u8 _res34[0xB8008 - 0xB4984];
 	u32 pcie_rscc_xo_cbcr;
-	u8 _res11b[0xB9048 - 0xB800C];
+	u8 _res35[0xB9048 - 0xB800C];
 	u32 smmu_pcie_qtc_at_cbcr;
-	u8 _res11c[0xBA000 - 0xB904C];
+	u8 _res36[0xBA000 - 0xB904C];
 	struct calypso_pcie_noc pcie_noc;
-	u8 _res11da[0xBA4F8 - 0xBA4E8];
+	u8 _res37a[0xBA4F8 - 0xBA4E8];
 	u32 pcie_5_cfg_ahb_cbcr;
-	u8 _res11db[0xC3000 - 0xBA4FC];
+	u8 _res37b[0xC3000 - 0xBA4FC];
 	struct calypso_pcie_5 pcie_5;
-	u8 _res11e[0xC5028 - 0xC30D4];
+	u8 _res38[0xC5028 - 0xC30D4];
 	u32 qup_oob_s_ahb_cbcr;
 	u32 qup_oob_core_cbcr;
-	u8 _res12[0xC503C - 0xC5030];
+	u8 _res39[0xC503C - 0xC5030];
 	u32 qup_oob_core_cdivr;
 	u32 qup_oob_core_2x_cbcr;
-	u8 _res13[0xC517C - 0xc5044];
+	u8 _res40[0xC517C - 0xc5044];
 	u32 qup_wrap1_m_ahb_cbcr;
 	u32 qup_wrap1_s_ahb_cbcr;
 	u32 qup_wrap1_core_cbcr;
-	u8 _res14[0xC5194 - 0xC5188];
+	u8 _res41[0xC5194 - 0xC5188];
 	u32 qup_wrap1_core_cdivr;
 	u32 qup_wrap1_core_2x_cbcr;
-	u8 _res15[0xC51A8 - 0xC519C];
+	u8 _res42[0xC51A8 - 0xC519C];
 	struct clock_rcg qup_wrap1_core_2x;
-	u8 _res16[0xC52D4 - 0xC51B0];
+	u8 _res43[0xC52D4 - 0xC51B0];
 	u32 qup_wrap2_m_ahb_cbcr;
 	u32 qup_wrap2_s_ahb_cbcr;
 	u32 qup_wrap2_core_cbcr;
-	u8 _res17[0xC52EC - 0xC52E0];
+	u8 _res44[0xC52EC - 0xC52E0];
 	u32 qup_wrap2_core_cdivr;
 	u32 qup_wrap2_core_2x_cbcr;
-	u8 _res18[0xC5300 - 0xC52F4];
+	u8 _res45[0xC5300 - 0xC52F4];
 	struct clock_rcg qup_wrap2_core_2x;
-	u8 _res19[0xC542C - 0xC5308];
+	u8 _res46[0xC542C - 0xC5308];
 	u32 qup_wrap0_m_ahb_cbcr;
 	u32 qup_wrap0_s_ahb_cbcr;
 	u32 qup_wrap0_core_cbcr;
-	u8 _res20[0xC5444 - 0xC5438];
+	u8 _res47[0xC5444 - 0xC5438];
 	u32 qup_wrap0_core_cdivr;
 	u32 qup_wrap0_core_2x_cbcr;
-	u8 _res21[0xC5458 - 0xC544C];
+	u8 _res48[0xC5458 - 0xC544C];
 	struct clock_rcg qup_wrap0_core_2x;
-	u8 _res20a[0xD2004 - 0xC5460];
+	u8 _res49[0xCA000 - 0xC5460];
+	u32 qusb2phy_hs0_mp_bcr;
+	u8 _res50[0xD2004 - 0xCA004];
 	u32 pcie_phy_5_gdscr;
-	u8 _res20b[0xD2030 - 0xD2008];
+	u8 _res51[0xD2030 - 0xD2008];
 	u32 pcie_phy_5_aux_cbcr;
-	u8 _res20c[0xE7004 - 0xD2034];
+	u8 _res52[0xDB000 - 0xD2034];
+	u32 gcc_usb3_phy_prim_bcr;
+	u32 gcc_usb3phy_phy_prim_bcr;
+	u8 _res53[0xDB010 - 0xDB008];
+	u32 gcc_usb4_0_dp0_phy_prim_bcr;
+	u8 _res54[0xE1000 - 0xDB014];
+	u32 gcc_cfg_noc_usb3_tert_axi_cbcr;
+	u32 gcc_aggre_usb3_tert_axi_cbcr;
+	u8 _res55[0xE100C - 0xE1008];
+	u32 gcc_usb30_tert_bcr;
+	u32 gcc_usb30_tert_gdscr;
+	u8 _res56[0xE1024 - 0xE1014];
+	u32 gcc_usb30_tert_master_cbcr;
+	u8 _res57[0xE1034 - 0xE1028];
+	u32 gcc_usb30_tert_sleep_cbcr;
+	u32 gcc_usb30_tert_mock_utmi_cbcr;
+	struct clock_rcg usb30_tert_master_rcg;
+	u8 _res58[0xE1070 - 0xE1044];
+	u32 gcc_usb3_tert_phy_aux_cbcr;
+	u32 gcc_usb3_tert_phy_com_aux_cbcr;
+	u32 gcc_usb3_tert_phy_pipe_cbcr;
+	u32 gcc_usb3_tert_phy_pipe_muxr;
+	u8 _res59[0xE2000 - 0xE1080];
+	u32 gcc_cfg_noc_usb3_sec_axi_cbcr;
+	u32 gcc_aggre_usb3_sec_axi_cbcr;
+	u8 _res60[0xE200C - 0xE2008];
+	u32 gcc_usb30_sec_bcr;
+	u32 gcc_usb30_sec_gdscr;
+	u8 _res61[0xE2024 - 0xE2014];
+	u32 gcc_usb30_sec_master_cbcr;
+	u8 _res62[0xE2034 - 0xE2028];
+	u32 gcc_usb30_sec_sleep_cbcr;
+	u32 gcc_usb30_sec_mock_utmi_cbcr;
+	struct clock_rcg usb30_sec_master_rcg;
+	u8 _res63[0xE2070 - 0xE2044];
+	u32 gcc_usb3_sec_phy_aux_cbcr;
+	u32 gcc_usb3_sec_phy_com_aux_cbcr;
+	u32 gcc_usb3_sec_phy_pipe_cbcr;
+	u32 gcc_usb3_sec_phy_pipe_muxr;
+	u8 _res64[0xE6000 - 0xE2080];
+	u32 qusb2phy_hs1_mp_bcr;
+	u8 _res65[0xE7004 - 0xE6004];
 	u32 qup_oob_m_ahb_cbcr;
-	u8 _res23[0xE7014 - 0xE7008];
+	u8 _res66[0xE7014 - 0xE7008];
 	struct qupv3_clock qup_wrap3_s[2];
 };
 
 check_member(calypso_gcc, qup_wrap0_s, 0x28004);
 check_member(calypso_gcc, qspi_bcr, 0x50000);
+check_member(calypso_gcc, gcc_usb3_phy_sec_bcr, 0x2C000);
+check_member(calypso_gcc, gcc_usb3phy_phy_sec_bcr, 0x2C004);
+check_member(calypso_gcc, gcc_usb4_1_dp0_phy_sec_bcr, 0x2C010);
+check_member(calypso_gcc, gcc_cfg_noc_usb3_prim_axi_cbcr, 0x3F000);
+check_member(calypso_gcc, gcc_usb30_prim_bcr, 0x3F018);
+check_member(calypso_gcc, gcc_usb30_prim_gdscr, 0x3F01C);
+check_member(calypso_gcc, gcc_usb30_prim_master_cbcr, 0x3F030);
+check_member(calypso_gcc, gcc_usb30_prim_sleep_cbcr, 0x3F044);
+check_member(calypso_gcc, gcc_usb30_prim_mock_utmi_cbcr, 0x3F048);
+check_member(calypso_gcc, usb30_prim_master_rcg, 0x3F04C);
+check_member(calypso_gcc, gcc_usb3_prim_phy_aux_cbcr, 0x3F080);
+check_member(calypso_gcc, gcc_usb3_prim_phy_pipe_cbcr, 0x3F088);
+check_member(calypso_gcc, gcc_usb3_mp_ss0_phy_gdscr, 0x5400C);
+check_member(calypso_gcc, gcc_usb3_mp_ss1_phy_gdscr, 0x5402C);
+check_member(calypso_gcc, gcc_cfg_noc_usb3_mp_axi_cbcr, 0x9A000);
+check_member(calypso_gcc, gcc_usb30_mp_bcr, 0x9A00C);
+check_member(calypso_gcc, gcc_usb30_mp_gdscr, 0x9A010);
+check_member(calypso_gcc, gcc_usb30_mp_master_cbcr, 0x9A024);
+check_member(calypso_gcc, gcc_usb30_mp_sleep_cbcr, 0x9A034);
+check_member(calypso_gcc, gcc_usb3_mp_phy_aux_cbcr, 0x9A070);
+check_member(calypso_gcc, gcc_usb3_mp_phy_pipe_0_cbcr, 0x9A078);
+check_member(calypso_gcc, gcc_usb3_mp_phy_pipe_1_cbcr, 0x9A080);
+check_member(calypso_gcc, gcc_qusb2phy_prim_bcr, 0xAD024);
+check_member(calypso_gcc, gcc_qusb2phy_sec_bcr, 0xAE000);
+check_member(calypso_gcc, qusb2phy_hs0_mp_bcr, 0xCA000);
+check_member(calypso_gcc, gcc_usb3_phy_prim_bcr, 0xDB000);
+check_member(calypso_gcc, gcc_usb3phy_phy_prim_bcr, 0xDB004);
+check_member(calypso_gcc, gcc_usb4_0_dp0_phy_prim_bcr, 0xDB010);
+check_member(calypso_gcc, gcc_cfg_noc_usb3_tert_axi_cbcr, 0xE1000);
+check_member(calypso_gcc, gcc_usb30_tert_bcr, 0xE100C);
+check_member(calypso_gcc, gcc_usb30_tert_gdscr, 0xE1010);
+check_member(calypso_gcc, gcc_usb30_tert_master_cbcr, 0xE1024);
+check_member(calypso_gcc, gcc_usb3_tert_phy_aux_cbcr, 0xE1070);
+check_member(calypso_gcc, gcc_cfg_noc_usb3_sec_axi_cbcr, 0xE2000);
+check_member(calypso_gcc, gcc_usb30_sec_bcr, 0xE200C);
+check_member(calypso_gcc, gcc_usb30_sec_gdscr, 0xE2010);
+check_member(calypso_gcc, gcc_usb30_sec_master_cbcr, 0xE2024);
+check_member(calypso_gcc, gcc_usb30_sec_sleep_cbcr, 0xE2034);
+check_member(calypso_gcc, gcc_usb3_sec_phy_aux_cbcr, 0xE2070);
+check_member(calypso_gcc, gcc_usb3_sec_phy_pipe_cbcr, 0xE2078);
+check_member(calypso_gcc, qusb2phy_hs1_mp_bcr, 0xE6000);
 check_member(calypso_gcc, apcs_clk_br_en, 0x62000);
 check_member(calypso_gcc, apcs_clk_br_en1, 0x62008);
+check_member(calypso_gcc, gcc_hscnoc_east_at_cbcr, 0x73168);
+check_member(calypso_gcc, gcc_config_noc_at_cbcr, 0x74060);
+check_member(calypso_gcc, gcc_sys_noc_axi_cbcr, 0x76004);
+check_member(calypso_gcc, gcc_aggre_noc_south_ahb_cfg_cbcr, 0x82008);
+check_member(calypso_gcc, gcc_aggre_noc_south_2_axi_cbcr, 0x82050);
+check_member(calypso_gcc, gcc_aggre_noc_south_2_hs_axi_cbcr, 0x82054);
 check_member(calypso_gcc, apcs_clk_br_en2, 0x62010);
 check_member(calypso_gcc, apcs_clk_br_en3, 0x62018);
 check_member(calypso_gcc, apcs_clk_br_en4, 0x62020);
@@ -491,7 +649,47 @@ enum cb_err clock_configure_mux(enum clk_pcie clk_type, u32 src_type);
 enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type);
 enum cb_err clock_configure_pcie(void);
 
-/* Subsystem Reset */
+/* USB clock enums */
+enum clk_usb_gdsc {
+	USB30_MP_GDSC,
+	USB3_SS0_PHY_GDSC,
+	USB3_SS1_PHY_GDSC,
+	MAX_USB_GDSC,
+};
+
+enum clk_usb_mp {
+	USB30_MP_MASTER_CBCR,
+	USB30_MP_SLEEP_CBCR,
+	USB30_MP_MOCK_UTMI_CBCR,
+	USB3_MP_PHY_AUX_CBCR,
+	USB3_MP_PHY_COM_AUX_CBCR,
+	USB3_MP_PHY_PIPE_0_CBCR,
+	USB3_MP_PHY_PIPE_1_CBCR,
+	CFG_NOC_USB3_MP_AXI_CBCR,
+	AGGRE_USB3_MP_AXI_CBCR,
+	CFG_NOC_USB_ANOC_SOUTH_AHB_CBCR,
+	USB_CLK_COUNT,
+};
+
+enum clk_pipe_usb {
+	USB3_PHY_PIPE_0,
+	USB3_PHY_PIPE_1,
+	USB3_PIPE_CLK_COUNT,
+};
+
+enum clk_usb_phy_src_sel {
+	USB_PHY_PIPE_SRC_SEL = 0,
+	USB_PHY_XO_SRC_SEL = 2,
+};
+
+/* USB clock functions */
+void clock_configure_usb(void);
+enum cb_err clock_enable_usb_gdsc(enum clk_usb_gdsc gdsc_type);
+enum cb_err usb_mp_clock_enable(enum clk_usb_mp clk_type);
+enum cb_err usb_clock_configure_mux(enum clk_pipe_usb clk_type, u32 src_type);
+void usb_mp_clock_reset(enum clk_usb_mp clk_type, bool assert);
+
+/* Hardware base pointers */
 static struct aoss *const aoss = (void *)AOSS_CC_BASE;
 static struct calypso_gcc *const gcc = (void *)GCC_BASE;
 static struct calypso_ncc0_clock *const apss_ncc0 = (void *)NCC0_BASE;
@@ -502,4 +700,4 @@ static struct calypso_qupv3_wrap *const qup_oob_clk = (void *)GCC_QUPV3_OOB_BASE
 
 enum cb_err pll_init_and_set(struct calypso_ncc0_clock *ncc0, u32 l_val);
 
-#endif	// __SOC_QUALCOMM_CALYPSO_CLOCK_H__
+#endif /* __SOC_QUALCOMM_CALYPSO_CLOCK_H__ */

@@ -28,18 +28,20 @@ static bool is_rom2_remapped(uint32_t rom2_start, uint32_t offset)
 const struct region_device *boot_device_ro(void)
 {
 	/*
-	 * The following code assumes that ROM2 is mapped at flash offset 0.
-	 * This is the default configuration currently enforced by soft-straps.
 	 * When ROM Armor is enabled, don't call FCH SPI functions
 	 * because the SPIBAR is no longer accessible.
 	 */
-	if (!psp_get_hsti_state_rom_armor_enforced() &&
-	    is_rom2_remapped((uint32_t)(uintptr_t)rom_base, 0))
-		die("Non default ROM2 remapping is not supported!");
+	if (!psp_get_hsti_state_rom_armor_enforced()) {
+		/*
+		 * The following code assumes that ROM2 is mapped at flash offset 0.
+		 * This is the default configuration currently enforced by soft-straps.
+		 */
+		if (is_rom2_remapped((uint32_t)(uintptr_t)rom_base, 0))
+			die("Non default ROM2 remapping is not supported!");
 
-
-	/* FSP might reconfigure it, so initialize again in every stage */
-	fch_spi_configure_4dw_burst();
+		/* FSP might reconfigure 4DW burst, so initialize again in every stage */
+		fch_spi_configure_4dw_burst();
+	}
 
 	return &boot_dev.rdev;
 }

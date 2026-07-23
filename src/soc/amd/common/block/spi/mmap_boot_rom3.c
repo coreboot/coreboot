@@ -201,8 +201,14 @@ const struct region_device *boot_device_ro(void)
 {
 	bios_mmap_init();
 
-	/* FSP might reconfigure it, so initialize again in every stage */
-	fch_spi_configure_4dw_burst();
+	/*
+	 * When ROM Armor is enabled, don't call FCH SPI functions
+	 * because the SPIBAR is no longer accessible.
+	 */
+	if (!psp_get_hsti_state_rom_armor_enforced()) {
+		/* FSP might reconfigure 4DW burst, so initialize again in every stage */
+		fch_spi_configure_4dw_burst();
+	}
 
 	return &real_dev.rdev;
 }

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <limits.h>
+#include <lib.h>
 #include <tests/test.h>
 #include <helpers/file.h>
 #include <string.h>
@@ -8,6 +9,7 @@
 #include <stdlib.h>
 
 #include <vendorcode/amd/psp/psp_fw_parser.h>
+#include <vendorcode/amd/psp/internal.h>
 
 struct psp_init_test_state {
 	char *fname_base;
@@ -22,6 +24,7 @@ struct psp_test_state {
 	size_t num_entries;
 	enum psp_dir_type type;
 	int level;
+	bool compressed;
 };
 
 static int teardown_psp_file(void **state)
@@ -39,8 +42,7 @@ static int setup_psp_file(void **state)
 {
 	int ret = 0;
 	struct psp_init_test_state *init_state = *state;
-	const char path_prefix[] = "soc/amd/psp_fw/%s%s";
-	const char raw_file_suffix[] = ".bin";
+	const char path_prefix[] = "soc/amd/psp_fw/%s";
 	struct psp_test_state *s = test_malloc(sizeof(*s));
 	memset(s, 0, sizeof(*s));
 
@@ -51,8 +53,9 @@ static int setup_psp_file(void **state)
 	s->type = init_state->type;
 	s->level = init_state->level;
 	const size_t raw_filename_size =
-		strlen(path_prefix) + strlen(init_state->fname_base) + ARRAY_SIZE(raw_file_suffix);
+		strlen(path_prefix) + strlen(init_state->fname_base);
 	s->raw_filename = test_malloc(raw_filename_size);
+	s->compressed = false;
 
 	if (!s->raw_filename) {
 		print_error("File path allocation error\n");
@@ -60,7 +63,7 @@ static int setup_psp_file(void **state)
 		goto error;
 	}
 
-	snprintf(s->raw_filename, raw_filename_size, path_prefix, init_state->fname_base, raw_file_suffix);
+	snprintf(s->raw_filename, raw_filename_size, path_prefix, init_state->fname_base);
 
 	int file_size = test_get_file_size(s->raw_filename);
 
@@ -71,6 +74,11 @@ static int setup_psp_file(void **state)
 	}
 
 	s->raw_file_sz = file_size;
+
+	if (strlen(s->raw_filename) > 5 &&
+	    strncmp(&s->raw_filename[strlen(s->raw_filename) - 5], ".lzma", 5) == 0)
+		s->compressed = true;
+
 	*state = s;
 	return 0;
 error:
@@ -82,10 +90,22 @@ static void test_psp_header(void **state)
 {
 	struct psp_test_state *s = *state;
 	uint8_t *raw_buf = test_malloc(s->raw_file_sz);
-
 	assert_non_null(raw_buf);
+
 	assert_int_equal(s->raw_file_sz,
-			 test_read_file(s->raw_filename, raw_buf, s->raw_file_sz));
+		test_read_file(s->raw_filename, raw_buf, s->raw_file_sz));
+
+	if (s->compressed) {
+		uint8_t *decomp_buf = test_malloc(16 * MiB);
+		assert_non_null(decomp_buf);
+
+		assert_int_equal(16 * MiB,
+			ulzman(raw_buf, s->raw_file_sz, decomp_buf, 16 * MiB));
+		test_free(raw_buf);
+
+		raw_buf = decomp_buf;
+		s->raw_file_sz = 16 * MiB;
+	}
 
 	struct mem_region_device mem_rdev;
 	mem_region_device_ro_init(&mem_rdev, raw_buf, s->raw_file_sz);
@@ -166,7 +186,92 @@ static void test_psp_header(void **state)
 	test_free(raw_buf);
 }
 
-#define PSP_CORRECT_FILE_TEST(_file_prefix, _num_entries, _type, _level)                     \
+static void test_full_rom(void **state)
+{
+	struct psp_test_state *s = *state;
+	uint8_t *raw_buf = test_malloc(s->raw_file_sz);
+	assert_non_null(raw_buf);
+
+	assert_int_equal(s->raw_file_sz,
+		test_read_file(s->raw_filename, raw_buf, s->raw_file_sz));
+
+	if (s->compressed) {
+		uint8_t *decomp_buf = test_malloc(16 * MiB);
+		assert_non_null(decomp_buf);
+
+		assert_int_equal(16 * MiB,
+			ulzman(raw_buf, s->raw_file_sz, decomp_buf, 16 * MiB));
+		test_free(raw_buf);
+
+		raw_buf = decomp_buf;
+		s->raw_file_sz = 16 * MiB;
+	}
+
+	struct mem_region_device mem_rdev;
+	mem_region_device_ro_init(&mem_rdev, raw_buf, s->raw_file_sz);
+	struct psp_dir_region dir_rdev;
+
+	assert_int_equal(psp_fw_read_and_validate_table(&mem_rdev.rdev, 0x20000, PSP_DIR_EFS, &dir_rdev), CB_SUCCESS);
+	assert_int_equal(2, psp_dir_count_entries(&dir_rdev));
+	assert_int_equal(PSP_DIR_EFS, dir_rdev.type);
+
+	/* On full ROMs the efs entry type must not be PSP_DIR_NONE. */
+	for (size_t i = 0; i < psp_dir_count_entries(&dir_rdev); i++) {
+		union psp_dir_entry entry;
+		enum psp_dir_type next_dir_type;
+		assert_int_equal(psp_dir_get_entry_by_index(&dir_rdev, i, &entry), CB_SUCCESS);
+		assert_int_not_equal(0, entry.efs.offset);
+		assert_int_not_equal(PSP_DIR_NONE, entry.efs.type);
+		assert_true(psp_entry_is_table_pointer(&dir_rdev, &entry, 0, &next_dir_type));
+		assert_int_equal(next_dir_type, entry.efs.type);
+	}
+
+	/* Test psp_entry_is_table_pointer() */
+	{
+		enum psp_dir_type next_dir_type;
+		union psp_dir_entry entry;
+
+		assert_int_equal(psp_dir_get_entry_by_index(&dir_rdev, 0, &entry), CB_SUCCESS);
+		assert_true(psp_entry_is_table_pointer(&dir_rdev, &entry, 0, &next_dir_type));
+		assert_int_equal(next_dir_type, PSP_DIR_PSP);
+
+		struct psp_dir_region psp_dir_rdev;
+		uint32_t dir_offset = psp_dir_entry_offset(&dir_rdev, &entry);
+
+		/* Validate table and fill next_dir */
+		assert_int_equal(psp_fw_read_and_validate_table(&mem_rdev.rdev, dir_offset,
+								next_dir_type, &psp_dir_rdev), CB_SUCCESS);
+
+		assert_int_equal(psp_dir_rdev.level, 1);
+
+		/* Test psp_fw_psp_is_table_pointer() */
+		for (size_t i = 0; i < psp_dir_count_entries(&psp_dir_rdev); i++) {
+			union psp_dir_entry entry;
+			assert_int_equal(psp_dir_get_entry_by_index(&psp_dir_rdev, i, &entry), CB_SUCCESS);
+
+			if (entry.psp.type == AMD_FW_PSP_L2_PTR ||
+			    entry.psp.type == AMD_FW_PSP_RECOVERYAB_A ||
+			    entry.psp.type == AMD_FW_PSP_RECOVERYAB_B) {
+
+				assert_true(psp_entry_is_table_pointer(&psp_dir_rdev, &entry, 0, &next_dir_type));
+				print_message("PSP pointer Address 0x%llx, next_dir_type 0x%02x\n",
+					(uint64_t)entry.psp.addr, next_dir_type);
+
+				/* Validate table and fill next_dir */
+				uint32_t flash_rel_offset = psp_dir_entry_offset(&psp_dir_rdev, &entry);
+				assert_int_not_equal(flash_rel_offset, 0);
+
+				struct psp_dir_region next_dir;
+				assert_int_equal(psp_fw_read_and_validate_table(&mem_rdev.rdev, flash_rel_offset,
+										next_dir_type, &next_dir), CB_SUCCESS);
+			}
+		}
+	}
+
+	test_free(raw_buf);
+}
+
+#define PSP_TABLE_FILE_TEST(_file_prefix, _num_entries, _type, _level)                       \
 	{                                                                                    \
 		.name = "test_psp_header(" _file_prefix ")",                                 \
 		.test_func = test_psp_header, .setup_func = setup_psp_file,                  \
@@ -174,19 +279,29 @@ static void test_psp_header(void **state)
 		 &((struct psp_init_test_state) {_file_prefix, _num_entries, _type, _level}) \
 	}
 
+#define PSP_FULL_ROM_TEST(_file_prefix, _num_entries, _type, _level)                         \
+	{                                                                                    \
+		.name = "test_full_rom(" _file_prefix ")",                                   \
+		.test_func = test_full_rom, .setup_func = setup_psp_file,                    \
+		.teardown_func = teardown_psp_file, .initial_state =                         \
+		 &((struct psp_init_test_state) {_file_prefix, _num_entries, _type, _level}) \
+	}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		PSP_CORRECT_FILE_TEST("psp_l1", 2, PSP_DIR_PSP, 1),
-		PSP_CORRECT_FILE_TEST("psp_l2", 0x36, PSP_DIR_PSP, 2),
-		PSP_CORRECT_FILE_TEST("bdh_l1", 0x11, PSP_DIR_BIOS, 1),
-		PSP_CORRECT_FILE_TEST("bdh_l2", 0x11, PSP_DIR_BIOS, 2),
-		PSP_CORRECT_FILE_TEST("ish", 1, PSP_DIR_ISH, 0),
-		PSP_CORRECT_FILE_TEST("combo_1", 1, PSP_DIR_COMBO, 1),
-		PSP_CORRECT_FILE_TEST("combo_2", 1, PSP_DIR_COMBO, 1),
-		PSP_CORRECT_FILE_TEST("efs1", 2, PSP_DIR_EFS, 0),
-		PSP_CORRECT_FILE_TEST("efs2", 2, PSP_DIR_EFS, 0),
-		PSP_CORRECT_FILE_TEST("efs3", 2, PSP_DIR_EFS, 0),
+		PSP_TABLE_FILE_TEST("psp_l1.bin", 2, PSP_DIR_PSP, 1),
+		PSP_TABLE_FILE_TEST("psp_l2.bin", 0x36, PSP_DIR_PSP, 2),
+		PSP_TABLE_FILE_TEST("bdh_l1.bin", 0x11, PSP_DIR_BIOS, 1),
+		PSP_TABLE_FILE_TEST("bdh_l2.bin", 0x11, PSP_DIR_BIOS, 2),
+		PSP_TABLE_FILE_TEST("ish.bin", 1, PSP_DIR_ISH, 0),
+		PSP_TABLE_FILE_TEST("combo_1.bin", 1, PSP_DIR_COMBO, 1),
+		PSP_TABLE_FILE_TEST("combo_2.bin", 1, PSP_DIR_COMBO, 1),
+		PSP_TABLE_FILE_TEST("efs1.bin", 2, PSP_DIR_EFS, 0),
+		PSP_TABLE_FILE_TEST("efs2.bin", 2, PSP_DIR_EFS, 0),
+		PSP_TABLE_FILE_TEST("efs3.bin", 2, PSP_DIR_EFS, 0),
+		PSP_FULL_ROM_TEST("full_rom_ish.bin.lzma", 2, PSP_DIR_ISH, 0),
+		PSP_FULL_ROM_TEST("full_rom_legacy.bin.lzma", 1, PSP_DIR_PSP, 0),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);

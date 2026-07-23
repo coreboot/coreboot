@@ -11,5 +11,8 @@ psp_fw-test-srcs += src/vendorcode/amd/psp/psp_fw_cmb.c
 psp_fw-test-srcs += src/vendorcode/amd/psp/psp_fw_efs.c
 psp_fw-test-srcs += src/vendorcode/amd/psp/psp_fw_ish.c
 psp_fw-test-srcs += src/vendorcode/amd/psp/psp_fw_psp.c
+psp_fw-test-srcs  += src/lib/lzma.c
+psp_fw-test-srcs  += src/lib/lzmadecode.c
+psp_fw-test-srcs += tests/stubs/console.c
 
 psp_fw-test-syssrcs += tests/helpers/file.c

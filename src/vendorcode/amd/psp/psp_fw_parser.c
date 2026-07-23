@@ -204,9 +204,21 @@ uint32_t psp_dir_entry_offset(const struct psp_dir_region *dir_rdev, const union
 		break;
 	case PSP_DIR_COMBO:
 		addr = entry->combo.lvl2_addr;
+		/* Get address mode from EFS */
+		const struct psp_dir_region *parent = dir_rdev->parent;
+		while (parent) {
+			if (parent->type == PSP_DIR_EFS)
+				break;
+			parent = parent->parent;
+		}
+
+		if (parent && parent->type == PSP_DIR_EFS)
+			mode = parent->mode;
 		break;
 	case PSP_DIR_ISH:
 		addr = entry->ish.pl2_location;
+		/* ISH is always relative to BIOS */
+		mode = AMD_ADDR_REL_BIOS;
 		break;
 	default:
 		break;
@@ -214,6 +226,45 @@ uint32_t psp_dir_entry_offset(const struct psp_dir_region *dir_rdev, const union
 
 	enum cb_err err = relative_offset(dir_rdev, addr, mode, &offset);
 	return err == CB_SUCCESS ? (uint32_t)offset : 0;
+}
+
+/**
+ * Checks if the given PSP directory entry is a table pointer.
+ *
+ * @param dir_rdev	PSP directory region
+ * @param entry		Entry to check
+ * @param psp_id	PSP ID to filter by (0 to ignore)
+ * @param addr		Pointer to store the address of the table if found
+ * @param next_dir_type	Pointer to store the type of the next directory
+ *
+ * @return true if the entry is a table pointer, otherwise false.
+ */
+bool psp_entry_is_table_pointer(const struct psp_dir_region *dir_rdev,
+				const union psp_dir_entry *entry,
+				const uint32_t psp_id,
+				enum psp_dir_type *next_dir_type)
+{
+	switch (dir_rdev->type) {
+	case PSP_DIR_EFS:
+		return psp_fw_efs_is_table_pointer(dir_rdev, entry, next_dir_type);
+	case PSP_DIR_PSP:
+		return psp_fw_psp_is_table_pointer(dir_rdev, entry, next_dir_type);
+	case PSP_DIR_COMBO:
+		if (dir_rdev->level == 1) {
+			if (psp_id && entry->combo.id != psp_id)
+				return false;
+			return psp_fw_combo_is_table_pointer(dir_rdev, entry, next_dir_type);
+		}
+		break;
+	case PSP_DIR_ISH:
+		if (psp_id && entry->ish.psp_id != psp_id)
+			return false;
+		return psp_fw_ish_is_table_pointer(dir_rdev, entry, next_dir_type);
+	default:
+		break;
+	}
+
+	return false;
 }
 
 /* Check if destination looks like the expected PSP directory header.

@@ -118,7 +118,7 @@ enum cb_err psp_fw_combo_validate_table(const struct region_device *rdev,
  * @param dir_rdev	PSP directory region
  * @return the cookie of the PSP directory region, or 0 if dir_rdev is NULL or could not be read.
  */
-uint32_t psp_fw_combo_cookie(const struct psp_dir_region *dir_rdev)
+static uint32_t psp_fw_combo_cookie(const struct psp_dir_region *dir_rdev)
 {
 	struct psp_combo_header combo_hdr;
 
@@ -131,4 +131,34 @@ uint32_t psp_fw_combo_cookie(const struct psp_dir_region *dir_rdev)
 		return 0;
 
 	return combo_hdr.cookie;
+}
+
+/*
+ * Check if the PSP directory entry at the given index is a pointer to another table.
+ * @param dir_rdev	PSP directory region
+ * @param entry		PSP directory entry to check
+ * @param addr		Pointer to store the address of the next table, if any
+ * @param next_dir_type	Pointer to store the type of the next directory, if any
+ *
+ * @return true if the entry is a pointer to another table, otherwise false.
+*/
+bool psp_fw_combo_is_table_pointer(const struct psp_dir_region *dir_rdev,
+				   const union psp_dir_entry *entry,
+				   enum psp_dir_type *next_dir_type)
+{
+	(void)entry;
+	assert (dir_rdev->type == PSP_DIR_COMBO);
+	if (dir_rdev->type != PSP_DIR_COMBO)
+		return false;
+
+	const uint32_t cookie = psp_fw_combo_cookie(dir_rdev);
+	if (cookie == 0)
+		return false;
+
+	if (cookie == PSP2_COOKIE)
+		*next_dir_type = PSP_DIR_PSP;
+	else
+		*next_dir_type = PSP_DIR_BIOS;
+
+	return true;
 }

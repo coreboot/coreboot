@@ -139,3 +139,56 @@ enum cb_err psp_fw_psp_validate_table(const struct region_device *rdev,
 	memcpy(rdev_hdr, &ret, sizeof(struct psp_dir_region));
 	return CB_SUCCESS;
 }
+
+/*
+ * Check if the PSP directory entry at the given index is a pointer to another table.
+ * @param dir_rdev	PSP directory region
+ * @param entry		PSP directory entry to check
+ * @param addr		Pointer to store the address of the next table, if any
+ * @param next_dir_type	Pointer to store the type of the next directory, if any
+ *
+ * @return true if the entry is a pointer to another table, otherwise false.
+*/
+bool psp_fw_psp_is_table_pointer(const struct psp_dir_region *dir_rdev,
+				 const union psp_dir_entry *entry,
+				 enum psp_dir_type *next_dir_type)
+{
+	struct psp_dir_region next_dir;
+	assert (dir_rdev->type == PSP_DIR_PSP);
+	if (dir_rdev->type != PSP_DIR_PSP)
+		return false;
+
+	if (dir_rdev->level == 1) {
+		switch (entry->psp.type) {
+		case AMD_FW_PSP_L2_PTR:
+			*next_dir_type = PSP_DIR_PSP;
+			return true;
+		case AMD_FW_PSP_RECOVERYAB_A:
+			/* fallthrough */
+		case AMD_FW_PSP_RECOVERYAB_B:
+			/* Legacy A/B recovery points to PSPL2. New platforms point to ISH */
+			const struct region_device *root = psp_dir_get_root(dir_rdev);
+			uint32_t dir_offset = psp_dir_entry_offset(dir_rdev, entry);
+			/* Validate table */
+			if (psp_fw_read_and_validate_table(root, dir_offset, PSP_DIR_PSP, &next_dir) == CB_SUCCESS) {
+				*next_dir_type = PSP_DIR_PSP;
+				return true;
+			} else if (psp_fw_read_and_validate_table(root, dir_offset, PSP_DIR_ISH, &next_dir) == CB_SUCCESS) {
+				*next_dir_type = PSP_DIR_ISH;
+				return true;
+			}
+			break;
+		default:
+			break;
+		}
+	} else if (dir_rdev->level == 2) {
+		switch (entry->psp.type) {
+		case AMD_FW_PSP_BIOS_TABLE:
+			*next_dir_type = PSP_DIR_BIOS;
+			return true;
+		default:
+			break;
+		}
+	}
+	return false;
+}

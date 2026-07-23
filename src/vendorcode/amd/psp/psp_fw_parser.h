@@ -94,4 +94,9 @@ enum cb_err psp_dir_get_entry_by_index(const struct psp_dir_region *dir_rdev,
 uint32_t psp_dir_entry_offset(const struct psp_dir_region *dir_rdev,
 			      const union psp_dir_entry *entry);
 
+bool psp_entry_is_table_pointer(const struct psp_dir_region *dir_rdev,
+				const union psp_dir_entry *entry,
+				const uint32_t psp_id,
+				enum psp_dir_type *next_dir_type);
+
 #endif /* _PSP_FW_PARSER_H_ */

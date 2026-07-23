@@ -28,7 +28,9 @@ enum cb_err psp_fw_combo_get_entry_by_index(const struct psp_dir_region *dir_rde
 enum cb_err psp_fw_combo_validate_table(const struct region_device *rdev,
 					const uint32_t offset,
 					struct psp_dir_region *rdev_hdr);
-uint32_t psp_fw_combo_cookie(const struct psp_dir_region *dir_rdev);
+bool psp_fw_combo_is_table_pointer(const struct psp_dir_region *dir_rdev,
+				   const union psp_dir_entry *entry,
+				   enum psp_dir_type *next_dir_type);
 
 /* ISH */
 uint32_t psp_fw_ish_get_entry_count(const struct psp_dir_region *dir_rdev);
@@ -38,6 +40,9 @@ enum cb_err psp_fw_ish_get_entry_by_index(const struct psp_dir_region *dir_rdev,
 enum cb_err psp_fw_ish_validate_table(const struct region_device *rdev,
 			       const uint32_t offset,
 			       struct psp_dir_region *rdev_hdr);
+bool psp_fw_ish_is_table_pointer(const struct psp_dir_region *dir_rdev,
+				 const union psp_dir_entry *entry,
+				 enum psp_dir_type *next_dir_type);
 
 /* PSP */
 uint32_t psp_fw_psp_get_entry_count(const struct psp_dir_region *dir_rdev);
@@ -47,6 +52,9 @@ enum cb_err psp_fw_psp_get_entry_by_index(const struct psp_dir_region *dir_rdev,
 enum cb_err psp_fw_psp_validate_table(const struct region_device *rdev,
 				      const uint32_t offset,
 				      struct psp_dir_region *rdev_hdr);
+bool psp_fw_psp_is_table_pointer(const struct psp_dir_region *dir_rdev,
+				 const union psp_dir_entry *entry,
+				 enum psp_dir_type *next_dir_type);
 
 /* EFS */
 uint32_t psp_fw_efs_get_entry_count(const struct psp_dir_region *dir_rdev);
@@ -56,5 +64,8 @@ enum cb_err psp_fw_efs_get_entry_by_index(const struct psp_dir_region *dir_rdev,
 enum cb_err psp_fw_efs_validate_table(const struct region_device *rdev,
 				      const uint32_t offset,
 				      struct psp_dir_region *rdev_hdr);
+bool psp_fw_efs_is_table_pointer(const struct psp_dir_region *dir_rdev,
+				 const union psp_dir_entry *entry,
+				 enum psp_dir_type *next_dir_type);
 
 #endif /* _PSP_FW_INTERNAL_H_ */

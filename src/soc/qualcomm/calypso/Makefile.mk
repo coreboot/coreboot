@@ -57,6 +57,9 @@ ramstage-y += ../common/spmi.c
 ramstage-y += ../common/pmic_gpio.c
 ramstage-$(CONFIG_SOC_QUALCOMM_CDT) += ../common/cdt.c
 ramstage-y += platform_info.c
+ramstage-y += usb/usb.c
+ramstage-y += usb/snps_usb_phy.c
+ramstage-y += usb/qmpv4_usb_phy.c
 
 ################################################################################
 

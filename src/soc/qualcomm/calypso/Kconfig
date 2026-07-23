@@ -95,4 +95,10 @@ config SOC_SPI_FREQ_MHZ
 	help
 	  Supported SPI Frequency for Hamoa/X1P42100 Platforms
 
+config USB_MP_FORCE_GEN1_SPEED
+	bool "Force USB3 MP ports to Gen1 (5 Gbps) speed"
+	help
+	  Forces both USB3 MP Type-A ports to Gen1 (5 Gbps) speed.
+	  Useful for debugging Gen2 link training failures.
+
 endif

@@ -80,7 +80,7 @@ void rkvop_prepare(u32 vop_id, const struct edid *edid)
 		     V_WIN0_DATA_FMT(rgb_mode) | V_WIN0_EN(1));
 }
 
-void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
+void rkvop_mode_set(u32 vop_id, const struct edid *edid, enum vop_modes mode)
 {
 	u32 hactive = edid->mode.ha;
 	u32 vactive = edid->mode.va;

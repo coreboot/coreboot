@@ -13,7 +13,7 @@ struct soc_rockchip_rk3288_config {
 	u32 bl_power_on_udelay;
 	u32 bl_pwm_to_enable_udelay;
 	u32 framebuffer_bits_per_pixel;
-	u32 vop_mode;
+	enum vop_modes vop_mode;
 };
 
 #endif /* __SOC_ROCKCHIP_RK3288_CHIP_H__ */

@@ -367,7 +367,7 @@ enum vop_modes {
 #define V_VAEP(x)		(((x)&0x1fff)<<0)
 #define V_VASP(x)		(((x)&0x1fff)<<16)
 
-void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode);
+void rkvop_mode_set(u32 vop_id, const struct edid *edid, enum vop_modes mode);
 void rkvop_prepare(u32 vop_id, const struct edid *edid);
 void rkvop_enable(u32 vop_id, u32 fbbase);
 #endif

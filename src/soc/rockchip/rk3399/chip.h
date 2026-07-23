@@ -8,7 +8,7 @@
 
 struct soc_rockchip_rk3399_config {
 	u32 framebuffer_bits_per_pixel;
-	u32 vop_mode;
+	enum vop_modes vop_mode;
 };
 
 #endif /* __SOC_ROCKCHIP_RK3399_CHIP_H__ */

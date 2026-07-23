@@ -16,7 +16,6 @@ all-y += qcom_qup_se.c
 all-y += ../common/qup_se_handler.c
 all-y += ../common/qupv3_spi.c
 all-y += ../common/qupv3_i2c.c
-all-y += ../common/qupv3_spi.c
 
 ################################################################################
 bootblock-y += bootblock.c

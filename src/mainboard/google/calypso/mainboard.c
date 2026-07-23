@@ -18,6 +18,7 @@
 #include <soc/qupv3_config_common.h>
 #include <soc/qupv3_i2c_common.h>
 #include <soc/qup_se_handlers_common.h>
+#include <soc/usb/usb.h>
 #include <soc/variant.h>
 
 bool mainboard_needs_pcie_init(void)
@@ -168,7 +169,7 @@ static void setup_usb_late(void)
 	if (is_low_power_boot_with_charger())
 		return;
 
-	/* Placeholder for late USB init */
+	setup_usb_host0();
 }
 
 void mainboard_soc_init(void)

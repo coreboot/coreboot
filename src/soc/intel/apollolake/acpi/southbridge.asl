@@ -3,6 +3,9 @@
 #include <intelblocks/pcr.h>
 #include <soc/gpe.h>
 
+/* PCR access */
+#include <soc/intel/common/acpi/pch_pcr.asl>
+
 /* PCIE device */
 #include "pcie.asl"
 

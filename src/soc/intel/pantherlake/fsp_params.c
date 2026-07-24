@@ -15,6 +15,7 @@
 #include <intelblocks/mp_init.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/systemagent.h>
+#include <intelblocks/tcss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <option.h>
@@ -316,7 +317,8 @@ static void fill_fsps_igd_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 				  const struct soc_intel_pantherlake_config *config)
 {
-	s_cfg->TcssAuxOri = config->tcss_aux_ori;
+	s_cfg->TcssAuxOri = tcss_get_aux_orientation(config->tcss_aux_ori,
+						     config->tcss_ports);
 
 	/* Explicitly clear this field to avoid using defaults */
 	memset(s_cfg->IomTypeCPortPadCfg, 0, sizeof(s_cfg->IomTypeCPortPadCfg));

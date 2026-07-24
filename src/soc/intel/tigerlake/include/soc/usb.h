@@ -3,6 +3,7 @@
 #ifndef _SOC_USB_H_
 #define _SOC_USB_H_
 
+#include <intelblocks/tcss.h>
 #include <stdint.h>
 
 /* Per Port HS Transmitter Emphasis */
@@ -135,21 +136,6 @@ struct usb3_port_config {
 	.ocpin            = (pin), \
 	.tx_de_emp        = 0x29, \
 	.tx_downscale_amp = 0x00, \
-}
-
-struct tcss_port_config {
-	uint8_t enable;
-	uint8_t ocpin;
-};
-
-#define TCSS_PORT_EMPTY { \
-	.enable           = 0, \
-	.ocpin            = OC_SKIP, \
-}
-
-#define TCSS_PORT_DEFAULT(pin) { \
-	.enable           = 1, \
-	.ocpin            = (pin), \
 }
 
 #endif

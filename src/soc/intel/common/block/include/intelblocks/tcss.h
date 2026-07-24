@@ -6,6 +6,7 @@
 #include <intelblocks/gpio.h>
 #if !defined(__ACPI__)
 #include <device/usbc_mux.h>
+#include <stdint.h>
 
 /* PMC IPC related offsets and commands */
 #define PMC_IPC_USBC_CMD_ID		0xA7
@@ -77,6 +78,76 @@ enum typec_port_index {
 	TYPE_C_PORT_3,
 	MAX_TYPE_C_PORTS,
 };
+
+enum tcss_aux_orientation {
+	/* Per-port FSP TcssAuxOri value: bit 0 enables override, bit 1 selects CC2. */
+	TCSS_AUX_ORIENTATION_EXTERNAL = 0b00,
+	TCSS_AUX_ORIENTATION_CC1 = 0b01,
+	TCSS_AUX_ORIENTATION_CC2 = 0b11,
+};
+
+struct tcss_port_config {
+	uint8_t enable:1;
+	uint8_t aux_orientation:2;
+	uint8_t reserved:5;
+	uint8_t ocpin;
+};
+
+_Static_assert(sizeof(struct tcss_port_config) == 2,
+	       "tcss_port_config layout changed");
+
+#define TCSS_PORT_EMPTY { \
+	.enable           = 0, \
+	.ocpin            = OC_SKIP, \
+}
+
+/* Disabled port with SoC-owned AUX orientation matching CC1. */
+#define TCSS_PORT_EMPTY_CC1 { \
+	.enable           = 0, \
+	.aux_orientation  = TCSS_AUX_ORIENTATION_CC1, \
+	.ocpin            = OC_SKIP, \
+}
+
+/* Disabled port with SoC-owned AUX orientation matching CC2. */
+#define TCSS_PORT_EMPTY_CC2 { \
+	.enable           = 0, \
+	.aux_orientation  = TCSS_AUX_ORIENTATION_CC2, \
+	.ocpin            = OC_SKIP, \
+}
+
+/* External hardware owns AUX orientation. */
+#define TCSS_PORT_DEFAULT(pin) { \
+	.enable           = 1, \
+	.aux_orientation  = TCSS_AUX_ORIENTATION_EXTERNAL, \
+	.ocpin            = (pin), \
+}
+
+/* The SoC owns AUX orientation and AUX+ follows CC1. */
+#define TCSS_PORT_CC1(pin) { \
+	.enable           = 1, \
+	.aux_orientation  = TCSS_AUX_ORIENTATION_CC1, \
+	.ocpin            = (pin), \
+}
+
+/* The SoC owns AUX orientation and AUX+ follows CC2. */
+#define TCSS_PORT_CC2(pin) { \
+	.enable           = 1, \
+	.aux_orientation  = TCSS_AUX_ORIENTATION_CC2, \
+	.ocpin            = (pin), \
+}
+
+static inline uint16_t
+tcss_get_aux_orientation(uint16_t raw,
+			 const struct tcss_port_config ports[MAX_TYPE_C_PORTS])
+{
+	if (raw)
+		return raw;
+
+	for (unsigned int port = 0; port < MAX_TYPE_C_PORTS; port++)
+		raw |= ports[port].aux_orientation << (port * 2);
+
+	return raw;
+}
 
 #define TCSS_CD_FIELD(name, val) \
 	(((val) & TCSS_CD_##name##_MASK) << TCSS_CD_##name##_SHIFT)

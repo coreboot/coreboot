@@ -3,6 +3,7 @@
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
 #include <cbfs.h>
+#include <console/console.h>
 #include <cpu/intel/microcode.h>
 #include <drivers/intel/gma/opregion.h>
 #include <fsp/api.h>
@@ -13,6 +14,7 @@
 #include <intelblocks/aspm.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/mp_init.h>
+#include <intelblocks/tcss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <option.h>
@@ -294,6 +296,12 @@ static void fill_fsps_igd_params(FSP_S_CONFIG *s_cfg, const config_t *config)
 
 static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg, const config_t *config)
 {
+	const uint16_t aux_ori = tcss_get_aux_orientation(config->tcss_aux_ori,
+							   config->tcss_ports);
+
+	if (aux_ori != 0)
+		printk(BIOS_WARNING, "TCSS AUX orientation is not supported by this FSP\n");
+
 	/* D3Cold for TCSS */
 	s_cfg->D3ColdEnable = !config->tcss_d3_cold_disable;
 	s_cfg->TcCstateLimit = 8;

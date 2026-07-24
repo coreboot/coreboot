@@ -331,7 +331,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->D3ColdEnable = CONFIG(D3COLD_SUPPORT);
 
 	params->UsbTcPortEn = config->UsbTcPortEn;
-	params->TcssAuxOri = config->TcssAuxOri;
+	params->TcssAuxOri = tcss_get_aux_orientation(config->TcssAuxOri,
+						      config->tcss_ports);
 
 	/* Explicitly clear this field to avoid using defaults */
 	memset(params->IomTypeCPortPadCfg, 0, sizeof(params->IomTypeCPortPadCfg));

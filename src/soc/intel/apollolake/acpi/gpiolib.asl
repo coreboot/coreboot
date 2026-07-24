@@ -57,10 +57,8 @@ Scope (\_SB)
 	{
 		/* Arg0 - GPIO portid */
 		/* Arg1 - GPIO pad offset relative to the community */
-		Local1 = 0
-		Local1 |= (Arg0 << 16) | CONFIG_PCR_BASE_ADDRESS
-		Local1 |= (PAD_CFG_BASE + Arg1 * GPIO_NUM_PAD_CFG_REGS * 4)
-		Return (Local1)
+		Return (\_SB.PCI0.PCRB (Arg0) + PAD_CFG_BASE
+			+ Arg1 * GPIO_NUM_PAD_CFG_REGS * 4)
 	}
 
 	/* Calculate HOSTSW_REG address */
@@ -76,13 +74,7 @@ Scope (\_SB)
 	{
 		/* Arg0 - GPIO portid */
 		/* Arg1 - GPIO pad offset relative to the community */
-
-		OperationRegion (SHO0, SystemMemory, CONFIG_PCR_BASE_ADDRESS |
-			(Arg0 << 16) | CHSA (Arg1), 4)
-		Field (SHO0, AnyAcc, NoLock, Preserve) {
-			TEMP, 32
-		}
-		Return (TEMP)
+		Return (\_SB.PCI0.PCRR (Arg0, CHSA (Arg1)))
 	}
 
 	/* Set Host ownership register of GPIO Community */
@@ -91,12 +83,6 @@ Scope (\_SB)
 		/* Arg0 - GPIO portid */
 		/* Arg1 - GPIO pad offset relative to the community */
 		/* Arg2 - Value for Host own register */
-
-		OperationRegion (SHO0, SystemMemory, CONFIG_PCR_BASE_ADDRESS |
-			(Arg0 << 16) | CHSA (Arg1), 4)
-		Field (SHO0, AnyAcc, NoLock, Preserve) {
-			TEMP, 32
-		}
-		TEMP = Arg2
+		\_SB.PCI0.PCRW (Arg0, CHSA (Arg1), Arg2)
 	}
 }

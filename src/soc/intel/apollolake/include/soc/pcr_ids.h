@@ -20,6 +20,7 @@
 #define PID_ITSS	0xD0
 #define PID_RTC		0xD1
 #define PID_LPC		0xD2
+#define PID_SCC		0xD6
 #define PID_MODPHY	0xA5
 
 #define PID_AUNIT	0x4D

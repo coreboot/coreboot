@@ -1,16 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <soc/pcr_ids.h>
+
 Scope (\_SB.PCI0) {
-	/* 0xD6- is the port address */
-	/* 0x600- is the dynamic clock gating control register offset (GENR) */
-	OperationRegion (SBMM, SystemMemory,
-		CONFIG_PCR_BASE_ADDRESS | (0xD6 << PCR_PORTID_SHIFT) | 0x0600, 0x18)
+	/* SCC GENR (clock gate) at 0x600; GPPRVRW3 at 0x608 */
+	OperationRegion (SBMM, SystemMemory, PCRB (PID_SCC) + 0x0600, 0x18)
 	Field (SBMM, DWordAcc, NoLock, Preserve)
 	{
 		GENR, 32,
 		Offset (0x08),
-		,  5, /* bit[5] represents Force Card Detect SD Card */
-		GRR3,  1, /* GPPRVRW3 for SD Card detect Bypass. It's active high */
+		,      5,
+		GRR3,  1, /* bit[5]: SD card detect bypass, active high */
 	}
 
 	/* SCC power gate control method, this method must be serialized as

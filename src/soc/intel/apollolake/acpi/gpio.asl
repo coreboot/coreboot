@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 #include <gpio.h>
-#include <intelblocks/pcr.h>
 #include <soc/pcr_ids.h>
 #include "gpiolib.asl"
 
@@ -25,8 +24,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			Local0 = GPIO_COMM0_PID << PCR_PORTID_SHIFT
-			RBAS = CONFIG_PCR_BASE_ADDRESS | Local0
+			RBAS = \_SB.PCI0.PCRB (GPIO_COMM0_PID)
 			Return (^RBUF)
 		}
 
@@ -55,8 +53,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			Local0 = GPIO_COMM1_PID << PCR_PORTID_SHIFT
-			RBAS = CONFIG_PCR_BASE_ADDRESS | Local0
+			RBAS = \_SB.PCI0.PCRB (GPIO_COMM1_PID)
 			Return (^RBUF)
 		}
 
@@ -85,8 +82,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			Local0 = GPIO_COMM2_PID << PCR_PORTID_SHIFT
-			RBAS = CONFIG_PCR_BASE_ADDRESS | Local0
+			RBAS = \_SB.PCI0.PCRB (GPIO_COMM2_PID)
 			Return (^RBUF)
 		}
 
@@ -115,8 +111,7 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-			Local0 = GPIO_COMM3_PID << PCR_PORTID_SHIFT
-			RBAS = CONFIG_PCR_BASE_ADDRESS | Local0
+			RBAS = \_SB.PCI0.PCRB (GPIO_COMM3_PID)
 			Return (^RBUF)
 		}
 

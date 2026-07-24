@@ -33,4 +33,7 @@ config UART_FOR_CONSOLE
 	int
 	default 1
 
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/fa_asl.fmd"
+
 endif # BOARD_SIEMENS_FA_ASL

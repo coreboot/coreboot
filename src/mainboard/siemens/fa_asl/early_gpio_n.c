@@ -10,8 +10,6 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_F14, 0, PLTRST),
 	/* WWAN_PWR_EN */
 	PAD_CFG_GPO(GPP_D17, 1, DEEP),
-	/* EC_IN_RW */
-	PAD_CFG_GPI(GPP_E7, NONE, DEEP),
 };
 
 static const struct pad_config early_uart_gpio_table[] = {

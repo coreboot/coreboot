@@ -18,7 +18,6 @@ ifeq ($(CONFIG_BOARD_INTEL_ADLRVP_RPL_EXT_EC),y)
 romstage-y += memory_rpl.c
 endif
 
-ramstage-y += ec.c
 ramstage-y += mainboard.c
 ramstage-y += board_id.c
 ramstage-$(CONFIG_FW_CONFIG) += fw_config.c

@@ -1,9 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <cpu/x86/smm.h>
-#include <ec/google/chromeec/smm.h>
 #include <intelblocks/smihandler.h>
-#include <baseboard/ec.h>
 
 void mainboard_smi_espi_handler(void)
 {

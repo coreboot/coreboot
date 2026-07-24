@@ -19,9 +19,6 @@ static const struct pad_config early_gpio_table[] = {
 	/* SMB_DATA */
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
 
-	/* EC_IN_RW */
-	PAD_CFG_GPI(GPP_E7, NONE, DEEP),
-
 	/* x4 PCIE slot 1 RESET */
 	PAD_CFG_GPO(GPP_F10, 0, PLTRST),
 

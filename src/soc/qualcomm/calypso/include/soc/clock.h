@@ -14,6 +14,7 @@
 #define CLK_100MHZ              (100 * MHz)
 #define CLK_200MHZ              (200 * MHz)
 #define CLK_400MHZ              (400 * MHz)
+#define CLK_600MHZ              (600 * MHz)
 #define CLK_75MHZ               (75 * MHz)
 #define CLK_575MHZ              (575 * MHz)
 #define CLK_37_5MHZ             (37500 * KHz)
@@ -22,6 +23,10 @@
 #define L_VAL_2995P2MHz         0x9C
 #define L_VAL_1363P2MHz         0x47
 #define L_VAL_710P4MHz          0x25
+
+/* DISP PLL */
+#define L_VAL_600MHz		0x1F
+#define DISP_PLL1_ALPHA_VAL	0x4000
 
 #define QUPV3_WRAP0_CLK_ENA_S(idx)              (13 + idx)
 #define QUPV3_WRAP1_CLK_ENA_S(idx)              (15 + idx)
@@ -134,6 +139,21 @@ struct calypso_gpll {
 	u32 test_ctl;
 	u32 test_ctl_u;
 	u32 ssc;
+};
+
+enum disp_cc_mdss_ahb_clk_src {
+	SRC_XO_19_2MHZ_AHB = 0,
+	SRC_DISP_CC_PLL1_MAIN_AHB = 4,
+	SRC_DISP_CC_PLL1_EVEN_AHB = 6,
+	SRC_CORE_BI_PLL_TEST_SE_AHB = 7,
+};
+
+enum disp_cc_mdss_mdp_clk_src {
+	SRC_XO_19_2MHZ_MDP = 0,
+	SRC_DISP_CC_PLL0_MAIN_MDP = 1,
+	SRC_DISP_CC_PLL1_MAIN_MDP = 4,
+	SRC_DISP_CC_PLL1_EVEN_MDP = 6,
+	SRC_CORE_BI_PLL_TEST_SE_MDP = 7,
 };
 
 enum ncc0_cmu_clk_cfg_calypso {
@@ -365,9 +385,79 @@ check_member(calypso_pcie_5, pipe_muxr, 0x09C);
 check_member(calypso_pcie_5, at_cbcr, 0x0C0);
 check_member(calypso_pcie_5, aggre_noc_pcie_5_east_sf_axi_cbcr, 0x0D0);
 
+struct calypso_disp_pll_clock {
+	u32 pll_mode;
+	u32 pll_opmode;
+	u32 pll_state;
+	u32 pll_status;
+	u32 pll_l;
+	u32 pll_alpha;
+	u32 pll_user_ctl;
+	u32 pll_user_ctl_u;
+};
+
+struct calypso_disp_cc {
+	uint8_t _res0[0x010];
+	uint32_t mdss_mdp_cbcr;
+	uint8_t _res1[0x01C];
+	uint32_t mdss_vsync_cbcr;
+	uint8_t _res2[0x068];
+	uint32_t mdss_dptx3_pixel0_cbcr;
+	uint32_t mdss_dptx3_link_cbcr;
+	uint32_t mdss_dptx3_link_intf_cbcr;
+	uint32_t mdss_dptx3_aux_cbcr;
+	uint8_t _res3[0x004];
+	uint32_t mdss_ahb_cbcr;
+	uint8_t _res4[0x09C];
+	struct clock_rcg mdss_mdp_rcg;
+	uint8_t _res5[0x010];
+	struct clock_rcg mdss_vsync_rcg;
+	uint8_t _res6[0x1A4];
+	struct clock_rcg mdss_dptx3_pixel0_rcg;
+	uint8_t _res7[0x010];
+	struct clock_rcg mdss_dptx3_link_rcg;
+	uint8_t _res8[0x014];
+	struct clock_rcg mdss_dptx3_aux_rcg;
+	uint8_t _res9[0x010];
+	struct clock_rcg mdss_ahb_rcg;
+	uint8_t	 _res10[0x0C98];
+	uint32_t mdss_core_gdscr;
+	uint8_t	 _res11[0x3004];
+	uint32_t mdss_rscc_vsync_cbcr;
+	uint32_t mdss_rscc_ahb_cbcr;
+	uint8_t _res12[0x2034];
+	struct clock_rcg xo_rcg;
+	uint8_t _res13[0x010];
+	uint32_t xo_cbcr;
+};
+
+/* Offset checks (relative to DISP_CC_BASE) */
+check_member(calypso_disp_cc, mdss_mdp_cbcr,		0x000010);
+check_member(calypso_disp_cc, mdss_vsync_cbcr,		0x000030);
+check_member(calypso_disp_cc, mdss_dptx3_pixel0_cbcr,	0x00009C);
+check_member(calypso_disp_cc, mdss_dptx3_link_cbcr,	0x0000A0);
+check_member(calypso_disp_cc, mdss_dptx3_link_intf_cbcr,	0x0000A4);
+check_member(calypso_disp_cc, mdss_dptx3_aux_cbcr,	0x0000A8);
+check_member(calypso_disp_cc, mdss_ahb_cbcr,		0x0000B0);
+check_member(calypso_disp_cc, mdss_mdp_rcg,		0x000150);
+check_member(calypso_disp_cc, mdss_vsync_rcg,		0x000168);
+check_member(calypso_disp_cc, mdss_dptx3_pixel0_rcg,	0x000314);
+check_member(calypso_disp_cc, mdss_dptx3_link_rcg,	0x00032C);
+check_member(calypso_disp_cc, mdss_dptx3_aux_rcg,	0x000348);
+check_member(calypso_disp_cc, mdss_ahb_rcg,		0x000360);
+check_member(calypso_disp_cc, mdss_core_gdscr,		0x0001000);
+check_member(calypso_disp_cc, mdss_rscc_vsync_cbcr,	0x0004008);
+check_member(calypso_disp_cc, mdss_rscc_ahb_cbcr,	0x000400C);
+check_member(calypso_disp_cc, xo_rcg,			0x0006044);
+check_member(calypso_disp_cc, xo_cbcr,			0x000605C);
+
+
 struct calypso_gcc {
 	struct calypso_gpll gpll0;
-	u8 _res0[0x28004 - 0x3A];
+	u8 _res0[0x27004 - 0x3A];
+	u32 gcc_disp_ahb_cbcr;
+	u32 gcc_disp_hf_axi_cbcr;
+	u8 _res0a[0x28004 - 0x2700C];
 	struct qupv3_clock qup_wrap0_s[8];
 	u8 _res1[0x2C000 - 0x28984];
 	u32 gcc_usb3_phy_sec_bcr;
@@ -564,6 +654,8 @@ struct calypso_gcc {
 	struct qupv3_clock qup_wrap3_s[2];
 };
 
+check_member(calypso_gcc, gcc_disp_ahb_cbcr, 0x27004);
+check_member(calypso_gcc, gcc_disp_hf_axi_cbcr, 0x27008);
 check_member(calypso_gcc, qup_wrap0_s, 0x28004);
 check_member(calypso_gcc, qspi_bcr, 0x50000);
 check_member(calypso_gcc, gcc_usb3_phy_sec_bcr, 0x2C000);
@@ -756,11 +848,39 @@ enum clk_lpass {
 	LPASS_CLK_COUNT
 };
 
+enum clk_disp_gdsc {
+	DISP_CC_CORE_GDSC,
+	MAX_DISP_GDSC,
+};
+
+enum clk_mdss {
+	GCC_DISP_AHB_CBCR,
+	GCC_DISP_XO_CBCR,
+	GCC_DISP_HF_AXI_CBCR,
+	DISP_CC_MDSS_AHB_CBCR,
+	DISP_CC_MDSS_MDP_CBCR,
+	DISP_CC_MDSS_VSYNC_CBCR,
+	DISP_CC_MDSS_RSCC_AHB_CBCR,
+	DISP_CC_MDSS_RSCC_VSYNC_CBCR,
+	DISP_CC_XO_CBCR,
+	DISP_CC_MDSS_DPTX3_PIXEL0_CBCR,
+	DISP_CC_MDSS_DPTX3_LINK_CBCR,
+	DISP_CC_MDSS_DPTX3_AUX_CBCR,
+	DISP_CC_MDSS_DPTX3_LINK_INTF_CBCR,
+	MDSS_CLK_COUNT,
+};
+
 enum cb_err clock_enable_pcie(enum clk_pcie clk_type);
 enum cb_err clock_configure_mux(enum clk_pcie clk_type, u32 src_type);
 enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type);
 enum cb_err clock_configure_pcie(void);
 enum cb_err lpass_init(void);
+void enable_disp_clock_tcsr(void);
+enum cb_err clock_enable_disp_gdsc(enum clk_disp_gdsc gdsc_type);
+void enable_mdss_clk(void);
+enum cb_err mdss_clock_enable(enum clk_mdss clk_type);
+enum cb_err disp_pll_init_and_set(struct calypso_disp_pll_clock *disp_pll,
+	u32 l_val, u32 alpha_val);
 
 /* USB clock enums */
 enum clk_usb_gdsc {
@@ -814,6 +934,9 @@ static struct calypso_qupv3_wrap *const qup_oob_clk = (void *)GCC_QUPV3_OOB_BASE
 static struct calypso_lpass_audio_cc *const lpass_audio_cc = (void *)LPASS_AUDIO_CC_PLL_BASE;
 static struct calypso_lpass_aon_cc *const lpass_aon_cc = (void *)LPASS_AON_CC_BASE;
 static struct calypso_lpass_core_gdsc *const lpass_core_gdsc = (void *)LPASS_CORE_GDSC_REG_BASE;
+static struct calypso_disp_pll_clock *const apss_disp_pll0 = (void *)DISP_PLL0_BASE;
+static struct calypso_disp_pll_clock *const apss_disp_pll1 = (void *)DISP_PLL1_BASE;
+static struct calypso_disp_cc *const disp_cc = (void *)DISP_CC_BASE;
 
 enum cb_err pll_init_and_set(struct calypso_ncc0_clock *ncc0, u32 l_val);
 #endif	// __SOC_QUALCOMM_CALYPSO_CLOCK_H__

@@ -37,5 +37,6 @@
 #define AOP_BOOT_TIMEOUT_US		200000
 
 int rpmh_rsc_init(void);
+enum cb_err display_rpmh_init(void);
 
 #endif /* _SOC_QUALCOMM_CALYPSO_RPMH_CONFIG_H_ */

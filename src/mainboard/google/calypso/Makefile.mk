@@ -15,3 +15,5 @@ romstage-y += charging.c
 ramstage-y += charging.c
 
 ramstage-y += mainboard.c
+
+ramstage-y += display.c

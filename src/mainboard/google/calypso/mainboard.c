@@ -9,15 +9,18 @@
 #include <commonlib/coreboot_tables.h>
 #include <delay.h>
 #include <device/device.h>
+#include "display.h"
 #include <ec/google/chromeec/ec.h>
 #include <fw_config.h>
 #include <halt.h>
 #include <soc/cdt.h>
+#include <soc/clock.h>
 #include <soc/pcie.h>
 #include <soc/platform_info.h>
 #include <soc/qupv3_config_common.h>
 #include <soc/qupv3_i2c_common.h>
 #include <soc/qup_se_handlers_common.h>
+#include <soc/rpmh_config.h>
 #include <soc/usb/usb.h>
 #include <soc/variant.h>
 
@@ -130,7 +133,7 @@ static void mainboard_init(void *chip_info)
 		 * initialization is bypassed to prioritize fast-charging boot speeds.
 		 */
 		mdelay(250);
-		/* Placeholder for display init */
+		display_startup();
 	}
 
 	/*
@@ -187,7 +190,10 @@ void mainboard_soc_init(void)
 	/* Setup USB related initial config */
 	setup_usb();
 
-	/* Placeholder for display init in LB_BOOT_MODE_NORMAL */
+	enum boot_mode_t boot_mode = get_boot_mode();
+
+	if (boot_mode == LB_BOOT_MODE_NORMAL || boot_mode == LB_BOOT_MODE_NO_BATTERY)
+		display_startup();
 
 	/* Setup audio related initial config */
 	setup_audio();

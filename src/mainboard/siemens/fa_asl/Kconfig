@@ -15,29 +15,9 @@ config BOARD_SIEMENS_FA_ASL_COMMON
 config BOARD_SIEMENS_FA_ASL
 	select BOARD_SIEMENS_FA_ASL_COMMON
 	select DRIVERS_UART_8250IO
-	select MAINBOARD_USES_IFD_EC_REGION
 	select SOC_INTEL_ALDERLAKE_PCH_N
 
 if BOARD_SIEMENS_FA_ASL_COMMON
-
-config SOC_INTEL_CSE_LITE_SKU
-	bool "Use CSE Lite firmware"
-	default y if ADL_CHROME_EC
-	help
-	  Enable if CSE Lite firmware is used in your build. It is commonly
-	  used in Chrome boards (chromebooks, chromeboxes, ...).
-	  But since ADL RVP build can be used with or without CSE Lite firmware
-	  it is a configurable option. Alderlake RVP boards usually don't use
-	  an CSE Lite firmware, but are still very likely to use it in case
-	  ChromeEC is used.
-
-config CHROMEOS
-	select GBB_FLAG_FORCE_DEV_SWITCH_ON
-	select GBB_FLAG_FORCE_DEV_BOOT_USB
-	select GBB_FLAG_FORCE_DEV_BOOT_ALTFW
-	select GBB_FLAG_FORCE_MANUAL_RECOVERY
-	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
-	select HAS_RECOVERY_MRC_CACHE
 
 config MAINBOARD_DIR
 	default "siemens/fa_asl"
@@ -59,7 +39,6 @@ config DEVICETREE
 config VBOOT
 	select VBOOT_LID_SWITCH
 	select VBOOT_MOCK_SECDATA if BOARD_INTEL_ADLRVP_P_EXT_EC || BOARD_INTEL_ADLRVP_N_EXT_EC
-	select EC_GOOGLE_CHROMEEC_SWITCHES if ADL_CHROME_EC
 	select VBOOT_EARLY_EC_SYNC if BOARD_INTEL_ADLRVP_N_EXT_EC
 
 config UART_FOR_CONSOLE

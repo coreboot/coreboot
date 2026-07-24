@@ -3,7 +3,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
@@ -269,8 +268,3 @@ void variant_configure_gpio_pads(void)
 {
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }
-
-static const struct cros_gpio cros_gpios[] = {
-	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
-};
-DECLARE_CROS_GPIOS(cros_gpios);

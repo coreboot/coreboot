@@ -71,21 +71,5 @@ struct chip_operations mainboard_ops = {
 
 const char *mainboard_vbt_filename(void)
 {
-	if (!CONFIG(CHROMEOS))
-		return "vbt.bin";
-
-	uint32_t cpu_id = cpu_get_cpuid();
-	uint8_t sku_id = get_board_id();
-	switch (sku_id) {
-	case ADL_P_LP5_1:
-	case ADL_P_LP5_2:
-		if (cpu_id == CPUID_RAPTORLAKE_J0)
-			return "vbt_adlrvp_rpl_lp5.bin";
-		return "vbt_adlrvp_lp5.bin";
-	case ADL_P_DDR5_1:
-	case ADL_P_DDR5_2:
-		return "vbt_adlrvp_ddr5.bin";
-	default:
-		return "vbt.bin";
-	}
+	return "vbt.bin";
 }

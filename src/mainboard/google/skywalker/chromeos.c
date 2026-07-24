@@ -105,6 +105,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			{GPIO_TCHSCR_RST_1V8_L.id, ACTIVE_LOW, -1, "mipi_tp_rstn"},
 		};
 		lb_add_gpios(gpios, mipi_panel_gpios, ARRAY_SIZE(mipi_panel_gpios));
+	} else {
+		/* eDP panel 3.3V (PP3300_EDP) enable, for Depthcharge power-off sequence */
+		struct lb_gpio edp_panel_gpios[] = {
+			{GPIO_EN_PP3300_EDP_X.id, ACTIVE_HIGH, -1, "panel_pp3300_edp"},
+		};
+		lb_add_gpios(gpios, edp_panel_gpios, ARRAY_SIZE(edp_panel_gpios));
 	}
 }
 

@@ -111,13 +111,6 @@ void mcupm_init(void)
 	mcupm.load_buffer = _dram_dma;
 	mcupm.buffer_size = REGION_SIZE(dram_dma);
 
-	/* Set CPUEB as secure master */
-	printk(BIOS_INFO, "Before: DEVAPC_MCUPM = %#x\n",
-	       read32p(DEVAPC_INFRA_SECU_AO_SEC_REPLACE_0));
-	setbits32p(DEVAPC_INFRA_SECU_AO_SEC_REPLACE_0, BIT(15));
-	printk(BIOS_INFO, "After: DEVAPC_MCUPM = %#x\n",
-	       read32p(DEVAPC_INFRA_SECU_AO_SEC_REPLACE_0));
-
 	if (eb_spmc() != 0)
 		die("%s: eb sram power on failed\n", __func__);
 	write32(&mcupm_reg->sw_rstn, MCUPM_RSTN_RSTN_INIT);

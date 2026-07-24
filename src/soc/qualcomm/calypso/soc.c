@@ -68,7 +68,7 @@ static uint64_t calc_acdb_carveout_size(void)
 
 static uint64_t calc_mte_size(void)
 {
-	return (((region_sz(ddr_region) / GiB) / 32));
+	return (((region_sz(ddr_region) / GiB) / 32) * MiB);
 }
 
 static void soc_read_resources(struct device *dev)
@@ -127,9 +127,7 @@ static void soc_read_resources(struct device *dev)
 		(uintptr_t)_dram_space_1 + ACDB_CARVEOUT_OFFSET - calc_acdb_carveout_size(),
 		calc_acdb_carveout_size());
 	/* MTE is located at 0x8_C000_0000 ++ MTE size */
-	reserved_ram_range(dev, index++,
-		(uintptr_t)_dram_space_1 + ACDB_CARVEOUT_OFFSET + calc_mte_size(),
-		calc_mte_size());
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_space_1 + ACDB_CARVEOUT_OFFSET, calc_mte_size());
 }
 
 static void qtee_fw_config_load(void)

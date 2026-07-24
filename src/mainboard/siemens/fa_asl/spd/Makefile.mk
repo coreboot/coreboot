@@ -1,10 +1,4 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-SPD_SOURCES =  adlrvp_lp4	# 0b000
-SPD_SOURCES += empty		# 0b001
-SPD_SOURCES += empty		# 0b002
-SPD_SOURCES += adlrvp_lp5	# 0b003
-SPD_SOURCES += empty		# 0b004
-SPD_SOURCES += empty		# 0b005
-SPD_SOURCES += adlrvp_ddr5_mr	# 0b006
-SPD_SOURCES += adlrvp_n_lp5	# 0b007
+SPD_SOURCES =  Micron_MT62F512M32D2DS031_WT_B		# 0b000
+SPD_SOURCES += Micron_MT62F1G32D2DS-031_RFIT_C		# 0b001

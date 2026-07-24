@@ -1054,7 +1054,8 @@ case "$TARGETARCH" in
 				TARGET_BINUTILS_OPTIONS="$TARGET_BINUTILS_OPTIONS --with-isa-spec=${RISCV_ISA_SPEC}";;
 	powerpc64*-linux*)	;;
 	i386*)			TARGETARCH=i386-elf;;
-	arm*)			TARGETARCH=arm-eabi;;
+	arm*)			TARGETARCH=arm-eabi
+				TARGET_GCC_OPTIONS="$TARGET_GCC_OPTIONS --with-multilib-list=rmprofile";;
 	aarch64*)		TARGETARCH=aarch64-elf;;
 	nds32le-elf)		;;
 	*)			printf "${red}WARNING: Unsupported architecture $TARGETARCH.${NC}\n\n"; ;;

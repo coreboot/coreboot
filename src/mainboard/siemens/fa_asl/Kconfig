@@ -1,23 +1,17 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-config BOARD_SIEMENS_FA_ASL_COMMON
-	def_bool n
+if BOARD_SIEMENS_FA_ASL
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
 	select BOARD_ROMSIZE_KB_32768
 	select CPU_INTEL_SOCKET_LGA1700
 	select DRIVERS_INTEL_DPTF
-	select DRIVERS_SPI_ACPI
-	select DRIVERS_USB_ACPI
 	select FSP_TYPE_IOT
 	select HAVE_ACPI_TABLES
 	select HAVE_SPD_IN_CBFS
-	select SOC_INTEL_COMMON_BLOCK_IPU
-
-config BOARD_SIEMENS_FA_ASL
-	select BOARD_SIEMENS_FA_ASL_COMMON
-	select DRIVERS_UART_8250IO
+	select INTEL_LPSS_UART_FOR_CONSOLE
 	select SOC_INTEL_ALDERLAKE_PCH_N
-
-if BOARD_SIEMENS_FA_ASL_COMMON
 
 config MAINBOARD_DIR
 	default "siemens/fa_asl"
@@ -26,7 +20,6 @@ config MAINBOARD_PART_NUMBER
 	default "FA ASL"
 
 config MAINBOARD_VENDOR
-	string
 	default "Siemens"
 
 config MAINBOARD_FAMILY
@@ -36,28 +29,8 @@ config MAINBOARD_FAMILY
 config DEVICETREE
 	default "devicetree.cb"
 
-config VBOOT
-	select VBOOT_LID_SWITCH
-	select VBOOT_MOCK_SECDATA if BOARD_INTEL_ADLRVP_P_EXT_EC || BOARD_INTEL_ADLRVP_N_EXT_EC
-	select VBOOT_EARLY_EC_SYNC if BOARD_INTEL_ADLRVP_N_EXT_EC
-
 config UART_FOR_CONSOLE
 	int
-	default 0
+	default 1
 
-config GEN3_EXTERNAL_CLOCK_BUFFER
-	bool
-	depends on SOC_INTEL_ALDERLAKE_PCH_P
-	default n
-	help
-	  Support external Gen-3 clock chip for ADL-P.
-	  `CONFIG_CLKSRC_FOR_EXTERNAL_BUFFER` provides feed clock to discrete buffer
-	  for further distribution to platform. SRCCLKREQB[7:9] maps to internal
-	  SRCCLKREQB[6]. If any of them asserted, SRC buffer
-	  `CONFIG_CLKSRC_FOR_EXTERNAL_BUFFER` gets enabled.
-
-config CLKSRC_FOR_EXTERNAL_BUFFER
-	depends on GEN3_EXTERNAL_CLOCK_BUFFER
-	int
-	default 6  # CLKSRC 6
-endif
+endif # BOARD_SIEMENS_FA_ASL

@@ -1,4 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+comment "FA ASL"
+
 config BOARD_SIEMENS_FA_ASL
 	bool "FA ASL"

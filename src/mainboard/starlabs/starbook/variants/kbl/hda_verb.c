@@ -4,7 +4,7 @@
 #include <device/azalia_codec/realtek.h>
 
 static const u32 realtek_alc269_verbs[] = {
-#define STARLABS_HDA_CODEC_SSID		0x1e507038
+#define STARLABS_HDA_CODEC_SSID		0x10ec10d0
 #define STARLABS_HDA_DMIC_LOCATION	AZALIA_MOBILE_LID_INSIDE
 #define STARLABS_HDA_SPEAKER_LOCATION	AZALIA_FRONT
 #include <mainboard/starlabs/common/hda/alc269_vc3.inc>

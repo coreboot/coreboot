@@ -8,7 +8,7 @@ static const u32 realtek_alc269_verbs[] = {
 #define STARLABS_HDA_DMIC_LOCATION	AZALIA_MOBILE_LID_INSIDE
 #define STARLABS_HDA_SPEAKER_LOCATION	AZALIA_TOP
 #include <mainboard/starlabs/common/hda/alc269_vc3.inc>
-#include <mainboard/starlabs/common/hda/alc269_vc3_legacy_coefficients.inc>
+#include <mainboard/starlabs/common/hda/alc269_vc3_rpl_u_coefficients.inc>
 };
 
 const u32 pc_beep_verbs[] = {

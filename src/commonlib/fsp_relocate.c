@@ -158,7 +158,8 @@ static FSP_INFO_HEADER *fsp_get_info_hdr(void *fsp, size_t fih_offset)
 	return fih;
 }
 
-static int pe_relocate(uintptr_t new_addr, void *pe, void *fsp, size_t fih_off)
+static int pe_relocate(uintptr_t new_addr, void *pe, void *fsp, size_t fih_off,
+	 size_t pe_size)
 {
 	EFI_IMAGE_OPTIONAL_HEADER_UNION *peih;
 	EFI_IMAGE_DOS_HEADER *doshdr;
@@ -246,6 +247,11 @@ static int pe_relocate(uintptr_t new_addr, void *pe, void *fsp, size_t fih_off)
 			uint16_t rtype = reloc_type(rdata[i]);
 			uint32_t aoff = vaddr + roff;
 			uint64_t val;
+			if ((size_t)aoff + sizeof(uint64_t) > pe_size) {
+				printk(BIOS_ERR, "PE reloc target 0x%x outside 0x%zx-byte section\n",
+					 aoff, pe_size);
+				return -1;
+			}
 			printk(FSP_DBG_LVL, "\t\treloc type %x offset %x aoff %x, base-0x%" PRIX64 "\n",
 					rtype, roff, aoff, img_base_off);
 			switch (rtype) {
@@ -282,7 +288,7 @@ static int pe_relocate(uintptr_t new_addr, void *pe, void *fsp, size_t fih_off)
 	return 0;
 }
 
-static int te_relocate(uintptr_t new_addr, void *te)
+static int te_relocate(uintptr_t new_addr, void *te, size_t te_size)
 {
 	EFI_TE_IMAGE_HEADER *teih;
 	EFI_IMAGE_DATA_DIRECTORY *relocd;
@@ -296,6 +302,11 @@ static int te_relocate(uintptr_t new_addr, void *te)
 	uint32_t adj;
 
 	teih = te;
+
+	if (te_size < sizeof(EFI_TE_IMAGE_HEADER)) {
+		printk(BIOS_ERR, "TE size too small.\n");
+		return -1;
+	}
 
 	if (read_le16(&teih->Signature) != EFI_TE_IMAGE_HEADER_SIGNATURE) {
 		printk(BIOS_ERR, "TE Signature mismatch: %x vs %x\n",
@@ -312,6 +323,10 @@ static int te_relocate(uintptr_t new_addr, void *te)
 	 * program is found by adding the fixup_offset to the ImageBase.
 	 */
 	fixup_offset = read_le16(&teih->StrippedSize);
+	if (fixup_offset < sizeof(EFI_TE_IMAGE_HEADER)) {
+		printk(BIOS_ERR, "TE StrippedSize too small.\n");
+		return -1;
+	}
 	fixup_offset -= sizeof(EFI_TE_IMAGE_HEADER);
 	/* Keep track of a base that is correctly adjusted so that offsets
 	 * can be used directly. */
@@ -359,6 +374,13 @@ static int te_relocate(uintptr_t new_addr, void *te)
 
 				offset += rva_offset;
 				reloc_addr = (void *)&te_base[offset];
+				if ((uint8_t *)reloc_addr < (uint8_t *)te ||
+				    (uint8_t *)reloc_addr + sizeof(uint32_t) >
+				    (uint8_t *)te + te_size) {
+					printk(BIOS_ERR, "TE reloc target %p outside %p+0x%zx\n",
+							reloc_addr, te, te_size);
+					return -1;
+				}
 				val = read_le32(reloc_addr);
 
 				printk(FSP_DBG_LVL, "Adjusting %p %x -> %x\n",
@@ -648,11 +670,11 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 			if (read_le8(&csh->Type) == EFI_SECTION_TE) {
 				printk(FSP_DBG_LVL, "TE image at offset %zx\n",
 					section_offset);
-				te_relocate(section_addr, section_data);
+				te_relocate(section_addr, section_data, data_size);
 			} else if (read_le8(&csh->Type) == EFI_SECTION_PE32) {
 				printk(FSP_DBG_LVL, "PE32 image at offset %zx\n",
 					section_offset);
-				pe_relocate(new_addr, section_data, fsp, *fih_offset);
+				pe_relocate(new_addr, section_data, fsp, *fih_offset, data_size);
 			}
 
 			offset += data_size + data_offset;

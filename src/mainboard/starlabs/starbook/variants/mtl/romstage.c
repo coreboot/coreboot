@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <common/hda.h>
 #include <option.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
@@ -38,6 +39,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	if (get_uint_option("wifi", 1) == 0)
 		mupd->FspmConfig.PcieRpEnableMask &= ~(1 << 8);
 
-	mupd->FspmConfig.PchHdaSubSystemIds = 0x70381e50;
+	mupd->FspmConfig.PchHdaSubSystemIds =
+		STARLABS_HDA_PCI_SUBSYSTEM_ID(STARLABS_HDA_POLICY_ALC269_VC3);
 	mupd->FspmConfig.PsysPmax = 0;
 };

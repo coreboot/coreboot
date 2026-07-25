@@ -135,7 +135,7 @@ chip soc/intel/skylake
 			end
 		end
 		device ref hda		on
-			subsystemid 0x10ec 0x10d0
+			subsystemid 0x2145 0x0002 # ALC269 VC3
 		end
 		device ref smbus	on  end
 		device ref fast_spi	on  end

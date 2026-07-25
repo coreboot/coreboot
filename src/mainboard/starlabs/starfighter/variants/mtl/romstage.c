@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <common/hda.h>
 #include <common/memory.h>
 #include <console/console.h>
 #include <fsp/api.h>
@@ -139,6 +140,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		mupd->FspmConfig.TcssXhciEn = 0;
 	}
 
-	mupd->FspmConfig.PchHdaSubSystemIds = 0x20147017;
+	mupd->FspmConfig.PchHdaSubSystemIds =
+		STARLABS_HDA_PCI_SUBSYSTEM_ID(STARLABS_HDA_POLICY_ALC235_STARFIGHTER);
 	mupd->FspmConfig.PsysPmax = 0;
 };

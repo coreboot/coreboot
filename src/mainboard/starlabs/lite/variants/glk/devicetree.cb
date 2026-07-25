@@ -64,7 +64,7 @@ chip soc/intel/apollolake
 		device ref fast_spi	on  end
 		device ref sram		on  end
 		device ref hda		on
-			subsystemid 0x10ec 0x111e
+			subsystemid 0x2145 0x0004 # Lite ALC269 VC
 		end
 		device ref heci1	on  end
 		device ref heci2	on  end

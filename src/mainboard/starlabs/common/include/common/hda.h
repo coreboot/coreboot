@@ -1,0 +1,26 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef MAINBOARD_STARLABS_COMMON_HDA_H
+#define MAINBOARD_STARLABS_COMMON_HDA_H
+
+#define STARLABS_HDA_SUBSYSTEM_VENDOR		0x2145
+
+/*
+ * Keep zero reserved: coreboot's device model treats a zero subsystem device
+ * ID as unset, so devicetree cannot reliably program 0x2145:0x0000.
+ */
+#define STARLABS_HDA_POLICY_ALC235_STARFIGHTER	0x0001
+#define STARLABS_HDA_POLICY_ALC269_VC3		0x0002
+#define STARLABS_HDA_POLICY_ALC269_VB6		0x0003
+#define STARLABS_HDA_POLICY_LITE_ALC269_VC	0x0004
+#define STARLABS_HDA_POLICY_LITE_ALC269_VB	0x0005
+#define STARLABS_HDA_POLICY_ALC256_INTERNAL	0x0006
+#define STARLABS_HDA_POLICY_ALC256_EXTERNAL_EQ	0x0007
+
+/* Reserved for the PHX external-amplifier profile, which has no RPL EQ data. */
+#define STARLABS_HDA_POLICY_ALC256_EXTERNAL	0x0008
+
+#define STARLABS_HDA_PCI_SUBSYSTEM_ID(policy) \
+	(((policy) << 16) | STARLABS_HDA_SUBSYSTEM_VENDOR)
+
+#endif /* MAINBOARD_STARLABS_COMMON_HDA_H */

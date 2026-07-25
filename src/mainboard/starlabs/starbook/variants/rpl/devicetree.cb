@@ -296,7 +296,7 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref hda		on
-			subsystemid 0x1e50 0x7007
+			subsystemid 0x2145 0x0003 # ALC269 VB6
 			register "pch_hda_sdi_enable[0]"		= "true"
 			register "pch_hda_dsp_enable"			= "true"
 			register "pch_hda_audio_link_hda_enable"	= "true"

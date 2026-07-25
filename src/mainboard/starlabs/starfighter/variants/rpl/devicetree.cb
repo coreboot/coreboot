@@ -360,7 +360,7 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref hda		on
-			subsystemid 0x10ec 0x1200
+			subsystemid 0x2145 0x0007 # ALC256 external amplifier and EQ
 			register "pch_hda_sdi_enable[0]"		= "true"
 			register "pch_hda_dsp_enable"			= "true"
 			register "pch_hda_audio_link_hda_enable"	= "true"

@@ -156,8 +156,13 @@ static bool read_spd_dimm(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cf
 
 		if (!dimm_changed) {
 			printk(BIOS_INFO, "Use the SPD cache data\n");
-			spd_fill_from_cache(spd_cache, &blk);
-		} else {
+			if (spd_fill_from_cache(spd_cache, &blk) == CB_ERR) {
+				printk(BIOS_ERR, "Cannot use SPD cache data\n");
+				dimm_changed = true;
+			}
+		}
+
+		if (dimm_changed) {
 			/* Access memory info through SMBUS. */
 			get_spd_smbus(&blk);
 

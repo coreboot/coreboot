@@ -67,9 +67,12 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		need_update_cache = true;
 	}
 
-	if (!dimm_changed) {
-		spd_fill_from_cache(spd_cache, &blk);
-	} else {
+	if (!dimm_changed && spd_fill_from_cache(spd_cache, &blk) == CB_ERR) {
+		printk(BIOS_WARNING, "Cannot use SPD cache data\n");
+		dimm_changed = true;
+	}
+
+	if (dimm_changed) {
 		/* Access memory info through SMBUS. */
 		get_spd_smbus(&blk);
 

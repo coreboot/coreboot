@@ -29,6 +29,7 @@ tests-y += coreboot_table-test
 tests-y += rtc-test
 tests-y += spd_cache-ddr3-test
 tests-y += spd_cache-ddr4-test
+tests-y += spd_cache-ddr5-test
 tests-y += cbmem_stage_cache-test
 tests-y += libgcc-test
 tests-y += cbfs-verification-no-sha512-test
@@ -176,6 +177,18 @@ spd_cache-ddr4-test-config += CONFIG_SPD_CACHE_FMAP_NAME=\"RW_SPD_CACHE\" \
 				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
 spd_cache-ddr4-test-cflags += -D__TEST_SPD_CACHE_DDR=4
 spd_cache-ddr4-test-cflags += -I tests/include/tests/lib/fmap
+
+spd_cache-ddr5-test-srcs += tests/lib/spd_cache-test.c
+spd_cache-ddr5-test-srcs += tests/stubs/console.c
+spd_cache-ddr5-test-srcs += src/lib/spd_cache.c
+spd_cache-ddr5-test-srcs += src/lib/crc_byte.c
+spd_cache-ddr5-test-srcs += src/commonlib/region.c
+spd_cache-ddr5-test-mocks += fmap_locate_area_as_rdev
+spd_cache-ddr5-test-config += CONFIG_SPD_CACHE_FMAP_NAME=\"RW_SPD_CACHE\" \
+				CONFIG_DIMM_MAX=4 CONFIG_DIMM_SPD_SIZE=1024 \
+				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
+spd_cache-ddr5-test-cflags += -D__TEST_SPD_CACHE_DDR=5
+spd_cache-ddr5-test-cflags += -I tests/include/tests/lib/fmap
 
 cbmem_stage_cache-test-srcs += tests/lib/cbmem_stage_cache-test.c
 cbmem_stage_cache-test-srcs += tests/stubs/console.c

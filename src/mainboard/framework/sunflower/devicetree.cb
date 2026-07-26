@@ -190,7 +190,7 @@ chip soc/intel/alderlake
 			register "gen3_dec" = "0x00fc0f01"	# EC extended:  0xF00-0xFFF
 			register "gen4_dec" = "0x00fc0801"	# EC shared:    0x800-0x8FF
 			chip ec/google/chromeec
-				device pnp 0c09.0 on end
+				device pnp 0c09.0 alias chrome_ec on end
 			end
 		end
 
@@ -207,5 +207,56 @@ chip soc/intel/alderlake
 		end
 		device ref smbus on end
 		device ref fast_spi on end
+	end
+
+	# Q56 (F75303 remote1), close to the CPU. EC halt: 85C
+	chip drivers/acpi/thermal_zone
+		register "description" = ""CPU""
+		use chrome_ec as temperature_controller
+		register "sensor_id" = "0"
+		register "hibernate_temperature" = "160"
+		register "critical_temperature" = "170"
+		register "use_acpi1_thermal_zone_scope" = "true"
+		device generic 0 on end
+	end
+	# Q57 (F75303 remote2), top skin near H16. EC halt: 90C
+	chip drivers/acpi/thermal_zone
+		register "description" = ""TopSkin""
+		use chrome_ec as temperature_controller
+		register "sensor_id" = "1"
+		register "hibernate_temperature" = "160"
+		register "critical_temperature" = "170"
+		register "use_acpi1_thermal_zone_scope" = "true"
+		device generic 1 on end
+	end
+	# U31 (F75303 local). EC halt: 94C
+	chip drivers/acpi/thermal_zone
+		register "description" = ""Local""
+		use chrome_ec as temperature_controller
+		register "sensor_id" = "2"
+		register "hibernate_temperature" = "160"
+		register "critical_temperature" = "170"
+		register "use_acpi1_thermal_zone_scope" = "true"
+		device generic 2 on end
+	end
+	# Battery pack temperature over SMBus. EC halt: 66C
+	chip drivers/acpi/thermal_zone
+		register "description" = ""Battery""
+		use chrome_ec as temperature_controller
+		register "sensor_id" = "3"
+		register "hibernate_temperature" = "160"
+		register "critical_temperature" = "170"
+		register "use_acpi1_thermal_zone_scope" = "true"
+		device generic 3 on end
+	end
+	# SoC die temperature over PECI. EC halt: 127C
+	chip drivers/acpi/thermal_zone
+		register "description" = ""SOC""
+		use chrome_ec as temperature_controller
+		register "sensor_id" = "4"
+		register "hibernate_temperature" = "160"
+		register "critical_temperature" = "170"
+		register "use_acpi1_thermal_zone_scope" = "true"
+		device generic 4 on end
 	end
 end

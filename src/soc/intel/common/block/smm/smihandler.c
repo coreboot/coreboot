@@ -120,13 +120,19 @@ static void busmaster_disable_on_bus(int bus)
 				continue;
 
 			/*
-			 * If secondary bus is equal to current bus bypass
+			 * If secondary bus is lesser-equal to current bus bypass
 			 * the bridge because it's likely unconfigured and
 			 * would cause infinite recursion.
 			 */
 			int secbus = pci_read_config8(dev, PCI_SECONDARY_BUS);
 
-			if (secbus == bus)
+			/*
+			 * Note: Secondary bus numbers must be strictly greater than the
+			 * parent bus number. This prevents infinite recursion from
+			 * cycles programmed into bridge config space (e.g., 0 -> N -> 0)
+			 * and bounds maximum stack depth to 256 levels.
+			 */
+			if (secbus <= bus)
 				continue;
 
 			busmaster_disable_on_bus(secbus);

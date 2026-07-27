@@ -25,6 +25,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_E0, NONE, DEEP),
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),
 	PAD_CFG_NF(GPP_E9, NONE, PWROK, NF1),
+	/* The following three bits are used to define the SPD data set slot in CBFS */
 	PAD_CFG_GPI(GPP_E10, NONE, DEEP),
 	PAD_CFG_GPI(GPP_E12, NONE, DEEP),
 	PAD_CFG_GPI(GPP_E17, NONE, DEEP),

@@ -66,11 +66,11 @@ chip soc/intel/pantherlake
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C1
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# USB_CAMERA
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)"		# Type-A Port A0
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# Type-A Port A1
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A1
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 Type-A Port A0
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)" # USB3.2 Type-A Port A1
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3.2 Type-A Port A0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3.2 Type-A Port A1
 
 	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)" # USB3_C0
 	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC_SKIP)" # USB3_C1

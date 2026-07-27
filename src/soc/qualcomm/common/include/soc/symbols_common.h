@@ -78,7 +78,6 @@ DECLARE_REGION(dram_oob_glink_always)
 DECLARE_REGION(dram_oob_glink_assist)
 DECLARE_REGION(dram_oob_mdm_assist)
 DECLARE_REGION(dram_oob_wlan_assist)
-DECLARE_OPTIONAL_REGION(pcie)
 
 /*
  * DDR_SPACE (2 GB) aka `_dram`:  0x80000000 - 0x100000000

@@ -142,7 +142,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_D07:     Not used */
 	PAD_NC(GPP_D07, NONE),
 	/* GPP_D08:     HW_ID4 */
-	PAD_CFG_GPI(GPP_D08, NONE, DEEP),
+	PAD_CFG_GPI_LOCK(GPP_D08, NONE, LOCK_CONFIG),
 	/* GPP_D09:     Not used */
 	PAD_NC(GPP_D09, NONE),
 	/* GPP_D10:     Not used */
@@ -350,6 +350,9 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* GPP_C15:     SOC_FP_RST_STRAP_L */
 	PAD_CFG_GPO(GPP_C15, 0, DEEP),
+
+	/* GPP_D08:     HW_ID4 */
+	PAD_CFG_GPI_LOCK(GPP_D08, NONE, LOCK_CONFIG),
 
 	/* GPP_E05:     FP_PWR_EN */
 	PAD_CFG_GPO(GPP_E05, 1, PLTRST),

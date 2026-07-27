@@ -10,17 +10,11 @@ chip soc/intel/alderlake
 
 	# FSP configuration
 
-	# Enable CNVi BT
-	register "cnvi_bt_core" = "true"
-
 	# Sagv Configuration
 	register "sagv" = "SaGv_Enabled"
 
 	# Enable DPTF
 	register "dptf_enable" = "true"
-
-	# eMMC HS400
-	register "emmc_enable_hs400_mode" = "true"
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC3)"		# Type-C Port1
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"		# Type-C Port2
@@ -37,8 +31,6 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port3
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 WWAN
 
-	register "sata_salp_support" = "0"
-
 	# Enable EDP in PortA
 	register "ddi_portA_config" = "1"
 	# Enable HDMI in Port B
@@ -50,63 +42,26 @@ chip soc/intel/alderlake
 	register "tcss_aux_ori" = "4"
 	register "typec_aux_bias_pads[1]" = "{.pad_auxp_dc = GPP_E20, .pad_auxn_dc = GPP_E21}"
 
-	register "s0ix_enable" = "true"
-
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
-		[PchSerialIoIndexI2C1] = PchSerialIoPci,
-		[PchSerialIoIndexI2C2] = PchSerialIoPci,
-		[PchSerialIoIndexI2C3] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C5] = PchSerialIoPci,
+		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
 	}"
 
 	register "serial_io_gspi_mode" = "{
-		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI3] = PchSerialIoDisabled,
 	}"
 
-	register "serial_io_gspi_cs_mode" = "{
-		[PchSerialIoIndexGSPI0] = 0,
-		[PchSerialIoIndexGSPI1] = 0,
-		[PchSerialIoIndexGSPI2] = 0,
-		[PchSerialIoIndexGSPI3] = 0,
-	}"
-
-	register "serial_io_gspi_cs_state" = "{
-		[PchSerialIoIndexGSPI0] = 0,
-		[PchSerialIoIndexGSPI1] = 0,
-		[PchSerialIoIndexGSPI2] = 0,
-		[PchSerialIoIndexGSPI3] = 0,
-	}"
-
 	register "serial_io_uart_mode" = "{
-		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
-		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART1] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
-	}"
-
-	register "cnvi_bt_audio_offload" = "true"
-
-	# Intel Common SoC Config
-	register "common_soc_config" = "{
-		.i2c[0] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[1] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[2] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[3] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[5] = {
-			.speed = I2C_SPEED_FAST,
-		},
 	}"
 
 	# Configure external V1P05/Vnn/VnnSx Rails
@@ -239,27 +194,13 @@ chip soc/intel/alderlake
 				end
 			end
 		end
-		device ref cnvi_wifi on
-			chip drivers/wifi/generic
-				register "wake" = "GPE0_PME_B0"
-				device generic 0 on end
-			end
-		end
 		device ref i2c0 on end
-		device ref i2c1 on end
-		device ref i2c2 on end
-		device ref i2c3 on end
 		device ref heci1 on end
-		device ref sata off end
-		device ref i2c5 on end
 		device ref pcie_rp7 on end
 		device ref pcie_rp9 on end
 		device ref uart0 on end
-		device ref gspi0 on end
+		device ref uart1 on end
 		device ref p2sb on end
-		device ref emmc on end
-		device ref ish on end
-		device ref ufs on end
 		device ref smbus on end
 	end
 end

@@ -7,6 +7,8 @@
 #include <device/dram/ddr4.h>
 #include <device/dram/ddr5.h>
 #include <fmap.h>
+#include <security/vboot/antirollback.h>
+#include <security/vboot/mrc_cache_hash_tpm.h>
 #include <spd_cache.h>
 #include <spd.h>
 #include <spd_bin.h>
@@ -39,8 +41,8 @@
 enum cb_err update_spd_cache(struct spd_block *blk)
 {
 	struct region_device rdev;
-	uint16_t data_crc = 0;
-	int i, j;
+	uint8_t full_spd_buf[SC_SPD_TOTAL_LEN];
+	int i;
 
 	assert(blk->len <= SC_SPD_LEN);
 
@@ -49,42 +51,45 @@ enum cb_err update_spd_cache(struct spd_block *blk)
 		return CB_ERR;
 	}
 
-	/* Erase whole area, it's for align with 4KiB which is the size of SPI rom sector. */
+	/* Phase 1: Build a contiguous, normalized byte stream buffer */
+	for (i = 0; i < SC_SPD_NUMS; i++) {
+		uint8_t *slot_ptr = &full_spd_buf[SC_SPD_OFFSET(i)];
+
+		if (blk->spd_array[i] == NULL) {
+			/* Missing DIMMs are padded with 0xFF */
+			memset(slot_ptr, 0xff, SC_SPD_LEN);
+		} else {
+			memcpy(slot_ptr, blk->spd_array[i], blk->len);
+			if (blk->len < SC_SPD_LEN)
+				memset(slot_ptr + blk->len, 0xff, SC_SPD_LEN - blk->len);
+		}
+	}
+
+	/* Phase 2a: Erase and Write SPD data to SPI FLASH */
 	if (rdev_eraseat(&rdev, 0, region_device_sz(&rdev)) < 0) {
 		printk(BIOS_ERR, "SPD_CACHE: Cannot erase %s region\n", SPD_CACHE_FMAP_NAME);
 		return CB_ERR;
 	}
 
-	/* Write SPD data */
-	for (i = 0; i < SC_SPD_NUMS; i++) {
-		if (blk->spd_array[i] == NULL) {
-			/* If DIMM is not present, we calculate the CRC with 0xff. */
-			for (j = 0; j < SC_SPD_LEN; j++)
-				data_crc = crc16_byte(data_crc, 0xff);
-		} else {
-			if (rdev_writeat(&rdev, blk->spd_array[i], SC_SPD_OFFSET(i), blk->len)
-										< 0) {
-				printk(BIOS_ERR, "SPD_CACHE: Cannot write SPD data at %d\n",
-					SC_SPD_OFFSET(i));
-				return CB_ERR;
-			}
+	/* Phase 2b: Write the entire normalized buffer so flash content matches full_spd_buf */
+	if (rdev_writeat(&rdev, full_spd_buf, 0, sizeof(full_spd_buf)) < 0) {
+		printk(BIOS_ERR, "SPD_CACHE: Cannot write full SPD buffer\n");
+		return CB_ERR;
+	}
 
-			for (j = 0; j < blk->len; j++)
-				data_crc = crc16_byte(data_crc, blk->spd_array[i][j]);
+	/* Phase 3: Integrity check / TPM hashing selection based on Kconfig */
+	if (CONFIG(SPD_CACHE_TPM_HASH)) {
+		mrc_cache_update_hash(SPD_CACHE_NV_INDEX, full_spd_buf, sizeof(full_spd_buf));
+		printk(BIOS_INFO, "SPD_CACHE: Extending TPM PCR with SPD buffer measurement\n");
+	} else {
+		uint16_t data_crc = CRC(full_spd_buf, sizeof(full_spd_buf), crc16_byte);;
 
-			/* If the blk->len < SC_SPD_LEN, we calculate the CRC with 0xff. */
-			if (blk->len < SC_SPD_LEN)
-				for (j = 0; j < (SC_SPD_LEN - (blk->len)); j++)
-					data_crc = crc16_byte(data_crc, 0xff);
+		if (rdev_writeat(&rdev, &data_crc, SC_CRC_OFFSET, SC_CRC_LEN) < 0) {
+			printk(BIOS_ERR, "SPD_CACHE: Cannot write crc at 0x%04x\n", SC_CRC_OFFSET);
+			return CB_ERR;
 		}
 	}
 
-	/* Write the crc16 */
-	/* It must be the last step to ensure that the data is written correctly */
-	if (rdev_writeat(&rdev, &data_crc, SC_CRC_OFFSET, SC_CRC_LEN) < 0) {
-		printk(BIOS_ERR, "SPD_CACHE: Cannot write crc at 0x%04x\n", SC_CRC_OFFSET);
-		return CB_ERR;
-	}
 	return CB_SUCCESS;
 }
 
@@ -117,8 +122,8 @@ enum cb_err load_spd_cache(uint8_t **spd_cache, size_t *spd_cache_sz)
 	return CB_SUCCESS;
 }
 
-/* Use to verify the cache data is valid. */
-bool spd_cache_is_valid(uint8_t *spd_cache, size_t spd_cache_sz)
+/* Validates the in-memory SPD cache against the CRC16 algorithm */
+static bool spd_cache_crc16_is_valid(uint8_t *spd_cache, size_t spd_cache_sz)
 {
 	uint16_t data_crc = 0;
 	int i;
@@ -131,6 +136,36 @@ bool spd_cache_is_valid(uint8_t *spd_cache, size_t spd_cache_sz)
 		data_crc = crc16_byte(data_crc, *(spd_cache + i));
 
 	return *(uint16_t *)(spd_cache + SC_CRC_OFFSET) == data_crc;
+}
+
+/*
+ * Check if the cached SPD TPM hash is valid.
+ *
+ * Compares the TPM hash currently stored in the system or TPM against the
+ * calculated hash of the provided SPD cache buffer to verify integrity.
+ */
+static bool spd_cache_tpm_hash_is_valid(const uint8_t *spd_cache, size_t spd_cache_sz)
+{
+	if (spd_cache_sz < SC_SPD_TOTAL_LEN)
+		return false;
+
+	if (mrc_cache_verify_hash(SPD_CACHE_NV_INDEX, spd_cache, SC_SPD_TOTAL_LEN)) {
+		printk(BIOS_INFO, "SPD_CACHE: TPM NV hash verification succeeded\n");
+		return true;
+	}
+
+	printk(BIOS_WARNING, "SPD_CACHE: Hash mismatch against TPM NV index 0x%x\n",
+	       SPD_CACHE_NV_INDEX);
+	return false;
+}
+
+/* Use to verify the cache data is valid. */
+bool spd_cache_is_valid(uint8_t *spd_cache, size_t spd_cache_sz)
+{
+	if (CONFIG(SPD_CACHE_TPM_HASH))
+		return spd_cache_tpm_hash_is_valid(spd_cache, spd_cache_sz);
+
+	return spd_cache_crc16_is_valid(spd_cache, spd_cache_sz);
 }
 
 /*

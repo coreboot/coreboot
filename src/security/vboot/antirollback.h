@@ -31,6 +31,7 @@ enum vb2_pcr_digest;
 #define HASH_NV_SIZE                    VB2_SHA256_DIGEST_SIZE
 #define ENT_ROLLBACK_SPACE_INDEX        0x100e
 #define VBIOS_CACHE_NV_INDEX            0x100f
+#define SPD_CACHE_NV_INDEX              0x1010
 /* Widevine Secure Counter space */
 #define WIDEVINE_COUNTER_NV_INDEX(n)	(0x3000 + (n))
 #define NUM_WIDEVINE_COUNTERS		4

@@ -80,6 +80,20 @@ config SPD_CACHE_FMAP_NAME
 	help
 	  Name of the FMAP region created in the default FMAP to cache SPD data.
 
+config SPD_CACHE_TPM_HASH
+	bool
+	default n
+	depends on SPD_CACHE_IN_FMAP
+	select TPM
+	help
+	  Enables storing a SHA-256 hash of the cached SPD data in a TPM NVRAM
+	  index (0x1010) whenever the RW_SPD_CACHE region is updated.
+
+	  During boot, coreboot verifies the RW_SPD_CACHE against the digest
+	  stored in the TPM. If the hashes do not match (e.g. due to RW SPI
+	  tampering), coreboot invalidates the cache and falls back to a fresh
+	  MRC training.
+
 if RAMSTAGE_LIBHWBASE && !ROMSTAGE_LIBHWBASE
 
 config HWBASE_DYNAMIC_MMIO

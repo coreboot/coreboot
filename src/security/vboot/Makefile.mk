@@ -141,6 +141,9 @@ postcar-y += common.c
 romstage-$(CONFIG_MRC_SAVE_HASH_IN_TPM) += mrc_cache_hash_tpm.c
 ramstage-$(CONFIG_MRC_SAVE_HASH_IN_TPM) += mrc_cache_hash_tpm.c
 
+romstage-$(CONFIG_SPD_CACHE_TPM_HASH) += mrc_cache_hash_tpm.c
+ramstage-$(CONFIG_SPD_CACHE_TPM_HASH) += mrc_cache_hash_tpm.c
+
 ramstage-$(CONFIG_SOC_AMD_GFX_CACHE_VBIOS_IN_FMAP) += vbios_cache_hash_tpm.c
 
 ifeq ($(CONFIG_VBOOT_X86_RSA_ACCELERATION),y)

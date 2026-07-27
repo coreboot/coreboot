@@ -4,8 +4,6 @@
 #include <console/console.h>
 #include <soc/romstage.h>
 
-#include "board_id.h"
-
 static const struct mb_cfg fa_asl_mem_config = {
 	.type = MEM_TYPE_LP5X,
 

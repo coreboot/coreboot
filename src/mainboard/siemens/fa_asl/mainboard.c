@@ -12,17 +12,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "board_id.h"
-
-const char *smbios_system_sku(void)
-{
-	static char sku_str[7] = "";
-	uint8_t sku_id = get_board_id();
-
-	snprintf(sku_str, sizeof(sku_str), "sku%u", sku_id);
-	return sku_str;
-}
-
 static void mainboard_init(void *chip_info)
 {
 	variant_configure_gpio_pads();

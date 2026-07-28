@@ -7,6 +7,7 @@ nullidt_offset = nullidt & 0xffff;
 #define INTEL_FIT_POINTER 0xffffffc0
 #define RESET_VECTOR 0xfffffff0
 #define CBFS_HEADER_POINTER 0xfffffffc
+#define BOOTBLOCK_END 0x100000000
 
 /* Symbol _start16bit must be aligned to 4kB to start AP CPUs with
  * Startup IPI message without RAM.
@@ -34,7 +35,7 @@ ap_sipi_vector_in_rom = (_start16bit >> 12) & 0xff;
 SECTIONS {
 
 #if CONFIG(FIXED_BOOTBLOCK_SIZE)
-	. = _ebootblock - CONFIG_C_ENV_BOOTBLOCK_SIZE;
+	. = BOOTBLOCK_END - CONFIG_C_ENV_BOOTBLOCK_SIZE;
 #else
 	. = EARLY_INIT_BASE - PROGRAM_SZ;
 	/* Page tables need to be at a 4K boundary so align the bootblock downwards */
@@ -83,6 +84,13 @@ SECTIONS {
 	.header_pointer . : {
 		KEEP(*(.header_pointer));
 	}
+
+#if CONFIG(FIXED_BOOTBLOCK_SIZE) && !CONFIG(BOOTBLOCK_IN_CBFS)
+	/* Keep the flat binary at the size expected by platform loaders. */
+	.bootblock_end (BOOTBLOCK_END - 1) : {
+		BYTE(0);
+	}
+#endif
 	_ebootblock = .;
 }
 

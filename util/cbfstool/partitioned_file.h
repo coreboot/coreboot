@@ -99,6 +99,16 @@ bool partitioned_file_write_region(partitioned_file_t *file,
 bool partitioned_file_read_region(struct buffer *dest,
 			const partitioned_file_t *file, const char *region);
 
+/**
+ * Read the entire contents of a flat (non-partitioned) file.
+ *
+ * @param dest   Empty destination buffer for the data
+ * @param file   Flat partitioned file to read
+ * @return       Whether the operation was successful
+ */
+bool partitioned_file_read_flat(struct buffer *dest,
+			const partitioned_file_t *file);
+
 /** @param file Partitioned file to flush and cleanup */
 void partitioned_file_close(partitioned_file_t *file);
 
@@ -145,5 +155,25 @@ extern const partitioned_file_fmap_selector_t
 /** Selector that counts FMAP sections that contain the fmap_area arg. */
 extern const partitioned_file_fmap_selector_t
 					partitioned_file_fmap_select_parents_of;
+
+/**
+ * Reallocate the in-memory buffer of a flat (non-partitioned) file.
+ * Any expanded space is filled with 0xff.
+ *
+ * @param file     Flat partitioned file to reallocate
+ * @param new_size New buffer size in bytes
+ * @return         Whether the buffer reallocation was successful
+ */
+bool partitioned_file_realloc_flat(partitioned_file_t *file, size_t new_size);
+
+/**
+ * Write a buffer's contents to a flat (non-partitioned) file and truncate it.
+ *
+ * @param file    Flat partitioned file to write to
+ * @param buffer  Buffer whose contents to write
+ * @return        Whether the operation was successful
+ */
+bool partitioned_file_write_flat(partitioned_file_t *file,
+				 const struct buffer *buffer);
 
 #endif

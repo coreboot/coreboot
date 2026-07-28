@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/file.h>
+#include <unistd.h>
 
 struct partitioned_file {
 	struct fmap *fmap;
@@ -168,7 +169,7 @@ partitioned_file_t *partitioned_file_reopen(const char *filename,
 	long fmap_region_offset = fmap_find((const uint8_t *)file->buffer.data,
 							file->buffer.size);
 	if (fmap_region_offset < 0) {
-		INFO("Opening image as a flat file because it doesn't contain any FMAP\n");
+		DEBUG("Opening image as a flat file because it doesn't contain any FMAP\n");
 		return file;
 	}
 	file->fmap = (struct fmap *)(file->buffer.data + fmap_region_offset);
@@ -210,6 +211,9 @@ bool partitioned_file_write_region(partitioned_file_t *file,
 	assert(file->stream);
 	assert(buffer);
 	assert(buffer->data);
+
+	if (buffer->size == 0)
+		return true;
 
 	if (buffer->data - buffer->offset != file->buffer.data) {
 		ERROR("Attempted to write a partition buffer back to a different file than it came from\n");
@@ -260,6 +264,21 @@ bool partitioned_file_read_region(struct buffer *dest,
 		buffer_clone(dest, &file->buffer);
 	}
 
+	return true;
+}
+
+bool partitioned_file_read_flat(struct buffer *dest,
+			const partitioned_file_t *file)
+{
+	assert(dest);
+	assert(file);
+
+	if (partitioned_file_is_partitioned(file)) {
+		ERROR("Cannot read partitioned file as flat\n");
+		return false;
+	}
+
+	buffer_clone(dest, &file->buffer);
 	return true;
 }
 
@@ -358,3 +377,59 @@ static bool select_parents_of(const struct fmap_area *parent, const void *arg)
 }
 const partitioned_file_fmap_selector_t partitioned_file_fmap_select_parents_of =
 							select_parents_of;
+
+bool partitioned_file_realloc_flat(partitioned_file_t *file, size_t new_size)
+{
+	assert(file);
+	if (partitioned_file_is_partitioned(file)) {
+		ERROR("Cannot resize partitioned file\n");
+		return false;
+	}
+	assert(file->buffer.offset == 0);
+
+	void *new_data = realloc(file->buffer.data, new_size);
+	if (!new_data) {
+		ERROR("Failed to realloc partitioned file buffer\n");
+		return false;
+	}
+	if (new_size > file->buffer.size) {
+		memset((uint8_t *)new_data + file->buffer.size, 0xff,
+		       new_size - file->buffer.size);
+	}
+	file->buffer.data = new_data;
+	file->buffer.size = new_size;
+	return true;
+}
+
+bool partitioned_file_write_flat(partitioned_file_t *file,
+				 const struct buffer *buffer)
+{
+	assert(file);
+	assert(file->stream);
+	assert(buffer);
+	assert(buffer->data);
+
+	if (partitioned_file_is_partitioned(file)) {
+		ERROR("Cannot write flat data to partitioned file\n");
+		return false;
+	}
+
+	if (fseek(file->stream, 0, SEEK_SET)) {
+		ERROR("Failed to seek within flat file\n");
+		return false;
+	}
+	if (buffer->size > 0 && !fwrite(buffer->data, buffer->size, 1, file->stream)) {
+		ERROR("Failed to write to flat file\n");
+		return false;
+	}
+	if (fflush(file->stream) != 0) {
+		ERROR("Failed to flush file stream\n");
+		return false;
+	}
+	if (ftruncate(fileno(file->stream), buffer->size) != 0) {
+		perror("ftruncate");
+		return false;
+	}
+	file->buffer.size = buffer->size;
+	return true;
+}

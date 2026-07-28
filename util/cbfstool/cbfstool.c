@@ -7,7 +7,11 @@
 #include <strings.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <errno.h>
 #include <getopt.h>
+#include <limits.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "common.h"
 #include "cbfs.h"
 #include "cbfs_image.h"
@@ -24,6 +28,8 @@
 #include <commonlib/region.h>
 #include <vboot_host.h>
 
+#define ECBFS_HEADROOM   4096
+
 struct command {
 	const char *name;
 	const char *optstring;
@@ -39,12 +45,14 @@ struct command {
 
 static struct param {
 	partitioned_file_t *image_file;
+	partitioned_file_t *ecbfs_image_file;
 	struct buffer *image_region;
 	const char *name;
 	const char *filename;
 	const char *fmap;
 	const char *region_name;
 	const char *source_region;
+	const char *ecbfs_dir;
 	const char *bootblock;
 	const char *ignore_sections;
 	const char *ucode_region;
@@ -148,6 +156,11 @@ static bool is_main_cbfs_region(const char *region_name)
 {
 	return strcmp(region_name, SECTION_NAME_PRIMARY_CBFS) == 0 ||
 		strcmp(region_name, SECTION_NAME_SECONDARY_CBFS) == 0;
+}
+
+static bool is_ecbfs_region(const char *region_name)
+{
+	return strncmp(region_name, "ECBFS_", 6) == 0;
 }
 
 static enum mhc_kind derive_mhc_kind(const char *region_name)
@@ -342,6 +355,9 @@ static bool verification_exclude(enum cbfs_type type)
 
 static bool region_is_flashmap(const char *region)
 {
+	if (param.ecbfs_image_file)
+		return false;
+
 	return partitioned_file_region_check_magic(param.image_file, region,
 					FMAP_SIGNATURE, strlen(FMAP_SIGNATURE));
 }
@@ -349,6 +365,9 @@ static bool region_is_flashmap(const char *region)
 /* @return Same as cbfs_is_valid_cbfs(), but for a named region. */
 static bool region_is_modern_cbfs(const char *region)
 {
+	if (param.ecbfs_image_file)
+		return true;
+
 	return partitioned_file_region_check_magic(param.image_file, region,
 				CBFS_FILE_MAGIC, strlen(CBFS_FILE_MAGIC));
 }
@@ -1785,6 +1804,11 @@ static int cbfs_copy(void)
 		return 1;
 	}
 
+	if (is_ecbfs_region(param.source_region) || param.ecbfs_image_file) {
+		ERROR("Copying to or from extended CBFS regions is not supported\n");
+		return 1;
+	}
+
 	/* Obtain the source region and convert it to a cbfs_image. */
 	if (!partitioned_file_read_region(&src_buf, param.image_file,
 						param.source_region)) {
@@ -1840,27 +1864,239 @@ static int cbfs_truncate(void)
 	return result;
 }
 
+static bool command_adds_entry(const struct command *cmd)
+{
+	return cmd->function == cbfs_add ||
+	       cmd->function == cbfs_add_flat_binary ||
+	       cmd->function == cbfs_add_payload ||
+	       cmd->function == cbfs_add_stage ||
+	       cmd->function == cbfs_add_integer;
+}
+
+static ssize_t get_additional_data_size(const struct command *cmd)
+{
+	/* Read-only commands don't expand existing external file */
+	if (!cmd->modifies_region)
+		return 0;
+
+	if (param.filename) {
+		struct stat st;
+		if (stat(param.filename, &st) != 0) {
+			ERROR("Failed to stat '%s'\n", param.filename);
+			return -1;
+		}
+		return st.st_size + ECBFS_HEADROOM;
+	}
+
+	/* Fixed-size additions (e.g. add-int) or removals/compacting */
+	return ECBFS_HEADROOM;
+}
+
+static int expand_ecbfs_file(partitioned_file_t *file, size_t data_size)
+{
+	/* If no data is being added (e.g. read-only, create), no expansion needed */
+	if (data_size == 0)
+		return 0;
+
+	size_t old_size = partitioned_file_total_size(file);
+	/*
+	 * cbfs_expand_to_region() assumes the region buffer size is a multiple
+	 * of CBFS_ALIGNMENT; an unaligned size makes cbfs_find_next_entry()
+	 * round past the end of the buffer during cbfs_add_entry_at().
+	 */
+	size_t new_size = ALIGN_UP(old_size + data_size, CBFS_ALIGNMENT);
+
+	if (!partitioned_file_realloc_flat(file, new_size))
+		return -1;
+
+	/*
+	 * partitioned_file_read_flat() returns a shallow view into file's
+	 * backing memory buffer, so cbfs_expand_to_region() updates it in
+	 * place and main() writes it back to disk after the command runs.
+	 */
+	struct buffer temp_buf;
+	if (!partitioned_file_read_flat(&temp_buf, file))
+		return -1;
+
+	if (cbfs_expand_to_region(&temp_buf) != 0)
+		return -1;
+
+	return 0;
+}
+
+static int compact_ecbfs_buffer(struct buffer *region)
+{
+	uint32_t new_size;
+	if (cbfs_truncate_space(region, &new_size) != 0) {
+		ERROR("Failed to compact external CBFS buffer\n");
+		return -1;
+	}
+
+	buffer_set_size(region, new_size);
+	return 0;
+}
+
+static int get_ecbfs_paths(const char *image_name, const char *region_name,
+			   char *dir_buf, size_t dir_sz,
+			   char *file_buf, size_t file_sz)
+{
+	int len;
+
+	if (param.ecbfs_dir)
+		len = snprintf(dir_buf, dir_sz, "%s", param.ecbfs_dir);
+	else
+		len = snprintf(dir_buf, dir_sz, "%s.ecbfs", image_name);
+	if (len < 0 || (size_t)len >= dir_sz) {
+		ERROR("Extended CBFS directory path is too long\n");
+		return -1;
+	}
+
+	len = snprintf(file_buf, file_sz, "%s/%s.bin", dir_buf, region_name);
+	if (len < 0 || (size_t)len >= file_sz) {
+		ERROR("Extended CBFS file path is too long\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+static int remove_ecbfs_dir_if_empty(const char *dir)
+{
+	/* Keep the directory if other extended CBFS files still reside in it. */
+	if (rmdir(dir) == -1 && errno != ENOTEMPTY && errno != EEXIST) {
+		perror(dir);
+		return -1;
+	}
+	return 0;
+}
+
+static int delete_ecbfs_file(const char *image_name, const char *region_name)
+{
+	char dir[PATH_MAX];
+	char ecbfs_file_path[PATH_MAX];
+
+	if (get_ecbfs_paths(image_name, region_name, dir, sizeof(dir),
+			    ecbfs_file_path, sizeof(ecbfs_file_path)) != 0)
+		return -1;
+
+	if (unlink(ecbfs_file_path) == -1) {
+		perror(ecbfs_file_path);
+		return -1;
+	}
+
+	return remove_ecbfs_dir_if_empty(dir);
+}
+
+static int finalize_ecbfs_region(const char *image_name, const char *region_name,
+				 partitioned_file_t **ecbfs_file,
+				 struct buffer *image_region)
+{
+	if (compact_ecbfs_buffer(image_region) != 0)
+		return -1;
+
+	if (buffer_size(image_region) == 0) {
+		partitioned_file_close(*ecbfs_file);
+		*ecbfs_file = NULL;
+		return delete_ecbfs_file(image_name, region_name);
+	}
+
+	if (!partitioned_file_write_flat(*ecbfs_file, image_region))
+		return -1;
+
+	return 0;
+}
+
+static partitioned_file_t *open_ecbfs_file(const char *image_name,
+					   const char *region_name,
+					   const struct command *cmd,
+					   bool *created_new)
+{
+	char dir[PATH_MAX];
+	char ecbfs_file_path[PATH_MAX];
+
+	*created_new = false;
+	if (get_ecbfs_paths(image_name, region_name, dir, sizeof(dir),
+			    ecbfs_file_path, sizeof(ecbfs_file_path)) != 0)
+		return NULL;
+
+	if (access(ecbfs_file_path, F_OK) != 0) {
+		if (!command_adds_entry(cmd)) {
+			ERROR("Extended CBFS file '%s' does not exist\n",
+			      ecbfs_file_path);
+			return NULL;
+		}
+		ssize_t data_size = get_additional_data_size(cmd);
+		if (data_size < 0)
+			return NULL;
+		if (mkdir(dir, 0755) == -1 && errno != EEXIST) {
+			perror(dir);
+			return NULL;
+		}
+		partitioned_file_t *file = partitioned_file_create_flat(ecbfs_file_path,
+									data_size);
+		if (!file) {
+			ERROR("Failed to create external file %s\n", ecbfs_file_path);
+			remove_ecbfs_dir_if_empty(dir);
+			return NULL;
+		}
+		/* Formats file's backing buffer in place; written out in main(). */
+		struct cbfs_image image = {};
+		if (!partitioned_file_read_flat(&image.buffer, file) ||
+		    cbfs_image_create(&image, buffer_size(&image.buffer)) != 0) {
+			ERROR("Failed to format external CBFS %s\n", ecbfs_file_path);
+			partitioned_file_close(file);
+			delete_ecbfs_file(image_name, region_name);
+			return NULL;
+		}
+		*created_new = true;
+		return file;
+	}
+
+	partitioned_file_t *file = partitioned_file_reopen(ecbfs_file_path,
+							   cmd->modifies_region);
+	if (!file) {
+		ERROR("Failed to open external file %s\n", ecbfs_file_path);
+		return NULL;
+	}
+
+	/*
+	 * Read-only commands (e.g. extract, print) do not modify the image
+	 * and do not need buffer expansion.
+	 */
+	if (!cmd->modifies_region)
+		return file;
+
+	ssize_t data_size = get_additional_data_size(cmd);
+	if (data_size < 0 || expand_ecbfs_file(file, data_size) != 0) {
+		ERROR("Failed to expand %s ECBFS file\n", ecbfs_file_path);
+		partitioned_file_close(file);
+		return NULL;
+	}
+
+	return file;
+}
+
 static const struct command commands[] = {
-	{"add", "H:r:f:n:t:c:b:a:p:yvA:j:gh?", cbfs_add, true, true},
-	{"add-flat-binary", "H:r:f:n:l:e:c:b:p:vA:gh?", cbfs_add_flat_binary,
+	{"add", "H:r:f:n:t:c:b:a:p:yvA:j:gh?X:", cbfs_add, true, true},
+	{"add-flat-binary", "H:r:f:n:l:e:c:b:p:vA:gh?X:", cbfs_add_flat_binary,
 				true, true},
-	{"add-payload", "H:r:f:n:c:b:a:C:I:p:vA:gh?", cbfs_add_payload,
+	{"add-payload", "H:r:f:n:c:b:a:C:I:p:vA:gh?X:", cbfs_add_payload,
 				true, true},
-	{"add-stage", "a:H:r:f:n:t:c:b:P:QS:p:yvA:gh?", cbfs_add_stage,
+	{"add-stage", "a:H:r:f:n:t:c:b:P:QS:p:yvA:gh?X:", cbfs_add_stage,
 				true, true},
-	{"add-int", "H:r:i:n:b:vgh?", cbfs_add_integer, true, true},
-	{"add-master-header", "H:r:vh?j:", cbfs_add_master_header, true, true},
-	{"compact", "r:h?", cbfs_compact, true, true},
-	{"copy", "r:R:h?", cbfs_copy, true, true},
-	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
-	{"extract", "H:r:m:n:f:Uvh?", cbfs_extract, true, false},
+	{"add-int", "H:r:i:n:b:vgh?X:", cbfs_add_integer, true, true},
+	{"add-master-header", "H:r:vh?j:X:", cbfs_add_master_header, true, true},
+	{"compact", "r:h?X:", cbfs_compact, true, true},
+	{"copy", "r:R:h?X:", cbfs_copy, true, true},
+	{"create", "M:r:s:B:b:H:o:m:vh?X:", cbfs_create, true, true},
+	{"extract", "H:r:m:n:f:Uvh?X:", cbfs_extract, true, false},
 	{"layout", "wvh?", cbfs_layout, false, false},
-	{"print", "H:r:vkh?", cbfs_print, true, false},
-	{"read", "r:f:vh?", cbfs_read, true, false},
-	{"remove", "H:r:n:vh?", cbfs_remove, true, true},
-	{"write", "r:f:i:Fudvh?", cbfs_write, true, true},
-	{"expand", "r:h?", cbfs_expand, true, true},
-	{"truncate", "r:h?", cbfs_truncate, true, true},
+	{"print", "H:r:vkh?X:", cbfs_print, true, false},
+	{"read", "r:f:vh?X:", cbfs_read, true, false},
+	{"remove", "H:r:n:vh?X:", cbfs_remove, true, true},
+	{"write", "r:f:i:Fudvh?X:", cbfs_write, true, true},
+	{"expand", "r:h?X:", cbfs_expand, true, true},
+	{"truncate", "r:h?X:", cbfs_truncate, true, true},
 };
 
 enum {
@@ -1910,6 +2146,7 @@ static struct option long_options[] = {
 	{"unprocessed",   no_argument,       0, 'U' },
 	{"ibb",           no_argument,       0, LONGOPT_IBB },
 	{"mmap",          required_argument, 0, LONGOPT_MMAP },
+	{"ecbfs-dir",     required_argument, 0, 'X' },
 	{NULL,            0,                 0,  0  }
 };
 
@@ -1948,8 +2185,16 @@ static int dispatch_command(struct command command)
 			INFO("Performing operation on '%s' region...\n",
 					param.region_name);
 		}
-		if (!partitioned_file_read_region(param.image_region,
-					param.image_file, param.region_name)) {
+
+		bool read_success;
+		if (param.ecbfs_image_file)
+			read_success = partitioned_file_read_flat(param.image_region,
+					param.ecbfs_image_file);
+		else
+			read_success = partitioned_file_read_region(param.image_region,
+					param.image_file, param.region_name);
+
+		if (!read_success) {
 			ERROR("The image will be left unmodified.\n");
 			return 1;
 		}
@@ -2011,6 +2256,7 @@ static void usage(char *name)
 	     "  -g               Generate position and alignment arguments\n"
 	     "  -U               Unprocessed; don't decompress or make ELF\n"
 	     "  -v               Provide verbose output (-v=INFO -vv=DEBUG output)\n"
+	     "  -X, --ecbfs-dir  Directory for external CBFS region files\n"
 	     "  -h               Display this help message\n\n"
 	     "COMMANDs:\n"
 	     " add [-r image,regions] -f FILE -n NAME -t TYPE [-A hash] \\\n"
@@ -2351,6 +2597,9 @@ int main(int argc, char **argv)
 				if (decode_mmap_arg(optarg))
 					return 1;
 				break;
+			case 'X':
+				param.ecbfs_dir = optarg;
+				break;
 			case 'h':
 			case '?':
 				usage(argv[0]);
@@ -2385,6 +2634,7 @@ int main(int argc, char **argv)
 		if (!param.image_file)
 			return 1;
 
+		int ret = 1;
 		unsigned num_regions = 1;
 		for (const char *list = strchr(param.region_name, ','); list;
 						list = strchr(list + 1, ','))
@@ -2398,8 +2648,12 @@ int main(int argc, char **argv)
 		// since this behavior can be requested via its modifies_region
 		// field. Additionally, it should never free the region buffer,
 		// as that is performed automatically once it completes.
-		struct buffer image_regions[num_regions];
-		memset(image_regions, 0, sizeof(image_regions));
+		struct {
+			struct buffer buffer;
+			struct partitioned_file *ecbfs;
+			const char *name;
+			bool created_new;
+		} image_regions[num_regions] = {};
 
 		bool seen_primary_cbfs = false;
 		char region_name_scratch[strlen(param.region_name) + 1];
@@ -2409,19 +2663,52 @@ int main(int argc, char **argv)
 			if (!param.region_name) {
 				ERROR("Encountered illegal degenerate region name in -r list\n");
 				ERROR("The image will be left unmodified.\n");
-				partitioned_file_close(param.image_file);
-				return 1;
+				goto cleanup;
 			}
 
 			// "COREBOOT" CBFS region is a mandatory one.
 			if (strcmp(param.region_name, SECTION_NAME_PRIMARY_CBFS) == 0)
 				seen_primary_cbfs = true;
 
-			param.image_region = image_regions + region;
-			if (dispatch_command(commands[i])) {
-				partitioned_file_close(param.image_file);
-				return 1;
+			image_regions[region].name = param.region_name;
+			param.image_region = &image_regions[region].buffer;
+			param.ecbfs_image_file = NULL;
+
+			if (is_ecbfs_region(param.region_name)) {
+				if (commands[i].function == cbfs_create) {
+					ERROR("Explicit creation of extended CBFS region '%s' is not supported\n",
+					      param.region_name);
+					goto cleanup;
+				}
+
+				const struct fmap *fmap =
+					partitioned_file_get_fmap(param.image_file);
+				if (!fmap) {
+					ERROR("Extended CBFS regions not supported for legacy (non-FMAP) images\n");
+					goto cleanup;
+				}
+
+				const char *parent_region =
+					param.region_name + strlen("ECBFS_");
+				if (!region_is_modern_cbfs(parent_region)) {
+					ERROR("Parent region '%s' is not a valid CBFS\n",
+					      parent_region);
+					goto cleanup;
+				}
+
+				partitioned_file_t *ecbfs_file =
+					open_ecbfs_file(image_name, param.region_name,
+							&commands[i],
+							&image_regions[region].created_new);
+				if (!ecbfs_file)
+					goto cleanup;
+
+				image_regions[region].ecbfs = ecbfs_file;
+				param.ecbfs_image_file = ecbfs_file;
 			}
+
+			if (dispatch_command(commands[i]))
+				goto cleanup;
 
 			param.region_name = strtok(NULL, ",");
 		}
@@ -2430,27 +2717,41 @@ int main(int argc, char **argv)
 			ERROR("The creation -r list must include the mandatory '%s' section.\n",
 						SECTION_NAME_PRIMARY_CBFS);
 			ERROR("The image will be left unmodified.\n");
-			partitioned_file_close(param.image_file);
-			return 1;
+			goto cleanup;
 		}
 
 		if (commands[i].modifies_region) {
 			assert(param.image_file);
-			for (unsigned region = 0; region < num_regions;
-								++region) {
-
-				if (!partitioned_file_write_region(
-							param.image_file,
-						image_regions + region)) {
-					partitioned_file_close(
-							param.image_file);
-					return 1;
+			for (unsigned int region = 0; region < num_regions; ++region) {
+				struct buffer *image_region = &image_regions[region].buffer;
+				if (image_regions[region].ecbfs) {
+					if (finalize_ecbfs_region(image_name,
+							image_regions[region].name,
+							&image_regions[region].ecbfs,
+							image_region) != 0)
+						goto cleanup;
+				} else {
+					if (!partitioned_file_write_region(
+								param.image_file,
+							image_region)) {
+						goto cleanup;
+					}
 				}
 			}
 		}
 
+		ret = 0;
+cleanup:
 		partitioned_file_close(param.image_file);
-		return 0;
+		for (unsigned int j = 0; j < num_regions; ++j) {
+			if (image_regions[j].ecbfs) {
+				partitioned_file_close(image_regions[j].ecbfs);
+				if (ret != 0 && image_regions[j].created_new)
+					delete_ecbfs_file(image_name,
+							  image_regions[j].name);
+			}
+		}
+		return ret;
 	}
 
 	ERROR("Unknown command '%s'.\n", cmd);

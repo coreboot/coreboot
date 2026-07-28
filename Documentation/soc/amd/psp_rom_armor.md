@@ -6,13 +6,22 @@ ROM Armor is a security feature provided by AMD's Platform Security Processor (P
 that protects SPI flash memory from unauthorized modifications. It enforces access
 control to specific regions of the SPI flash, allowing only whitelisted operations
 in System Management Mode (SMM). The ownership of the SPI flash changes from the
-x86 to the PSP.
+x86 to the PSP. Since the PSP is the owner of the SPI flash controller, it can access
+its non-volatile regions in the flash used for *fTPM storage* and *RPMC* and the
+*RPMC counters* by itself and doesn't need the *PSP SMI handler* for flash access.
+Using ROM Armor can thus improve the real-time behavior of the system since it uses
+less System Managment Interrupts.
 
 There are two versions of ROM Armor:
 - **ROM Armor 2**: Earlier implementation requiring PSP-mediated access for all
                    flash operations (read, write, erase)
-- **ROM Armor 3**: Enhanced implementation allowing direct read access while
+- **ROM Armor 3**: Enhanced implementation allowing direct MMIO read access while
                    maintaining PSP-mediated write and erase operations
+
+**Note:**
+When ROM Armor has been enabled the system can be no longer updated from the OS or
+the UEFI Shell! You must build a firmware that supports *in-firmware update mechanisms*,
+like UEFI capsule on disk updates, to update the SPI flash.
 
 ## ROM Armor 2
 
@@ -32,7 +41,8 @@ through PSP mailbox commands. This ensures complete PSP oversight of all flash a
 ### Configuring Writable Regions
 
 ROM Armor protects the SPI flash by default, but certain regions can be configured
-as writable through two mechanisms:
+as writable through two mechanisms. The SPI flash will still be write-protected from
+x86 point of view, but the PSP is allowed to update those flash regions.
 
 #### 1. PSP and BIOS Directory Entry Writable Bit
 
@@ -46,8 +56,7 @@ write and erase operations to the flash region occupied by that entry.
 
 **Common writable BIOS entries:**
 - **APCB (AGESA PSP Customization Block)** - Platform configuration data
-- **APOB NV Copy** - AGESA Parameter Output Block non-volatile storage
-- **Variable NVRAM** - Flash area used for UEFI variables
+- **APOB NV** - AGESA Parameter Output Block non-volatile storage
 
 These entries are configured during firmware build using the `amdfwtool` utility,
 which sets the writable bit based on the entry type and platform requirements.
@@ -56,8 +65,8 @@ which sets the writable bit based on the entry type and platform requirements.
 
 For flash regions that don't correspond to a specific PSP or BIOS directory entry,
 you can create a whitelist entry using BIOS directory type `0x6D` (AMD_BIOS_NV_ST).
-This entry contains a list of flash address ranges that should be writable under
-ROM Armor. Typically used for the Variable NVRAM area.
+The entry describes a flash address range (not tied to a PSP directory entry) that
+should be writable under ROM Armor. Typically used for the Variable NVRAM area.
 
 **Important considerations:**
 - Keep the whitelist minimal to reduce attack surface
@@ -70,21 +79,21 @@ ROM Armor. Typically used for the Variable NVRAM area.
 - **Performance Overhead**: All operations require PSP mailbox communication
 - **Read Performance**: Even read operations are mediated by PSP, impacting performance
                         (ROM Armor 2 only)
-- **Complexity**: Requires careful synchronization between BIOS and PSP firmware
-
+- **Complexity**: Breaks UEFI assumptions that the variable store is memory mapped and
+                  updates are immediatly seen
 ## ROM Armor 3
 
 ### Overview
 
 ROM Armor 3 is the enhanced version that improves performance by allowing direct
-read access to SPI flash while maintaining PSP-mediated write and erase operations.
+MMIO read access to SPI flash while maintaining PSP-mediated write and erase operations.
 This provides better performance for read-heavy workloads while preserving security
 for write operations. EDK2 default variable store implementation is also assuming
 that the storage is memory mapped and doesn't need to go through an accessor library.
 
 ### Key Features
 
-- **Direct Read Access**: Flash reads are bypassing PSP and use FCH SPI controller directly
+- **Direct MMIO Read Access**: Flash reads are bypassing PSP mailbox
 - **PSP-Mediated Writes**: Write and erase operations still require PSP approval
 - **Enhanced Performance**: Eliminates mailbox overhead for read operations
 - **Same Security Model**: Maintains whitelist enforcement for writes/erases
@@ -102,8 +111,8 @@ ROM Armor 3 is initialized during SMM setup. The initialization process:
 
 #### Read Operations
 
-In ROM Armor 3, read operations bypass the PSP and use the FCH SPI controller directly.
-This provides near-native read performance since no PSP mailbox communication is required.
+In ROM Armor 3, read operations bypass the PSP and direct access to the ROM2/ROM3 MMIO area
+is possible.
 
 #### Write Operations
 
@@ -134,13 +143,10 @@ writable after S3 resume, defeating the security protection.
 
 | Feature               | ROM Armor 2                 | ROM Armor 3                     |
 |-----------------------|-----------------------------|---------------------------------|
-| **Read Operations**   | PSP-mediated                | Direct FCH SPI access           |
+| **Read Operations**   | PSP-mediated                | MMIO SPIROM access              |
 | **Write Operations**  | PSP-mediated                | PSP-mediated                    |
 | **Erase Operations**  | PSP-mediated                | PSP-mediated                    |
 | **Performance**       | Lower (all ops through PSP) | Higher (direct MMIO reads)      |
-| **Security**          | Complete PSP oversight      | Same write/erase protection     |
-| **Use Case**          | Maximum security            | Balanced security & performance |
-| **Implementation**    | Simpler                     | More complex (dual paths)       |
 
 ## Configuration
 
@@ -163,29 +169,11 @@ config SOC_AMD_PSP_ROM_ARMOR_64K_ERASE
 
 ## Security Considerations
 
-### Allowlist Configuration
-
-ROM Armor enforces access control through multiple layers:
-
-1. **PSP Directory Entries**: Directory entries with the 'writable' bit set allow
-                              modification of their associated flash regions
-2. **BIOS Directory Entries**: Similar to PSP entries, BIOS directory entries
-                               can be marked writable
-3. **BIOS Directory Type 0x6D (Allowlist)**: Defines arbitrary flash address ranges
-                                             that should be writable
-4. **PSP Firmware Validation**: The PSP firmware verifies all write/erase requests against
-                                the combined allowlist before allowing access
-
-The allowlist is processed by PSP firmware during ROM Armor initialization. Any write or
-erase operation outside the whitelisted regions will be rejected by the PSP, returning
-an error status to the SMM code.
-
 ### Threat Model
 
 ROM Armor protects against:
 - Unauthorized BIOS modification from malware in OS
 - Unauthorized flash writes from compromised SMM code (limited to allowlist)
-- Flash corruption during runtime
 
 ROM Armor does NOT protect against:
 - Physical SPI programmer attacks
@@ -207,8 +195,6 @@ The `PSP_ROM_ARMOR_ENFORCED` bit in the HSTI state indicates whether ROM Armor
 has been successfully activated.
 
 Software can query this state to verify that ROM Armor protection is active.
-The HSTI state is typically stored in a reserved memory region accessible to
-both firmware and OS components for security validation purposes.
 
 ## APM Call Interface (Non-SMM Access)
 
@@ -251,10 +237,3 @@ diagnose whitelist configuration issues or PSP communication problems.
 - PSP rejected the operation (not whitelisted)
 - PSP firmware error
 - Check PSP logs for details
-
-## Conclusion
-
-ROM Armor is a critical security feature for protecting AMD platform firmware.
-ROM Armor 3 provides an improved implementation that balances security and performance
-by allowing direct read access while maintaining PSP-mediated write protection.
-Proper configuration and testing are essential to ensure both security and functionality.

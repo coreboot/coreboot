@@ -13,6 +13,8 @@ romstage-y += romstage.c
 romstage-y += charging.c
 romstage-$(CONFIG_SOC_QUALCOMM_CDT) += fw_config_calypso.c
 
+romstage-y += early_gpio.c
+
 ramstage-y += charging.c
 ramstage-$(CONFIG_SOC_QUALCOMM_CDT) += fw_config_calypso.c
 

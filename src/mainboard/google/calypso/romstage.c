@@ -134,6 +134,8 @@ static void update_battery_status(void)
 /* Perform romstage early hardware initialization */
 static void mainboard_setup_peripherals_early(void)
 {
+	configure_gpios_defaults();
+
 	update_battery_status();
 
 	/* Watchdog must be checked first to avoid erasing watchdog info later. */

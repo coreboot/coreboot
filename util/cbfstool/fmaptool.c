@@ -67,12 +67,20 @@ static void list_cbfs_section_names(FILE *out)
 
 	bool subsequent = false;
 	while (cbfs_it) {
-		const char *cur_name =
-				cbfs_sections_iterator_deref(cbfs_it)->name;
-		if (cbfs_sections_iterator_advance(&cbfs_it) && subsequent)
+		const struct flashmap_descriptor *desc =
+				cbfs_sections_iterator_deref(cbfs_it);
+		const char *cur_name = desc->name;
+
+		if (subsequent)
 			fputc(',', out);
 		fputs(cur_name, out);
 		subsequent = true;
+
+		if (desc->flags.f.ext) {
+			fprintf(out, ",ECBFS_%s", cur_name);
+		}
+
+		cbfs_sections_iterator_advance(&cbfs_it);
 	}
 	fputc('\n', out);
 }

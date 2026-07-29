@@ -79,6 +79,13 @@ chip soc/intel/alderlake
 		.vnn_icc_max_ma = 500,
 	}"
 
+	# Configure PCIe clocks as free running
+	register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"
+	register "pcie_clk_config_flag[1]" = "PCIE_CLK_FREE_RUNNING"
+	register "pcie_clk_config_flag[2]" = "PCIE_CLK_FREE_RUNNING"
+	register "pcie_clk_config_flag[3]" = "PCIE_CLK_FREE_RUNNING"
+	register "pcie_clk_config_flag[4]" = "PCIE_CLK_FREE_RUNNING"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref dtt on
@@ -196,8 +203,36 @@ chip soc/intel/alderlake
 		end
 		device ref i2c0 on end
 		device ref heci1 on end
-		device ref pcie_rp7 on end
-		device ref pcie_rp9 on end
+		device ref pcie_rp1 on
+			register "pch_pcie_rp[PCH_RP(1)]" = "{
+				.clk_src = 2,
+				.flags = PCIE_RP_CLK_REQ_UNUSED | PCIE_CLK_FREE_RUNNING,
+			}"
+		end
+		device ref pcie_rp3 on
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 3,
+				.flags = PCIE_RP_CLK_REQ_UNUSED | PCIE_CLK_FREE_RUNNING,
+			}"
+		end
+		device ref pcie_rp7 on
+			register "pch_pcie_rp[PCH_RP(7)]" = "{
+				.clk_src = 0,
+				.flags = PCIE_RP_CLK_REQ_UNUSED | PCIE_CLK_FREE_RUNNING,
+			}"
+		end
+		device ref pcie_rp9 on
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 4,
+				.flags = PCIE_RP_CLK_REQ_UNUSED | PCIE_CLK_FREE_RUNNING,
+			}"
+		end
+		device ref pcie_rp11 on
+			register "pch_pcie_rp[PCH_RP(11)]" = "{
+				.clk_src = 1,
+				.flags = PCIE_RP_CLK_REQ_UNUSED | PCIE_CLK_FREE_RUNNING,
+			}"
+		end
 		device ref uart0 on end
 		device ref uart1 on end
 		device ref p2sb on end

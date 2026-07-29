@@ -96,16 +96,16 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		return;
 	}
 	/*
-	 *+-------+--------+-------------+
-	 *|       | FP_SPI | FP_USB      |
-	 *+-------+--------+-------------+
-	 *| FPMCU | GSPI0  | usb2_port6  |
-	 *+-------+--------+-------------+
+	 *+-------+--------+-------------+--------------------+
+	 *|       | FP_SPI | FP_USB      | FP_UNKNOWN         |
+	 *+-------+--------+-------------+--------------------+
+	 *| FPMCU | GSPI0  | usb2_port6  | GSPI0 & USB2_port6 |
+	 *+-------+--------+-------------+--------------------+
 	 */
-	if (fw_config_probe(FW_CONFIG(FINGERPRINT_INTERFACE, FINGERPRINT_INTERFACE_SPI))) {
-		GPIO_PADBASED_OVERRIDE(padbased_table, fp_spi_enable_pads);
-	} else {
+	if (!fw_config_probe(FW_CONFIG(FINGERPRINT_INTERFACE, FINGERPRINT_INTERFACE_SPI))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, fp_spi_disable_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, fp_spi_enable_pads);
 	}
 	/* Probe fw_config : "IO_PORT" to reconfigure port settings accordingly.
 	 * proto0  : IO_PORT => "USB2A2C_HDMI:0"

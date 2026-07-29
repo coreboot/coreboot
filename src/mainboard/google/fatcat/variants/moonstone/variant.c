@@ -15,18 +15,23 @@ const char *get_wifi_sar_cbfs_filename(void)
 void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 {
 	/*
-	 *+-------+--------+-------------+
-	 *|       | FP_SPI | FP_USB      |
-	 *+-------+--------+-------------+
-	 *| FPMCU | GSPI0  | usb2_port6  |
-	 *+-------+--------+-------------+
+	 *+-------+--------+-------------+--------------------+
+	 *|       | FP_SPI | FP_USB      | FP_UNKNOWN         |
+	 *+-------+--------+-------------+--------------------+
+	 *| FPMCU | GSPI0  | usb2_port6  | GSPI0 & USB2_port6 |
+	 *+-------+--------+-------------+--------------------+
 	 */
+
+	if (fw_config_probe(FW_CONFIG(FINGERPRINT_INTERFACE, FINGERPRINT_INTERFACE_SPI))) {
+		printk(BIOS_INFO, "Disable usb2_port6\n");
+		config->usb2_ports[5] = (struct usb2_port_config) USB2_PORT_EMPTY;
+	}
+
 	if (fw_config_probe(FW_CONFIG(FINGERPRINT_INTERFACE, FINGERPRINT_INTERFACE_USB))) {
 		printk(BIOS_INFO, "Disable GSPI\n");
 		config->serial_io_gspi_mode[PchSerialIoIndexGSPI0] = PchSerialIoDisabled;
-		printk(BIOS_INFO, "usb2_port6 to FP\n");
-		config->usb2_ports[5] = (struct usb2_port_config) USB2_PORT_MID(OC_SKIP);
 	}
+
 	/* Probe fw_config : "IO_PORT" to reconfigure port settings accordingly.
 	 * proto0  : IO_PORT => "USB2A2C_HDMI:0"
 	 * porot1.5: IO_PORT => "USB3C:1"

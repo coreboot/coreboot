@@ -368,6 +368,7 @@ chip soc/intel/pantherlake
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E19)"
 						device ref usb2_port6 on
 							probe FINGERPRINT_INTERFACE FINGERPRINT_INTERFACE_USB
+							probe FINGERPRINT_INTERFACE FINGERPRINT_INTERFACE_UNKNOWN
 						end
 					end
 					chip drivers/usb/acpi
@@ -487,6 +488,7 @@ chip soc/intel/pantherlake
 		end # I2C5
 		device ref gspi0 on
 			probe FINGERPRINT_INTERFACE FINGERPRINT_INTERFACE_SPI
+			probe FINGERPRINT_INTERFACE FINGERPRINT_INTERFACE_UNKNOWN
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
@@ -501,6 +503,7 @@ chip soc/intel/pantherlake
 				register "enable_delay_ms" = "3"
 				device spi 0 on
 					probe FINGERPRINT_INTERFACE FINGERPRINT_INTERFACE_SPI
+					probe FINGERPRINT_INTERFACE FINGERPRINT_INTERFACE_UNKNOWN
 				end
 			end
 		end

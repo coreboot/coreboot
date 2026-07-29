@@ -304,6 +304,7 @@ void variant_devtree_update(void)
 	case SKU_3_PANTHEON:
 	case SKU_4_PANTHEON:
 		cfg->usb2_ports[5].enable = 0;
+		DEV_PTR(usb2_port6)->enabled = 0;
 		spi_fpmcu->enabled = 0;
 		break;
 	case SKU_0_BARD:
@@ -324,6 +325,7 @@ void variant_devtree_update(void)
 	case SKU_7_EKKO:
 		pl2_id = PL2_ID_BARD_EKKO;
 		cfg->usb2_ports[5].enable = 0;
+		DEV_PTR(usb2_port6)->enabled = 0;
 		cfg->usb2_ports[7].enable = 0;
 		cfg->usb2_ports[8].enable = 0;
 		cfg->usb2_ports[9].enable = 0;

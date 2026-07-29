@@ -144,6 +144,9 @@ struct device_tree *fdt_unflatten(const void *blob);
  * Unflattened device tree functions.
  */
 
+/* Create empty device tree */
+struct device_tree *dt_create_empty(void);
+
 /* Figure out how big a device tree would be if it were flattened. */
 uint32_t dt_flat_size(const struct device_tree *tree);
 /* Flatten a device tree into the buffer pointed to by dest. */

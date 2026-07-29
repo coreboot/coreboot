@@ -822,7 +822,24 @@ struct device_tree *fdt_unflatten(const void *blob)
 	return tree;
 }
 
+struct device_tree *dt_create_empty(void)
+{
+	static const struct fdt_header empty_header = {
+		.magic = htobe32(FDT_HEADER_MAGIC),
+		.version = htobe32(FDT_SUPPORTED_VERSION),
+		.last_comp_version = htobe32(16),
+		.reserve_map_offset = htobe32(sizeof(struct fdt_header)),
+	};
 
+	struct device_tree *tree = xzalloc(sizeof(*tree));
+	tree->header = &empty_header;
+	tree->header_size = sizeof(empty_header);
+
+	tree->root = alloc_node();
+	tree->root->name = "";
+
+	return tree;
+}
 
 /*
  * Functions to find the size of the device tree if it was flattened.

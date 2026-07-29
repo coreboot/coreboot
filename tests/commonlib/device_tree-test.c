@@ -238,6 +238,26 @@ static void test_dt_apply_overlay(void **state)
 	free_device_tree(base);
 }
 
+static void test_dt_create_empty(void **state)
+{
+	struct device_tree *tree = dt_create_empty();
+	assert_non_null(tree);
+	assert_non_null(tree->root);
+	assert_string_equal(tree->root->name, "");
+
+	uint32_t flat_size = dt_flat_size(tree);
+	assert_int_not_equal(flat_size, 0);
+
+	void *dest = test_malloc(flat_size);
+	assert_non_null(dest);
+	dt_flatten(tree, dest);
+	assert_true(fdt_is_valid(dest));
+
+	test_free(dest);
+	free(tree->root);
+	free(tree);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -247,6 +267,7 @@ int main(void)
 		cmocka_unit_test(test_fdt_find_prop_in_node),
 		cmocka_unit_test(test_fdt_read_reg_prop),
 		cmocka_unit_test(test_dt_apply_overlay),
+		cmocka_unit_test(test_dt_create_empty),
 	};
 
 	return cb_run_group_tests(tests, setup_device_tree_test_group,

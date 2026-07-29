@@ -102,7 +102,8 @@ $(build-dir):
 $(build-dir)/goswid: | $(build-dir)
 	echo "    SBOM      building goswid tool"
 	cd util/goswid; \
-	GOPATH=$(abspath build/go) GO111MODULE=on go build -modcacherw -o $(abspath $@) ./cmd/goswid
+	GOPATH=$(abspath build/go) GO111MODULE=on go build -buildvcs=false -modcacherw \
+		-o $(abspath $@) ./cmd/goswid
 
 ## Generate all .json files
 

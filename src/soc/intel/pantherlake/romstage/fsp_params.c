@@ -346,6 +346,12 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 				       const struct soc_intel_pantherlake_config *config)
 {
 	const struct soc_intel_pantherlake_power_map *map = get_map(config);
+
+	/* Set PsysPmax if it is available in DT.
+	   PsysPmax is in unit of 1/8 Watt */
+	if (config->psys_pmax_watts)
+		m_cfg->PsysPmax = config->psys_pmax_watts * 8;
+
 	if (!map)
 		return;
 

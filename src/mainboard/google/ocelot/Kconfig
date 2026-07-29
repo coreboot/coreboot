@@ -176,6 +176,7 @@ config DEVICETREE
 	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
 
 config DIMM_SPD_SIZE
+	default 1024 if BOARD_GOOGLE_MODEL_OCICAT || BOARD_GOOGLE_MODEL_KODKOD
 	default 512
 
 config DRIVER_TPM_I2C_ADDR

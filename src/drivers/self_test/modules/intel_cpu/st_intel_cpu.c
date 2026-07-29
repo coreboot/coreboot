@@ -7,9 +7,13 @@
 #include "st_intel_cpu.h"
 
 static struct self_test_t intel_cpu_selftests[] = {
-#if CONFIG(SELF_TEST_INTEL_CPU_UCODE)
-	{.id = ST_CPU_INTEL_MICROCODE, .exec = st_intel_microcode, .state = BS_PAYLOAD_LOAD, .when = BS_ON_EXIT},
-#endif
+	{
+		.id = ST_CPU_INTEL_MICROCODE,
+		.pre_check = CONFIG(SELF_TEST_INTEL_CPU_UCODE),
+		.exec = st_intel_microcode,
+		.state = BS_PAYLOAD_LOAD,
+		.when = BS_ON_EXIT
+	},
 	{.id = ST_INVALID_ID, } /* Terminator */
 };
 

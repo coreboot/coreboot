@@ -4,12 +4,18 @@
 #define _SELF_TEST_H_
 
 #include <commonlib/self_test.h>
+#include <stdbool.h>
 
 struct self_test_t {
 	/*
 	 * A 1-based unique number to identify a self test
 	 */
 	uint32_t id;
+	/*
+	 * Boolean pre-check condition to determine if the test should be registered
+	 * (e.g., CONFIG(SELF_TEST_INTEL_CPU_UCODE)). Must be set to true for the test to run.
+	 */
+	bool pre_check;
 	/*
 	 * Test override function to perform the test.
 	 * the return type of the function should be in struct st_status

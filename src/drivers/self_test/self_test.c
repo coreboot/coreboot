@@ -62,7 +62,7 @@ static void st_log(uint32_t id, struct st_status result)
 
 static void add_selftest(const struct self_test_t *test)
 {
-	if (!test)
+	if (!test || !test->pre_check)
 		return;
 
 	if (test->state >= ST_BS_STATE_MAX || test->when >= ST_BS_SEQ_MAX) {

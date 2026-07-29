@@ -699,6 +699,8 @@ usb_msc_poll(usbdev_t *dev)
 {
 	usbmsc_inst_t *msc = MSC_INST(dev);
 	int prev_ready = msc->ready;
+	unsigned int prev_blocksize = msc->blocksize;
+	unsigned int prev_numblocks = msc->numblocks;
 
 	if (usb_msc_test_unit_ready(dev) == USB_MSC_DETACHED)
 		return;
@@ -714,5 +716,10 @@ usb_msc_poll(usbdev_t *dev)
 		usb_debug("USB msc: not ready (lun %d) -> lun %d\n", msc->lun,
 			  new_lun);
 		msc->lun = new_lun;
+	} else if (prev_ready && msc->ready && (prev_blocksize != msc->blocksize ||
+		    prev_numblocks != msc->numblocks)) {
+		usb_debug("USB msc: geometry changed, recreating disk\n");
+		usb_msc_remove_disk(dev);
+		usb_msc_create_disk(dev);
 	}
 }

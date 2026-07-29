@@ -75,7 +75,9 @@ enum {
 	LONGOPT_ESPI0_CONFIG0	= 266,
 	LONGOPT_ESPI1_CONFIG0	= 267,
 	LONGOPT_ESPI0_CONFIG1	= 268,
-	LONGOPT_ESPI1_CONFIG1	= 269
+	LONGOPT_ESPI1_CONFIG1	= 269,
+	LONGOPT_SEV_NVRAM_BASE	= 270,
+	LONGOPT_SEV_NVRAM_SIZE	= 271
 };
 
 static const char optstring[] = {AMDFW_OPT_CONFIG, ':',
@@ -98,6 +100,8 @@ static struct option long_options[] = {
 	{"rpmc-nvram-size",  required_argument, 0, LONGOPT_RPMC_NVRAM_SIZE },
 	{"ab-nvram-base",    required_argument, 0, LONGOPT_AB_NVRAM_BASE },
 	{"ab-nvram-size",    required_argument, 0, LONGOPT_AB_NVRAM_SIZE },
+	{"sev-nvram-base",   required_argument, 0, LONGOPT_SEV_NVRAM_BASE },
+	{"sev-nvram-size",   required_argument, 0, LONGOPT_SEV_NVRAM_SIZE },
 	{"soft-fuse",        required_argument, 0, AMDFW_OPT_FUSE },
 	{"token-unlock",           no_argument, 0, AMDFW_OPT_UNLOCK },
 	{"whitelist",        required_argument, 0, AMDFW_OPT_WHITELIST },
@@ -599,6 +603,16 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 		case LONGOPT_AB_NVRAM_SIZE:
 			/* PSP legacy AB_RECOVERY NV size */
 			register_amd_psp_fw_addr(AMD_FW_PSP_AB_NVRAM, sub, 0, optarg);
+			sub = instance = 0;
+			break;
+		case LONGOPT_SEV_NVRAM_BASE:
+			/* PSP SEV NV base */
+			register_amd_psp_fw_addr(AMD_FW_PSP_SEV_DATA, sub, optarg, 0);
+			sub = instance = 0;
+			break;
+		case LONGOPT_SEV_NVRAM_SIZE:
+			/* PSP SEV NV size */
+			register_amd_psp_fw_addr(AMD_FW_PSP_SEV_DATA, sub, 0, optarg);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_CONFIG:

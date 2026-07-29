@@ -1161,7 +1161,8 @@ static struct psp_directory_table *integrate_psp_firmwares(context *ctx,
 
 			count++;
 		} else if (fw_table[i].type == AMD_FW_PSP_NVRAM ||
-			   fw_table[i].type == AMD_FW_PSP_RPMC_NVRAM) {
+			   fw_table[i].type == AMD_FW_PSP_RPMC_NVRAM ||
+			   fw_table[i].type == AMD_FW_PSP_SEV_DATA) {
 			if (fw_table[i].filename == NULL) {
 				if (fw_table[i].size == 0)
 					continue;

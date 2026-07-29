@@ -58,6 +58,10 @@ endif
 # Use additional Soft Fuse bits specified in Kconfig
 PSP_SOFTFUSE_BITS += $(call strip_quotes, $(CONFIG_PSP_SOFTFUSE_BITS))
 
+# type = 0x38
+PSP_SEV_NVRAM_BASE=$(call get_fmap_value,FMAP_SECTION_PSP_SEV_NVRAM_START)
+PSP_SEV_NVRAM_SIZE=$(call get_fmap_value,FMAP_SECTION_PSP_SEV_NVRAM_SIZE)
+
 # type = 0x3a
 ifeq ($(CONFIG_HAVE_PSP_WHITELIST_FILE),y)
 PSP_WHITELIST_FILE=$(CONFIG_PSP_WHITELIST_FILE)
@@ -118,6 +122,9 @@ OPT_PSP_BIOSBIN_SIZE=$(call add_opt_prefix, $(PSP_BIOSBIN_SIZE), --bios-uncomp-s
 OPT_APOB_NV_SIZE=$(call add_opt_prefix, $(APOB_NV_SIZE), --apob-nv-size)
 OPT_APOB_NV_BASE=$(call add_opt_prefix, $(APOB_NV_BASE), --apob-nv-base)
 
+OPT_PSP_SEV_NVRAM_BASE=$(call add_opt_prefix, $(PSP_SEV_NVRAM_BASE), --sev-nvram-base)
+OPT_PSP_SEV_NVRAM_SIZE=$(call add_opt_prefix, $(PSP_SEV_NVRAM_SIZE), --sev-nvram-size)
+
 OPT_EFS_ESPI_CONFIG=$(call add_opt_prefix, $(CONFIG_EFS_ESPI0_CONFIG0), --espi0-config0)
 OPT_EFS_ESPI_CONFIG+=$(call add_opt_prefix, $(CONFIG_EFS_ESPI1_CONFIG0), --espi1-config0)
 OPT_EFS_ESPI_CONFIG+=$(call add_opt_prefix, $(CONFIG_EFS_ESPI0_CONFIG1), --espi0-config1)
@@ -148,6 +155,8 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_APOB_ADDR) \
 		$(OPT_APOB_NV_SIZE) \
 		$(OPT_APOB_NV_BASE) \
+		$(OPT_PSP_SEV_NVRAM_BASE) \
+		$(OPT_PSP_SEV_NVRAM_SIZE) \
 		$(OPT_UCODE_FILES) \
 		$(OPT_DEBUG_AMDFWTOOL) \
 		$(OPT_PSP_BIOSBIN_FILE) \

@@ -29,9 +29,6 @@ the command:
 Code reviews are done in [the project's Gerrit
 instance](https://review.coreboot.org/).
 
-The code may be browsed via [coreboot's Gitiles
-instance](https://review.coreboot.org/plugins/gitiles/coreboot/+/HEAD).
-
 The coreboot project also maintains a
 [mirror](https://github.com/coreboot/coreboot) of the project on github.
 This is read-only, as coreboot does not accept github pull requests,

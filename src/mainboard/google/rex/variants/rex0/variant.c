@@ -6,10 +6,6 @@
 #include <sar.h>
 #include <variant/gpio.h>
 
-#define TCP2_AUX_SHIFT		4
-#define TCP_AUX_MASK		0x03
-#define TCP_AUX_FOLLOW_CC1	0x01
-
 const char *get_wifi_sar_cbfs_filename(void)
 {
 	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI));
@@ -41,7 +37,6 @@ void variant_update_soc_chip_config(struct soc_intel_meteorlake_config *config)
 		 * Configure TCP2 for
 		 * "SBU orientation not handled by external retimer"
 		 */
-		config->tcss_aux_ori &= ~(TCP_AUX_MASK << TCP2_AUX_SHIFT);
-		config->tcss_aux_ori |= TCP_AUX_FOLLOW_CC1 << TCP2_AUX_SHIFT;
+		config->tcss_ports[2] = (struct tcss_port_config)TCSS_PORT_CC1(OC_SKIP);
 	}
 }

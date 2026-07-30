@@ -38,6 +38,7 @@ chip soc/intel/pantherlake
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 x1 Type-A Con #0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 x1 Type-A Con #1
 
+	register "tcss_ports[0]" = "TCSS_PORT_EMPTY_CC1"
 	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 	register "tcss_ports[3]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 
@@ -49,9 +50,6 @@ chip soc/intel/pantherlake
 	register "ddi_ports_config" = "{
                 [DDI_PORT_A] = DDI_ENABLE_HPD,
         }"
-
-	# TCSS USB3
-	register "tcss_aux_ori" = "1"
 
 	# Enable CNVi Wi-Fi and Bluetooth
 	register "cnvi_wifi_core" = "true"

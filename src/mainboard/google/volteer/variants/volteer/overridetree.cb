@@ -41,7 +41,7 @@ chip soc/intel/tigerlake
 			},
 		},
 	}"
-	register "TcssAuxOri" = "1"
+	register "tcss_ports[0]" = "TCSS_PORT_CC1(OC3)"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E10, .pad_auxn_dc = GPP_E13}"
 
 	register "HybridStorageMode" = "1"

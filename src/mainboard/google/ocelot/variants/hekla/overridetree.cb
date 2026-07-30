@@ -254,11 +254,11 @@ chip soc/intel/pantherlake
 				# TCP0 (DP-1) for port C0
 				register "device[2].name" = ""DD02""
 				register "device[2].use_pld" = "true"
-				register "device[2].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(2, 1))"
 				# TCP1 (DP-2) for port C1
 				register "device[3].name" = ""DD03""
 				register "device[3].use_pld" = "true"
-				register "device[3].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+				register "device[3].pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(1, 1))"
 				device generic 0 on end
 			end
 		end

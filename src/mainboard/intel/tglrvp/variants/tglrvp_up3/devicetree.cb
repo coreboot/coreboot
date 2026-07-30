@@ -63,9 +63,6 @@ chip soc/intel/tigerlake
 		[PchSerialIoIndexUART2] = PchSerialIoPci,
 	}"
 
-	# TCSS USB3
-	register "TcssAuxOri" = "0"
-
 	# Enable S0ix
 	register "s0ix_enable" = "true"
 

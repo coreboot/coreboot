@@ -9,7 +9,7 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw2" = "GPP_E"
 
 	# TCSS
-	register "tcss_aux_ori" = "1"
+	register "tcss_ports[0]" = "TCSS_PORT_CC1(OC_SKIP)"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_A5, .pad_auxn_dc = GPP_A6}"
 
 	# Enable CNVi Bluetooth

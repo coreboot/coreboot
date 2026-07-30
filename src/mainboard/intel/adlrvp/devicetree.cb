@@ -129,9 +129,6 @@ chip soc/intel/alderlake
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
-	# TCSS USB3
-	register "tcss_aux_ori" = "0"
-
 	register "s0ix_enable" = "true"
 	register "dptf_enable" = "true"
 

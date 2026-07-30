@@ -35,6 +35,10 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_GSC_AP_INT.addr, ACTIVE_HIGH, gpio_get(GPIO_GSC_AP_INT),
 			"TPM interrupt"},
 #endif
+		{GPIO_SNDW_AMP_0_ENABLE.addr, ACTIVE_HIGH, gpio_get(GPIO_SNDW_AMP_0_ENABLE),
+			"Speaker 0 enable"},
+		{GPIO_SNDW_AMP_1_ENABLE.addr, ACTIVE_HIGH, gpio_get(GPIO_SNDW_AMP_1_ENABLE),
+			"Speaker 1 enable"},
 	};
 
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));

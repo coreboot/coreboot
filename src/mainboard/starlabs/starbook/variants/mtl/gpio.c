@@ -109,11 +109,11 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_C07, NONE, DEEP, NF1),		/* SML Data */
 
 	/* High-Definition Audio */
-	PAD_CFG_NF(GPP_D10, NATIVE, DEEP, NF1),				/* Clock */
-	PAD_CFG_NF(GPP_D11, NATIVE, DEEP, NF1),				/* Sync */
-	PAD_CFG_NF(GPP_D12, NATIVE, DEEP, NF1),				/* Data Output */
-	PAD_CFG_NF(GPP_D13, NATIVE, DEEP, NF1),				/* Data Input */
-	PAD_CFG_NF(GPP_D17, NATIVE, DEEP, NF1),				/* Reset */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D10, NATIVE, DEEP, NF1),	/* Clock */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D11, NATIVE, DEEP, NF1),	/* Sync */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D12, NATIVE, DEEP, NF1),	/* Data Output */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D13, NATIVE, DEEP, NF1),	/* Data Input */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D17, NATIVE, DEEP, NF1),	/* Reset */
 
 	/* PCH */
 	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF1),				/* C10 Gate */

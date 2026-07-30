@@ -46,18 +46,10 @@ chip soc/intel/alderlake
 			register "tcss_ports" = "{
 				[0] = TCSS_PORT_DEFAULT(OC_SKIP), // 5G module
 				[1] = TCSS_PORT_DEFAULT(OC_SKIP), // USB2.0 + USB 3.0 column with RJ45
-				[2] = TCSS_PORT_DEFAULT(OC_SKIP), // USB Type-C no TBT
+				[2] = TCSS_PORT_CC1(OC_SKIP), // USB Type-C no TBT
 				[3] = TCSS_PORT_DEFAULT(OC_SKIP), // USB-A 3.0
 			}"
 
-			# SOC Aux orientation override:
-			# This is a bitfield that corresponds to up to 4 TCSS ports.
-			# Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.
-			# Bits (4,5) allocated for TCSS Port3 configuration and Bits (6,7)for TCSS Port4.
-			# Bit0,Bit2,Bit4,Bit6 set to "1" indicates no retimer on USBC Ports
-			# Bit1,Bit3,Bit5,Bit7 set to "0" indicates Aux lines are not swapped on the
-			# motherboard to USBC connector
-			register "tcss_aux_ori" = "0x10"
 			register "typec_aux_bias_pads[2]" = "{.pad_auxp_dc = GPP_A21, .pad_auxn_dc = GPP_A22}"
 
 			chip drivers/usb/acpi

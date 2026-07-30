@@ -36,11 +36,6 @@ chip soc/intel/meteorlake
 	register "pch_slp_sus_min_assertion_width" = "SLP_SUS_ASSERTION_1_S"
 	register "pch_slp_a_min_assertion_width" = "SLP_A_ASSERTION_98_MS"
 
-	# SOC Aux orientation override for Type-C retimers:
-	# Two ports each have one Hayden Bridge retimer, aux lines not swapped.
-	# Even bits (0,2,4,6): 0 = retimer present; Odd bits (1,3,5,7): 0 = aux not swapped.
-	register "tcss_aux_ori" = "0x00"
-
 	device domain 0 on
 		subsystemid 0xf111 0x0003 inherit
 

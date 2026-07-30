@@ -53,10 +53,7 @@ chip soc/intel/alderlake
 	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
 	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x01515"
 
-	# Bit 0 - C0 has no redriver, so enable SBU muxing in the SoC.
-	# Bit 2 - C1 has a redriver which does SBU muxing.
-	# Bit 1,3 - AUX lines are not swapped on the motherboard for either C0 or C1.
-	register "tcss_aux_ori" = "1"
+	register "tcss_ports[0]" = "TCSS_PORT_CC1(OC_SKIP)"
 
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 

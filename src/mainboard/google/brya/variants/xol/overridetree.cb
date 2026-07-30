@@ -90,12 +90,11 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3_A1
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"
 
-	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC0)"
+	register "tcss_ports[0]" = "TCSS_PORT_CC1(OC0)"
 	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"
-	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+	register "tcss_ports[2]" = "TCSS_PORT_CC1(OC_SKIP)"
 	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"
 
-	register "tcss_aux_ori" = "0x11"
 
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 	register "typec_aux_bias_pads[2]" = "{.pad_auxp_dc = GPP_A19, .pad_auxn_dc = GPP_A20}"

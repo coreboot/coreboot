@@ -18,26 +18,17 @@ const char *get_wifi_sar_cbfs_filename(void)
 
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
-	/*
-	* SOC Aux orientation override:
-	* This is a bitfield that corresponds to up to 4 TCSS ports.
-	* Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.
-	* Bit0, Bit2 set to "0" indicates has retimer on TCSS Port.
-	* Bit0, Bit2 set to "1" indicates no retimer on TCSS Port.
-	* Bit1, Bit3 set to "0" indicates Aux lines are not swapped on TCSS Port.
-	* Bit1, Bit3 set to "1" indicates Aux lines are swapped on TCSS Port.
-	*/
-
 	if (fw_config_probe(FW_CONFIG(DB_AUX_BIAS, SOC))) {
 		printk(BIOS_INFO, "DB DP AUX BIAS connect to SOC.\n");
-		config->tcss_aux_ori = 5;
+		config->tcss_ports[0] = (struct tcss_port_config)TCSS_PORT_CC1(OC_SKIP);
+		config->tcss_ports[1] = (struct tcss_port_config)TCSS_PORT_CC1(OC_SKIP);
 		config->typec_aux_bias_pads[0].pad_auxp_dc = GPP_A19;
 		config->typec_aux_bias_pads[0].pad_auxn_dc = GPP_A20;
 		config->typec_aux_bias_pads[1].pad_auxp_dc = GPP_E22;
 		config->typec_aux_bias_pads[1].pad_auxn_dc = GPP_E23;
 	} else {
 		printk(BIOS_INFO, "DB DP AUX BIAS connect to redriver IC.\n");
-		config->tcss_aux_ori = 4;
+		config->tcss_ports[1] = (struct tcss_port_config)TCSS_PORT_CC1(OC_SKIP);
 		config->typec_aux_bias_pads[1].pad_auxp_dc = GPP_E22;
 		config->typec_aux_bias_pads[1].pad_auxn_dc = GPP_E23;
 	}

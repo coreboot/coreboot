@@ -89,11 +89,6 @@ chip soc/intel/alderlake
 
 	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 
-	# Bit 0 - C0 has no redriver, so enable SBU muxing in the SoC.
-	# Bit 2 - C1 has a redriver which does SBU muxing.
-	# Bit 1,3 - AUX lines are not swapped on the motherboard for either C0 or C1.
-	register "tcss_aux_ori" = "0"
-
 	# HD Audio
 	register "pch_hda_dsp_enable" = "true"
 	register "pch_hda_audio_link_hda_enable" = "1"

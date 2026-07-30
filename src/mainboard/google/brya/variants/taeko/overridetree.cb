@@ -72,7 +72,7 @@ chip soc/intel/alderlake
 		.v1p05_icc_max_ma = 500,
 		.vnn_sx_voltage_mv = 1250,
 	}"
-	register "tcss_aux_ori" = "1"
+	register "tcss_ports[0]" = "TCSS_PORT_CC1(OC0)"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 	register "sagv" = "SaGv_Enabled"
 

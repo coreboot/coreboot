@@ -59,15 +59,6 @@ chip soc/intel/alderlake
 	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
 	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x11515"
 
-	# SOC Aux orientation override:
-	# This is a bitfield that corresponds to up to 4 TCSS ports.
-	# Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.
-	# TcssAuxOri = 0101b
-	# Bit0,Bit2 set to "1" indicates no retimer on USBC Ports
-	# Bit1,Bit3 set to "0" indicates Aux lines are not swapped on the
-	# motherboard to USBC connector
-	register "tcss_aux_ori" = "0x1"
-
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_A21, .pad_auxn_dc = GPP_A22}"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C0
@@ -86,7 +77,7 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A3
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A4
 
-	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)" # USB3_C0
+	register "tcss_ports[0]" = "TCSS_PORT_CC1(OC_SKIP)" # USB3_C0
 	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A port A0
 
 	register "serial_io_i2c_mode" = "{

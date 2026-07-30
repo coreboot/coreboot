@@ -23,7 +23,7 @@ end
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 	register "platform_pmax" = "143"
-	register "tcss_aux_ori" = "1"
+	register "tcss_ports[0]" = "TCSS_PORT_CC1(OC0)"
 	# Acoustic settings
 	register "acoustic_noise_mitigation" = "true"
 	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_8"

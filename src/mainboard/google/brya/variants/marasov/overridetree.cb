@@ -102,15 +102,8 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
-
-	# SOC Aux orientation override:
-	# This is a bitfield that corresponds to up to 4 TCSS ports.
-	# Bits (0,1) are allocated for TCSS Port1 configuration and Bits (2,3) for TCSS Port2.
-	# TcssAuxOri = 0101b
-	# Bit0, Bit2 set to "1" indicates no retimer on USB-C Ports
-	# Bit1, Bit3 set to "0" indicates Aux lines are not swapped on the
 	# motherboard to USB-C connector
-	register "tcss_aux_ori" = "1"
+	register "tcss_ports[0]" = "TCSS_PORT_CC1(OC0)"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22,
                                               .pad_auxn_dc = GPP_E23}"
 

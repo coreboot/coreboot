@@ -273,7 +273,16 @@ config EDK2_SECURE_BOOT_SUPPORT
 	default y if EDK2_REPO_MRCHROMEBOX && SMMSTORE
 	help
 	  Select this option to enable UEFI SecureBoot support in edk2.
-	  UEFI SecureBoot will be disabled by default and can be enabled from the menu option.
+	  By default, keys are enrolled on first boot but Secure Boot stays
+	  disabled until enabled from the setup menu (or via
+	  EDK2_SECURE_BOOT_DEFAULT_ENABLE config).
+
+config EDK2_SECURE_BOOT_DEFAULT_ENABLE
+	bool "Enable UEFI Secure Boot by default"
+	depends on EDK2_SECURE_BOOT_SUPPORT && EDK2_REPO_MRCHROMEBOX
+	help
+	  After EnrollDefaultKeys provisions the default PK/KEK/db/dbx on
+	  first boot, leave Secure Boot enabled instead of forcing it off.
 
 config EDK2_USE_LVGL_RENDERER
 	bool "Use the LVGL graphical setup renderer"

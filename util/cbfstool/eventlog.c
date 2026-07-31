@@ -169,6 +169,7 @@ static void eventlog_print_type(const struct event_header *event)
 		{ELOG_TYPE_PSR_DATA_BACKUP, "PSR data backup"},
 		{ELOG_TYPE_PSR_DATA_LOST, "PSR data lost"},
 		{ELOG_TYPE_FW_SPLASH_SCREEN, "Firmware Splash Screen"},
+		{ELOG_TYPE_RAMDUMP, "RAM Dump Mode"},
 		{ELOG_TYPE_FW_CSE_SYNC, "Firmware CSE sync"},
 		{ELOG_TYPE_LOW_BATTERY_INDICATOR, "Low Battery boot"},
 		{ELOG_TYPE_EOL, "End of log"},

@@ -355,6 +355,8 @@ void platform_romstage_main(void)
 	chipset_dload_mode_active = qclib_check_dload_mode();
 
 	if (chipset_dload_mode_active) {
+		printk(BIOS_INFO, "Ramdump mode detected, logging event.\n");
+		elog_add_event(ELOG_TYPE_RAMDUMP);
 		if (CONFIG(MAINBOARD_RAMDUMP_LED_NOTIFICATION)) {
 			if (google_chromeec_lightbar_sequence(
 				CONFIG_MAINBOARD_LIGHTBAR_CMD_SEQ_RAMDUMP))

@@ -86,16 +86,16 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B25:     Not used */
 	PAD_NC(GPP_B25, NONE),
 
-	/* GPP_C00:     GPP_C0_SMBCLK ==> SMB_CLK */
-	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
-	/* GPP_C01:     GPP_C1_SMBDATA ==> SMB_DAT */
-	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
+	/* GPP_C00:     Not used */
+	PAD_NC(GPP_C00, NONE),
+	/* GPP_C01:     Not used */
+	PAD_NC(GPP_C01, NONE),
 	/* GPP_C02:     Not used */
 	PAD_NC(GPP_C02, NONE),
-	/* GPP_C03:     TBT_SMB_CLK */
-	PAD_CFG_NF(GPP_C03, NONE, DEEP, NF1),
-	/* GPP_C04:     TBT_SMB_DATA */
-	PAD_CFG_NF(GPP_C04, NONE, DEEP, NF1),
+	/* GPP_C03:     Not used */
+	PAD_NC(GPP_C03, NONE),
+	/* GPP_C04:     Not used */
+	PAD_NC(GPP_C04, NONE),
 	/* GPP_C05:     NC */
 	PAD_NC(GPP_C05, NONE),
 	/* GPP_C06:     NC */

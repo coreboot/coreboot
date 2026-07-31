@@ -11,7 +11,8 @@ Device (WLCO)
 
 	Method (_STA)
 	{
-		Return (0xf)
+		/* Present/enabled/functional, but hide from UI (no Windows driver) */
+		Return (0xb)
 	}
 
 	Name (_CRS, ResourceTemplate ()

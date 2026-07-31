@@ -63,6 +63,9 @@ static void fill_fspm_igd_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 			*ddi_port_upds[i].hpd = 0;
 		}
 	}
+
+	/* FSP should let coreboot set subsystem IDs, which are read/write-once */
+	m_cfg->HgSubSystemId = 0;
 }
 
 static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg, const config_t *config)

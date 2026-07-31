@@ -114,10 +114,11 @@ _init64:
 
 _entry64:
 	/* Store current stack pointer and set up new stack. */
-	movq %rsp, %rax
+	movq %rsp, old_stack_ptr
 	movabs	$_estack, %rsp
 
-	push %rax
+	/* Align stack to 16-byte boundary per System V ABI. */
+	andq	$-16, %rsp
 
 	fninit
 	movq %cr0, %rax
@@ -135,7 +136,12 @@ _entry64:
 	/* %rax has the return value - pass it on unmolested */
 _leave:
 	/* Restore old stack. */
-	pop %rsp
+	movq old_stack_ptr, %rsp
 
 	/* Return to the original context. */
 	ret
+
+.data
+.align 8
+old_stack_ptr:
+	.quad 0

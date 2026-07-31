@@ -88,7 +88,7 @@ chip soc/intel/meteorlake
 
 				## Passive Policy
 				register "policies.passive" = "{
-						[0] = DPTF_PASSIVE(CPU, CPU, 65, 1000),
+						[0] = DPTF_PASSIVE(CPU, CPU, 85, 1000),
 				}"
 
 				## Critical Policy

@@ -131,7 +131,7 @@ Method (EBIF, 2, Serialized)
 	Arg1[5] = (Local0 * 10) / 100
 
 	/* Design Low Capacity */
-	Arg1[6] = (Local0 * 33) / 100
+	Arg1[6] = (Local0 * 3) / 100
 
 	/* Granularity */
 	Arg1[7] = Local0 / 100
@@ -181,7 +181,7 @@ Method (EBIX, 2, Serialized)
 	Arg1[6] = (Local0 * 10) / 100
 
 	/* Design Low Capacity */
-	Arg1[7] = (Local0 * 33) / 100
+	Arg1[7] = (Local0 * 3) / 100
 
 	/* Cycle Count */
 	Arg1[8] = R (BCCY)

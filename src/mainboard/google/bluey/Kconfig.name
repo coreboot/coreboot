@@ -19,3 +19,6 @@ config BOARD_GOOGLE_QUARTZ
 
 config BOARD_GOOGLE_MICA
 	bool "->  Mica"
+
+config BOARD_GOOGLE_ANNITE
+	bool "->  Annite"

@@ -27,6 +27,7 @@
 #define IMEM_COOKIE_TYPE_OFFSET 108
 #define IMEM_STORAGE_SELECT_OFFSET 28
 #define DLOAD_STORAGE 0x02
+#define DLOAD_AP_RESET_SCHEDULED_DELAY_MS 10000 /* 10sec */
 
 static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
 static bool battery_present = true;
@@ -353,6 +354,9 @@ void platform_romstage_main(void)
 					"Failed to send LED/lightbar(0x%x) command to EC.\n",
 					CONFIG_MAINBOARD_LIGHTBAR_CMD_SEQ_RAMDUMP);
 		}
+		/* Scheduled AP reset using EC hostcmd during DLOAD mode */
+		if (CONFIG(EC_GOOGLE_CHROMEEC))
+			google_chromeec_apreset_schedule(DLOAD_AP_RESET_SCHEDULED_DELAY_MS);
 	}
 
 	mainboard_setup_peripherals_early();

@@ -148,10 +148,10 @@ static void i945_setup_bars(void)
 	pci_write_config32(HOST_BRIDGE, X60BAR, DEFAULT_X60BAR | 1);
 
 	/* vram size from CMOS option */
-	gfxsize = get_uint_option("gfx_uma_size", 2);	/* 2 for 8MB */
+	gfxsize = get_uint_option("gfx_uma_size", 3);	/* 3 for 16MB */
 	/* make sure no invalid setting is used */
 	if (gfxsize > 6)
-		gfxsize = 2;
+		gfxsize = 3;
 	pci_write_config16(HOST_BRIDGE, GGC, ((gfxsize + 1) << 4));
 	/* TSEG 2M, This amount can easily be covered by SMRR MTRR's,
 	   which requires to have TSEG_BASE aligned to TSEG_SIZE. */

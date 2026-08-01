@@ -102,7 +102,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 
 void bootblock_mainboard_early_init(void)
 {
-	if (CONFIG(DRIVERS_UART_8250IO))
+	if (CONFIG(HAVE_EXTERNAL_LPC_CARD))
 		try_enabling_LPC47N207_uart();
 
 	setup_sio_gpios();

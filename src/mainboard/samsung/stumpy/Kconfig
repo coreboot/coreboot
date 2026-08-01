@@ -19,9 +19,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_ITE_IT8772F
 	select HAVE_IFD_BIN
 	select HAVE_ME_BIN
-# LPC47N207 selected for external LPC card
-# not on board, should be made selectable.
-	select SUPERIO_SMSC_LPC47N207
 	select INTEL_INT15
 	select SANDYBRIDGE_VBOOT_IN_ROMSTAGE
 
@@ -33,5 +30,9 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	default "Stumpy"
+
+config HAVE_EXTERNAL_LPC_CARD
+	bool "Enable external LPC47N207 board"
+	select SUPERIO_SMSC_LPC47N207
 
 endif # BOARD_SAMSUNG_STUMPY

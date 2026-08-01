@@ -32,6 +32,19 @@
 #define LPC_GEN2_DEC		0x88 /* LPC IF Generic Decode Range 2 */
 #define LPC_GEN3_DEC		0x8c /* LPC IF Generic Decode Range 3 */
 #define LPC_GEN4_DEC		0x90 /* LPC IF Generic Decode Range 4 */
+/* LPC_GENx_DEC register fields */
+#define LPC_LGIR_AMASK_MASK	(0xfc << 16)
+#define LPC_LGIR_ADDR_MASK	0xfffc
+#define LPC_LGIR_EN		(1 << 0)
+
+/*
+ * Encode a LPC_GENx_DEC value from base address and window size.
+ * Size is 4..256 (4-byte steps); base must be 4-byte aligned.
+ */
+#define LPC_IO(base, size) ( \
+	((LPC_LGIR_AMASK_MASK) & (((size) - 1) << 16)) | \
+	((base) & LPC_LGIR_ADDR_MASK) | LPC_LGIR_EN)
+
 
 /* Only available on ICH10 and newer*/
 #define LGMR			0x98 /* LPC Generic Memory Range */

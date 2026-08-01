@@ -49,6 +49,9 @@ config CONSOLE_POST
 config DIMM_MAX
 	default 1
 
+config DIMM_SPD_SIZE
+	default 1024	# DDR5
+
 config POST_DEVICE
 	default n
 

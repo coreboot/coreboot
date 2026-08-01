@@ -36,4 +36,7 @@ config HAVE_EXTERNAL_LPC_CARD
 	bool "Enable external LPC47N207 board"
 	select SUPERIO_SMSC_LPC47N207
 
+config CBFS_SIZE
+	default 0x680000
+
 endif # BOARD_SAMSUNG_STUMPY

@@ -351,12 +351,17 @@ int vbnv_cmos_failed(void)
 	return rtc_failure();
 }
 
+int acpi_get_sleep_type(void)
+{
+	return acpi_sleep_from_pm1(inl(ACPI_BASE_ADDRESS + PM1_CNT));
+}
+
 int platform_is_resuming(void)
 {
 	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))
 		return 0;
 
-	return acpi_sleep_from_pm1(inl(ACPI_BASE_ADDRESS + PM1_CNT)) == ACPI_S3;
+	return acpi_get_sleep_type() == ACPI_S3;
 }
 
 void poweroff(void)

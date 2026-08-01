@@ -12,6 +12,7 @@ bootblock-y += ../../../cpu/intel/car/non-evict/cache_as_ram.S
 bootblock-y += ../../../cpu/intel/car/bootblock.c
 bootblock-y += ../../../cpu/x86/early_reset.S
 bootblock-y += bootblock/bootblock.c
+bootblock-y += pmutil.c
 
 romstage-y += iosf.c
 romstage-y += memmap.c

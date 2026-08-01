@@ -275,14 +275,14 @@ void verstage_main(void)
 	 * check the return value here because vb2api_fw_phase1 will catch
 	 * invalid secdata and tell us what to do (=reboot). */
 	timestamp_add_now(TS_TPMINIT_START);
-	rv = vboot_setup_tpm(ctx);
-	if (rv == TPM_SUCCESS) {
+	tpm_rc = vboot_setup_tpm(ctx);
+	if (tpm_rc == TPM_SUCCESS) {
 		antirollback_read_space_firmware(ctx);
 		antirollback_read_space_kernel(ctx);
 	} else {
-		vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_S_ERROR, rv);
+		vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_S_ERROR, tpm_rc);
 		if (CONFIG(TPM_SETUP_HIBERNATE_ON_ERR) &&
-				rv == TPM_CB_COMMUNICATION_ERROR) {
+				tpm_rc == TPM_CB_COMMUNICATION_ERROR) {
 			printk(BIOS_ERR, "Failed to communicate with TPM\n"
 					"Next reboot will hibernate to reset TPM");
 			/* Command the EC to hibernate on next AP shutdown */

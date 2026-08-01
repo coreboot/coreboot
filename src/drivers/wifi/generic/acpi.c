@@ -1326,7 +1326,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 	acpigen_write_scope_end(); /* Scope */
 
 	/* Fill Bluetooth companion SAR related ACPI structures and DSM functions. */
-	if (sar_loaded && is_dev_enabled(config->bluetooth_companion)) {
+	if (sar_loaded && config && is_dev_enabled(config->bluetooth_companion)) {
 		const char *path = acpi_device_path(config->bluetooth_companion);
 		if (path) {	/* Bluetooth device under USB Hub scope or PCIe root port */
 			acpigen_write_scope(path);

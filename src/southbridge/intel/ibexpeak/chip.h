@@ -3,6 +3,7 @@
 #ifndef SOUTHBRIDGE_INTEL_IBEXPEAK_CHIP_H
 #define SOUTHBRIDGE_INTEL_IBEXPEAK_CHIP_H
 
+#include <southbridge/intel/common/lpc_def.h>
 #include <southbridge/intel/common/spi.h>
 #include <types.h>
 #include "pch.h"

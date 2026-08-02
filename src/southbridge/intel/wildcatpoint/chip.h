@@ -4,6 +4,7 @@
 #define _SOC_INTEL_BROADWELL_PCH_CHIP_H_
 
 #include <types.h>
+#include <southbridge/intel/common/lpc_def.h>
 
 struct southbridge_intel_wildcatpoint_config {
 	/* GPE configuration */

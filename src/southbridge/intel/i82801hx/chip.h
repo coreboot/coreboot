@@ -5,6 +5,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <southbridge/intel/common/lpc_def.h>
 
 enum {
 	THTL_DEF = 0,

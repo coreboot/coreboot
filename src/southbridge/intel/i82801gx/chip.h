@@ -3,6 +3,7 @@
 #ifndef SOUTHBRIDGE_INTEL_I82801GX_CHIP_H
 #define SOUTHBRIDGE_INTEL_I82801GX_CHIP_H
 
+#include <southbridge/intel/common/lpc_def.h>
 #include <types.h>
 
 enum sata_mode {

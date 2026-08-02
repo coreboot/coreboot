@@ -9,6 +9,7 @@
 #else
 
 #include <stdint.h>
+#include <southbridge/intel/common/lpc_def.h>
 
 struct southbridge_intel_lynxpoint_config {
 	/**

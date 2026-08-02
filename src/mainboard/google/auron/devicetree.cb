@@ -28,8 +28,8 @@ chip northbridge/intel/broadwell
 
 		chip southbridge/intel/wildcatpoint
 			# EC range is 0x800-0x9ff
-			register "gen1_dec" = "0x00fc0801"
-			register "gen2_dec" = "0x00fc0901"
+			register "gen1_dec" = "LPC_IO(0x800, 0x100)"
+			register "gen2_dec" = "LPC_IO(0x900, 0x100)"
 
 			# EC_SMI is GPIO34
 			register "alt_gp_smi_en" = "0x0004"

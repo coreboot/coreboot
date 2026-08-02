@@ -57,8 +57,8 @@ chip northbridge/intel/sandybridge
 			}"
 
 			# EC range is 0xFD60 (EC_IO) and 0x68/0x6C
-			register "gen1_dec" = "0x0004fd61"
-			register "gen2_dec" = "0x00040069"
+			register "gen1_dec" = "LPC_IO(0xfd60, 0x8)"
+			register "gen2_dec" = "LPC_IO(0x68, 0x8)"
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "true"

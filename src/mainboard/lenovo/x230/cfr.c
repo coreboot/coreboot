@@ -12,7 +12,6 @@ static struct sm_obj_form system = {
 		&sata_mode,
 		&gfx_uma_size,
 		&hyper_threading,
-		&me_state,
 		&nmi,
 		&power_on_after_fail,
 		NULL

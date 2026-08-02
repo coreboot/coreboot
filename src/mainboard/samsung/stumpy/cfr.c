@@ -9,8 +9,6 @@ static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]) {
 		&gfx_uma_size,
-		&me_state,
-		&me_state_prev,
 		&nmi,
 		&sata_mode,
 		NULL

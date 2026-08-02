@@ -10,8 +10,7 @@
 static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]){&debug_level, &gfx_uma_size,
-						 &me_state,
-						 &me_state_prev, &nmi,
+						 &nmi,
 						 &hyper_threading, &sata_mode,
 						 NULL},
 };

@@ -20,6 +20,7 @@
 #include <elog.h>
 #include <option.h>
 #include <southbridge/intel/common/me.h>
+#include <southbridge/intel/bd82x6x/cfr.h>
 
 #include "me.h"
 #include "pch.h"
@@ -37,9 +38,14 @@ static void me_print_fw_version(mbp_fw_version_name *vers_name)
 		return;
 	}
 
-	printk(BIOS_DEBUG, "ME: found version %d.%d.%d.%d\n",
-	       vers_name->major_version, vers_name->minor_version,
-	       vers_name->hotfix_version, vers_name->build_version);
+	char version_str[32];
+	snprintf(version_str, 32, "%u.%u.%u.%u",
+		 vers_name->major_version, vers_name->minor_version,
+		 vers_name->hotfix_version, vers_name->build_version);
+
+	sb_cfr_set_string(ME_STRING_VERSION, version_str);
+
+	printk(BIOS_DEBUG, "ME: found version %s\n", version_str);
 }
 
 /* Determine the path that we should take based on ME status */
@@ -381,7 +387,8 @@ static void intel_me_init(struct device *dev)
 			mkhi_get_fw_version(&mbp_data.fw_version_name);
 			if (mkhi_get_fwcaps(&mbp_data.fw_caps_sku.fw_capabilities) == CB_SUCCESS)
 				mbp_data.fw_caps_sku.available = 1;
-		}
+		} else if (CONFIG(DRIVERS_OPTION_CFR))
+			me_print_fw_version(&mbp_data.fw_version_name);
 
 		if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
 			me_print_fw_version(&mbp_data.fw_version_name);

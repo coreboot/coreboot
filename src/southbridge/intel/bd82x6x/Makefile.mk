@@ -21,6 +21,7 @@ ramstage-y += smbus.c
 ramstage-y += ../common/pciehp.c
 
 ramstage-y += me_status.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
 ramstage-$(CONFIG_ELOG) += elog.c
 

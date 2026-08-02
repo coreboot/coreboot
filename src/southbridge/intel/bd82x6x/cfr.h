@@ -32,26 +32,6 @@ static const struct sm_object power_on_after_fail = SM_DECLARE_ENUM({
 				SM_ENUM_VALUE_END				},
 });
 
-/* Intel ME State */
-static const struct sm_object me_state = SM_DECLARE_ENUM({
-	.opt_name	= "me_state",
-	.ui_name	= "Intel Management Engine",
-	.ui_helptext	= "Enable or disable the Intel Management Engine",
-	.default_value	= CMOS_ME_STATE_NORMAL,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",		CMOS_ME_STATE_DISABLED	},
-				{ "Enabled",		CMOS_ME_STATE_NORMAL	},
-				SM_ENUM_VALUE_END				},
-});
-
-/* Intel ME State on previous boot */
-static const struct sm_object me_state_prev = SM_DECLARE_NUMBER({
-	.opt_name	= "me_state_prev",
-	.ui_name	= "ME State Previous Boot",
-	.flags		= CFR_OPTFLAG_SUPPRESS,
-	.default_value	= CMOS_ME_STATE_NORMAL,
-});
-
 enum {
 	SATA_MODE_AHCI,
 	SATA_MODE_IDE_COMPAT,
@@ -87,5 +67,19 @@ static const struct sm_object nmi = SM_DECLARE_ENUM({
 				{ "Enabled",	NMI_ON	},
 				SM_ENUM_VALUE_END	},
 });
+
+enum sb_cfr_strings {
+	ME_STRING_VERSION,
+	ME_STRING_OPERATIONAL_STATE,
+	ME_STRING_OPERATIONAL_MODE,
+	ME_STRING_WORKING_STATE,
+	ME_STRING_PROGRESS_PHASE,
+};
+
+#if ENV_RAMSTAGE && CONFIG(DRIVERS_OPTION_CFR)
+void sb_cfr_set_string(enum sb_cfr_strings e, const char *value);
+#else
+static inline void sb_cfr_set_string(enum sb_cfr_strings e, const char *value) {}
+#endif
 
 #endif /* SB_BD82X6X_CFR_H */

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <southbridge/intel/bd82x6x/cfr.h>
 #include "me.h"
 
 /* HFS1[3:0] Current Working State Values */
@@ -126,6 +127,11 @@ static const char *me_progress_policy_values[] = {
 
 void intel_me_status(union me_hfs *hfs, union me_gmes *gmes)
 {
+	sb_cfr_set_string(ME_STRING_PROGRESS_PHASE, me_progress_values[gmes->progress_code]);
+	sb_cfr_set_string(ME_STRING_WORKING_STATE, me_cws_values[hfs->working_state]);
+	sb_cfr_set_string(ME_STRING_OPERATIONAL_STATE, me_opstate_values[hfs->operation_state]);
+	sb_cfr_set_string(ME_STRING_OPERATIONAL_MODE, me_opmode_values[hfs->operation_mode]);
+
 	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL < BIOS_DEBUG)
 		return;
 

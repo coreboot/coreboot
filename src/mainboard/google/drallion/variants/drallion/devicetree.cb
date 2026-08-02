@@ -9,9 +9,9 @@ chip soc/intel/cannonlake
 	register "gpe0_dw2" = "PMC_GPP_D"
 
 	# EC host command ranges
-	register "gen1_dec" = "0x00040931" # 0x930-0x937
-	register "gen2_dec" = "0x00040941" # 0x940-0x947
-	register "gen3_dec" = "0x000c0951" # 0x950-0x95f
+	register "gen1_dec" = "LPC_IO(0x930, 0x8)" # 0x930-0x937
+	register "gen2_dec" = "LPC_IO(0x940, 0x8)" # 0x940-0x947
+	register "gen3_dec" = "LPC_IO(0x950, 0x10)" # 0x950-0x95f
 
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,

@@ -52,13 +52,13 @@ chip northbridge/intel/sandybridge
 			register "sata_interface_speed_support" = "0x2"
 
 			# Enable EC Port 0x68/0x6C
-			register "gen1_dec" = "0x00040069"
+			register "gen1_dec" = "LPC_IO(0x68, 0x8)"
 
 			# EC range is 0x800-0x9ff
-			register "gen2_dec" = "0x00fc0901"
+			register "gen2_dec" = "LPC_IO(0x900, 0x100)"
 
 			# EC range is 0x1610-0x161F
-			register "gen3_dec" = "0x0001C1611"
+			register "gen3_dec" = "LPC_IO(0x1610, 0x20)"
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "true"

@@ -4,6 +4,7 @@
 #define _SOC_CHIP_H_
 
 #include <intelblocks/cfg.h>
+#include <intelblocks/lpc_lib.h>
 #include <soc/acpi.h>
 #include <gpio.h>
 #include <soc/irq.h>

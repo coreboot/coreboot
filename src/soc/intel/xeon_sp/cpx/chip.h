@@ -5,6 +5,7 @@
 
 #include <gpio.h>
 #include <intelblocks/cfg.h>
+#include <intelblocks/lpc_lib.h>
 #include <soc/acpi.h>
 #include <soc/irq.h>
 #include <stdint.h>

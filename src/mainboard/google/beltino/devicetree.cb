@@ -27,7 +27,7 @@ chip northbridge/intel/haswell
 
 		chip southbridge/intel/lynxpoint
 			# SuperIO range is 0x700-0x73f
-			register "gen2_dec" = "0x003c0701"
+			register "gen2_dec" = "LPC_IO(0x700, 0x40)"
 
 			register "alt_gp_smi_en" = "0x0000"
 			register "gpe0_en_1" = "0x00000000"

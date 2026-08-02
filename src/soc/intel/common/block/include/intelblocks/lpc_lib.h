@@ -25,6 +25,20 @@
 #define LPC_IOE_COMA_EN			(1 << 0)
 #define LPC_NUM_GENERIC_IO_RANGES	4
 
+#define LPC_GENERIC_IO_RANGE(n)		((((n) & 0x3) * 4) + 0x84)
+#define  LPC_LGIR_AMASK_MASK		(0xfc << 16)
+#define  LPC_LGIR_ADDR_MASK		0xfffc
+#define  LPC_LGIR_EN			(1 << 0)
+#define LPC_LGIR_MAX_WINDOW_SIZE	256
+
+/*
+ * Encode a LPC_GENx_DEC value from base address and window size.
+ * Size is 4..256 (4-byte blocks); base must be 4-byte aligned.
+ */
+#define LPC_IO(base, size) ( \
+	((LPC_LGIR_AMASK_MASK) & (((size) - 1) << 16)) | \
+	((base) & LPC_LGIR_ADDR_MASK) | LPC_LGIR_EN)
+
 /* LPC PCR configuration */
 #define PCR_LPC_PRC			0x341c
 #define PCR_LPC_CCE_EN			0xf

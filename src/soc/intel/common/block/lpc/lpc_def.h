@@ -18,11 +18,6 @@
 /* Use IO_<peripheral>_<IO port> style macros defined in lpc_lib.h
  * to enable decoding of I/O locations for a peripheral. */
 #define LPC_IO_ENABLES			0x82
-#define LPC_GENERIC_IO_RANGE(n)		((((n) & 0x3) * 4) + 0x84)
-#define  LPC_LGIR_AMASK_MASK		(0xfc << 16)
-#define  LPC_LGIR_ADDR_MASK		0xfffc
-#define  LPC_LGIR_EN			(1 << 0)
-#define LPC_LGIR_MAX_WINDOW_SIZE	256
 #define LPC_GENERIC_MEM_RANGE		0x98
 #define  LPC_LGMR_ADDR_MASK		0xffff0000
 #define  LPC_LGMR_ADDR_1MB(n)		((n) >> 4)

@@ -137,16 +137,14 @@ _Static_assert(sizeof(struct tcss_port_config) == 2,
 }
 
 static inline uint16_t
-tcss_get_aux_orientation(uint16_t raw,
-			 const struct tcss_port_config ports[MAX_TYPE_C_PORTS])
+tcss_get_aux_orientation(const struct tcss_port_config ports[MAX_TYPE_C_PORTS])
 {
-	if (raw)
-		return raw;
+	uint16_t aux_ori = 0;
 
 	for (unsigned int port = 0; port < MAX_TYPE_C_PORTS; port++)
-		raw |= ports[port].aux_orientation << (port * 2);
+		aux_ori |= ports[port].aux_orientation << (port * 2);
 
-	return raw;
+	return aux_ori;
 }
 
 #define TCSS_CD_FIELD(name, val) \

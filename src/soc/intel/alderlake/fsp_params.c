@@ -633,8 +633,7 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 		DEV_PTR(tcss_usb3_port4),
 	};
 
-	s_cfg->TcssAuxOri = tcss_get_aux_orientation(config->tcss_aux_ori,
-						     config->tcss_ports);
+	s_cfg->TcssAuxOri = tcss_get_aux_orientation(config->tcss_ports);
 
 	/* Explicitly clear this field to avoid using defaults */
 	memset(s_cfg->IomTypeCPortPadCfg, 0, sizeof(s_cfg->IomTypeCPortPadCfg));

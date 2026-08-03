@@ -296,8 +296,7 @@ static void fill_fsps_igd_params(FSP_S_CONFIG *s_cfg, const config_t *config)
 
 static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg, const config_t *config)
 {
-	const uint16_t aux_ori = tcss_get_aux_orientation(config->tcss_aux_ori,
-							   config->tcss_ports);
+	const uint16_t aux_ori = tcss_get_aux_orientation(config->tcss_ports);
 
 	if (aux_ori != 0)
 		printk(BIOS_WARNING, "TCSS AUX orientation is not supported by this FSP\n");

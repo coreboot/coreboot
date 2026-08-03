@@ -395,15 +395,6 @@ struct soc_intel_meteorlake_config {
 	 */
 	struct typec_aux_bias_pads typec_aux_bias_pads[MAX_TYPE_C_PORTS];
 
-	/*
-	 * SOC Aux orientation override:
-	 * This is a bitfield that corresponds to up to 4 TCSS ports on MTL.
-	 * Even numbered bits (0, 2, 4, 6) control the retimer being handled by SOC.
-	 * Odd numbered bits (1, 3, 5, 7) control the orientation of the physical aux lines
-	 * on the motherboard.
-	 */
-	uint16_t tcss_aux_ori;
-
 	/* Connect Topology Command timeout value */
 	uint16_t itbt_connect_topology_timeout_in_ms;
 

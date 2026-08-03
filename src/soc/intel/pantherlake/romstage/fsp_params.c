@@ -282,9 +282,7 @@ static void fill_fspm_tcss_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TcssPort2 = config->tcss_cap_policy[2];
 	m_cfg->TcssPort3 = config->tcss_cap_policy[3];
 
-	/* Legacy raw settings were only applied in FSP-S. */
-	if (!config->tcss_aux_ori)
-		m_cfg->TcssAuxOri = tcss_get_aux_orientation(0, config->tcss_ports);
+	m_cfg->TcssAuxOri = tcss_get_aux_orientation(config->tcss_ports);
 }
 
 static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,

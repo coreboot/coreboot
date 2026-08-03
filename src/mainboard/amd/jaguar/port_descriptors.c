@@ -31,7 +31,7 @@ bool devtree_xgbe_dev_enabled(uint8_t port_num);
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,				\
 	.link_aspm = ASPM_L1,					\
-	.link_hotplug = HOTPLUG_DISABLED,			\
+	.link_hotplug = HOTPLUG_ENHANCED,			\
 	.clk_req = CLK_REQ4,					\
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133},	\
 }
@@ -253,7 +253,10 @@ void mainboard_get_dxio_ddi_descriptors(
 		mxm1->start_logical_lane = 16;
 		mxm1->end_logical_lane = 19;
 	}
-
+	if (mb_cfg_pcie_slot0_force_pwr()) {
+		mxm0->link_hotplug = HOTPLUG_DISABLED;
+		mxm1->link_hotplug = HOTPLUG_DISABLED;
+	}
 	*dxio_descs = jaguar_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(jaguar_dxio_descriptors);
 	*ddi_descs = jaguar_ddi_descriptors;

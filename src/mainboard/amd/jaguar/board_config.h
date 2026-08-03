@@ -38,7 +38,7 @@ static inline bool mb_cfg_pcie_slot0_force_pwr(void)
 	if (!CONFIG(ENABLE_EVAL_CARD))
 		return false;
 	return get_uint_option(OPTION_NAME_PCIE_SLOT0_FORCE_PWR,
-		CONFIG(ENABLE_FORCE_POWER_GPP0) && CONFIG(PCIE_SLOT0_2X4));
+		CONFIG(ENABLE_FORCE_POWER_GPP0));
 }
 
 #define OPTION_NAME_PCIE_BIF "pcie_ssd0_slot1_bifurcation"

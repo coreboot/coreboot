@@ -81,10 +81,10 @@ choice
 	  Either PCIe Slot-0 As 1(x8), PCIe Slot-0 As 2(x4).
 
 config PCIE_SLOT0_1X8
-	bool "Enable PCIe Slot-0 as 1(x8), Turn off force power"
+	bool "Enable PCIe Slot-0 as 1(x8)"
 
 config PCIE_SLOT0_2X4
-	bool "Enable PCIe Slot-0 as 2(x4), Turn on force power"
+	bool "Enable PCIe Slot-0 as 2(x4)"
 endchoice
 
 choice

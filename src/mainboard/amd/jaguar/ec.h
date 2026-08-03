@@ -19,10 +19,25 @@ void jaguar_ec_init(void);
 #define EC_GPIO_PAGE			0xc2
 
 /* Registers [0h-30h] on page 0xc2 */
+#define EC_HOTPLUG_MODE				0xf
+#define  EC_HOTPLUG_MODE_SLOT0			BIT(0)
+#define  EC_HOTPLUG_MODE_SLOT1			BIT(1)
+#define  EC_HOTPLUG_MODE_SLOT2			BIT(2)
+
+#define EC_HOTPLUG_BASIC_PWR_EN			0x10
+#define  EC_HP_BASIC_PWR_EN_SLOT0		BIT(0)
+#define  EC_HP_BASIC_PWR_EN_SLOT1		BIT(1)
+#define  EC_HP_BASIC_PWR_EN_SLOT2		BIT(2)
+
 #define EC_FORCE_PWR				0x11
 #define  EC_FORCE_PWR_SLOT0			BIT(0)
 #define  EC_FORCE_PWR_SLOT1			BIT(1)
 #define  EC_FORCE_PWR_SLOT2			BIT(2)
+
+#define EC_HOTPLUG_BASIC_RESET_N		0x12
+#define  EC_HP_BASIC_RESET_N_SLOT0		BIT(0)
+#define  EC_HP_BASIC_RESET_N_SLOT1		BIT(1)
+#define  EC_HP_BASIC_RESET_N_SLOT2		BIT(2)
 
 #define EC_PCIE_MUX				0x13
 #define  EC_PCIE_MUX_NVMEX4			0
@@ -52,5 +67,8 @@ void jaguar_ec_init(void);
 
 #define EC_EVAL_CTRL				0xA1
 #define  EC_EVAL_CTRL_CARD_ON			BIT(1)
+
+#define EC_SLOT_PWR_CTRL			0xA2
+#define  EC_SLOT0_PWR_ENABLE			BIT(5)
 
 #endif /* JAGUAR_EC_H */

@@ -14,6 +14,13 @@ DefinitionBlock (
 
 	#include <soc.asl>
 	#include "acpi/acp.asl"
+
+	// ATPX skeleton
+	Scope(\_SB.PCI0.GP19) // PCI 0:3.1
+	{
+		#include <soc/amd/common/acpi/dgpu_boco_atpx.asl>
+	}
+
 	Scope(\_SB.PCI0.LPCB)
 	{
 		#include "acpi/ec.asl"

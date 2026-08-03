@@ -117,6 +117,10 @@ static void mainboard_configure_ec(void)
 	u8 tmp = ec_read(EC_MODERN_STANDBY);
 	if ((tmp & mask) != mask)
 		ec_write(EC_MODERN_STANDBY, tmp | mask);
+
+	/* Slot 0 power on. TODO: Currently has no effect, figure out why */
+	tmp = ec_read(EC_SLOT_PWR_CTRL);
+	ec_write(EC_SLOT_PWR_CTRL, tmp | EC_SLOT0_PWR_ENABLE);
 }
 
 static void mainboard_init(void *chip_info)

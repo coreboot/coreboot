@@ -48,7 +48,7 @@ COREBOOT_EXPORTS += KCONFIG_RUSTCCFG
 
 # Make does not offer a recursive wildcard function, so here's one:
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
-SYMLINK_LIST = $(call rwildcard,site-local/,symlink.txt)
+SYMLINK_LIST := $(shell find site-local -name symlink.txt -print 2>/dev/null)
 
 
 # Directory containing the toplevel Makefile.mk

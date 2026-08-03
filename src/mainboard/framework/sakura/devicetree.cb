@@ -19,8 +19,8 @@ chip soc/intel/pantherlake
 	# DPTF enable
 	register "dptf_enable" = "true"
 
-	# Platform max power (100W USB-C PD, no EPR)
-	register "psys_pmax_watts" = "100"
+	# Maximum total system power consumption - roughly 140W TypeC + 75W battery
+	register "psys_pmax_watts" = "218"
 
 	# SAGV + power management
 	register "sagv" = "SAGV_ENABLED"

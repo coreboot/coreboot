@@ -25,8 +25,8 @@ chip soc/intel/meteorlake
 	# DPTF enable
 	register "dptf_enable" = "true"
 
-	# Platform max power (100W USB-C PD, no EPR)
-	register "psys_pmax_watts" = "100"
+	# Maximum total system power consumption - roughly 60W TypeC + 61W battery
+	register "psys_pmax_watts" = "122"
 
 	# SAGV + power management
 	register "sagv" = "SAGV_ENABLED"

@@ -16,6 +16,9 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw1" = "GPP_D"
 	register "pmc_gpe0_dw2" = "GPP_E"
 
+	# Maximum total system power consumption - roughly 60W TypeC + 51W battery
+	register "platform_pmax" = "112"
+
 	device domain 0 on
 		subsystemid 0xf111 0x000c inherit
 

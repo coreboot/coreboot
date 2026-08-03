@@ -65,7 +65,7 @@ bool devtree_xgbe_dev_enabled(uint8_t port_num);
 	.link_aspm = ASPM_L1,						\
 	.link_aspm_L1_1 = true,						\
 	.link_aspm_L1_2 = true,						\
-	.link_hotplug = HOTPLUG_ENHANCED,				\
+	.link_hotplug = HOTPLUG_DISABLED,				\
 	.clk_req = CLK_REQ0,						\
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133},		\
 }

@@ -27,6 +27,12 @@ void gfx_set_init_done(int done);
 int platform_is_resuming(void);
 
 /*
+ * Check if the platform is resuming from S3 and force a reboot when
+ * S3 resume is not supported (e.g. !CONFIG(HAVE_ACPI_RESUME)).
+ */
+void prevent_unsupported_s3_resume(void);
+
+/*
  * Handoff buffer to the payload.
  */
 enum boot_mode_t get_boot_mode(void);

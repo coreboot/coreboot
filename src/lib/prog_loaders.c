@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -20,6 +21,7 @@ void run_romstage(void)
 	if (!CONFIG(SEPARATE_ROMSTAGE)) {
 		/* Call romstage instead of loading it as a cbfs file. */
 		timestamp_add_now(TS_ROMSTAGE_START);
+		prevent_unsupported_s3_resume();
 		romstage_main();
 		dead_code();
 	}

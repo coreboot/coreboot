@@ -3,7 +3,10 @@
 #include <assert.h>
 #include <bootmode.h>
 #include <cbmem.h>
+#include <console/console.h>
+#include <reset.h>
 #include <security/vboot/misc.h>
+#include <security/vboot/vboot_common.h>
 #include <vb2_api.h>
 
 static int gfx_init_done = -1;
@@ -62,5 +65,31 @@ void set_boot_mode(const enum boot_mode_t mode)
 	if (boot_mode_ptr) {
 		*boot_mode_ptr = mode;
 		printk(BIOS_INFO, "Boot mode set to %d\n", mode);
+	}
+}
+
+__weak int platform_is_resuming(void)
+{
+	return 0;
+}
+
+/*
+ * Check if the platform is resuming from S3 and force a reboot when
+ * S3 resume is not supported (e.g. !CONFIG(HAVE_ACPI_RESUME)).
+ */
+void prevent_unsupported_s3_resume(void)
+{
+	if (CONFIG(HAVE_ACPI_RESUME))
+		return;
+
+	if (platform_is_resuming()) {
+		printk(BIOS_EMERG, "ACPI S3 resume is not supported on this platform\n");
+		/*
+		 * Prepare for reboot to clear the sleep state such that the board
+		 * is not stuck in a reboot loop.
+		 */
+		if (CONFIG(VBOOT))
+			vboot_platform_prepare_reboot();
+		board_reset();
 	}
 }

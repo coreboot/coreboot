@@ -201,6 +201,7 @@
 #define MAD_DIMM(ch)		(0x5004 + (ch) * 4)
 #define MAD_ZR			0x5014
 #define MCDECS_CBIT		0x501c
+#define CHANNEL_HASH		0x5024
 #define MC_INIT_STATE_G		0x5030
 #define MRC_REVISION		0x5034 /* Scratchpad register for MRC version */
 #define PM_SREF_CONFIG		0x5060

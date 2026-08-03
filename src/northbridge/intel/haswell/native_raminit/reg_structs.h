@@ -968,6 +968,17 @@ union mad_zr_reg {
 	uint32_t raw;
 };
 
+union channel_hash_reg {
+	struct __packed {
+		uint32_t addr_mask    : 14; // Bits 13:0
+		uint32_t              :  7; // Bits 20:14
+		uint32_t lsb_mask_bit :  2; // Bits 22:21
+		uint32_t enable       :  1; // Bits 23:23
+		uint32_t              :  8; // Bits 31:24
+	};
+	uint32_t raw;
+};
+
 union mc_init_state_g_reg {
 	struct __packed {
 		uint32_t pu_mrc_done        :  1; // Bits  0:0

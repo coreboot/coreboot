@@ -702,7 +702,19 @@ static uint8_t biggest_channel(const struct sysinfo *const ctrl)
 
 static void dram_zones(struct sysinfo *ctrl)
 {
-	/** TODO: Activate channel hash here, if enabled **/
+	/*
+	 * Note: MRC enables channel hash when Memory Trace is enabled
+	 * even if the rest of bitfields in the register have not been
+	 * configured. It is likely MRC assumes channel hash is always
+	 * enabled. Then again, Memory Trace is disabled by default.
+	 */
+	const union channel_hash_reg ch_hash = {
+		.addr_mask    = 0x30ce,
+		.lsb_mask_bit = 1, /* Pos of least significant bit set in addr_mask */
+		.enable       = 1,
+	};
+	mchbar_write32(CHANNEL_HASH, ch_hash.raw);
+
 	const uint8_t biggest = biggest_channel(ctrl);
 	const uint8_t smaller = !biggest;
 

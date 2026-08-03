@@ -197,16 +197,6 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 		printk(BIOS_DEBUG, "%s: module type is DDR5\n", __func__);
 		meminit_ddr(mem_cfg, &mb_cfg->ddr_config);
 		dq_dqs_auto_detect = true;
-		/*
-		 * TODO: Drop this workaround once SMBus driver in coreboot is
-		 * updated to support DDR5 EEPROM reading.
-		 */
-		if (spd_info->topo == MEM_TOPO_DIMM_MODULE) {
-			fill_dimm_module_info(mem_cfg, mb_cfg, spd_info);
-			mem_init_dq_upds(mem_cfg, NULL, mb_cfg, true);
-			mem_init_dqs_upds(mem_cfg, NULL, mb_cfg, true);
-			return;
-		}
 		break;
 	case MEM_TYPE_LP5X:
 		meminit_lp5x(mem_cfg, &mb_cfg->lp5x_config);

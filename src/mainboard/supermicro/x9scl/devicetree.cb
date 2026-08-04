@@ -8,12 +8,10 @@ chip northbridge/intel/sandybridge
 		device ref igd off end # iGPU
 		device ref peg60 on  end # PEG
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			register "gen1_dec" = "LPC_IO(0xa00, 0x100)"  # NCT6776 SuperIO (0x0a00-0aff)
-			# TODO: LPC_IO encodes 0x1640-0x173f (was 0x00fc1641); comment describes 0x1600-0x16ff
-			register "gen2_dec" = "LPC_IO(0x1640, 0x100)" # WPCM450 SuperIO (0x1600-16ff)
-			# TODO: LPC_IO encodes 0xca0-0xca7 (was 0x00040ca1); comment describes 0xca0-0xca3
-			register "gen3_dec" = "LPC_IO(0xca0, 0x8)"    # IPMI KCS (0x0ca0-0ca3)
-			register "gen4_dec" = "LPC_IO(0x3e0, 0x20)"   # 3rd UART (0x03e0-03ff)
+			register "gen1_dec" = "LPC_IO(0xa00, 0x100)"  # NCT6776 SuperIO (0xa00-0xaff)
+			register "gen2_dec" = "LPC_IO(0x1600, 0x100)" # WPCM450 SuperIO (0x1600-0x16ff)
+			register "gen3_dec" = "LPC_IO(0xca0, 0x4)"    # IPMI KCS (0xca0-0xca3)
+			register "gen4_dec" = "LPC_IO(0x3e0, 0x20)"   # 3rd UART (0x3e0-0x3ff)
 			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x3f"

@@ -24,7 +24,7 @@ chip northbridge/intel/pineview		# Northbridge
 			register "sata_ports_implemented" = "0x3"
 			register "gpe0_en" = "0x441"
 
-			register "gen1_dec" = "0x00fc0a01" # Environment Controller
+			register "gen1_dec" = "LPC_IO(0xa00, 0x100)" # Environment Controller
 
 			device pci 1b.0 on  end	# Audio
 			device pci 1c.0 on  end	# PCIe 1

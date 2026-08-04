@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#define DRAMC_PARAM_HEADER_VERSION 1
+#define DRAMC_PARAM_HEADER_VERSION 2
 #define CATRAINING_NUM_LP5 7
 
 struct sdram_params {
@@ -99,7 +99,7 @@ struct sdram_params {
 	/* tx oe */
 	u8 tx_oe_dq_mck[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP5];
 	u8 tx_oe_dq_ui[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP5];
-	u16 tx_oe_offset[CHANNEL_MAX][RANK_MAX];
+	u16 tx_oe_offset[DQS_NUMBER_LP5];
 };
 
 struct dramc_data {

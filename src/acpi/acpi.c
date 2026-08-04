@@ -18,6 +18,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpi_iort.h>
 #include <acpi/acpi_ivrs.h>
+#include <acpi/acpi_vfct.h>
 #include <acpi/acpigen.h>
 #include <cbfs.h>
 #include <cbmem.h>
@@ -692,30 +693,19 @@ void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions)
 	header->checksum = acpi_checksum((void *)einj, sizeof(*einj));
 }
 
-void acpi_create_vfct(const struct device *device,
-		      acpi_vfct_t *vfct,
-		      unsigned long (*acpi_fill_vfct_func)(const struct device *device,
-		      acpi_vfct_t *vfct_struct, unsigned long current))
+static void acpi_create_vfct(acpi_header_t *header, void *unused)
 {
-	acpi_header_t *header = &(vfct->header);
-	unsigned long current = (unsigned long)vfct + sizeof(acpi_vfct_t);
-
-	memset((void *)vfct, 0, sizeof(acpi_vfct_t));
-
-	if (acpi_fill_header(header, "VFCT", VFCT, sizeof(acpi_vfct_t)) != CB_SUCCESS)
+	if (!CONFIG(PCI))
 		return;
 
-	current = acpi_fill_vfct_func(device, vfct, current);
+	acpi_vfct_t *vfct = acpi_allocate_and_fill_vfct();
 
-	/* If no BIOS image, return with header->length == 0. */
-	if (!vfct->VBIOSImageOffset) {
-		header->length = 0;
-		return;
-	}
+	/* Add the VFCT allocated in CBMEM_ID_ACPI_VFCT instead of 'header' */
+	if (get_coreboot_rsdp() && vfct)
+		acpi_add_table((void *)get_coreboot_rsdp(), vfct);
 
-	/* (Re)calculate length and checksum. */
-	header->length = current - (unsigned long)vfct;
-	header->checksum = acpi_checksum((void *)vfct, header->length);
+	/* Setting a length of 0 will cause the caller to omit the table 'header'. */
+	header->length = 0;
 }
 
 void acpi_create_ipmi(const struct device *device,
@@ -1526,6 +1516,7 @@ static unsigned long write_acpi_tables(const unsigned long start)
 		{ acpi_create_pptt, NULL, sizeof(acpi_pptt_t) },
 		{ acpi_create_iort, NULL, sizeof(acpi_iort_t) },
 		{ acpi_create_wdat, NULL, sizeof(acpi_wdat_t) },
+		{ acpi_create_vfct, NULL, sizeof(acpi_vfct_t)},
 	};
 
 	current = start;

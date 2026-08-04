@@ -48,11 +48,6 @@ static inline void pci_rom_free(struct rom_header *rom_header)
 	cbfs_unmap(rom_header);
 }
 
-unsigned long
-pci_rom_write_acpi_tables(const struct device *device,
-						  unsigned long current,
-						  struct acpi_rsdp *rsdp);
-
 void pci_rom_run(struct device *dev);
 void pci_rom_ssdt(const struct device *device);
 

@@ -11,6 +11,7 @@ ramstage-y += acpigen_pci_root_resource_producer.c
 endif
 ramstage-$(CONFIG_ACPI_PPTT) += acpi_pptt.c
 ramstage-$(CONFIG_ACPI_IORT) += acpi_iort.c
+ramstage-y += acpi_vfct.c
 ramstage-y += acpigen.c
 ramstage-y += acpigen_dptf.c
 ramstage-y += acpigen_dsm.c

@@ -307,7 +307,6 @@ const struct device_operations amd_graphics_ops = {
 	.init			= graphics_dev_init,
 	.scan_bus		= scan_static_bus,
 	.ops_pci		= &pci_dev_ops_pci,
-	.write_acpi_tables	= pci_rom_write_acpi_tables,
 	.acpi_fill_ssdt		= graphics_fill_ssdt,
 	.acpi_name		= graphics_acpi_name,
 };

@@ -861,7 +861,6 @@ struct device_operations default_pci_ops_dev = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.write_acpi_tables = pci_rom_write_acpi_tables,
 	.acpi_fill_ssdt    = pci_rom_ssdt,
 #endif
 	.init             = pci_dev_init,

@@ -551,7 +551,6 @@ typedef struct acpi_vfct {
 	u32 VBIOSImageOffset;
 	u32 Lib1ImageOffset;
 	u32 Reserved[4];
-	acpi_vfct_image_hdr_t image_hdr;
 } __packed acpi_vfct_t;
 
 typedef struct acpi_ivrs_info {
@@ -1637,12 +1636,6 @@ int acpi_create_hmat_mpda(acpi_hmat_mpda_t *mpda, u32 initiator, u32 memory);
 /* Create Heterogeneous Memory Attribute Table */
 void acpi_create_hmat(acpi_hmat_t *hmat,
 		      unsigned long (*acpi_fill_hmat_func)(unsigned long current));
-
-void acpi_create_vfct(const struct device *device,
-		      acpi_vfct_t *vfct,
-		      unsigned long (*acpi_fill_vfct_func)(const struct device *device,
-				acpi_vfct_t *vfct_struct,
-				unsigned long current));
 
 void acpi_create_ipmi(const struct device *device,
 		      struct acpi_spmi *spmi,

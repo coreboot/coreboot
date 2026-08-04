@@ -128,7 +128,6 @@ static struct device_operations pcie_rtd3_device_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= pci_dev_init,
 	.ops_pci		= &pci_dev_ops_pci,
-	.write_acpi_tables	= pci_rom_write_acpi_tables,
 	.acpi_fill_ssdt		= pcie_rtd3_device_acpi_fill_ssdt,
 	.acpi_name		= pcie_rtd3_device_acpi_name,
 };

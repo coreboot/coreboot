@@ -484,7 +484,6 @@ chip soc/intel/pantherlake
 			end
 		end # I2C5
 		device ref gspi0 on end
-		device ref smbus on end
 		device ref hda on
 			chip drivers/sof
 				register "spkr_tplg" = "tas2563"

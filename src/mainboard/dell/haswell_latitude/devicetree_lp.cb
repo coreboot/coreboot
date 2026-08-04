@@ -61,7 +61,7 @@ chip northbridge/intel/haswell
 			device pci 1d.0 on  end # USB2 EHCI #1
 			device pci 1f.0 on      # LPC bridge
 				register "gen1_dec" = "LPC_IO(0x680, 0x80)"
-				register "gen3_dec" = "LPC_IO(0x7e0, 0x40)"
+				register "gen3_dec" = "LPC_IO(0x7c0, 0x40)"
 				# Enable 0x910 and 0x911 for early init and EC driver
 				register "gen4_dec" = "LPC_IO(0x900, 0x80)"
 

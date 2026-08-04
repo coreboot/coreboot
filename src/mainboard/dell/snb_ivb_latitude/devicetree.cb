@@ -39,8 +39,8 @@ chip northbridge/intel/sandybridge
 			device ref ehci1	on end
 			device ref lpc		on
 				register "gen1_dec" = "LPC_IO(0x680, 0x80)"
-				register "gen2_dec" = "LPC_IO(0x920, 0x60)"
-				register "gen3_dec" = "LPC_IO(0x7e0, 0x40)"
+				register "gen2_dec" = "LPC_IO(0x920, 0x20)"
+				register "gen3_dec" = "LPC_IO(0x7c0, 0x40)"
 				register "gen4_dec" = "LPC_IO(0x910, 0x4)" # Ports 0x910/0x911 for EC
 
 				chip ec/dell/mec5035

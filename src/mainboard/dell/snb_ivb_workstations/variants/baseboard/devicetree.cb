@@ -21,7 +21,7 @@ chip northbridge/intel/sandybridge
 			register "gpi12_routing" = "2"
 			register "gen1_dec" = "LPC_IO(0xa00, 0x80)"
 			register "gen2_dec" = "LPC_IO(0x900, 0x80)"
-			register "gen3_dec" = "LPC_IO(0x7e0, 0x40)"
+			register "gen3_dec" = "LPC_IO(0x7c0, 0x40)"
 			register "gen4_dec" = "LPC_IO(0x900, 0x20)"
 			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"

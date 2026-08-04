@@ -101,8 +101,10 @@
 
 #ifdef __ACPI__
 /* ASL MemoryFixed32() fails if these are additions. */
+#define ACPIMMIO_IOMUX_BASE		0xfed80d00
 #define ACPIMMIO_MISC_BASE		0xfed80e00
 #define ACPIMMIO_GPIO0_BASE		0xfed81500
+#define ACPIMMIO_REMOTE_GPIO_BASE	0xfed81200
 #endif
 
 #define ACPIMMIO_SM_PCI_BANK		0x0000

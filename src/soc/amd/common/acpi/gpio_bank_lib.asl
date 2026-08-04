@@ -8,6 +8,9 @@
 Method (GPAD, 0x1)
 {
 	/* Arg0 - GPIO pin number */
+	If (Arg0 >= 256) {
+		Return (((Arg0 - 256) * 4) + ACPIMMIO_REMOTE_GPIO_BASE)
+	}
 	Return ((Arg0 * 4) + ACPIMMIO_GPIO0_BASE)
 }
 

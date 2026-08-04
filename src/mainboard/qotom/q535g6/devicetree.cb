@@ -162,7 +162,7 @@ chip soc/intel/skylake
 		device ref lpc_espi	on
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
-			register "gen1_dec" = "0x007c0a01"
+			register "gen1_dec" = "LPC_IO(0xa00, 0x80)"
 
 			chip superio/ite/it8786e
 				register "TMPIN1.mode" = "THERMAL_RESISTOR"

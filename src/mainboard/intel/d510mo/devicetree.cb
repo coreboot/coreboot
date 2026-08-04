@@ -38,7 +38,7 @@ chip northbridge/intel/pineview		# Northbridge
 			#device pci 1e.2 off end		# AC'97 Audio (not on nm10?)
 			#device pci 1e.3 off end		# AC'97 Modem (not on nm10?)
 			device pci 1f.0 on		# ISA bridge
-				register "gen2_dec" = "LPC_IO(0x290, 0x80)"
+				register "gen2_dec" = "LPC_IO(0x290, 0x8)" # HWM
 				chip superio/winbond/w83627thg	# Super I/O
 					device pnp 4e.0 off end	# Floppy
 					device pnp 4e.1 on		# Parallel port

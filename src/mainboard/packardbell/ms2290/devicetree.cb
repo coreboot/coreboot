@@ -43,7 +43,7 @@ chip northbridge/intel/ironlake
 
 			register "gpe0_en" = "0x01800046"
 			register "alt_gp_smi_en" = "0x0000"
-			register "gen1_dec" = "0x040069"
+			register "gen1_dec" = "LPC_IO(0x68, 0x8)"
 
 			device pci 16.0 on # Management Engine Interface 1
 				subsystemid 0x1025 0x0379

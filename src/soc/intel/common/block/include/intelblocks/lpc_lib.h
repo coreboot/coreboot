@@ -33,11 +33,24 @@
 
 /*
  * Encode a LPC_GENx_DEC value from base address and window size.
- * Size is 4..256 (4-byte blocks); base must be 4-byte aligned.
+ * Size must be a power of two in [4, 256]; base must be aligned to size so
+ * AMASK yields a contiguous window [base, base + size).
  */
+#define LPC_IO_INVALID(base, size) ( \
+	(__builtin_constant_p(base) && __builtin_constant_p(size)) && ( \
+		((size) < 4) || ((size) > LPC_LGIR_MAX_WINDOW_SIZE) || \
+		((size) & ((size) - 1)) || ((base) & ((size) - 1))))
+#define LPC_IO_CHECK(base, size) \
+	(sizeof(struct { \
+		_Static_assert(!LPC_IO_INVALID(base, size), \
+			"LPC_IO: size must be power of 2 in [4,256], base aligned to size"); \
+		int dummy; \
+	}) * 0)
+
 #define LPC_IO(base, size) ( \
+	LPC_IO_CHECK(base, size) + ( \
 	((LPC_LGIR_AMASK_MASK) & (((size) - 1) << 16)) | \
-	((base) & LPC_LGIR_ADDR_MASK) | LPC_LGIR_EN)
+	((base) & LPC_LGIR_ADDR_MASK) | LPC_LGIR_EN))
 
 /* LPC PCR configuration */
 #define PCR_LPC_PRC			0x341c

@@ -76,8 +76,8 @@ chip soc/intel/skylake
 			end
 		end
 		device ref lpc_espi on
-			register "gen1_dec" = "0x007c0a01"	# Super IO SWC
-			register "gen2_dec" = "0x000c0ca1"	# IPMI KCS
+			register "gen1_dec" = "LPC_IO(0xa00, 0x80)" # Super IO SWC
+			register "gen2_dec" = "LPC_IO(0xca0, 0x10)" # IPMI KCS
 
 			chip drivers/ipmi
 				use pch_gpio as gpio_dev

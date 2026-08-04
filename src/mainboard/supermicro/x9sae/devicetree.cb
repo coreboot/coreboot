@@ -18,7 +18,7 @@ chip northbridge/intel/sandybridge
 		device ref peg60 on  end		# CPU1 SLOT7 (electrical x4 in x8)
 
 		chip southbridge/intel/bd82x6x
-			register "gen1_dec" = "0x00fc0a01" # NCT6776 SuperIO (0x0a00-0aff)
+			register "gen1_dec" = "LPC_IO(0xa00, 0x100)" # NCT6776 SuperIO (0x0a00-0aff)
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x3f"
 			register "spi_lvscc" = "0x2005"

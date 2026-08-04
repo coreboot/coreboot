@@ -14,7 +14,7 @@ chip northbridge/intel/haswell
 		device pci 02.0 on  end		# iGPU
 		device pci 03.0 off end		# Mini-HD audio
 		chip southbridge/intel/lynxpoint
-			register "gen1_dec"      = "0x000c0291"
+			register "gen1_dec"      = "LPC_IO(0x290, 0x10)"
 			register "sata_port_map" = "0x33"
 			device pci 14.0 on  end		# xHCI Controller
 			device pci 16.0 on  end		# MEI #1

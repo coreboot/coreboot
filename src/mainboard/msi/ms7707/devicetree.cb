@@ -9,8 +9,8 @@ chip northbridge/intel/sandybridge
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "docking_supported" = "false"
-			register "gen1_dec" = "0x000c0291"
-			register "gen2_dec" = "0x000c0a01"
+			register "gen1_dec" = "LPC_IO(0x290, 0x10)"
+			register "gen2_dec" = "LPC_IO(0xa00, 0x10)"
 			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x33"

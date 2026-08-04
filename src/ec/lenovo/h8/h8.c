@@ -356,7 +356,7 @@ static void h8_enable(struct device *dev)
 	reg8 = conf->config1;
 	if (conf->has_thinklight || conf->has_keyboard_backlight)
 		reg8 = (reg8 & 0xf3) | (backlight << 2);
-	ec_write(H8_CONFIG1, reg8);
+	ec_write(H8_CONFIG1, reg8 & ~conf->config1_reserved_mask);
 	ec_write(H8_CONFIG2, conf->config2);
 	ec_write(H8_CONFIG3, conf->config3);
 

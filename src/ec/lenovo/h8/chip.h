@@ -8,6 +8,7 @@ struct ec_lenovo_h8_config {
 	u8 config1;
 	u8 config2;
 	u8 config3;
+	u8 config1_reserved_mask;
 
 	u8 beepmask0;
 	u8 beepmask1;

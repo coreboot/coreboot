@@ -25,6 +25,8 @@ chip northbridge/intel/sandybridge
 			device ref lpc on
 				chip ec/lenovo/h8
 					register "eventa_enable" = "0x01"
+					# Avoid H8_CONFIG1 bit 2: it leaves ThinkLight stuck on.
+					register "config1_reserved_mask" = "1 << 2"
 					register "has_thinklight" = "true"
 					register "has_keyboard_backlight" = "true"
 					device ref lenovo_ec on end

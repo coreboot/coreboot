@@ -23,7 +23,6 @@ chip northbridge/intel/haswell
 			register "gen1_dec" = "LPC_IO(0xa00, 0x80)"
 			register "gen2_dec" = "LPC_IO(0x900, 0x80)"
 			register "gen3_dec" = "LPC_IO(0x7e0, 0x40)"
-			register "gen4_dec" = "LPC_IO(0x900, 0x20)"
 			register "sata_port_map" = "0x7"
 
 			device pci 14.0 on  end				# xHCI controller

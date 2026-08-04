@@ -140,7 +140,7 @@ chip soc/intel/skylake
 			subsystemid 0x1849 0x1a43
 
 			# Set @0x280-0x2ff I/O Range for SuperIO HWM
-			register "gen1_dec" = "0x007c0281"
+			register "gen1_dec" = "LPC_IO(0x280, 0x80)"
 
 			# Set LPC Serial IRQ mode
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"

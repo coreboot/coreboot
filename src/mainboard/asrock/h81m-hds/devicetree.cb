@@ -29,7 +29,7 @@ chip northbridge/intel/haswell
 		chip southbridge/intel/lynxpoint
 			register "sata_port_map" = "0x33"
 
-			register "gen1_dec" = "0x00000295" # Super I/O HWM
+			register "gen1_dec" = "LPC_IO(0x294, 0x4)" # Super I/O HWM
 
 			device pci 14.0 on      # xHCI controller
 				subsystemid 0x1849 0x8c31

@@ -249,10 +249,10 @@ chip soc/intel/cannonlake
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/B 3042/3052 (M2_KEYB1)" "SlotDataBusWidth1X"
 		end
 		device ref lpc_espi on
-			register "gen1_dec" = "0x00fc0201"
-			register "gen2_dec" = "0x007c0281"
-			register "gen3_dec" = "0x000c03e1"
-			register "gen4_dec" = "0x001c02e1"
+			register "gen1_dec" = "LPC_IO(0x200, 0x100)"
+			register "gen2_dec" = "LPC_IO(0x280, 0x80)"
+			register "gen3_dec" = "LPC_IO(0x3e0, 0x10)"
+			register "gen4_dec" = "LPC_IO(0x2e0, 0x20)"
 
 			# Set LPC Serial IRQ mode
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"

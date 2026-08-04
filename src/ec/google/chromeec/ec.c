@@ -804,6 +804,25 @@ int google_chromeec_offmode_heartbeat(void)
 	return google_chromeec_command(&cmd);
 }
 
+/* Scheduled AP reset */
+int google_chromeec_apreset_schedule(uint32_t delay_ms)
+{
+	struct ec_params_ap_reset_scheduled params = {
+		.delay_ms = delay_ms,
+	};
+
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_AP_RESET_SCHEDULED,
+		.cmd_version = 0,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
+		.cmd_size_out = 0,
+		.cmd_data_out = NULL,
+	};
+
+	return google_chromeec_command(&cmd);
+}
+
 int google_chromeec_reboot(enum ec_reboot_cmd type, uint8_t flags)
 {
 	const struct ec_params_reboot_ec params = {

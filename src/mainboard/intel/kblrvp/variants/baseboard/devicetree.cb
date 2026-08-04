@@ -126,7 +126,7 @@ chip soc/intel/skylake
 		device ref smbus	on  end
 		device ref lpc_espi	on
 			# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
-			register "gen1_dec" = "0x00fc0801"
+			register "gen1_dec" = "LPC_IO(0x800, 0x100)"
 		end
 		device ref fast_spi	on  end
 	end

@@ -150,7 +150,7 @@ chip soc/intel/skylake
 		end
 		device ref lpc_espi	on
 			# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
-			register "gen2_dec" = "0x000c0201"
+			register "gen2_dec" = "LPC_IO(0x200, 0x10)"
 
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end

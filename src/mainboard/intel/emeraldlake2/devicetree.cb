@@ -37,11 +37,11 @@ chip northbridge/intel/sandybridge
 
 			register "sata_port_map" = "0x3f"
 
-			register "gen1_dec" = "0x00fc1601"
+			register "gen1_dec" = "LPC_IO(0x1600, 0x100)"
 			# runtime_port registers
-			register "gen2_dec" = "0x000c0181"
+			register "gen2_dec" = "LPC_IO(0x180, 0x10)"
 			# SuperIO range is 0x700-0x73f
-			register "gen3_dec" = "0x003c0701"
+			register "gen3_dec" = "LPC_IO(0x700, 0x40)"
 			register "usb_port_config" = "{
 				{ 1, 0, 0 }, /* P0: Front port  (OC0) */
 				{ 1, 0, 1 }, /* P1: Back port   (OC1) */

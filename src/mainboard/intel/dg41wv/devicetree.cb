@@ -45,7 +45,7 @@ chip northbridge/intel/x4x		# Northbridge
 			register "ide_enable_primary" = "true"
 			register "gpe0_en" = "0x440"
 
-			register "gen1_dec" = "0x00fc0a01" # HWM
+			register "gen1_dec" = "LPC_IO(0xa00, 0x100)" # HWM
 
 			device pci 1b.0 on		# Audio
 				subsystemid 0x8086 0x5756

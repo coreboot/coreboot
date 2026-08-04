@@ -2,14 +2,7 @@
 
 chip soc/intel/xeon_sp/gnr
 
-	# configure LPC generic IO decode ranges
-	# 	[bits 31..24: reserved]
-	# 	[bits 23..18: io decode address mask <7..2>]
-	# 	[bits 17..16: reserved]
-	# 	[bits 15..2 : io decode dword aligned address <15..2>]
-	#	[bit 1      : reserved]
-	#	[bit 0      : enabled]
-	register "gen1_dec" = "0x00000CA1" # IPMI KCS
+	register "gen1_dec" = "LPC_IO(0xca0, 0x4)" # IPMI KCS
 
 	# configure FSP debug settings
 	register "serial_io_uart_debug_io_base" = CONFIG_TTYS0_BASE

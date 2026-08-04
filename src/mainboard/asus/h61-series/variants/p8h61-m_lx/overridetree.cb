@@ -4,7 +4,7 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x1043 0x844d inherit
 		chip southbridge/intel/bd82x6x
-			register "gen1_dec" = "0x00000295" # Super I/O HWM
+			register "gen1_dec" = "LPC_IO(0x294, 0x4)" # Super I/O HWM
 
 			device ref hda on
 				subsystemid 0x1043 0x8445

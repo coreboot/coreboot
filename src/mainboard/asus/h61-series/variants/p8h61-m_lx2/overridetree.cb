@@ -21,7 +21,7 @@ chip northbridge/intel/sandybridge
 				{1, 0xb57, 6},
 				{1, 0xb57, 6},
 			}"
-			register "gen1_dec" = "0x000c0291"
+			register "gen1_dec" = "LPC_IO(0x290, 0x10)"
 			device ref hda on
 				subsystemid 0x1043 0x8415
 			end

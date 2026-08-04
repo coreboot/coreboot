@@ -23,7 +23,7 @@ chip northbridge/intel/sandybridge
 				{ 1, 0xa53, 5 },
 				{ 1, 0xa53, 6 }
 			}"
-			register "gen4_dec" = "0x0000ff29" # Could be for KB3722 EC
+			register "gen4_dec" = "LPC_IO(0xff28, 0x4)" # Could be for KB3722 EC
 
 			device ref pcie_rp1 on	# PCIEX_16_3 (electrical x2 or x4)
 				smbios_slot_desc "SlotTypePciExpressGen2X4" "SlotLengthLong" "PCIEX16_3" "SlotDataBusWidth4X"

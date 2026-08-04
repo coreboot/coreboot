@@ -45,8 +45,8 @@ chip northbridge/intel/sandybridge
 			end
 			device ref pcie_rp8 on end  # uPD720200 for rear USB3 ports
 			device ref lpc on
-				register "gen1_dec" = "0x00fc0295"
-				register "gen2_dec" = "0x00fc0a01"
+				register "gen1_dec" = "LPC_IO(0x294, 0x100)"
+				register "gen2_dec" = "LPC_IO(0xa00, 0x100)"
 				chip superio/nuvoton/nct6776
 					device pnp 2e.0 off end
 					device pnp 2e.1 off end

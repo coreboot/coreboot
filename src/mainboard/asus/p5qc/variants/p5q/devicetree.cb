@@ -16,8 +16,8 @@ chip northbridge/intel/x4x		# Northbridge
 			# Enable PCIe ports 0,2,3 as slots.
 			register "pcie_slot_implemented"	= "0x31"
 
-			register "gen1_dec" = "0x00000295"
-			register "gen2_dec" = "0x001c4701"
+			register "gen1_dec" = "LPC_IO(0x294, 0x4)"
+			register "gen2_dec" = "LPC_IO(0x4700, 0x20)"
 
 			device pci 19.0 off end		# GBE
 			device pci 1a.0 on  end		# USB

@@ -148,7 +148,7 @@ chip soc/intel/alderlake
 
 		device ref pch_espi on
 			# HWM I/O decode range
-			register "gen1_dec" = "0x007c0281"
+			register "gen1_dec" = "LPC_IO(0x280, 0x80)"
 
 			chip superio/nuvoton/nct6791d
 				device pnp 2e.1   off end # Parallel port (this line needed for super i/o init to work)

@@ -4,7 +4,7 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x1043 0x844d inherit
 		chip southbridge/intel/bd82x6x
-			register "gen1_dec" = "0x000c0291"
+			register "gen1_dec" = "LPC_IO(0x290, 0x10)"
 
 			device ref pcie_rp1 on  end
 			device ref pcie_rp2 off end

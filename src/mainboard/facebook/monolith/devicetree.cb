@@ -190,7 +190,7 @@ chip soc/intel/skylake
 			# CPLD host command ranges are in 0x280-0x2BF
 			# EC PNP registers are at 0x6e and 0x6f
 			register "gen1_dec" = "LPC_IO(0x280, 0x40)"
-			register "gen3_dec" = "LPC_IO(0x6c, 0x8)"
+			register "gen3_dec" = "LPC_IO(0x6c, 0x4)"
 
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end

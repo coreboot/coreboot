@@ -87,10 +87,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B24, NONE),
 	/* GPP_B25:     X1_SLOT_WAKE_N */
 	/* NOTE: x1 slot wake will be overridden according to SD fw_config */
-	/* GPP_C00:     GPP_C0_SMBCLK */
-	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
-	/* GPP_C01:     GPP_C1_SMBDATA */
-	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
+	/* GPP_C00:     NC */
+	PAD_NC(GPP_C00, NONE),
+	/* GPP_C01:     NC */
+	PAD_NC(GPP_C01, NONE),
 	/* GPP_C02:     Not used */
 	PAD_NC(GPP_C02, NONE),
 	/* GPP_C03:     TCP_LAN_SML0_SCL_R */
@@ -375,10 +375,10 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Pad configuration in romstage */
 static const struct pad_config romstage_gpio_table[] = {
-	/* GPP_C00:     GPP_C0_SMBCLK */
-	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
-	/* GPP_C01:     GPP_C1_SMBDATA */
-	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
+	/* GPP_C00:     NC */
+	PAD_NC(GPP_C00, NONE),
+	/* GPP_C01:     NC */
+	PAD_NC(GPP_C01, NONE),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

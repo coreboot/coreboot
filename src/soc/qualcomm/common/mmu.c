@@ -65,6 +65,7 @@ void qc_mmu_dram_config_post_dram_init(size_t ddr_size)
 	} else {
 		int count;
 		struct region *config = qc_get_soc_dram_space_config(ddr_size, &count);
+		count = MIN(count, MAX_DRAM_SPACE_INDEX - 1);
 		for (int i = 0; i < count; i++)
 			mmu_config_range((void *)config[i].offset, config[i].size, CACHED_RAM);
 	}

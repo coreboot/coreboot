@@ -98,8 +98,12 @@ config VGA_ROM_RUN
 	select HAVE_VGA_TEXT_FRAMEBUFFER
 	help
 	  Execute VGA Option ROMs in coreboot if found. This can be used
-	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS
+	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS or EDK2
 	  payload.
+
+	  If you are concerned about security, you might want to disable
+	  this option, but it might leave your system in a state of degraded
+	  functionality, if there's no other way to initialize the graphics card.
 
 	  When using a SeaBIOS payload it runs all option ROMs with much
 	  more complete BIOS interrupt services available than coreboot,
@@ -202,20 +206,14 @@ config ON_DEVICE_ROM_LOAD
 	bool "Load Option ROMs on PCI devices"
 	default n if PAYLOAD_SEABIOS
 	default y if !PAYLOAD_SEABIOS
-	depends on VGA_ROM_RUN
 	help
 	  Load Option ROMs stored on PCI/PCIe/AGP VGA devices in coreboot.
+	  If disabled, only Option ROMs stored in CBFS will be loaded by
+	  coreboot.
 
-	  If disabled, only Option ROMs stored in CBFS will be executed by
-	  coreboot. If you are concerned about security, you might want to
-	  disable this option, but it might leave your system in a state of
-	  degraded functionality.
-
-	  When using a SeaBIOS payload it runs all option ROMs with much
-	  more complete BIOS interrupt services available than coreboot,
-	  which some option ROMs require in order to function correctly.
-
-	  If unsure, say N when using SeaBIOS as payload, Y otherwise.
+	  The decision to run the ROM is still determined by other policies.
+	  Option ROMs are advertised through ACPI tables, so the kernel can
+	  still use them even if they are not run in coreboot or the payload.
 
 choice
 	prompt "Option ROM execution type"

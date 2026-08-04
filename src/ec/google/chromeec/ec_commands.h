@@ -1758,9 +1758,7 @@ enum ec_feature_code {
 	 * The EC supports triggering an STB dump.
 	 */
 	EC_FEATURE_AMD_STB_DUMP = 50,
-	/*
-	 * The EC supports memory dump commands.
-	 */
+	/* Deprecated */
 	EC_FEATURE_MEMORY_DUMP = 51,
 	/*
 	 * The EC supports DP2.1 capability
@@ -5947,7 +5945,7 @@ struct ec_params_get_panic_info_v2 {
 #define EC_CMD_VERSION0 0x00DC
 
 /*
- * Memory Dump Commands
+ * DEPRECATED: Memory Dump Commands
  *
  * Since the HOSTCMD response size is limited, depending on the
  * protocol, retrieving a memory dump is split into 3 commands.
@@ -5965,12 +5963,14 @@ struct ec_params_get_panic_info_v2 {
  * Memory entries may overlap and may be out of order.
  * The host should check for overlaps to optimize transfer rate.
  */
+/* Deprecated */
 #define EC_CMD_MEMORY_DUMP_GET_METADATA 0x00DD
 struct ec_response_memory_dump_get_metadata {
 	uint16_t memory_dump_entry_count;
 	uint32_t memory_dump_total_size;
 } __ec_align4;
 
+/* Deprecated */
 #define EC_CMD_MEMORY_DUMP_GET_ENTRY_INFO 0x00DE
 struct ec_params_memory_dump_get_entry_info {
 	uint16_t memory_dump_entry_index;
@@ -5981,6 +5981,7 @@ struct ec_response_memory_dump_get_entry_info {
 	uint32_t size;
 } __ec_align4;
 
+/* Deprecated */
 #define EC_CMD_MEMORY_DUMP_READ_MEMORY 0x00DF
 
 struct ec_params_memory_dump_read_memory {
@@ -6145,6 +6146,24 @@ struct ec_response_thread_info_detail {
 	uint32_t pc;
 	uint32_t lr;
 	uint32_t sp;
+} __ec_align4;
+
+/**
+ * Simulate up to 2 consecutive delayed power button presses.
+ */
+#define EC_CMD_POWER_BUTTON_PRESS 0x00E6
+
+struct ec_params_power_button_press {
+	/* Delay before the first press. Can be 0. */
+	uint32_t first_press_delay_ms;
+	/* Optional delay before the second press.
+	 * If 0, second press is not scheduled.
+	 */
+	uint32_t second_press_delay_ms;
+	/* Duration of the first press. If 0, default 200ms is used. */
+	uint16_t first_press_duration_ms;
+	/* Duration of the second press. If 0, default 200ms is used. */
+	uint16_t second_press_duration_ms;
 } __ec_align4;
 
 /*****************************************************************************/
@@ -6861,8 +6880,7 @@ struct ec_params_get_cbi {
 /*
  * Flags to control write behavior.
  *
- * NO_SYNC: Makes EC update data in RAM but skip writing to EEPROM. It's
- *          useful when writing multiple fields in a row.
+ * NO_SYNC: Obsolete
  * INIT:    Need to be set when creating a new CBI from scratch. All fields
  *          will be initialized to zero first.
  */
@@ -7005,6 +7023,8 @@ enum chipset_shutdown_reason {
 	CHIPSET_SHUTDOWN_BUTTON,
 	/* Force a chipset shutdown, because the AP wants to. */
 	CHIPSET_SHUTDOWN_HOST_CMD,
+	/* Forcing a shutdown for battery cutoff. */
+	CHIPSET_SHUTDOWN_BATTERY_CUTOFF,
 
 	CHIPSET_SHUTDOWN_COUNT, /* End of shutdown reasons. */
 };
@@ -8488,6 +8508,13 @@ struct ec_params_switch_enable_poe {
 	uint8_t enabled;
 } __ec_align1;
 
+/* Scheduled AP reset */
+#define EC_CMD_AP_RESET_SCHEDULED 0x0146
+
+struct ec_params_ap_reset_scheduled {
+	uint32_t delay_ms;
+} __ec_align4;
+
 /*****************************************************************************/
 /* The command range 0x200-0x2FF is reserved for Rotor. */
 
@@ -9054,6 +9081,13 @@ struct ec_params_fp_sign_match {
 
 struct ec_response_fp_sign_match {
 	uint8_t signature[FP_MAC_LENGTH];
+} __ec_align4;
+
+/* Unlock developer options via FingerGuard HMAC */
+#define EC_CMD_FP_UNLOCK_DEV_OPTIONS 0x0418
+
+struct ec_params_fp_unlock_dev_options {
+	uint8_t hmac[FP_MAC_LENGTH];
 } __ec_align4;
 
 /*

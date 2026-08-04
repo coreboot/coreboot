@@ -22,13 +22,5 @@ DefinitionBlock(
 		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 	}
 
-	Scope (\_SB.PCI0.RP01)
-	{
-		Device (PEGP)
-		{
-			Name (_ADR, Zero)
-		}
-	}
-
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 }

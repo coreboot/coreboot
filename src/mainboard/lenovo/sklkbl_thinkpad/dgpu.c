@@ -10,29 +10,6 @@
 #include <static.h>
 #include <variant/dgpu.h>
 
-void ssdt_add_dgpu(const struct device *dev)
-{
-	struct rom_header *rom;
-	struct device *dgpu = DEV_PTR(dgpu);
-
-	/* Add entry for dGPU if present/enabled */
-	if (!dgpu || !dgpu->enabled)
-		return;
-
-	/* ROM should be already loaded? */
-	rom = dgpu->pci_vga_option_rom;
-	if (!rom) {
-		printk(BIOS_DEBUG, "dGPU oprom not loaded - probing\n");
-		rom = pci_rom_probe(dgpu);
-		if (!rom || !pci_rom_load(dgpu, rom))
-			return;
-	}
-
-	acpigen_write_scope("\\_SB.PCI0.RP01.PEGP");
-	acpigen_write_rom((void *)rom, rom->size * 512);
-	acpigen_pop_len();
-}
-
 void dgpu_detect(void)
 {
 	static const char * const dgfx_vram_id_str[] = { "1GB", "2GB", "4GB", "N/A" };

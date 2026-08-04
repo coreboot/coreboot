@@ -242,9 +242,9 @@ chip soc/intel/alderlake
 		end
 		device ref pch_espi on
 			# LPC generic I/O ranges
-			register "gen1_dec" = "0x00fc0201"
-			register "gen2_dec" = "0x003c0a01"
-			register "gen3_dec" = "0x000c0081"
+			register "gen1_dec" = "LPC_IO(0x200, 0x100)"
+			register "gen2_dec" = "LPC_IO(0xa00, 0x40)"
+			register "gen3_dec" = "LPC_IO(0x80, 0x10)"
 
 			chip superio/ite/it8659e
 				register "TMPIN1.mode"    = "THERMAL_PECI"

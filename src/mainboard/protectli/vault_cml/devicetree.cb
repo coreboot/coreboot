@@ -4,10 +4,10 @@ chip soc/intel/cannonlake
 
 	register "cpu_pl2_4_cfg" = "baseline"
 
-	register "gen1_dec" = "0x00fc0201"
-	register "gen2_dec" = "0x007c0a01"
-	register "gen3_dec" = "0x000c03e1"
-	register "gen4_dec" = "0x001c02e1"
+	register "gen1_dec" = "LPC_IO(0x200, 0x100)"
+	register "gen2_dec" = "LPC_IO(0xa00, 0x80)"
+	register "gen3_dec" = "LPC_IO(0x3e0, 0x10)"
+	register "gen4_dec" = "LPC_IO(0x2e0, 0x20)"
 
 	# GPIO
 	register "PchUnlockGpioPads" = "1"

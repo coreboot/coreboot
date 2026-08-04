@@ -29,7 +29,7 @@ chip northbridge/intel/x4x		# Northbridge
 			register "sata_ports_implemented" = "0x3"
 			register "gpe0_en" = "0x40"
 
-			register "gen2_dec" = "LPC_IO(0x290, 0x80)" # HWM
+			register "gen2_dec" = "LPC_IO(0x290, 0x10)" # HWM
 
 			device pci 1b.0 on		# Audio
 				subsystemid 0x1458 0xa002

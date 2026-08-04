@@ -46,9 +46,9 @@ chip northbridge/intel/i945
 			register "c3_latency" = "0x23"
 			register "p_cnt_throttling_supported" = "true"
 
-			register "gen1_dec" = "0x000c0681"
-			register "gen2_dec" = "0x000c1641"
-			register "gen4_dec" = "0x001c0301"
+			register "gen1_dec" = "LPC_IO(0x680, 0x10)"
+			register "gen2_dec" = "LPC_IO(0x1640, 0x10)"
+			register "gen4_dec" = "LPC_IO(0x300, 0x20)"
 
 			device pci 1b.0 on # Audio Controller
 				subsystemid 0x8384 0x7680

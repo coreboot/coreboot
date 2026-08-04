@@ -12,10 +12,10 @@ chip northbridge/intel/sandybridge
 
 		chip southbridge/intel/bd82x6x	# Intel Series 7 Panther Point PCH
 			# mailbox at 0x200/0x201 and PM1 at 0x220
-			register "gen1_dec" = "0x007c0201"
-			register "gen2_dec" = "0x000c0101"
-			register "gen3_dec" = "0x00fcfe01"
-			register "gen4_dec" = "0x000402e9"
+			register "gen1_dec" = "LPC_IO(0x200, 0x80)"
+			register "gen2_dec" = "LPC_IO(0x100, 0x10)"
+			register "gen3_dec" = "LPC_IO(0xfe00, 0x100)"
+			register "gen4_dec" = "LPC_IO(0x2e8, 0x8)"
 			register "gpi6_routing" = "2"
 			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
 			# HDD(0), ODD(1), mSATA(2), eSATA(4)

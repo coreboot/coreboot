@@ -10,7 +10,7 @@ chip northbridge/intel/sandybridge
 		subsystemid 0x103c 0x3398 inherit
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
-			register "gen1_dec" = "0x00fc0a01"
+			register "gen1_dec" = "LPC_IO(0xa00, 0x100)"
 			# 0x1: 2.5", 0x2: DVD, 0x4: mSATA
 			register "sata_port_map" = "0x7"
 			register "superspeed_capable_ports" = "0x0000000f"

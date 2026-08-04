@@ -92,7 +92,7 @@ chip soc/intel/skylake
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 			# FIXME: Missing Super I/O HWM config
-			register "gen1_dec" = "0x000c0291"
+			register "gen1_dec" = "LPC_IO(0x290, 0x10)"
 		end
 		device ref pmc		on
 			register "PmConfigSlpS3MinAssert"	= "SLP_S3_MIN_ASSERT_50MS"

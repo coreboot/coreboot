@@ -9,8 +9,8 @@ chip northbridge/intel/sandybridge
 		device ref igd on  end
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 PCH
-			register "gen1_dec" = "0x00fc0601"
-			register "gen2_dec" = "0x00fc0801"
+			register "gen1_dec" = "LPC_IO(0x600, 0x100)"
+			register "gen2_dec" = "LPC_IO(0x800, 0x100)"
 			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "spi_lvscc" = "0x2005"

@@ -56,9 +56,9 @@ chip northbridge/intel/broadwell
 			end
 			device pci 1d.0 on  end # USB2 EHCI #1
 			device pci 1f.0 on      # LPC bridge
-				register "gen1_dec" = "0x007c0201"
-				register "gen2_dec" = "0x000c0101"
-				register "gen4_dec" = "0x000402e9"
+				register "gen1_dec" = "LPC_IO(0x200, 0x80)"
+				register "gen2_dec" = "LPC_IO(0x100, 0x10)"
+				register "gen4_dec" = "LPC_IO(0x2e8, 0x8)"
 				register "gpe0_en_1" = "0x40"
 				register "gpe0_en_2" = "0x600"
 				register "gpe0_en_4" = "0x46"

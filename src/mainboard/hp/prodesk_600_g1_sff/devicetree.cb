@@ -12,8 +12,8 @@ chip northbridge/intel/haswell
 		device pci 02.0 on end # Internal graphics VGA controller
 		device pci 03.0 on end # Mini-HD audio
 		chip southbridge/intel/lynxpoint # Intel Series 8 Lynx Point PCH
-			register "gen1_dec" = "0x00fc0a01"
-			register "gen2_dec" = "0x00fc0801"
+			register "gen1_dec" = "LPC_IO(0xa00, 0x100)"
+			register "gen2_dec" = "LPC_IO(0x800, 0x100)"
 			register "gpe0_en_1" = "0x0146"
 			register "sata_port0_gen3_dtle" = "0x5"
 			register "sata_port1_gen3_dtle" = "0x5"

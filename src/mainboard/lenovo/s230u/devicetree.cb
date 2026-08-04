@@ -23,7 +23,7 @@ chip northbridge/intel/sandybridge
 			register "docking_supported" = "true"
 			register "gen1_dec" = "0x00000000"
 			register "gen2_dec" = "LPC_IO(0x700, 0x10)"
-			register "gen3_dec" = "LPC_IO(0x68, 0x10)"
+			register "gen3_dec" = "LPC_IO(0x68, 0x8)"
 			register "gen4_dec" = "LPC_IO(0x6a0, 0x10)"
 			register "gpi13_routing" = "2"
 			register "gpi7_routing" = "2"

@@ -150,7 +150,7 @@ chip soc/intel/skylake
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 			# EC host command ranges are in 0x380-0x383 & 0x80-0x8f
-			register "gen1_dec" = "0x00000381"
+			register "gen1_dec" = "LPC_IO(0x380, 0x4)"
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
 			end

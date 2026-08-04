@@ -250,9 +250,9 @@ chip soc/intel/cannonlake
 		device ref lpc_espi on
 			# This board has a lot of SuperIO LDNs with I/O BARs, the LPC generic
 			# I/O ranges must be configured manually.
-			register "gen1_dec" = "0x000c0ca1"	# IPMI: ca0-caf
-			register "gen2_dec" = "0x007c0a01"	# ASpeed SuperIO SWC and mailbox: a00-a7f
-			register "gen3_dec" = "0x00040291"	# Nuvoton SuperIO HW monitor: 290-297
+			register "gen1_dec" = "LPC_IO(0xca0, 0x10)" # IPMI: ca0-caf
+			register "gen2_dec" = "LPC_IO(0xa00, 0x80)" # ASpeed SuperIO SWC and mailbox: a00-a7f
+			register "gen3_dec" = "LPC_IO(0x290, 0x8)"  # Nuvoton SuperIO HW monitor: 290-297
 
 			# AST2500 Super IO UART1 requires continuous mode
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"

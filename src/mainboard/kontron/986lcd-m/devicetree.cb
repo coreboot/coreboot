@@ -36,10 +36,10 @@ chip northbridge/intel/i945
 			register "p_cnt_throttling_supported" = "false"
 
 			# ICH-7 generic decode IO ports range for LPC
-			register "gen1_dec" = "0x00fc0a01" # HWM
-			register "gen2_dec" = "0x000403e9" # COM3
-			register "gen3_dec" = "0x000402e9" # COM4
-			register "gen4_dec" = "0x00000301" # ??
+			register "gen1_dec" = "LPC_IO(0xa00, 0x100)" # HWM
+			register "gen2_dec" = "LPC_IO(0x3e8, 0x8)"   # COM3
+			register "gen3_dec" = "LPC_IO(0x2e8, 0x8)"   # COM4
+			register "gen4_dec" = "LPC_IO(0x300, 0x4)"   # ??
 
 			device pci 1b.0 on end # High Definition Audio
 			device pci 1c.0 on end # Ethernet 1

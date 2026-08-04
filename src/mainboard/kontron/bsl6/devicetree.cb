@@ -92,7 +92,7 @@ chip soc/intel/skylake
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 			# EC/kempld at 0xa80/0xa81
-			register "gen1_dec" = "0x00000a81"
+			register "gen1_dec" = "LPC_IO(0xa80, 0x4)"
 
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end

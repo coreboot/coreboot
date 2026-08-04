@@ -30,7 +30,7 @@ chip northbridge/intel/sandybridge
 			register "sata_interface_speed_support" = "0x3"
 
 			# TODO: Enable generic LPC decodes...
-			register "gen1_dec" = "0x001c02e1"
+			register "gen1_dec" = "LPC_IO(0x2e0, 0x20)"
 			#register "gen2_dec" = "0x00000000"
 			#register "gen3_dec" = "0x00000000"
 			#register "gen4_dec" = "0x00000000"

@@ -23,7 +23,7 @@ chip northbridge/intel/pineview
 			register "sata_ports_implemented" = "0x3"
 			register "gpe0_en" = "0x441"
 
-			register "gen1_dec" = "0x00040291" # Environment Controller
+			register "gen1_dec" = "LPC_IO(0x290, 0x8)" # Environment Controller
 
 			device pci 1b.0 on  end		# HD Audio
 			device pci 1c.0 on  end		# PCIe 1: Realtek GbE NIC

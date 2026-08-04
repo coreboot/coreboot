@@ -12,7 +12,7 @@ chip northbridge/intel/sandybridge
 		end
 
 		chip southbridge/intel/bd82x6x	# Intel Series 7 Panther Point PCH
-			register "gen1_dec" = "0x003c0a01"
+			register "gen1_dec" = "LPC_IO(0xa00, 0x40)"
 
 			# Set max SATA speed to 6.0 Gb/s
 			register "sata_port_map" = "0x3f"

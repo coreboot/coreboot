@@ -10,7 +10,7 @@ chip northbridge/intel/sandybridge
 		device ref igd on end
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			register "gen1_dec" = "0x003c0a01"
+			register "gen1_dec" = "LPC_IO(0xa00, 0x40)"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x33"
 			register "spi_lvscc" = "0x2005"

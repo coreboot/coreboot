@@ -39,7 +39,7 @@ chip soc/intel/xeon_sp/skx
 	register "ats_support" = "1"
 	register "cstate_states" = "CSTATES_C1C6"
 
-	register "gen2_dec" = "0x000c0ca1" # IPMI KCS
+	register "gen2_dec" = "LPC_IO(0xca0, 0x10)" # IPMI KCS
 
 	device cpu_cluster 0 on end
 

@@ -27,15 +27,16 @@ void platform_fill_dimm_info_args(const DIMM_INFO *src_dimm,
 }
 
 /*
- * Checks if the Converged Security Engine (CSE) is in a malicious state.
+ * Checks if the Converged Security Engine (CSE) is in a stale recovery state.
  *
- * A malicious state is inferred when the CSE has been temporarily disabled via
- * software (HFS1 COM Soft Temp Disable) but the Current Operating State (COS)
- * is not in default aka pre-boot state.
+ * A stale recovery state occurs when the CSE has been temporarily disabled via
+ * software (HFS1 COM Soft Temp Disable), but its Current Operating State (COS)
+ * has not returned to the default pre-boot state. Since COS is managed by hardware,
+ * a non-default state lingering across reboots indicates stale state information.
  *
- * @return true if the CSE is in a malicious state, false otherwise.
+ * @return true if the CSE is in a stale recovery state, false otherwise.
  */
-static bool cse_in_malicious_state(void)
+static bool cse_in_stale_recovery_state(void)
 {
 	return cse_is_hfs1_com_soft_temp_disable() && !cse_is_hfs1_cos_default();
 }
@@ -54,8 +55,8 @@ void mainboard_romstage_entry(void)
 	/* Initialize HECI interface */
 	cse_init(HECI1_BASE_ADDRESS);
 
-	if (cse_in_malicious_state()) {
-		printk(BIOS_INFO, "CSE is in malicious state inside %s(), "
+	if (cse_in_stale_recovery_state()) {
+		printk(BIOS_INFO, "CSE is in stale recovery state inside %s(), "
 		       "doing board reset\n", __func__);
 		do_board_reset();
 	}

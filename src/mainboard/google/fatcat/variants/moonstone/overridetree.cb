@@ -508,7 +508,6 @@ chip soc/intel/pantherlake
 			end
 		end
 
-		device ref smbus on end
 		device ref hda on
 			probe AUDIO_CODEC AUDIO_CODEC_ALC721
 			probe AUDIO_AMPLIFIER AUDIO_AMPLIFIER_ALC1320

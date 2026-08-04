@@ -38,10 +38,10 @@ chip northbridge/intel/sandybridge
 			device ref pcie_rp6	on end # SD/MMC Card Reader
 			device ref ehci1	on end
 			device ref lpc		on
-				register "gen1_dec" = "0x007c0681"
-				register "gen2_dec" = "0x005c0921"
-				register "gen3_dec" = "0x003c07e1"
-				register "gen4_dec" = "0x00000911" # Ports 0x910/0x911 for EC
+				register "gen1_dec" = "LPC_IO(0x680, 0x80)"
+				register "gen2_dec" = "LPC_IO(0x920, 0x60)"
+				register "gen3_dec" = "LPC_IO(0x7e0, 0x40)"
+				register "gen4_dec" = "LPC_IO(0x910, 0x4)" # Ports 0x910/0x911 for EC
 
 				chip ec/dell/mec5035
 					device pnp ff.0 on end

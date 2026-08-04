@@ -40,7 +40,7 @@ chip soc/intel/skylake
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 			# I/O decode for EMI/Runtime registers
-			register "gen1_dec" = "0x007c0a01"
+			register "gen1_dec" = "LPC_IO(0xa00, 0x80)"
 
 			# SCH5553
 			chip superio/smsc/sch555x

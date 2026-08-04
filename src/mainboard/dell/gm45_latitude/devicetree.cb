@@ -62,7 +62,7 @@ chip northbridge/intel/gm45
 				[3] = { 10, 0 },
 			}"
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
-			register "gen1_dec" = "0x007c0901"
+			register "gen1_dec" = "LPC_IO(0x900, 0x80)"
 
 			device pci 19.0 on end # LAN
 			device pci 1a.0 on end # UHCI

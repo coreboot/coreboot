@@ -102,10 +102,10 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B25:     SOC_SD_WAKE# */
 	PAD_CFG_GPI_SCI_LOW(GPP_B25, NONE, DEEP, LEVEL),
 
-	/* GPP_C00:     SOC_SMBCLK */
-	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
-	/* GPP_C01:     SOC_SMBDATA */
-	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
+	/* GPP_C00:     NC */
+	PAD_NC(GPP_C00, NONE),
+	/* GPP_C01:     NC */
+	PAD_NC(GPP_C01, NONE),
 	/* GPP_C02:     Not used */
 	PAD_NC(GPP_C02, NONE),
 	/* GPP_C03:     SOC_SML0CLK */
@@ -418,10 +418,10 @@ static const struct pad_config early_gpio_table[] = {
 static const struct pad_config romstage_gpio_table[] = {
 	/* GPP_B16:     SOC_SSD2_EN */
 	PAD_CFG_GPO(GPP_B16, 1, PLTRST),
-	/* GPP_C00:     SOC_SMBCLK */
-	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
-	/* GPP_C01:     SOC_SMBDATA */
-	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
+	/* GPP_C00:     NC */
+	PAD_NC(GPP_C00, NONE),
+	/* GPP_C01:     NC */
+	PAD_NC(GPP_C01, NONE),
 	/* GPP_H03:     EN_PWR_FP */
 	PAD_CFG_GPO(GPP_H03, 0, DEEP),
 	/* GPP_H17:     FP_RST_1V8_OD# */

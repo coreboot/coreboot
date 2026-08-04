@@ -1,0 +1,47 @@
+#!/usr/bin/env sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# DESCR: Check that gen*_dec uses LPC_IO() instead of raw values
+
+LINTDIR="$(
+	cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+	pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+# Exit if the code isn't in a git repo
+if [ "${IN_GIT_TREE}" -eq 0 ]; then
+	exit 0
+fi
+
+# LPC_IO() always sets EN, so disabled windows may still use a raw 0.
+# Multiline values (e.g. CONFIG(...) ? LPC_IO(...) : LPC_IO(...)) are OK
+# as long as LPC_IO appears in the quoted expression.
+${FIND_FILES} 'src' | grep '\.cb$' | while read -r file; do
+	awk -v file="$file" '
+	/^[[:space:]]*#/ { next }
+	match($0, /register[[:space:]]+"gen[1-4]_dec"[[:space:]]*=[[:space:]]*"/) {
+		rest = substr($0, RSTART + RLENGTH)
+		val = ""
+		lineno = NR
+		line = rest
+		while (1) {
+			q = index(line, "\"")
+			if (q > 0) {
+				val = val substr(line, 1, q - 1)
+				break
+			}
+			val = val line " "
+			if ((getline line) <= 0)
+				break
+		}
+		gsub(/^[[:space:]]+|[[:space:]]+$/, "", val)
+		if (val ~ /^0([xX]0*)?$/)
+			next
+		if (val !~ /LPC_IO[[:space:]]*\(/)
+			printf "%s:%d: gen*_dec must use LPC_IO(base, size), not a raw value\n", file, lineno
+	}
+	' "$file"
+done

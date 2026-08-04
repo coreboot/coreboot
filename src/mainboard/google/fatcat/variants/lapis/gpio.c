@@ -102,10 +102,10 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B25:     DIMM_SEL2 */
 	PAD_CFG_GPI(GPP_B25, NONE, DEEP),
 
-	/* GPP_C00:     GPP_C0_SMBCLK ==> SMB_CLK */
-	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
-	/* GPP_C01:     GPP_C1_SMBDATA ==> SMB_DAT */
-	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
+	/* GPP_C00:     NC */
+	PAD_NC(GPP_C00, NONE),
+	/* GPP_C01:     NC */
+	PAD_NC(GPP_C01, NONE),
 	/* GPP_C02:     Not used */
 	PAD_NC(GPP_C02, NONE),
 	/* GPP_C03:     TBT_SMB_CLK */

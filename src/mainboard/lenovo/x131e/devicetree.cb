@@ -35,10 +35,10 @@ chip northbridge/intel/sandybridge
 			# Set max SATA speed to 6.0 Gb/s
 			register "sata_interface_speed_support" = "0x3"
 
-			register "gen1_dec" = "0x007c1611"
-			register "gen2_dec" = "0x00040069"
-			register "gen3_dec" = "0x000c0701"
-			register "gen4_dec" = "0x000c06a1"
+			register "gen1_dec" = "LPC_IO(0x1610, 0x80)"
+			register "gen2_dec" = "LPC_IO(0x68, 0x8)"
+			register "gen3_dec" = "LPC_IO(0x700, 0x10)"
+			register "gen4_dec" = "LPC_IO(0x6a0, 0x10)"
 
 			register "xhci_switchable_ports" = "0x3"
 			register "superspeed_capable_ports" = "0x3"

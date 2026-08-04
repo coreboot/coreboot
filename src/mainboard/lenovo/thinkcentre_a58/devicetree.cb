@@ -26,7 +26,7 @@ chip northbridge/intel/x4x		# Northbridge
 			register "ide_enable_primary" = "true"
 			register "gpe0_en" = "0x440"
 
-			register "gen1_dec" = "0x00fc0a01"
+			register "gen1_dec" = "LPC_IO(0xa00, 0x100)"
 
 			device pci 1b.0 on end		# Audio
 			device pci 1c.0 on end		# PCIe 1

@@ -37,9 +37,9 @@ chip northbridge/intel/sandybridge
 			# Set max SATA speed to 6.0 Gb/s
 			register "sata_interface_speed_support" = "0x3"
 
-			register "gen1_dec" = "0x7c1601"
-			register "gen2_dec" = "0x0c15e1"
-			register "gen4_dec" = "0x0c06a1"
+			register "gen1_dec" = "LPC_IO(0x1600, 0x80)"
+			register "gen2_dec" = "LPC_IO(0x15e0, 0x10)"
+			register "gen4_dec" = "LPC_IO(0x6a0, 0x10)"
 
 			# Do not enable xHCI Port 4 since WWAN USB is EHCI-only
 			register "xhci_switchable_ports" = "0x7"

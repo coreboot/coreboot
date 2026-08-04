@@ -28,9 +28,9 @@ chip northbridge/intel/haswell
 		device pci 03.0 on  end	# Mini-HD audio
 
 		chip southbridge/intel/lynxpoint # Intel Series 8 Lynx Point PCH
-			register "gen1_dec" = "0x007c1601"
-			register "gen2_dec" = "0x000c15e1"
-			register "gen4_dec" = "0x000c06a1"
+			register "gen1_dec" = "LPC_IO(0x1600, 0x80)"
+			register "gen2_dec" = "LPC_IO(0x15e0, 0x10)"
+			register "gen4_dec" = "LPC_IO(0x6a0, 0x10)"
 			register "gpi13_routing" = "2"
 			register "gpi1_routing" = "2"
 			# 0(HDD), 1(M.2), 5(ODD)

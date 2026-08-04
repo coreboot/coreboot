@@ -169,8 +169,8 @@ chip soc/intel/skylake
 		device ref lpc_espi	on
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
-			register "gen1_dec" = "0x000c0681"
-			register "gen2_dec" = "0x000c1641"
+			register "gen1_dec" = "LPC_IO(0x680, 0x10)"
+			register "gen2_dec" = "LPC_IO(0x1640, 0x10)"
 
 			chip superio/ite/it8528e
 				device pnp 6e.1 off end

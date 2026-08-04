@@ -13,7 +13,7 @@ chip soc/intel/xeon_sp/spr
 	# configure VT-d
 	register "vtd_support" = "1"
 
-	register "gen2_dec" = "0x000c0ca1" # IPMI KCS
+	register "gen2_dec" = "LPC_IO(0xca0, 0x10)" # IPMI KCS
 
 	register "cstate_states" = "CSTATES_C1C6"
 	device cpu_cluster 0 on end

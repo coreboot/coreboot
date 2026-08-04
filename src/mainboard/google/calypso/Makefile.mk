@@ -2,6 +2,7 @@
 
 all-y += board_misc.c
 all-y += chromeos.c
+all-$(CONFIG_EC_GOOGLE_CHROMEEC_POSTCODE) += ec.c
 ifneq ($(CONFIG_MISSING_BOARD_RESET),y)
 all-y += reset.c
 endif

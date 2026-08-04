@@ -167,10 +167,9 @@ chip soc/intel/skylake
 		device ref lpc_espi	on
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
-			register "gen1_dec" = "LPC_IO(0xa00, 0x80)"  # EC 0xa00-0xa7f
-			register "gen2_dec" = "LPC_IO(0x3e0, 0x10)"  # COM3 port 0x3e0 - 0x3ef
-			# TODO: LPC_IO encodes 0x2e0-0x3df (was 0x00fc02e1); comment describes 0x2e0-0x2ff
-			register "gen3_dec" = "LPC_IO(0x2e0, 0x100)" # COM2/4/5/6 ports 0x2e0 - 0x2ff
+			register "gen1_dec" = "LPC_IO(0xa00, 0x80)" # EC 0xa00-0xa7f
+			register "gen2_dec" = "LPC_IO(0x3e0, 0x10)" # COM3 port 0x3e0-0x3ef
+			register "gen3_dec" = "LPC_IO(0x2e0, 0x20)" # COM2/4/5/6 ports 0x2e0-0x2ff
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
 			end

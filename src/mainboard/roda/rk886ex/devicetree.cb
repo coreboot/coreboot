@@ -44,9 +44,9 @@ chip northbridge/intel/i945
 			register "ide_enable_primary" = "true"
 			register "ide_enable_secondary" = "false"
 
-			register "gen1_dec" = "0x001c02e1" # COM3, COM4
-			register "gen2_dec" = "0x00fc0601" # ??
-			register "gen3_dec" = "0x00040069" # EC decode ??
+			register "gen1_dec" = "LPC_IO(0x2e0, 0x20)"  # COM3, COM4
+			register "gen2_dec" = "LPC_IO(0x600, 0x100)" # ??
+			register "gen3_dec" = "LPC_IO(0x68, 0x8)"    # EC decode ??
 
 			device pci 1b.0 off end	# High Definition Audio
 			device pci 1c.0 on  end	# PCIe port 1

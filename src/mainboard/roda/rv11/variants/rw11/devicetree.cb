@@ -39,9 +39,9 @@ chip northbridge/intel/sandybridge
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			# LPC i/o generic decodes
-			register "gen1_dec" = "0x003c0a01" # ITE environment controller
-			register "gen2_dec" = "0x000403e9" # additional com port
-			register "gen3_dec" = "0x000402e9" # additional com port
+			register "gen1_dec" = "LPC_IO(0xa00, 0x40)" # ITE environment controller
+			register "gen2_dec" = "LPC_IO(0x3e8, 0x8)"  # additional com port
+			register "gen3_dec" = "LPC_IO(0x2e8, 0x8)"  # additional com port
 
 			# Enable both SATA ports 0, 1
 			register "sata_port_map" = "0x03"

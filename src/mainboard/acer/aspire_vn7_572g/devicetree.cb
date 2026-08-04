@@ -286,8 +286,8 @@ chip soc/intel/skylake
 			register "lpc_iod" = "0x0010"	# 80h-81h; ComB: 2F8h-2FFh (COM 2)
 			register "lpc_ioe" = "LPC_IOE_COMA_EN | LPC_IOE_COMB_EN | LPC_IOE_KBC_60_64
 					| LPC_IOE_EC_62_66 | LPC_IOE_SUPERIO_2E_2F | LPC_IOE_EC_4E_4F"	# 82h-83h
-			register "gen3_dec" = "0x00040069"	# 8Ch-8Fh; EC (sideband): Port 68h/6Ch
-			register "gen4_dec" = "0x000c1201"	# 90h-93h; EC (index): Port 1200h
+			register "gen3_dec" = "LPC_IO(0x68, 0x8)"    # 8Ch-8Fh; EC (sideband): Port 68h/6Ch
+			register "gen4_dec" = "LPC_IO(0x1200, 0x10)" # 90h-93h; EC (index): Port 1200h
 
 			# EC/KBC requires continuous mode
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"

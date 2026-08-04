@@ -252,7 +252,6 @@ chip soc/intel/cannonlake
 			register "gen1_dec" = "LPC_IO(0x200, 0x100)"
 			register "gen2_dec" = "LPC_IO(0x280, 0x80)"
 			register "gen3_dec" = "LPC_IO(0x3e0, 0x10)"
-			register "gen4_dec" = "LPC_IO(0x2e0, 0x20)"
 
 			# Set LPC Serial IRQ mode
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"

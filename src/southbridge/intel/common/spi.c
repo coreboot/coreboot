@@ -686,7 +686,8 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 
 spi_xfer_exit:
 	/* Clear atomic preop now that xfer is done */
-	writew_(0, cntlr.preop);
+	if (!spi_locked())
+		writew_(0, cntlr.preop);
 
 	return 0;
 }

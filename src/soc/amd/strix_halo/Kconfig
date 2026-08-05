@@ -38,6 +38,7 @@ config SOC_AMD_STRIX_HALO_BASE
 	select SOC_AMD_COMMON_BLOCK_APOB		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_APOB_HASH		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_BANKED_GPIOS	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_CONFIG
 	select SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM1AH
 	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC         # TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN  # TODO: Check if this is still correct

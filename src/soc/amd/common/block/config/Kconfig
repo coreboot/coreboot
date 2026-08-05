@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_AMD_COMMON_BLOCK_CONFIG
+	bool
+	help
+	  Common soc_get_common_config() helper. SoCs that select this must
+	  provide <soc/soc_chip.h> with a soc_amd_config_t typedef for their chip
+	  config, which embeds struct soc_amd_common_config common_config.

@@ -184,4 +184,6 @@ struct soc_amd_mendocino_config {
 
 };
 
+typedef struct soc_amd_mendocino_config soc_amd_config_t;
+
 #endif /* MENDOCINO_CHIP_H */

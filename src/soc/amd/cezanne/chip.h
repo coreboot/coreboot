@@ -118,4 +118,6 @@ struct soc_amd_cezanne_config {
 	bool acp_i2s_use_external_48mhz_osc;
 };
 
+typedef struct soc_amd_cezanne_config soc_amd_config_t;
+
 #endif /* CEZANNE_CHIP_H */

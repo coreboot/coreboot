@@ -107,4 +107,6 @@ struct soc_amd_glinda_config {
 	struct usb_phy_config usb_phy;
 };
 
+typedef struct soc_amd_glinda_config soc_amd_config_t;
+
 #endif /* GLINDA_CHIP_H */

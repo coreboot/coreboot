@@ -302,4 +302,6 @@ struct soc_amd_picasso_config {
 	struct usb_pd_control usb_pd_config_override[USB_PD_PORT_COUNT];
 };
 
+typedef struct soc_amd_picasso_config soc_amd_config_t;
+
 #endif /* __PICASSO_CHIP_H__ */

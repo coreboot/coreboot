@@ -107,4 +107,6 @@ struct soc_amd_strix_halo_config {
 	struct usb_phy_config usb_phy;
 };
 
+typedef struct soc_amd_strix_halo_config soc_amd_config_t;
+
 #endif /* STRIX_HALO_CHIP_H */

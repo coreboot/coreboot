@@ -1,7 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_AMD_GENOA_POC),y)
 
-all-y		+= config.c
 all-y		+= gpio.c
 all-y		+= i2c.c
 all-y		+= i3c.c

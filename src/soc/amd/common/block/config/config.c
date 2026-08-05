@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/chip.h>
-#include <device/device.h>
+#include <soc/soc_chip.h>
 #include <static.h>
-#include "chip.h"
 
 const struct soc_amd_common_config *soc_get_common_config(void)
 {
-	const struct soc_amd_turin_poc_config *cfg = config_of_soc();
-	return &cfg->common_config;
+	const soc_amd_config_t *config = config_of_soc();
+
+	return &config->common_config;
 }

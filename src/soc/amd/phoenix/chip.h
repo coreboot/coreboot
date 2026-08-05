@@ -113,4 +113,6 @@ struct soc_amd_phoenix_config {
 #endif
 };
 
+typedef struct soc_amd_phoenix_config soc_amd_config_t;
+
 #endif /* PHOENIX_CHIP_H */

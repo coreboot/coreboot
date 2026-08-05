@@ -63,4 +63,6 @@ struct soc_amd_turin_poc_config {
 	struct soc_usb_config usb;
 };
 
+typedef struct soc_amd_turin_poc_config soc_amd_config_t;
+
 #endif /* __TURIN_POC_CHIP_H__ */

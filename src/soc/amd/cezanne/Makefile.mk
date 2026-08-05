@@ -6,7 +6,6 @@ subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 
 # Beware that all-y also adds the compilation unit to verstage on PSP
 all-y		+= aoac.c
-all-y		+= config.c
 all-y		+= i2c.c
 
 # all_x86-y adds the compilation unit to all stages that run on the x86 cores

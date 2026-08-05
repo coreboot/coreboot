@@ -32,8 +32,9 @@ struct soc_amd_common_config {
 };
 
 /*
- * SoC callback that returns pointer to soc_amd_common_config structure embedded within the chip
- * soc config.
+ * Returns a pointer to the soc_amd_common_config embedded in the SoC chip
+ * config. SoCs using this must select SOC_AMD_COMMON_BLOCK_CONFIG and
+ * provide <soc/soc_chip.h> with a soc_amd_config_t typedef for their chip config.
  */
 const struct soc_amd_common_config *soc_get_common_config(void);
 

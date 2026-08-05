@@ -95,6 +95,12 @@ Name(CRES, ResourceTemplate() {
 }) /* End Name(_SB.PCI0.CRES) */
 
 Method(_CRS, 0) {
+	/* Set highest PCI bus and length */
+	CreateWordField(CRES, ^PSB0._MAX, BMAX)
+	CreateWordField(CRES, ^PSB0._LEN, BLEN)
+	BLEN = CONFIG_ECAM_MMCONF_BUS_NUMBER
+	BMAX = BLEN - 1
+
 	/* DBGO("\\_SB\\PCI0\\_CRS\n") */
 	CreateDWordField(CRES, ^MMIO._BAS, MM1B)
 	CreateDWordField(CRES, ^MMIO._LEN, MM1L)

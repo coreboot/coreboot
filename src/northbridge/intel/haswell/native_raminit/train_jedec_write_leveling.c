@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <assert.h>
+#include <commonlib/bsd/clamp.h>
 #include <console/console.h>
 #include <delay.h>
 #include <northbridge/intel/haswell/haswell.h>
@@ -35,22 +36,24 @@ static void program_wdb_pattern(struct sysinfo *ctrl, const bool invert)
 		write_wdb_fixed_pat(ctrl, pat[s], pmask[invert], ARRAY_SIZE(pmask[invert]), s);
 }
 
-static int16_t set_add_delay(uint32_t *add_delay, uint8_t rank, int8_t target_off)
+static void update_add_delay(const uint8_t channel, const uint8_t rank, const int8_t tgt_off)
 {
 	const uint8_t shift = rank * 2;
-	if (target_off > MAX_ADD_DELAY) {
-		*add_delay &= ~(3 << shift);
-		*add_delay |= MAX_ADD_DELAY << shift;
-		return 128 * (target_off - MAX_ADD_DELAY);
-	} else if (target_off < 0) {
-		*add_delay &= ~(3 << shift);
-		*add_delay |= 0 << shift;
-		return 128 * target_off;
-	} else {
-		*add_delay &= ~(3 << shift);
-		*add_delay |= target_off << shift;
+	uint32_t sc_wr_add_delay = mchbar_read32(SC_WR_ADD_DELAY_ch(channel));
+	sc_wr_add_delay &= ~(3 << shift);
+	sc_wr_add_delay |= clamp_s8(0, tgt_off, MAX_ADD_DELAY) << shift;
+	mchbar_write32(SC_WR_ADD_DELAY_ch(channel), sc_wr_add_delay);
+}
+
+static int16_t calc_global_offset(const int8_t tgt_off)
+{
+	/* Return the PI offset to use when tgt_off is out of range of SC_WR_ADD_DELAY */
+	if (tgt_off > MAX_ADD_DELAY)
+		return 128 * (tgt_off - MAX_ADD_DELAY);
+	else if (tgt_off < 0)
+		return 128 * tgt_off;
+	else
 		return 0;
-	}
 }
 
 static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t rank)
@@ -60,7 +63,6 @@ static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t 
 	const uint8_t dq_offset_max = ARRAY_SIZE(dq_offsets);
 
 	int8_t byte_off[NUM_CHANNELS][NUM_LANES] = { 0 };
-	uint32_t add_delay[NUM_CHANNELS] = { 0 };
 	bool invert = false;
 	const uint16_t valid_byte_mask = BIT(ctrl->lanes) - 1;
 
@@ -77,7 +79,6 @@ static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t 
 		if (!rank_in_ch(ctrl, rank, channel))
 			continue;
 
-		add_delay[channel] = mchbar_read32(SC_WR_ADD_DELAY_ch(channel));
 		printk(JWLC_PLOT, "\t\t%u\t", channel);
 	}
 	printk(JWLC_PLOT, "\nByte\t");
@@ -98,14 +99,12 @@ static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t 
 			if (!rank_in_ch(ctrl, rank, channel))
 				continue;
 
-			const int16_t global_byte_off =
-				set_add_delay(&add_delay[channel], rank, offsets[off]);
+			const int16_t global_byte_off = calc_global_offset(offsets[off]);
 			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 				update_txt(ctrl, channel, rank, byte, TXT_DQDQS_OFF,
 					global_byte_off);
 			}
-			mchbar_write32(SC_WR_ADD_DELAY_ch(channel),
-				add_delay[channel]);
+			update_add_delay(channel, rank, offsets[off]);
 		}
 		/* Reset FIFOs and DRAM DLL (Micron workaround) */
 		if (!ctrl->lpddr) {
@@ -195,8 +194,7 @@ static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t 
 		uint8_t all_good_loops = 0;
 		bool all_good = 0;
 		while (!all_good) {
-			global_byte_off =
-				set_add_delay(&add_delay[channel], rank, target_off);
+			global_byte_off = calc_global_offset(target_off);
 			all_good = true;
 			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 				int16_t local_offset;
@@ -237,7 +235,7 @@ static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t 
 			printk(BIOS_DEBUG, "  B%u:   %d\t%d\n", byte, local_offset,
 				ctrl->txdqs[channel][rank][byte]);
 		}
-		mchbar_write32(SC_WR_ADD_DELAY_ch(channel), add_delay[channel]);
+		update_add_delay(channel, rank, target_off);
 		if (!ctrl->lpddr) {
 			reset_dram_dll(ctrl, channel, rank);
 			udelay(1);

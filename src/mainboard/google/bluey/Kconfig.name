@@ -22,3 +22,6 @@ config BOARD_GOOGLE_MICA
 
 config BOARD_GOOGLE_ANNITE
 	bool "->  Annite"
+
+config BOARD_GOOGLE_PIC
+	bool "->  Pic"

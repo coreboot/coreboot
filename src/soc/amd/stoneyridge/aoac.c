@@ -6,19 +6,23 @@
 #include <soc/southbridge.h>
 #include <types.h>
 
+#if CONFIG(AMD_SOC_CONSOLE_UART) && FCH_AOAC_UART_FOR_CONSOLE == -1
+# error Unsupported UART_FOR_CONSOLE chosen
+#endif
+
 /*
- * Table of devices that need their AOAC registers enabled and waited
- * upon (usually about .55 milliseconds). Instead of individual delays
- * waiting for each device to become available, a single delay will be
- * executed.
+ * Devices that need their AOAC registers enabled during early FCH init.
+ * Console UART is included when AMD_SOC_CONSOLE_UART is selected.
  */
 static const unsigned int aoac_devs[] = {
-	FCH_AOAC_DEV_UART0 + CONFIG_UART_FOR_CONSOLE * 2,
 	FCH_AOAC_DEV_AMBA,
 	FCH_AOAC_DEV_I2C0,
 	FCH_AOAC_DEV_I2C1,
 	FCH_AOAC_DEV_I2C2,
 	FCH_AOAC_DEV_I2C3,
+#if CONFIG(AMD_SOC_CONSOLE_UART)
+	FCH_AOAC_UART_FOR_CONSOLE,
+#endif
 };
 
 void wait_for_aoac_enabled(unsigned int dev)

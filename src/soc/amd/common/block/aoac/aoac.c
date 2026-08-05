@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/aoac.h>
+#include <delay.h>
 
 /* This initiates the power on sequence, but doesn't wait for the device to be powered on. */
 void power_on_aoac_device(unsigned int dev)
@@ -29,4 +30,23 @@ bool is_aoac_device_enabled(unsigned int dev)
 		return true;
 	else
 		return false;
+}
+
+void wait_for_aoac_enabled(unsigned int dev)
+{
+	while (!is_aoac_device_enabled(dev))
+		udelay(100);
+}
+
+void enable_aoac_devices(void)
+{
+	size_t i, num;
+	const unsigned int *devs = soc_get_aoac_devices(&num);
+
+	for (i = 0; i < num; i++)
+		power_on_aoac_device(devs[i]);
+
+	/* Wait for AOAC devices to indicate power and clock OK */
+	for (i = 0; i < num; i++)
+		wait_for_aoac_enabled(devs[i]);
 }

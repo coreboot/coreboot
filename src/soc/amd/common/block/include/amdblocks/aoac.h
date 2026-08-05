@@ -35,8 +35,14 @@
 bool is_aoac_device_enabled(unsigned int dev);
 void power_on_aoac_device(unsigned int dev);
 void power_off_aoac_device(unsigned int dev);
-/* the following 2 functions are implemented in the SoC code */
 void enable_aoac_devices(void);
 void wait_for_aoac_enabled(unsigned int dev);
+
+/*
+ * SoC provides the list of AOAC devices to power on during early FCH init.
+ * Include the console UART device in this list when AMD_SOC_CONSOLE_UART is
+ * enabled (see FCH_AOAC_UART_FOR_CONSOLE in soc/aoac_defs.h).
+ */
+const unsigned int *soc_get_aoac_devices(size_t *num);
 
 #endif /* AMD_BLOCK_AOAC_H */

@@ -6,12 +6,11 @@ all-y		+= gpio.c
 all-y		+= i2c.c
 all-y		+= i3c.c
 all-y		+= uart.c
+all-y		+= aoac.c
 
 bootblock-y	+= early_fch.c
-bootblock-y	+= aoac.c
 
 ramstage-y	+= acpi.c
-ramstage-y	+= aoac.c
 ramstage-y	+= chip.c
 ramstage-y	+= cpu.c
 ramstage-y	+= domain.c

@@ -4,7 +4,6 @@ ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
 
 subdirs-y += ../../../cpu/amd/mtrr/
 
-bootblock-y += aoac.c
 bootblock-y += BiosCallOuts.c
 bootblock-y += bootblock.c
 bootblock-y += early_fch.c
@@ -28,7 +27,6 @@ verstage-y += i2c.c
 postcar-y += memmap.c
 postcar-$(CONFIG_TPM_MEASURED_BOOT) += i2c.c
 
-ramstage-y += aoac.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += i2c.c
 ramstage-y += chip.c
@@ -46,6 +44,7 @@ ramstage-y += memmap.c
 ramstage-y += usb.c
 ramstage-y += psp.c
 
+all-y += aoac.c
 all-y += monotonic_timer.c
 all-y += pstate_util.c
 all-y += reset.c

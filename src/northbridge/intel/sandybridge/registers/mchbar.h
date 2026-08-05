@@ -476,7 +476,7 @@
 #define CHANNEL_HASH		0x5024 /** WARNING: Only exists on IVB! */
 
 #define MC_INIT_STATE_G		0x5030 /* High-level behavior in IOSAV mode */
-#define MRC_REVISION		0x5034 /* MRC Revision */
+#define MRC_REVISION		0x5034 /* Scratchpad register for MRC version */
 #define PM_DLL_CONFIG		0x5064 /* Memory Controller I/O DLL config */
 #define RCOMP_TIMER		0x5084 /* RCOMP evaluation timer register */
 

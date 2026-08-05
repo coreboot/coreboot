@@ -202,7 +202,7 @@
 #define MAD_ZR			0x5014
 #define MCDECS_CBIT		0x501c
 #define MC_INIT_STATE_G		0x5030
-#define MRC_REVISION		0x5034 /* MRC Revision */
+#define MRC_REVISION		0x5034 /* Scratchpad register for MRC version */
 #define PM_SREF_CONFIG		0x5060
 
 #define RCOMP_TIMER		0x5084

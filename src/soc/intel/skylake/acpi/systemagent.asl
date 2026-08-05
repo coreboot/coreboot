@@ -57,7 +57,7 @@ Method (_CRS, 0, Serialized)
 	{
 		/* Bus Numbers */
 		WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
-				0x0000, 0x0000, 0x00ff, 0x0000, 0x0100)
+				0x0000, 0x0000, 0x00ff, 0x0000, 0x0100,,, PB00)
 
 		/* IO Region 0 */
 		DWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode,
@@ -182,6 +182,12 @@ Method (_CRS, 0, Serialized)
 				0x00005000)
 #endif
 })
+
+	/* Set highest PCI bus and length */
+	CreateWordField (MCRS, PB00._MAX, BMAX)
+	CreateWordField (MCRS, PB00._LEN, BLEN)
+	BLEN = CONFIG_ECAM_MMCONF_BUS_NUMBER
+	BMAX = BLEN - 1
 
 	/* Find PCI resource area in MCRS */
 	CreateDwordField (MCRS, PM01._MIN, PMIN)

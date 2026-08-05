@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cbfs.h>
 #include <cbmem.h>
 #include <device/dram/ddr3.h>
 #include <device/pci_ops.h>
@@ -19,6 +20,31 @@ void get_spd_info(struct spd_info *spdi, const struct northbridge_intel_haswell_
 		/* Without memory down: from devicetree */
 		memcpy(spdi->addresses, cfg->spd_addresses, ARRAY_SIZE(spdi->addresses));
 	}
+}
+
+const uint8_t *get_spd_from_cbfs(struct spd_info *spdi)
+{
+	if (!CONFIG(HAVE_SPD_IN_CBFS))
+		return NULL;
+
+	printk(RAM_DEBUG, "SPD index %u\n", spdi->spd_index);
+
+	size_t spd_file_len;
+	uint8_t *spd_file = cbfs_map("spd.bin", &spd_file_len);
+
+	if (!spd_file) {
+		printk(BIOS_ERR, "SPD data not found in CBFS\n");
+		return NULL;
+	}
+	if (spd_file_len < ((spdi->spd_index + 1) * SPD_SIZE_MAX_DDR3)) {
+		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
+		spdi->spd_index = 0;
+	}
+	if (spd_file_len < SPD_SIZE_MAX_DDR3) {
+		printk(BIOS_ERR, "Invalid SPD data in CBFS\n");
+		return NULL;
+	}
+	return spd_file + (spdi->spd_index * SPD_SIZE_MAX_DDR3);
 }
 
 static const char *const ecc_decoder[] = {

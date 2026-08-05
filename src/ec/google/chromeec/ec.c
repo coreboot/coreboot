@@ -262,13 +262,27 @@ bool google_chromeec_has_fan(void)
 	}
 }
 
+static int chromeec_cmd_post_code(uint16_t postcode)
+{
+	const struct ec_params_port80_write params = {
+		.code = postcode
+	};
+
+	return ec_cmd_port80_write(PLAT_EC, &params);
+}
+
 void google_chromeec_post(uint8_t postcode)
 {
+	if (CONFIG(EC_GOOGLE_CHROMEEC_POSTCODE)) {
+		chromeec_cmd_post_code(postcode);
+		return;
+	}
+
 	/* backlight is a percent. postcode is a uint8_t.
 	 * Convert the uint8_t to %.
 	 */
-	postcode = (postcode/4) + (postcode/8);
-	google_chromeec_kbbacklight(postcode);
+	uint8_t percent = (postcode / 4) + (postcode / 8);
+	google_chromeec_kbbacklight(percent);
 }
 
 /*

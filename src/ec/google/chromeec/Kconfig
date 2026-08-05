@@ -8,6 +8,13 @@ config EC_GOOGLE_CHROMEEC
 	  Google's Chrome EC
 
 if EC_GOOGLE_CHROMEEC
+config EC_GOOGLE_CHROMEEC_POSTCODE
+	bool "Send POST codes to Chrome EC via host command"
+	depends on EC_GOOGLE_CHROMEEC && !NO_POST
+	default y
+	help
+	  Send POST codes to Chrome EC using a host command when LPC/eSPI
+	  port 80 is not available or to log events to EC.
 
 config EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
 	depends on EC_GOOGLE_CHROMEEC_LPC

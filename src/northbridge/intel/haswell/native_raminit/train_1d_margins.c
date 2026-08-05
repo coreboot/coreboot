@@ -138,7 +138,7 @@ static enum raminit_status train_1d_margin(
 			change_1d_margin_multicast(
 				ctrl,
 				param_bit,
-				0x88888888,
+				param_bit == RdTBit ? 0 : 0x88888888,
 				rank,
 				true,
 				REG_FILE_USE_RANK);

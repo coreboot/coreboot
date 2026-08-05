@@ -130,13 +130,25 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 		if (!does_rank_exist(ctrl, rank))
 			continue;
 
+		/*
+		 * The RX_PER_BIT_RANK registers apply an additional per-bit
+		 * delay (in PI ticks) to the main RdT timings. As the range
+		 * of the RdT PI is rather small (only 1 QCLK) by design (it
+		 * is the delay between a rising/falling DQS edge and actual
+		 * sampling of DQ), we should keep the RdTBit offset at zero
+		 * to avoid saturating the RdT PI.
+		 *
+		 * The WrT PI has a much bigger range which means saturation
+		 * is not an issue. Also, looks like TX_PER_BIT_RANK applies
+		 * a signed offset to tx_dq, and 0x8 is "no offset".
+		 */
 		const union ddr_data_rx_train_rank_reg rx_train = {
 			.rcven = 64,
 			.dqs_p = 32,
 			.dqs_n = 32,
 		};
 		mchbar_write32(DDR_DATA_RX_TRAIN_RANK(rank), rx_train.raw);
-		mchbar_write32(DDR_DATA_RX_PER_BIT_RANK(rank), 0x88888888);
+		mchbar_write32(DDR_DATA_RX_PER_BIT_RANK(rank), 0);
 
 		const union ddr_data_tx_train_rank_reg tx_train = {
 			.tx_eq     = TXEQFULLDRV | 11,

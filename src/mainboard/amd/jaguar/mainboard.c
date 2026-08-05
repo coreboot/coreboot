@@ -109,6 +109,10 @@ static void mainboard_configure_ec(void)
 {
 	ec_set_ports(JAGUAR_EC_CMD, JAGUAR_EC_DATA);
 
+	/* Print EC firmware version */
+	printk(BIOS_INFO, "EC version: %c.%c.%c\n", ec_read(EC_VERSION_0),
+	       ec_read(EC_VERSION_1), ec_read(EC_VERSION_2));
+
 	/* Modern Standby enable, D3 cold enable */
 	const u8 mask = EC_MODERN_STANDBY_SSD0_D3_EN |
 			EC_MODERN_STANDBY_SSD1_D3_EN |

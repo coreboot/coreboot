@@ -71,4 +71,8 @@ void jaguar_ec_init(void);
 #define EC_SLOT_PWR_CTRL			0xA2
 #define  EC_SLOT0_PWR_ENABLE			BIT(5)
 
+#define EC_VERSION_0				0xB8
+#define EC_VERSION_1				0xBA
+#define EC_VERSION_2				0xBC
+
 #endif /* JAGUAR_EC_H */

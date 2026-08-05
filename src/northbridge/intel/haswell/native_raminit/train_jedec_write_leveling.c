@@ -53,6 +53,202 @@ static int16_t set_add_delay(uint32_t *add_delay, uint8_t rank, int8_t target_of
 	}
 }
 
+static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t rank)
+{
+	const int8_t offsets[] = { 0, 1, -1, 2, 3 };
+	const int8_t dq_offsets[] = { 0, -10, 10, -5, 5, -15, 15 };
+	const uint8_t dq_offset_max = ARRAY_SIZE(dq_offsets);
+
+	int8_t byte_off[NUM_CHANNELS][NUM_LANES] = { 0 };
+	uint32_t add_delay[NUM_CHANNELS] = { 0 };
+	bool invert = false;
+	const uint16_t valid_byte_mask = BIT(ctrl->lanes) - 1;
+
+	uint8_t chanmask = 0;
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++)
+		chanmask |= select_reut_ranks(ctrl, channel, BIT(rank));
+
+	if (!chanmask)
+		return RAMINIT_STATUS_SUCCESS;
+
+	printk(BIOS_DEBUG, "Rank %u\n", rank);
+	printk(JWLC_PLOT, "Channel");
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		if (!rank_in_ch(ctrl, rank, channel))
+			continue;
+
+		add_delay[channel] = mchbar_read32(SC_WR_ADD_DELAY_ch(channel));
+		printk(JWLC_PLOT, "\t\t%u\t", channel);
+	}
+	printk(JWLC_PLOT, "\nByte\t");
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		if (!rank_in_ch(ctrl, rank, channel))
+			continue;
+
+		printk(JWLC_PLOT, "\t");
+		for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
+			printk(JWLC_PLOT, "%u ", byte);
+	}
+	printk(JWLC_PLOT, "\nDelay DqOffset");
+	bool done = false;
+	int8_t byte_sum[NUM_CHANNELS] = { 0 };
+	uint16_t byte_pass[NUM_CHANNELS] = { 0 };
+	for (uint8_t off = 0; off < ARRAY_SIZE(offsets); off++) {
+		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+			if (!rank_in_ch(ctrl, rank, channel))
+				continue;
+
+			const int16_t global_byte_off =
+				set_add_delay(&add_delay[channel], rank, offsets[off]);
+			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
+				update_txt(ctrl, channel, rank, byte, TXT_DQDQS_OFF,
+					global_byte_off);
+			}
+			mchbar_write32(SC_WR_ADD_DELAY_ch(channel),
+				add_delay[channel]);
+		}
+		/* Reset FIFOs and DRAM DLL (Micron workaround) */
+		if (!ctrl->lpddr) {
+			io_reset();
+			for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+				if (!rank_in_ch(ctrl, rank, channel))
+					continue;
+
+				reset_dram_dll(ctrl, channel, rank);
+			}
+			udelay(1);
+		}
+		for (uint8_t dq_offset = 0; dq_offset < dq_offset_max; dq_offset++) {
+			printk(JWLC_PLOT, "\n% 3d\t% 3d",
+				offsets[off], dq_offsets[dq_offset]);
+			change_1d_margin_multicast(
+				ctrl,
+				WrT,
+				dq_offsets[dq_offset],
+				rank,
+				false,
+				REG_FILE_USE_RANK);
+
+			/*
+			 * Re-program the WDB pattern. Change the pattern
+			 * for the next test to avoid false pass issues.
+			 */
+			program_wdb_pattern(ctrl, invert);
+			invert = !invert;
+			run_io_test(ctrl, chanmask, BASIC_VA, true);
+			done = true;
+			for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+				if (!rank_in_ch(ctrl, rank, channel))
+					continue;
+
+				printk(JWLC_PLOT, "\t");
+				uint16_t result = get_byte_group_errors(channel);
+				result &= valid_byte_mask;
+
+				/* Skip bytes that have failed or already passed */
+				const uint16_t skip_me = result | byte_pass[channel];
+				for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
+					const bool pass = result & BIT(byte);
+					printk(JWLC_PLOT, pass ? "# " : ". ");
+					if (skip_me & BIT(byte))
+						continue;
+
+					byte_pass[channel] |= BIT(byte);
+					byte_off[channel][byte] = offsets[off];
+					byte_sum[channel] += offsets[off];
+				}
+				if (byte_pass[channel] != valid_byte_mask)
+					done = false;
+			}
+			if (done)
+				break;
+		}
+		if (done)
+			break;
+	}
+	printk(BIOS_DEBUG, "\n\n");
+	if (!done) {
+		printk(BIOS_ERR, "JWLC: Could not find a pass for all bytes\n");
+		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+			if (!rank_in_ch(ctrl, rank, channel))
+				continue;
+
+			printk(BIOS_ERR, "Channel %u, rank %u fail:", channel, rank);
+			const uint16_t passing_mask = byte_pass[channel];
+			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
+				if (BIT(byte) & passing_mask)
+					continue;
+
+				printk(BIOS_ERR, " %u", byte);
+			}
+			printk(BIOS_ERR, "\n");
+		}
+		return RAMINIT_STATUS_JWRL_FAILURE;
+	}
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		if (!rank_in_ch(ctrl, rank, channel))
+			continue;
+
+		/* Refine target offset to make sure it works for all bytes */
+		int8_t target_off = DIV_ROUND_CLOSEST(byte_sum[channel], ctrl->lanes);
+		int16_t global_byte_off = 0;
+		uint8_t all_good_loops = 0;
+		bool all_good = 0;
+		while (!all_good) {
+			global_byte_off =
+				set_add_delay(&add_delay[channel], rank, target_off);
+			all_good = true;
+			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
+				int16_t local_offset;
+				local_offset = byte_off[channel][byte] - target_off;
+				local_offset = local_offset * 128 + global_byte_off;
+				const uint16_t tx_dq = ctrl->tx_dq[channel][rank][byte];
+				if (tx_dq + local_offset >= (512 - 64)) {
+					all_good = false;
+					all_good_loops++;
+					target_off++;
+					break;
+				}
+				const uint16_t txdqs = ctrl->tx_dq[channel][rank][byte];
+				if (txdqs + local_offset < 96) {
+					all_good = false;
+					all_good_loops++;
+					target_off--;
+					break;
+				}
+			}
+			/* Avoid an infinite loop */
+			if (all_good_loops > 3)
+				break;
+		}
+
+		if (!all_good) {
+			printk(BIOS_ERR, "JWLC: Target offset refining failed\n");
+			return RAMINIT_STATUS_JWRL_FAILURE;
+		}
+		printk(BIOS_DEBUG, "C%u.R%u:  Offset\tFinalEdge\n", channel, rank);
+		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
+			int16_t local_offset;
+			local_offset = byte_off[channel][byte] - target_off;
+			local_offset = local_offset * 128 + global_byte_off;
+			ctrl->tx_dq[channel][rank][byte] += local_offset;
+			ctrl->txdqs[channel][rank][byte] += local_offset;
+			update_txt(ctrl, channel, rank, byte, TXT_RESTORE, 0);
+			printk(BIOS_DEBUG, "  B%u:   %d\t%d\n", byte, local_offset,
+				ctrl->txdqs[channel][rank][byte]);
+		}
+		mchbar_write32(SC_WR_ADD_DELAY_ch(channel), add_delay[channel]);
+		if (!ctrl->lpddr) {
+			reset_dram_dll(ctrl, channel, rank);
+			udelay(1);
+		}
+		printk(BIOS_DEBUG, "\n");
+	}
+	printk(BIOS_DEBUG, "\n");
+
+	return RAMINIT_STATUS_SUCCESS;
+}
+
 static enum raminit_status train_jedec_write_leveling_cleanup(struct sysinfo *ctrl)
 {
 	const struct reut_box reut_addr = {
@@ -68,9 +264,6 @@ static enum raminit_status train_jedec_write_leveling_cleanup(struct sysinfo *ct
 		.inc_rate   = 1,
 		.dq_pattern = BASIC_VA,
 	};
-	const int8_t offsets[] = { 0, 1, -1, 2, 3 };
-	const int8_t dq_offsets[] = { 0, -10, 10, -5, 5, -15, 15 };
-	const uint8_t dq_offset_max = ARRAY_SIZE(dq_offsets);
 
 	/* Set LFSR seeds to be sequential */
 	program_wdb_lfsr(ctrl, true);
@@ -98,194 +291,11 @@ static enum raminit_status train_jedec_write_leveling_cleanup(struct sysinfo *ct
 
 		mchbar_write32(REUT_ch_PAT_WDB_CL_MUX_CFG(channel), reut_wdb_cl_mux_cfg.raw);
 	}
-
-	int8_t byte_off[NUM_CHANNELS][NUM_LANES] = { 0 };
-	uint32_t add_delay[NUM_CHANNELS] = { 0 };
 	enum raminit_status status = RAMINIT_STATUS_SUCCESS;
-	bool invert = false;
-	const uint16_t valid_byte_mask = BIT(ctrl->lanes) - 1;
 	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
-		uint8_t chanmask = 0;
-		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++)
-			chanmask |= select_reut_ranks(ctrl, channel, BIT(rank));
-
-		if (!chanmask)
-			continue;
-
-		printk(BIOS_DEBUG, "Rank %u\n", rank);
-		printk(JWLC_PLOT, "Channel");
-		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-			if (!rank_in_ch(ctrl, rank, channel))
-				continue;
-
-			printk(JWLC_PLOT, "\t\t%u\t", channel);
-		}
-		printk(JWLC_PLOT, "\nByte\t");
-		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-			if (!rank_in_ch(ctrl, rank, channel))
-				continue;
-
-			printk(JWLC_PLOT, "\t");
-			for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
-				printk(JWLC_PLOT, "%u ", byte);
-		}
-		printk(JWLC_PLOT, "\nDelay DqOffset");
-		bool done = false;
-		int8_t byte_sum[NUM_CHANNELS] = { 0 };
-		uint16_t byte_pass[NUM_CHANNELS] = { 0 };
-		for (uint8_t off = 0; off < ARRAY_SIZE(offsets); off++) {
-			for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-				if (!rank_in_ch(ctrl, rank, channel))
-					continue;
-
-				const int16_t global_byte_off =
-					set_add_delay(&add_delay[channel], rank, offsets[off]);
-				for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-					update_txt(ctrl, channel, rank, byte, TXT_DQDQS_OFF,
-						global_byte_off);
-				}
-				mchbar_write32(SC_WR_ADD_DELAY_ch(channel),
-						add_delay[channel]);
-			}
-			/* Reset FIFOs and DRAM DLL (Micron workaround) */
-			if (!ctrl->lpddr) {
-				io_reset();
-				for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-					if (!rank_in_ch(ctrl, rank, channel))
-						continue;
-
-					reset_dram_dll(ctrl, channel, rank);
-				}
-				udelay(1);
-			}
-			for (uint8_t dq_offset = 0; dq_offset < dq_offset_max; dq_offset++) {
-				printk(JWLC_PLOT, "\n% 3d\t% 3d",
-					offsets[off], dq_offsets[dq_offset]);
-				change_1d_margin_multicast(
-					ctrl,
-					WrT,
-					dq_offsets[dq_offset],
-					rank,
-					false,
-					REG_FILE_USE_RANK);
-
-				/*
-				 * Re-program the WDB pattern. Change the pattern
-				 * for the next test to avoid false pass issues.
-				 */
-				program_wdb_pattern(ctrl, invert);
-				invert = !invert;
-				run_io_test(ctrl, chanmask, BASIC_VA, true);
-				done = true;
-				for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-					if (!rank_in_ch(ctrl, rank, channel))
-						continue;
-
-					printk(JWLC_PLOT, "\t");
-					uint16_t result = get_byte_group_errors(channel);
-					result &= valid_byte_mask;
-
-					/* Skip bytes that have failed or already passed */
-					const uint16_t skip_me = result | byte_pass[channel];
-					for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-						const bool pass = result & BIT(byte);
-						printk(JWLC_PLOT, pass ? "# " : ". ");
-						if (skip_me & BIT(byte))
-							continue;
-
-						byte_pass[channel] |= BIT(byte);
-						byte_off[channel][byte] = offsets[off];
-						byte_sum[channel] += offsets[off];
-					}
-					if (byte_pass[channel] != valid_byte_mask)
-						done = false;
-				}
-				if (done)
-					break;
-			}
-			if (done)
-				break;
-		}
-		printk(BIOS_DEBUG, "\n\n");
-		if (!done) {
-			printk(BIOS_ERR, "JWLC: Could not find a pass for all bytes\n");
-			for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-				if (!rank_in_ch(ctrl, rank, channel))
-					continue;
-
-				printk(BIOS_ERR, "Channel %u, rank %u fail:", channel, rank);
-				const uint16_t passing_mask = byte_pass[channel];
-				for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-					if (BIT(byte) & passing_mask)
-						continue;
-
-					printk(BIOS_ERR, " %u", byte);
-				}
-				printk(BIOS_ERR, "\n");
-			}
-			status = RAMINIT_STATUS_JWRL_FAILURE;
+		status = wl_clean_up_rank(ctrl, rank);
+		if (status)
 			break;
-		}
-		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-			if (!rank_in_ch(ctrl, rank, channel))
-				continue;
-
-			/* Refine target offset to make sure it works for all bytes */
-			int8_t target_off = DIV_ROUND_CLOSEST(byte_sum[channel], ctrl->lanes);
-			int16_t global_byte_off = 0;
-			uint8_t all_good_loops = 0;
-			bool all_good = 0;
-			while (!all_good) {
-				global_byte_off =
-					set_add_delay(&add_delay[channel], rank, target_off);
-				all_good = true;
-				for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-					int16_t local_offset;
-					local_offset = byte_off[channel][byte] - target_off;
-					local_offset = local_offset * 128 + global_byte_off;
-					const uint16_t tx_dq = ctrl->tx_dq[channel][rank][byte];
-					if (tx_dq + local_offset >= (512 - 64)) {
-						all_good = false;
-						all_good_loops++;
-						target_off++;
-						break;
-					}
-					const uint16_t txdqs = ctrl->tx_dq[channel][rank][byte];
-					if (txdqs + local_offset < 96) {
-						all_good = false;
-						all_good_loops++;
-						target_off--;
-						break;
-					}
-				}
-				/* Avoid an infinite loop */
-				if (all_good_loops > 3)
-					break;
-			}
-			if (!all_good) {
-				printk(BIOS_ERR, "JWLC: Target offset refining failed\n");
-				status = RAMINIT_STATUS_JWRL_FAILURE;
-				break;
-			}
-			printk(BIOS_DEBUG, "C%u.R%u:  Offset\tFinalEdge\n", channel, rank);
-			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-				int16_t local_offset;
-				local_offset = byte_off[channel][byte] - target_off;
-				local_offset = local_offset * 128 + global_byte_off;
-				ctrl->tx_dq[channel][rank][byte] += local_offset;
-				ctrl->txdqs[channel][rank][byte] += local_offset;
-				update_txt(ctrl, channel, rank, byte, TXT_RESTORE, 0);
-				printk(BIOS_DEBUG, "  B%u:   %d\t%d\n", byte, local_offset,
-					ctrl->txdqs[channel][rank][byte]);
-			}
-			mchbar_write32(SC_WR_ADD_DELAY_ch(channel), add_delay[channel]);
-			if (!ctrl->lpddr) {
-				reset_dram_dll(ctrl, channel, rank);
-				udelay(1);
-			}
-			printk(BIOS_DEBUG, "\n");
-		}
-		printk(BIOS_DEBUG, "\n");
 	}
 
 	/* Restore WDB after test */

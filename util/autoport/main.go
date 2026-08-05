@@ -160,6 +160,36 @@ func FormatHexLE32(d []uint8) string {
 	return FormatHex32(u)
 }
 
+/*
+ * Format a LPC_GENx_DEC register value as LPC_IO(base, size).
+ *
+ * AMASK marks address bits as don't-care, so the decoded window is only
+ * [base, base + size) when base is aligned to a power-of-two size. Vendor
+ * firmware often programs values that do not satisfy this, in which case the
+ * window this returns is the contiguous range the hardware really decodes.
+ */
+func FormatGenDec(name string, d []uint8) string {
+	u := uint32(d[0]) | (uint32(d[1]) << 8) | (uint32(d[2]) << 16) | (uint32(d[3]) << 24)
+
+	/* LPC_IO() always sets the enable bit, so keep disabled ranges as-is. */
+	if (u & 1) == 0 {
+		return FormatHex32(0)
+	}
+
+	base := u & 0xfffc
+	mask := ((u >> 16) & 0xfc) | 3
+	/* Only the trailing ones of the mask describe a contiguous window. */
+	size := (mask ^ (mask & (mask + 1))) + 1
+	aligned := base &^ (size - 1)
+
+	if aligned != base || mask+1 != size {
+		fmt.Printf("%s value 0x%08x decodes 0x%x-0x%x, not the 0x%x bytes at 0x%x it appears to describe\n",
+			name, u, aligned, aligned+size-1, mask+1, base)
+	}
+
+	return fmt.Sprintf("LPC_IO(0x%x, 0x%x)", aligned, size)
+}
+
 func FormatBool(inp bool) string {
 	if inp {
 		return "1"

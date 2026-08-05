@@ -117,10 +117,10 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 
 		Registers: map[string]string{
 			"sata_interface_speed_support": "0x3",
-			"gen1_dec":                     FormatHexLE32(PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x84:0x88]),
-			"gen2_dec":                     FormatHexLE32(PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x88:0x8c]),
-			"gen3_dec":                     FormatHexLE32(PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x8c:0x90]),
-			"gen4_dec":                     FormatHexLE32(PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x90:0x94]),
+			"gen1_dec":                     FormatGenDec("gen1_dec", PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x84:0x88]),
+			"gen2_dec":                     FormatGenDec("gen2_dec", PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x88:0x8c]),
+			"gen3_dec":                     FormatGenDec("gen3_dec", PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x8c:0x90]),
+			"gen4_dec":                     FormatGenDec("gen4_dec", PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x90:0x94]),
 			"pcie_port_coalesce":           "1",
 			"pcie_hotplug_map":             pcieHotplugMap,
 

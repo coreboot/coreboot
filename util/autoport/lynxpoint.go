@@ -187,10 +187,10 @@ func (b lynxpoint) Scan(ctx Context, addr PCIDevData) {
 
 		/* alt_gp_smi_en is not generated because coreboot doesn't use SMI like OEM firmware */
 		Registers: map[string]string{
-			"gen1_dec":             FormatHexLE32(PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x84:0x88]),
-			"gen2_dec":             FormatHexLE32(PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x88:0x8c]),
-			"gen3_dec":             FormatHexLE32(PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x8c:0x90]),
-			"gen4_dec":             FormatHexLE32(PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x90:0x94]),
+			"gen1_dec":             FormatGenDec("gen1_dec", PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x84:0x88]),
+			"gen2_dec":             FormatGenDec("gen2_dec", PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x88:0x8c]),
+			"gen3_dec":             FormatGenDec("gen3_dec", PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x8c:0x90]),
+			"gen4_dec":             FormatGenDec("gen4_dec", PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 0}].ConfigDump[0x90:0x94]),
 			"sata_port_map":        fmt.Sprintf("0x%x", PCIMap[PCIAddr{Bus: 0, Dev: 0x1f, Func: 2}].ConfigDump[0x92]&0x3f),
 			"docking_supported":    (FormatBool((FADT[113] & (1 << 1)) != 0)),
 			"sata_port0_gen3_dtle": fmt.Sprintf("0x%x", sp0dtle_data),

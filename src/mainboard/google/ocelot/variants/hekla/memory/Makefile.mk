@@ -7,3 +7,5 @@ SPD_SOURCES =
 SPD_SOURCES += spd/lp5/set-0/spd-15.hex      # ID = 0(0b0000)  Parts = K3KL9L90EM-MGCV
 SPD_SOURCES += spd/lp5/set-0/spd-10.hex      # ID = 1(0b0001)  Parts = MT62F2G32D4DS-020 WT:D
 SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 2(0b0010)  Parts = K3KL8L80EM-MGCV, MT62F1G32D2DS-020 WT:D
+SPD_SOURCES += spd/lp5/set-0/spd-16.hex      # ID = 3(0b0011)  Parts = K3LK7K70BM-BGCP
+SPD_SOURCES += spd/lp5/set-0/spd-17.hex      # ID = 4(0b0100)  Parts = SM2G64Y62PD8FGK-UT

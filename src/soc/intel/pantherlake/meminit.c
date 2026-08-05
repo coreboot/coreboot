@@ -212,6 +212,19 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 		meminit_ddr(mem_cfg, &mb_cfg->ddr_config);
 		dq_dqs_auto_detect = true;
 		expand_channels = true;
+		/*
+		 * On platforms that rely on FSP-M to probe SPD over SMBus directly
+		 * (e.g. Intel RVPs), populate the SpdAddressTable/CkdAddressTable UPDs
+		 * so FSP-M handles SMBus reads, and initialize default DQ/DQS swizzle
+		 * UPDs before returning early.
+		 */
+		if (CONFIG(SOC_INTEL_PANTHERLAKE_FSP_READ_SPD) &&
+				 (spd_info->topo == MEM_TOPO_DIMM_MODULE)) {
+			fill_dimm_module_info(mem_cfg, mb_cfg, spd_info);
+			mem_init_dq_upds(mem_cfg, NULL, mb_cfg, true);
+			mem_init_dqs_upds(mem_cfg, NULL, mb_cfg, true);
+			return;
+		}
 		break;
 	case MEM_TYPE_LP5X:
 		meminit_lp5x(mem_cfg, &mb_cfg->lp5x_config);

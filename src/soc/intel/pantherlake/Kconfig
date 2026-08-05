@@ -501,4 +501,12 @@ config SOC_INTEL_SPI_PSF_DESTINATION_ID
 	hex
 	default 0x5140
 
+config SOC_INTEL_PANTHERLAKE_FSP_READ_SPD
+	bool
+	default n
+	help
+	  Select this option if the platform relies on FSP-M to probe and read
+	  SPD EEPROM bytes directly over SMBus (e.g. Intel RVPs) rather than
+	  having coreboot read and pass the SPD buffer to FSP-M.
+
 endif

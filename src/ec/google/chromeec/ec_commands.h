@@ -5,8 +5,8 @@
 
 /* Host communication command constants for Chrome EC */
 
-#ifndef __CROS_EC_EC_COMMANDS_H
-#define __CROS_EC_EC_COMMANDS_H
+#ifndef PLATFORM_EC_INCLUDE_EC_COMMANDS_H_
+#define PLATFORM_EC_INCLUDE_EC_COMMANDS_H_
 
 #if !defined(__ACPI__) && !defined(__KERNEL__)
 #include <stdint.h>
@@ -1788,6 +1788,14 @@ enum ec_feature_code {
 	 * Support signaling new console logs via host event
 	 */
 	EC_FEATURE_CONSOLE_LOG_EVENT = 58,
+	/*
+	 * The EC supports power monitoring
+	 */
+	EC_FEATURE_PWRMON = 59,
+	/*
+	 * The EC supports Bluetooth passthrough
+	 */
+	EC_FEATURE_BT_PASSTHRU = 60,
 };
 
 #define EC_FEATURE_MASK_0(event_code) BIT(event_code % 32)
@@ -3742,6 +3750,13 @@ struct ec_params_vstore_write {
 	uint8_t data[EC_VSTORE_SLOT_SIZE];
 } __ec_align1;
 
+/* Write port80 / post code event */
+#define EC_CMD_PORT80_WRITE 0x004C
+
+struct ec_params_port80_write {
+	uint32_t code;
+} __ec_align4;
+
 /*****************************************************************************/
 /* Thermal engine commands. Note that there are two implementations. We'll
  * reuse the command number, but the data and behavior is incompatible.
@@ -4178,6 +4193,12 @@ enum ec_mkbp_event {
 	/* Peripheral device charger event */
 	EC_MKBP_EVENT_PCHG = 12,
 
+	/* Power monitor telemetry event */
+	EC_MKBP_EVENT_PWRMON = 13,
+
+	/* Bluetooth passthrough event */
+	EC_MKBP_EVENT_BLUETOOTH = 14,
+
 	/* Number of MKBP events */
 	EC_MKBP_EVENT_COUNT,
 };
@@ -4199,6 +4220,8 @@ BUILD_ASSERT(EC_MKBP_EVENT_COUNT <= EC_MKBP_EVENT_TYPE_MASK);
 		[EC_MKBP_EVENT_DP_ALT_MODE_ENTERED] = "DP_ALT_MODE_ENTERED",   \
 		[EC_MKBP_EVENT_ONLINE_CALIBRATION] = "ONLINE_CALIBRATION",     \
 		[EC_MKBP_EVENT_PCHG] = "PCHG",                                 \
+		[EC_MKBP_EVENT_PWRMON] = "PWRMON",                             \
+		[EC_MKBP_EVENT_BLUETOOTH] = "BLUETOOTH",                       \
 	}
 /* clang-format on */
 
@@ -4280,6 +4303,12 @@ union __ec_align_offset1 ec_response_get_next_data_v3 {
 	uint32_t cec_events;
 
 	uint8_t cec_message[16];
+
+	struct __ec_todo_packed {
+		int64_t value;
+		uint32_t samples;
+		uint8_t channel_id;
+	} pwrmon_data;
 };
 BUILD_ASSERT(sizeof(union ec_response_get_next_data_v3) == 18);
 
@@ -6958,6 +6987,7 @@ struct ec_params_set_cbi_bin {
 #define EC_RESET_FLAG_EFS BIT(20) /* Jumped to this image by EFS */
 #define EC_RESET_FLAG_AP_IDLE BIT(21) /* Leave alone AP */
 #define EC_RESET_FLAG_INITIAL_PWR BIT(22) /* EC had power, then was reset */
+#define EC_RESET_FLAG_PDC BIT(23) /* EC is recovering a PDC chip */
 
 /*
  * Reason codes used by the AP after a shutdown to figure out why it was reset
@@ -8606,6 +8636,7 @@ struct ec_params_fp_passthru {
  * @FP_CAPTURE_PATTERN1: Self test pattern (e.g. inverted checkerboard)
  * @FP_CAPTURE_QUALITY_TEST: Capture for Quality test with fixed contrast
  * @FP_CAPTURE_RESET_TEST: Capture for pixel reset value test
+ * @FP_CAPTURE_PATTERN2: Capture for pattern2 test
  * @FP_CAPTURE_TYPE_MAX: End of enum
  *
  * @note This enum must remain ordered, if you add new values you must ensure
@@ -8623,6 +8654,7 @@ enum fp_capture_type {
 	FP_CAPTURE_PATTERN1 = 12,
 	FP_CAPTURE_QUALITY_TEST = 16,
 	FP_CAPTURE_RESET_TEST = 20,
+	FP_CAPTURE_PATTERN2 = 24,
 	FP_CAPTURE_TYPE_MAX,
 };
 /* LINT.ThenChange(/test/fpsensor_utils.cc,
@@ -8630,7 +8662,7 @@ enum fp_capture_type {
  */
 
 /* The maximum number of capture types in enum fp_capture_type */
-#define FP_MAX_CAPTURE_TYPES 9
+#define FP_MAX_CAPTURE_TYPES 10
 
 /* Extracts the capture type from the sensor 'mode' word */
 #define FP_CAPTURE_TYPE(mode)                                          \
@@ -9417,6 +9449,68 @@ struct ec_response_battery_get_misc_info {
 	uint32_t battery_status;
 	int32_t dfet_status;
 } __ec_align4;
+
+/**
+ * Power monitoring. Used to read power consumptions on rails
+ */
+#define EC_CMD_PWRMON 0x0608
+
+enum ec_pwrmon_cmd {
+	EC_PWRMON_GET_CHANNEL_COUNT = 0,
+	EC_PWRMON_DUMP_INFO = 1,
+	EC_PWRMON_SET_RATE = 2,
+	EC_PWRMON_GET_RATE = 3,
+	EC_PWRMON_START = 4,
+	EC_PWRMON_STOP = 5,
+	EC_PWRMON_LATCH = 6,
+};
+
+struct ec_params_pwrmon {
+	uint8_t cmd;
+	union {
+		uint16_t set_rate;
+		uint8_t channel_id;
+	} __ec_align2;
+
+	/*
+	 * The following commands have no args:
+	 *
+	 * start, stop, latch
+	 *
+	 */
+} __ec_align4;
+
+struct pwrmon_dump_info {
+	uint8_t channel_id;
+	char channel_name[32];
+} __ec_align4;
+
+struct ec_response_pwrmon {
+	union {
+		uint16_t sample_rate;
+		uint8_t channel_count;
+		struct pwrmon_dump_info dump_info;
+	} __ec_align4;
+} __ec_align4;
+
+/* BT Passthrough */
+#define EC_CMD_BT_COMMAND 0x0609
+
+/* ChromeOS Host Command limit is strictly <256 bytes */
+#define BT_MAX_COMMAND_SIZE 240
+struct ec_param_bt_command {
+	uint32_t size;
+	uint8_t data[BT_MAX_COMMAND_SIZE];
+} __ec_align4;
+
+#define EC_CMD_BT_READ_EVENT 0x060A
+
+#define BT_MAX_EVENT_SIZE 240
+struct ec_response_bt_read_event {
+	uint32_t num_events;
+	uint8_t events[BT_MAX_EVENT_SIZE];
+} __ec_align4;
+
 /*****************************************************************************/
 /*
  * Reserve a range of host commands for board-specific, experimental, or
@@ -9497,4 +9591,4 @@ struct ec_response_battery_get_misc_info {
 }
 #endif
 
-#endif /* __CROS_EC_EC_COMMANDS_H */
+#endif /* PLATFORM_EC_INCLUDE_EC_COMMANDS_H_ */

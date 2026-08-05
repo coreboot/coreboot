@@ -3,8 +3,8 @@
 
 
 
-#ifndef __CROS_EC_EC_CMD_API_H
-#define __CROS_EC_EC_CMD_API_H
+#ifndef PLATFORM_EC_INCLUDE_EC_CMD_API_H_
+#define PLATFORM_EC_INCLUDE_EC_CMD_API_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -79,6 +79,14 @@ static inline int ec_cmd_thermal_get_threshold_v1(
 {
 	return CROS_EC_COMMAND(h, EC_CMD_THERMAL_GET_THRESHOLD, 1, p,
 			       sizeof(*p), r, sizeof(*r));
+}
+
+static inline int ec_cmd_ucsi_ppm_get(CROS_EC_COMMAND_INFO *h,
+				      const struct ec_params_ucsi_ppm_get *p,
+				      uint8_t *r)
+{
+	return CROS_EC_COMMAND(h, EC_CMD_UCSI_PPM_GET, 0, p, sizeof(*p), r,
+			       p->size);
 }
 
 static inline int
@@ -298,6 +306,7 @@ _CROS_EC_CV_F_P_R(EC_CMD_BATTERY_GET_DYNAMIC, 0, battery_get_dynamic,
 		  battery_dynamic_info, battery_dynamic_info);
 _CROS_EC_CV_F_P_R(EC_CMD_BATTERY_GET_DYNAMIC, 1, battery_get_dynamic_v1,
 		  battery_dynamic_info, battery_dynamic_info_v1);
+_CROS_EC_C0_F_PF_RF(EC_CMD_BATTERY_GET_MISC_INFO, battery_get_misc_info);
 _CROS_EC_CV_F_P_R(EC_CMD_BATTERY_GET_STATIC, 0, battery_get_static,
 		  battery_static_info, battery_static_info);
 _CROS_EC_CV_F_P_R(EC_CMD_BATTERY_GET_STATIC, 1, battery_get_static_v1,
@@ -488,8 +497,8 @@ _CROS_EC_C0_F_PF(EC_CMD_USB_PD_RW_HASH_ENTRY, usb_pd_rw_hash_entry);
 _CROS_EC_C0_F_PF_RF(EC_CMD_VBOOT_HASH, vboot_hash);
 _CROS_EC_C0_F_PF_RF(EC_CMD_VSTORE_READ, vstore_read);
 _CROS_EC_C0_F_PF(EC_CMD_VSTORE_WRITE, vstore_write);
+_CROS_EC_C0_F_PF(EC_CMD_PORT80_WRITE, port80_write);
 _CROS_EC_C0_F_PF(EC_CMD_UCSI_PPM_SET, ucsi_ppm_set);
-_CROS_EC_C0_F_PF(EC_CMD_UCSI_PPM_GET, ucsi_ppm_get);
 _CROS_EC_C0_F_PF(EC_CMD_FP_VENDOR, fp_vendor);
 _CROS_EC_C0_F_RF(EC_CMD_FP_ASCP_CLAIM, fp_ascp_claim);
 _CROS_EC_C0_F_PF(EC_CMD_FP_ASCP_ESTABLISH, fp_ascp_establish);
@@ -499,4 +508,4 @@ _CROS_EC_C0_F_PF(EC_CMD_ENTER_BOOTLOADER, enter_bootloader);
 }
 #endif
 
-#endif /* __CROS_EC_EC_CMD_API_H */
+#endif /* PLATFORM_EC_INCLUDE_EC_CMD_API_H_ */

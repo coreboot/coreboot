@@ -13,7 +13,6 @@
 #include <amdblocks/uart.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
-#include <soc/uart.h>
 
 #include "chip.h"
 

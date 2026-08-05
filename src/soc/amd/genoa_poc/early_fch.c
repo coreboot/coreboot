@@ -7,7 +7,6 @@
 #include <amdblocks/pmlib.h>
 #include <amdblocks/uart.h>
 #include <soc/southbridge.h>
-#include <soc/uart.h>
 
 /* Before console init */
 void fch_pre_init(void)

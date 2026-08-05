@@ -3,12 +3,9 @@
 #include <amdblocks/gpio.h>
 #include <amdblocks/uart.h>
 #include <commonlib/helpers.h>
-#include <device/mmio.h>
 #include <gpio.h>
 #include <soc/aoac_defs.h>
 #include <soc/iomap.h>
-#include <soc/southbridge.h>
-#include <soc/uart.h>
 #include <types.h>
 
 static const struct soc_uart_ctrlr_info uart_info[] = {
@@ -26,9 +23,4 @@ const struct soc_uart_ctrlr_info *soc_get_uart_ctrlr_info(size_t *num_ctrlrs)
 {
 	*num_ctrlrs = ARRAY_SIZE(uart_info);
 	return uart_info;
-}
-
-void clear_uart_legacy_config(void)
-{
-	write16p(FCH_LEGACY_UART_DECODE, 0);
 }

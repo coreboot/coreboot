@@ -8,6 +8,8 @@
 #include <device/pci_def.h>
 #include <soc/iomap.h>
 
+#define FCH_LEGACY_UART_DECODE		(ALINK_AHB_ADDRESS + 0x20) /* 0xfedc0020 */
+
 /*
  * AcpiMmio Region
  *  - fixed addresses offset from 0xfed80000

@@ -14,7 +14,6 @@
 #include <amdblocks/uart.h>
 #include <device/pci.h>
 #include <soc/southbridge.h>
-#include <soc/uart.h>
 #include <soc/i2c.h>
 
 /* Before console init */

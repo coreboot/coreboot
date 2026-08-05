@@ -5,6 +5,8 @@
 #include <amdblocks/gpio.h>
 #include <amdblocks/uart.h>
 #include <device/device.h>
+#include <device/mmio.h>
+#include <soc/southbridge.h>
 
 uintptr_t get_uart_base(unsigned int idx)
 {
@@ -52,6 +54,11 @@ void set_uart_config(unsigned int idx)
 		return;
 
 	gpio_configure_pads(ctrlr[idx].mux, 2);
+}
+
+void clear_uart_legacy_config(void)
+{
+	write16p(FCH_LEGACY_UART_DECODE, 0);
 }
 
 #if CONFIG(HAVE_ACPI_TABLES)

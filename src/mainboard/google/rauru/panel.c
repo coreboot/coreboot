@@ -2,14 +2,22 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/panel.h>
+#include <device/mmio.h>
 #include <fw_config.h>
 #include <gpio.h>
+#include <soc/addressmap.h>
 #include <soc/ddp.h>
 #include <soc/dsi.h>
 #include <variants.h>
 
 void configure_backlight(bool enable)
 {
+	/*
+	 * Enable PWM for seamless display support. We only need to set
+	 * the enable bit so the kernel can detect the PWM is active.
+	 */
+	clrsetbits32p(DISP_PWM_BASE, BIT(0), enable ? BIT(0) : 0);
+
 	gpio_output(GPIO_AP_EDP_BKLTEN, enable);
 	gpio_output(GPIO_BL_PWM_1V8, enable);
 }

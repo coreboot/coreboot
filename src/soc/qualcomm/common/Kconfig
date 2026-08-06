@@ -172,4 +172,11 @@ config SOC_QUALCOMM_SPLIT_AOP_CBFS
 	  `aop_devcfg_meta`). This saves flash space in the RO region while
 	  avoiding decompression overhead during normal RW boot.
 
+config QC_HYP_AC_CFG_PRERAM
+	bool
+	default n
+	help
+	  When enabled, hyp_ac_config is a configuration image which will be loaded
+	  during the ROM stage of system execution.
+
 endif

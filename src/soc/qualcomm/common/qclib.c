@@ -192,6 +192,8 @@ const char *qclib_file_default(enum qclib_cbfs_file file)
 		return CONFIG_CBFS_PREFIX "/apdp_meta";
 	case QCLIB_CBFS_RAMDUMP_META:
 		return CONFIG_CBFS_PREFIX "/ramdump_meta";
+	case QCLIB_CBFS_HYP_AC_META:
+		return CONFIG_CBFS_PREFIX "/hyp_ac_meta";
 	default:
 		die("unknown QcLib file %d", file);
 	}
@@ -561,6 +563,18 @@ void qclib_rerun(void)
 		}
 
 		qclib_add_if_table_entry(QCLIB_TE_AOP_DEVCFG_META_SETTINGS, _aop_blob_meta, data_size, 0);
+
+		if (CONFIG(QC_HYP_AC_CFG_PRERAM)) {
+			/* Attempt to load hyp_ac_meta Blob. */
+			data_size = cbfs_load(qclib_file(QCLIB_CBFS_HYP_AC_META),
+					_dram_hyp_ac_meta, REGION_SIZE(dram_hyp_ac_meta));
+			if (!data_size) {
+				printk(BIOS_ERR, "[%s] /dram_hyp_ac_meta failed\n", __func__);
+				goto fail;
+			}
+
+			qclib_add_if_table_entry(QCLIB_TE_HYP_AC_META_SETTINGS, _dram_hyp_ac_meta, data_size, 0);
+		}
 	}
 
 	if (CONFIG(QC_RAMDUMP_ENABLE) && qc_soc_debug_enabled() && qclib_check_dload_mode()) {

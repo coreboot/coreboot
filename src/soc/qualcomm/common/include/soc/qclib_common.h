@@ -34,6 +34,7 @@
 #define QCLIB_TE_APDP_META_SETTINGS	"apdp_metadata"
 #define QCLIB_TE_RAMDUMP_META_SETTINGS	"ramdump_metadata"
 #define QCLIB_TE_CBMEM_META_SETTINGS  "ddr_encryption_exclude"
+#define QCLIB_TE_HYP_AC_META_SETTINGS	"hyp_ac_metadata"
 
 /* BA_BMASK_VALUES (blob_attributes bit mask values) */
 #define QCLIB_BA_SAVE_TO_STORAGE 0x00000001
@@ -51,6 +52,7 @@ enum qclib_cbfs_file {
 	QCLIB_CBFS_AOP_DEVCFG_META,
 	QCLIB_CBFS_APDP_META,
 	QCLIB_CBFS_RAMDUMP_META,
+	QCLIB_CBFS_HYP_AC_META,
 	QCLIB_CBFS_MAX
 };
 

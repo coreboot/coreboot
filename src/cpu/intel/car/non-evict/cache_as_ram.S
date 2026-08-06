@@ -173,25 +173,9 @@ end_microcode_update:
 	/* Fill up the cache next. */
 	movl	$_car_mtrr_start, %edi
 
-	/* Calculate number of loops and place it in %ecx. */
-#if CONFIG_DCACHE_RAM_MRC_VAR_SIZE > 0
-	/* When mrc_var is used initialize the whole MTRR area */
+	/* Number of loops. */
 	movl	$_car_mtrr_size, %ecx
-#else
-	/* Native raminit doesn't use mrc_var. Only allocated region needs to be
-	 * initialized. Can reduce CAR setup time by 50%.
-	 */
-	movl	$_car_unallocated_start, %ecx
-	movl	$_car_region_start, %eax
-	subl	%eax, %ecx
-#endif
-	mov	%ecx, %esp
-
-	/* Round up to next cache-line */
-	addl	$63, %ecx
 	shr	$6, %ecx
-
-	/* %ebx = 64 (Cacheline size) */
 	xorl	%ebx, %ebx
 	mov	$64, %bl
 
@@ -221,7 +205,7 @@ end_microcode_update:
 
 	/* Now that CAR is enabled clear it. */
 	movl	$_car_mtrr_start, %edi
-	movl	%esp, %ecx	/* %esp = allocated CAR length */
+	movl	$_car_mtrr_size, %ecx
 	cld
 	xorl	%eax, %eax
 	shr	$2, %ecx

@@ -10,6 +10,7 @@
 #include <soc/qclib_common.h>
 #include <soc/qcom_spmi.h>
 #include <soc/qcom_tsens.h>
+#include <soc/soccp.h>
 #include <timer.h>
 #include <types.h>
 
@@ -442,6 +443,7 @@ void disable_slow_battery_charging(void)
 void enable_fast_battery_charging(void)
 {
 	qupv3_fw_load();
+	soccp_fw_load();
 }
 
 bool is_low_power_boot_with_charger(void)

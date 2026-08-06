@@ -371,6 +371,12 @@ static void mainboard_peripherals_reinit(void)
 		qup_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, 3200 * KHz); /* EC SPI */
 }
 
+bool qclib_do_load_soccp_fw(void)
+{
+	/* FIXME: Load SoCCP FW always */
+	return is_low_power_boot_with_charger();
+}
+
 void platform_romstage_postram(void)
 {
 	set_boot_mode(boot_mode);
@@ -385,8 +391,7 @@ void platform_romstage_postram(void)
 		if (board_support_dead_battery_charging())
 			configure_dead_battery_boot();
 
-		/* FIXME: Add fast charging support */
-		enable_slow_battery_charging();
+		enable_fast_battery_charging();
 	}
 
 	qclib_rerun();

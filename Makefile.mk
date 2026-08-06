@@ -530,7 +530,7 @@ endif
 CFLAGS_common += -pipe
 CFLAGS_common += -g
 CFLAGS_common += -nostdinc
-CFLAGS_common += -std=gnu11
+CFLAGS_common += -std=gnu23
 CFLAGS_common += -nostdlib
 CFLAGS_common += -Wall
 CFLAGS_common += -Wundef

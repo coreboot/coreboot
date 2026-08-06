@@ -5,5 +5,5 @@
 
 uintptr_t cbmem_top_chipset(void)
 {
-	return (uintptr_t)_dram_pil;
+	return (uintptr_t)_dram_oob;
 }

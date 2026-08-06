@@ -23,13 +23,7 @@
  * 0xFFE00000    +----------------------------------------------------------+      |        |
  *               |                ... Usable memory ...                     |      |        |
  * 0xFEEE0000    +----------------------------------------------------------+      |        |
- *               |                   dram_oob_wlan_assist                   |      |        |
- * 0xFEED0000    +----------------------------------------------------------+      |        |
- *               |                   dram_oob_mdm_assist                    |      |        |
- * 0xFEEC0000    +----------------------------------------------------------+      |        |
- *               |                  dram_oob_glink_assist                   |      |        |
- * 0xFED80000    +----------------------------------------------------------+      |        |
- *               |                  dram_oob_glink_always                   |      |        |
+ *               |                   dram_oob_nc                            |      |        |
  * 0xFEC00000    +----------------------------------------------------------+      |        |
  *               |                ... Usable memory ...                     |      |        |
  * 0xE6900000    +----------------------------------------------------------+      |        |
@@ -50,6 +44,10 @@
  *               |                        dram_bert                         |      |        |
  * 0xD6F00000    +----------------------------------------------------------+      |        |
  *               |                ... Usable memory ...                     |      |        |
+ * 0x95F0C000    +----------------------------------------------------------+      |        |
+ *               |                   dram_soccp_dtb_meta                    |      |        |
+ * 0x95F08000    +----------------------------------------------------------+      |        |
+ *               |                   dram_soccp_meta                        |      |        |
  * 0x95F04000    +----------------------------------------------------------+      |        |
  *               |                   dram_hyp_ac_meta                       |      |        |
  * 0x95F00000    +----------------------------------------------------------+      |        |
@@ -297,7 +295,7 @@ SECTIONS
 	 * accesses, therefore regions requiring QSPI DMA access must not be placed
 	 * within this range.
 	 */
-	TTB(0x14A60000, 64K)
+	TTB(0x14A60000, 72K)
 	PRERAM_DMA_COHERENT(0x14A72000, 8K)
 	VBOOT2_WORK(0x14A74000, 12K)
 	CBFS_MCACHE(0x14A77000, 22K)
@@ -343,10 +341,17 @@ SECTIONS
 	REGION(dram_spu_secure, 0x84900000, 0x100000, 4K)
 	REGION(dram_adsp_rpc_heap, 0x84A00000, 0x900000, 4K)
 	REGION(dram_smmu_pt, 0x85370000, 0xA20000, 4K)
-	REGION(dram_pil, 0x86E10000, 0xD0F0000, 4K)
+	REGION(dram_oob, 0x86E10000, 0xF60000, 4K)
+	REGION(dram_oob_non_secure, 0x87E00000, 0xC00000, 4K)
+	REGION(dram_spss, 0x88A00000, 0x400000, 4K)
+	REGION(dram_soccp, 0x88E00000, 0x400000, 4K)
+	REGION(dram_soccp_dtb, 0x89200000, 0x20000, 4K)
+	REGION(dram_pil, 0x93500000, 0xA00000, 4K)
 	POSTRAM_CBFS_CACHE(0x93F00000, 16M)
 	RAMSTAGE(0x94F00000, 16M)
 	REGION(dram_hyp_ac_meta, 0x95F00000, 16K, 4K)
+	REGION(dram_soccp_meta, 0x95F04000, 16K, 4K)
+	REGION(dram_soccp_dtb_meta, 0x95F08000, 16K, 4K)
 	REGION(dram_bert, 0xD6F00000, 0x100000, 4K)
 	REGION(dram_hyp_ac, 0xD7000000, 0x19000, 4K)
 	REGION(dram_tz_ac, 0xD7019000, 0x10000, 4K)
@@ -354,10 +359,7 @@ SECTIONS
 	REGION(dram_tz, 0xD7180000, 0x680000, 4K)
 	REGION(dram_ta, 0xD7800000, 0x1C00000, 4K)
 	REGION(dram_display, 0xE4800000, 0x2100000, 4K)
-	REGION(dram_oob_glink_always, 0xFEC00000, 0x180000, 4K)
-	REGION(dram_oob_glink_assist, 0xFED80000, 0x140000, 4K)
-	REGION(dram_oob_mdm_assist, 0xFEEC0000, 0x10000, 4K)
-	REGION(dram_oob_wlan_assist, 0xFEED0000, 0x10000, 4K)
+	REGION(dram_oob_nc, 0xFEC00000, 0x2e0000, 4K)
 	REGION(dram_smem, 0xFFE00000, 0x200000, 4K)
 	DRAM_END(0x100000000)
 

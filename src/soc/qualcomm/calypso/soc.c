@@ -124,10 +124,7 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_spu_secure, REGION_SIZE(dram_spu_secure));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_smmu_pt, REGION_SIZE(dram_smmu_pt));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_bert, REGION_SIZE(dram_bert));
-	reserved_ram_range(dev, index++, (uintptr_t)_dram_oob_glink_always, REGION_SIZE(dram_oob_glink_always));
-	reserved_ram_range(dev, index++, (uintptr_t)_dram_oob_glink_assist, REGION_SIZE(dram_oob_glink_assist));
-	reserved_ram_range(dev, index++, (uintptr_t)_dram_oob_mdm_assist, REGION_SIZE(dram_oob_mdm_assist));
-	reserved_ram_range(dev, index++, (uintptr_t)_dram_oob_wlan_assist, REGION_SIZE(dram_oob_wlan_assist));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_oob_nc, REGION_SIZE(dram_oob_nc));
 	/* ACDB carveout region located at 0x8C0000000 - (n*5.5 + 1 + 3) where n is size of DDR */
 	reserved_ram_range(dev, index++,
 		(uintptr_t)_dram_space_1 + ACDB_CARVEOUT_OFFSET - calc_acdb_carveout_size(),

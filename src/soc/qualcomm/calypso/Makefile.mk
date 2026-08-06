@@ -34,6 +34,7 @@ romstage-y += ../common/mmu.c
 romstage-y += ../common/watchdog.c
 romstage-y += mmu.c
 romstage-y += ../common/aop_load_reset.c
+romstage-y += hyp_ac_config.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 romstage-$(CONFIG_SOC_QUALCOMM_CDT) += ../common/cdt.c
 romstage-y += platform_info.c
@@ -432,6 +433,20 @@ $(HYPAC_CFG_FILE_CBFS)-file := $(HYPAC_CFG_FILE)
 $(HYPAC_CFG_FILE_CBFS)-type := payload
 $(HYPAC_CFG_FILE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(HYPAC_CFG_FILE_CBFS)
+
+################################################################################
+# Rule to create hyp_ac_meta from hyp_ac_config.elf
+# This rule depends on hyp_ac_config.elf built and the extractor script existing.
+$(obj)/mainboard/$(MAINBOARDDIR)/hyp_ac_meta: $(CALYPSO_BLOB)/ac_policy/hyp_ac_config.elf util/qualcomm/elf_segment_extractor.py
+	@echo "Extracting ELF headers and hash table segment from $< to $@"
+	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
+
+HYP_AC_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/hyp_ac_meta
+HYP_AC_META_CBFS := $(CONFIG_CBFS_PREFIX)/hyp_ac_meta
+$(HYP_AC_META_CBFS)-file := $(HYP_AC_META_FILE)
+$(HYP_AC_META_CBFS)-type := raw
+$(HYP_AC_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(HYP_AC_META_CBFS)
 
 endif # ifeq ($(CONFIG_ARM64_USE_SECURE_OS),y)
 ################################################################################

@@ -155,11 +155,6 @@ static void qtee_fw_config_load(void)
 					CONFIG_CBFS_PREFIX"/tzac_cfg");
 	if (!selfload(&tzac_cfg))
 		die("tzac_cfg load failed");
-
-	struct prog hypac_cfg = PROG_INIT(PROG_PAYLOAD,
-					CONFIG_CBFS_PREFIX"/hypac_cfg");
-	if (!selfload(&hypac_cfg))
-		die("hypac_cfg load failed");
 }
 
 static void soc_init(struct device *dev)

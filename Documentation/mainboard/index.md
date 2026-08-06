@@ -120,15 +120,6 @@ FBG-1701 <facebook/fbg1701.md>
 Monolith <facebook/monolith.md>
 ```
 
-## Framework
-
-```{toctree}
-:maxdepth: 1
-
-Laptop 12 13th Gen Intel (Sunflower) <framework/sunflower.md>
-Laptop 13 Intel Core Ultra Series 1 (Marigold) <framework/marigold.md>
-Laptop 13 Intel Core Ultra Series 3 (Sakura) <framework/sakura.md>
-```
 ## Foxconn
 
 ```{toctree}
@@ -142,7 +133,10 @@ D41S <foxconn/d41s.md>
 ```{toctree}
 :maxdepth: 1
 
-Azalea (Framework 13 Ryzen 7040 series) <framework/azalea/azalea.md>
+Laptop 12 13th Gen Intel (Sunflower) <framework/sunflower.md>
+Laptop 13 Intel Core Ultra Series 1 (Marigold) <framework/marigold.md>
+Laptop 13 Intel Core Ultra Series 3 (Sakura) <framework/sakura.md>
+Laptop 13 Ryzen 7040 Series (Azalea) <framework/azalea/azalea.md>
 ```
 
 

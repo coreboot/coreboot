@@ -2,16 +2,10 @@
 
 #include <boot/coreboot_tables.h>
 #include <console/cfr.h>
+#include <cpu/intel/model_206ax/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <northbridge/intel/sandybridge/cfr.h>
 #include <southbridge/intel/bd82x6x/cfr.h>
-
-static const struct sm_object hyper_threading = SM_DECLARE_BOOL({
-	.opt_name	= "hyper_threading",
-	.ui_name	= "Hyper-Threading",
-	.ui_helptext	= "Enable or disable Hyper-Threading",
-	.default_value	= true,
-});
 
 static struct sm_obj_form system = {
 	.ui_name = "System",

@@ -5,6 +5,8 @@
 
 #define ALIB_FUNCTION_REPORT_AC_DC_STATE		0x1
 #define ALIB_FUNCTION_DYNAMIC_POWER_THERMAL_CONFIG	0xc
+#define ALIB_FUNCTION_HOLD_PCIE_LINK_TRAINING		0x12
+#define ALIB_FUNCTION_RELEASE_PCIE_LINK_TRAINING	0x13
 
 #ifndef __ACPI__
 
@@ -42,6 +44,8 @@ void acpigen_write_alib_dptc_thermal_C(uint8_t *thermal_param_C, size_t thermal_
 void acpigen_write_alib_dptc_thermal_D(uint8_t *thermal_param_D, size_t thermal_param_D_len);
 void acpigen_write_alib_dptc_thermal_E(uint8_t *thermal_param_E, size_t thermal_param_E_len);
 void acpigen_write_alib_dptc_thermal_F(uint8_t *thermal_param_F, size_t thermal_param_F_len);
+void acpigen_write_alib_hold_link_training(const struct device *dev);
+void acpigen_write_alib_release_link_training(const struct device *dev);
 #endif /* !__ACPI__ */
 
 #endif /* AMD_COMMON_ALIB_H */

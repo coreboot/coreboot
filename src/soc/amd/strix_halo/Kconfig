@@ -28,7 +28,8 @@ config SOC_AMD_STRIX_HALO_BASE
 	select SOC_AMD_COMMON_BLOCK_ACP_GEN2		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPIMMIO		# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_ACPI_ALIB		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_ACPI_ALIB
+	select SOC_AMD_COMMON_BLOCK_ACPI_ALIB_HAS_PCIE_HOLD
 	select SOC_AMD_COMMON_BLOCK_ACPI_CPPC		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_CPU_POWER_STATE
 	select SOC_AMD_COMMON_BLOCK_ACPI_GPIO		# TODO: Check if this is still correct

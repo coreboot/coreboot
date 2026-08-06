@@ -247,3 +247,23 @@ void acpigen_write_alib_dptc_thermal_F(uint8_t *thermal_param_F, size_t thermal_
 
 	acpigen_write_scope_end();
 }
+
+void acpigen_write_alib_hold_link_training(const struct device *dev)
+{
+	if (!CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_ALIB_HAS_PCIE_HOLD))
+		return;
+
+	acpigen_emit_namestring("\\_SB.ALIB");
+	acpigen_write_integer(ALIB_FUNCTION_HOLD_PCIE_LINK_TRAINING);
+	acpigen_write_integer(dev->path.pci.devfn);
+}
+
+void acpigen_write_alib_release_link_training(const struct device *dev)
+{
+	if (!CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_ALIB_HAS_PCIE_HOLD))
+		return;
+
+	acpigen_emit_namestring("\\_SB.ALIB");
+	acpigen_write_integer(ALIB_FUNCTION_RELEASE_PCIE_LINK_TRAINING);
+	acpigen_write_integer(dev->path.pci.devfn);
+}

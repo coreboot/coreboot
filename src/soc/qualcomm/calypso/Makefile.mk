@@ -35,6 +35,7 @@ romstage-y += ../common/watchdog.c
 romstage-y += mmu.c
 romstage-y += ../common/aop_load_reset.c
 romstage-y += hyp_ac_config.c
+romstage-$(CONFIG_QC_SOCCP_ENABLE) += soccp_load_reset.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 romstage-$(CONFIG_SOC_QUALCOMM_CDT) += ../common/cdt.c
 romstage-y += platform_info.c
@@ -391,6 +392,50 @@ $(SHRM_META_CBFS)-file := $(SHRM_META_FILE)
 $(SHRM_META_CBFS)-type := raw
 $(SHRM_META_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 cbfs-files-y += $(SHRM_META_CBFS)
+
+################################################################################
+SOCCP_FILE := $(CALYPSO_BLOB)/$(BLOB_VARIANT)/soccp/soccp.mbn
+SOCCP_CBFS := $(CONFIG_CBFS_PREFIX)/soccp
+$(SOCCP_CBFS)-file := $(SOCCP_FILE)
+$(SOCCP_CBFS)-type := payload
+$(SOCCP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(SOCCP_CBFS)
+
+################################################################################
+# Rule to create soccp_meta from soccp.mbn
+# This rule depends on soccp.mbn built and the extractor script existing.
+$(obj)/mainboard/$(MAINBOARDDIR)/soccp_meta: $(CALYPSO_BLOB)/$(BLOB_VARIANT)/soccp/soccp.mbn util/qualcomm/elf_segment_extractor.py
+	@echo "Extracting ELF headers and hash table segment from $< to $@"
+	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
+
+SOCCP_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/soccp_meta
+SOCCP_META_CBFS := $(CONFIG_CBFS_PREFIX)/soccp_meta
+$(SOCCP_META_CBFS)-file := $(SOCCP_META_FILE)
+$(SOCCP_META_CBFS)-type := raw
+$(SOCCP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(SOCCP_META_CBFS)
+
+################################################################################
+SOCCP_DTB_FILE := $(CALYPSO_BLOB)/$(BLOB_VARIANT)/soccp/soccp_dtb.mbn
+SOCCP_DTB_CBFS := $(CONFIG_CBFS_PREFIX)/soccp_dtb
+$(SOCCP_DTB_CBFS)-file := $(SOCCP_DTB_FILE)
+$(SOCCP_DTB_CBFS)-type := payload
+$(SOCCP_DTB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(SOCCP_DTB_CBFS)
+
+################################################################################
+# Rule to create soccp_dtb_meta from soccp_dtb.mbn
+# This rule depends on soccp_dtb.mbn built and the extractor script existing.
+$(obj)/mainboard/$(MAINBOARDDIR)/soccp_dtb_meta: $(CALYPSO_BLOB)/$(BLOB_VARIANT)/soccp/soccp_dtb.mbn util/qualcomm/elf_segment_extractor.py
+	@echo "Extracting ELF headers and hash table segment from $< to $@"
+	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
+
+SOCCP_DTB_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/soccp_dtb_meta
+SOCCP_DTB_META_CBFS := $(CONFIG_CBFS_PREFIX)/soccp_dtb_meta
+$(SOCCP_DTB_META_CBFS)-file := $(SOCCP_DTB_META_FILE)
+$(SOCCP_DTB_META_CBFS)-type := raw
+$(SOCCP_DTB_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(SOCCP_DTB_META_CBFS)
 
 ################################################################################
 GSI_FW_FILE := $(CALYPSO_BLOB)/qup_fw/gsi_fw.bin

@@ -165,6 +165,14 @@ static inline void init_qclib_cb_if_table(struct qclib_cb_if_table *tbl)
 	tbl->reserved = 0;
 }
 
+__weak bool qclib_do_load_soccp_fw(void)
+{
+	if (!CONFIG(QC_SOCCP_ENABLE))
+		return false;
+
+	return true;
+}
+
 const char *qclib_file_default(enum qclib_cbfs_file file)
 {
 	switch (file) {
@@ -194,6 +202,10 @@ const char *qclib_file_default(enum qclib_cbfs_file file)
 		return CONFIG_CBFS_PREFIX "/ramdump_meta";
 	case QCLIB_CBFS_HYP_AC_META:
 		return CONFIG_CBFS_PREFIX "/hyp_ac_meta";
+	case QCLIB_CBFS_SOCCP_META:
+		return CONFIG_CBFS_PREFIX "/soccp_meta";
+	case QCLIB_CBFS_SOCCP_DTB_META:
+		return CONFIG_CBFS_PREFIX "/soccp_dtb_meta";
 	default:
 		die("unknown QcLib file %d", file);
 	}
@@ -574,6 +586,29 @@ void qclib_rerun(void)
 			}
 
 			qclib_add_if_table_entry(QCLIB_TE_HYP_AC_META_SETTINGS, _dram_hyp_ac_meta, data_size, 0);
+		}
+
+		if (CONFIG(QC_SOCCP_ENABLE) && qclib_do_load_soccp_fw()) {
+			/* Attempt to load soccp_meta Blob. */
+			data_size = cbfs_load(qclib_file(QCLIB_CBFS_SOCCP_META),
+					_dram_soccp_meta, REGION_SIZE(dram_soccp_meta));
+			if (!data_size) {
+				printk(BIOS_ERR, "[%s] //dram_soccp_meta failed\n", __func__);
+				goto fail;
+			}
+
+			qclib_add_if_table_entry(QCLIB_TE_SOCCP_META_SETTINGS, _dram_soccp_meta, data_size, 0);
+
+			/* Attempt to load soccp_dtb_meta Blob. */
+			data_size = cbfs_load(qclib_file(QCLIB_CBFS_SOCCP_DTB_META),
+					_dram_soccp_dtb_meta, REGION_SIZE(dram_soccp_dtb_meta));
+			if (!data_size) {
+				printk(BIOS_ERR, "[%s] /dram_soccp_dtb_meta failed\n", __func__);
+				goto fail;
+			}
+
+			qclib_add_if_table_entry(QCLIB_TE_SOCCP_DTB_META_SETTINGS, _dram_soccp_dtb_meta, data_size, 0);
+
 		}
 	}
 

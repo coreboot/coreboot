@@ -35,6 +35,8 @@
 #define QCLIB_TE_RAMDUMP_META_SETTINGS	"ramdump_metadata"
 #define QCLIB_TE_CBMEM_META_SETTINGS  "ddr_encryption_exclude"
 #define QCLIB_TE_HYP_AC_META_SETTINGS	"hyp_ac_metadata"
+#define QCLIB_TE_SOCCP_META_SETTINGS	"soccp_metadata"
+#define QCLIB_TE_SOCCP_DTB_META_SETTINGS	"soccp_dtb_metadata"
 
 /* BA_BMASK_VALUES (blob_attributes bit mask values) */
 #define QCLIB_BA_SAVE_TO_STORAGE 0x00000001
@@ -53,6 +55,8 @@ enum qclib_cbfs_file {
 	QCLIB_CBFS_APDP_META,
 	QCLIB_CBFS_RAMDUMP_META,
 	QCLIB_CBFS_HYP_AC_META,
+	QCLIB_CBFS_SOCCP_META,
+	QCLIB_CBFS_SOCCP_DTB_META,
 	QCLIB_CBFS_MAX
 };
 
@@ -97,6 +101,7 @@ int  qclib_mainboard_override(struct qclib_cb_if_table *table);
 bool qclib_check_dload_mode(void);
 void qupv3_fw_load(void);
 void smem_wipe(void);
+bool qclib_do_load_soccp_fw(void);
 
 const char *qclib_file_default(enum qclib_cbfs_file file);
 const char *qclib_file(enum qclib_cbfs_file file);

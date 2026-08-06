@@ -185,4 +185,11 @@ config QC_HYP_AC_CFG_PRERAM
 	  When enabled, hyp_ac_config is a configuration image which will be loaded
 	  during the ROM stage of system execution.
 
+config QC_SOCCP_ENABLE
+	bool
+	default n
+	help
+	  When enabled, soccp and soccp_dtb is a configuration image which will be loaded
+	  during the ROM stage of system execution.
+
 endif

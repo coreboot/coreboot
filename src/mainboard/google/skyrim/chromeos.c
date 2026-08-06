@@ -10,6 +10,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 {
 }
 
+int get_write_protect_state(void)
+{
+	/* Write protect is active low, so invert it here */
+	return !gpio_get(CROS_WP_GPIO);
+}
+
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AL(CROS_WP_GPIO, GPIO_DEVICE_NAME),

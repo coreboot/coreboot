@@ -175,7 +175,7 @@ HOSTCFLAGS += -fms-extensions
 TOOLCFLAGS += -mno-ms-bitfields
 endif
 ifeq ($(shell uname -o 2>/dev/null), Cygwin)
-TOOLCFLAGS+=-std=gnu11
+TOOLCFLAGS+=-std=gnu23
 TOOLCPPFLAGS+=-D_GNU_SOURCE
 else
 TOOLCFLAGS+=-std=c11

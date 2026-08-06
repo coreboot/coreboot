@@ -6,7 +6,7 @@ SMCBIOSINFOTOOL:= $(objutil)/supermicro/smcbiosinfo
 $(SMCBIOSINFOTOOL): $(dir)/smcbiosinfo/smcbiosinfo.c
 	printf "    HOSTCC     Creating SMCBIOSINFO tool\n"
 	mkdir -p $(objutil)/supermicro
-	$(HOSTCC) $(TOOLCPPFLAGS) $< -o $@
+	$(HOSTCC) -std=gnu23 $(TOOLCPPFLAGS) $< -o $@
 
 ifeq ($(CONFIG_VENDOR_SUPERMICRO),y)
 ifneq ($(call strip_quotes, $(CONFIG_SUPERMICRO_BOARDID)),)

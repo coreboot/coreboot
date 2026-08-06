@@ -218,7 +218,7 @@ STRIP := $(STRIP_$(ARCH-y))
 AR := $(AR_$(ARCH-y))
 endif
 
-CFLAGS += -std=gnu11 $(CFLAGS_$(ARCH-y))
+CFLAGS += -std=gnu23 $(CFLAGS_$(ARCH-y))
 
 ifeq ($(CONFIG_LP_COMPILER_LLVM_CLANG),y)
 CC:=clang

@@ -11,6 +11,7 @@ PREFIX   ?= /usr/local
 CFLAGS   ?= -O2
 WERROR=-Werror
 CFLAGS   += -Wall -Wextra -Wmissing-prototypes -Wshadow $(WERROR)
+CFLAGS   += -std=gnu23
 CPPFLAGS += -I . -I $(ROOT)/commonlib/include -I $(ROOT)/commonlib/bsd/include
 CPPFLAGS += -include $(ROOT)/commonlib/bsd/include/commonlib/bsd/compiler.h
 

@@ -11,6 +11,7 @@ AMDFWTOOLCFLAGS :=-O2 -Wall -Wextra -Wshadow $(WERROR)
 AMDFWTOOLCFLAGS += -I $(top)/src/commonlib/bsd/include
 AMDFWTOOLCFLAGS += -I $(top)/src/
 AMDFWTOOLCFLAGS += -D_GNU_SOURCE # memmem() from string.h
+AMDFWTOOLCFLAGS += -std=gnu23
 AMDFWTOOLCFLAGS += -ffunction-sections -fdata-sections
 
 ifneq ($(PKG_CONFIG),)

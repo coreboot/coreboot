@@ -51,7 +51,7 @@ TEST_CFLAGS += -Wno-unknown-warning-option -Wno-source-mgr -Wno-main-return-type
 TEST_CFLAGS += -Wno-array-compare -Wno-trigraphs
 TEST_CFLAGS += -Wno-unused-but-set-variables
 
-TEST_CFLAGS += -std=gnu11 -ffunction-sections -fdata-sections -fno-builtin
+TEST_CFLAGS += -std=gnu23 -ffunction-sections -fdata-sections -fno-builtin
 
 ifneq ($(filter-out 0,$(DEBUG)),)
 TEST_CFLAGS += -Og -ggdb3

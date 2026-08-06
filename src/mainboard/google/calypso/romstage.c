@@ -12,6 +12,7 @@
 #include <reset.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/aop_common.h>
+#include <soc/hyp_ac_config.h>
 #include <soc/pcie.h>
 #include <soc/pmic.h>
 #include <soc/qcom_spmi.h>
@@ -376,6 +377,9 @@ void platform_romstage_postram(void)
 
 	if (!chipset_dload_mode_active)
 		aop_fw_load_reset();
+
+	if (!chipset_dload_mode_active)
+		hyp_ac_config_fw_load();
 
 	if (is_low_power_boot_with_charger()) {
 		if (board_support_dead_battery_charging())

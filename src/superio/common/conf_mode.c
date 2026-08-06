@@ -64,6 +64,13 @@ void pnp_exit_conf_mode_0202(struct device *dev)
 	pnp_write_config(dev, 0x02, (1 << 1));
 }
 
+void pnp_exit_conf_mode_aa_espi(struct device *dev)
+{
+	outb(0xaa, dev->path.pnp.port);
+	/* Dummy read of the EFDR: restores the port's IO resource data to 0xff. */
+	inb(dev->path.pnp.port + 1);
+}
+
 /* Functions for ACPI */
 #if CONFIG(HAVE_ACPI_TABLES)
 static void pnp_ssdt_enter_conf_mode_55(struct device *dev, const char *idx, const char *data)
@@ -168,6 +175,18 @@ static void pnp_ssdt_exit_conf_mode_0202(struct device *dev, const char *idx, co
 	acpigen_write_byte(0x02);
 	acpigen_emit_namestring(data);
 }
+
+static void pnp_ssdt_exit_conf_mode_aa_espi(struct device *dev, const char *idx, const char *data)
+{
+	acpigen_write_store();
+	acpigen_write_byte(0xaa);
+	acpigen_emit_namestring(idx);
+
+	/* Dummy read of the EFDR: restores the port's IO resource data to 0xff. */
+	acpigen_write_store();
+	acpigen_emit_namestring(data);
+	acpigen_emit_byte(LOCAL0_OP);
+}
 #endif
 
 const struct pnp_mode_ops pnp_conf_mode_55_aa = {
@@ -230,5 +249,14 @@ const struct pnp_mode_ops pnp_conf_mode_870155_aa = {
 #if CONFIG(HAVE_ACPI_TABLES)
 	.ssdt_enter_conf_mode = pnp_ssdt_enter_conf_mode_870155aa,
 	.ssdt_exit_conf_mode = pnp_ssdt_exit_conf_mode_0202,
+#endif
+};
+
+const struct pnp_mode_ops pnp_conf_mode_8787_aa_espi = {
+	.enter_conf_mode = pnp_enter_conf_mode_8787,
+	.exit_conf_mode  = pnp_exit_conf_mode_aa_espi,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.ssdt_enter_conf_mode = pnp_ssdt_enter_conf_mode_8787,
+	.ssdt_exit_conf_mode = pnp_ssdt_exit_conf_mode_aa_espi,
 #endif
 };

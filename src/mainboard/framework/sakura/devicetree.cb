@@ -30,6 +30,9 @@ chip soc/intel/pantherlake
 	register "pch_slp_sus_min_assertion_width" = "SLP_SUS_ASSERTION_1_S"
 	register "pch_slp_a_min_assertion_width" = "SLP_A_ASSERTION_98_MS"
 
+	# Shut down the VCCSA rail down in low-power states
+	register "vccsa_shutdown" = "1"
+
 	# Enable all four TCSS Type-C ports with full functionality
 	# USB3 + DP-alt + Thunderbolt/USB4 + PCIe tunneling
 	register "tcss_cap_policy[0]" = "TCSS_TYPE_C_PORT_FULL_FUN"

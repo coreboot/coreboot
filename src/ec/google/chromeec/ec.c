@@ -1417,33 +1417,14 @@ static void google_chromeec_log_uptimeinfo(void)
 	printk(BIOS_DEBUG, "\n");
 }
 
-/* Cache and retrieve the EC image type (ro or rw) */
 enum ec_image google_chromeec_get_current_image(void)
 {
-	static enum ec_image ec_image_type = EC_IMAGE_UNKNOWN;
-
-	if (ec_image_type != EC_IMAGE_UNKNOWN)
-		return ec_image_type;
-
 	struct ec_response_get_version resp = {};
-	int rv;
 
-	rv = ec_cmd_get_version(PLAT_EC, &resp);
+	if (ec_cmd_get_version(PLAT_EC, &resp))
+		return EC_IMAGE_UNKNOWN;
 
-	if (rv != 0) {
-		printk(BIOS_DEBUG,
-			"Google Chrome EC: version command failed!\n");
-	} else {
-		printk(BIOS_DEBUG, "Google Chrome EC: version:\n");
-		printk(BIOS_DEBUG, "	ro: %s\n", resp.version_string_ro);
-		printk(BIOS_DEBUG, "	rw: %s\n", resp.version_string_rw);
-		printk(BIOS_DEBUG, "  running image: %d\n",
-			resp.current_image);
-		ec_image_type = resp.current_image;
-	}
-
-	/* Will still be UNKNOWN if command failed */
-	return ec_image_type;
+	return resp.current_image;
 }
 
 int google_chromeec_get_num_pd_ports(unsigned int *num_ports)

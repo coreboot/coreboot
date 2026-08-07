@@ -537,7 +537,7 @@ vb2_error_t vb2ex_ec_jump_to_rw(void)
 
 	/* Default delay to wait after EC reboot */
 	mdelay(50);
-	while (google_chromeec_hello()) {
+	while (google_chromeec_get_current_image() != EC_IMAGE_RW) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "EC did not return from reboot after %lldus\n",
 			       stopwatch_duration_usecs(&sw));

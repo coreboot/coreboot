@@ -6,11 +6,13 @@
 #include <amdblocks/psp.h>
 #include <amdblocks/smi.h>
 #include <amdblocks/smm.h>
+#include <amdblocks/spi.h>
 #include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <elog.h>
 #include <soc/smi.h>
 #include <soc/smu.h>
 #include <soc/southbridge.h>
@@ -54,6 +56,9 @@ void fch_slp_typ_handler(void)
 	}
 
 	if (slp_typ >= ACPI_S3) {
+		/* Sleep Type Elog S3, S4, and S5 entry */
+		elog_gsmi_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
+
 		wbinvd();
 
 		clear_all_smi_status();
@@ -95,4 +100,16 @@ void *get_smi_source_handler(int source)
 			return smi_sources[i].handler;
 
 	return NULL;
+}
+
+void smm_soc_early_init(void)
+{
+	if (CONFIG(SPI_FLASH_SMM))
+		fch_spi_backup_registers();
+}
+
+void smm_soc_exit(void)
+{
+	if (CONFIG(SPI_FLASH_SMM))
+		fch_spi_restore_registers();
 }

@@ -108,9 +108,13 @@ static int none_compress(char *in, int in_len, char *out, int *out_len)
 	return 0;
 }
 
-static int none_decompress(char *in, int in_len, char *out, unused int out_len,
-				size_t *actual_size)
+static int none_decompress(char *in, int in_len, char *out, int out_len, size_t *actual_size)
 {
+	if (in_len > out_len) {
+		ERROR("none_decompress: in_len (%d) > out_len (%d)\n", in_len, out_len);
+		return -1;
+	}
+
 	memcpy(out, in, in_len);
 	if (actual_size != NULL)
 		*actual_size = in_len;

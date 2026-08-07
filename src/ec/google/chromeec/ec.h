@@ -24,7 +24,6 @@ enum host_event_code google_chromeec_get_event(void);
 
 /* Check if EC supports feature EC_FEATURE_UNIFIED_WAKE_MASKS */
 bool google_chromeec_is_uhepi_supported(void);
-int google_ec_running_ro(void);
 /* Retrieve the EC image type (ro or rw) */
 enum ec_image google_chromeec_get_current_image(void);
 void google_chromeec_init(void);

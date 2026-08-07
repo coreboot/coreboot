@@ -1491,11 +1491,6 @@ void google_chromeec_init(void)
 		google_chromeec_rgbkbd_set_color((enum google_chromeec_rgbkbd_color)rgb_color);
 }
 
-int google_ec_running_ro(void)
-{
-	return (google_chromeec_get_current_image() == EC_IMAGE_RO);
-}
-
 /* Returns data role and type of device connected */
 static int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
 				    bool *active_cable, uint8_t *dp_mode)

@@ -34,7 +34,6 @@ ramstage-y	+= manifest.c
 
 smm-y		+= gpio.c
 smm-y		+= root_complex.c
-smm-y		+= smihandler.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/mendocino/include

@@ -8,25 +8,21 @@
 #include <amdblocks/smm.h>
 #include <amdblocks/spi.h>
 #include <arch/hlt.h>
-#include <arch/io.h>
+#include <console/cbmem_console.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
+#include <psp_verstage/psp_transfer.h>
 #include <soc/smi.h>
 #include <soc/smu.h>
 #include <soc/southbridge.h>
 #include <types.h>
 
-/*
- * Both the psp_notify_sx_info and the smu_sx_entry call will clobber the SMN index register
- * during the SMN accesses. Since the SMI handler is the last thing that gets called before
- * entering S3, this won't interfere with any indirect SMN accesses via the same register pair.
- */
 void fch_slp_typ_handler(void)
 {
-	uint32_t pci_ctrl;
-	uint16_t pm1cnt;
+	uint32_t pci_ctrl, reg32;
+	uint16_t pm1cnt, reg16;
 	uint8_t slp_typ, rst_ctrl;
 
 	/* Figure out SLP_TYP */
@@ -66,12 +62,53 @@ void fch_slp_typ_handler(void)
 		/* Do not send SMI before AcpiPm1CntBlkx00[SlpTyp] */
 		pci_ctrl = pm_read32(PM_PCI_CTRL);
 		pci_ctrl &= ~FORCE_SLPSTATE_RETRY;
+		if (CONFIG(SOC_AMD_COMMON_BLOCK_SMI_STPCLK_RETRY))
+			pci_ctrl |= FORCE_STPCLK_RETRY;
 		pm_write32(PM_PCI_CTRL, pci_ctrl);
 
 		/* Enable SlpTyp */
 		rst_ctrl = pm_read8(PM_RST_CTRL1);
 		rst_ctrl |= SLPTYPE_CONTROL_EN;
 		pm_write8(PM_RST_CTRL1, rst_ctrl);
+
+		/*
+		 * Before the final command, check if there's pending wake
+		 * event. Read enable first, so that reading the actual status
+		 * is as close as possible to entering S3. The idea is to
+		 * minimize the opportunity for a wake event to happen before
+		 * actually entering S3. If there's a pending wake event, log
+		 * it and continue normal path. S3 will fail and the wake event
+		 * becomes a SCI.
+		 */
+		if (CONFIG(ELOG_GSMI)) {
+			reg16 = acpi_read16(MMIO_ACPI_PM1_EN);
+			reg16 &= acpi_read16(MMIO_ACPI_PM1_STS);
+			if (reg16)
+				elog_add_extended_event(
+						ELOG_SLEEP_PENDING_PM1_WAKE,
+						(u32)reg16);
+
+			reg32 = acpi_read32(MMIO_ACPI_GPE0_EN);
+			reg32 &= acpi_read32(MMIO_ACPI_GPE0_STS);
+			if (reg32)
+				elog_add_extended_event(
+						ELOG_SLEEP_PENDING_GPE0_WAKE,
+						reg32);
+		}
+
+		/*
+		 * smu_sx_entry() uses SMN and clobbers the SMN index register.
+		 * psp_notify_sx_info() uses the PSP MMIO mailbox and does not.
+		 * Since this is the last thing run before entering S3, the SMN
+		 * clobber does not interfere with other indirect SMN accesses.
+		 */
+		if (slp_typ == ACPI_S3) {
+			if (CONFIG(SOC_AMD_COMMON_BLOCK_SMI_PSP_SX_NOTIFY))
+				psp_notify_sx_info(ACPI_S3);
+
+			if (CONFIG(SOC_AMD_COMMON_BLOCK_SMI_USB_S3_ENTRY))
+				soc_smi_usb_s3_entry();
+		}
 
 		smu_sx_entry(); /* Leave SlpTypeEn clear, SMU will set */
 		printk(BIOS_ERR, "System did not go to sleep\n");
@@ -94,7 +131,7 @@ void *get_smi_source_handler(int source)
 {
 	size_t i;
 
-	for (i = 0 ; i < ARRAY_SIZE(smi_sources) ; i++)
+	for (i = 0; i < ARRAY_SIZE(smi_sources); i++)
 		if (smi_sources[i].type == source)
 			return smi_sources[i].handler;
 
@@ -103,6 +140,15 @@ void *get_smi_source_handler(int source)
 
 void smm_soc_early_init(void)
 {
+	/*
+	 * Replay the transfer buffer console to the SMM console buffer, so
+	 * that SMM console output isn't attributed to the verstage that ran
+	 * on the PSP.
+	 */
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_SMM_CBMEMC_REPLAY) &&
+	    CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && __CBMEM_CONSOLE_ENABLE__)
+		replay_transfer_buffer_cbmemc();
+
 	if (CONFIG(SPI_FLASH_SMM))
 		fch_spi_backup_registers();
 }

@@ -94,6 +94,44 @@ config SOC_AMD_COMMON_BLOCK_SMM
 	  Add common SMM relocation, finalization and handler functionality to
 	  the build.
 
+config SOC_AMD_COMMON_BLOCK_SMIHANDLER
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_SMM
+	help
+	  Common fch_slp_typ_handler, get_smi_source_handler, and SMM
+	  early-init/exit. Stoneyridge keeps a custom SMI handler and does not
+	  select this.
+
+config SOC_AMD_COMMON_BLOCK_SMI_PSP_SX_NOTIFY
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_SMIHANDLER
+	help
+	  Notify the PSP of S3 entry from the common SMI sleep handler before
+	  sending the SMU the sleep entry message.
+
+config SOC_AMD_COMMON_BLOCK_SMI_STPCLK_RETRY
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_SMIHANDLER
+	help
+	  Set FORCE_STPCLK_RETRY in PM_PCI_CTRL in the common SMI sleep
+	  handler before enabling SlpTyp.
+
+config SOC_AMD_COMMON_BLOCK_SMI_USB_S3_ENTRY
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_SMIHANDLER
+	help
+	  SoC provides soc_smi_usb_s3_entry() which the common SMI sleep
+	  handler calls on S3 entry, e.g. to send the SMU a message to prepare
+	  the USB controllers for S3.
+
+config SOC_AMD_COMMON_BLOCK_SMM_CBMEMC_REPLAY
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_SMIHANDLER
+	help
+	  Replay the verstage console from the PSP transfer buffer into the
+	  SMM cbmem console during SMM early init, so that SMM console output
+	  is not misattributed to verstage.
+
 config SOC_AMD_COMMON_LATE_SMM_LOCKING
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_SMM

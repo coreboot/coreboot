@@ -32,7 +32,6 @@ ramstage-y += sata.c
 ramstage-y += soc_util.c
 ramstage-y += xhci.c
 
-smm-y += smihandler.c
 ifeq ($(CONFIG_DEBUG_SMI),y)
 smm-y += uart.c
 endif

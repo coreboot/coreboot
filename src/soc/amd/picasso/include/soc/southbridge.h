@@ -14,6 +14,7 @@
 
 /* Power management registers:  0xfed80300 or index/data at IO 0xcd6/cd7 */
 #define PM_PCI_CTRL			0x08
+#define   FORCE_STPCLK_RETRY		BIT(24)
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 
 #define PWR_RESET_CFG			0x10

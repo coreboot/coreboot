@@ -67,6 +67,8 @@ config SOC_AMD_GLINDA_BASE
 	select SOC_AMD_COMMON_BLOCK_RESET
 	select SOC_AMD_COMMON_BLOCK_SMBUS		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_SMI			# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_SMIHANDLER
+	select SOC_AMD_COMMON_BLOCK_SMI_PSP_SX_NOTIFY
 	select SOC_AMD_COMMON_BLOCK_SMM			# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_SMU			# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_SMU_SX_ENTRY	# TODO: Check if this is still correct

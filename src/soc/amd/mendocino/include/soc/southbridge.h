@@ -9,6 +9,7 @@
 #define PM_ISACONTROL			0x04
 #define   ABCLKGATEEN			BIT(16)
 #define PM_PCI_CTRL			0x08
+#define   FORCE_STPCLK_RETRY		BIT(24)
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define PWR_RESET_CFG			0x10
 #define   TOGGLE_ALL_PWR_GOOD		BIT(1)

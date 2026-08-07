@@ -206,9 +206,6 @@ static bool rtc_hw_init(void)
 	struct stopwatch sw;
 	u16 rdata;
 
-	if (!rtc_eosc_cali_and_write())
-		return false;
-
 	stopwatch_init_usecs_expire(&sw, BBPU_RELOAD_TIMEOUT_US);
 
 	rtc_clrset_trigger(RTC_BBPU, 0,
@@ -321,6 +318,9 @@ static void secure_rtc_init(void)
 
 static bool rtc_init_after_recovery(void)
 {
+	if (!rtc_eosc_cali_and_write())
+		return false;
+
 	/* write powerkeys */
 	if (!rtc_powerkey_init())
 		return false;
@@ -350,6 +350,7 @@ static void rtc_recovery_flow(void)
 {
 	printk(BIOS_INFO, "%s: enter\n", __func__);
 
+	/* Set SCK_TOP_XTAL_SEL = 1, select internal EOSC */
 	config_interface(SCK_TOP_XTAL_SEL_ADDR, 1, SCK_TOP_XTAL_SEL_MASK,
 			 SCK_TOP_XTAL_SEL_SHIFT);
 	udelay(100);
@@ -365,6 +366,14 @@ static bool rtc_first_boot_init(void)
 {
 	u16 rdata;
 	printk(BIOS_INFO, "%s: Enter\n", __func__);
+
+	/* Set SCK_TOP_XTAL_SEL = 1, select internal EOSC */
+	config_interface(SCK_TOP_XTAL_SEL_ADDR, 1, SCK_TOP_XTAL_SEL_MASK,
+			 SCK_TOP_XTAL_SEL_SHIFT);
+	udelay(100);
+
+	if (!rtc_eosc_cali_and_write())
+		return false;
 
 	if (!rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RESET_SPAR))
 		return false;
@@ -424,9 +433,6 @@ static bool rtc_first_boot_init(void)
 		return false;
 	}
 
-	if (!rtc_frequency_meter_check())
-		return false;
-
 	if (!rtc_hw_init())
 		return false;
 
@@ -434,6 +440,9 @@ static bool rtc_first_boot_init(void)
 		return false;
 
 	secure_rtc_init();
+
+	if (!rtc_frequency_meter_check())
+		return false;
 
 	return true;
 }

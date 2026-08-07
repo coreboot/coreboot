@@ -13,7 +13,7 @@
 #include <soc/dramc_param_common.h>
 #include <soc/dramc_soc.h>
 
-#define DRAMC_PARAM_HEADER_VERSION 1
+#define DRAMC_PARAM_HEADER_VERSION 2
 
 struct sdram_params {
 	/* Sometimes, we may need to compare params member
@@ -56,8 +56,8 @@ struct sdram_params {
 	/* rx datlat 4B */
 	u8 rx_datlat[CHANNEL_MAX][RANK_MAX];
 
-	/* RX perbit 88B */
-	u8 rx_best_vref[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
+	/* RX perbit 84B */
+	u8 rx_best_vref[CHANNEL_MAX][DQS_NUMBER_LP4];
 	u8 rx_perbit_dqs[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 	u8 rx_perbit_dqm[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 	u8 rx_perbit_dq[CHANNEL_MAX][RANK_MAX][DQ_DATA_WIDTH_LP4];

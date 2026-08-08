@@ -54,6 +54,7 @@ static void mpio_params_config(void)
 	mpio_data->SrisLowerSkpOsGenSup                = 0;
 	mpio_data->SrisLowerSkpOsRcvSup                = 0;
 	mpio_data->AmdCxlOnAllPorts                    = 1;
+	mpio_data->Enable2SpcGen5                      = 0;
 	mpio_data->CxlCorrectableErrorLogging          = 1;
 	mpio_data->CxlUnCorrectableErrorLogging        = 1;
 	  // This is also available in Nbio. How to handle duplicate entries?

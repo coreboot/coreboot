@@ -8,3 +8,4 @@ ramstage-y += dock.c
 romstage-y += gpio.c
 
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c

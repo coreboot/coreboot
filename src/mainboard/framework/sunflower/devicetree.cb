@@ -81,6 +81,7 @@ chip soc/intel/alderlake
 				[3] = USB2_PORT_TYPE_C(OC_SKIP),	/* JTypeC USBC3 (left) */
 				[4] = USB2_PORT_TYPE_C(OC_SKIP),	/* JTypeC USBC4 (left) */
 				[6] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[8] = USB2_PORT_MID(OC_SKIP),		/* Fingerprint */
 				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
 			}"
 			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# JDCI Debug
@@ -110,6 +111,11 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						device ref usb2_port7 on end
 						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+					end
+					chip drivers/usb/acpi
+						device ref usb2_port9 on end
+						register "desc" = ""USB2 Fingerprint""
 						register "type" = "UPC_TYPE_INTERNAL"
 					end
 					chip drivers/usb/acpi

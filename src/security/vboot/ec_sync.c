@@ -407,7 +407,7 @@ vb2_error_t vb2ex_commit_data(struct vb2_context *ctx)
  */
 vb2_error_t vb2ex_ec_running_rw(int *in_rw)
 {
-	*in_rw = (google_chromeec_get_current_image() == EC_IMAGE_RW);
+	*in_rw = !google_ec_running_ro();
 	return VB2_SUCCESS;
 }
 

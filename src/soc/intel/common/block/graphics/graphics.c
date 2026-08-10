@@ -281,6 +281,16 @@ static void graphics_dev_read_resources(struct device *dev)
 {
 	pci_dev_read_resources(dev);
 
+	/*
+	 * BAR2 (GMADR) is the framebuffer aperture. Request write-combining
+	 * for it explicitly so that it also gets a WC MTRR when the resource
+	 * allocator places it above 4GiB, which is what matters for payload
+	 * graphics performance.
+	 */
+	struct resource *res_bar2 = find_resource(dev, PCI_BASE_ADDRESS_2);
+	if (res_bar2 && res_bar2->size)
+		res_bar2->flags |= IORESOURCE_WRCOMB;
+
 	if (CONFIG(SOC_INTEL_GFX_NON_PREFETCHABLE_MMIO)) {
 		struct resource *res_bar0 = find_resource(dev, PCI_BASE_ADDRESS_0);
 		if (res_bar0->flags & IORESOURCE_PREFETCH)

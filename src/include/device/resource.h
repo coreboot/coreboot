@@ -19,6 +19,7 @@
 #define IORESOURCE_PREFETCH	0x00001000	/* No side effects */
 #define IORESOURCE_READONLY	0x00002000
 #define IORESOURCE_CACHEABLE	0x00004000
+#define IORESOURCE_WRCOMB	0x00008000	/* Request write-combining */
 /* This resource filters all of the unclaimed transactions to the bus below. */
 #define IORESOURCE_SUBTRACTIVE  0x00040000
 /* The IO resource has a bus below it. */

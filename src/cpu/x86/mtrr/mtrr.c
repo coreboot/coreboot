@@ -123,11 +123,20 @@ static int filter_vga_wrcomb(struct device *dev, struct resource *res)
 		return 0;
 
 	/*
-	 * Only mark 32-bit BARs as WC. Some platforms expose additional large
-	 * prefetchable BARs above 4GiB for the iGPU, and tagging those as WC
-	 * can fragment the address space enough to exhaust variable MTRRs.
-	 * Keeping the below-4GiB framebuffer WC is the priority for payload UI
-	 * performance.
+	 * A driver that knows a BAR benefits from write-combining (e.g. a
+	 * framebuffer aperture) can explicitly request it with
+	 * IORESOURCE_WRCOMB. Honor that request regardless of where the
+	 * allocator placed the BAR.
+	 */
+	if (res->flags & IORESOURCE_WRCOMB)
+		return 1;
+
+	/*
+	 * Otherwise only mark 32-bit BARs as WC. Some platforms expose
+	 * additional large prefetchable BARs above 4GiB for the iGPU, and
+	 * tagging those as WC can fragment the address space enough to
+	 * exhaust variable MTRRs. Keeping the below-4GiB framebuffer WC is
+	 * the priority for payload UI performance.
 	 */
 	if (res->size != 0 && res->base >= 0x100000000ULL)
 		return 0;

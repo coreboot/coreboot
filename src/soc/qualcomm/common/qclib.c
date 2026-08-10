@@ -87,14 +87,23 @@ static void process_mem_chip_information(struct mem_chip_info *info)
 static void write_mem_chip_information(struct qclib_cb_if_table_entry *te)
 {
 	struct mem_chip_info *info = (void *)te->blob_address;
-	if (te->size > sizeof(struct mem_chip_info) &&
-	    te->size == mem_chip_info_size(info->num_entries)) {
-		process_mem_chip_information(info);
-		dump_mem_chip_info(info);
 
-		/* Save mem_chip_info in global variable ahead of hook running */
-		mem_chip_info = info;
+	if (!info || te->size < sizeof(struct mem_chip_info)) {
+		printk(BIOS_WARNING, "mem_chip_info buffer too small for header (%x)\n", te->size);
+		return;
 	}
+
+	if (te->size < mem_chip_info_size(info->num_entries)) {
+		printk(BIOS_WARNING, "mem_chip_info buffer (%x) too small for %u entries (%zu)\n",
+		       te->size, info->num_entries, mem_chip_info_size(info->num_entries));
+		return;
+	}
+
+	process_mem_chip_information(info);
+	dump_mem_chip_info(info);
+
+	/* Save mem_chip_info in global variable ahead of hook running */
+	mem_chip_info = info;
 }
 
 static void add_mem_chip_info(int unused)

@@ -158,18 +158,38 @@
  *               |         ... (Memory not mapped: Unavailable) ...         | XXXXXXXXX
  * 0x14A80000    +----------------------------------------------------------+ <---------
  *               |                    auth_metadata                         |      ^
- * 0x14A7F000    +----------------------------------------------------------+      |
- *               |                     debug_policy                         |      |
  * 0x14A7E000    +----------------------------------------------------------+      |
- *               |         OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE           |      |
+ *               |                     debug_policy                         |      |
+ * 0x14A7D000    +----------------------------------------------------------+      |
+ *               |                     FMAP_CACHE                           |      |
+ * 0x14A7C800    +----------------------------------------------------------+      |
+ *               |                    CBFS_MCACHE                           |      |
+ * 0x14A77000    +----------------------------------------------------------+      |
+ *               |                    VBOOT2_WORK                           |      |
+ * 0x14A74000    +----------------------------------------------------------+      |
+ *               |               PRERAM_DMA_COHERENT                        |      |
+ * 0x14A72000    +----------------------------------------------------------+      |
+ *               |                ... Usable memory ...                     |      |
+ * 0x14A70000    +----------------------------------------------------------+      |
+ *               |             TTB (Translation Table Base)                 |      |
+ * 0x14A60000    +----------------------------------------------------------+      |
+ *               |                  qclib_serial_log                        |      |
+ * 0x14A5F000    +----------------------------------------------------------+      |
+ *               |                     TIMESTAMP                            |      |
+ * 0x14A5E000    +----------------------------------------------------------+      |
+ *               |                    aop_blob_meta                         |      |
+ * 0x14A5A000    +----------------------------------------------------------+      |
+ *               |                    qc_blob_meta                          |      |
  * 0x14A56000    +----------------------------------------------------------+      |
  *               |                 PRERAM_CBMEM_CONSOLE                     |      |
- * 0x14A50000    +----------------------------------------------------------+      |
+ * 0x14A50000    +----------------------------------------------------------+    BSRAM
  *               |                       qclib                              |      |
  * 0x148A0000    +----------------------------------------------------------+      |
  *               |                    ddr_training                          |      |
  * 0x14880000    +----------------------------------------------------------+      |
- *               |             TTB (Translation Table Base)                 |      |
+ *               |                dcb (DDR Config Block)                    |      |
+ * 0x14872000    +----------------------------------------------------------+      |
+ *               |                    PRERAM_STACK                          |      |
  * 0x1486E000    +----------------------------------------------------------+      |
  *               |                 PRERAM_CBFS_CACHE                        |      |
  * 0x14852000    +----------------------------------------------------------+      |
@@ -179,25 +199,7 @@
  * 0x14850000    +----------------------------------------------------------+      |
  *               |                  apdp_ramdump_meta                       |      |
  * 0x1484F000    +----------------------------------------------------------+      |
- *               |                    aop_blob_meta                         |      |
- * 0x1484B000    +----------------------------------------------------------+      |
- *               |                    qc_blob_meta                          |      |
- * 0x14847000    +----------------------------------------------------------+      |
- *               |                dcb (DDR Config Block)                    |      |
- * 0x14839000    +----------------------------------------------------------+      |
- *               |                     FMAP_CACHE                           |      |
- * 0x14838800    +----------------------------------------------------------+    BSRAM
- *               |                    CBFS_MCACHE                           |      |
- * 0x14833000    +----------------------------------------------------------+      |
- *               |                  qclib_serial_log                        |      |
- * 0x14832000    +----------------------------------------------------------+      |
- *               |               PRERAM_DMA_COHERENT                        |      |
- * 0x14830000    +----------------------------------------------------------+      |
- *               |                    VBOOT2_WORK                           |      |
- * 0x1482D000    +----------------------------------------------------------+      |
- *               |                    PRERAM_STACK                          |      |
- * 0x14829000    +----------------------------------------------------------+      |
- *               |                     TIMESTAMP                            |      |
+ *               |         OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE           |      |
  * 0x14828000    +----------------------------------------------------------+      |
  *               |                     BOOTBLOCK                            |      |
  * 0x14819000    +----------------------------------------------------------+      |
@@ -267,27 +269,34 @@ SECTIONS
 	BSRAM_START(0x14800000)
 	REGION(pbl_timestamps, 0x14800000, 84K, 4K)
 	BOOTBLOCK(0x14819000, 60K)
-	TIMESTAMP(0x14828000, 4K)
-	PRERAM_STACK(0x14829000, 16K)
-	VBOOT2_WORK(0x1482D000, 12K)
-	PRERAM_DMA_COHERENT(0x14830000, 8K)
-	REGION(qclib_serial_log, 0x14832000, 4K, 4K)
-	CBFS_MCACHE(0x14833000, 22K)
-	FMAP_CACHE(0x14838800, 2K)
-	REGION(dcb, 0x14839000, 56K, 4K)
-	REGION(qc_blob_meta, 0x14847000, 16K, 4K)
-	REGION(aop_blob_meta, 0x1484B000, 16K, 4K)
+	OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE(0x14828000, 156K)
 	REGION(apdp_ramdump_meta, 0x1484F000, 4K, 4K)
 	REGION(cpr_settings, 0x14850000, 4K, 4K)
 #if CONFIG(SOC_QUALCOMM_CDT)
-    REGION(cdt_data, 0x14851000, 4K, 4K)
+	REGION(cdt_data, 0x14851000, 4K, 4K)
 #endif
 	PRERAM_CBFS_CACHE(0x14852000, 112K)
-	TTB(0x1486E000, 64K)
+	PRERAM_STACK(0x1486E000, 16K)
+	REGION(dcb, 0x14872000, 56K, 4K)
 	REGION(ddr_training, 0x14880000, 128K, 4K)
 	REGION(qclib, 0x148A0000, 1728K, 4K)
 	PRERAM_CBMEM_CONSOLE(0x14A50000, 24K)
-	OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE(0x14A56000, 156K)
+	REGION(qc_blob_meta, 0x14A56000, 16K, 4K)
+	REGION(aop_blob_meta, 0x14A5A000, 16K, 4K)
+	TIMESTAMP(0x14A5E000, 4K)
+	REGION(qclib_serial_log, 0x14A5F000, 4K, 4K)
+
+	/*
+	 * The address range 0x14A60000-0x14A6C000 (48KB) has read/write permissions
+	 * only for secure masters. QSPI DMA transactions are generated as non-secure
+	 * accesses, therefore regions requiring QSPI DMA access must not be placed
+	 * within this range.
+	 */
+	TTB(0x14A60000, 64K)
+	PRERAM_DMA_COHERENT(0x14A72000, 8K)
+	VBOOT2_WORK(0x14A74000, 12K)
+	CBFS_MCACHE(0x14A77000, 22K)
+	FMAP_CACHE(0x14A7C800, 2K)
 	REGION(debug_policy, 0x14A7D000, 4K, 4K)
 	REGION(auth_metadata, 0x14A7E000, 8K, 4K)
 	BSRAM_END(0x14A80000)

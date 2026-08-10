@@ -427,7 +427,8 @@ void qclib_load_and_run(void)
 			_ddr_training, data_size, 0);
 
 	/* Address and size of this entry will be filled in by QcLib. */
-	qclib_add_if_table_entry(QCLIB_TE_MEM_CHIP_INFO, NULL, 0, 0);
+	if (!CONFIG(QC_MEMCHIP_INFO_ON_RERUN))
+		qclib_add_if_table_entry(QCLIB_TE_MEM_CHIP_INFO, NULL, 0, 0);
 
 	if (_pmic) {
 		/* Attempt to load PMICCFG Blob */
@@ -583,6 +584,10 @@ void qclib_rerun(void)
 
 		qclib_add_if_table_entry(QCLIB_TE_RAMDUMP_META_SETTINGS, _apdp_ramdump_meta, data_size, 0);
 	}
+
+	/* Address and size of this entry will be filled in by QcLib. */
+	if (CONFIG(QC_MEMCHIP_INFO_ON_RERUN))
+		qclib_add_if_table_entry(QCLIB_TE_MEM_CHIP_INFO, NULL, 0, 0);
 
 	/* Set up the system and jump into QcLib */
 	printk(BIOS_DEBUG, "\n\n\nRe-enter QCLib to bring up AOP\n");

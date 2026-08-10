@@ -124,6 +124,13 @@ config QC_SANITIZE_MEMCHIP_INFO
 
 	  If unsure, say N.
 
+config QC_MEMCHIP_INFO_ON_RERUN
+	bool
+	help
+	  Selected by platforms where QcLib provides or requires the memory chip
+	  information table entry (QCLIB_TE_MEM_CHIP_INFO) during the secondary
+	  run/re-entry stage (qclib_rerun).
+
 config QC_QDUTT_ENABLE
 	bool
 	default n

@@ -10,6 +10,23 @@
 
 __weak int qclib_mainboard_override(struct qclib_cb_if_table *table) { return 0; }
 
+bool qclib_check_dload_mode(void)
+{
+	if (!CONFIG(QC_RAMDUMP_ENABLE))
+		return false;
+
+	uint32_t boot_misc_detect = read32((void *)TCSR_BOOT_MISC_DETECT);
+
+	if (boot_misc_detect & DLOAD_BOTH) {
+		printk(BIOS_DEBUG, "Download mode detected: 0x%x\n", boot_misc_detect);
+		return true;
+	}
+
+	printk(BIOS_DEBUG, "Download mode not enabled (TCSR value: 0x%x)\n",
+			boot_misc_detect);
+	return false;
+}
+
 int qclib_soc_override(struct qclib_cb_if_table *table)
 {
 	size_t data_size;

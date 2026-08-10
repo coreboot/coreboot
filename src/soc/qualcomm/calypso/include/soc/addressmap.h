@@ -178,4 +178,14 @@
 #define TCSR_PCIE_1_CLKREF_EN_OFF		0x95048
 #define TCSR_PCIE_1_CLKREF_EN__PCIE_ENABLE	((void *)(TCSR_BASE + TCSR_PCIE_1_CLKREF_EN_OFF))
 
+/* TCSR Boot Misc Detect Register for Download Mode */
+#define TCSR_BOOT_MISC_DETECT          0x1FD9000
+
+/* Bits 4 and 5 represent the ramdump download cookies in SoC logic */
+enum dload_mode_cookies {
+	DLOAD_FULL_DUMP = BIT(4),
+	DLOAD_MINI_DUMP = BIT(5),
+	DLOAD_BOTH = (DLOAD_FULL_DUMP | DLOAD_MINI_DUMP)
+};
+
 #endif /*  __SOC_QUALCOMM_CALYPSO_ADDRESS_MAP_H__ */

@@ -338,6 +338,7 @@ static void qclib_prepare_and_run(void)
 		qclib_cb_if_table.global_attributes |=
 			QCLIB_GA_ENABLE_UART_LOGGING;
 
+	printk(BIOS_DEBUG, "%s: Dumping table entries (BEFORE QCLib):\n", __func__);
 	dump_te_table();
 
 	printk(BIOS_DEBUG, "Global Attributes[%#x]..Table Entries Count[%d]\n",
@@ -357,6 +358,9 @@ static void qclib_prepare_and_run(void)
 	}
 
 	prog_run(&qclib);
+
+	printk(BIOS_DEBUG, "%s: Dumping table entries (AFTER QCLib):\n", __func__);
+	dump_te_table();
 
 	if (qclib_cb_if_table.num_entries > QCLIB_MAX_NUMBER_OF_ENTRIES) {
 		printk(BIOS_ERR, "QcLib returned invalid num_entries=%u,",

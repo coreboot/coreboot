@@ -236,6 +236,8 @@ static void write_qclib_log_to_cbmemc(struct qclib_cb_if_table_entry *te)
 
 static void write_table_entry(struct qclib_cb_if_table_entry *te)
 {
+	printk(BIOS_DEBUG, "%s: table entry: %s\n", __func__, te->name);
+
 	if (!strncmp(QCLIB_TE_DDR_INFORMATION, te->name,
 			sizeof(te->name))) {
 		write_ddr_information(te);

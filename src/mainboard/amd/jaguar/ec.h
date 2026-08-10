@@ -46,4 +46,11 @@ void jaguar_ec_init(void);
 #define  EC_XGBE_LED_ENABLE			BIT(2)
 #define  EC_XGBE_SFPP_MUX_ENABLE		BIT(3)
 
+#define EC_EVAL_STS				0xA0
+#define  EC_EVAL_STS_PWR_GOOD			BIT(1)
+#define  EC_EVAL_STS_CARD_DETECTED		BIT(2)
+
+#define EC_EVAL_CTRL				0xA1
+#define  EC_EVAL_CTRL_CARD_ON			BIT(1)
+
 #endif /* JAGUAR_EC_H */

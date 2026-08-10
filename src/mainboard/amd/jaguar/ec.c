@@ -13,6 +13,13 @@ static void configure_ec_gpio(void)
 	uint8_t tmp;
 	uint8_t olddata = ec_read(EC_PAGE_SELECT);
 
+	/* EC detected EVAL card and power is off? */
+	if ((ec_read(EC_EVAL_STS) & (EC_EVAL_STS_CARD_DETECTED | EC_EVAL_STS_PWR_GOOD)) ==
+	    EC_EVAL_STS_CARD_DETECTED) {
+		ec_write(EC_EVAL_CTRL,  ec_read(EC_EVAL_CTRL) | EC_EVAL_CTRL_CARD_ON);
+		printk(BIOS_DEBUG, "Detected EVAL card in EVAL slot, powering on...\n");
+	}
+
 	/* select page c2 */
 	ec_write(EC_PAGE_SELECT, EC_GPIO_PAGE);
 

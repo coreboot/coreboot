@@ -148,10 +148,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D03, NONE),
 	/* GPP_D04:	NC */
 	PAD_NC(GPP_D04, NONE),
-	/* GPP_D05:	UART_DBG_TX_ISH_RX (NC) */
-	PAD_NC(GPP_D05, NONE),
-	/* GPP_D06:	UART_ISH_TX_DBG_RX (NC) */
-	PAD_NC(GPP_D06, NONE),
+	/* GPP_D05:     ISH_UART0_RXD_SNSR_HDR */
+	PAD_CFG_NF(GPP_D05, UP_20K, DEEP, NF2),
+	/* GPP_D06:     ISH_UART0_TXD_SNSR_HDR */
+	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF2),
 	/* GPP_D07:	NC */
 	PAD_NC(GPP_D07, NONE),
 	/* GPP_D08:	NC */

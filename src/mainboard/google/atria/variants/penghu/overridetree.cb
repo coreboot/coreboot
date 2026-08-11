@@ -130,6 +130,13 @@ chip soc/intel/novalake
 			}"
 		end # SSD
 
+                device ref ish on
+                        chip drivers/intel/ish
+                                register "add_acpi_dma_property" = "true"
+                                device generic 0 on end
+                        end
+                end
+
 		# NOTE: i2c0 is function 0; hence it needs to be enabled when any of i2c1-5 is enabled.
 		# TPM device is under i2c2. Therefore, i2c0 needs to be enabled anyways.
 		device ref i2c0 on end

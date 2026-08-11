@@ -274,6 +274,10 @@ static void fill_fsps_microcode_params(FSP_S_CONFIG *s_cfg,
 	if (!CONFIG(USE_FSP_FEATURE_PROGRAM_ON_APS))
 		return;
 
+	/* SoC specific check to skip re-loading of microcode */
+	if (soc_skip_ucode_update(get_current_microcode_rev(), 0))
+		return;
+
 	/* Locate microcode and pass to FSP-S for 2nd microcode loading */
 	microcode = intel_microcode_find();
 	if (!microcode)

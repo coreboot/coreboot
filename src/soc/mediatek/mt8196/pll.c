@@ -1660,6 +1660,7 @@ void mt_pll_raise_little_cpu_freq(u32 freq)
 	clrbits32(pll->reg, MT8196_PLL_EN);
 	pll_set_rate(pll, freq);
 	setbits32(pll->reg, MT8196_PLL_EN);
+	udelay(PLL_EN_DELAY);
 
 	clrsetbits32(&mtk_mcusys->cpu_plldiv0_cfg, GENMASK(10, 8), BIT(8));
 	setbits32(&mtk_mcusys->cpu_plldiv0_cfg, BIT(10));

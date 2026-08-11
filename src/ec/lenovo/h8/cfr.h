@@ -8,6 +8,7 @@
 #define _LENOVO_H8_CFR_H_
 
 #include <drivers/option/cfr_frontend.h>
+#include "chip.h"
 #include "h8.h"
 
 /* Bluetooth */
@@ -18,13 +19,58 @@ static const struct sm_object bluetooth = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
-/* Keyboard Backlight */
-static const struct sm_object backlight = SM_DECLARE_BOOL({
+static const struct sm_enum_value kic_values_both[] = {
+	{ "Both",		KIC_BOTH	},
+	{ "Keyboard only",	KIC_KEYBOARD	},
+	{ "ThinkLight only",	KIC_THINKLIGHT	},
+	{ "None",		KIC_NONE	},
+	SM_ENUM_VALUE_END,
+};
+
+static const struct sm_enum_value kic_values_thinklight_only[] = {
+	{ "ThinkLight",		KIC_THINKLIGHT	},
+	{ "None",		KIC_NONE	},
+	SM_ENUM_VALUE_END,
+};
+
+static const struct sm_enum_value kic_values_keyboard_only[] = {
+	{ "Keyboard backlight",	KIC_KEYBOARD	},
+	{ "None",		KIC_NONE	},
+	SM_ENUM_VALUE_END,
+};
+
+static void update_backlight(struct sm_object *new)
+{
+	struct ec_lenovo_h8_config *conf = h8_get_config();
+	const bool has_thinklight = conf && conf->has_thinklight;
+	const bool has_kb_backlight = h8_kb_backlight_supported(conf);
+
+	if (!has_thinklight && !has_kb_backlight) {
+		new->sm_enum.flags = CFR_OPTFLAG_SUPPRESS;
+		return;
+	}
+
+	if (has_thinklight && has_kb_backlight) {
+		new->sm_enum.values = kic_values_both;
+		new->sm_enum.ui_helptext = "Select illumination device(s)";
+	} else if (has_thinklight) {
+		new->sm_enum.values = kic_values_thinklight_only;
+		new->sm_enum.ui_helptext = "Enable or disable ThinkLight";
+	} else {
+		new->sm_enum.values = kic_values_keyboard_only;
+		new->sm_enum.ui_helptext = "Enable or disable keyboard illumination";
+	}
+
+	new->sm_enum.default_value = h8_illumination_default();
+}
+
+/* Illumination Control (ThinkLight and/or keyboard backlight) */
+static const struct sm_object backlight = SM_DECLARE_ENUM({
 	.opt_name	= "backlight",
-	.ui_name	= "Keyboard Backlight",
-	.ui_helptext	= "Enable or disable the keyboard backlight",
-	.default_value	= false,
-});
+	.ui_name	= "Illumination Control",
+	.ui_helptext	= "Select illumination device(s)",
+	.values		= kic_values_both,
+}, WITH_CALLBACK(update_backlight));
 
 /* USB Always-On */
 static const struct sm_object usb_always_on = SM_DECLARE_ENUM({

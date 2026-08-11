@@ -14,5 +14,5 @@ void bootblock_mainboard_init(void)
 		i2c_init(CONFIG_DRIVER_TPM_I2C_BUS, I2C_SPEED_FAST); /* H1/TPM I2C */
 
 	if (CONFIG(EC_GOOGLE_CHROMEEC))
-		qup_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, 1010 * KHz); /* EC SPI */
+		qup_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, 3200 * KHz); /* EC SPI */
 }

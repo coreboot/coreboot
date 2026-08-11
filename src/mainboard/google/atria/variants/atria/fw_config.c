@@ -13,6 +13,37 @@
 /* t: table */
 #define GPIO_CONFIGURE_PADS(t) gpio_configure_pads(t, ARRAY_SIZE(t))
 
+/* x1 slot CBI + x1 slot power sequence: 2. power=on */
+static const struct pad_config pre_mem_x1slot_pads[] = {
+	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
+	PAD_CFG_GPO(GPP_A08, 1, DEEP),
+};
+
+/* x1 slot power sequence: 3. PERST# = de-assert; */
+static const struct pad_config x1slot_pads[] = {
+	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
+	PAD_CFG_GPO(GPP_A08, 1, DEEP),
+	/* GPP_F22:     X1_DT_PCIE_RST_N */
+	PAD_CFG_GPO(GPP_F22, 1, DEEP),
+	/* GPP_C07:     X1_SLOT_WAKE_N */
+	PAD_CFG_GPI_SCI_LOW(GPP_C07, NONE, DEEP, LEVEL),
+};
+
+static const struct pad_config x1slot_clkreq_pads[] = {
+	/* x1 slot power sequence: 3a. Clkreq = enable for AIC with clkreq support */
+	/* GPP_C10:     CLKREQ1_X1_GEN4_DT_CEM_SLOT_N */
+	PAD_CFG_NF(GPP_C10, NONE, DEEP, NF1),
+};
+
+static const struct pad_config x1slot_disable_pads[] = {
+	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
+	PAD_CFG_GPO(GPP_A08, 0, DEEP),
+	/* GPP_F22:     X1_DT_PCIE_RST_N */
+	PAD_CFG_GPO(GPP_F22, 1, DEEP),
+	/* GPP_C07:     T4 board: X1_SLOT_WAKE_N */
+	PAD_NC(GPP_C07, NONE),
+};
+
 static const struct pad_config pre_mem_gen4_ssd_pads[] = {
 	/* GPP_B10:     SOC_M2_GEN4_SSD3_PWREN */
 	PAD_CFG_GPO(GPP_B10, 1, DEEP),
@@ -368,6 +399,9 @@ void fw_config_configure_pre_mem_gpio(void)
 	} else if (fw_config_probe(FW_CONFIG(STORAGE_TYPE, STORAGE_TYPE_NVME_GEN5))) {
 		GPIO_CONFIGURE_PADS(pre_mem_gen5_ssd_pads);
 	}
+
+	if (fw_config_probe(FW_CONFIG(SD_CARD_CONTROLLER, SD_CONTROLLER_PRESENT)))
+		GPIO_CONFIGURE_PADS(pre_mem_x1slot_pads);
 }
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
@@ -448,5 +482,12 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	} else {
 		GPIO_PADBASED_OVERRIDE(padbased_table, cnvi_disable_pads);
 		GPIO_PADBASED_OVERRIDE(padbased_table, pcie_wlan_disable_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(SD_CARD_CONTROLLER, SD_CONTROLLER_PRESENT))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_clkreq_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_disable_pads);
 	}
 }

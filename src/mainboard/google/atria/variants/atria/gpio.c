@@ -25,7 +25,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_A07:     SECURE_CAM_SW_R */
 	PAD_CFG_GPI_TRIG_OWN(GPP_A07, NONE, PLTRST, LEVEL, ACPI),
 	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
-	PAD_CFG_GPO(GPP_A08, 1, DEEP),
+	/* NOTE: x1 slot power will be updated according to SD_CARD_CONTROLLER fw_config */
 	/* GPP_A09:     M.2_WWAN_FCP_OFF_N */
 	PAD_CFG_GPO(GPP_A09, 1, PLTRST),
 	/* GPP_A10:     WLAN_RST_N */
@@ -105,13 +105,13 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C06:     WIFI_WAKE_N */
 	PAD_CFG_GPI_SCI_LOW(GPP_C06, NONE, DEEP, LEVEL),
 	/* GPP_C07:     X1_SLOT_WAKE_N */
-	PAD_CFG_GPI_SCI_LOW(GPP_C07, NONE, DEEP, LEVEL),
+	/* NOTE: x1 slot wake will be overridden according to SD_CARD_CONTROLLER fw_config */
 	/* GPP_C08:     CRD2_PWREN */
 	PAD_CFG_GPO(GPP_C08, 0, DEEP),
 	/* GPP_C09:     SOC_CLKREQ0_GEN5_SSD2_N */
 	PAD_CFG_NF(GPP_C09, NONE, DEEP, NF1),
 	/* GPP_C10:     CLKREQ1_X1_GEN4_DT_CEM_SLOT_N */
-	PAD_CFG_NF(GPP_C10, NONE, DEEP, NF1),
+	/* NOTE: x1 slot clkreq will be overridden according to SD_CARD_CONTROLLER fw_config */
 	/* GPP_C11:     CLKREQ2_X1_GEN4_M2_WLAN_N */
 	PAD_CFG_NF(GPP_C11, NONE, DEEP, NF1),
 	/* GPP_C12:     CLKREQ3_X1_GEN4_M2_WWAN_N */
@@ -268,7 +268,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F19:     GPP_PRIVACY_LED_CAM2 */
 	PAD_CFG_GPO(GPP_F19, 0, PLTRST),
 	/* GPP_F22:     X1_DT_PCIE_RST_N */
-	PAD_CFG_GPO(GPP_F22, 1, PLTRST),
+	/* NOTE: X1 PERST will follow power sequence according to SD_CARD_CONTROLLER fw_config */
 	/* GPP_F23:     ISH_GP_9A; NOTE: ISH will handle SMC_LID; not AP */
 	PAD_CFG_NF(GPP_F23, NONE, DEEP, NF8),
 
@@ -371,6 +371,14 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H07, NONE, DEEP, NF1),
 	/* GPP_F16:     SPI_TPM_INT_N */
 	PAD_CFG_GPI_APIC(GPP_F16, NONE, PLTRST, LEVEL, INVERT),
+
+	/* x1 slot power sequence: 1. no clkreq; PERST=asserted; power=off */
+	/* GPP_C10:     CLKREQ1_X1_GEN4_DT_CEM_SLOT_N */
+	PAD_CFG_GPI(GPP_C10, NONE, DEEP),
+	/* GPP_F22:     X1_DT_PCIE_RST_N */
+	PAD_CFG_GPO(GPP_F22, 0, DEEP),
+	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
+	PAD_CFG_GPO(GPP_A08, 0, DEEP),
 
 	/* Put all storage media in reset and then disable power. */
 	/* GPP_A11:     SOC_M2_GEN4_SSD3_RESET_N */

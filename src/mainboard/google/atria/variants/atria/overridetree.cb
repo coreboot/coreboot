@@ -369,6 +369,24 @@ chip soc/intel/novalake
 			end
 		end
 
+		device ref pcie_rp2 on
+			probe SD_CARD_CONTROLLER SD_CONTROLLER_PRESENT
+			# Enable PCH PCIE x1 slot using CLK 1
+			register "pcie_rp[PCIE_RP(2)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A08)"
+				register "enable_delay_ms" = "100"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F22)"
+				register "reset_delay_ms" = "20"
+				register "srcclk_pin" = "1"
+				device generic 0 on end
+			end
+		end # PCIE x1 slot
+
 		device ref pcie_rp3 on
 			probe WIFI_INTERFACE WIFI_INTERFACE_PCIE
 			register "pcie_rp[PCIE_RP(3)]" = "{

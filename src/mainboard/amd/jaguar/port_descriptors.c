@@ -36,8 +36,8 @@ bool devtree_xgbe_dev_enabled(uint8_t port_num);
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133},	\
 }
 
-/* x4 Eval slot / PCIe SLOT-0 (CLK_REQ4) */
-#define jaguar_mxm_v1_dxio_descriptor {			\
+/* x4 Eval slot / PCIe SLOT-0 */
+#define jaguar_mxm_v1_dxio_descriptor {				\
 	.engine_type = UNUSED_ENGINE,				\
 	.port_present = false,					\
 	.start_logical_lane = 16,				\
@@ -46,9 +46,9 @@ bool devtree_xgbe_dev_enabled(uint8_t port_num);
 	.function_number = 2,					\
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,				\
-	.link_aspm = ASPM_L1,					\
+	.link_aspm = ASPM_L0s,					\
 	.link_hotplug = HOTPLUG_DISABLED,			\
-	.clk_req = CLK_REQ4,					\
+	.clk_req = CLK_DISABLE,					\
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133},	\
 }
 
@@ -247,6 +247,9 @@ void mainboard_get_dxio_ddi_descriptors(
 		mxm0->port_present = true;
 		mxm0->start_logical_lane = 12;
 		mxm0->end_logical_lane = 15;
+		/* #CLK_REQ is not shared between two PCIe devices */
+		mxm0->link_aspm = ASPM_DISABLED;
+		mxm0->clk_req = ASPM_L0s;
 
 		mxm1->engine_type = PCIE_ENGINE;
 		mxm1->port_present = true;

@@ -122,6 +122,8 @@ static void handle_low_power_charging_boot(void)
 
 static void mainboard_init(void *chip_info)
 {
+	configure_debug_access_port();
+
 	enum boot_mode_t boot_mode = get_boot_mode();
 
 	/* Do early display init for low/off-mode charging */

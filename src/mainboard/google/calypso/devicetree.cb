@@ -12,6 +12,8 @@ end
 chip soc/qualcomm/calypso
 	device cpu_cluster 0 on end
 	device domain 0 on
+		probe STORAGE_TYPE STORAGE_TYPE_NVME
+		probe STORAGE_TYPE STORAGE_TYPE_UNKNOWN
 		device pci 00.0 on end # Root Bridge
 	end
 end

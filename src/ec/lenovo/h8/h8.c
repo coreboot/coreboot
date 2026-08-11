@@ -249,12 +249,69 @@ struct device_operations h8_dev_ops = {
 
 void __weak h8_mb_init(void){ /* NOOP */ }
 
+static struct ec_lenovo_h8_config *h8_chip_config;
+
+/* Determine keyboard backlight support from devicetree + EC query */
+bool h8_kb_backlight_supported(const struct ec_lenovo_h8_config *conf)
+{
+	if (!conf || !conf->has_keyboard_backlight)
+		return false;
+
+	return ec_read(0x34) & 0x40;
+}
+
+u8 h8_illumination_default(void)
+{
+	struct ec_lenovo_h8_config *conf = h8_get_config();
+	const bool has_thinklight = conf && conf->has_thinklight;
+	const bool has_kb_backlight = h8_kb_backlight_supported(conf);
+
+	if (has_thinklight && has_kb_backlight)
+		return KIC_BOTH;
+	if (has_thinklight)
+		return KIC_THINKLIGHT;
+	if (has_kb_backlight)
+		return KIC_KEYBOARD;
+
+	return KIC_NONE;
+}
+
+/* User-set illumination option */
+static u8 h8_illumination_option(void)
+{
+	return get_uint_option("backlight", h8_illumination_default()) & 0x3;
+}
+
+bool h8_thinklight_active(const struct device *dev)
+{
+	const struct ec_lenovo_h8_config *conf = dev->chip_info;
+
+	if (!conf || !conf->has_thinklight)
+		return false;
+
+	u8 backlight = h8_illumination_option();
+	return backlight == KIC_BOTH || backlight == KIC_THINKLIGHT;
+}
+
+bool h8_kb_backlight_active(const struct device *dev)
+{
+	const struct ec_lenovo_h8_config *conf = dev->chip_info;
+
+	if (!h8_kb_backlight_supported(conf))
+		return false;
+
+	u8 backlight = h8_illumination_option();
+	return backlight == KIC_BOTH || backlight == KIC_KEYBOARD;
+}
+
 static void h8_enable(struct device *dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
 	u8 val;
 	u8 backlight;
 	u8 beepmask0, beepmask1, reg8;
+
+	h8_chip_config = conf;
 
 	dev->ops = &h8_dev_ops;
 
@@ -267,16 +324,8 @@ static void h8_enable(struct device *dev)
 	reg8 |= H8_CONFIG0_TC_ENABLE;
 	ec_write(H8_CONFIG0, reg8);
 
-	/* Default to both keyboard illumination devices */
-	backlight = get_uint_option("backlight", 0) & 0x3;
-
-	/*
-	 * Disable keyboard backlight if:
-	 *   - Non-backlit hardware is physically installed -or-
-	 *   - "Thinklight only" or "None" is selected as keyboard illumination
-	 */
-	if (conf->has_keyboard_backlight)
-		conf->has_keyboard_backlight = (ec_read(0x34) & 0x40) && !(backlight & 0x2);
+	/* Program illumination mode from user option */
+	backlight = h8_illumination_option();
 
 	reg8 = conf->config1;
 	if (conf->has_thinklight || conf->has_keyboard_backlight)
@@ -374,3 +423,8 @@ struct chip_operations ec_lenovo_h8_ops = {
 	.name = "Lenovo H8 EC",
 	.enable_dev = h8_enable,
 };
+
+struct ec_lenovo_h8_config *h8_get_config(void)
+{
+	return h8_chip_config;
+}

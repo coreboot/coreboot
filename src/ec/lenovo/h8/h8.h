@@ -12,6 +12,13 @@ enum usb_always_on {
 	UAO_AC_ONLY = 2
 };
 
+enum keyboard_illumination_control {
+	KIC_BOTH	= 0,
+	KIC_KEYBOARD	= 1,
+	KIC_THINKLIGHT	= 2,
+	KIC_NONE	= 3
+};
+
 void h8_trackpoint_enable(int on);
 void h8_wlan_enable(int on);
 void h8_set_audio_mute(int on);
@@ -33,7 +40,14 @@ void h8_wwan_enable(int on);
 bool h8_wwan_nv_enable(void);
 bool h8_has_wwan(const struct device *dev);
 
+struct ec_lenovo_h8_config;
+
 void h8_ssdt_generator(const struct device *dev);
+struct ec_lenovo_h8_config *h8_get_config(void);
+bool h8_kb_backlight_supported(const struct ec_lenovo_h8_config *conf);
+u8 h8_illumination_default(void);
+bool h8_thinklight_active(const struct device *dev);
+bool h8_kb_backlight_active(const struct device *dev);
 /*
  * boards needing specific h8-related inits could override it
  */

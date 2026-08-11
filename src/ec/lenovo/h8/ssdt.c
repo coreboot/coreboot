@@ -37,9 +37,9 @@ void h8_ssdt_generator(const struct device *dev)
 	/* Used by thinkpad_acpi */
 	acpigen_write_name_byte("HBDC", h8_has_bdc(dev) ? ONE_OP : ZERO_OP);
 	acpigen_write_name_byte("HWAN", h8_has_wwan(dev) ? ONE_OP : ZERO_OP);
-	acpigen_write_name_byte("HKLT", (conf && conf->has_thinklight) ?
+	acpigen_write_name_byte("HKLT", h8_thinklight_active(dev) ?
 				ONE_OP : ZERO_OP);
-	acpigen_write_name_byte("HKBL", (conf && conf->has_keyboard_backlight) ?
+	acpigen_write_name_byte("HKBL", h8_kb_backlight_active(dev) ?
 				ONE_OP : ZERO_OP);
 	acpigen_write_name_byte("HUWB", (conf && conf->has_uwb) ?
 				ONE_OP : ZERO_OP);

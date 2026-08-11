@@ -42,5 +42,6 @@ void launch_charger_applet(void);
 bool platform_get_battery_soc_information(uint32_t *batt_pct);
 void enable_fast_battery_charging(void);
 void configure_dead_battery_boot(void);
+bool mainboard_nvme_present(void);
 
 #endif /* MAINBOARD_GOOGLE_MENSA_BOARD_H */

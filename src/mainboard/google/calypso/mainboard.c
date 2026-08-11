@@ -26,7 +26,7 @@
 
 bool mainboard_needs_pcie_init(void)
 {
-	return true;
+	return mainboard_nvme_present();
 }
 
 static void trigger_critical_battery_shutdown(void)

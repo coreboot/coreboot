@@ -147,15 +147,17 @@ static void mainboard_setup_peripherals_early(void)
 /* Perform romstage late hardware initialization */
 static void mainboard_setup_peripherals_late(int mode)
 {
+	bool nvme_present = mainboard_nvme_present();
 	/*
 	 * Power on NVMe early so that the DDR init and other operations
 	 * that follow provide an organic >50ms delay before PCIe PERST
 	 * de-assertion in platform_romstage_postram(), satisfying the
 	 * NVMe spec requirement without a static mdelay().
 	 */
-	gcom_pcie_power_on_ep();
+	if (nvme_present)
+		gcom_pcie_power_on_ep();
 
-	if (!chipset_dload_mode_active) {
+	if (!chipset_dload_mode_active && nvme_present) {
 		/* Perform PCIe setup early in async mode if supported to save 100ms */
 		if (mode == LB_BOOT_MODE_NORMAL || mode == LB_BOOT_MODE_NO_BATTERY)
 			qcom_setup_pcie_host(NULL);

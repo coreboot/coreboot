@@ -10,6 +10,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <elog.h>
 #include <reset.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/aop_common.h>
 #include <soc/pcie.h>
 #include <soc/pmic.h>
@@ -44,6 +45,15 @@ static bool is_off_mode(void)
 	return is_pon_on_ac();
 }
 
+static bool ap_running_rw(void)
+{
+	if (!CONFIG(VBOOT))
+		return false;
+
+	/* In coreboot, all non-recovery boot runs from RW */
+	return !vboot_recovery_mode_enabled();
+}
+
 static enum boot_mode_t init_boot_mode(void)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
@@ -55,7 +65,7 @@ static enum boot_mode_t init_boot_mode(void)
 		boot_mode_new = LB_BOOT_MODE_NO_BATTERY;
 	} else if (google_chromeec_is_rtc_event()) {
 		boot_mode_new = LB_BOOT_MODE_RTC_WAKE;
-	} else if (is_off_mode()) {
+	} else if (is_off_mode() && ap_running_rw() && !google_ec_running_ro()) {
 		boot_mode_new = LB_BOOT_MODE_OFFMODE_CHARGING;
 	} else if (battery_below_threshold) {
 		if (google_chromeec_is_charger_present())

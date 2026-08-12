@@ -313,6 +313,7 @@ smm-$(CONFIG_ARCH_RAMSTAGE_X86_64) += memmove_64.S
 smm-y += memset.c
 smm-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 smm-$(CONFIG_DEBUG_NULL_DEREF_BREAKPOINTS_IN_ALL_STAGES) += null_breakpoint.c
+smm-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 smm-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/smihandler.c)
 

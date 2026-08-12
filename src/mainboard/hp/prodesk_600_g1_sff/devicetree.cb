@@ -38,7 +38,7 @@ chip northbridge/intel/haswell
 			device pci 1f.0 on	# LPC bridge
 				chip superio/common
 					device pnp 2e.ff on # passes SIO base addr to SSDT gen
-						chip superio/nuvoton/npcd378
+						chip superio/nuvoton/npcd378 # NPCD379 onboard
 							device pnp 2e.0 off end		# Floppy
 							device pnp 2e.1 on		# Parallel port
 								# global
@@ -93,6 +93,7 @@ chip northbridge/intel/haswell
 							device pnp 2e.7 on		#  WDT ?
 								io 0x60 = 0x0a20
 							end
+							# Should stay off or PSU FAN stops working, c.f. BUG:601
 							device pnp 2e.8 off		# HWM
 								io 0x60 = 0x800
 								# IOBASE[0h:feh] HWM page

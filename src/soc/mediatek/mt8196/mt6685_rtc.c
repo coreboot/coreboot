@@ -594,6 +594,9 @@ static void rtc_get_tick(struct rtc_time *tm)
 	rtc_read(RTC_TC_DOM, &rdata);
 	tm->mday = rdata;
 
+	rtc_read(RTC_TC_DOW, &rdata);
+	tm->wday = rdata;
+
 	rtc_read(RTC_TC_MTH, &rdata);
 	tm->mon = rdata & RTC_TC_MTH_MASK;
 

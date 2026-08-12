@@ -171,6 +171,24 @@ static void indicate_charging_status(void)
 	clear_ac_unplug_event();
 }
 
+/*
+ * Signals the Chrome EC to register the final off-mode heartbeat
+ * and initiates the AP power-off sequence.
+ *
+ * Input: bool skip_heartbeat - if true then wake immediately after shutdown
+ *                              depending upon charger attached state.
+ */
+static void chromeec_finalize_and_poweroff(bool skip_heartbeat)
+{
+	/* Turn on the lightbar, as the charging applet may have turned it off */
+	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
+		google_chromeec_lightbar_on();
+
+	if (!skip_heartbeat)
+		google_chromeec_offmode_heartbeat();
+	google_chromeec_ap_poweroff();
+}
+
 void launch_charger_applet(void)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
@@ -194,9 +212,9 @@ void launch_charger_applet(void)
 		if (detect_ac_unplug_event()) {
 			printk(BIOS_INFO, "Issuing power-off due to changer disconnection.\n");
 			indicate_charging_status();
-			google_chromeec_offmode_heartbeat();
-			google_chromeec_ap_poweroff();
+			chromeec_finalize_and_poweroff(false);
 		}
+
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_WARNING, "Charging not enabled %ld ms. Abort.\n",
 					charging_enable_timeout_ms);
@@ -208,8 +226,7 @@ void launch_charger_applet(void)
 			printk(BIOS_INFO, "Issuing power-off.\n");
 			if (detect_ac_unplug_event())
 				indicate_charging_status();
-			google_chromeec_offmode_heartbeat();
-			google_chromeec_ap_poweroff();
+			chromeec_finalize_and_poweroff(false);
 		}
 		mdelay(200);
 	}
@@ -251,8 +268,7 @@ void launch_charger_applet(void)
 			printk(BIOS_INFO, "Issuing power-off due to change in charging state.\n");
 			if (detect_ac_unplug_event())
 				indicate_charging_status();
-			google_chromeec_offmode_heartbeat();
-			google_chromeec_ap_poweroff();
+			chromeec_finalize_and_poweroff(true);
 		}
 
 		/*

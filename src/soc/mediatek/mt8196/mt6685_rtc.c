@@ -208,9 +208,8 @@ static bool rtc_hw_init(void)
 
 	stopwatch_init_usecs_expire(&sw, BBPU_RELOAD_TIMEOUT_US);
 
-	rtc_clrset_trigger(RTC_BBPU, 0,
-			   RTC_BBPU_KEY | RTC_BBPU_RESET_ALARM |
-			   (RTC_BBPU_RESET_SPAR & (~RTC_BBPU_SPAR_SW)));
+	rtc_clrset_trigger(RTC_BBPU, RTC_BBPU_SPAR_SW,
+			   RTC_BBPU_KEY | RTC_BBPU_RESET_ALARM | RTC_BBPU_RESET_SPAR);
 
 	do {
 		rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);

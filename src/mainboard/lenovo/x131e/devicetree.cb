@@ -85,7 +85,7 @@ chip northbridge/intel/sandybridge
 				end
 
 				chip ec/lenovo/h8
-					device pnp ff.1 on # dummy
+					device pnp 62.0 alias lenovo_ec on
 						io 0x60 = 0x62
 						io 0x62 = 0x66
 						io 0x64 = 0x1600

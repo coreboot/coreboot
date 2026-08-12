@@ -23,7 +23,7 @@ chip northbridge/intel/sandybridge
 			device ref pcie_rp5 on end # Thunderbolt controller
 			device ref lpc on
 				chip ec/lenovo/h8
-					device pnp ff.2 on end # dummy
+					device ref lenovo_ec on end
 					register "has_thinklight" = "true"
 					register "has_keyboard_backlight" = "true"
 					register "bdc_gpio_num" = "54"

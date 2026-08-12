@@ -27,7 +27,7 @@ chip northbridge/intel/sandybridge
 					register "eventa_enable" = "0x01"
 					register "has_thinklight" = "true"
 					register "has_keyboard_backlight" = "true"
-					device pnp ff.2 on end
+					device ref lenovo_ec on end
 				end
 			end
 		end

@@ -41,7 +41,7 @@ chip northbridge/intel/sandybridge
 					register "event5_enable" = "0x3c"
 					register "evente_enable" = "0x1d"
 					register "has_keyboard_backlight" = "1"
-					device pnp ff.2 on end
+					device ref lenovo_ec on end
 				end
 			end
 		end

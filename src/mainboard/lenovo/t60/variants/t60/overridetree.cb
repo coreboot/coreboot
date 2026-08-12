@@ -28,7 +28,7 @@ chip northbridge/intel/i945
 				chip ec/lenovo/h8
 					register "bdc_gpio_num" = "7"
 					register "bdc_gpio_lvl" = "0"
-					device pnp ff.2 on end
+					device ref lenovo_ec on end
 				end
 				chip superio/nsc/pc87384
 					device pnp 2e.2 off # Serial Port / IR

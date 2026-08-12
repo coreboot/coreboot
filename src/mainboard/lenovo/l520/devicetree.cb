@@ -81,7 +81,7 @@ chip northbridge/intel/sandybridge
 				chip ec/lenovo/pmh7
 					register "backlight_enable" = "true"
 					register "dock_event_enable" = "true"
-					device pnp ff.1 on end # dummy
+					device pnp 15e0.0 alias pmh7 on end
 				end
 				chip ec/lenovo/h8
 					register "config0" = "0xa7"
@@ -106,7 +106,7 @@ chip northbridge/intel/sandybridge
 					register "eventd_enable" = "0xff"
 					register "evente_enable" = "0xff"
 
-					device pnp ff.2 on # dummy
+					device pnp 62.0 alias lenovo_ec on
 						io 0x60 = 0x62
 						io 0x62 = 0x66
 						io 0x64 = 0x1600

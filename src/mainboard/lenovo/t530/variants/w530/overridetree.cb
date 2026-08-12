@@ -31,7 +31,7 @@ chip northbridge/intel/sandybridge
 			end
 			device ref lpc on
 				chip ec/lenovo/h8
-					device pnp ff.2 on end # dummy
+					device ref lenovo_ec on end
 					register "config1" = "0x01"
 					register "config3" = "0xe2"
 				end

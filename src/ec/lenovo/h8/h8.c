@@ -94,7 +94,7 @@ static void h8_f1_to_f12_as_primary(int on)
 	}
 }
 
-static u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
+u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
 {
 	static char str[16 + 1]; /* 16 ASCII chars + \0 */
 	u8 i, c;

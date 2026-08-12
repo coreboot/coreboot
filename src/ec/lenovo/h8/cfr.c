@@ -6,6 +6,24 @@
 #include "h8.h"
 #include "chip.h"
 
+static void update_version(struct sm_object *new)
+{
+	char *ecfw = malloc(17);
+	if (!ecfw)
+		return;
+	int len = h8_build_id_and_function_spec_version(ecfw, 16);
+	ecfw[len] = 0;
+
+	new->sm_varchar.default_value = ecfw;
+}
+
+static const struct sm_object fw_version = SM_DECLARE_VARCHAR({
+	.opt_name	= "ec_version",
+	.ui_name	= "Version",
+	.ui_helptext	= "The EC firmware version",
+	.default_value	= "Unknown",
+}, WITH_CALLBACK(update_version));
+
 /* Bluetooth */
 static void update_bluetooth(struct sm_object *new)
 {
@@ -235,6 +253,7 @@ __cfr_form static struct sm_obj_form cfr_power = {
 __cfr_form static struct sm_obj_form cfr_devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
+		&fw_version,
 		&bluetooth,
 		&wlan,
 		&wwan,

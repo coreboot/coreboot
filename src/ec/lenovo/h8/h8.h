@@ -40,6 +40,7 @@ void h8_wwan_enable(int on);
 bool h8_wwan_nv_enable(void);
 bool h8_has_wwan(void);
 
+u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len);
 void h8_ssdt_generator(const struct device *dev);
 bool h8_kb_backlight_supported(void);
 bool h8_has_thinklight(void);

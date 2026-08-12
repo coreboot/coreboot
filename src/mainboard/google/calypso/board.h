@@ -44,5 +44,6 @@ void enable_fast_battery_charging(void);
 void init_sdam_config(void);
 void configure_dead_battery_boot(void);
 bool mainboard_nvme_present(void);
+void clear_pending_ec_events(void);
 
 #endif /* MAINBOARD_GOOGLE_MENSA_BOARD_H */

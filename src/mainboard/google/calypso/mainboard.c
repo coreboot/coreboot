@@ -140,7 +140,7 @@ static void mainboard_init(void *chip_info)
 	 * Low-battery boot indicator is done. Therefore, power off if battery
 	 * is critical and not charging
 	 */
-	if (get_boot_mode() == LB_BOOT_MODE_LOW_BATTERY)
+	if (boot_mode == LB_BOOT_MODE_LOW_BATTERY)
 		trigger_critical_battery_shutdown();
 
 	load_qc_se_firmware_early();

@@ -181,7 +181,7 @@ static void clear_ac_unplug_event(void)
 	google_chromeec_clear_events_b(ac_unplug_event);
 }
 
-static int detect_ac_unplug_event(void)
+int detect_ac_unplug_event(void)
 {
 	const uint64_t ac_unplug_event_mask =
 		EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED);
@@ -211,7 +211,7 @@ void clear_pending_ec_events(void)
  * Input: bool skip_heartbeat - if true then wake immediately after shutdown
  *                              depending upon charger attached state.
  */
-static void chromeec_finalize_and_poweroff(bool skip_heartbeat)
+void chromeec_finalize_and_poweroff(bool skip_heartbeat)
 {
 	smb_enter_low_power_psm_at_poweroff();
 

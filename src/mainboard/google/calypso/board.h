@@ -45,5 +45,19 @@ void init_sdam_config(void);
 void configure_dead_battery_boot(void);
 bool mainboard_nvme_present(void);
 void clear_pending_ec_events(void);
+/*
+ * Detect an AC unplug event
+ *
+ * @return 1 if AC is unplugged, 0 otherwise.
+ */
+int detect_ac_unplug_event(void);
+/*
+ * Signals the Chrome EC to register the final off-mode heartbeat
+ * and initiates the AP power-off sequence.
+ *
+ * Input: bool skip_heartbeat - if true then wake immediately after shutdown
+ *                              depending upon charger attached state.
+ */
+void chromeec_finalize_and_poweroff(bool skip_heartbeat);
 
 #endif /* MAINBOARD_GOOGLE_MENSA_BOARD_H */

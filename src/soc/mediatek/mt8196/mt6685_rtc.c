@@ -244,7 +244,7 @@ static bool rtc_lpd_init(void)
 	if (!rtc_clrset_trigger(RTC_CON, RTC_CON_LPRST, 0))
 		return false;
 
-	if (!rtc_clrset_trigger(RTC_CON, RTC_CON_LPRST, RTC_XOSC32_LPEN))
+	if (!rtc_clrset_trigger(RTC_CON, RTC_CON_LPRST, RTC_EOSC32_LPEN))
 		return false;
 
 	if (!rtc_clrset_trigger(RTC_CON, 0, RTC_CON_LPRST))

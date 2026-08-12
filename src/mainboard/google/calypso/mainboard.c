@@ -106,14 +106,6 @@ static void handle_low_power_charging_boot(void)
 	/* FIXME: Add fast charging support */
 	enable_slow_battery_charging();
 
-	/*
-	 * Disable the lightbar for Low-Battery or Off-Mode charging sequences.
-	 * This maintains visual consistency between the built-in display
-	 * indicators and the external lightbar.
-	 */
-	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
-		google_chromeec_lightbar_off();
-
 	/* Placeholder for display stop before launching charging applet */
 
 	/* Boot to charging applet; if this fails, the applet should trigger a reset */

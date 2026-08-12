@@ -205,22 +205,6 @@ void clear_pending_ec_events(void)
 }
 
 /*
- * Provides visual feedback via the LEDs and clears the AC unplug
- * event to acknowledge the transition into a charging state.
- */
-static void indicate_charging_status(void)
-{
-	/* Turn on LEDs to alert user of power state change */
-	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL)) {
-		google_chromeec_lightbar_on();
-		mdelay(DELAY_CHARGING_ACTIVE_LB_MS);
-	}
-
-	/* Clear the event to prevent re-triggering in the next iteration */
-	clear_ac_unplug_event();
-}
-
-/*
  * Signals the Chrome EC to register the final off-mode heartbeat
  * and initiates the AP power-off sequence.
  *
@@ -229,13 +213,11 @@ static void indicate_charging_status(void)
  */
 static void chromeec_finalize_and_poweroff(bool skip_heartbeat)
 {
-	/* Turn on the lightbar, as the charging applet may have turned it off */
-	if (CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
-		google_chromeec_lightbar_on();
-
 	smb_enter_low_power_psm_at_poweroff();
+
 	if (!skip_heartbeat)
 		google_chromeec_offmode_heartbeat();
+
 	google_chromeec_ap_poweroff();
 }
 
@@ -263,7 +245,7 @@ void launch_charger_applet(void)
 		/* Relying on debounce logic before bailing out */
 		if (detect_ac_unplug_event()) {
 			printk(BIOS_INFO, "Issuing power-off due to changer disconnection.\n");
-			indicate_charging_status();
+			clear_ac_unplug_event();
 			chromeec_finalize_and_poweroff(false);
 		}
 
@@ -277,7 +259,7 @@ void launch_charger_applet(void)
 			 */
 			printk(BIOS_INFO, "Issuing power-off.\n");
 			if (detect_ac_unplug_event())
-				indicate_charging_status();
+				clear_ac_unplug_event();
 			chromeec_finalize_and_poweroff(false);
 		}
 		mdelay(200);
@@ -319,7 +301,7 @@ void launch_charger_applet(void)
 		if (!get_battery_icurr_ma()) {
 			printk(BIOS_INFO, "Issuing power-off due to change in charging state.\n");
 			if (detect_ac_unplug_event())
-				indicate_charging_status();
+				clear_ac_unplug_event();
 			chromeec_finalize_and_poweroff(true);
 		}
 

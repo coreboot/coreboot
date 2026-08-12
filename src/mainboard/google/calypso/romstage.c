@@ -79,18 +79,6 @@ static enum boot_mode_t init_boot_mode(void)
 	return boot_mode_new;
 }
 
-static void platform_init_lightbar(void)
-{
-	if (!CONFIG(EC_GOOGLE_CHROMEEC_LED_CONTROL))
-		return;
-
-	/*
-	 * Early initialization of the Chrome EC lightbar.
-	 * Ensures visual continuity if the AP firmware disabled the lightbar
-	 * in a previous boot without a subsequent EC reset.
-	 */
-	google_chromeec_lightbar_on();
-}
 /*
  * Update and cache battery status from the EC.
  * This should be called once, early in the boot process,
@@ -146,8 +134,6 @@ static void update_battery_status(void)
 /* Perform romstage early hardware initialization */
 static void mainboard_setup_peripherals_early(void)
 {
-	platform_init_lightbar();
-
 	update_battery_status();
 
 	/* Watchdog must be checked first to avoid erasing watchdog info later. */

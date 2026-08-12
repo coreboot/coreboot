@@ -237,6 +237,8 @@ void platform_romstage_main(void)
 	if (battery_needs_recovery || battery_is_cutoff)
 		handle_battery_shipping_recovery(battery_needs_recovery);
 
+	init_sdam_config();
+
 	/* Underlying PMIC registers are accessible only at this point */
 	boot_mode = init_boot_mode();
 

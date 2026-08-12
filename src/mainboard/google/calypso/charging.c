@@ -63,6 +63,26 @@ enum charging_status {
 	CHRG_ENABLE,
 };
 
+static struct sdam_config {
+uint32_t addr;
+uint8_t mask;
+uint8_t value;
+} default_sdam_config[] = {
+	{SDAM15_MEM_061_ADDR, DEAD_BATT_STS, 0},
+};
+
+/*
+ * Initialize SDAM to default values at boot
+ */
+void init_sdam_config(void)
+{
+	printk(BIOS_INFO, "Initializing SDAM config at boot\n");
+	size_t count = ARRAY_SIZE(default_sdam_config);
+	for (size_t i = 0; i < count; i++)
+		spmi_rmw8(default_sdam_config[i].addr, default_sdam_config[i].mask,
+				default_sdam_config[i].value);
+}
+
 static int get_battery_icurr_ma(void)
 {
 	const uint32_t smb_regs[] = {

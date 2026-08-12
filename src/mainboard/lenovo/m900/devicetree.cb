@@ -118,8 +118,6 @@ chip soc/intel/skylake
 		device ref lpc_espi on
 			register "gen1_dec" = "LPC_IO(0x200, 0x100)"
 			register "gen2_dec" = "LPC_IO(0xa00, 0x40)"
-			register "gen3_dec" = "LPC_IO(0x68, 0x8)"
-			register "gen4_dec" = "LPC_IO(0x80, 0x10)"
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 			# Actually a NCT6685D, but the 6687D seems similar enough

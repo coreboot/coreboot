@@ -125,7 +125,7 @@ u16 rtc_measure_frequency_meter(u16 measure_src, u16 window_size)
 			 RG_FQMTR_DCXO26M_MASK, RG_FQMTR_DCXO26M_SHIFT);
 
 	config_interface(RG_FQMTR_TCKSEL, 0,
-			 RG_FQMTR_DCXO26M_MASK, RG_FQMTR_DCXO26M_SHIFT);
+			 RG_FQMTR_TCKSEL_MASK, RG_FQMTR_TCKSEL_SHIFT);
 	udelay(100);
 
 	/* Disable FQMTR */

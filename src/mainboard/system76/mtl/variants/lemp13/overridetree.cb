@@ -41,16 +41,77 @@ chip soc/intel/meteorlake
 		device ref tcss_dma0 on end
 		device ref xhci on
 			register "usb2_ports" = "{
-				[0] = USB2_PORT_MID(OC_SKIP),		/* TODO: USB TYPEA port1 GEN2 */
-				[1] = USB2_PORT_MID(OC_SKIP),		/* TODO: USB TYPEA port2 GEN1 */
-				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* TODO: TBT TYPEC USB2.0 */
-				[4] = USB2_PORT_TYPE_C(OC_SKIP),	/* TODO: TYPEC USB2.0 */
+				[0] = USB2_PORT_MID(OC_SKIP),		/* Type-A 3.2 Gen 2 */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* Type-A 3.2 Gen 1 */
+				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* Thunderbolt */
+				[3] = USB2_PORT_MID(OC_SKIP),		/* WWAN */
+				[4] = USB2_PORT_TYPE_C(OC_SKIP),	/* Type-C 3.2 Gen 2 */
 				[6] = USB2_PORT_MID(OC_SKIP),		/* Camera */
 				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
 			}"
 			register "usb3_ports" = "{
-				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* TODO: USB port1 GEN1 */
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A 3.2 Gen 1 */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* WWAN */
 			}"
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Port 1""
+						register "type" = "UPC_TYPE_A"
+						#register "use_custom_pld" = "true"
+						#register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, LEFT, ACPI_PLD_GROUP(, 4))"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Port 2""
+						register "type" = "UPC_TYPE_A"
+						#register "use_custom_pld" = "true"
+						#register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, CENTER, ACPI_PLD_GROUP(, 2))"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Thunderbolt""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						#register "use_custom_pld" = "true"
+						#register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(, 5))"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 WWAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Port 5""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						#register "use_custom_pld" = "true"
+						#register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(, 2))"
+						device ref usb2_port5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Port 1""
+						register "type" = "UPC_TYPE_USB3_A"
+						#register "use_custom_pld" = "true"
+						#register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, CENTER, ACPI_PLD_GROUP(, 2))"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 WWAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb3_port2 on end
+					end
+				end
+			end
 		end
 
 		device ref i2c0 on

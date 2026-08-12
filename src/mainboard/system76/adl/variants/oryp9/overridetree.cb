@@ -69,40 +69,39 @@ chip soc/intel/alderlake
 		end
 		device ref xhci on
 			register "usb2_ports" = "{
-				[0] = USB2_PORT_TYPE_C(OC_SKIP),	/* TYPEC1 (USB 3.2 Gen2) */
+				[0] = USB2_PORT_TYPE_C(OC_SKIP),	/* Type-C 3.2 Gen 2 */
 				[1] = USB2_PORT_MID(OC_SKIP),		/* J_USB2 */
 				[2] = USB2_PORT_MID(OC_SKIP),		/* J_USB1 */
-				[5] = USB2_PORT_MID(OC_SKIP),		/* Per-KB */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* KBLED */
 				[6] = USB2_PORT_MID(OC_SKIP),		/* Fingerprint */
 				[7] = USB2_PORT_MID(OC_SKIP),		/* Camera */
-				[8] = USB2_PORT_TYPE_C(OC_SKIP),	/* TYPEC2 (Thunderbolt) */
+				[8] = USB2_PORT_TYPE_C(OC_SKIP),	/* Thunderbolt */
 				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
 			}"
 			register "usb3_ports" = "{
-				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPEC1 (USB 3.2 Gen2) */
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-C 3.2 Gen 2 */
 				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_USB2 */
 				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_USB1 */
 			}"
-			# ACPI
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 TYPEC1""
+						register "desc" = ""USB2 Port 1""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 J_USB2""
+						register "desc" = ""USB2 Port 2""
 						register "type" = "UPC_TYPE_A"
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 J_USB1""
+						register "desc" = ""USB2 Port 3""
 						register "type" = "UPC_TYPE_A"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Per-KB""
+						register "desc" = ""USB2 KBLED""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port6 on end
 					end
@@ -117,7 +116,7 @@ chip soc/intel/alderlake
 						device ref usb2_port8 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 TYPEC2""
+						register "desc" = ""USB2 Thunderbolt""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						device ref usb2_port9 on end
 					end
@@ -127,18 +126,18 @@ chip soc/intel/alderlake
 						device ref usb2_port10 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 TYPEC1""
+						register "desc" = ""USB3 Port 1""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 J_USB2""
-						register "type" = "UPC_TYPE_A"
+						register "desc" = ""USB3 Port 2""
+						register "type" = "UPC_TYPE_USB3_A"
 						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 J_USB2""
-						register "type" = "UPC_TYPE_A"
+						register "desc" = ""USB3 Port 3""
+						register "type" = "UPC_TYPE_USB3_A"
 						device ref usb3_port3 on end
 					end
 				end

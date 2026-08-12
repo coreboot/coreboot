@@ -10,7 +10,7 @@ chip soc/intel/alderlake
 				[0] = USB2_PORT_MID(OC_SKIP),		/* Type-A 3.2 Gen 2 (Left, Front) */
 				[1] = USB2_PORT_MID(OC_SKIP),		/* Type-A 3.2 Gen 2 (Left, Rear) */
 				[5] = USB2_PORT_MID(OC_SKIP),		/* Camera */
-				[6] = USB2_PORT_MID(OC_SKIP),		/* Per-key RGB */
+				[6] = USB2_PORT_MID(OC_SKIP),		/* KBLED */
 				/* Port reset messaging cannot be used,
 				 * so do not use USB2_PORT_TYPE_C for these */
 				[8] = USB2_PORT_MID(OC_SKIP),		/* Type-C Thunderbolt (Right, Front) */
@@ -24,47 +24,47 @@ chip soc/intel/alderlake
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A 3.2 Gen 2 (Left, Front)""
+						register "desc" = ""USB2 Port 1""
 						register "type" = "UPC_TYPE_A"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A 3.2 Gen 2 (Left, Rear)""
+						register "desc" = ""USB2 Port 2""
 						register "type" = "UPC_TYPE_A"
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Camera""
+						register "desc" = ""USB2 Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Per-key RGB""
+						register "desc" = ""USB2 KBLED""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port7 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-C Thunderbolt (Right, Front)""
+						register "desc" = ""USB2 Thunderbolt 1""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						device ref usb2_port9 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-C Thunderbolt with PD (Right, Rear)""
+						register "desc" = ""USB2 Thunderbolt 2""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						device ref usb2_port10 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Bluetooth""
+						register "desc" = ""USB2 Bluetooth""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port14 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A 3.2 Gen 2 (Left, Front)""
+						register "desc" = ""USB3 Port 1""
 						register "type" = "UPC_TYPE_USB3_A"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A 3.2 Gen 2 (Left, Rear)""
+						register "desc" = ""USB3 Port 3""
 						register "type" = "UPC_TYPE_USB3_A"
 						device ref usb3_port3 on end
 					end

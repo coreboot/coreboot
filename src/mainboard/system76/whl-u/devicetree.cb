@@ -62,24 +62,6 @@ chip soc/intel/cannonlake
 		end
 		device ref dptf		on  end
 		device ref thermal	on  end
-		device ref xhci		on
-			register "usb2_ports" = "{
-				[0] = USB2_PORT_MID(OC_SKIP),		/* USB-A */
-				[1] = USB2_PORT_MID(OC_SKIP),		/* 3G / LTE */
-				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB-C */
-				[3] = USB2_PORT_MID(OC_SKIP),		/* USB-A */
-				[6] = USB2_PORT_MAX(OC_SKIP),		/* Camera */
-				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
-			}"
-			register "usb3_ports" = "{
-				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB-A */
-				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* 4G on galp3-c, NC on darp5 */
-				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB-C */
-				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB-A */
-				[4] = USB3_PORT_EMPTY,			/* Used by TBT */
-				[5] = USB3_PORT_EMPTY,			/* Used by TBT */
-			}"
-		end
 		device ref cnvi_wifi	on
 			chip drivers/wifi/generic
 				register "wake" = "PME_B0_EN_BIT"

@@ -524,10 +524,8 @@ void rtc_boot(void)
 	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
 	/* HW K EOSC mode whatever power off (including plug out battery) */
-	rtc_read(RTC_AL_YEA, &rtc_al_yea);
-	/* HW K EOSC mode whatever power off (including plug out battery) */
-	rtc_write(RTC_AL_YEA, ((rtc_al_yea | RTC_K_EOSC_RSV_0) &
-		  (~RTC_K_EOSC_RSV_1)) & (~RTC_K_EOSC_RSV_2));
+	rtc_clrset_trigger(RTC_AL_YEA, RTC_K_EOSC_RSV_1 | RTC_K_EOSC_RSV_2,
+			   RTC_K_EOSC_RSV_0);
 
 	/* Defensive patch: Check and enable EOSC HW calibration if disabled */
 	rtc_read(RTC_OSC32CON, &rdata);

@@ -87,8 +87,6 @@ chip northbridge/intel/sandybridge
 			device ref lpc on
 				subsystemid 0x1849 0x1e44
 				register "gen1_dec" = "LPC_IO(0x290, 0x10)"
-				register "gen2_dec" = "LPC_IO(0x240, 0x10)"
-				register "gen3_dec" = "LPC_IO(0x250, 0x10)"
 				chip superio/nuvoton/nct6776
 					device pnp 2e.0 off end	 # Floppy
 					device pnp 2e.1 off end  # Parallel port

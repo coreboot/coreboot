@@ -18,8 +18,6 @@ chip northbridge/intel/sandybridge
 		end
 		chip southbridge/intel/bd82x6x
 			register "gen1_dec" = "LPC_IO(0x290, 0x10)"
-			register "gen2_dec" = "LPC_IO(0x240, 0x10)"
-			register "gen3_dec" = "LPC_IO(0x250, 0x10)"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x3f"
 			register "superspeed_capable_ports" = "0x0000000f"

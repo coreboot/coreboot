@@ -40,6 +40,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		mupd->FspmConfig.PcieRpEnableMask &= ~(1 << 8);
 
 	mupd->FspmConfig.PchHdaSubSystemIds =
-		STARLABS_HDA_PCI_SUBSYSTEM_ID(STARLABS_HDA_POLICY_ALC269_VC3);
+		starlabs_hda_selected_pci_subsystem_id(STARLABS_HDA_POLICY_ALC269_VC3);
 	mupd->FspmConfig.PsysPmax = 0;
 };

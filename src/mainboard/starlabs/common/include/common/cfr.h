@@ -6,6 +6,7 @@
 #include <drivers/option/cfr_frontend.h>
 #include <intelblocks/cfr.h>
 #include <soc/soc_chip.h>
+#include <common/hda.h>
 #include <common/powercap.h>
 #include <common/touchpad.h>
 
@@ -77,6 +78,19 @@ static const struct sm_object hda_dsp = SM_DECLARE_BOOL({
 	.ui_helptext	= "Enable or disable the Intel HD Audio Digital Signal Processor.\n"
 			  "Recommended to disable when booting Windows.",
 	.default_value	= true,
+});
+
+static const struct sm_object hda_subsystem_id = SM_DECLARE_ENUM({
+	.opt_name	= "hda_subsystem_id",
+	.ui_name	= "Audio Device ID",
+	.ui_helptext	= "Select the current Star Labs audio profile identifier or "
+			  "the identifier used by earlier firmware.",
+	.default_value	= STARLABS_HDA_SUBSYSTEM_ID_CURRENT,
+	.values		= (const struct sm_enum_value[]) {
+		{ "Current", STARLABS_HDA_SUBSYSTEM_ID_CURRENT },
+		{ "Legacy",  STARLABS_HDA_SUBSYSTEM_ID_LEGACY  },
+		SM_ENUM_VALUE_END,
+	},
 });
 
 #if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || \

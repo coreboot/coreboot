@@ -2,8 +2,6 @@
 
 #include <boot/coreboot_tables.h>
 #include <drivers/option/cfr_frontend.h>
-#include <ec/lenovo/h8/cfr.h>
-#include <ec/lenovo/pmh7/cfr.h>
 #include <northbridge/intel/sandybridge/cfr.h>
 #include <southbridge/intel/bd82x6x/cfr.h>
 
@@ -22,57 +20,13 @@ static struct sm_obj_form system = {
 		&hyper_threading,
 		&me_state,
 		&nmi,
-		NULL
-	},
-};
-
-static struct sm_obj_form power = {
-	.ui_name = "Power",
-	.obj_list = (const struct sm_object *[]) {
 		&power_on_after_fail,
-		&first_battery,
-		&usb_always_on,
-		NULL
-	},
-};
-
-static struct sm_obj_form devices = {
-	.ui_name = "Devices",
-	.obj_list = (const struct sm_object *[]) {
-		&bluetooth,
-		&wlan,
-		&wwan,
-		NULL
-	},
-};
-
-static struct sm_obj_form hid = {
-	.ui_name = "Keyboard/Mouse",
-	.obj_list = (const struct sm_object *[]) {
-		&trackpoint,
-		&touchpad,
-		&backlight,
-		&fn_ctrl_swap,
-		&sticky_fn,
-		&f1_to_f12_as_primary,
-		NULL
-	},
-};
-
-static struct sm_obj_form misc = {
-	.ui_name = "Other",
-	.obj_list = (const struct sm_object *[]) {
-		&volume,
 		NULL
 	},
 };
 
 static struct sm_obj_form *sm_root[] = {
 	&system,
-	&power,
-	&devices,
-	&hid,
-	&misc,
 	NULL
 };
 

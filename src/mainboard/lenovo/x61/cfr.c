@@ -3,8 +3,6 @@
 #include <boot/coreboot_tables.h>
 #include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
-#include <ec/lenovo/h8/cfr.h>
-#include <ec/lenovo/pmh7/cfr.h>
 #include <northbridge/intel/gm965/cfr.h>
 #include <southbridge/intel/i82801hx/cfr.h>
 
@@ -35,22 +33,6 @@ static struct sm_obj_form storage = {
 	},
 };
 
-static struct sm_obj_form ec = {
-	.ui_name = "Embedded Controller",
-	.obj_list = (const struct sm_object *[]) {
-		&first_battery,
-		&bluetooth,
-		&wlan,
-		&wwan,
-		&pm_beeps,
-		&battery_beep,
-		&sticky_fn,
-		&volume,
-		&trackpoint,
-		NULL
-	},
-};
-
 static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]) {
@@ -74,7 +56,6 @@ static struct sm_obj_form *sm_root[] = {
 	&power,
 	&graphics,
 	&storage,
-	&ec,
 	NULL
 };
 

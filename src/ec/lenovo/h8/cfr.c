@@ -1,25 +1,24 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/*
- * CFR enums and structs for Lenovo H8 EC
- */
-
-#ifndef _LENOVO_H8_CFR_H_
-#define _LENOVO_H8_CFR_H_
-
 #include <assert.h>
 #include <drivers/option/cfr_frontend.h>
 #include <static.h>
-#include "chip.h"
 #include "h8.h"
+#include "chip.h"
 
 /* Bluetooth */
+static void update_bluetooth(struct sm_object *new)
+{
+	if (!(CONFIG(H8_SUPPORT_BT_ON_WIFI) || h8_has_bdc()))
+		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+}
+
 static const struct sm_object bluetooth = SM_DECLARE_BOOL({
 	.opt_name	= "bluetooth",
 	.ui_name	= "Bluetooth",
 	.ui_helptext	= "Enable or disable the bluetooth module",
 	.default_value	= true,
-});
+}, WITH_CALLBACK(update_bluetooth));
 
 static const struct sm_enum_value kic_values_both[] = {
 	{ "Both",		KIC_BOTH	},
@@ -90,12 +89,22 @@ static const struct sm_object usb_always_on = SM_DECLARE_ENUM({
 });
 
 /* Ultrawideband */
+static void update_uwb(struct sm_object *new)
+{
+	const struct device *dev = DEV_PTR(lenovo_ec);
+	assert(dev && dev->chip_info);
+	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
+
+	if (!conf || !conf->has_uwb)
+		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+}
+
 static const struct sm_object uwb = SM_DECLARE_BOOL({
 	.opt_name	= "uwb",
 	.ui_name	= "Ultrawideband",
 	.ui_helptext	= "TBD",
 	.default_value	= true,
-});
+}, WITH_CALLBACK(update_uwb));
 
 enum {
 	H8_SECONDARY_BATTERY,
@@ -135,20 +144,36 @@ static const struct sm_object wlan = SM_DECLARE_BOOL({
 });
 
 /* WWAN */
+static void update_wwan(struct sm_object *new)
+{
+	if (!h8_has_wwan())
+		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+}
+
 static const struct sm_object wwan = SM_DECLARE_BOOL({
 	.opt_name	= "wwan",
 	.ui_name	= "WWAN",
 	.ui_helptext	= "Enable or disable the WWAN module",
 	.default_value	= true,
-});
+}, WITH_CALLBACK(update_wwan));
 
 /* Power Management Beeps */
+static void update_beep(struct sm_object *new)
+{
+	const struct device *dev = DEV_PTR(lenovo_ec);
+	assert(dev && dev->chip_info);
+	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
+
+	if (!conf || !conf->has_power_management_beeps)
+		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+}
+
 static const struct sm_object pm_beeps = SM_DECLARE_BOOL({
 	.opt_name	= "power_management_beeps",
 	.ui_name	= "Power Management Beeps",
 	.ui_helptext	= "Enable or disable power management beeps",
 	.default_value	= true,
-});
+}, WITH_CALLBACK(update_beep));
 
 /* Low Battery Beep */
 static const struct sm_object battery_beep = SM_DECLARE_BOOL({
@@ -156,7 +181,7 @@ static const struct sm_object battery_beep = SM_DECLARE_BOOL({
 	.ui_name	= "Low Battery Beep",
 	.ui_helptext	= "Enable or disable low battery beep",
 	.default_value	= true,
-});
+}, WITH_CALLBACK(update_beep));
 
 /* Fn-CTRL Swap */
 static const struct sm_object fn_ctrl_swap = SM_DECLARE_BOOL({
@@ -180,6 +205,66 @@ static const struct sm_object f1_to_f12_as_primary = SM_DECLARE_BOOL({
 	.ui_name	= "Primary Function keys",
 	.ui_helptext	= "F1-F12 default act as function keys",
 	.default_value	= true,
+	.flags		= CONFIG(H8_HAS_PRIMARY_FN_KEYS) ? 0 : CFR_OPTFLAG_SUPPRESS,
 });
 
-#endif /* _LENOVO_H8_CFR_H_ */
+/* Touchpad - Controlled by PMH7 */
+static const struct sm_object touchpad = SM_DECLARE_BOOL({
+	.opt_name	= "touchpad",
+	.ui_name	= "Touchpad",
+	.ui_helptext	= "Enable or disable the touchpad",
+	.default_value	= true,
+	.flags		= CONFIG(EC_LENOVO_PMH7) ? 0 : CFR_OPTFLAG_SUPPRESS,
+});
+
+/* Trackpoint - Controlled by PMH7 */
+static const struct sm_object trackpoint = SM_DECLARE_BOOL({
+	.opt_name	= "trackpoint",
+	.ui_name	= "Trackpoint",
+	.ui_helptext	= "Enable or disable the trackpoint",
+	.default_value	= true,
+	.flags		= CONFIG(EC_LENOVO_PMH7) ? 0 : CFR_OPTFLAG_SUPPRESS,
+});
+
+__cfr_form static struct sm_obj_form cfr_power = {
+	.ui_name = "Power",
+	.obj_list = (const struct sm_object *[]) {
+		&first_battery,
+		&usb_always_on,
+		NULL
+	},
+};
+
+__cfr_form static struct sm_obj_form cfr_devices = {
+	.ui_name = "Devices",
+	.obj_list = (const struct sm_object *[]) {
+		&bluetooth,
+		&wlan,
+		&wwan,
+		&uwb,
+		NULL
+	},
+};
+
+__cfr_form static struct sm_obj_form cfr_hid = {
+	.ui_name = "Keyboard/Mouse",
+	.obj_list = (const struct sm_object *[]) {
+		&backlight,
+		&fn_ctrl_swap,
+		&sticky_fn,
+		&f1_to_f12_as_primary,
+		&touchpad,
+		&trackpoint,
+		NULL
+	},
+};
+
+__cfr_form static struct sm_obj_form cfr_misc = {
+	.ui_name = "Other",
+	.obj_list = (const struct sm_object *[]) {
+		&volume,
+		&pm_beeps,
+		&battery_beep,
+		NULL
+	},
+};

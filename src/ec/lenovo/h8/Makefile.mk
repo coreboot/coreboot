@@ -23,5 +23,6 @@ ramstage-y += h8.c
 ramstage-y += bluetooth.c
 ramstage-y += wwan.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ssdt.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
 endif

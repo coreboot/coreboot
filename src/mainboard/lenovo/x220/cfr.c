@@ -2,8 +2,6 @@
 
 #include <boot/coreboot_tables.h>
 #include <drivers/option/cfr_frontend.h>
-#include <ec/lenovo/h8/cfr.h>
-#include <ec/lenovo/pmh7/cfr.h>
 #include <northbridge/intel/sandybridge/cfr.h>
 #include <southbridge/intel/bd82x6x/cfr.h>
 
@@ -23,23 +21,6 @@ static struct sm_obj_form pcie = {
 #endif
 		&pcie_rp4,
 		&pcie_rp6,
-		NULL
-	},
-};
-
-static struct sm_obj_form ec = {
-	.ui_name = "Embedded Controller",
-	.obj_list = (const struct sm_object *[]) {
-		&bluetooth,
-		&usb_always_on,
-		&wlan,
-		&wwan,
-		&pm_beeps,
-		&battery_beep,
-		&fn_ctrl_swap,
-		&sticky_fn,
-		&touchpad,
-		&trackpoint,
 		NULL
 	},
 };
@@ -66,7 +47,6 @@ static struct sm_obj_form power = {
 static struct sm_obj_form *sm_root[] = {
 	&system,
 	&power,
-	&ec,
 	&pcie,
 	NULL
 };

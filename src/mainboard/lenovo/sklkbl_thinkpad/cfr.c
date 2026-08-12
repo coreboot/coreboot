@@ -2,8 +2,6 @@
 
 #include <boot/coreboot_tables.h>
 #include <drivers/option/cfr_frontend.h>
-#include <ec/lenovo/h8/cfr.h>
-#include <ec/lenovo/pmh7/cfr.h>
 #include <intelblocks/cfr.h>
 #include <soc/cfr.h>
 #include <static.h>
@@ -47,29 +45,7 @@ static struct sm_obj_form system = {
 	},
 };
 
-static struct sm_obj_form ec = {
-	.ui_name = "Embedded Controller",
-	.obj_list = (const struct sm_object *[]) {
-		&bluetooth,
-		&backlight,
-		&uwb,
-		&usb_always_on,
-		&volume,
-		&wlan,
-		&wwan,
-		&pm_beeps,
-		&battery_beep,
-		&fn_ctrl_swap,
-		&sticky_fn,
-		&f1_to_f12_as_primary,
-		&touchpad,
-		&trackpoint,
-		NULL
-	},
-};
-
 static struct sm_obj_form *sm_root[] = {
-	&ec,
 	&system,
 	NULL
 };

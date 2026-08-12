@@ -23,7 +23,6 @@ chip northbridge/intel/haswell
 
 		chip southbridge/intel/lynxpoint # Intel 8 Series Lynx Point PCH
 			register "gen1_dec" = "LPC_IO(0x290, 0x10)"
-			register "gen2_dec" = "LPC_IO(0xa00, 0x80)"
 			register "gpe0_en_1" = "0x2046"
 			register "sata_port0_gen3_dtle" = "0x2"
 			register "sata_port1_gen3_dtle" = "0x2"

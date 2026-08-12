@@ -36,7 +36,6 @@ chip northbridge/intel/sandybridge
 			device ref pcie_rp6 on end	# ASM1042A USB 3.0 Host Controller
 			device ref lpc on
 				register "gen1_dec" = "LPC_IO(0x290, 0x10)"
-				register "gen2_dec" = "LPC_IO(0xa00, 0x100)"
 
 				chip superio/ite/it8772f
 					device pnp 2e.0 off end	# FDC

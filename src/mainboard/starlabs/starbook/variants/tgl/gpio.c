@@ -37,7 +37,7 @@ const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),				/* TXD */
 
 	/* SSD */
-	PAD_CFG_GPI(GPP_D8, NONE, DEEP),					/* Clock Request 3 */
+	PAD_CFG_GPI(GPP_D8, NONE, DEEP),				/* Clock Request 3 */
 	PAD_CFG_GPO(GPP_A11, 0, PLTRST),				/* Reset asserted */
 	PAD_CFG_GPO(GPP_D16, 0, PLTRST),				/* Enable (PWREN off) */
 };

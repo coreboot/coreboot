@@ -280,7 +280,7 @@ static void load_qc_se_firmware_late(void)
 	if (!CONFIG(MAINBOARD_NO_USB_A_PORT))
 		qupv3_se_fw_load_and_init(QUPV3_0_SE1, SE_PROTOCOL_I2C, MIXED); /* USB-A retimer */
 
-	qupv3_se_fw_load_and_init(QUPV3_0_SE5, SE_PROTOCOL_I2C, MIXED); /* eUSB repeater */
+	qupv3_se_fw_load_and_init(QUPV3_0_SE5, SE_PROTOCOL_I2C, GSI); /* eUSB repeater */
 
 	if (CONFIG(MAINBOARD_HAS_FINGERPRINT_VIA_SPI))
 		qupv3_se_fw_load_and_init(QUPV3_2_SE2, SE_PROTOCOL_SPI, MIXED); /* Fingerprint SPI */

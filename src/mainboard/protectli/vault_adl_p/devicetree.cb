@@ -233,10 +233,7 @@ chip soc/intel/alderlake
 					 "M.2/E 2230 (M2_WIFI1)" "SlotDataBusWidth1X"
 		end
 		device ref pch_espi on
-			# LPC generic I/O ranges
-			register "gen1_dec" = "LPC_IO(0x200, 0x100)"
-			register "gen2_dec" = "LPC_IO(0xa00, 0x40)"
-			register "gen3_dec" = "LPC_IO(0x80, 0x10)"
+			register "gen1_dec" = "LPC_IO(0xa00, 0x40)"
 
 			chip superio/ite/it8659e
 				register "TMPIN1.mode"    = "THERMAL_PECI"

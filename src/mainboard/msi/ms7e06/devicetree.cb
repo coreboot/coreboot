@@ -197,10 +197,7 @@ chip soc/intel/alderlake
 					 "M2_2" "SlotDataBusWidth4X"
 		end
 		device ref pch_espi on
-			register "gen1_dec" = "LPC_IO(0x200, 0x100)"
-			register "gen2_dec" = "LPC_IO(0xa00, 0x40)"
-			register "gen3_dec" = "LPC_IO(0x3f0, 0x10)"
-			register "gen4_dec" = "LPC_IO(0x80, 0x10)"
+			register "gen1_dec" = "LPC_IO(0xa00, 0x40)"
 
 			chip superio/nuvoton/nct6687d
 				register "sensors[0]" = "PECI_AGENT0_DOMAIN0"

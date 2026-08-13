@@ -75,65 +75,22 @@ static unsigned long write_mptable(unsigned long rom_table_end)
 
 static unsigned long write_acpi_table(unsigned long rom_table_end)
 {
-	unsigned long high_table_pointer;
-	const size_t max_acpi_size = CONFIG_MAX_ACPI_TABLE_SIZE_KB * KiB;
 
 	post_code(POSTCODE_X86_WRITE_ACPITABLE);
 
-	/* Write ACPI tables to F segment and high tables area */
+	acpi_allocate_write_tables();
 
-	/* Ok, this is a bit hacky still, because some day we want to have this
-	 * completely dynamic. But right now we are setting fixed sizes.
-	 * It's probably still better than the old high_table_base code because
-	 * now at least we know when we have an overflow in the area.
-	 *
-	 * We want to use 1MB - 64K for Resume backup. We use 512B for TOC and
-	 * 512 byte for GDT, 4K for PIRQ and 4K for MP table and 8KB for the
-	 * coreboot table. This leaves us with 47KB for all of ACPI. Let's see
-	 * how far we get.
-	 */
-	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_ACPI,
-		max_acpi_size);
-	if (high_table_pointer) {
-		unsigned long acpi_start = high_table_pointer;
-		unsigned long new_high_table_pointer;
-
+	acpi_rsdp_t *rsdp = (acpi_rsdp_t *)get_coreboot_rsdp();
+	if (rsdp && memcmp(rsdp->signature, RSDP_SIG, 8) == 0) {
 		rom_table_end = ALIGN_UP(rom_table_end, 16);
-		new_high_table_pointer = write_acpi_tables(high_table_pointer);
-		if (new_high_table_pointer > (high_table_pointer
-			+ max_acpi_size)) {
-			die("ACPI tables overflowed and corrupted CBMEM! Increase config MAX_ACPI_TABLE_SIZE_KB!\n");
-		}
-		printk(BIOS_DEBUG, "ACPI tables: %ld bytes.\n",
-				new_high_table_pointer - high_table_pointer);
+		acpi_rsdp_t *low_rsdp = (acpi_rsdp_t *)rom_table_end;
 
-		/* Now we need to create a low table copy of the RSDP. */
-
-		/* First we look for the high table RSDP */
-		while (acpi_start < new_high_table_pointer) {
-			if (memcmp(((acpi_rsdp_t *)acpi_start)->signature,
-				RSDP_SIG, 8) == 0)
-				break;
-			acpi_start++;
-		}
-
-		/* Now, if we found the RSDP, we take the RSDT and XSDT pointer
-		 * from it in order to write the low RSDP
-		 */
-		if (acpi_start < new_high_table_pointer) {
-			acpi_rsdp_t *low_rsdp = (acpi_rsdp_t *)rom_table_end,
-				    *high_rsdp = (acpi_rsdp_t *)acpi_start;
-
-			/* Technically rsdp length varies but coreboot always
-			   writes longest size available.  */
-			memcpy(low_rsdp, high_rsdp, sizeof(acpi_rsdp_t));
-		} else {
-			printk(BIOS_ERR, "Didn't find RSDP in high table.\n");
-		}
+		/* Technically rsdp length varies but coreboot always
+		   writes longest size available.  */
+		memcpy(low_rsdp, rsdp, sizeof(acpi_rsdp_t));
 		rom_table_end = ALIGN_UP(rom_table_end + sizeof(acpi_rsdp_t), 16);
 	} else {
-		rom_table_end = write_acpi_tables(rom_table_end);
-		rom_table_end = ALIGN_UP(rom_table_end, 1024);
+		printk(BIOS_ERR, "ACPI: Didn't find RSDP in CBMEM.\n");
 	}
 
 	return rom_table_end;

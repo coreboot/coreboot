@@ -1489,7 +1489,7 @@ static void acpidump_print(void *table_ptr)
 	printk(BIOS_SPEW, "\n");
 }
 
-unsigned long write_acpi_tables(const unsigned long start)
+static unsigned long write_acpi_tables(const unsigned long start)
 {
 	unsigned long current;
 	acpi_rsdp_t *rsdp;
@@ -1729,6 +1729,25 @@ unsigned long write_acpi_tables(const unsigned long start)
 	}
 
 	return current;
+}
+
+/*
+ * Allocate memory for ACPI tables and write them to that memory.
+ * The memory is allocated from cbmem with id CBMEM_ID_ACPI.
+ */
+void acpi_allocate_write_tables(void)
+{
+	const size_t max_acpi_size = CONFIG_MAX_ACPI_TABLE_SIZE_KB * KiB;
+	const void *acpi_buf = cbmem_add(CBMEM_ID_ACPI, max_acpi_size);
+	if (!acpi_buf)
+		die("ACPI: failed to allocate CBMEM_ID_ACPI\n");
+	const uintptr_t acpi_start = (uintptr_t)acpi_buf;
+	assert(IS_ALIGNED(acpi_start, 16));
+	const uintptr_t acpi_end = write_acpi_tables(acpi_start);
+
+	printk(BIOS_DEBUG, "ACPI tables: %lu bytes.\n", acpi_end - acpi_start);
+	if (acpi_end > acpi_start + max_acpi_size)
+		die("ACPI tables overflowed and corrupted CBMEM! Increase config MAX_ACPI_TABLE_SIZE_KB!\n");
 }
 
 static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp)

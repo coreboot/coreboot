@@ -11,16 +11,6 @@
 #include <string.h>
 #include <symbols.h>
 
-static void write_acpi_table(void)
-{
-	const size_t max_acpi_size = CONFIG_MAX_ACPI_TABLE_SIZE_KB * KiB;
-	const uintptr_t acpi_start = (uintptr_t)cbmem_add(CBMEM_ID_ACPI, max_acpi_size);
-	assert(IS_ALIGNED(acpi_start, 16));
-	const uintptr_t acpi_end = write_acpi_tables(acpi_start);
-	assert(acpi_end < acpi_start + max_acpi_size);
-	printk(BIOS_DEBUG, "ACPI tables: %ld bytes.\n", acpi_end - acpi_start);
-}
-
 static void write_smbios_table(void)
 {
 	unsigned long smbios_begin, smbios_end;
@@ -51,7 +41,7 @@ static void write_smbios_table(void)
 void arch_write_tables(uintptr_t coreboot_table)
 {
 	if (CONFIG(HAVE_ACPI_TABLES))
-		write_acpi_table();
+		acpi_allocate_write_tables();
 
 	if (CONFIG(GENERATE_SMBIOS_TABLES))
 		write_smbios_table();

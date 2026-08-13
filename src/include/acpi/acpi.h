@@ -1539,7 +1539,7 @@ uintptr_t get_coreboot_rsdp(void);
 unsigned long fw_cfg_acpi_tables(unsigned long start);
 
 /* These are implemented by the target port or north/southbridge. */
-unsigned long write_acpi_tables(const unsigned long addr);
+void acpi_allocate_write_tables(void);
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_arch_fill_madt(acpi_madt_t *madt, unsigned long current);
 

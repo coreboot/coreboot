@@ -96,13 +96,13 @@ static int get_spd(u8 *spd, u8 addr)
 	}
 
 	if (CONFIG(DRAM_SUPPORT_DDR5) && is_spd5_hub(addr)) {
-		smbus_read_spd5(spd, addr, CONFIG_DIMM_SPD_SIZE);
-		if (CONFIG_DIMM_SPD_SIZE < SPD_SIZE_MAX_DDR5) {
+		if (CONFIG_DIMM_SPD_SIZE > SPD_SIZE_MAX_DDR5) {
 			printk(BIOS_ERR,
-			       "SPD5 hub at %02x needs DIMM_SPD_SIZE >= %d (have %d)\n",
+			       "SPD5 hub at %02x needs DIMM_SPD_SIZE <= %d (have %d)\n",
 			       addr << 1, SPD_SIZE_MAX_DDR5, CONFIG_DIMM_SPD_SIZE);
 			return -1;
 		}
+		smbus_read_spd5(spd, addr, CONFIG_DIMM_SPD_SIZE);
 
 		/* Reset the page for the next loop iteration */
 		reset_page_spd5(addr);

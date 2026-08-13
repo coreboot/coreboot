@@ -62,6 +62,8 @@
 #define PCIE3X2_ELBI_SYS_STTS		0x08
 #define XMLH_LINK_UP			0x400
 #define PCIE_ELBI_LTSSM_STATE_MASK	0x3f	/* bits 5:0 = LTSSM state */
+#define PCIE_ELBI_CS2_ENABLE		0xA4
+#define ENABLE				BIT(0)	/* PCIE_ELBI_CS2_ENABLE: set CS2 bit in DBI access */
 
 /* DBI Registers */
 #define PCIE_LINK_STATUS_REG		0x80
@@ -142,7 +144,14 @@
 #define GEN3_EQ_FB_MODE_MASK		0xF
 #define PCIE_L1SUB_CAP_HEADER_REG	0x1DC
 #define L1SUB_NEXT_OFFSET_MASK		0xFFF00000
-#define PCIE_RAS_DES_CAP_HDR_OFFSET	0x230	/* offset to skip DPC */
+#define PCIE_RAS_DES_CAP_HDR_OFFSET	0x230	/* offset to skip DPC (Gen5/Calypso) */
+
+/*
+ * x1p42100 (Hamoa) DBI register offsets from IP Catalog JSON.
+ * These differ from the Gen5/Calypso offsets above.
+ */
+#define PCIE_L1SUB_CAP_HEADER_REG_X1P42100	0x238
+#define PCIE_RAS_DES_CAP_HDR_OFFSET_X1P42100	0x28C
 #define PCIE_QUEUE_STATUS_OFF		0x73C
 #define TIMER_MOD_FLOW_CONTROL_EN	BIT(31)
 #define TIMER_MOD_FLOW_CONTROL_MASK	0x1FFF0000

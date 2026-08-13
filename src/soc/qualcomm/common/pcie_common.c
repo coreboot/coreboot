@@ -306,21 +306,122 @@ static void post_phy_pwr_up_init(struct qcom_pcie_cntlr_t *pcie)
 static void post_phy_pwr_up_dbi_init(struct qcom_pcie_cntlr_t *pcie)
 {
 	pcie_cntlr_cfg_t *pcierc = pcie->cntlr_cfg;
+	static const uint32_t eq_rate_shadow[] = { 0x0, RATE_SHADOW_SEL_VAL };
+
+	/* Fix N_FTS: set COMMON_CLK_N_FTS=0x80, ACK_N_FTS=0x80 */
+	clrsetbits32(pcierc->dbi_base + PCIE_ACK_F_ASPM_CTRL_OFF,
+		     COMMON_CLK_N_FTS_MASK | ACK_N_FTS_MASK,
+		     COMMON_CLK_N_FTS_VAL | ACK_N_FTS_VAL);
+
+	/* Set AUX clock frequency to 19.2 MHz */
+	write32(pcierc->dbi_base + PCIE_AUX_CLK_FREQ_OFF, PCIE_AUX_CLK_FREQ_19_2MHZ);
+
+	/* Unlock DBI read-only registers */
 	dw_pcie_dbi_rd_wr(true);
+
+	/* Enable CRS Software Visibility in root control/capabilities */
+	setbits32(pcierc->dbi_base + PCIE_ROOT_CONTROL_ROOT_CAPABILITIES_REG,
+		  PCIE_CAP_CRS_SW_VISIBILITY | PCIE_CAP_CRS_SW_VISIBILITY_EN);
+
+	/* Set class code: Base=0x6 (Bridge), Sub=0x4 (PCI-to-PCI) */
+	clrsetbits32(pcierc->dbi_base + PCIE_TYPE1_CLASS_CODE_REV_ID_REG,
+		     BASE_CLASS_CODE_MASK | SUBCLASS_CODE_MASK,
+		     BASE_CLASS_CODE_BRIDGE | SUBCLASS_CODE_PCI_BRIDGE);
+
+	/* Disable hot-plug capable */
+	clrbits32(pcierc->dbi_base + PCIE_SLOT_CAPABILITIES_REG, PCIE_CAP_HOT_PLUG_CAPABLE);
+
+	/*
+	 * Set Downstream/Upstream Port 8.0 GT/s Transmitter Preset = 5
+	 * (recommended for short channel) in Lane Equalization Control Register.
+	 */
 	write32(pcierc->dbi_base + PCIE_SPCIE_CAP_OFF_0CH_REG, 0x55555555);
 	write32(pcierc->dbi_base + PCIE_SPCIE_CAP_OFF_10H_REG, 0x55555555);
+
+	/*
+	 * Set Downstream/Upstream Port 16.0 GT/s Transmitter Preset = 5
+	 * (recommended for short channel) in 16.0 GT/s Lane Equalization
+	 * Control Register.
+	 */
 	write32(pcierc->dbi_base + PCIE_PL16G_CAP_OFF_20H_REG, 0x55555555);
-	clrbits32(pcierc->dbi_base + PCIE_SLOT_CAPABILITIES_REG, PCIE_CAP_HOT_PLUG_CAPABLE);
-	dsb();
-	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF, RATE_SHADOW_SEL_MASK, 0x0);
-	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_EQ_FB_MODE_DIR_CHANGE_OFF, GEN3_EQ_FMDC_T_MIN_PHASE23, 0x1);
-	clrbits32(pcierc->dbi_base + PCIE_GEN3_EQ_CONTROL_OFF, GEN3_EQ_PSET_REQ_VEC);
-	dsb();
-	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF, RATE_SHADOW_SEL_MASK, RATE_SHADOW_SEL_VAL);
-	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_EQ_FB_MODE_DIR_CHANGE_OFF, GEN3_EQ_FMDC_T_MIN_PHASE23, 0x1);
-	clrbits32(pcierc->dbi_base + PCIE_GEN3_EQ_CONTROL_OFF, GEN3_EQ_PSET_REQ_VEC);
-	dsb();
+
+	/*
+	 * Remove DPC from capabilities list: set L1SS NEXT_OFFSET to point
+	 * directly to RAS DES (skipping DPC).
+	 * Offsets from IP Catalog JSON for x1p42100 (Hamoa):
+	 *   L1SUB_CAP_HEADER = 0x238, RAS_DES_CAP_HEADER = 0x28C
+	 */
+	clrsetbits32(pcierc->dbi_base + PCIE_L1SUB_CAP_HEADER_REG_X1P42100,
+		     L1SUB_NEXT_OFFSET_MASK,
+		     (uint32_t)PCIE_RAS_DES_CAP_HDR_OFFSET_X1P42100 << 20);
+
+	/* Lock DBI read-only registers */
 	dw_pcie_dbi_rd_wr(false);
+
+	/* GEN3 (RATE_SHADOW_SEL=0) and GEN4 (RATE_SHADOW_SEL=1) EQ settings */
+	for (size_t i = 0; i < ARRAY_SIZE(eq_rate_shadow); i++) {
+		clrsetbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF,
+			    RATE_SHADOW_SEL_MASK, eq_rate_shadow[i]);
+
+		clrsetbits32(pcierc->dbi_base + PCIE_GEN3_EQ_FB_MODE_DIR_CHANGE_OFF,
+			    GEN3_EQ_FMDC_ALL_MASK, GEN3_EQ_FMDC_ALL_VAL);
+		clrbits32(pcierc->dbi_base + PCIE_GEN3_EQ_CONTROL_OFF,
+			    GEN3_EQ_PHASE23_EXIT_MODE | GEN3_EQ_PSET_REQ_VEC | GEN3_EQ_FB_MODE_MASK);
+	}
+
+	/* Restore RATE_SHADOW_SEL=0 and disable non-compliant Rx DC coupling */
+	clrbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF,
+		    RATE_SHADOW_SEL_MASK | GEN3_ZRXDC_NONCOMPL);
+
+	/*
+	 * Gen4 lane margining capabilities:
+	 *   MAX_VOLTAGE_OFFSET=0x12, NUM_VOLTAGE_STEPS=0x78,
+	 *   MAX_TIMING_OFFSET=0x32, NUM_TIMING_STEPS=0x10
+	 */
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN4_LANE_MARGINING_1_OFF,
+		     GEN4_MARG1_MAX_VOLT_OFF_MASK |
+		     GEN4_MARG1_NUM_VOLT_STEPS_MASK |
+		     GEN4_MARG1_MAX_TIMING_OFF_MASK |
+		     GEN4_MARG1_NUM_TIMING_STEPS_MASK,
+		     (0x12 << 24) | (0x78 << 16) | (0x32 << 8) | 0x10);
+
+	/*
+	 * Gen4 lane margining control:
+	 *   IND_ERROR_SAMPLER=1, SAMPLE_REPORTING_METHOD=1,
+	 *   IND_LEFT_RIGHT_TIMING=1, IND_UP_DOWN_VOLTAGE=1,
+	 *   VOLTAGE_SUPPORTED=1, MAXLANES=3,
+	 *   SAMPLE_RATE_TIMING=0x3F, SAMPLE_RATE_VOLTAGE=0x3F
+	 */
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN4_LANE_MARGINING_2_OFF,
+		     GEN4_MARG2_IND_ERR_SAMPLER |
+		     GEN4_MARG2_SAMPLE_RPT_METHOD |
+		     GEN4_MARG2_IND_LR_TIMING |
+		     GEN4_MARG2_IND_UD_VOLTAGE |
+		     GEN4_MARG2_VOLTAGE_SUPPORTED |
+		     GEN4_MARG2_MAXLANES_MASK |
+		     GEN4_MARG2_SAMPLE_RATE_TIMING_MASK |
+		     GEN4_MARG2_SAMPLE_RATE_VOLTAGE_MASK,
+		     GEN4_MARG2_IND_ERR_SAMPLER |
+		     GEN4_MARG2_SAMPLE_RPT_METHOD |
+		     GEN4_MARG2_IND_LR_TIMING |
+		     GEN4_MARG2_IND_UD_VOLTAGE |
+		     GEN4_MARG2_VOLTAGE_SUPPORTED |
+		     (0x3 << 16) | (0x3F << 8) | 0x3F);
+
+	/* Clear the BAR mask for the root port */
+	setbits32(pcierc->elbi + PCIE_ELBI_CS2_ENABLE, ENABLE);
+	write32(pcierc->dbi_base + PCIE_TYPE1_BAR0_REG, 0x0);
+	write32(pcierc->dbi_base + PCIE_TYPE1_BAR1_REG, 0x0);
+	clrbits32(pcierc->elbi + PCIE_ELBI_CS2_ENABLE, ENABLE);
+
+	/* Flow control timer: enable with 64-cycle update interval */
+	clrsetbits32(pcierc->dbi_base + PCIE_QUEUE_STATUS_OFF,
+		     TIMER_MOD_FLOW_CONTROL_EN | TIMER_MOD_FLOW_CONTROL_MASK,
+		     TIMER_MOD_FLOW_CONTROL_EN | TIMER_MOD_FLOW_CONTROL_VAL);
+
+	/* Enable Bus Master and Memory Space */
+	setbits32(pcierc->dbi_base + PCIE_TYPE1_STATUS_COMMAND_REG,
+		     PCIE_BME | PCIE_MSE);
 }
 #endif
 

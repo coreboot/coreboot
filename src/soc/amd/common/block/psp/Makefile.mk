@@ -28,6 +28,7 @@ endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2),y)
 
 all_x86-$(CONFIG_PSP_AB_RECOVERY) += psp_ab_recovery.c
+smm-$(CONFIG_PSP_AB_RECOVERY) += psp_ab_recovery.c
 
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2_EARLY_ACCESS),y)
 bootblock-y += psp.c

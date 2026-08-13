@@ -1750,6 +1750,39 @@ void acpi_allocate_write_tables(void)
 		die("ACPI tables overflowed and corrupted CBMEM! Increase config MAX_ACPI_TABLE_SIZE_KB!\n");
 }
 
+bool check_acpi_tables_write_limit(unsigned long current, size_t size)
+{
+	static unsigned long acpi_buffer_start = 0;
+	static unsigned long acpi_buffer_limit = 0;
+	static bool limit_initialized = false;
+
+	if (!limit_initialized) {
+		const struct cbmem_entry *ce = cbmem_entry_find(CBMEM_ID_ACPI);
+		if (ce) {
+			acpi_buffer_start = (unsigned long)cbmem_entry_start(ce);
+			acpi_buffer_limit = acpi_buffer_start + cbmem_entry_size(ce);
+			limit_initialized = true;
+		} else {
+			printk(BIOS_ERR, "ACPI buffer not yet allocated, write blocked\n");
+			return false;
+		}
+	}
+
+	if (current < acpi_buffer_start || current >= acpi_buffer_limit) {
+		printk(BIOS_ERR, "Detected write attempt @ %#lx outside the ACPI buffer"
+		       " (start %#lx, limit %#lx)\n",
+		       current, acpi_buffer_start, acpi_buffer_limit);
+		return false;
+	}
+
+	if (size > (acpi_buffer_limit - current)) {
+		printk(BIOS_ERR, "ACPI buffer overflow detected (limit %#lx,"
+		       " needed %#zx at %#lx)\n", acpi_buffer_limit, size, current);
+		return false;
+	}
+	return true;
+}
+
 static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp)
 {
 	if (strncmp((char *)rsdp, RSDP_SIG, sizeof(RSDP_SIG) - 1) != 0)

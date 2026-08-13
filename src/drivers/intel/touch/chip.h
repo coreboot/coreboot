@@ -178,6 +178,7 @@ struct intel_thc_hidspi_info {
 enum intel_touch_device {
 	TH_SENSOR_NONE,
 	TH_SENSOR_WACOM,    /* BOM22 for SPI only */
+	TH_SENSOR_WACOM_B52, /* BOM52 for SPI and I2C */
 	/*
 	 * TH_SENSOR_ELAN: the ELAN device for Intel's RVPs (default for ELAN)
 	 * TH_SENSOR_ELAN_REX: the device used in Google Rex; requires a special cable for Intel's RVP

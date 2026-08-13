@@ -206,9 +206,4 @@ config BOARD_SUPPORTS_HT
 	default n if SOC_INTEL_ALDERLAKE_PCH_N
 	default y
 
-config BOARD_SUPPORTS_HOTPLUG
-	bool
-	default y if BOARD_STARLABS_STARBOOK_ADL
-	default n
-
 endif

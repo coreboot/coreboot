@@ -34,6 +34,8 @@ ramstage-y	+= xhci.c
 smm-y		+= gpio.c
 smm-y		+= root_complex.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
+smm-y		+= reset.c
+smm-y		+= soc_util.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/glinda/include
 CPPFLAGS_common += -I$(src)/soc/amd/glinda/acpi

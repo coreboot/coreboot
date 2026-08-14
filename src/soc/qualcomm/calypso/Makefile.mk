@@ -401,6 +401,13 @@ $(GSI_FW_CBFS)-compression := none
 cbfs-files-y += $(GSI_FW_CBFS)
 
 ################################################################################
+QUPV3_FW_FILE := $(CALYPSO_BLOB)/qup_fw/qupv3_fw.elf
+QUPV3_FW_CBFS := $(CONFIG_CBFS_PREFIX)/qupv3_fw
+$(QUPV3_FW_CBFS)-file := $(QUPV3_FW_FILE)
+$(QUPV3_FW_CBFS)-type := payload
+cbfs-files-y += $(QUPV3_FW_CBFS)
+
+################################################################################
 ifeq ($(CONFIG_ARM64_USE_SECURE_OS),y)
 
 DEVCFG_TZ_FILE := $(CALYPSO_BLOB)/qtee/tz_oem_config.mbn

@@ -4,11 +4,24 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <device/mmio.h>
+#include <program_loading.h>
 #include <soc/addressmap.h>
 #include <soc/qclib_common.h>
 #include <soc/symbols_common.h>
 
 __weak int qclib_mainboard_override(struct qclib_cb_if_table *table) { return 0; }
+
+void qupv3_fw_load(void)
+{
+	struct prog qupv3_fw_prog =
+		PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/qupv3_fw");
+
+	printk(BIOS_INFO, "Loading QUPv3 firmware\n");
+	if (!selfload(&qupv3_fw_prog))
+		die("SOC image: QUPv3 FW load failed");
+
+	printk(BIOS_INFO, "QUPv3 firmware loaded successfully\n");
+}
 
 bool qclib_check_dload_mode(void)
 {

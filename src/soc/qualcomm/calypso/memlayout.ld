@@ -213,19 +213,15 @@
  * 0x146ABFFC    +----------------------------------------------------------+      |
  *               |                   ddr_information                        |      |
  * 0x146ABFE8    +----------------------------------------------------------+      |
- *               |                     shared_imem                          |      |
- * 0x146AA000    +----------------------------------------------------------+      |
  *               |                      aop_imem                            |      |
- * 0x146A8000    +----------------------------------------------------------+    SSRAM
- *               |                   qdss_usb_trace                         |      |
- * 0x146A6000    +----------------------------------------------------------+      |
- *               |                     delta_dcb                            |      |
- * 0x146A2000    +----------------------------------------------------------+      |
+ * 0x146A7000    +----------------------------------------------------------+    SSRAM
  *               |               dtb (Device Tree Blob)                     |      |
- * 0x14692000    +----------------------------------------------------------+      |
+ * 0x1468F000    +----------------------------------------------------------+      |
  *               |                      aop_sdi                             |      |
  * 0x14686000    +----------------------------------------------------------+      |
- *               |                 Reserved for QSEE                        |      v
+ *               |                   qdss_usb_trace                         |      |
+ * 0x14681000    +----------------------------------------------------------+      |
+ *               |                     shared_imem                          |      v
  * 0x14680000    +----------------------------------------------------------+ <---------
  *               |         ... (Memory not mapped: Unavailable) ...         | XXXXXXXXX
  * 0x0EF30000    +----------------------------------------------------------+ <---------
@@ -257,13 +253,20 @@ SECTIONS
 	AOPSRAM_END(0x0EF30000)
 
 	SSRAM_START(0x14680000)
-	REGION(qsee, 0x14680000, 24K, 4K)
-	REGION(aop_sdi, 0x14686000, 48K, 4K)
-	REGION(dtb, 0x14692000, 64K, 4K)
-	REGION(delta_dcb, 0x146A2000, 16K, 4K)
-	REGION(qdss_usb_trace, 0x146A6000, 8K, 4K)
-	REGION(aop_imem, 0x146A8000, 8K, 4K)
-	REGION(shared_imem, 0x146AA000, 0x1000, 4K)
+	REGION(shared_imem, 0x14680000, 4K, 4K)
+	REGION(qdss_usb_trace, 0x14681000, 8K, 4K)
+	REGION(aop_sdi, 0x14686000, 36K, 4K)
+/*
+ * Fixme - QSEE (80KB) and SOCCP SDI (16KB) falls in this region (0x1468F000--0x146A7000)
+ * QSEE region would be loaded at ramstage and so usage at romstage has no impact in
+ * normal boot flow. SOCCP SDI is needed at QcLib second entry (in ramdump flow) and usage
+ * at romstage during QcLib first entry also has no impact. But in ramdump flow, these
+ * regions would be overwritten by DTB loading and so QSEE/SOCCP-SDI region related
+ * use-case would be corrupted. After boot-IMEM optimization, this has to be moved to
+ * BSRAM region
+ */
+	REGION(dtb, 0x1468F000, 96K, 4K)
+	REGION(aop_imem, 0x146A7000, 16K, 4K)
 	REGION(ddr_information, 0x146ABFE8, 16, 8)
 	WATCHDOG_TOMBSTONE(0x146ABFFC, 4)
 	SSRAM_END(0x146AC000)

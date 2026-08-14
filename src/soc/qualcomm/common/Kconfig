@@ -172,6 +172,12 @@ config SOC_QUALCOMM_SPLIT_AOP_CBFS
 	  `aop_devcfg_meta`). This saves flash space in the RO region while
 	  avoiding decompression overhead during normal RW boot.
 
+config QC_DELTA_DCB_ENABLE
+	bool
+	default n
+	help
+	  Enable loading of DELTA_DCB blob for QCLib.
+
 config QC_HYP_AC_CFG_PRERAM
 	bool
 	default n

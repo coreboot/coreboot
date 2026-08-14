@@ -444,7 +444,7 @@ void qclib_load_and_run(void)
 		qclib_add_if_table_entry(QCLIB_TE_PMIC_SETTINGS, _pmic, data_size, 0);
 	}
 
-	if (_qc_blob_meta_1) {
+	if (CONFIG(QC_DELTA_DCB_ENABLE)) {
 		/* Attempt to load DELTA_DCB Blob */
 		data_size = cbfs_load(qclib_file(QCLIB_CBFS_DELTA_DCB),
 				_qc_blob_meta_1, REGION_SIZE(qc_blob_meta_1));

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef MAINBOARD_GOOGLE_MENSA_BOARD_H
-#define MAINBOARD_GOOGLE_MENSA_BOARD_H
+#ifndef MAINBOARD_GOOGLE_CALYPSO_BOARD_H
+#define MAINBOARD_GOOGLE_CALYPSO_BOARD_H
 
 #include <assert.h>
 #include <gpio.h>
@@ -60,4 +60,4 @@ int detect_ac_unplug_event(void);
  */
 void chromeec_finalize_and_poweroff(bool skip_heartbeat);
 
-#endif /* MAINBOARD_GOOGLE_MENSA_BOARD_H */
+#endif /* MAINBOARD_GOOGLE_CALYPSO_BOARD_H */

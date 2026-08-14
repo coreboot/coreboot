@@ -1,62 +1,84 @@
 # CBI UFSC fields
 fw_config
 	field AUDIO_CODEC 0 2
-		option AUDIO_CODEC_ABSENT	0
-		option AUDIO_CODEC_CS42L45	1
-		option AUDIO_CODEC_ALC721	2
+		option AUDIO_CODEC_ABSENT		0
+		option AUDIO_CODEC_CS42L45		1
+		option AUDIO_CODEC_ALC721		2
 	end
 	field AUDIO_AMPLIFIER 3 5
-		option AUDIO_AMPLIFIER_ABSENT	0
-		option AUDIO_AMPLIFIER_CS35L63	1
+		option AUDIO_AMPLIFIER_ABSENT		0
+		option AUDIO_AMPLIFIER_CS35L63		1
 	end
-	field UFC 6 6
-		option UFC_ABSENT		0
-		option UFC_MIPI			1
+	field CAMERA_UFC_NAME 6 8
+		option CAMERA_UFC_ABSENT		0
+		option CAMERA_UFC_USB			1
+		option CAMERA_UFC_MIPI			2
 	end
-	field WFC 7 7
-		option WFC_ABSENT		0
-		option WFC_MIPI			1
+	field CAMERA_WFC_NAME 9 11
+		option CAMERA_WFC_ABSENT		0
+		option CAMERA_WFC_USB			1
+		option CAMERA_WFC_MIPI			2
 	end
 	field STORAGE_TYPE 12 14
-		option STORAGE_TYPE_NVME_GEN4	1
-		option STORAGE_TYPE_NVME_GEN5	2
-		option STORAGE_TYPE_UFS	3
+		option STORAGE_TYPE_NVME_GEN4		1
+		option STORAGE_TYPE_NVME_GEN5		2
+		option STORAGE_TYPE_UFS			3
 	end
 	field SD_CARD_CONTROLLER 15 16
-		option SD_CONTROLLER_ABSENT	0
-		option SD_CONTROLLER_PRESENT	1
+		option SD_CONTROLLER_ABSENT		0
+		option SD_CONTROLLER_PRESENT		1
 	end
-	field TOUCHSCREEN 17 18
-		option TOUCHSCREEN_ABSENT	0
-		option TOUCHSCREEN_PRESENT	1
+	field TOUCHSCREEN_SOC_INTERFACE 21 22
+		option TOUCHSCREEN_INTERFACE_UNDEFINED	0
+		option TOUCHSCREEN_INTERFACE_THC	1
+		option TOUCHSCREEN_INTERFACE_LPSS_I2C	2
+		option TOUCHSCREEN_INTERFACE_GSPI	3
 	end
 	field SENSOR_HUB 23 23
-		option ISH_ABSENT	0
-		option ISH_PRESENT	1
+		option ISH_ABSENT			0
+		option ISH_PRESENT			1
 	end
 	field FINGERPRINT_INTERFACE 24 25
 		option FINGERPRINT_INTERFACE_ABSENT	0
 		option FINGERPRINT_INTERFACE_USB	1
 	end
 	field WIFI_INTERFACE 26 27
-		option WIFI_INTERFACE_ABSENT	0
-		option WIFI_INTERFACE_CNVI	1
-		option WIFI_INTERFACE_PCIE	2
+		option WIFI_INTERFACE_ABSENT		0
+		option WIFI_INTERFACE_CNVI		1
+		option WIFI_INTERFACE_PCIE		2
+	end
+	field CELLULAR_INTERFACE 28 29
+		option CELLULAR_ABSENT			0
+		option CELLULAR_USB			1
+		option CELLULAR_PCIE			2
 	end
 	field FORM_FACTOR 30 31
-		option FORM_FACTOR_CLAMSHELL	1
+		option FORM_FACTOR_CLAMSHELL		1
 	end
 	field TRACKPAD 32 34
-		option TRACKPAD_ABSENT	0
-		option TRACKPAD_PRESENT	1
+		option TRACKPAD_ABSENT			0
+		option TRACKPAD_HYNITRONICS_131T	1
+	end
+	field TRACKPAD_SOC_INTERFACE 37 38
+		option TRACKPAD_INTERFACE_UNDEFINED	0
+		option TRACKPAD_INTERFACE_THC		1
+		option TRACKPAD_INTERFACE_LPSS_I2C	2
 	end
 	field KEYBOARD_LAYOUT 45 47
-		option KEYBOARD_ABSENT	0
-		option KEYBOARD_PRESENT	1
+		option KEYBOARD_ABSENT			0
+		option KEYBOARD_PRESENT			1
 	end
 	field AP_OEM_3BIT_FIELD0 56 58
-		option WIFI_SAR_ID0	0
-		option WIFI_SAR_ID1	1
+		option TOUCHSCREEN_ELAN_B36_I2C		0
+		option TOUCHSCREEN_ELAN_B36_SPI		1
+		option TOUCHSCREEN_WACOM_B52_I2C	2
+		option TOUCHSCREEN_WACOM_B52_SPI	3
+		option TOUCHSCREEN_ELAN_REX_I2C		4
+		option TOUCHSCREEN_ELAN_REX_SPI		5
+	end
+	field AP_OEM_2BIT_FIELD0 59 60
+		option WIFI_SAR_ID0			0
+		option WIFI_SAR_ID1			1
 	end
 end
 
@@ -304,8 +326,8 @@ chip soc/intel/novalake
 				register "cio2_prt[0]" = "0"
 				register "cio2_prt[1]" = "2"
 				device generic 0 on
-					probe UFC UFC_MIPI
-					probe WFC WFC_MIPI
+					probe CAMERA_UFC_NAME CAMERA_UFC_MIPI
+					probe CAMERA_WFC_NAME CAMERA_WFC_MIPI
 				end
 			end
 		end
@@ -452,7 +474,7 @@ chip soc/intel/novalake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 36 on
-					probe UFC UFC_MIPI
+					probe CAMERA_UFC_NAME CAMERA_UFC_MIPI
 				end
 			end
 			chip drivers/intel/mipi_camera
@@ -479,7 +501,7 @@ chip soc/intel/novalake
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 0C on
-					probe UFC UFC_MIPI
+					probe CAMERA_UFC_NAME CAMERA_UFC_MIPI
 				end
 			end
 			chip drivers/intel/mipi_camera
@@ -511,7 +533,7 @@ chip soc/intel/novalake
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 50 on
-					probe UFC UFC_MIPI
+					probe CAMERA_UFC_NAME CAMERA_UFC_MIPI
 				end
 			end
 		end # I2C0
@@ -559,7 +581,7 @@ chip soc/intel/novalake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 36 on
-					probe WFC WFC_MIPI
+					probe CAMERA_WFC_NAME CAMERA_WFC_MIPI
 				end
 			end
 			chip drivers/intel/mipi_camera
@@ -586,7 +608,7 @@ chip soc/intel/novalake
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 0C on
-					probe WFC WFC_MIPI
+					probe CAMERA_WFC_NAME CAMERA_WFC_MIPI
 				end
 			end
 			chip drivers/intel/mipi_camera
@@ -618,7 +640,7 @@ chip soc/intel/novalake
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 50 on
-					probe WFC WFC_MIPI
+					probe CAMERA_WFC_NAME CAMERA_WFC_MIPI
 				end
 			end
 		end # I2C1

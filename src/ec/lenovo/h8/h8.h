@@ -34,20 +34,17 @@ int h8_get_sense_ready(void);
 
 void h8_bluetooth_enable(int on);
 bool h8_bluetooth_nv_enable(void);
-bool h8_has_bdc(const struct device *dev);
+bool h8_has_bdc(void);
 
 void h8_wwan_enable(int on);
 bool h8_wwan_nv_enable(void);
-bool h8_has_wwan(const struct device *dev);
-
-struct ec_lenovo_h8_config;
+bool h8_has_wwan(void);
 
 void h8_ssdt_generator(const struct device *dev);
-struct ec_lenovo_h8_config *h8_get_config(void);
-bool h8_kb_backlight_supported(const struct ec_lenovo_h8_config *conf);
+bool h8_kb_backlight_supported(void);
 u8 h8_illumination_default(void);
-bool h8_thinklight_active(const struct device *dev);
-bool h8_kb_backlight_active(const struct device *dev);
+bool h8_thinklight_active(void);
+bool h8_kb_backlight_active(void);
 /*
  * boards needing specific h8-related inits could override it
  */

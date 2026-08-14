@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
+#include <static.h>
 #include <stdio.h>
 #include <string.h>
 #include <smbios.h>
@@ -249,11 +251,13 @@ struct device_operations h8_dev_ops = {
 
 void __weak h8_mb_init(void){ /* NOOP */ }
 
-static struct ec_lenovo_h8_config *h8_chip_config;
-
 /* Determine keyboard backlight support from devicetree + EC query */
-bool h8_kb_backlight_supported(const struct ec_lenovo_h8_config *conf)
+bool h8_kb_backlight_supported(void)
 {
+	const struct device *dev = DEV_PTR(lenovo_ec);
+	assert(dev && dev->chip_info);
+	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
+
 	if (!conf || !conf->has_keyboard_backlight)
 		return false;
 
@@ -262,9 +266,11 @@ bool h8_kb_backlight_supported(const struct ec_lenovo_h8_config *conf)
 
 u8 h8_illumination_default(void)
 {
-	struct ec_lenovo_h8_config *conf = h8_get_config();
+	const struct device *dev = DEV_PTR(lenovo_ec);
+	assert(dev && dev->chip_info);
+	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
 	const bool has_thinklight = conf && conf->has_thinklight;
-	const bool has_kb_backlight = h8_kb_backlight_supported(conf);
+	const bool has_kb_backlight = h8_kb_backlight_supported();
 
 	if (has_thinklight && has_kb_backlight)
 		return KIC_BOTH;
@@ -282,9 +288,11 @@ static u8 h8_illumination_option(void)
 	return get_uint_option("backlight", h8_illumination_default()) & 0x3;
 }
 
-bool h8_thinklight_active(const struct device *dev)
+bool h8_thinklight_active(void)
 {
-	const struct ec_lenovo_h8_config *conf = dev->chip_info;
+	const struct device *dev = DEV_PTR(lenovo_ec);
+	assert(dev && dev->chip_info);
+	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
 
 	if (!conf || !conf->has_thinklight)
 		return false;
@@ -293,11 +301,9 @@ bool h8_thinklight_active(const struct device *dev)
 	return backlight == KIC_BOTH || backlight == KIC_THINKLIGHT;
 }
 
-bool h8_kb_backlight_active(const struct device *dev)
+bool h8_kb_backlight_active(void)
 {
-	const struct ec_lenovo_h8_config *conf = dev->chip_info;
-
-	if (!h8_kb_backlight_supported(conf))
+	if (!h8_kb_backlight_supported())
 		return false;
 
 	u8 backlight = h8_illumination_option();
@@ -310,8 +316,6 @@ static void h8_enable(struct device *dev)
 	u8 val;
 	u8 backlight;
 	u8 beepmask0, beepmask1, reg8;
-
-	h8_chip_config = conf;
 
 	dev->ops = &h8_dev_ops;
 
@@ -396,11 +400,11 @@ static void h8_enable(struct device *dev)
 	if (volume <= 0xff && !acpi_is_wakeup_s3())
 		ec_write(H8_VOLUME_CONTROL, volume);
 
-	val = (CONFIG(H8_SUPPORT_BT_ON_WIFI) || h8_has_bdc(dev)) &&
+	val = (CONFIG(H8_SUPPORT_BT_ON_WIFI) || h8_has_bdc()) &&
 		h8_bluetooth_nv_enable();
 	h8_bluetooth_enable(val);
 
-	val = h8_has_wwan(dev) && h8_wwan_nv_enable();
+	val = h8_has_wwan() && h8_wwan_nv_enable();
 	h8_wwan_enable(val);
 
 	if (conf->has_uwb)
@@ -423,8 +427,3 @@ struct chip_operations ec_lenovo_h8_ops = {
 	.name = "Lenovo H8 EC",
 	.enable_dev = h8_enable,
 };
-
-struct ec_lenovo_h8_config *h8_get_config(void)
-{
-	return h8_chip_config;
-}

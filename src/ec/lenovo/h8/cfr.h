@@ -7,7 +7,9 @@
 #ifndef _LENOVO_H8_CFR_H_
 #define _LENOVO_H8_CFR_H_
 
+#include <assert.h>
 #include <drivers/option/cfr_frontend.h>
+#include <static.h>
 #include "chip.h"
 #include "h8.h"
 
@@ -41,9 +43,11 @@ static const struct sm_enum_value kic_values_keyboard_only[] = {
 
 static void update_backlight(struct sm_object *new)
 {
-	struct ec_lenovo_h8_config *conf = h8_get_config();
+	const struct device *dev = DEV_PTR(lenovo_ec);
+	assert(dev && dev->chip_info);
+	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
 	const bool has_thinklight = conf && conf->has_thinklight;
-	const bool has_kb_backlight = h8_kb_backlight_supported(conf);
+	const bool has_kb_backlight = h8_kb_backlight_supported();
 
 	if (!has_thinklight && !has_kb_backlight) {
 		new->sm_enum.flags = CFR_OPTFLAG_SUPPRESS;

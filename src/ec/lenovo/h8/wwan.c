@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <ec/acpi/ec.h>
 #include <gpio.h>
 #include <option.h>
+#include <static.h>
 #include <types.h>
 
 #include "h8.h"
@@ -22,9 +24,11 @@ void h8_wwan_enable(int on)
 /*
  * Detect WWAN on supported MBs.
  */
-bool h8_has_wwan(const struct device *dev)
+bool h8_has_wwan(void)
 {
-	struct ec_lenovo_h8_config *conf = dev->chip_info;
+	const struct device *dev = DEV_PTR(lenovo_ec);
+	assert(dev && dev->chip_info);
+	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
 
 	if (!CONFIG(H8_HAS_WWAN_GPIO_DETECTION)) {
 		printk(BIOS_INFO, "H8: WWAN detection not implemented. "
@@ -32,7 +36,7 @@ bool h8_has_wwan(const struct device *dev)
 		return true;
 	}
 
-	if (gpio_get(conf->wwan_gpio_num) == conf->wwan_gpio_lvl) {
+	if (conf && (gpio_get(conf->wwan_gpio_num) == conf->wwan_gpio_lvl)) {
 		printk(BIOS_INFO, "H8: WWAN installed\n");
 		return true;
 	}

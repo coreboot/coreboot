@@ -2,7 +2,6 @@
 
 #include <boot/coreboot_tables.h>
 #include <drivers/option/cfr_frontend.h>
-#include <ec/google/chromeec/cfr.h>
 #include <intelblocks/cfr.h>
 #include <soc/cfr.h>
 
@@ -15,7 +14,6 @@ static const struct sm_object ipu_camera = SM_DECLARE_BOOL({
 	.flags		= CFR_OPTFLAG_SUPPRESS,
 	#endif
 });
-
 
 static struct sm_obj_form system = {
 	.ui_name = "System",
@@ -37,15 +35,6 @@ static struct sm_obj_form system = {
 	},
 };
 
-static struct sm_obj_form ec = {
-	.ui_name = "ChromeEC Embedded Controller",
-	.obj_list = (const struct sm_object *[]) {
-		&auto_fan_control,
-		&ec_kb_backlight,
-		NULL
-	},
-};
-
 static struct sm_obj_form devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
@@ -56,7 +45,6 @@ static struct sm_obj_form devices = {
 
 static struct sm_obj_form *sm_root[] = {
 	&system,
-	&ec,
 	&devices,
 	NULL
 };

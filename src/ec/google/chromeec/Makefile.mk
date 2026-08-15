@@ -55,6 +55,8 @@ verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_MEC) += mec.c
 verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_RTK) += rtk.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ec_acpi.c
 
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
+
 ramstage-$(CONFIG_VBOOT) += vboot_storage.c
 smm-$(CONFIG_VBOOT) += vboot_storage.c
 romstage-$(CONFIG_VBOOT) += vboot_storage.c

@@ -9,7 +9,6 @@ romstage-y += romstage.c
 ramstage-y += chromeos.c
 ramstage-y += ec.c
 ramstage-y += sku_id.c
-ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
 verstage-y += chromeos.c
 verstage-y += verstage.c

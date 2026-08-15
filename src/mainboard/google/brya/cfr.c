@@ -2,7 +2,6 @@
 
 #include <boot/coreboot_tables.h>
 #include <drivers/option/cfr_frontend.h>
-#include <ec/google/chromeec/cfr.h>
 #include <intelblocks/cfr.h>
 #include <soc/cfr.h>
 
@@ -62,22 +61,11 @@ static struct sm_obj_form system = {
 	},
 };
 
-static struct sm_obj_form ec = {
-	.ui_name = "ChromeEC Embedded Controller",
-	.obj_list = (const struct sm_object *[]) {
-		&auto_fan_control,
-		&ec_kb_backlight,
-		&ec_rgb_kb_color,
-		NULL
-	},
-};
-
 static struct sm_obj_form *sm_root[] = {
 	&system,
 #if CONFIG(BOARD_GOOGLE_TANIKS) || CONFIG(BOARD_GOOGLE_TAEKO)
 	&devices,
 #endif
-	&ec,
 	NULL
 };
 

@@ -106,11 +106,7 @@ static const struct sm_object usb_always_on = SM_DECLARE_ENUM({
 /* Ultrawideband */
 static void update_uwb(struct sm_object *new)
 {
-	const struct device *dev = DEV_PTR(lenovo_ec);
-	assert(dev && dev->chip_info);
-	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
-
-	if (!conf || !conf->has_uwb)
+	if (!h8_has_uwb())
 		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
 }
 

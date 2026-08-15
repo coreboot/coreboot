@@ -47,6 +47,8 @@ bool h8_has_thinklight(void);
 u8 h8_illumination_default(void);
 bool h8_thinklight_active(void);
 bool h8_kb_backlight_active(void);
+
+bool h8_has_uwb(void);
 /*
  * boards needing specific h8-related inits could override it
  */

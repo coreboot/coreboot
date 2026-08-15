@@ -312,6 +312,16 @@ bool h8_kb_backlight_active(void)
 	return backlight == KIC_BOTH || backlight == KIC_KEYBOARD;
 }
 
+/* Returns true when UWB is supported */
+bool h8_has_uwb(void)
+{
+	const struct device *dev = DEV_PTR(lenovo_ec);
+	assert(dev && dev->chip_info);
+	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
+
+	return conf && conf->has_uwb;
+}
+
 static void h8_enable(struct device *dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
@@ -409,7 +419,7 @@ static void h8_enable(struct device *dev)
 	val = h8_has_wwan() && h8_wwan_nv_enable();
 	h8_wwan_enable(val);
 
-	if (conf->has_uwb)
+	if (h8_has_uwb())
 		h8_uwb_enable(get_uint_option("uwb", 1));
 
 	h8_fn_ctrl_swap(get_uint_option("fn_ctrl_swap", CONFIG(H8_FN_CTRL_SWAP)));

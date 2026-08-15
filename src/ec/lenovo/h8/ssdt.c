@@ -24,8 +24,6 @@ static char *h8_dsdt_scope(const struct device *dev, const char *scope)
  */
 void h8_ssdt_generator(const struct device *dev)
 {
-	struct ec_lenovo_h8_config *conf = dev->chip_info;
-
 	if (!acpi_device_path(dev))
 		return;
 
@@ -39,7 +37,7 @@ void h8_ssdt_generator(const struct device *dev)
 	acpigen_write_name_byte("HWAN", h8_has_wwan() ? ONE_OP : ZERO_OP);
 	acpigen_write_name_byte("HKLT", h8_thinklight_active() ? ONE_OP : ZERO_OP);
 	acpigen_write_name_byte("HKBL", h8_kb_backlight_active() ? ONE_OP : ZERO_OP);
-	acpigen_write_name_byte("HUWB", (conf && conf->has_uwb) ? ONE_OP : ZERO_OP);
+	acpigen_write_name_byte("HUWB", h8_has_uwb() ? ONE_OP : ZERO_OP);
 
 	acpigen_pop_len(); /* Scope HKEY */
 }

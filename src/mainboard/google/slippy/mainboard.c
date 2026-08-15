@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_device.h>
 #include <acpi/acpi_pld.h>
 #include <acpi/acpigen.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
+#include <device/i2c.h>
 #include <device/pci_def.h>
 #include <drivers/intel/gma/int15.h>
 #include <option.h>
@@ -28,6 +30,33 @@ static void mainboard_init(struct device *dev)
 	mainboard_ec_init();
 }
 
+static void peppy_ssdt_add_als(void)
+{
+	const struct acpi_i2c i2c = {
+		.address	= BOARD_LIGHTSENSOR_I2C_ADDR,
+		.mode_10bit	= I2C_MODE_7_BIT,
+		.speed		= I2C_SPEED_FAST,
+		.resource	= "\\_SB.PCI0.I2C1",
+	};
+	const struct acpi_irq irq = ACPI_IRQ_EDGE_LOW(BOARD_LIGHTSENSOR_IRQ);
+
+	acpigen_write_scope("\\_SB.PCI0.I2C1");
+	acpigen_write_device("ALSI");
+	acpigen_write_name_string("_HID", "ISL29018");
+	acpigen_write_name_string("_DDN", "Intersil 29018 Ambient Light Sensor");
+	acpigen_write_name_integer("_UID", 6);
+	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+
+	acpigen_write_name("_CRS");
+	acpigen_write_resourcetemplate_header();
+	acpi_device_write_i2c(&i2c);
+	acpi_device_write_interrupt(&irq);
+	acpigen_write_resourcetemplate_footer();
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+}
+
 static void mainboard_fill_ssdt(const struct device *dev)
 {
 	if (!CONFIG(BOARD_GOOGLE_PEPPY))
@@ -41,6 +70,10 @@ static void mainboard_fill_ssdt(const struct device *dev)
 	acpigen_write_name_integer("ETPD", touchpad_type != TP_TYPE_CYPRESS ? 1 : 0);
 	acpigen_write_name_integer("CTPD", touchpad_type != TP_TYPE_ELAN ? 1 : 0);
 	acpigen_pop_len(); /* Scope */
+
+	/* Ambient light sensor (I2C1) only when CFR option is enabled */
+	if (get_uint_option("ambient_light", 0))
+		peppy_ssdt_add_als();
 
 	/* SIM USB (PRT6) only when LTE/NGFF CFR option is enabled */
 	if (get_uint_option("lte_ngff", 0)) {
@@ -63,15 +96,17 @@ static int mainboard_smbios_data(struct device *dev, int *handle,
 {
 	int len = 0;
 
-	len += smbios_write_type41(
-		current, handle,
-		BOARD_LIGHTSENSOR_NAME,		/* name */
-		BOARD_LIGHTSENSOR_IRQ,		/* instance */
-		BOARD_LIGHTSENSOR_I2C_BUS,	/* segment */
-		BOARD_LIGHTSENSOR_I2C_ADDR,	/* bus */
-		0,				/* device */
-		0,				/* function */
-		SMBIOS_DEVICE_TYPE_OTHER);	/* device type */
+	if (!CONFIG(BOARD_GOOGLE_PEPPY) || get_uint_option("ambient_light", 0)) {
+		len += smbios_write_type41(
+			current, handle,
+			BOARD_LIGHTSENSOR_NAME,		/* name */
+			BOARD_LIGHTSENSOR_IRQ,		/* instance */
+			BOARD_LIGHTSENSOR_I2C_BUS,	/* segment */
+			BOARD_LIGHTSENSOR_I2C_ADDR,	/* bus */
+			0,				/* device */
+			0,				/* function */
+			SMBIOS_DEVICE_TYPE_OTHER);	/* device type */
+	}
 
 	len += smbios_write_type41(
 		current, handle,

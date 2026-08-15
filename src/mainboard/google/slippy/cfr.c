@@ -29,6 +29,15 @@ static const struct sm_object lte_ngff = SM_DECLARE_BOOL({
 	.flags		= !CONFIG(BOARD_GOOGLE_PEPPY) ? CFR_OPTFLAG_SUPPRESS : 0,
 });
 
+static const struct sm_object ambient_light = SM_DECLARE_BOOL({
+	.opt_name	= "ambient_light",
+	.ui_name	= "Ambient light sensor",
+	.ui_helptext	= "Enable ACPI/SMBIOS for the ISL29018 on I2C1.\n"
+			  "Only for boards that have the sensor fitted.",
+	.default_value	= false,
+	.flags		= !CONFIG(BOARD_GOOGLE_PEPPY) ? CFR_OPTFLAG_SUPPRESS : 0,
+});
+
 static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]) {
@@ -51,6 +60,7 @@ static struct sm_obj_form devices = {
 	.obj_list = (const struct sm_object *[]) {
 		&touchpad_type,
 		&lte_ngff,
+		&ambient_light,
 		NULL
 	},
 };

@@ -42,6 +42,7 @@ bool h8_has_wwan(void);
 
 void h8_ssdt_generator(const struct device *dev);
 bool h8_kb_backlight_supported(void);
+bool h8_has_thinklight(void);
 u8 h8_illumination_default(void);
 bool h8_thinklight_active(void);
 bool h8_kb_backlight_active(void);

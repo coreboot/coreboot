@@ -250,6 +250,16 @@ struct device_operations h8_dev_ops = {
 
 void __weak h8_mb_init(void){ /* NOOP */ }
 
+/* Returns true when thinklight is supported */
+bool h8_has_thinklight(void)
+{
+	const struct device *dev = DEV_PTR(lenovo_ec);
+	assert(dev && dev->chip_info);
+	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
+
+	return conf && conf->has_thinklight;
+}
+
 /* Determine keyboard backlight support from devicetree + EC query */
 bool h8_kb_backlight_supported(void)
 {
@@ -265,10 +275,7 @@ bool h8_kb_backlight_supported(void)
 
 u8 h8_illumination_default(void)
 {
-	const struct device *dev = DEV_PTR(lenovo_ec);
-	assert(dev && dev->chip_info);
-	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
-	const bool has_thinklight = conf && conf->has_thinklight;
+	const bool has_thinklight = h8_has_thinklight();
 	const bool has_kb_backlight = h8_kb_backlight_supported();
 
 	if (has_thinklight && has_kb_backlight)
@@ -289,11 +296,7 @@ static u8 h8_illumination_option(void)
 
 bool h8_thinklight_active(void)
 {
-	const struct device *dev = DEV_PTR(lenovo_ec);
-	assert(dev && dev->chip_info);
-	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
-
-	if (!conf || !conf->has_thinklight)
+	if (!h8_has_thinklight())
 		return false;
 
 	u8 backlight = h8_illumination_option();

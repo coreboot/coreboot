@@ -42,10 +42,7 @@ static const struct sm_enum_value kic_values_keyboard_only[] = {
 
 static void update_backlight(struct sm_object *new)
 {
-	const struct device *dev = DEV_PTR(lenovo_ec);
-	assert(dev && dev->chip_info);
-	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
-	const bool has_thinklight = conf && conf->has_thinklight;
+	const bool has_thinklight = h8_has_thinklight();
 	const bool has_kb_backlight = h8_kb_backlight_supported();
 
 	if (!has_thinklight && !has_kb_backlight) {

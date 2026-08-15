@@ -15,9 +15,7 @@ static const struct sm_object touchpad_type = SM_DECLARE_ENUM({
 		{ "Elan",		1	},
 		{ "Cypress",		2	},
 		SM_ENUM_VALUE_END		},
-#if !CONFIG(BOARD_GOOGLE_PEPPY)
-	.flags		= CFR_OPTFLAG_SUPPRESS,
-#endif
+	.flags		= !CONFIG(BOARD_GOOGLE_PEPPY) ? CFR_OPTFLAG_SUPPRESS : 0,
 });
 
 static const struct sm_object lte_ngff = SM_DECLARE_BOOL({

@@ -49,6 +49,9 @@ bool h8_thinklight_active(void);
 bool h8_kb_backlight_active(void);
 
 bool h8_has_uwb(void);
+
+bool h8_has_power_management_beeps(void);
+
 /*
  * boards needing specific h8-related inits could override it
  */

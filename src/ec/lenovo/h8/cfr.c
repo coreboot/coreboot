@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <assert.h>
 #include <drivers/option/cfr_frontend.h>
-#include <static.h>
 #include "h8.h"
 #include "chip.h"
 
@@ -171,11 +169,7 @@ static const struct sm_object wwan = SM_DECLARE_BOOL({
 /* Power Management Beeps */
 static void update_beep(struct sm_object *new)
 {
-	const struct device *dev = DEV_PTR(lenovo_ec);
-	assert(dev && dev->chip_info);
-	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
-
-	if (!conf || !conf->has_power_management_beeps)
+	if (!h8_has_power_management_beeps())
 		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
 }
 

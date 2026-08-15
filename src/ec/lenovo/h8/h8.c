@@ -322,6 +322,16 @@ bool h8_has_uwb(void)
 	return conf && conf->has_uwb;
 }
 
+/* Returns true when power management beeps are supported */
+bool h8_has_power_management_beeps(void)
+{
+	const struct device *dev = DEV_PTR(lenovo_ec);
+	assert(dev && dev->chip_info);
+	const struct ec_lenovo_h8_config *conf = dev ? dev->chip_info : NULL;
+
+	return conf && conf->has_power_management_beeps;
+}
+
 static void h8_enable(struct device *dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
@@ -361,14 +371,12 @@ static void h8_enable(struct device *dev)
 	beepmask0 = conf->beepmask0;
 	beepmask1 = conf->beepmask1;
 
-	if (conf->has_power_management_beeps) {
+	if (h8_has_power_management_beeps()) {
 		if (get_uint_option("power_management_beeps", 1) == 0) {
 			beepmask0 = 0x00;
 			beepmask1 = 0x00;
 		}
-	}
 
-	if (conf->has_power_management_beeps) {
 		if (get_uint_option("low_battery_beep", 1))
 			beepmask0 |= 2;
 		else

@@ -1717,7 +1717,7 @@ void google_chromeec_init(void)
 		return;
 
 	/* Enable automatic fan control */
-	if (get_uint_option("auto_fan_control", CONFIG(EC_GOOGLE_CHROMEEC_AUTO_FAN_CTRL))) {
+	if (get_uint_option("auto_fan_control", google_chromeec_has_fan())) {
 		ec_cmd_thermal_auto_fan_ctrl(PLAT_EC);
 	}
 

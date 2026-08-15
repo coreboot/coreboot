@@ -20,6 +20,15 @@ static const struct sm_object touchpad_type = SM_DECLARE_ENUM({
 #endif
 });
 
+static const struct sm_object lte_ngff = SM_DECLARE_BOOL({
+	.opt_name	= "lte_ngff",
+	.ui_name	= "LTE / NGFF slot",
+	.ui_helptext	= "Enable PCIe RP2 and ACPI for the LTE/NGFF slot.\n"
+			  "Only for boards with the NGFF connector (or equivalent) fitted.",
+	.default_value	= false,
+	.flags		= !CONFIG(BOARD_GOOGLE_PEPPY) ? CFR_OPTFLAG_SUPPRESS : 0,
+});
+
 static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]) {
@@ -41,6 +50,7 @@ static struct sm_obj_form devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
 		&touchpad_type,
+		&lte_ngff,
 		NULL
 	},
 };

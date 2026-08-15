@@ -23,6 +23,8 @@ chip northbridge/intel/haswell
 				# Disable PCIe CLKOUT 2-5 and CLKOUT_XDP
 				register "icc_clock_disable" = "0x013c0000"
 			end
+
+			device pci 1c.1 on end # PCIe Port #2
 		end
 	end
 end

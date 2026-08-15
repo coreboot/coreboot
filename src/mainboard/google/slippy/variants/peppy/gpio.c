@@ -22,7 +22,7 @@ const struct pch_lp_gpio_map mainboard_lp_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 16: UNUSED */
 	LP_GPIO_UNUSED,        /* 17: UNUSED */
 	LP_GPIO_NATIVE,        /* 18: PCIE_CLKREQ_WLAN# */
-	LP_GPIO_UNUSED,        /* 19: UNUSED */
+	LP_GPIO_NATIVE,        /* 19: PCIE_CLKREQ_LTE# */
 	LP_GPIO_UNUSED,        /* 20: UNUSED */
 	LP_GPIO_UNUSED,        /* 21: UNUSED */
 	LP_GPIO_UNUSED,        /* 22: UNUSED */

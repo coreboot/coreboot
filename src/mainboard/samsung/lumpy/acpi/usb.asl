@@ -1,26 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-Scope (\_SB.PCI0.EHC1.HUB7.PRT1)
+Scope (\_SB.PCI0.EHC1.HUB7.URMH)
 {
-	// Hub Port 1
-	Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
+	Scope (PRT0)
 	{
-		0xFF,	// Connectable
-		0xFF,	// OEM Connector
-		0,	// Reserved
-		0	// Reserved
-	})
-
-	// Not Visible
-	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
-	{
-		Return (GPLD (0))
-	}
-
-	Device (USB1)
-	{
-		Name (_ADR, 1)
-
 		// Left USB Port
 		Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
 		{
@@ -38,10 +21,8 @@ Scope (\_SB.PCI0.EHC1.HUB7.PRT1)
 
 	}
 
-	Device (USB2)
+	Scope (PRT1)
 	{
-		Name (_ADR, 2)
-
 		// Right USB Port
 		Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
 		{
@@ -58,10 +39,8 @@ Scope (\_SB.PCI0.EHC1.HUB7.PRT1)
 		}
 	}
 
-	Device (USB4)
+	Scope (PRT3)
 	{
-		Name (_ADR, 4)
-
 		// SD Card Slot
 		Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
 		{
@@ -80,27 +59,10 @@ Scope (\_SB.PCI0.EHC1.HUB7.PRT1)
 
 }
 
-Scope (\_SB.PCI0.EHC2.HUB7.PRT1)
+Scope (\_SB.PCI0.EHC2.HUB7.URMH)
 {
-	// Hub Port 2
-	Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
+	Scope (PRT3)
 	{
-		0xFF,	// Connectable
-		0xFF,	// OEM Connector
-		0,	// Reserved
-		0	// Reserved
-	})
-
-	// Not Visible
-	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
-	{
-		Return (GPLD (0))
-	}
-
-	Device (USB4)
-	{
-		Name (_ADR, 4)
-
 		// Webcam
 		Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
 		{

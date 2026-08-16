@@ -42,13 +42,33 @@ Device (EHC1)
 			Return (Local0)
 		}
 
-		// How many are there?
-		Device (PRT1) { Name (_ADR, 1) } // USB Port 0
-		Device (PRT2) { Name (_ADR, 2) } // USB Port 1
-		Device (PRT3) { Name (_ADR, 3) } // USB Port 2
-		Device (PRT4) { Name (_ADR, 4) } // USB Port 3
-		Device (PRT5) { Name (_ADR, 5) } // USB Port 4
-		Device (PRT6) { Name (_ADR, 6) } // USB Port 5
+		Device (URMH) {	/* Rate Matching Hub */
+			Name (_ADR, 1)
+
+			// Hub Port 1
+			Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
+			{
+				0xFF,	// Connectable
+				0xFF,	// OEM Connector
+				0,	// Reserved
+				0	// Reserved
+			})
+
+			// Not Visible
+			Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
+			{
+				Return (GPLD (0))
+			}
+
+			Device (PRT0) { Name(_ADR, 1) }
+			Device (PRT1) { Name(_ADR, 2) }
+			Device (PRT2) { Name(_ADR, 3) }
+			Device (PRT3) { Name(_ADR, 4) }
+			Device (PRT4) { Name(_ADR, 5) }
+			Device (PRT5) { Name(_ADR, 6) }
+			Device (PRT6) { Name(_ADR, 7) }
+			Device (PRT7) { Name(_ADR, 8) }
+		}
 	}
 }
 
@@ -92,13 +112,31 @@ Device (EHC2)
 			Return (Local0)
 		}
 
-		// How many are there?
-		Device (PRT1) { Name (_ADR, 1) } // USB Port 0
-		Device (PRT2) { Name (_ADR, 2) } // USB Port 1
-		Device (PRT3) { Name (_ADR, 3) } // USB Port 2
-		Device (PRT4) { Name (_ADR, 4) } // USB Port 3
-		Device (PRT5) { Name (_ADR, 5) } // USB Port 4
-		Device (PRT6) { Name (_ADR, 6) } // USB Port 5
+		Device (URMH) {	/* Rate Matching Hub */
+			Name (_ADR, 1)
+
+			// Hub Port 1
+			Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
+			{
+				0xFF,	// Connectable
+				0xFF,	// OEM Connector
+				0,	// Reserved
+				0	// Reserved
+			})
+
+			// Not Visible
+			Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
+			{
+				Return (GPLD (0))
+			}
+
+			Device (PRT0) { Name(_ADR, 1) }
+			Device (PRT1) { Name(_ADR, 2) }
+			Device (PRT2) { Name(_ADR, 3) }
+			Device (PRT3) { Name(_ADR, 4) }
+			Device (PRT4) { Name(_ADR, 5) }
+			Device (PRT5) { Name(_ADR, 6) }
+		}
 	}
 }
 

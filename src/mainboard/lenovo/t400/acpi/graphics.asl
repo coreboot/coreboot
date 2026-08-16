@@ -4,41 +4,23 @@
  * Switchable graphics not yet tested!
  */
 
-/* Hybrid graphics enable/disable GPIO bitfields */
-Name (HYG1, 0x004A0000)
-Name (HYG2, 0x00020000)
-
-/* GPIO control port */
-Name (GPCP, DEFAULT_GPIOBASE)
-
-/* GPIO control map */
-OperationRegion (GPCM, SystemIO, GPCP, 0x3F)
-Field (GPCM, ByteAcc, NoLock, Preserve) {
-	GPUS, 32,
-	GPIS, 32,
-	Offset (0x0C),
-	GPLV, 32,
-	Offset (0x30),
-	GQUS, 32,
-	GQIS, 32,
-	GQLV, 32
-}
-
 Method(SHYB, 1) {
 	/* Switch hybrid graphics */
 	if (Arg0 == 1)
 	{
 		/* Discrete graphics requested */
-		GPLV |= HYG1
-		GQLV |= HYG2
+		\_SB.PCI0.STXS(17)
+		\_SB.PCI0.STXS(19)	/* Backlight control */
+		\_SB.PCI0.STXS(22)	/* Mux */
+		\_SB.PCI0.STXS(49)	/* GFX_PWR_EN_D */
 	}
 	else
 	{
 		/* Integrated graphics requested */
-		Local0 = HYG1 ^ 0xFFFFFFFF
-		GPLV &= Local0
-		Local0 = HYG2 ^ 0xFFFFFFFF
-		GQLV &= Local0
+		\_SB.PCI0.CTXS(17)
+		\_SB.PCI0.CTXS(19)	/* Backlight control */
+		\_SB.PCI0.CTXS(22)	/* Mux */
+		\_SB.PCI0.CTXS(49)	/* GFX_PWR_EN_D */
 	}
 }
 

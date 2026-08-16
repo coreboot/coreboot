@@ -8,6 +8,8 @@
 #include "wpt_lp_pci_irqs.asl"
 #endif
 
+#include <southbridge/intel/lynxpoint/pch_minimal.h>
+
 #if CONFIG(INTEL_LYNXPOINT_LP)
 #define DEFAULT_PRW_VALUE	0x6d
 #else
@@ -45,6 +47,11 @@ Scope (\)
 	Name (ISWP, 0)
 #endif
 }
+
+#if !CONFIG(INTEL_LYNXPOINT_LP)
+// General purpose GPIO access methods
+#include <southbridge/intel/common/acpi/gpio.asl>
+#endif
 
 // High Definition Audio (Azalia) 0:1b.0
 #include "audio.asl"

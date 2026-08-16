@@ -213,6 +213,8 @@ Scope(\)
 		KTCT, 1,	// Keyboard Text redirect disable
 	}
 }
+// General purpose GPIO access methods
+#include <southbridge/intel/common/acpi/gpio.asl>
 
 // High Definition Audio (Azalia) 0:1b.0
 #include "audio.asl"

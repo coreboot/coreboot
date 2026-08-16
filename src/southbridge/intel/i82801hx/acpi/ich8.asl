@@ -149,6 +149,8 @@ Scope(\)
 	}
 
 }
+// General purpose GPIO access methods
+#include <southbridge/intel/common/acpi/gpio.asl>
 
 // 0:1b.0 High Definition Audio (Azalia)
 #include <southbridge/intel/common/acpi/audio_ich.asl>

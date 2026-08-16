@@ -159,7 +159,6 @@ void southbridge_smm_xhci_sleep(u8 slp_type)
 
 void southbridge_finalize_all(void)
 {
-	intel_me_finalize_smm();
 	intel_pch_finalize_smm();
 	intel_sandybridge_finalize_smm();
 	intel_model_206ax_finalize_smm();

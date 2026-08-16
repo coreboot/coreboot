@@ -285,11 +285,11 @@ u32 read_cb(void);
 int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 		 void *req_data, void *rsp_data, int rsp_bytes);
 
-void update_mei_base_address(void);
-bool is_mei_base_address_valid(void);
 int intel_mei_setup(struct device *dev);
 int intel_me_extend_valid(struct device *dev);
 void intel_me_hide(struct device *dev);
+
+void me_finalize_ops(void);
 
 /* Defined in me_status.c for both romstage and ramstage */
 void intel_me_status(union me_hfs *hfs, union me_gmes *gmes);
@@ -299,7 +299,6 @@ int intel_early_me_init(void);
 int intel_early_me_uma_size(void);
 int intel_early_me_init_done(u8 status);
 bool intel_early_me_cpu_replaced(void);
-void intel_me_finalize_smm(void);
 
 /* Identifiction */
 

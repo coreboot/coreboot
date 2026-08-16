@@ -311,21 +311,7 @@ int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 	return 0;
 }
 
-#ifdef __SIMPLE_DEVICE__
-
-void update_mei_base_address(void)
-{
-	uint32_t reg32 = pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf;
-	mei_base_address = (u32 *)(uintptr_t)reg32;
-}
-
-bool is_mei_base_address_valid(void)
-{
-	return mei_base_address && mei_base_address != (u32 *)0xfffffff0;
-}
-
-#else
-
+#ifndef __SIMPLE_DEVICE__
 /* Prepare ME for MEI messages */
 int intel_mei_setup(struct device *dev)
 {

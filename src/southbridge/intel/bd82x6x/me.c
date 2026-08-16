@@ -21,6 +21,7 @@
 #include <option.h>
 #include <southbridge/intel/common/me.h>
 #include <southbridge/intel/bd82x6x/cfr.h>
+#include <static.h>
 
 #include "me.h"
 #include "pch.h"
@@ -208,6 +209,95 @@ static void me_print_fwcaps(mbp_fw_caps *caps_section)
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
 }
 
+/* Send END OF POST message to the ME */
+static void me8_mkhi_end_of_post(void)
+{
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_GEN,
+		.command	= MKHI_END_OF_POST,
+	};
+	struct mei_header mei = {
+		.is_complete	= 1,
+		.host_address	= MEI_HOST_ADDRESS,
+		.client_address	= MEI_ADDRESS_MKHI,
+		.length		= sizeof(mkhi),
+	};
+
+	u32 eop_ack;
+
+	/* Send request and wait for response */
+	printk(BIOS_NOTICE, "ME: %s\n", __func__);
+	if (mei_sendrecv(&mei, &mkhi, NULL, &eop_ack, sizeof(eop_ack)) < 0) {
+		printk(BIOS_ERR, "ME: END OF POST message failed\n");
+		return;
+	}
+
+	printk(BIOS_INFO, "ME: END OF POST message successful (%d)\n", eop_ack);
+}
+
+/* Send END OF POST message to the ME */
+static void me7_mkhi_end_of_post(void)
+{
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_GEN,
+		.command	= MKHI_END_OF_POST,
+	};
+	struct mei_header mei = {
+		.is_complete	= 1,
+		.host_address	= MEI_HOST_ADDRESS,
+		.client_address	= MEI_ADDRESS_MKHI,
+		.length		= sizeof(mkhi),
+	};
+
+	/* Send request and wait for response */
+	if (mei_sendrecv(&mei, &mkhi, NULL, NULL, 0) < 0) {
+		printk(BIOS_ERR, "ME: END OF POST message failed\n");
+		return;
+	}
+
+	printk(BIOS_INFO, "ME: END OF POST message successful\n");
+}
+
+static void intel_me_finalize(struct device *dev)
+{
+	union me_hfs hfs;
+
+	/* Make sure ME is in a mode that expects EOP */
+	hfs.raw = pci_read_config32(dev, PCI_ME_HFS);
+
+	/* Abort and leave device alone if not normal mode */
+	if (hfs.fpt_bad ||
+	    hfs.working_state != ME_HFS_CWS_NORMAL ||
+	    hfs.operation_mode != ME_HFS_MODE_NORMAL)
+		return;
+
+	/* Try to send EOP command so ME stops accepting other commands */
+	if (intel_me_generation(dev) == ME_GEN_8)
+		me8_mkhi_end_of_post();
+	else if (intel_me_generation(dev) == ME_GEN_7)
+		me7_mkhi_end_of_post();
+	else
+		printk(BIOS_ERR, "%s: No finalize handler\n", dev_path(dev));
+
+	intel_me_hide(dev);
+}
+
+/*
+ * Lock down the ME device and hide it from the OS.  This is called at the end of
+ * the ramstage to ensure that the ME is not left in a state where it will accept
+ * commands from the OS.
+ */
+void me_finalize_ops(void)
+{
+	struct device *dev = DEV_PTR(mei1);
+
+	/* When already called, HECI-1 will be hidden and dev->enabled is false */
+	if (dev && dev->enabled && dev->ops && dev->ops->final)
+		dev->ops->final(dev);
+}
+
+/******************************************************************************
+ *									     */
 static u32 me_to_host_words_pending(void)
 {
 	struct mei_csr me;
@@ -460,6 +550,7 @@ static struct device_operations device_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= intel_me_init,
+	.final			= intel_me_finalize,
 	.ops_pci		= &pci_dev_ops_pci,
 };
 

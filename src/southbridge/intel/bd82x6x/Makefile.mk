@@ -25,7 +25,7 @@ ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 
 ramstage-$(CONFIG_ELOG) += elog.c
 
-smm-y += common.c smihandler.c me_smm.c me_common.c
+smm-y += common.c smihandler.c
 
 romstage-y += common.c
 romstage-y += me_status.c

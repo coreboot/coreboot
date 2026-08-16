@@ -17,6 +17,7 @@
 #include <string.h>
 #include "chip.h"
 #include "pch.h"
+#include "me.h"
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/common/pciehp.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
@@ -683,6 +684,8 @@ static void southbridge_fill_ssdt(const struct device *device)
 static void lpc_final(struct device *dev)
 {
 	spi_finalize_ops();
+	/* Run ME finalize handler before disabling global reset */
+	me_finalize_ops();
 
 	/* Call SMM finalize() handlers before resume */
 	if (CONFIG(INTEL_CHIPSET_LOCKDOWN) ||

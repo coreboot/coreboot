@@ -4,7 +4,12 @@
 #define _INTEL_ME_H
 
 #include <device/device.h>
+#include <device/pci_ids.h>
 #include <types.h>
+
+/* PCI Device IDs */
+#define PCI_DEVID_ME_7	0x1c3a
+#define PCI_DEVID_ME_8	0x1e3a
 
 #define ME_RETRY		100000	/* 1 second */
 #define ME_DELAY		10	/* 10 us */
@@ -295,6 +300,29 @@ int intel_early_me_uma_size(void);
 int intel_early_me_init_done(u8 status);
 bool intel_early_me_cpu_replaced(void);
 void intel_me_finalize_smm(void);
+
+/* Identifiction */
+
+enum me_generation {
+	ME_GEN_UNKNOWN,
+	ME_GEN_7,
+	ME_GEN_8,
+};
+
+static inline enum me_generation intel_me_generation(struct device *dev)
+{
+	if (!dev || dev->vendor != PCI_VID_INTEL)
+		return ME_GEN_UNKNOWN;
+
+	switch (dev->device) {
+	case PCI_DEVID_ME_7:
+		return ME_GEN_7;
+	case PCI_DEVID_ME_8:
+		return ME_GEN_8;
+	default:
+		return ME_GEN_UNKNOWN;
+	}
+}
 
 typedef struct {
 	u32       major_version  : 16;

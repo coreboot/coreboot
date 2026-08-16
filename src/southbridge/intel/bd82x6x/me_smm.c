@@ -82,10 +82,10 @@ void intel_me_finalize_smm(void)
 	/* Try to send EOP command so ME stops accepting other commands */
 	const u16 did = pci_read_config16(PCH_ME_DEV, PCI_DEVICE_ID);
 	switch (did) {
-	case 0x1c3a:
+	case PCI_DEVID_ME_7:
 		me7_mkhi_end_of_post();
 		break;
-	case 0x1e3a:
+	case PCI_DEVID_ME_8:
 		me8_mkhi_end_of_post();
 		break;
 	default:

@@ -16,7 +16,6 @@ ramstage-y += sata.c
 ramstage-y += usb_ehci.c
 ramstage-y += usb_xhci.c
 ramstage-y += me.c
-ramstage-y += me_8.x.c
 ramstage-y += me_common.c
 ramstage-y += smbus.c
 ramstage-y += ../common/pciehp.c

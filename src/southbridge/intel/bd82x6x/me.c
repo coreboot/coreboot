@@ -16,12 +16,31 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/pci_ids.h>
+#include <string.h>
 #include <elog.h>
 #include <option.h>
 #include <southbridge/intel/common/me.h>
 
 #include "me.h"
 #include "pch.h"
+
+static inline void print_cap(const char *name, int state)
+{
+	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
+	       name, state ? " en" : "dis");
+}
+
+static void me_print_fw_version(mbp_fw_version_name *vers_name)
+{
+	if (!vers_name->major_version) {
+		printk(BIOS_ERR, "ME: mbp missing version report\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "ME: found version %d.%d.%d.%d\n",
+	       vers_name->major_version, vers_name->minor_version,
+	       vers_name->hotfix_version, vers_name->build_version);
+}
 
 /* Determine the path that we should take based on ME status */
 static me_bios_path intel_me_path(struct device *dev)
@@ -66,9 +85,15 @@ static me_bios_path intel_me_path(struct device *dev)
 		break;
 	}
 
-	/* Check for any error code and valid firmware */
+	/* Check for any error code and valid firmware and MBP */
 	if (hfs.error_code || hfs.fpt_bad)
 		path = ME_ERROR_BIOS_PATH;
+
+	/* Check if the MBP is ready */
+	if ((intel_me_generation(dev) == ME_GEN_8) && !gmes.mbp_rdy) {
+		printk(BIOS_CRIT, "%s: mbp is not ready!\n", __func__);
+		path = ME_ERROR_BIOS_PATH;
+	}
 
 	if (CONFIG(ELOG) && path != ME_NORMAL_BIOS_PATH) {
 		struct elog_event_data_me_extended data = {
@@ -88,8 +113,8 @@ static me_bios_path intel_me_path(struct device *dev)
 	return path;
 }
 
-/* Get ME firmware version */
-static int mkhi_get_fw_version(void)
+/* Get ME 7.x firmware version */
+static int mkhi_get_fw_version(mbp_fw_version_name *vers_name)
 {
 	struct me_fw_version version;
 	struct mkhi_header mkhi = {
@@ -116,64 +141,74 @@ static int mkhi_get_fw_version(void)
 	       version.recovery_major, version.recovery_minor,
 	       version.recovery_build_number, version.recovery_hot_fix);
 
+	/* Convert to mbp_fw_version_name */
+	vers_name->major_version = version.code_major;
+	vers_name->minor_version = version.code_minor;
+	vers_name->hotfix_version = version.code_hot_fix;
+	vers_name->build_version = version.code_build_number;
 	return 0;
 }
 
-static inline void print_cap(const char *name, int state)
-{
-	printk(BIOS_DEBUG, "ME Capability: %-30s : %sabled\n",
-	       name, state ? "en" : "dis");
-}
+static int intel_me_read_mbp(me_bios_payload *mbp_data);
 
 /* Get ME Firmware Capabilities */
-static int mkhi_get_fwcaps(void)
+static int mkhi_get_fwcaps(mefwcaps_sku *cap)
 {
 	u32 rule_id = 0;
-	struct me_fwcaps cap;
+	struct me_fwcaps cap_msg;
 	struct mkhi_header mkhi = {
-		.group_id	= MKHI_GROUP_ID_FWCAPS,
-		.command	= MKHI_FWCAPS_GET_RULE,
+		.group_id       = MKHI_GROUP_ID_FWCAPS,
+		.command        = MKHI_FWCAPS_GET_RULE,
 	};
 	struct mei_header mei = {
-		.is_complete	= 1,
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-		.length		= sizeof(mkhi) + sizeof(rule_id),
+		.is_complete    = 1,
+		.host_address   = MEI_HOST_ADDRESS,
+		.client_address = MEI_ADDRESS_MKHI,
+		.length         = sizeof(mkhi) + sizeof(rule_id),
 	};
 
 	/* Send request and wait for response */
-	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap, sizeof(cap)) < 0) {
+	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap_msg, sizeof(cap_msg)) < 0) {
 		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
 		return -1;
 	}
-
-	print_cap("Full Network manageability", cap.caps_sku.full_net);
-	print_cap("Regular Network manageability", cap.caps_sku.std_net);
-	print_cap("Manageability", cap.caps_sku.manageability);
-	print_cap("Small business technology", cap.caps_sku.small_business);
-	print_cap("Level III manageability", cap.caps_sku.l3manageability);
-	print_cap("IntelR Anti-Theft (AT)", cap.caps_sku.intel_at);
-	print_cap("IntelR Capability Licensing Service (CLS)",
-		  cap.caps_sku.intel_cls);
-	print_cap("IntelR Power Sharing Technology (MPC)",
-		  cap.caps_sku.intel_mpc);
-	print_cap("ICC Over Clocking", cap.caps_sku.icc_over_clocking);
-	print_cap("Protected Audio Video Path (PAVP)", cap.caps_sku.pavp);
-	print_cap("IPV6", cap.caps_sku.ipv6);
-	print_cap("KVM Remote Control (KVM)", cap.caps_sku.kvm);
-	print_cap("Outbreak Containment Heuristic (OCH)", cap.caps_sku.och);
-	print_cap("Virtual LAN (VLAN)", cap.caps_sku.vlan);
-	print_cap("TLS", cap.caps_sku.tls);
-	print_cap("Wireless LAN (WLAN)", cap.caps_sku.wlan);
-
+	*cap = cap_msg.caps_sku;
 	return 0;
 }
 
+/* Get ME Firmware Capabilities */
+static void me_print_fwcaps(mbp_fw_caps *caps_section)
+{
+	mefwcaps_sku *cap = &caps_section->fw_capabilities;
+	if (!caps_section->available) {
+		printk(BIOS_ERR, "ME: mbp missing fwcaps report\n");
+		if (mkhi_get_fwcaps(cap))
+			return;
+	}
+
+	print_cap("Full Network manageability", cap->full_net);
+	print_cap("Regular Network manageability", cap->std_net);
+	print_cap("Manageability", cap->manageability);
+	print_cap("Small business technology", cap->small_business);
+	print_cap("Level III manageability", cap->l3manageability);
+	print_cap("IntelR Anti-Theft (AT)", cap->intel_at);
+	print_cap("IntelR Capability Licensing Service (CLS)", cap->intel_cls);
+	print_cap("IntelR Power Sharing Technology (MPC)", cap->intel_mpc);
+	print_cap("ICC Over Clocking", cap->icc_over_clocking);
+	print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
+	print_cap("IPV6", cap->ipv6);
+	print_cap("KVM Remote Control (KVM)", cap->kvm);
+	print_cap("Outbreak Containment Heuristic (OCH)", cap->och);
+	print_cap("Virtual LAN (VLAN)", cap->vlan);
+	print_cap("TLS", cap->tls);
+	print_cap("Wireless LAN (WLAN)", cap->wlan);
+}
 
 /* Check whether ME is present and do basic init */
 static void intel_me_init(struct device *dev)
 {
 	me_bios_path path = intel_me_path(dev);
+	me_bios_payload mbp_data = {0};
 	bool need_reset = false;
 	union me_hfs hfs;
 
@@ -202,11 +237,18 @@ static void intel_me_init(struct device *dev)
 		if (intel_mei_setup(dev) < 0)
 			break;
 
+		if (intel_me_generation(dev) == ME_GEN_8) {
+			if (intel_me_read_mbp(&mbp_data))
+				break;
+		} else if (intel_me_generation(dev) == ME_GEN_7) {
+			mkhi_get_fw_version(&mbp_data.fw_version_name);
+			if (!mkhi_get_fwcaps(&mbp_data.fw_caps_sku.fw_capabilities))
+				mbp_data.fw_caps_sku.available = 1;
+		}
+
 		if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
-			/* Print ME firmware version */
-			mkhi_get_fw_version();
-			/* Print ME firmware capabilities */
-			mkhi_get_fwcaps();
+			me_print_fw_version(&mbp_data.fw_version_name);
+			me_print_fwcaps(&mbp_data.fw_caps_sku);
 		}
 
 		/* Put ME in Software Temporary Disable Mode, if needed */
@@ -281,8 +323,151 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 };
 
+static const unsigned short me_device_ids[] = { PCI_DEVID_ME_7, PCI_DEVID_ME_8, 0 };
+
 static const struct pci_driver intel_me __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VID_INTEL,
-	.device	= PCI_DEVID_ME_7,
+	.devices = me_device_ids,
 };
+
+/******************************************************************************
+ *									     */
+static u32 me_to_host_words_pending(void)
+{
+	struct mei_csr me;
+	read_me_csr(&me);
+	if (!me.ready)
+		return 0;
+	return (me.buffer_write_ptr - me.buffer_read_ptr) &
+		(me.buffer_depth - 1);
+}
+
+/*
+ * Intel ME 8.x only.
+ * mbp seems to be following its own flow, let's retrieve it in a dedicated
+ * function.
+ */
+static int intel_me_read_mbp(me_bios_payload *mbp_data)
+{
+	mbp_header mbp_hdr;
+	mbp_item_header	mbp_item_hdr;
+	u32 me2host_pending;
+	u32 mbp_item_id;
+	struct mei_csr host;
+
+	me2host_pending = me_to_host_words_pending();
+	if (!me2host_pending) {
+		printk(BIOS_ERR, "ME: no mbp data!\n");
+		return -1;
+	}
+
+	/* we know for sure that at least the header is there */
+	mei_read_dword_ptr(&mbp_hdr, MEI_ME_CB_RW);
+
+	if ((mbp_hdr.num_entries > (mbp_hdr.mbp_size / 2)) ||
+	    (me2host_pending < mbp_hdr.mbp_size)) {
+		printk(BIOS_ERR, "ME: mbp of %d entries, total size %d words"
+		       " buffer contains %d words\n",
+		       mbp_hdr.num_entries, mbp_hdr.mbp_size,
+		       me2host_pending);
+		return -1;
+	}
+
+	me2host_pending--;
+
+	while (mbp_hdr.num_entries--) {
+		u32 *copy_addr;
+		u32 copy_size, buffer_room;
+		void *p;
+
+		if (!me2host_pending) {
+			printk(BIOS_ERR, "ME: no mbp data %d entries to go!\n",
+			       mbp_hdr.num_entries + 1);
+			return -1;
+		}
+
+		mei_read_dword_ptr(&mbp_item_hdr, MEI_ME_CB_RW);
+
+		if (mbp_item_hdr.length > me2host_pending) {
+			printk(BIOS_ERR, "ME: insufficient mbp data %d "
+			       "entries to go!\n",
+			       mbp_hdr.num_entries + 1);
+			return -1;
+		}
+
+		me2host_pending -= mbp_item_hdr.length;
+
+		mbp_item_id = (((u32)mbp_item_hdr.item_id) << 8) +
+			mbp_item_hdr.app_id;
+
+		copy_size = mbp_item_hdr.length - 1;
+
+#define SET_UP_COPY(field) { copy_addr = (u32 *)&mbp_data->field;	     \
+			buffer_room = sizeof(mbp_data->field) / sizeof(u32); \
+			break;					             \
+		}
+
+		p = &mbp_item_hdr;
+		printk(BIOS_INFO, "ME: MBP item header %8.8x\n", *((u32 *)p));
+
+		switch (mbp_item_id) {
+		case 0x101:
+			SET_UP_COPY(fw_version_name);
+
+		case 0x102:
+			SET_UP_COPY(icc_profile);
+
+		case 0x103:
+			SET_UP_COPY(at_state);
+
+		case 0x201:
+			mbp_data->fw_caps_sku.available = 1;
+			SET_UP_COPY(fw_caps_sku.fw_capabilities);
+
+		case 0x301:
+			SET_UP_COPY(rom_bist_data);
+
+		case 0x401:
+			SET_UP_COPY(platform_key);
+
+		case 0x501:
+			mbp_data->fw_plat_type.available = 1;
+			SET_UP_COPY(fw_plat_type.rule_data);
+
+		case 0x601:
+			SET_UP_COPY(mfsintegrity);
+
+		default:
+			printk(BIOS_ERR, "ME: unknown mbp item id 0x%x! Skipping\n",
+			       mbp_item_id);
+			while (copy_size--)
+				read_cb();
+			continue;
+		}
+
+		if (buffer_room != copy_size) {
+			printk(BIOS_ERR, "ME: buffer room %d != %d copy size"
+			       " for item  0x%x!!!\n",
+			       buffer_room, copy_size, mbp_item_id);
+			return -1;
+		}
+		while (copy_size--)
+			*copy_addr++ = read_cb();
+	}
+
+	read_host_csr(&host);
+	host.interrupt_generate = 1;
+	write_host_csr(&host);
+
+	{
+		int cntr = 0;
+		while (host.interrupt_generate) {
+			read_host_csr(&host);
+			cntr++;
+		}
+		printk(BIOS_SPEW, "ME: mbp read OK after %d cycles\n", cntr);
+	}
+
+	return 0;
+}

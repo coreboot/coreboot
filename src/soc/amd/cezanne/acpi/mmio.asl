@@ -27,6 +27,16 @@ Device (GPIO)
 	Name (_UID, 0)
 	Name (_DDN, GPIO_DEVICE_DESC)
 
+	Name (_DSD, Package ()
+	{
+		ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+		Package ()
+		{
+			Package () { "pinctrl-resource-names", Package () {
+				"gpio", "remote-gpio", "iomux" } },
+		},
+	})
+
 	Method (_CRS, 0) {
 		Local0 = ResourceTemplate() {
 			Interrupt (
@@ -36,6 +46,8 @@ Device (GPIO)
 				Shared, , , IRQR)
 			{ 0 }
 			Memory32Fixed (ReadWrite, ACPIMMIO_GPIO0_BASE, 0x400)
+			Memory32Fixed (ReadWrite, ACPIMMIO_REMOTE_GPIO_BASE, 0x100)
+			Memory32Fixed (ReadWrite, ACPIMMIO_IOMUX_BASE, 0x100)
 		}
 		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PICM) {
@@ -46,6 +58,8 @@ Device (GPIO)
 		If (IRQN == 0x1f) {
 			Return (ResourceTemplate() {
 				Memory32Fixed (ReadWrite, ACPIMMIO_GPIO0_BASE, 0x400)
+				Memory32Fixed (ReadWrite, ACPIMMIO_REMOTE_GPIO_BASE, 0x100)
+				Memory32Fixed (ReadWrite, ACPIMMIO_IOMUX_BASE, 0x100)
 			})
 		} Else {
 			Return (Local0)

@@ -22,6 +22,7 @@ static const struct device_operations usb_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+	.scan_bus		= scan_static_bus,
 	.init			= usb_init,
 	.ops_pci		= 0, /* No subsystem IDs on 82371EB! */
 };

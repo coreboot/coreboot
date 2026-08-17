@@ -59,6 +59,7 @@ static struct device_operations usb_uhci_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+	.scan_bus		= scan_static_bus,
 	.init			= usb_uhci_init,
 	.ops_pci		= &pci_dev_ops_pci,
 };

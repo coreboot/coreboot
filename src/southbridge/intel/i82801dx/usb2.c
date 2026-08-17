@@ -17,11 +17,12 @@ static void usb2_init(struct device *dev)
 }
 
 static struct device_operations usb2_ops = {
-	.read_resources = pci_ehci_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init = usb2_init,
-	.enable = i82801dx_enable,
+	.read_resources		= pci_ehci_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.scan_bus		= scan_static_bus,
+	.init			= usb2_init,
+	.enable			= i82801dx_enable,
 };
 
 /* 82801DB/DBM USB 2.0 */

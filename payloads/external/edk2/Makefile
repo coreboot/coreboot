@@ -147,6 +147,7 @@ BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdCapsuleEmbeddedDriverSuppor
 endif
 ifeq ($(CONFIG_DRIVERS_EFI_CAPSULE_ON_DISK_SUPPORT),y)
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdCapsuleOnDiskSupport=TRUE
+BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdCapsuleOnDiskConnectBootDevice=TRUE
 endif
 ifeq ($(CONFIG_DRIVERS_EFI_CAPSULE_EMBED_FMP_DXE),y)
 BUILD_STR += -D CAPSULE_EMBED_FMP_DXE=TRUE

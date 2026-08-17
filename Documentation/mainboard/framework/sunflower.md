@@ -3,7 +3,7 @@
 ## Support Status
 
 This port is currently not officially supported by Framework.
-It is a proof of concept for internal evaluation of the technical feasability
+It is a proof of concept for internal evaluation of the technical feasibility
 of coreboot at Framework.
 
 All mainboards sold to customers ship with BootGuard enabled. While it is
@@ -17,14 +17,14 @@ binaries, flashing will not result in a bootable system.
 - EC
     - Nuvoton NPCX 993 with Chrome EC firmware
     - Backlit keyboard, with standard PS/2 keycodes and I2C HID hotkeys
-    - Battery
+    - 50Wh Battery
     - Suspend / resume (S0ix, not S3)
 - GPU
     - Intel® Iris® Xe Graphics
     - GOP driver is recommended, VBT is provided
     - HDMI/USB-C DisplayPort video
 - Memory
-    - 1x SODIMM slots for up to 48GB DDR5-5600
+    - 1x SODIMM slot for up to 48GB DDR5-5600
 - Networking
     - AX211 M.2 2230 CNVi WiFi / Bluetooth
     - Or compatible with PCIe Gen2 x1 WiFi / Bluetooth
@@ -35,17 +35,17 @@ binaries, flashing will not result in a bootable system.
     - Combined headphone / microphone 3.5-mm jack
     - USB-C DisplayPort/HDMI audio
 - Built-in devices
-  - I2C HID PTP Touchpad
-  - I2C HID Touchscreen
-  - I2C HID Mediakeys
-  - Intel fTPM
-  - Intel RAPL power reporting
-  - USB Camera
-  - USB Fingerprint reader
-  - eSPI PS2 Keyboard
-  - eSPI PS2 emulated mouse/touchpad (if OS has no I2C driver)
+    - I2C HID PTP Touchpad
+    - I2C HID Touchscreen
+    - I2C HID Mediakeys
+    - Intel fTPM
+    - Intel RAPL power reporting
+    - USB Camera
+    - USB Fingerprint reader
+    - eSPI PS2 Keyboard
+    - eSPI PS2 emulated mouse/touchpad (if OS has no I2C driver)
 - Storage
-    - M.2 2280 PCIe Gen4 x4 SSD
+    - M.2 2230 PCIe Gen4 x4 SSD
 - 4 Type-C Ports
     - USB 3.2 Gen 2
     - 100W USB PD 3.0 Charging

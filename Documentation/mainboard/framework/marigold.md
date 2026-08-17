@@ -3,7 +3,7 @@
 ## Support Status
 
 This port is currently not officially supported by Framework.
-It is a proof of concept for internal evaluation of the technical feasability
+It is a proof of concept for internal evaluation of the technical feasibility
 of coreboot at Framework.
 
 All mainboards sold to customers ship with BootGuard enabled. While it is

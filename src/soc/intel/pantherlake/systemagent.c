@@ -175,7 +175,14 @@ static void configure_tdp(struct device *dev)
 			if (config->enable_fast_vmode[VR_DOMAIN_IA] &&
 			    soc_config->tdp_pl4_fastvmode)
 				soc_config->tdp_pl4 = soc_config->tdp_pl4_fastvmode;
-			soc_config->tdp_pl1_override = tdp;
+
+			/* Enable tdp_pl1_override if it was configured */
+			if (!soc_config->tdp_pl1_override)
+				soc_config->tdp_pl1_override = tdp;
+
+			printk(BIOS_INFO, "TDP cfg: tdp=%u index=%u tdp_pl1_override=%u\n",
+					tdp, cpuid_to_ptl[i].limits, soc_config->tdp_pl1_override);
+
 			set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
 			config_tdp = true;
 			printk(BIOS_DEBUG, "Configured power limits for SA PCI ID: 0x%4x\n",

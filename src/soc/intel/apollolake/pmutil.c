@@ -198,9 +198,30 @@ int soc_prev_sleep_state(const struct chipset_power_state *ps,
 	return prev_sleep_state;
 }
 
-static int rtc_failed(uint32_t gen_pmcon1)
+static void clear_rtc_failed(void)
 {
-	return !!(gen_pmcon1 & RPS);
+	uintptr_t pmc_bar = soc_read_pmc_base();
+	uint32_t gen_pmcon1 = read32p(pmc_bar + GEN_PMCON1);
+
+	/* We do not want to write 1 to clear-1 bits. Set them to 0. */
+	gen_pmcon1 &= ~GEN_PMCON1_CLR1_BITS;
+
+	/* RPS is write 0 to clear. */
+	gen_pmcon1 &= ~RPS;
+
+	write32p(pmc_bar + GEN_PMCON1, gen_pmcon1);
+}
+
+static int check_rtc_failed(uint32_t gen_pmcon1)
+{
+	const int failed = !!(gen_pmcon1 & RPS);
+
+	if (failed) {
+		clear_rtc_failed();
+		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", failed);
+	}
+
+	return failed;
 }
 
 int soc_get_rtc_failed(void)
@@ -210,28 +231,12 @@ int soc_get_rtc_failed(void)
 	if (acpi_fetch_pm_state(&ps, PS_CLAIMER_RTC) < 0)
 		return 1;
 
-	return rtc_failed(ps->gen_pmcon1);
+	return check_rtc_failed(ps->gen_pmcon1);
 }
 
 int vbnv_cmos_failed(void)
 {
-	uintptr_t pmc_bar = soc_read_pmc_base();
-	uint32_t gen_pmcon1 = read32p(pmc_bar + GEN_PMCON1);
-	int rtc_failure = rtc_failed(gen_pmcon1);
-
-	if (rtc_failure) {
-		printk(BIOS_INFO, "RTC failed!\n");
-
-		/* We do not want to write 1 to clear-1 bits. Set them to 0. */
-		gen_pmcon1 &= ~GEN_PMCON1_CLR1_BITS;
-
-		/* RPS is write 0 to clear. */
-		gen_pmcon1 &= ~RPS;
-
-		write32p(pmc_bar + GEN_PMCON1, gen_pmcon1);
-	}
-
-	return rtc_failure;
+	return check_rtc_failed(read32p(soc_read_pmc_base() + GEN_PMCON1));
 }
 
 /* STM Support */

@@ -1674,7 +1674,7 @@ int dt_set_bin_prop_by_path(struct device_tree *tree, const char *path,
 		return 1;
 	}
 
-	dt_add_bin_prop(dt_node, prop_name, data, data_size);
+	dt_add_bin_prop(dt_node, strdup(prop_name), data, data_size);
 	free(path_copy);
 
 	return 0;

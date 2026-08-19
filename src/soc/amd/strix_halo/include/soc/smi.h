@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-/* TODO: Update for Strix Halo */
-
 #ifndef AMD_STRIX_HALO_SMI_H
 #define AMD_STRIX_HALO_SMI_H
 
@@ -25,13 +23,13 @@
 #define SMITYPE_G_GENINT1_L		0
 #define SMITYPE_G_GENINT2_L		1
 #define SMITYPE_G_AGPIO3		2
-#define SMITYPE_G_LPC_PME_L		3
+#define SMITYPE_G_AGPIO22		3
 #define SMITYPE_G_AGPIO4		4
-#define SMITYPE_G_LPC_PD_L		5
+#define SMITYPE_G_AGPIO11		5
 #define SMITYPE_G_SPKR			6
 #define SMITYPE_G_AGPIO5		7
 #define SMITYPE_G_WAKE_L		8
-#define SMITYPE_G_LPC_SMI_L		9
+#define SMITYPE_G_AGPIO29		9
 #define SMITYPE_G_AGPIO6		10
 #define SMITYPE_G_AGPIO7		11
 #define SMITYPE_G_USBOC0_L		12
@@ -39,7 +37,7 @@
 #define SMITYPE_G_USBOC2_L		14
 #define SMITYPE_G_USBOC3_L		15
 #define SMITYPE_G_AGPIO23		16
-#define SMITYPE_G_ESPI_RESET_L		17
+#define SMITYPE_G_AGPIO32		17
 #define SMITYPE_G_FANIN0		18
 #define SMITYPE_G_SYSRESET_L		19
 #define SMITYPE_G_AGPIO40		20
@@ -49,13 +47,13 @@
 #define GEVENT_MASK ((1 << SMITYPE_G_GENINT1_L)		\
 		   | (1 << SMITYPE_G_GENINT2_L)		\
 		   | (1 << SMITYPE_G_AGPIO3)		\
-		   | (1 << SMITYPE_G_LPC_PME_L)		\
+		   | (1 << SMITYPE_G_AGPIO22)		\
 		   | (1 << SMITYPE_G_AGPIO4)		\
-		   | (1 << SMITYPE_G_LPC_PD_L)		\
+		   | (1 << SMITYPE_G_AGPIO11)		\
 		   | (1 << SMITYPE_G_SPKR)		\
 		   | (1 << SMITYPE_G_AGPIO5)		\
 		   | (1 << SMITYPE_G_WAKE_L)		\
-		   | (1 << SMITYPE_G_LPC_SMI_L)		\
+		   | (1 << SMITYPE_G_AGPIO29)		\
 		   | (1 << SMITYPE_G_AGPIO6)		\
 		   | (1 << SMITYPE_G_AGPIO7)		\
 		   | (1 << SMITYPE_G_USBOC0_L)		\
@@ -63,7 +61,7 @@
 		   | (1 << SMITYPE_G_USBOC2_L)		\
 		   | (1 << SMITYPE_G_USBOC3_L)		\
 		   | (1 << SMITYPE_G_AGPIO23)		\
-		   | (1 << SMITYPE_G_ESPI_RESET_L)	\
+		   | (1 << SMITYPE_G_AGPIO32)	\
 		   | (1 << SMITYPE_G_FANIN0)		\
 		   | (1 << SMITYPE_G_SYSRESET_L)	\
 		   | (1 << SMITYPE_G_AGPIO40)		\

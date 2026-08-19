@@ -315,6 +315,8 @@ chip soc/intel/novalake
 		end
 
 		device ref ipu on
+			probe CAMERA_UFC_NAME CAMERA_UFC_MIPI
+			probe CAMERA_WFC_NAME CAMERA_WFC_MIPI
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"
 				register "acpi_name" = ""IPU0""
@@ -325,10 +327,7 @@ chip soc/intel/novalake
 				register "cio2_lane_endpoint[1]" = ""^I2C0.CAM1""
 				register "cio2_prt[0]" = "0"
 				register "cio2_prt[1]" = "2"
-				device generic 0 on
-					probe CAMERA_UFC_NAME CAMERA_UFC_MIPI
-					probe CAMERA_WFC_NAME CAMERA_WFC_MIPI
-				end
+				device generic 0 on end
 			end
 		end
 

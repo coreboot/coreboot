@@ -5,6 +5,7 @@
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
 #include <intelblocks/cfg.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/systemagent.h>
@@ -27,6 +28,10 @@ static void pch_finalize(void)
 	/* TODO: Add Thermal Configuration */
 
 	pmc_clear_pmcon_sts();
+
+	/* Lock chipset memory registers to protect SMM. */
+	if (!CONFIG(USE_INTEL_FSP_MP_INIT))
+		cpu_lt_lock_memory();
 }
 
 static void tbt_finalize(void)

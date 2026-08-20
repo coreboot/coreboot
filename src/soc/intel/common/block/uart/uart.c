@@ -4,6 +4,7 @@
 #include <acpi/acpigen.h>
 #include <acpi/acpi_gnvs.h>
 #include <console/uart.h>
+#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -84,6 +85,11 @@ bool uart_is_controller_initialized(void)
 	base = pci_s_read_config32(dev, PCI_BASE_ADDRESS_0) & ~0xFFF;
 	if (!base)
 		return false;
+
+	if (ENV_SMM && smm_points_to_smram((void *)base, 4 * KiB)) {
+		printk(BIOS_EMERG, "UART: BAR0 0x%" PRIxPTR " overlaps SMRAM!\n", base);
+		die("SMM BAR exploitation attempt detected.");
+	}
 
 	if ((pci_s_read_config16(dev, PCI_COMMAND) & UART_PCI_ENABLE)
 	    != UART_PCI_ENABLE)

@@ -149,10 +149,8 @@ static int mkhi_get_fw_version(mbp_fw_version_name *vers_name)
 	return 0;
 }
 
-static int intel_me_read_mbp(me_bios_payload *mbp_data);
-
 /* Get ME Firmware Capabilities */
-static int mkhi_get_fwcaps(mefwcaps_sku *cap)
+static enum cb_err mkhi_get_fwcaps(mefwcaps_sku *cap)
 {
 	u32 rule_id = 0;
 	struct me_fwcaps cap_msg;
@@ -170,10 +168,10 @@ static int mkhi_get_fwcaps(mefwcaps_sku *cap)
 	/* Send request and wait for response */
 	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap_msg, sizeof(cap_msg)) < 0) {
 		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
-		return -1;
+		return CB_ERR;
 	}
 	*cap = cap_msg.caps_sku;
-	return 0;
+	return CB_SUCCESS;
 }
 
 /* Get ME Firmware Capabilities */
@@ -182,7 +180,7 @@ static void me_print_fwcaps(mbp_fw_caps *caps_section)
 	mefwcaps_sku *cap = &caps_section->fw_capabilities;
 	if (!caps_section->available) {
 		printk(BIOS_ERR, "ME: mbp missing fwcaps report\n");
-		if (mkhi_get_fwcaps(cap))
+		if (mkhi_get_fwcaps(cap) != CB_SUCCESS)
 			return;
 	}
 
@@ -204,135 +202,6 @@ static void me_print_fwcaps(mbp_fw_caps *caps_section)
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
 }
 
-/* Check whether ME is present and do basic init */
-static void intel_me_init(struct device *dev)
-{
-	me_bios_path path = intel_me_path(dev);
-	me_bios_payload mbp_data = {0};
-	bool need_reset = false;
-	union me_hfs hfs;
-
-	/* Do initial setup and determine the BIOS path */
-	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_get_bios_path_string(path));
-
-	u8 me_state = get_uint_option("me_state", 0);
-	u8 me_state_prev = get_uint_option("me_state_prev", 0);
-
-	printk(BIOS_DEBUG, "ME: me_state=%u, me_state_prev=%u\n", me_state, me_state_prev);
-
-	switch (path) {
-	case ME_S3WAKE_BIOS_PATH:
-#if CONFIG(HIDE_MEI_ON_ERROR)
-	case ME_ERROR_BIOS_PATH:
-#endif
-		intel_me_hide(dev);
-		break;
-
-	case ME_NORMAL_BIOS_PATH:
-		/* Validate the extend register */
-		if (intel_me_extend_valid(dev) < 0)
-			break; /* TODO: force recovery mode */
-
-		/* Prepare MEI MMIO interface */
-		if (intel_mei_setup(dev) < 0)
-			break;
-
-		if (intel_me_generation(dev) == ME_GEN_8) {
-			if (intel_me_read_mbp(&mbp_data))
-				break;
-		} else if (intel_me_generation(dev) == ME_GEN_7) {
-			mkhi_get_fw_version(&mbp_data.fw_version_name);
-			if (!mkhi_get_fwcaps(&mbp_data.fw_caps_sku.fw_capabilities))
-				mbp_data.fw_caps_sku.available = 1;
-		}
-
-		if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
-			me_print_fw_version(&mbp_data.fw_version_name);
-			me_print_fwcaps(&mbp_data.fw_caps_sku);
-		}
-
-		/* Put ME in Software Temporary Disable Mode, if needed */
-		if (me_state == CMOS_ME_STATE_DISABLED
-				&& CMOS_ME_STATE(me_state_prev) == CMOS_ME_STATE_NORMAL) {
-			printk(BIOS_INFO, "ME: disabling ME\n");
-			if (enter_soft_temp_disable()) {
-				enter_soft_temp_disable_wait();
-				need_reset = true;
-			} else {
-				printk(BIOS_ERR, "ME: failed to enter Soft Temporary Disable mode\n");
-			}
-
-			break;
-		}
-
-		/*
-		 * Leave the ME unlocked in this path.
-		 * It will be locked via SMI command later.
-		 */
-		break;
-
-	case ME_DISABLE_BIOS_PATH:
-		/* Bring ME out of Soft Temporary Disable mode, if needed */
-		hfs.raw = pci_read_config32(dev, PCI_ME_HFS);
-		if (hfs.operation_mode == ME_HFS_MODE_DIS
-				&& me_state == CMOS_ME_STATE_NORMAL
-				&& (CMOS_ME_STATE(me_state_prev) == CMOS_ME_STATE_DISABLED
-					|| !CMOS_ME_CHANGED(me_state_prev))) {
-			printk(BIOS_INFO, "ME: re-enabling ME\n");
-
-			exit_soft_temp_disable(dev);
-			exit_soft_temp_disable_wait(dev);
-
-			/*
-			 * ME starts loading firmware immediately after writing to H_GS,
-			 * but Lenovo BIOS performs a reboot after bringing ME back to
-			 * Normal mode. Assume that global reset is needed.
-			 */
-			need_reset = true;
-		} else {
-			intel_me_hide(dev);
-		}
-		break;
-
-#if !CONFIG(HIDE_MEI_ON_ERROR)
-	case ME_ERROR_BIOS_PATH:
-#endif
-	case ME_RECOVERY_BIOS_PATH:
-	case ME_FIRMWARE_UPDATE_BIOS_PATH:
-		break;
-	}
-
-	/* To avoid boot loops if ME fails to get back from disabled mode,
-	   set the 'changed' bit here. */
-	if (me_state != CMOS_ME_STATE(me_state_prev) || need_reset) {
-		u8 new_state = me_state | CMOS_ME_STATE_CHANGED;
-		set_uint_option("me_state_prev", new_state);
-	}
-
-	if (need_reset) {
-		set_global_reset(true);
-		full_reset();
-	}
-}
-
-static struct device_operations device_ops = {
-	.read_resources		= pci_dev_read_resources,
-	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= pci_dev_enable_resources,
-	.init			= intel_me_init,
-	.ops_pci		= &pci_dev_ops_pci,
-};
-
-static const unsigned short me_device_ids[] = { PCI_DEVID_ME_7, PCI_DEVID_ME_8, 0 };
-
-static const struct pci_driver intel_me __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VID_INTEL,
-	.devices = me_device_ids,
-};
-
-/******************************************************************************
- *									     */
 static u32 me_to_host_words_pending(void)
 {
 	struct mei_csr me;
@@ -345,7 +214,7 @@ static u32 me_to_host_words_pending(void)
 
 /*
  * Intel ME 8.x only.
- * mbp seems to be following its own flow, let's retrieve it in a dedicated
+ * MBP seems to be following its own flow, let's retrieve it in a dedicated
  * function.
  */
 static int intel_me_read_mbp(me_bios_payload *mbp_data)
@@ -471,3 +340,130 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 
 	return 0;
 }
+
+/* Check whether ME is present and do basic init */
+static void intel_me_init(struct device *dev)
+{
+	me_bios_path path = intel_me_path(dev);
+	me_bios_payload mbp_data = {0};
+	bool need_reset = false;
+	union me_hfs hfs;
+
+	/* Do initial setup and determine the BIOS path */
+	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_get_bios_path_string(path));
+
+	u8 me_state = get_uint_option("me_state", 0);
+	u8 me_state_prev = get_uint_option("me_state_prev", 0);
+
+	printk(BIOS_DEBUG, "ME: me_state=%u, me_state_prev=%u\n", me_state, me_state_prev);
+
+	switch (path) {
+	case ME_S3WAKE_BIOS_PATH:
+#if CONFIG(HIDE_MEI_ON_ERROR)
+	case ME_ERROR_BIOS_PATH:
+#endif
+		intel_me_hide(dev);
+		break;
+
+	case ME_NORMAL_BIOS_PATH:
+		/* Validate the extend register */
+		if (intel_me_extend_valid(dev) < 0)
+			break; /* TODO: force recovery mode */
+
+		/* Prepare MEI MMIO interface */
+		if (intel_mei_setup(dev) < 0)
+			break;
+
+		if (intel_me_generation(dev) == ME_GEN_8) {
+			if (intel_me_read_mbp(&mbp_data))
+				break;
+		} else if (intel_me_generation(dev) == ME_GEN_7) {
+			mkhi_get_fw_version(&mbp_data.fw_version_name);
+			if (mkhi_get_fwcaps(&mbp_data.fw_caps_sku.fw_capabilities) == CB_SUCCESS)
+				mbp_data.fw_caps_sku.available = 1;
+		}
+
+		if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
+			me_print_fw_version(&mbp_data.fw_version_name);
+			me_print_fwcaps(&mbp_data.fw_caps_sku);
+		}
+
+		/* Put ME in Software Temporary Disable Mode, if needed */
+		if (me_state == CMOS_ME_STATE_DISABLED
+				&& CMOS_ME_STATE(me_state_prev) == CMOS_ME_STATE_NORMAL) {
+			printk(BIOS_INFO, "ME: disabling ME\n");
+			if (enter_soft_temp_disable()) {
+				enter_soft_temp_disable_wait();
+				need_reset = true;
+			} else {
+				printk(BIOS_ERR, "ME: failed to enter Soft Temporary Disable mode\n");
+			}
+
+			break;
+		}
+
+		/*
+		 * Leave the ME unlocked in this path.
+		 * It will be locked via SMI command later.
+		 */
+		break;
+
+	case ME_DISABLE_BIOS_PATH:
+		/* Bring ME out of Soft Temporary Disable mode, if needed */
+		hfs.raw = pci_read_config32(dev, PCI_ME_HFS);
+		if (hfs.operation_mode == ME_HFS_MODE_DIS
+				&& me_state == CMOS_ME_STATE_NORMAL
+				&& (CMOS_ME_STATE(me_state_prev) == CMOS_ME_STATE_DISABLED
+					|| !CMOS_ME_CHANGED(me_state_prev))) {
+			printk(BIOS_INFO, "ME: re-enabling ME\n");
+
+			exit_soft_temp_disable(dev);
+			exit_soft_temp_disable_wait(dev);
+
+			/*
+			 * ME starts loading firmware immediately after writing to H_GS,
+			 * but Lenovo BIOS performs a reboot after bringing ME back to
+			 * Normal mode. Assume that global reset is needed.
+			 */
+			need_reset = true;
+		} else {
+			intel_me_hide(dev);
+		}
+		break;
+
+#if !CONFIG(HIDE_MEI_ON_ERROR)
+	case ME_ERROR_BIOS_PATH:
+#endif
+	case ME_RECOVERY_BIOS_PATH:
+	case ME_FIRMWARE_UPDATE_BIOS_PATH:
+		break;
+	}
+
+	/* To avoid boot loops if ME fails to get back from disabled mode,
+	   set the 'changed' bit here. */
+	if (me_state != CMOS_ME_STATE(me_state_prev) || need_reset) {
+		u8 new_state = me_state | CMOS_ME_STATE_CHANGED;
+		set_uint_option("me_state_prev", new_state);
+	}
+
+	if (need_reset) {
+		set_global_reset(true);
+		full_reset();
+	}
+}
+
+static struct device_operations device_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= intel_me_init,
+	.ops_pci		= &pci_dev_ops_pci,
+};
+
+static const unsigned short me_device_ids[] = { PCI_DEVID_ME_7, PCI_DEVID_ME_8, 0 };
+
+static const struct pci_driver intel_me __pci_driver = {
+	.ops	= &device_ops,
+	.vendor	= PCI_VID_INTEL,
+	.devices = me_device_ids,
+};

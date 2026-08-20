@@ -374,7 +374,7 @@ LIB_SPD_BIN = $(obj)/spd.bin
 
 SPD_SRC_DIR := src/mainboard/$(MAINBOARDDIR)/spd
 SPD_OBJ_DIR := $(obj)/spd
-SPD_GEN_TOOL := util/spd_tools/bin/spd_gen
+SPD_GEN_TOOL := $(objutil)/spd_tools/spd_gen
 
 SPD_GEN_MEM_TECH ?=
 SPD_GEN_SET ?= 0
@@ -391,10 +391,11 @@ endef
 
 LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), $(call spd_hex_dep,$(f)))
 
-$(SPD_GEN_TOOL):
-	$(MAKE) -C util/spd_tools bin/spd_gen
+$(SPD_GEN_TOOL): $(wildcard util/spd_tools/src/spd_gen/*.go)
+	printf "    MAKE       $(subst $(objutil)/,,$(@))\n"
+	$(MAKE) -C util/spd_tools BIN_DIR=$(abspath $(dir $@)) $(abspath $@)
 
-$(SPD_OBJ_DIR)/%.spd.hex: $(SPD_SRC_DIR)/%.spd.json | $(SPD_GEN_TOOL)
+$(SPD_OBJ_DIR)/%.spd.hex: $(SPD_SRC_DIR)/%.spd.json $(SPD_GEN_TOOL)
 	test -n "$(SPD_GEN_MEM_TECH)" || \
 	    (echo "SPD_GEN_MEM_TECH must be set to generate SPD hex from JSON" >&2 && exit 1)
 	mkdir -p $(SPD_OBJ_DIR)

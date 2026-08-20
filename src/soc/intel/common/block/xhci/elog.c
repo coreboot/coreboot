@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/x86/smm.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/xhci.h>
 #include <elog.h>
+#include <inttypes.h>
 #include <intelblocks/xhci.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
@@ -76,6 +78,12 @@ bool xhci_update_wake_event(const struct xhci_wake_info *wake_info,
 					    PCI_FUNC(wake_info[i].xhci_dev));
 		mmio_base = pci_s_read_config32(devfn, PCI_BASE_ADDRESS_0);
 		mmio_base &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+
+		if (ENV_SMM && smm_points_to_smram((void *)mmio_base, 64 * KiB)) {
+			printk(BIOS_EMERG, "XHCI: BAR0 0x%" PRIxPTR " overlaps SMRAM!\n", mmio_base);
+			die("SMM BAR exploitation attempt detected.");
+		}
+
 		usb_info = soc_get_xhci_usb_info(wake_info[i].xhci_dev);
 
 		/* Check USB2 port status & control registers */

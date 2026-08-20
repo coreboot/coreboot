@@ -19,7 +19,7 @@ fw_config
 	end
 	field TOUCHSCREEN 7 8
 		option TOUCHSCREEN_NONE			0
-		option TOUCHSCREEN_THC_SPI		1
+		option TOUCHSCREEN_THC_SPI_ELAN_REX	1
 		option TOUCHSCREEN_THC_I2C		2
 		option TOUCHSCREEN_LPSS_I2C_ELAN_REX	3
 	end
@@ -292,7 +292,7 @@ chip soc/intel/pantherlake
 
 		device ref thc0 on
 			register "thc_wake_on_touch[0]" = "true"
-			probe TOUCHSCREEN TOUCHSCREEN_THC_SPI
+			probe TOUCHSCREEN TOUCHSCREEN_THC_SPI_ELAN_REX
 			probe TOUCHSCREEN TOUCHSCREEN_THC_I2C
 			# THC0 is function 0; hence it needs to be enabled when THC1 is to be enabled.
 			probe TOUCHPAD TOUCHPAD_THC_I2C
@@ -327,12 +327,12 @@ chip soc/intel/pantherlake
 				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC0)"
 				register "active_ltr" = "1"
 				register "idle_ltr" = "0"
-				register "connected_device" = "TH_SENSOR_ELAN"
-				register "soc_hidspi.write_mode" = "HIDSPI_WRITE_MODE_MULTI_SINGLE_SPI"
+				register "connected_device" = "TH_SENSOR_ELAN_REX"
+				register "soc_hidspi.write_mode" = "HIDSPI_WRITE_MODE_SINGLE"
 				register "soc_hidspi.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E16)"
 				register "add_acpi_dma_property" = "true"
-				device generic 0 alias touch_0_spi_elan on
-					probe TOUCHSCREEN TOUCHSCREEN_THC_SPI
+				device generic 0 alias touch_0_spi_google on
+					probe TOUCHSCREEN TOUCHSCREEN_THC_SPI_ELAN_REX
 				end
 			end
 		end

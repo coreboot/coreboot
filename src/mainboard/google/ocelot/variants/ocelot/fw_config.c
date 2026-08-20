@@ -616,7 +616,7 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 
 	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C)))
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_thc_i2c_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
+	else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI_ELAN_REX))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_thc_spi_enable_pads);
 		if (config->thc_wake_on_touch[0])
 			GPIO_PADBASED_OVERRIDE(padbased_table, thc0_enable_wake);
@@ -636,7 +636,7 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	 * *=========================================================================*
 	 * |             Usage                     |           GPP_E17               |
 	 * *=========================================================================*
-	 * | Touchscreen in THC-SPI (with rework)  | NF3: THC HID-SPI CS0            |
+	 * | THC-SPI ELAN Rex TS (with rework)     | NF3: THC HID-SPI CS0            |
 	 * *---------------------------------------*---------------------------------*
 	 * | FPS present         (without rework)  | NF5: GSPI0 CS0                  |
 	 * *---------------------------------------*---------------------------------*
@@ -644,7 +644,7 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	 * NOTE: 1. CBI selecting TS THC-SPI or implies TS rework is applied for the board.
 	 *       2. CBI selecting TS THC-SPI with FPS present is invalid case.
 	 */
-	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
+	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI_ELAN_REX))) {
 		/*  Board has TS THC-SPI rework and does not support FPS*/
 	} else if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, fp_enable_pads);

@@ -39,7 +39,7 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 
 	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C))) {
 		config->thc_mode[0] = THC_HID_I2C_MODE;
-	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
+	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI_ELAN_REX))) {
 		config->thc_mode[0] = THC_HID_SPI_MODE;
 	}
 

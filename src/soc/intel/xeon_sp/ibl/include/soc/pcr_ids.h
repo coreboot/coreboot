@@ -13,5 +13,6 @@
 #define PID_GPIOCOM3      PID_NOT_SUPPORTED
 #define PID_GPIOCOM2      PID_NOT_SUPPORTED
 #define PID_GPIOCOM1      PID_NOT_SUPPORTED
+#define PID_DMI           PID_NOT_SUPPORTED
 
 #endif	/* _PCR_IDS_H_ */

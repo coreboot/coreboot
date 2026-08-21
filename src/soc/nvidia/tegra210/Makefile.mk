@@ -111,9 +111,6 @@ CPPFLAGS_common += -Isrc/soc/nvidia/tegra210/include/
 # package up the image pull in bootblock.bin, it will be this wrapped version
 # instead of the raw bootblock.
 
-$(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
-	cp $< $@
-
 $(obj)/generated/bct.bin: $(obj)/generated/bct.cfg $(CBOOTIMAGE)
 	@printf "    CBOOTIMAGE $(subst $(obj)/,,$(@))\n"
 	$(CBOOTIMAGE) -gbct $(CBOOTIMAGE_OPTS) $< $@

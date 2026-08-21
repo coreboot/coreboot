@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/mmio.h>
 #include <boot_device.h>
 #include <console/console.h>
 #include <fmap.h>
 #include <commonlib/region.h>
 #include <stdbool.h>
+#include <soc/addressmap.h>
 #include <soc/cdt.h>
 #include <soc/symbols_common.h>
 
@@ -71,4 +73,22 @@ uint32_t cdt_get_hw_version(void)
 		cdt_init_platform_id();
 
 	return plat_id ? plat_id->hw_version_major : 0;
+}
+
+uint8_t platform_get_fast_boot(void)
+{
+	uint32_t boot_config = read32((void *)SOC_BOOT_CONFIG);
+	uint8_t fast_boot = EXTRACT_FIELD(boot_config,
+					  SOC_BOOT_CONFIG_FAST_BOOT_MASK,
+					  SOC_BOOT_CONFIG_FAST_BOOT_SHIFT);
+
+	if (fast_boot == BOOT_OPTION_QSPI_NVME || fast_boot == BOOT_OPTION_QSPI_NVME_ALT)
+		return CALYPSO_STORAGE_TYPE_NVME;
+
+	return CALYPSO_STORAGE_TYPE_UFS;
+}
+
+bool platform_boot_media_is_nvme(void)
+{
+	return platform_get_fast_boot() == CALYPSO_STORAGE_TYPE_NVME;
 }

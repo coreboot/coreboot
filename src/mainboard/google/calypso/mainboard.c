@@ -236,26 +236,3 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 	.init = mainboard_init,
 };
-
-void fw_config_get_mainboard_override(uint64_t *fw_config)
-{
-	if (!CONFIG(SOC_QUALCOMM_CDT))
-		return;
-
-	uint16_t soc_id;
-	switch (platform_get_soc_id()) {
-	case SOC_ID_CALYPSO:
-		soc_id = CALYPSO_ID_SCP;
-		break;
-	default:
-		printk(BIOS_WARNING, "CDT: Unknown SoC ID, skipping fw_config override\n");
-		return;
-	}
-
-	uint16_t platform_id = cdt_get_platform_id();
-	uint32_t soc_platform_id = ((uint32_t)soc_id << 16) | platform_id;
-
-	printk(BIOS_INFO, "CDT: soc_platform_id=0x%08x\n", soc_platform_id);
-
-	*fw_config = soc_platform_id;
-}

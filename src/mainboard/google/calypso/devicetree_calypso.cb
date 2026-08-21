@@ -1,0 +1,20 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+# CDT fw_config layout for CALYPSO:
+#   [15:0]  : Platform ID
+#   [31:16] : SoC ID
+#   [34:32] : Storage Type (normalized from BOOT_CONFIG FAST_BOOT field)
+fw_config
+	field STORAGE_TYPE 32 34
+		option STORAGE_TYPE_UNKNOWN	0
+		option STORAGE_TYPE_NVME	1
+		option STORAGE_TYPE_UFS		2
+	end
+end
+
+chip soc/qualcomm/calypso
+	device cpu_cluster 0 on end
+	device domain 0 on
+		device pci 00.0 on end # Root Bridge
+	end
+end

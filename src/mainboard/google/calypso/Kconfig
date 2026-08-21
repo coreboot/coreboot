@@ -147,6 +147,8 @@ config VBOOT
 ##########################################################
 #### Update below when adding a new derivative board. ####
 ##########################################################
+config DEVICETREE
+	default "devicetree_calypso.cb" if BOARD_GOOGLE_MODEL_CALYPSO
 
 config MAINBOARD_PART_NUMBER
 	default "Calypso" if BOARD_GOOGLE_CALYPSO

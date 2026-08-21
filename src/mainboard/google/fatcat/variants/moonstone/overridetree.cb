@@ -50,19 +50,19 @@ chip soc/intel/pantherlake
 	# Apply PTL-U's thermal settings here to avoid thermal issues.
 
 	register "power_limits_config[PTL_CORE_1]" = "{
-		.tdp_pl1_override = 15,
+		.tdp_pl1_override = 18,
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 152,
 	}"
 
 	register "power_limits_config[PTL_CORE_3]" = "{
-		.tdp_pl1_override = 15,
+		.tdp_pl1_override = 18,
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 152,
 	}"
 
 	register "power_limits_config[PTL_CORE_4]" = "{
-		.tdp_pl1_override = 15,
+		.tdp_pl1_override = 18,
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 152,
 	}"

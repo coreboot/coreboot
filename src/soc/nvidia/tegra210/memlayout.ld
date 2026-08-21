@@ -5,10 +5,9 @@
 #include <arch/header.ld>
 
 /*
- * Note: The BootROM uses the address range [0x4000_0000:0x4000_E000) itself,
+ * Note: The BootROM uses the address range [0x4000_0000:0x4001_0000) itself,
  * so the bootblock loading address must be placed after that. After the
  * handoff that area may be reclaimed for other uses, e.g. CBFS cache.
- * TODO: Did this change on Tegra210? What's the new valid range?
  */
 
 SECTIONS
@@ -26,8 +25,8 @@ SECTIONS
 	STACK(0x4000C400, 3K)
 #endif
 	TIMESTAMP(0x4000D000, 2K)
-	BOOTBLOCK(0x4000D800, 42K)
-	OVERLAP_VERSTAGE_ROMSTAGE(0x40018000, 160K)
+	BOOTBLOCK(0x40010000, 42K) /* can't be below 0x4001_0000! See above */
+	OVERLAP_VERSTAGE_ROMSTAGE(0x4001A800, 150K)
 	SRAM_END(0x40040000)
 
 	DRAM_START(0x80000000)

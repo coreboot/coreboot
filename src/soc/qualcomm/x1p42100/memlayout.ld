@@ -118,6 +118,8 @@
  *               |                     debug_policy                         |      |
  * 0x14A7D000    +----------------------------------------------------------+      |
  *               |                ... Usable memory ...                     |      |
+ * 0x14A61000    +----------------------------------------------------------+      |
+ *               |                    ddr_aop_params                        |      |
  * 0x14A60000    +----------------------------------------------------------+      |
  *               |         OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE           |      |
  * 0x14A38000    +----------------------------------------------------------+      |
@@ -256,6 +258,7 @@ SECTIONS
 	REGION(cpr_settings, 0x14A17000, 12K, 4K)
 	PRERAM_CBMEM_CONSOLE(0x14A30000, 32K)
 	OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE(0x14A38000, 160K)
+	REGION(ddr_aop_params, 0x14A60000, 4K, 4K)
 	REGION(debug_policy, 0x14A7D000 , 4K, 4K)
 	REGION(auth_metadata, 0x14A7E000, 8K, 4K)
 	BSRAM_END(0x14A80000)

@@ -1,0 +1,6 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+comment "Porg (NVIDIA Tegra X1 (T210))"
+
+config BOARD_NVIDIA_PORG
+	bool "->  Porg (Jetson Nano)"

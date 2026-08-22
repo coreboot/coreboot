@@ -1,0 +1,31 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_NVIDIA_PORG
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_4096
+	select COMMON_CBFS_SPI_WRAPPER
+	select SPI_FLASH
+	select SPI_FLASH_MACRONIX
+	select SOC_NVIDIA_TEGRA210
+	select BOOTROM_SDRAM_INIT
+
+config MAINBOARD_DIR
+	default "nvidia/porg"
+
+config MAINBOARD_PART_NUMBER
+	default "Porg"
+
+config DRAM_SIZE_MB
+	int
+	default 4096
+
+config BOOT_DEVICE_SPI_FLASH_BUS
+	int "SPI bus with boot media ROM"
+	range 1 7
+	default 7
+	help
+		Which SPI bus the boot media is connected to.
+
+endif # BOARD_NVIDIA_PORG

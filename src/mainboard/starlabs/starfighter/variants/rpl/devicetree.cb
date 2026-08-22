@@ -278,6 +278,7 @@ chip soc/intel/alderlake
 				register "srcclk_pin"			= "2"
 				register "add_acpi_dma_property"	= "true"
 				register "skip_on_off_support"		= "true"
+				register "enable_wifi_pldr"		= "true"
 				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
 				register "use_rp_mutex"			= "true"
 				device generic 0 on end

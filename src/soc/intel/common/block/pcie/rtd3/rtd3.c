@@ -8,6 +8,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/pci.h>
+#include <drivers/wifi/generic/wifi.h>
 #include <intelblocks/pmc.h>
 #include <intelblocks/pmc_ipc.h>
 #include <intelblocks/pcie_rp.h>
@@ -32,10 +33,152 @@
 /* ACPI path to control PCIE CLK by P2SB */
 #define RTD3_PCIE_CLK_ENABLE_PATH "\\_SB.PCI0.SPCO"
 
+#define WIFI_FLR_DELAY_MS      100
+#define WIFI_PLDR_DELAY_MS     50
+#define WIFI_BT_RESET_DELAY_MS 160
+#define WIFI_BT_MUTEX_PATH     "\\_SB.PCI0.CNMT"
+#define WIFI_BT_RESET_PATH     "\\_SB.PCI0.BTRK"
+
+enum wifi_pldr_mode {
+	WIFI_PLDR_PRODUCT_RESET = BIT(0),
+	WIFI_PLDR_WIFI_FLR = BIT(1),
+	WIFI_PLDR_BT_OFF_ON = BIT(2),
+};
+
+enum wifi_pldr_status {
+	WIFI_PLDR_CORE_RESET_COMPLETE = 1,
+	WIFI_PLDR_PRODUCT_RESET_COMPLETE,
+};
+
 enum modphy_pg_state {
 	PG_DISABLE = 0,
 	PG_ENABLE = 1,
 };
+
+static void acpigen_write_if_namestr_and_int(const char *namestr, uint64_t mask)
+{
+	acpigen_write_if();
+	acpigen_emit_byte(AND_OP);
+	acpigen_emit_namestring(namestr);
+	acpigen_write_integer(mask);
+	acpigen_emit_byte(LOCAL0_OP);
+}
+
+static void
+pcie_rtd3_acpi_wifi_pldr(const struct device *wifi, const struct device *parent,
+			 const struct soc_intel_common_block_pcie_rtd3_config *config)
+{
+	const unsigned int pcie_cap = pci_find_capability(wifi, PCI_CAP_ID_PCIE);
+	const struct opregion opregion = OPREGION("WFPC", PCI_CONFIG, 0, 0xff);
+	const struct fieldlist fieldlist[] = {
+		FIELDLIST_OFFSET(pcie_cap + PCI_EXP_DEVCAP),
+		FIELDLIST_RESERVED(28),
+		FIELDLIST_NAMESTR("WFLR", 1),
+		FIELDLIST_OFFSET(pcie_cap + PCI_EXP_DEVCTL),
+		FIELDLIST_RESERVED(15),
+		FIELDLIST_NAMESTR("WIFR", 1),
+	};
+
+	if (!pcie_cap || !config->reset_gpio.pin_count) {
+		printk(BIOS_ERR,
+		       "%s: Wi-Fi PLDR requires a PCIe capability and reset GPIO\n",
+		       __func__);
+		return;
+	}
+
+	acpigen_write_name_integer("RSTT", 0);
+	acpigen_write_name_integer("PRRS", 0);
+	acpigen_write_name_integer("WFDL", WIFI_PLDR_DELAY_MS);
+
+	acpigen_write_opregion(&opregion);
+	acpigen_write_field("WFPC", fieldlist, ARRAY_SIZE(fieldlist),
+			    FIELD_WORDACC | FIELD_NOLOCK | FIELD_PRESERVE);
+
+	acpigen_write_power_res("WRST", 5, 0, NULL, 0);
+
+	acpigen_write_method("_STA", 0);
+	acpigen_write_return_integer(1);
+	acpigen_pop_len(); /* Method */
+
+	acpigen_write_method("_ON", 0);
+	acpigen_pop_len(); /* Method */
+
+	acpigen_write_method("_OFF", 0);
+	acpigen_pop_len(); /* Method */
+
+	acpigen_write_method_serialized("_RST", 0);
+
+	if (config->use_rp_mutex)
+		acpigen_write_acquire(acpi_device_path_join(parent, RP_MUTEX_NAME),
+				      ACPI_MUTEX_NO_TIMEOUT);
+
+	acpigen_write_store_int_to_namestr(0, "PRRS");
+
+	/* A function reset precedes the optional product reset. */
+	acpigen_write_if_namestr_and_int("RSTT", WIFI_PLDR_WIFI_FLR);
+	acpigen_write_if_lequal_namestr_int("WFLR", 1);
+	acpigen_write_store_int_to_namestr(1, "WIFR");
+	acpigen_write_sleep(WIFI_FLR_DELAY_MS);
+	acpigen_write_store_int_to_namestr(WIFI_PLDR_CORE_RESET_COMPLETE, "PRRS");
+	acpigen_pop_len(); /* If WFLR */
+	acpigen_pop_len(); /* If WIFI_PLDR_WIFI_FLR */
+
+	acpigen_write_if_namestr_and_int("RSTT", WIFI_PLDR_PRODUCT_RESET);
+	acpigen_write_store_int_to_namestr(0, "PRRS");
+	acpigen_write_store_int_to_op(0, LOCAL1_OP);
+	acpigen_write_store_int_to_op(0, LOCAL2_OP);
+
+	acpigen_write_if_namestr_and_int("RSTT", WIFI_PLDR_BT_OFF_ON);
+	acpigen_write_if_cond_ref_of(WIFI_BT_RESET_PATH);
+	acpigen_write_store();
+	acpigen_write_acquire(WIFI_BT_MUTEX_PATH, 1000);
+	acpigen_emit_byte(LOCAL2_OP);
+	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0);
+	acpigen_emit_namestring(WIFI_BT_RESET_PATH);
+	acpigen_emit_byte(0);
+	acpigen_write_sleep(WIFI_BT_RESET_DELAY_MS);
+	acpigen_write_store_int_to_op(1, LOCAL1_OP);
+	acpigen_pop_len(); /* If CNMT acquired */
+	acpigen_pop_len(); /* If CondRefOf BTRK */
+	acpigen_pop_len(); /* If WIFI_PLDR_BT_OFF_ON */
+
+	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0);
+	acpigen_enable_tx_gpio(&config->reset_gpio);
+	acpigen_emit_ext_op(SLEEP_OP);
+	acpigen_emit_namestring("WFDL");
+	acpigen_disable_tx_gpio(&config->reset_gpio);
+
+	acpigen_write_if_lequal_op_int(LOCAL1_OP, 1);
+	acpigen_emit_namestring(WIFI_BT_RESET_PATH);
+	acpigen_emit_byte(1);
+	acpigen_write_sleep(WIFI_BT_RESET_DELAY_MS);
+	acpigen_write_release(WIFI_BT_MUTEX_PATH);
+	acpigen_write_else();
+	acpigen_write_sleep(WIFI_FLR_DELAY_MS);
+	acpigen_pop_len(); /* If */
+
+	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0);
+	acpigen_write_store_int_to_namestr(WIFI_PLDR_PRODUCT_RESET_COMPLETE, "PRRS");
+	acpigen_pop_len(); /* If product reset completed */
+	acpigen_pop_len(); /* If product reset is available */
+	acpigen_pop_len(); /* If WIFI_PLDR_PRODUCT_RESET */
+
+	if (config->use_rp_mutex)
+		acpigen_write_release(acpi_device_path_join(parent, RP_MUTEX_NAME));
+
+	if (config->skip_on_off_support) {
+		acpigen_emit_byte(INCREMENT_OP);
+		acpigen_emit_namestring(acpi_device_path_join(parent, "RTD3.OFSK"));
+	}
+
+	acpigen_pop_len(); /* Method */
+	acpigen_write_power_res_end();
+
+	acpigen_write_name("_PRR");
+	acpigen_write_package(1);
+	acpigen_emit_namestring("WRST");
+	acpigen_pop_len(); /* Package */
+}
 
 /* Called from _ON to get PCIe link back to active state. */
 static void pcie_rtd3_acpi_l23_exit(void)
@@ -599,3 +742,29 @@ struct chip_operations soc_intel_common_block_pcie_rtd3_ops = {
 	.name = "Intel PCIe Runtime D3",
 	.enable_dev = pcie_rtd3_acpi_enable
 };
+
+void soc_wifi_pcie_fill_ssdt(const struct device *wifi)
+{
+	const struct device *rtd3;
+	const struct soc_intel_common_block_pcie_rtd3_config *config;
+
+	if (!wifi->upstream || wifi->path.type != DEVICE_PATH_PCI ||
+	    wifi->vendor != PCI_VID_INTEL ||
+	    (wifi->class >> 16) != PCI_BASE_CLASS_NETWORK)
+		return;
+
+	for (rtd3 = wifi->upstream->children; rtd3; rtd3 = rtd3->sibling) {
+		if (is_dev_enabled(rtd3) &&
+		    rtd3->chip_ops == &soc_intel_common_block_pcie_rtd3_ops)
+			break;
+	}
+
+	if (!rtd3)
+		return;
+
+	config = rtd3->chip_info;
+	if (!config || !config->enable_wifi_pldr)
+		return;
+
+	pcie_rtd3_acpi_wifi_pldr(wifi, wifi->upstream->dev, config);
+}

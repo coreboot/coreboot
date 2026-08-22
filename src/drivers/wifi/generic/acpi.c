@@ -42,6 +42,10 @@ __weak int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 	return -1;
 }
 
+__weak void soc_wifi_pcie_fill_ssdt(const struct device *dev)
+{
+}
+
 /*
  * Function 1: Allow PC OEMs to set ETSI 5.8GHz SRD in Passive/Disabled ESTI SRD
  * Channels: 149, 153, 157, 161, 165
@@ -1242,6 +1246,7 @@ static void wifi_ssdt_write_device(const struct device *dev, const char *path)
 
 	/* Address */
 	acpigen_write_ADR_pci_device(dev);
+	soc_wifi_pcie_fill_ssdt(dev);
 
 	acpigen_pop_len(); /* Device */
 }

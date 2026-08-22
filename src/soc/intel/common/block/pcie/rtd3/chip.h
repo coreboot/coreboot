@@ -89,6 +89,9 @@ struct soc_intel_common_block_pcie_rtd3_config {
 	 */
 	bool skip_on_off_support;
 
+	/* Add a Power Resource for Reset to an attached Intel Wi-Fi device. */
+	bool enable_wifi_pldr;
+
 	/*
 	 * Indicates the root port mutex is used for _ON and _OFF, the companion device driver
 	 * such as WWAN driver should also acquire this mutex in methods that access the same HW

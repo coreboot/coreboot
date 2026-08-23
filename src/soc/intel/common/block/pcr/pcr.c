@@ -55,9 +55,22 @@
 #define P2SB_CR_SBI_EXT_ADDR	0xdc
 #endif
 
+static inline bool pcr_is_pid_supported(uint8_t pid, uint16_t offset)
+{
+	if (pid == PID_NOT_SUPPORTED) {
+		if (!ENV_BOOTBLOCK)
+			printk(BIOS_SPEW, "PCR: Skipping unsupported PID 0x%02x at offset 0x%04x\n",
+			       pid, offset);
+		return false;
+	}
+	return true;
+}
+
 static void *__pcr_reg_address(uint8_t pid, uint16_t offset)
 {
 	uintptr_t reg_addr;
+
+	assert(pid != PID_NOT_SUPPORTED);
 
 	/* Create an address based off of port id and offset. */
 	reg_addr = CONFIG_PCR_BASE_ADDRESS;
@@ -69,6 +82,8 @@ static void *__pcr_reg_address(uint8_t pid, uint16_t offset)
 
 void *pcr_reg_address(uint8_t pid, uint16_t offset)
 {
+	assert(pid != PID_NOT_SUPPORTED);
+
 	if (CONFIG(PCR_COMMON_IOSF_1_0))
 		assert(IS_ALIGNED(offset, sizeof(uint32_t)));
 
@@ -92,6 +107,9 @@ static inline void check_pcr_offset_align(uint16_t offset, size_t size)
 
 uint32_t pcr_read32(uint8_t pid, uint16_t offset)
 {
+	if (!pcr_is_pid_supported(pid, offset))
+		return 0;
+
 	/* Ensure the PCR offset is correctly aligned. */
 	assert(IS_ALIGNED(offset, sizeof(uint32_t)));
 
@@ -100,6 +118,9 @@ uint32_t pcr_read32(uint8_t pid, uint16_t offset)
 
 uint16_t pcr_read16(uint8_t pid, uint16_t offset)
 {
+	if (!pcr_is_pid_supported(pid, offset))
+		return 0;
+
 	/* Ensure the PCR offset is correctly aligned. */
 	check_pcr_offset_align(offset, sizeof(uint16_t));
 
@@ -108,6 +129,9 @@ uint16_t pcr_read16(uint8_t pid, uint16_t offset)
 
 uint8_t pcr_read8(uint8_t pid, uint16_t offset)
 {
+	if (!pcr_is_pid_supported(pid, offset))
+		return 0;
+
 	/* Ensure the PCR offset is correctly aligned. */
 	check_pcr_offset_align(offset, sizeof(uint8_t));
 
@@ -127,6 +151,9 @@ static inline void write_completion(uint8_t pid, uint16_t offset)
 
 void pcr_write32(uint8_t pid, uint16_t offset, uint32_t indata)
 {
+	if (!pcr_is_pid_supported(pid, offset))
+		return;
+
 	/* Ensure the PCR offset is correctly aligned. */
 	assert(IS_ALIGNED(offset, sizeof(indata)));
 
@@ -137,6 +164,9 @@ void pcr_write32(uint8_t pid, uint16_t offset, uint32_t indata)
 
 void pcr_write16(uint8_t pid, uint16_t offset, uint16_t indata)
 {
+	if (!pcr_is_pid_supported(pid, offset))
+		return;
+
 	/* Ensure the PCR offset is correctly aligned. */
 	check_pcr_offset_align(offset, sizeof(uint16_t));
 
@@ -147,6 +177,9 @@ void pcr_write16(uint8_t pid, uint16_t offset, uint16_t indata)
 
 void pcr_write8(uint8_t pid, uint16_t offset, uint8_t indata)
 {
+	if (!pcr_is_pid_supported(pid, offset))
+		return;
+
 	/* Ensure the PCR offset is correctly aligned. */
 	check_pcr_offset_align(offset, sizeof(uint8_t));
 
@@ -159,6 +192,9 @@ void pcr_rmw32(uint8_t pid, uint16_t offset, uint32_t anddata, uint32_t ordata)
 {
 	uint32_t data32;
 
+	if (!pcr_is_pid_supported(pid, offset))
+		return;
+
 	data32 = pcr_read32(pid, offset);
 	data32 &= anddata;
 	data32 |= ordata;
@@ -168,6 +204,9 @@ void pcr_rmw32(uint8_t pid, uint16_t offset, uint32_t anddata, uint32_t ordata)
 void pcr_rmw16(uint8_t pid, uint16_t offset, uint16_t anddata, uint16_t ordata)
 {
 	uint16_t data16;
+
+	if (!pcr_is_pid_supported(pid, offset))
+		return;
 
 	data16 = pcr_read16(pid, offset);
 	data16 &= anddata;
@@ -179,6 +218,9 @@ void pcr_rmw8(uint8_t pid, uint16_t offset, uint8_t anddata, uint8_t ordata)
 {
 	uint8_t data8;
 
+	if (!pcr_is_pid_supported(pid, offset))
+		return;
+
 	data8 = pcr_read8(pid, offset);
 	data8 &= anddata;
 	data8 |= ordata;
@@ -189,6 +231,9 @@ void pcr_or32(uint8_t pid, uint16_t offset, uint32_t ordata)
 {
 	uint32_t data32;
 
+	if (!pcr_is_pid_supported(pid, offset))
+		return;
+
 	data32 = pcr_read32(pid, offset);
 	data32 |= ordata;
 	pcr_write32(pid, offset, data32);
@@ -198,6 +243,9 @@ void pcr_or16(uint8_t pid, uint16_t offset, uint16_t ordata)
 {
 	uint16_t data16;
 
+	if (!pcr_is_pid_supported(pid, offset))
+		return;
+
 	data16 = pcr_read16(pid, offset);
 	data16 |= ordata;
 	pcr_write16(pid, offset, data16);
@@ -206,6 +254,9 @@ void pcr_or16(uint8_t pid, uint16_t offset, uint16_t ordata)
 void pcr_or8(uint8_t pid, uint16_t offset, uint8_t ordata)
 {
 	uint8_t data8;
+
+	if (!pcr_is_pid_supported(pid, offset))
+		return;
 
 	data8 = pcr_read8(pid, offset);
 	data8 |= ordata;
@@ -255,6 +306,11 @@ int pcr_execute_sideband_msg(pci_devfn_t dev, struct pcr_sbi_msg *msg, uint32_t 
 		printk(BIOS_ERR, "Pointer checked for NULL Fail! "
 		       "msg = %p \t data = %p \t response = %p\n",
 		       msg, data, response);
+		return -1;
+	}
+
+	if (!pcr_is_pid_supported(msg->pid, msg->offset)) {
+		*response = P2SB_CR_SBI_STATUS_NOT_SUPPORTED;
 		return -1;
 	}
 

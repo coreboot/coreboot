@@ -6,6 +6,7 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-y += spd/spd.c
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-y += ec.c
 ramstage-y += irqroute.c
 ramstage-y += w25q64.c

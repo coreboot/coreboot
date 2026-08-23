@@ -6,6 +6,9 @@
 /* Port Id lives in bits 23:16 and register offset lives in 15:0 of address. */
 #define PCR_PORTID_SHIFT	16
 
+/* Unsupported PID Index */
+#define PID_NOT_SUPPORTED 0xff
+
 #if !defined(__ACPI__)
 #include <types.h>
 #include <device/pci_ops.h>

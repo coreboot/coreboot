@@ -3,7 +3,8 @@
 #ifndef _PCR_IDS_H_
 #define _PCR_IDS_H_
 
-#define PID_NOT_SUPPORTED 0xff
+#include <intelblocks/pcr.h>
+
 #define PID_ITSS          0x00
 #define PID_RTC           PID_NOT_SUPPORTED
 #define PID_PSF3          PID_NOT_SUPPORTED

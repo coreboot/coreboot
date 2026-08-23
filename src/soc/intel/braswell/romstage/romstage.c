@@ -6,6 +6,7 @@
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <console/console.h>
+#include <option.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>
 #include <soc/romstage.h>
@@ -117,8 +118,10 @@ void soc_memory_init_params(struct romstage_params *params, MEMORY_INIT_UPD *upd
 	upd->PcdMrcInitMmioSize   = 0x800;
 	upd->PcdMrcInitSpdAddr1   = config->PcdMrcInitSpdAddr1;
 	upd->PcdMrcInitSpdAddr2   = config->PcdMrcInitSpdAddr2;
-	upd->PcdIgdDvmt50PreAlloc = config->PcdIgdDvmt50PreAlloc;
-	upd->PcdApertureSize      = 2;
+	upd->PcdIgdDvmt50PreAlloc = get_uint_option("igd_dvmt_prealloc",
+						    config->PcdIgdDvmt50PreAlloc);
+	upd->PcdApertureSize      = get_uint_option("igd_aperture_size",
+						    IGD_AP_SZ_256MB);
 	upd->PcdGttSize           = 1;
 	upd->PcdLegacySegDecode   = 0;
 	upd->PcdDvfsEnable        = config->PcdDvfsEnable;

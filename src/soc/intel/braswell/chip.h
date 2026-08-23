@@ -18,10 +18,28 @@
 #define SVID_CONFIG3		3
 #define SVID_PMIC_CONFIG	8
 
+/* PcdIgdDvmt50PreAlloc - Braswell FSP BSF values */
 #define IGD_MEMSIZE_32MB	0x01
 #define IGD_MEMSIZE_64MB	0x02
 #define IGD_MEMSIZE_96MB	0x03
 #define IGD_MEMSIZE_128MB	0x04
+#define IGD_MEMSIZE_160MB	0x05
+#define IGD_MEMSIZE_192MB	0x06
+#define IGD_MEMSIZE_224MB	0x07
+#define IGD_MEMSIZE_256MB	0x08
+#define IGD_MEMSIZE_288MB	0x09
+#define IGD_MEMSIZE_320MB	0x0a
+#define IGD_MEMSIZE_352MB	0x0b
+#define IGD_MEMSIZE_384MB	0x0c
+#define IGD_MEMSIZE_416MB	0x0d
+#define IGD_MEMSIZE_448MB	0x0e
+#define IGD_MEMSIZE_480MB	0x0f
+#define IGD_MEMSIZE_512MB	0x10
+
+/* PcdApertureSize - Braswell FSP BSF values */
+#define IGD_AP_SZ_128MB		0x01
+#define IGD_AP_SZ_256MB		0x02
+#define IGD_AP_SZ_512MB		0x03
 
 enum lpe_clk_src {
 	LPE_CLK_SRC_XTAL,

@@ -2,14 +2,14 @@
 
 config DRIVERS_EFI_VARIABLE_STORE
 	bool "Include EFI variable store driver"
-	select UDK_2017_BINDING if !PLATFORM_USES_FSP2_0
+	select UDK_2017_BINDING if !PLATFORM_USES_FSP2_0 && !PLATFORM_USES_FSP1_1
 	help
 	  Adds a driver that is able to read and write an EFI formatted
 	  VariableStore as used by tianocore.
 
 config DRIVERS_EFI_FW_INFO
 	bool "Expose firmware version in a EFI-friendly form"
-	select UDK_2017_BINDING if !PLATFORM_USES_FSP2_0
+	select UDK_2017_BINDING if !PLATFORM_USES_FSP2_0 && !PLATFORM_USES_FSP1_1
 	help
 	  Adds firmware version information to coreboot table in a form similar to
 	  EFI System Resource Table (ESRT) that can be used for firmware updates.

@@ -6,7 +6,7 @@
 #include <types.h>
 #include <commonlib/region.h>
 
-#include <vendorcode/intel/edk2/UDK2017/MdePkg/Include/Uefi/UefiBaseType.h>
+#include <Uefi/UefiBaseType.h>
 
 /**
  * efi_fv_get_option

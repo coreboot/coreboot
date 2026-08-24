@@ -2,7 +2,9 @@
 
 #include <intelbasecode/debug_feature.h>
 #include <console/console.h>
+#include <security/vboot/vboot_common.h>
 #include <spi_flash.h>
+#include <types.h>
 
 #define SI_DESC_OEM_SECTION_OFFSET	0xF00
 #define DEBUG_FEATURE_CTRL_OFFSET	SI_DESC_OEM_SECTION_OFFSET
@@ -55,6 +57,15 @@ bool is_debug_cse_fw_update_disable(void)
 
 enum cb_err dbg_feature_cntrl_init(void)
 {
+	/*
+	 * In production / verified boot mode, do not allow unauthenticated bytes
+	 * from the IFD OEM section to bypass security policies or enable debug modes.
+	 */
+	if (CONFIG(VBOOT) && !vboot_developer_mode_enabled()) {
+		printk(BIOS_INFO, "Debug feature override disabled in verified mode\n");
+		return CB_SUCCESS;
+	}
+
 	const struct spi_flash *spi_flash_dev = boot_device_spi_flash();
 
 	if (spi_flash_dev == NULL) {

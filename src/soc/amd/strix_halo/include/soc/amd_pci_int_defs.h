@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Strix Halo */
-
 #ifndef AMD_STRIX_HALO_AMD_PCI_INT_DEFS_H
 #define AMD_STRIX_HALO_AMD_PCI_INT_DEFS_H
 

@@ -104,8 +104,8 @@ static int google_chromeec_status_check(u16 port, u8 mask, u8 cond)
 	 * Some ECs take 15-20s to complete Flash Erase operation.
 	 */
 	const uint64_t ec_status_timeout_us = 30 * USECS_PER_SEC;
-	/* Wait 1 usec between read attempts  */
-	const uint64_t ec_status_read_period_us = 1;
+	/* Wait 100 usec between read attempts  */
+	const uint64_t ec_status_read_period_us = 100;
 
 	stopwatch_init_usecs_expire(&timeout_sw, ec_status_timeout_us);
 	do {

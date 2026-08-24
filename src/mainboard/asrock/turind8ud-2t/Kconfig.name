@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_ASROCK_TURIND8UD_2T
+	bool "TURIND8UD-2T/X550"

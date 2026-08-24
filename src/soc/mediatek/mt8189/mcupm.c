@@ -29,9 +29,6 @@ void mcupm_init(void)
 	mcupm.load_buffer = _dram_dma;
 	mcupm.buffer_size = REGION_SIZE(dram_dma);
 
-	/* Set CPUEB as secure master */
-	setbits32(&mtk_spm->poweron_config_set, BIT(15));
-
 	/* Unlock SPM POWERON_CONFIG_EN */
 	setbits32(&mtk_spm->poweron_config_set, SPM_REGWR_CFG_KEY | BCLK_CG_EN_LSB);
 

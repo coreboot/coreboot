@@ -894,7 +894,7 @@ static bool is_cse_fw_update_enabled(void)
 	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD))
 		return false;
 
-	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
+	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE) && !CONFIG(VBOOT))
 		return !is_debug_cse_fw_update_disable();
 
 	return true;

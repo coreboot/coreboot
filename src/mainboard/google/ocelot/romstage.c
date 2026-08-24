@@ -3,6 +3,7 @@
 #include <baseboard/variants.h>
 #include <fsp/api.h>
 #include <ec/google/chromeec/ec.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 #include <static.h>
@@ -53,11 +54,22 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	/* Disable CPU ratio override for unstable power scenarios */
 	if (CONFIG(EC_GOOGLE_CHROMEEC) && (!google_chromeec_is_battery_present() ||
 			google_chromeec_is_below_critical_threshold())) {
-	        const struct soc_intel_pantherlake_config *config = config_of_soc();
-	        FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
-	        if (config->cpu_ratio_override)
-	                m_cfg->CpuRatio = 0;
+		const struct soc_intel_pantherlake_config *config = config_of_soc();
+		FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
+		if (config->cpu_ratio_override)
+			m_cfg->CpuRatio = 0;
 	}
 
 	variant_post_gpio_configure();
+}
+
+bool mainboard_can_allow_flex_ratio_override(void)
+{
+	if (!CONFIG(VBOOT))
+		return false;
+
+	if (vboot_recovery_mode_enabled() || vboot_check_recovery_request())
+		return false;
+
+	return true;
 }

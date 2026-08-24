@@ -1,7 +1,39 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
+#include <fsp/graphics.h>
+#include <fsp/util.h>
 #include <ec/google/chromeec/ec.h>
+
+/* Threshold for selecting lower-resolution assets */
+#define FHD_WIDTH_THRESHOLD		1920
+
+/*
+ * Helper to determine if the current panel is low-resolution (<= FHD).
+ */
+static bool is_low_res_panel(void)
+{
+	const struct hob_graphics_info *ginfo;
+	size_t size;
+
+	/* Find the graphics information HOB */
+	ginfo = fsp_find_extension_hob_by_guid(fsp_graphics_info_guid, &size);
+	if (!ginfo || ginfo->framebuffer_base == 0)
+		return false;
+
+	return ginfo->horizontal_resolution <= FHD_WIDTH_THRESHOLD;
+}
+
+/*
+ * Mainboard-specific override for logo filenames.
+ */
+const char *mainboard_bmp_logo_filename(void)
+{
+	if (is_low_res_panel())
+		return "cb_plus_logo.bmp";
+
+	return "cb_logo.bmp";
+}
 
 /*
  * SKU_ID, TDP (Watts), pl1_min (milliWatts), pl1_max (milliWatts),

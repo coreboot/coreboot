@@ -8,6 +8,7 @@
 #include <soc/mtk_fsp.h>
 #include <soc/pi_image.h>
 #include <soc/sspm.h>
+#include <soc/storage.h>
 #include <symbols.h>
 
 void bootmem_platform_add_ranges(void)
@@ -22,7 +23,10 @@ static void soc_read_resources(struct device *dev)
 
 static void soc_init(struct device *dev)
 {
+	uint32_t storage_type = mainboard_needs_ufs_init() ? STORAGE_UFS : STORAGE_UNKNOWN;
+
 	mtk_fsp_init(RAMSTAGE_SOC_INIT);
+	mtk_fsp_add_param(FSP_PARAM_TYPE_STORAGE, sizeof(storage_type), &storage_type);
 	pi_image_add_mtk_fsp_params();
 	mtk_fsp_load_and_run();
 

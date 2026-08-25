@@ -132,16 +132,22 @@ enum mtk_storage_type mainboard_get_storage_type(void)
 	return STORAGE_UNKNOWN;
 }
 
+bool mainboard_needs_ufs_init(void)
+{
+	/* An unprovisioned CBI initializes both eMMC and UFS. */
+	return !fw_config_is_provisioned() ||
+	       !fw_config_probe(FW_CONFIG(STORAGE, STORAGE_EMMC));
+}
+
 static void mainboard_init(struct device *dev)
 {
 	mt6359p_init_pmif_arb();
 
-	if (!fw_config_is_provisioned()) {
+	if (!fw_config_is_provisioned() || fw_config_probe(FW_CONFIG(STORAGE, STORAGE_EMMC)))
 		mtk_msdc_configure_emmc(true);
-	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_EMMC))) {
-		mtk_msdc_configure_emmc(true);
+
+	if (!mainboard_needs_ufs_init())
 		mtcmos_ufs_power_off();
-	}
 
 	dpm_init();
 	setup_usb_host();

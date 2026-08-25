@@ -78,4 +78,8 @@ chip soc/amd/glinda
 	end
 
 	device ref uart_0 on end # UART0 - debug header J7
+
+	chip drivers/amd/ftpm
+		device mmio 0xfd2108d0 on end
+	end
 end

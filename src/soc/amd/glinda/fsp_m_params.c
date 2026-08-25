@@ -228,6 +228,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		FCH_AOAC_DEV_I3C1,
 		FCH_AOAC_DEV_I3C2,
 		FCH_AOAC_DEV_I3C3,
+		FCH_AOAC_DEV_HID2,
 	};
 
 	for (int i = 0; i < ARRAY_SIZE(fch_aoac_devs); i++) {

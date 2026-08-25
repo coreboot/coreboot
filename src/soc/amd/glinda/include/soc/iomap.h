@@ -15,6 +15,9 @@
 #define GNB_IO_APIC_ADDR		0xfec01000
 #define SPI_BASE_ADDRESS		0xfec10000
 
+/* FCH HID2 (second HID-over-SPI companion controller) */
+#define APU_HID2_BASE			0xfec12000
+
 /* FCH AL2AHB Registers */
 #define ALINK_AHB_ADDRESS		0xfedc0000
 

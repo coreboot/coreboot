@@ -22,6 +22,7 @@
 #define FCH_AOAC_DEV_I3C0		21
 #define FCH_AOAC_DEV_UART3		26
 #define FCH_AOAC_DEV_ESPI		27
+#define FCH_AOAC_DEV_HID2		31
 
 /* FCH helper define to determine UART_FOR_CONSOLE */
 #define FCH_AOAC_UART_FOR_CONSOLE \

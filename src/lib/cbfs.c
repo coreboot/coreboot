@@ -421,7 +421,7 @@ bool cbfs_preload_is_preload_thread(void)
 	struct cbfs_preload_context *context;
 
 	list_for_each(context, cbfs_preload_context_list, list_node) {
-		if (context->handle.thread_id == thread_id())
+		if (thread_is_current(&context->handle))
 			return true;
 	}
 

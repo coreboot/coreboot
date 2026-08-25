@@ -48,6 +48,7 @@ config BOARD_GOOGLE_BASEBOARD_ATRIA
 	select BOARD_GOOGLE_ATRIA_COMMON
 	select MAINBOARD_HAS_CHROMEOS
 	select SYSTEM_TYPE_LAPTOP
+	select CHROMEOS_WIFI_SAR if CHROMEOS
 
 config BOARD_GOOGLE_ATRIA
 	select BOARD_GOOGLE_BASEBOARD_ATRIA
@@ -74,6 +75,14 @@ config CHROMEOS
 	select GBB_FLAG_FORCE_DEV_BOOT_USB
 	select GBB_FLAG_FORCE_MANUAL_RECOVERY
 	select HAS_RECOVERY_MRC_CACHE
+
+config CHROMEOS_WIFI_SAR
+	bool "Enable SAR options for ChromeOS build"
+	depends on CHROMEOS
+	select DSAR_ENABLE
+	select GEO_SAR_ENABLE
+	select SAR_ENABLE
+	select USE_SAR
 
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"

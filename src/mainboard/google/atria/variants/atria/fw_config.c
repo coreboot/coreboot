@@ -43,6 +43,64 @@ static const struct pad_config ufs_enable_pads[] = {
 	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF1),
 };
 
+static const struct pad_config pcie_wlan_enable_pads[] = {
+	/* GPP_A10:     WLAN_RST_N */
+	PAD_CFG_GPO(GPP_A10, 1, PLTRST),
+	/* GPP_C06:     WIFI_WAKE_N */
+	PAD_CFG_GPI_SCI_LOW(GPP_C06, NONE, DEEP, LEVEL),
+};
+
+static const struct pad_config pcie_wlan_disable_pads[] = {
+	/* GPP_A10:     WLAN_RST_N */
+	PAD_NC(GPP_A10, NONE),
+	/* GPP_C06:     WIFI_WAKE_N */
+	PAD_NC(GPP_C06, NONE),
+};
+
+static const struct pad_config cnvi_enable_pads[] = {
+	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F00, NONE, DEEP, NF1),
+	/* GPP_F01:     M.2_CNV_BRI_RSP_BT_UART2_RXD */
+	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F01, NONE, DEEP, NF1),
+	/* GPP_F02:     M.2_CNV_RGI_DT_BT_UART2_TXD */
+	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F02, NONE, DEEP, NF1),
+	/* GPP_F03:     M.2_CNV_RGI_RSP_BT_UART2_CTS_N */
+	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F03, NONE, DEEP, NF1),
+	/* GPP_F04:     CNV_RF_RESET_R_N */
+	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F04, NONE, DEEP, NF1),
+	/* GPP_F05:     CRF_CLKREQ_R */
+	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F05, NONE, DEEP, NF3),
+	/* GPP_A15:     BT_RF_KILL_N */
+	PAD_CFG_GPO(GPP_A15, 1, DEEP),
+	/* GPP_D23:     WIFI_RF_KILL_N */
+	PAD_CFG_GPO(GPP_D23, 1, DEEP),
+};
+
+static const struct pad_config cnvi_disable_pads[] = {
+	/* GPP_F00:     M.2_CNV_BRI_DT_BT_UART2_RTS_N */
+	PAD_NC(GPP_F00, NONE),
+	/* GPP_F01:     M.2_CNV_BRI_RSP_BT_UART2_RXD */
+	PAD_NC(GPP_F01, NONE),
+	/* GPP_F02:     M.2_CNV_RGI_DT_BT_UART2_TXD */
+	PAD_NC(GPP_F02, NONE),
+	/* GPP_F03:     M.2_CNV_RGI_RSP_BT_UART2_CTS_N */
+	PAD_NC(GPP_F03, NONE),
+	/* GPP_F04:     CNV_RF_RESET_R_N */
+	PAD_NC(GPP_F04, NONE),
+	/* GPP_F05:     CRF_CLKREQ_R */
+	PAD_NC(GPP_F05, NONE),
+
+	/* GPP_A15:     BT_RF_KILL_N */
+	PAD_NC(GPP_A15, NONE),
+	/* GPP_D23:     WIFI_RF_KILL_N */
+	PAD_NC(GPP_D23, NONE),
+};
+
 static const struct pad_config ish_disable_pads[] = {
 	/* GPP_B02: 	ISH_I3C0_SDA_SNSR_HDR_R */
 	PAD_NC(GPP_B02, NONE),
@@ -174,5 +232,16 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	} else if (fw_config_probe(FW_CONFIG(AUDIO_CODEC, AUDIO_CODEC_ABSENT))) {
 		printk(BIOS_INFO, "Audio codec absent; disable audio GPIOs.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, audio_disable_pads);
+	}
+
+	if ( fw_config_probe(FW_CONFIG(WIFI_INTERFACE, WIFI_INTERFACE_PCIE))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, pcie_wlan_enable_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, cnvi_disable_pads);
+	} else if (fw_config_probe(FW_CONFIG(WIFI_INTERFACE, WIFI_INTERFACE_CNVI))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, cnvi_enable_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, pcie_wlan_disable_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, cnvi_disable_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, pcie_wlan_disable_pads);
 	}
 }

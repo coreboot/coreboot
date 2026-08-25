@@ -6,12 +6,23 @@
 #include <baseboard/variants.h>
 #include <bootstate.h>
 #include <device/device.h>
+#include <soc/ramstage.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>
 
 void __weak fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	/* default implementation does nothing */
+}
+
+void __weak variant_update_soc_chip_config(struct soc_intel_novalake_config *config)
+{
+	/* default implementation does nothing */
+}
+
+void mainboard_update_soc_chip_config(struct soc_intel_novalake_config *config)
+{
+	variant_update_soc_chip_config(config);
 }
 
 static void mainboard_init(void *chip_info)

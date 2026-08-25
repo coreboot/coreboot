@@ -6,6 +6,7 @@
 #include <fsp/api.h>
 #include <soc/gpio.h>
 #include <soc/meminit.h>
+#include <soc/soc_chip.h>
 
 /**
  * @brief Get the variant GPIO table
@@ -72,5 +73,7 @@ void variant_update_soc_memory_init_params(FSPM_UPD *memupd);
 void fw_config_configure_pre_mem_gpio(void);
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table);
+
+void variant_update_soc_chip_config(struct soc_intel_novalake_config *config);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

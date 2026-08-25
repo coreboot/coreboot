@@ -16,6 +16,7 @@ config BOARD_SAPPHIRE_RAVE2
 if BOARD_SAPPHIRE_RAVE2
 
 config FMDFILE
+	default "src/mainboard/sapphire/rave2/board_rave2_ab.fmd" if PSP_AB_RECOVERY
 	default "src/mainboard/sapphire/rave2/rave2.fmd"
 
 config MAINBOARD_DIR

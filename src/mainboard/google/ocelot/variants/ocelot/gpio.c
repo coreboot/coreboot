@@ -82,9 +82,9 @@ static const struct pad_config gpio_table[] = {
 
 	/* GPP_C */
 	/* GPP_C00:     SPD_SMB_CLK */
-	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
+	PAD_NC(GPP_C00, NONE),
 	/* GPP_C01:     SPD_SMB_DATA */
-	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
+	PAD_NC(GPP_C01, NONE),
 	/* GPP_C02:     NC */
 	PAD_NC(GPP_C02, NONE),
 	/* GPP_C03:     TCP_LAN_SML0_SCL_R */
@@ -377,10 +377,6 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Pad configuration in romstage */
 static const struct pad_config romstage_gpio_table[] = {
-	/* GPP_C00:     SPD_SMB_CLK */
-	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
-	/* GPP_C01:     SPD_SMB_DATA */
-	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
 	/* GPP_C15:     FPS_RST_N */
 	PAD_CFG_GPO(GPP_C15, 0, PLTRST),
 };

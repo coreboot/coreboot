@@ -627,7 +627,6 @@ chip soc/intel/pantherlake
 			end # FPMCU
 		end
 
-		device ref smbus on end
 		device ref hda on
 			probe AUDIO AUDIO_ALC721_SNDW
 			probe AUDIO AUDIO_ALC256_HDA

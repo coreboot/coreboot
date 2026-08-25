@@ -28,8 +28,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_10, DF_VRCONTEXT_0, PULL_UP),
 	/* PWR_LED */
 	PAD_NF(GPIO_11, BLINK, PULL_NONE),
-	/* unused */
-	PAD_NC(GPIO_12),
+	/* VE3558 reset pin */
+	PAD_GPO(GPIO_12, HIGH),
 	/* USB_OCP0 */
 	PAD_NF(GPIO_16, USB_OC0_L, PULL_NONE),
 	/* VERSAL */

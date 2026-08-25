@@ -93,6 +93,7 @@ static const fsp_dxio_descriptor rave2_dxio_descriptors[] = {
 	},
 	{ /* VE3558 PCIe x2 (VE3558_CLK GPP_CLK4, no CLKREQ# pin, lanes 14-15) */
 		.engine_type = PCIE_ENGINE,
+		.gpio_group_id = GPIO_12,
 		.port_present = true,
 		.start_logical_lane = 14,
 		.end_logical_lane = 15,

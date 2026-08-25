@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <delay.h>
 #include <gpio.h>
 #include "gpio.h"
 
@@ -8,6 +9,8 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	PAD_NF(GPIO_2, WAKE_L, PULL_UP),
 	/* NVMe Reset pin */
 	PAD_GPO(GPIO_8, HIGH),
+	/* VE3558 Reset pin */
+	PAD_GPO(GPIO_12, HIGH),
 	/* ESPI_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* ESPI_SOC_CLK */
@@ -34,5 +37,9 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 
 void mainboard_program_early_gpios(void)
 {
+	/* Assert VE3558 reset for 1ms before the pad table drives it back high */
+	gpio_output(GPIO_12, 0);
+	mdelay(1);
+
 	gpio_configure_pads(gpio_set_stage_reset, ARRAY_SIZE(gpio_set_stage_reset));
 }

@@ -114,6 +114,9 @@ config SOC_AMD_FAEGAN
 
 if SOC_AMD_GLINDA_BASE
 
+config MB_COMPRESS_RAMSTAGE_ZSTD
+	default y
+
 config CHIPSET_DEVICETREE
 	string
 	default "soc/amd/glinda/chipset.cb"

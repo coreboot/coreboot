@@ -93,6 +93,7 @@ chip soc/amd/glinda
 					end
 				end
 			end
+			device ref mp2 on end # Sensor Fusion Hub (MP2)
 		end
 
 		device ref gpp_bridge_c on  # Internal GPP Bridge 2 to Bus C

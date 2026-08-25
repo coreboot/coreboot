@@ -16,6 +16,16 @@ static void prepare_usb(void)
 	reset_usb0();
 }
 
+int qclib_mainboard_override(struct qclib_cb_if_table *table)
+{
+	/* Lazor boards need a hack to limit DDR frequency on certain memory parts to work
+	   around a stability issue. */
+	if (CONFIG(BOARD_GOOGLE_LAZOR))
+		table->global_attributes |= QCLIB_GA_DDR_FMAX_LIMIT_HYNIX8GB;
+
+	return 0;
+}
+
 void platform_romstage_main(void)
 {
 	prepare_usb();

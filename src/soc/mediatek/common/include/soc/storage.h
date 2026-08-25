@@ -3,6 +3,8 @@
 #ifndef SOC_MEDIATEK_COMMON_STORAGE_H
 #define SOC_MEDIATEK_COMMON_STORAGE_H
 
+#include <types.h>
+
 /* Bits [31:28] for base type (e.g. UFS, NVMe). */
 #define _BASE_TYPE_SHIFT 28
 #define _BASE_TYPE_MASK (0xf << _BASE_TYPE_SHIFT)
@@ -14,6 +16,7 @@
 
 enum mtk_storage_type {
 	STORAGE_UNKNOWN		= 0,
+	STORAGE_UFS		= _BASE_TYPE_UFS,
 	STORAGE_UFS_22		= _BASE_TYPE_UFS | 0x220,
 	STORAGE_UFS_31		= _BASE_TYPE_UFS | 0x310,
 	STORAGE_UFS_40		= _BASE_TYPE_UFS | 0x400,
@@ -23,5 +26,8 @@ enum mtk_storage_type {
 };
 
 enum mtk_storage_type mainboard_get_storage_type(void);
+
+/* Whether the UFS domain has to stay powered for the mainboard to boot. */
+bool mainboard_needs_ufs_init(void);
 
 #endif /* SOC_MEDIATEK_COMMON_STORAGE_H */

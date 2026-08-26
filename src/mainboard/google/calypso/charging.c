@@ -7,6 +7,7 @@
 #include <reset.h>
 #include <soc/pmic_gpio.h>
 #include <soc/qcom_spmi.h>
+#include <soc/qcom_tsens.h>
 #include <timer.h>
 #include <types.h>
 
@@ -228,6 +229,7 @@ void launch_charger_applet(void)
 
 	static const long charging_enable_timeout_ms = CHARGING_RAIL_STABILIZATION_DELAY_MS;
 	struct stopwatch sw;
+	bool has_crossed_threshold = false;
 	bool has_entered_dead_battery_mode = false;
 
 	printk(BIOS_INFO, "Inside %s. Initiating charging\n", __func__);
@@ -317,6 +319,13 @@ void launch_charger_applet(void)
 		if (detect_ec_manual_poweron_event()) {
 			printk(BIOS_INFO, "Exiting charging applet to boot to OS\n");
 			do_board_reset();
+		}
+
+		/* Issue a shutdown in the event of temperature trip */
+		qcom_tsens_monitor_all(&has_crossed_threshold);
+		if (has_crossed_threshold) {
+			printk(BIOS_INFO, "Issuing power-off due to temperature trip.\n");
+			chromeec_finalize_and_poweroff(false);
 		}
 	} while (true);
 }

@@ -102,9 +102,10 @@ typedef struct {
 **/
   UINT8                       SerialIoUartDebugAutoFlow;
 
-/** Offset 0x0062
+/** Offset 0x0062 - Opportunistic Self Refresh IdleTimer
+  Default 0 = AUTO. Range is 500 to 10000 [ns]
 **/
-  UINT8                       FspmUpdRsvd0[2];
+  UINT16                      OppSrefIdleTmr;
 
 /** Offset 0x0064 - SerialIoUartDebugRxPinMux - FSPT
   Select RX pin muxing for SerialIo UART used for debug
@@ -1381,20 +1382,20 @@ typedef struct {
 **/
   UINT8                       ChHashEnable;
 
-/** Offset 0x02A2 - DDR PowerDown and idle counter
-  Enables/Disable DDR PowerDown and idle counter(For LPDDR Only)
+/** Offset 0x02A2 - DDR PowerDown and idle counter - Deprecated
+  Deprecated
   $EN_DIS
 **/
   UINT8                       EnablePwrDn;
 
-/** Offset 0x02A3 - DDR PowerDown and idle counter
-  Enables/Disable DDR PowerDown and idle counter(For LPDDR Only)
+/** Offset 0x02A3 - DDR PowerDown and idle counter - Deprecated
+  Deprecated
   $EN_DIS
 **/
   UINT8                       EnablePwrDnLpddr;
 
-/** Offset 0x02A4 - SelfRefresh Enable
-  Enables/Disable SelfRefresh Enable
+/** Offset 0x02A4 - SelfRefresh Enable - Deprecated
+  Deprecated
   $EN_DIS
 **/
   UINT8                       SrefCfgEna;
@@ -1592,15 +1593,14 @@ typedef struct {
 **/
   UINT8                       UserBudgetEnable;
 
-/** Offset 0x02C6 - Power Down Mode
-  This option controls command bus tristating during idle periods
+/** Offset 0x02C6 - Power Down Mode - Deprecated
+  Deprecated
   0x0:No Power Down, 0x1:APD, 0x6:PPD DLL OFF, 0xFF:Auto
 **/
   UINT8                       PowerDownMode;
 
-/** Offset 0x02C7 - Pwr Down Idle Timer
-  The minimum value should = to the worst case Roundtrip delay + Burst_Length. 0 means
-  AUTO: 64 for ULX/ULT, 128 for DT/Halo
+/** Offset 0x02C7 - Pwr Down Idle Timer - Deprecated
+  Deprecated
 **/
   UINT8                       PwdwnIdleCounter;
 
@@ -1957,8 +1957,7 @@ typedef struct {
   UINT8                       NnFlexDramOvrdMask;
 
 /** Offset 0x032E - Force DIMM Rx Offset Calibration training
-  Force DIMM Rx Offset Calibration training for LPDDR5X, frequencies >= 6800: 0 =
-  Disable, 1 = Enable
+  Force DIMM Rx Offset Calibration training for LPDDR5X: 0 = Disable, 1 = Enable
   $EN_DIS
 **/
   UINT8                       ForceDIMMRXOFFSET;
@@ -2113,9 +2112,17 @@ typedef struct {
 **/
   UINT8                       PchHdaAudioLinkDmicEnable[2];
 
-/** Offset 0x04D6
+/** Offset 0x04D6 - Power Down Mode
+  CKE Power Down Mode: 0=Enabled, 1=Disabled, 2=Auto (default)
+  0x0:Enable, 0x1:Disable, 0x2:Auto
 **/
-  UINT8                       FspmUpdRsvd1543[2];
+  UINT8                       PwDownMode;
+
+/** Offset 0x04D7 - Force DDR5 Read DCA
+  Force Enable DDR5 Read DCA: 0 = Disable, 1 = Enable
+  $EN_DIS
+**/
+  UINT8                       ForceDdr5ReadDca;
 
 /** Offset 0x04D8 - DMIC<N> ClkA Pin Muxing (N - DMIC number)
   Determines DMIC<N> ClkA Pin muxing. See  GPIO_*_MUXING_DMIC<N>_CLKA_*
@@ -2409,7 +2416,7 @@ typedef struct {
 
 /** Offset 0x061A
 **/
-  UINT8                       FabricGVDisable;
+  UINT8                       FabricGvEnable;
 
 /** Offset 0x061B
 **/
@@ -4255,9 +4262,15 @@ typedef struct {
 **/
   UINT8                       IGpuGsm2Size;
 
-/** Offset 0x0A56
+/** Offset 0x0A56 - PreMemory Display Scaling
+  Configure the Display Scaling for PreMemory
+  0:Default, 1:Center Scaling
 **/
-  UINT8                       FspmUpdRsvd46[2];
+  UINT8                       DisplayScaling;
+
+/** Offset 0x0A57
+**/
+  UINT8                       FspmUpdRsvd46[1];
 
 /** Offset 0x0A58 - Intel Graphics VBT (Video BIOS Table) Size
   Size of Internal Graphics VBT Image
@@ -4443,9 +4456,12 @@ typedef struct {
 **/
   UINT8                       WeaklockEn;
 
-/** Offset 0x0ACB
+/** Offset 0x0ACB - Block CKE in DFI Switch
+  DDR5 only: 0: keep block_cke disabled during DFI switch (default), 1: enable block_cke
+  during DFI switch
+  $EN_DIS
 **/
-  UINT8                       FspmUpdRsvd39;
+  UINT8                       BlockCkeInDfiSwitch;
 
 /** Offset 0x0ACC - Rx DQS Delay Comp Support
   Enables/Disable Rx DQS Delay Comp Support
@@ -4483,8 +4499,8 @@ typedef struct {
 **/
   UINT32                      RealtimeMemoryFrequency;
 
-/** Offset 0x0ADC - SelfRefresh IdleTimer
-  SelfRefresh IdleTimer, Default is 256
+/** Offset 0x0ADC - SelfRefresh IdleTimer - Deprecated
+  Deprecated
 **/
   UINT16                      SrefCfgIdleTmr;
 
@@ -4748,7 +4764,13 @@ typedef struct {
 
 /** Offset 0x0B0D
 **/
-  UINT8                       FspmUpdRsvd41[3];
+  UINT8                       FspmUpdRsvd41;
+
+/** Offset 0x0B0E - RDMPR Per-Bit Speed
+  Controls the frequency at which ERDMPR2D uses per-bit. 0: Auto (6400 and up), otherwise
+  the frequency value (3200, 4800 etc.)
+**/
+  UINT16                      ReadMprPerBitSpeed;
 
 /** Offset 0x0B10 - Disable Zq
   Enable/Disable Zq Calibration: 0:Enabled, 1:Disabled

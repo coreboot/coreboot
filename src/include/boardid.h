@@ -19,5 +19,6 @@
 uint32_t board_id(void);	/* differentiates revisions */
 uint32_t ram_code(void);	/* identifies installed DRAM modules */
 uint32_t sku_id(void);		/* differentiates other optional components */
+uint32_t soc_id(void);		/* differentiates SoC type/family */
 
 #endif /* __INCLUDE_BOARDID_H__ */

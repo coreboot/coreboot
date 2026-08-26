@@ -477,6 +477,7 @@ struct lb_board_config {
 	uint32_t board_id;
 	uint32_t ram_code;
 	uint32_t sku_id;
+	uint32_t soc_id;
 };
 
 #define MAX_SERIALNO_LENGTH	32

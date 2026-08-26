@@ -210,6 +210,7 @@ static void lb_gpios(struct lb_header *header)
 __weak uint32_t board_id(void) { return UNDEFINED_STRAPPING_ID; }
 __weak uint32_t ram_code(void) { return UNDEFINED_STRAPPING_ID; }
 __weak uint32_t sku_id(void) { return UNDEFINED_STRAPPING_ID; }
+__weak uint32_t soc_id(void) { return UNDEFINED_STRAPPING_ID; }
 __weak uint64_t fw_config_get(void) { return UNDEFINED_FW_CONFIG; }
 
 static void lb_boot_media_params(struct lb_header *header)
@@ -377,6 +378,7 @@ static struct lb_board_config *lb_board_config(struct lb_header *header)
 	config->board_id = board_id();
 	config->ram_code = ram_code();
 	config->sku_id = sku_id();
+	config->soc_id = soc_id();
 	config->fw_config = fw_config;
 
 	if (config->board_id != UNDEFINED_STRAPPING_ID)
@@ -385,6 +387,8 @@ static struct lb_board_config *lb_board_config(struct lb_header *header)
 		printk(BIOS_INFO, "RAM code: %d\n", config->ram_code);
 	if (config->sku_id != UNDEFINED_STRAPPING_ID)
 		printk(BIOS_INFO, "SKU ID: %d\n", config->sku_id);
+	if (config->soc_id != UNDEFINED_STRAPPING_ID)
+		printk(BIOS_INFO, "SoC ID: 0x%x\n", config->soc_id);
 	if (fw_config != UNDEFINED_FW_CONFIG)
 		printk(BIOS_INFO, "FW config: %#" PRIx64 "\n", fw_config);
 

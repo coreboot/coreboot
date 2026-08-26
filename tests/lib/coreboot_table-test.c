@@ -482,6 +482,7 @@ static void test_write_tables(void **state)
 			assert_int_equal(board_id(), board_config->board_id);
 			assert_int_equal(ram_code(), board_config->ram_code);
 			assert_int_equal(sku_id(), board_config->sku_id);
+			assert_int_equal(soc_id(), board_config->soc_id);
 			break;
 		case LB_TAG_ACPI_RSDP:
 			assert_int_equal(sizeof(struct lb_acpi_rsdp), record->size);

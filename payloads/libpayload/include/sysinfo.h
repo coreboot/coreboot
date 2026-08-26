@@ -128,6 +128,7 @@ struct sysinfo_t {
 	u32		board_id;
 	u32		ram_code;
 	u32		sku_id;
+	u32		soc_id;
 
 	/*
 	 * A payload using this field is responsible for ensuring it checks its

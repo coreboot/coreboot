@@ -121,6 +121,7 @@ static void cb_parse_board_config(unsigned char *ptr, struct sysinfo_t *info)
 	info->board_id = config->board_id;
 	info->ram_code = config->ram_code;
 	info->sku_id = config->sku_id;
+	info->soc_id = config->soc_id;
 }
 
 #if CONFIG(LP_NVRAM)
@@ -343,6 +344,7 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 	info->board_id = UNDEFINED_STRAPPING_ID;
 	info->ram_code = UNDEFINED_STRAPPING_ID;
 	info->sku_id = UNDEFINED_STRAPPING_ID;
+	info->soc_id = UNDEFINED_STRAPPING_ID;
 	info->fw_config = UNDEFINED_FW_CONFIG;
 
 	/* Now, walk the tables. */

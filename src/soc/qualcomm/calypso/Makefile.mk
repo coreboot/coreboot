@@ -65,6 +65,8 @@ ramstage-y += platform_info.c
 ramstage-y += usb/usb.c
 ramstage-y += usb/snps_usb_phy.c
 ramstage-y += usb/qmpv4_usb_phy.c
+ramstage-y += ../common/tsens.c
+ramstage-y += tsens_map.c
 
 ################################################################################
 

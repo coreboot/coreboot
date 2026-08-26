@@ -263,4 +263,7 @@ config OCELOT_VGA_MODE12_SUPPORT
 	help
 	  Select this if the FSP supports VGA mode 12 for eSOL.
 
+config SYSTEM_SMBIOS_MANUFACTURER
+	default "Google"
+
 endif # BOARD_GOOGLE_OCELOT_COMMON

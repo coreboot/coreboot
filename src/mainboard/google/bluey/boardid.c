@@ -4,6 +4,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <soc/cdt.h>
+#include <soc/platform_info.h>
 
 uint32_t board_id(void)
 {
@@ -40,6 +41,17 @@ uint32_t sku_id(void)
 
 	if (CONFIG(EC_GOOGLE_CHROMEEC))
 		id = google_chromeec_get_board_sku();
+
+	return id;
+}
+
+uint32_t soc_id(void)
+{
+	static uint32_t id = UNDEFINED_STRAPPING_ID;
+	if (id != UNDEFINED_STRAPPING_ID)
+		return id;
+
+	id = platform_get_soc_hw_id();
 
 	return id;
 }

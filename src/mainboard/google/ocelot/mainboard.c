@@ -16,9 +16,23 @@ void __weak fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	/* default implementation does nothing */
 }
 
+static void override_tier_1_gpio_chip_config(struct soc_intel_pantherlake_config *config)
+{
+	/* Override the Tier-1 GPIO to ensure VGPIO dedicated for THC remains as wake source */
+	for (size_t i = 0; i < NUM_THC; i++) {
+		if (is_devfn_enabled(_PCI_DEVFN(THC, i)) && config->thc_wake_on_touch[i]) {
+			/* Atleast one THC interface is enabled, hence, skip checking further */
+			config->pmc_gpe0_dw0 = GPP_VGPIO;
+			break;
+		}
+	}
+}
+
 void mainboard_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 {
 	variant_update_soc_chip_config(config);
+
+	override_tier_1_gpio_chip_config(config);
 }
 
 void __weak variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)

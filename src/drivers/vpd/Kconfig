@@ -20,7 +20,42 @@ config VPD_FMAP_SIZE
 	help
 	  Size in bytes of the FMAP region created to store VPD tables.
 
-config SMBIOS_SERIAL_FROM_VPD
-	bool "Load device serial from VPD"
+config SMBIOS_UUID_FROM_VPD
+	bool "Load system UUID from VPD"
 	depends on VPD && GENERATE_SMBIOS_TABLES
-	default n
+	help
+	  VPD storage keys:
+	  - system_uuid; stored as a raw UUID, byte-order is given by the SMBIOS
+	    specification. The UUID 00112233-4455-6677-8899-AABBCCDDEEFF would be
+	    stored as the bytes 33 22 11 00 55 44 77 66 88 99 AA BB CC DD EE FF.
+
+config SMBIOS_SERIAL_FROM_VPD
+	bool "Load mainboard and system serial number from VPD"
+	depends on VPD && GENERATE_SMBIOS_TABLES
+	help
+	  VPD storage keys:
+	  - mlb_serial_number: mainboard serial number
+	  - serial_number: system serial number
+
+config SMBIOS_SERIAL_SIZE
+	int "Maximum serial number size"
+	depends on SMBIOS_SERIAL_FROM_VPD
+	help
+	  Including the terminating null byte
+	default 64
+
+config SMBIOS_SYSTEM_DATA_FROM_VPD
+	bool "Load system/product DMI strings from VPD"
+	depends on VPD && GENERATE_SMBIOS_TABLES
+	help
+	  Loads the following system/product DMI strings from VPD:
+	  - system_family
+	  - system_product_name
+	  - system_sku
+
+config SMBIOS_SYSTEM_DATA_SIZE
+	int "Maximum length of a single system/product DMI string"
+	depends on SMBIOS_SYSTEM_DATA_FROM_VPD
+	help
+	  Including the terminating null byte
+	default 64

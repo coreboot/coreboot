@@ -3,11 +3,10 @@
 #include <smbios.h>
 
 #include "vpd.h"
-#include "vpd_tables.h"
 
 #define VPD_KEY_SYSTEM_SERIAL		"serial_number"
 #define VPD_KEY_MAINBOARD_SERIAL	"mlb_serial_number"
-#define VPD_SERIAL_LEN			64
+#define VPD_SERIAL_LEN			(CONFIG_SMBIOS_SERIAL_SIZE)
 
 const char *smbios_system_serial_number(void)
 {

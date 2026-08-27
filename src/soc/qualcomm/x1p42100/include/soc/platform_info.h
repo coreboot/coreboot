@@ -64,5 +64,6 @@ union tcsr_soc_hw_version {
 };
 
 enum qclib_soc_id platform_get_soc_id(void);
+uint32_t platform_get_soc_hw_id(void);
 
 #endif /* __SOC_QUALCOMM_X1P42100_PLATFORM_INFO_H__ */

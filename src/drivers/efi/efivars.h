@@ -9,6 +9,14 @@
 #include <Uefi/UefiBaseType.h>
 
 /**
+ * Initialize an erased EFI variable store.
+ *
+ * The region is left untouched unless it is erased or contains only a partial
+ * programming of the expected headers from an interrupted initialization.
+ */
+enum cb_err efi_fv_initialize(const struct region_device *rdev, size_t block_size);
+
+/**
  * efi_fv_get_option
  * Use the provided EFI variable store inside the region device as variable store.
  * @rdev: the readable region to operate on

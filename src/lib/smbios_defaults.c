@@ -134,6 +134,17 @@ __weak const char *smbios_system_product_name(void)
 	return smbios_mainboard_product_name();
 }
 
+__weak const char *smbios_system_family(void)
+{
+	/* This config option is a misnomer, but we'll keep it to not
+	 * break other code relying on the historic name. */
+#ifdef CONFIG_MAINBOARD_FAMILY
+	return CONFIG_MAINBOARD_FAMILY;
+#else
+	return "";
+#endif
+}
+
 __weak void smbios_system_set_uuid(u8 *uuid)
 {
 	/* leave all zero */

@@ -65,6 +65,7 @@ int get_smbios_data(struct device *dev, int *handle, unsigned long *current);
 
 const char *smbios_system_manufacturer(void);
 const char *smbios_system_product_name(void);
+const char *smbios_system_family(void);
 const char *smbios_system_serial_number(void);
 const char *smbios_system_version(void);
 void smbios_system_set_uuid(u8 *uuid);

@@ -486,9 +486,7 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	t->wakeup_type = smbios_system_wakeup_type();
 	t->sku = smbios_add_string(t->eos, smbios_system_sku());
 	t->version = smbios_add_string(t->eos, smbios_system_version());
-#ifdef CONFIG_MAINBOARD_FAMILY
-	t->family = smbios_add_string(t->eos, CONFIG_MAINBOARD_FAMILY);
-#endif
+	t->family = smbios_add_string(t->eos, smbios_system_family());
 	smbios_system_set_uuid(t->uuid);
 	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;

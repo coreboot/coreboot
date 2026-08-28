@@ -184,9 +184,45 @@ bool rtc_gpio_init(void)
 				  RTC_CON_GPEN | RTC_CON_GOE);
 }
 
+/*
+ * Cold-boot / recovery helper:
+ * When the 32.768 kHz clock domain is disabled (RTC_REG_XOSC32_ENB = 0),
+ * RTC_BBPU_CBUSY cannot clear because its clock domain crossing (CDC)
+ * handshake requires 2-3 active 32K clock edges.
+ * Standard rtc_xosc_write() waits for CBUSY after writing UNLOCK1, which
+ * creates a circular deadlock (waiting for 32K clock to turn on 32K clock)
+ * and aborts before the clock enable bit is written.
+ * This helper breaks the deadlock by replacing rtc_busy_wait() with
+ * deterministic udelay(100) intervals during the unlock and enable sequence.
+ */
+static bool mt6685_xosc_force_enable(u16 val)
+{
+	rtc_write(RTC_OSC32CON, RTC_OSC32CON_UNLOCK1);
+	udelay(100);
+	rtc_write(RTC_OSC32CON, RTC_OSC32CON_UNLOCK2);
+	udelay(100);
+	rtc_write(RTC_OSC32CON, val);
+	udelay(100);
+
+	return rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
+}
+
 static bool rtc_eosc_cali_and_write(void)
 {
 	u16 osc32con, val;
+
+	/*
+	 * Pre-enable EOSC analog oscillator and 32K clock gate if unclocked.
+	 * Without active 32K clock edges, FQMTR calibration fails (returns 0)
+	 * and subsequent register writes time out on CBUSY.
+	 */
+	rtc_read(RTC_OSC32CON, &osc32con);
+	if (!(osc32con & RTC_REG_XOSC32_ENB)) {
+		osc32con = OSC32CON_ANALOG_SETTING | RTC_REG_XOSC32_ENB |
+			   (osc32con & RTC_XOSCCALI_MASK);
+		if (!mt6685_xosc_force_enable(osc32con))
+			printk(BIOS_WARNING, "%s: initial rtc_xosc_write failed\n", __func__);
+	}
 
 	val = rtc_eosc_cali();
 	printk(BIOS_DEBUG, "before set ENB_HW_Mode: EOSC cali val = %#x\n", val);

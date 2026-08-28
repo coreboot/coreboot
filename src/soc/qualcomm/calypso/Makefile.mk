@@ -106,6 +106,16 @@ DELTA_DCB_FILE := $(CALYPSO_BLOB)/boot/$(DTB_DCB_BLOB_PATH)/delta_dcb.bin
 SHRM_FILE := $(CALYPSO_BLOB)/$(BLOB_VARIANT)/shrm/shrm.elf
 endif # CONFIG_QC_QDUTT_ENABLE
 
+ifeq ($(CONFIG_QC_RAMDUMP_ENABLE),y)
+AOP_FILE := $(CALYPSO_BLOB)/RAMDUMP/$(BLOB_VARIANT)/aop/aop.mbn
+AOP_CFG_FILE := $(CALYPSO_BLOB)/RAMDUMP/$(BLOB_VARIANT)/aop/aop_devcfg.mbn
+APDP_FILE := $(CALYPSO_BLOB)/RAMDUMP/$(BLOB_VARIANT)/apdp/apdp.mbn
+else
+AOP_FILE := $(CALYPSO_BLOB)/$(BLOB_VARIANT)/aop/aop.mbn
+AOP_CFG_FILE := $(CALYPSO_BLOB)/$(BLOB_VARIANT)/aop/aop_devcfg.mbn
+APDP_FILE := $(CALYPSO_BLOB)/$(BLOB_VARIANT)/apdp/apdp.mbn
+endif # CONFIG_QC_QDUTT_ENABLE
+
 ################################################################################
 ifeq ($(CONFIG_QC_SDI_ENABLE),y)
 QCSDI_FILE := $(CALYPSO_BLOB)/boot/QcSdi.elf
@@ -194,7 +204,6 @@ $(I2C_FW_CBFS)-compression := none
 cbfs-files-y += $(I2C_FW_CBFS)
 
 ################################################################################
-AOP_FILE := $(CALYPSO_BLOB)/$(BLOB_VARIANT)/aop/aop.mbn
 AOP_CBFS := $(CONFIG_CBFS_PREFIX)/aop
 $(AOP_CBFS)-file := $(AOP_FILE)
 $(AOP_CBFS)-type := payload
@@ -204,7 +213,7 @@ cbfs-files-y += $(AOP_CBFS)
 ################################################################################
 # Rule to create aop_meta from aop.mbn
 # This rule depends on aop.mbn built and the extractor script existing.
-$(obj)/mainboard/$(MAINBOARDDIR)/aop_meta: $(CALYPSO_BLOB)/$(BLOB_VARIANT)/aop/aop.mbn util/qualcomm/elf_segment_extractor.py
+$(obj)/mainboard/$(MAINBOARDDIR)/aop_meta: $(AOP_FILE) util/qualcomm/elf_segment_extractor.py
 	@echo "Extracting ELF headers and hash table segment from $< to $@"
 	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
 
@@ -216,7 +225,6 @@ $(AOP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(AOP_META_CBFS)
 
 ################################################################################
-AOP_CFG_FILE := $(CALYPSO_BLOB)/$(BLOB_VARIANT)/aop/aop_devcfg.mbn
 AOP_CFG_CBFS := $(CONFIG_CBFS_PREFIX)/aop_cfg
 $(AOP_CFG_CBFS)-file := $(AOP_CFG_FILE)
 $(AOP_CFG_CBFS)-type := payload
@@ -226,7 +234,7 @@ cbfs-files-y += $(AOP_CFG_CBFS)
 ################################################################################
 # Rule to create aop_meta from aop_devcfg.mbn
 # This rule depends on aop_devcfg.mbn built and the extractor script existing.
-$(obj)/mainboard/$(MAINBOARDDIR)/aop_devcfg_meta: $(CALYPSO_BLOB)/$(BLOB_VARIANT)/aop/aop_devcfg.mbn util/qualcomm/elf_segment_extractor.py
+$(obj)/mainboard/$(MAINBOARDDIR)/aop_devcfg_meta: $(AOP_CFG_FILE) util/qualcomm/elf_segment_extractor.py
 	@echo "Extracting ELF headers and hash table segment from $< to $@"
 	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
 
@@ -368,7 +376,6 @@ endif # ifeq ($(CONFIG_ARM64_USE_SECURE_OS),y)
 ################################################################################
 ifeq ($(CONFIG_QC_APDP_ENABLE),y)
 
-APDP_FILE := $(CALYPSO_BLOB)/qtee/apdp.mbn
 APDP_CBFS := $(CONFIG_CBFS_PREFIX)/apdp
 $(APDP_CBFS)-file := $(APDP_FILE)
 $(APDP_CBFS)-type := payload
@@ -378,7 +385,7 @@ cbfs-files-y += $(APDP_CBFS)
 ################################################################################
 # Rule to create apdp_meta from apdp.mbn
 # This rule depends on apdp.mbn being built and the extractor script existing.
-$(obj)/mainboard/$(MAINBOARDDIR)/apdp_meta: $(CALYPSO_BLOB)/$(BLOB_VARIANT)/apdp/apdp.mbn util/qualcomm/elf_segment_extractor.py
+$(obj)/mainboard/$(MAINBOARDDIR)/apdp_meta: $(APDP_FILE) util/qualcomm/elf_segment_extractor.py
 	@echo "Extracting ELF headers and hash table segment from $< to $@"
 	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
 
@@ -393,7 +400,7 @@ endif # ifeq ($(CONFIG_QC_APDP_ENABLE),y)
 ################################################################################
 ifeq ($(CONFIG_QC_RAMDUMP_ENABLE),y)
 
-RAMDUMP_FILE := $(CALYPSO_BLOB)/boot/XblRamdump.elf
+RAMDUMP_FILE := $(CALYPSO_BLOB)/RAMDUMP/boot/XblRamdump.elf
 RAMDUMP_CBFS := $(CONFIG_CBFS_PREFIX)/ramdump
 $(RAMDUMP_CBFS)-file := $(RAMDUMP_FILE)
 $(RAMDUMP_CBFS)-type := stage
@@ -403,7 +410,7 @@ cbfs-files-y += $(RAMDUMP_CBFS)
 ################################################################################
 # Rule to create ramdump_meta from XblRamdump.elf
 # This rule depends on XblRamdump.elf being built and the extractor script existing.
-$(obj)/mainboard/$(MAINBOARDDIR)/ramdump_meta: $(CALYPSO_BLOB)/boot/XblRamdump.elf util/qualcomm/elf_segment_extractor.py
+$(obj)/mainboard/$(MAINBOARDDIR)/ramdump_meta: $(RAMDUMP_FILE) util/qualcomm/elf_segment_extractor.py
 	@echo "Extracting ELF headers and hash table segment from $< to $@"
 	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
 

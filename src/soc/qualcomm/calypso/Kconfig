@@ -42,6 +42,10 @@ config SOC_QUALCOMM_CALYPSO
 
 if SOC_QUALCOMM_CALYPSO_BASE
 
+config QC_RAMDUMP_ENABLE
+	bool
+	default y if QC_RAMDUMP
+
 config QC_BLOBS_UPSTREAM
 	bool "QC blobs are available in upstream repository"
 	select USE_QC_BLOBS

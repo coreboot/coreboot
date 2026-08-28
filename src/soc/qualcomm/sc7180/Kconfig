@@ -24,6 +24,10 @@ config SOC_QUALCOMM_SC7180
 
 if SOC_QUALCOMM_SC7180
 
+config QC_SDI_ENABLE
+	bool
+	default y if QC_RAMDUMP
+
 config MEMLAYOUT_LD_FILE
 	string
 	default "src/soc/qualcomm/sc7180/memlayout.ld"

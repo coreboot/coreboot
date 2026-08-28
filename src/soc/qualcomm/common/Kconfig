@@ -29,6 +29,15 @@ config QMP_PHY_PCIE5_1X4
 
 if SOC_QUALCOMM_COMMON
 
+config QC_RAMDUMP
+	bool "Enable Qualcomm RAM dump"
+	default n
+	help
+	  Build-time toggle for Qualcomm RAM dump support.
+	  Controlled by the ChromeOS 'qualcomm_ramdump' USE flag.
+	  The possible options are (A) using SDI for SC7180 and SC7280
+	  (B) using RAMDUMP for X1P42100 and future generations.
+
 config QC_SDI_ENABLE
 	bool
 	default n

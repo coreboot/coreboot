@@ -61,7 +61,13 @@ static struct device_operations pci_domain_ops = {
 
 static uint64_t calc_acdb_carveout_size(void)
 {
-	return ((((region_sz(ddr_region) / GiB) * 11) / 2 + 36) * MiB);
+/*
+ * Carevout calculation (in MiB) = (n*0.5)+1+81 where n is size of DDR in GiB.
+ * Hyp debug buffer - 81 MiB
+ * ACDB carveout - (n*0.5)+1
+ */
+
+	return (((region_sz(ddr_region) / GiB) / 2 + 1 + 81) * MiB);
 }
 
 static void soc_read_resources(struct device *dev)

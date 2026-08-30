@@ -1,6 +1,8 @@
 chip northbridge/intel/sandybridge
 	device domain 0 on
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "spi_lvscc" = "0"
+			register "spi_uvscc" = "0x2005"
 			register "gen1_dec" = "LPC_IO(0x680, 0x10)"
 			register "gen2_dec" = "LPC_IO(0x1640, 0x10)"
 			register "gen3_dec" = "LPC_IO(0x300, 0x20)"

@@ -168,7 +168,7 @@ chip soc/intel/apollolake
 				register "generic.detect" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_105)"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_146)"
-				register "generic.reset_delay_ms" = "45"
+				register "generic.reset_delay_ms" = "75"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 20 on end

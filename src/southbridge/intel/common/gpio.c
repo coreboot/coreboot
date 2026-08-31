@@ -10,8 +10,6 @@
 #include "southbridge/intel/common/gpio.h"
 #include "southbridge/intel/common/lpc_def.h"
 
-#define MAX_GPIO_NUMBER 75 /* zero based */
-
 /*
  * If you want to use these macros outside this file, consider making
  * more helper functions to expose the functionality you want instead.
@@ -112,7 +110,7 @@ int gpio_get(gpio_t gpio_num)
 	u16 gpio_base = get_gpio_base();
 	int index, bit;
 
-	if (gpio_num > MAX_GPIO_NUMBER)
+	if (gpio_num >= CONFIG_SOUTHBRIDGE_INTEL_COMMON_NUM_GPIOS)
 		return 0; /* Just ignore wrong gpio numbers. */
 
 	index = gpio_num / 32;
@@ -133,7 +131,7 @@ void gpio_set(gpio_t gpio_num, int value)
 	int index, bit;
 	u32 config;
 
-	if (gpio_num > MAX_GPIO_NUMBER)
+	if (gpio_num >= CONFIG_SOUTHBRIDGE_INTEL_COMMON_NUM_GPIOS)
 		return; /* Just ignore wrong gpio numbers. */
 
 	index = gpio_num / 32;
@@ -155,7 +153,7 @@ int gpio_is_native(int gpio_num)
 	int index, bit;
 	u32 config;
 
-	if (gpio_num > MAX_GPIO_NUMBER)
+	if (gpio_num >= CONFIG_SOUTHBRIDGE_INTEL_COMMON_NUM_GPIOS)
 		return 0; /* Just ignore wrong gpio numbers. */
 
 	index = gpio_num / 32;
@@ -174,7 +172,7 @@ static void gpio_set_gpio(gpio_t gpio_num)
 	int index, bit;
 	u32 config;
 
-	if (gpio_num > MAX_GPIO_NUMBER)
+	if (gpio_num >= CONFIG_SOUTHBRIDGE_INTEL_COMMON_NUM_GPIOS)
 		return; /* Just ignore wrong gpio numbers. */
 
 	index = gpio_num / 32;
@@ -197,7 +195,7 @@ void gpio_input(gpio_t gpio_num)
 	int index, bit;
 	u32 config;
 
-	if (gpio_num > MAX_GPIO_NUMBER)
+	if (gpio_num >= CONFIG_SOUTHBRIDGE_INTEL_COMMON_NUM_GPIOS)
 		return; /* Just ignore wrong gpio numbers. */
 
 	gpio_set_gpio(gpio_num);
@@ -222,7 +220,7 @@ void gpio_output(gpio_t gpio_num, int value)
 	int index, bit;
 	u32 config;
 
-	if (gpio_num > MAX_GPIO_NUMBER)
+	if (gpio_num >= CONFIG_SOUTHBRIDGE_INTEL_COMMON_NUM_GPIOS)
 		return; /* Just ignore wrong gpio numbers. */
 
 	gpio_set_gpio(gpio_num);

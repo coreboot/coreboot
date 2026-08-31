@@ -30,6 +30,12 @@ DefinitionBlock(
 			#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
 
+			Device (GLAN)
+			{
+				Name (_ADR, 0x00190000)
+				Name (_PRW, Package () { 13, 4 })
+			}
+
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}

@@ -42,7 +42,7 @@ config MAINBOARD_VENDOR
 	string
 	default "Hewlett-Packard"
 
-config MAINBOARD_SMBIOS_MANUFACTURER
+config SYSTEM_SMBIOS_MANUFACTURER
 	string
 	default "GOOGLE"
 

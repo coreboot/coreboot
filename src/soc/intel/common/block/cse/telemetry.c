@@ -27,6 +27,11 @@ enum cb_err cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rs
 		return CB_ERR;
 	}
 
+	if (resp_size != sizeof(struct cse_boot_perf_rsp)) {
+		printk(BIOS_ERR, "cse: Get boot performance data: bad reply size %zu (expected %zu)\n",
+		       resp_size, sizeof(struct cse_boot_perf_rsp));
+	}
+
 	if (boot_perf_rsp->hdr.result) {
 		printk(BIOS_ERR, "cse: Get boot performance data resp failed: %d\n",
 				boot_perf_rsp->hdr.result);
@@ -38,7 +43,7 @@ enum cb_err cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rs
 
 static void process_cse_telemetry_data(void)
 {
-	struct cse_boot_perf_rsp cse_perf_data;
+	struct cse_boot_perf_rsp cse_perf_data = {0};
 	s64 ts[NUM_CSE_BOOT_PERF_DATA] = {0};
 	s64 current_time;
 	int zero_point_idx = 0;

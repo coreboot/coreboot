@@ -78,16 +78,16 @@ void soc_display_fsp_smbios_memory_info_hob(
 		memory_info_hob->ErrorCorrectionType);
 	printk(BIOS_DEBUG, "    0x%02x: ChannelCount\n",
 		memory_info_hob->ChannelCount);
-	for (channel = 0; channel < memory_info_hob->ChannelCount;
-		channel++) {
+	for (channel = 0; channel < memory_info_hob->ChannelCount &&
+		channel < ARRAY_SIZE(memory_info_hob->ChannelInfo); channel++) {
 		channel_info = &memory_info_hob->ChannelInfo[channel];
 		printk(BIOS_DEBUG, "  Channel %d\n", channel);
 		printk(BIOS_DEBUG, "      0x%02x: ChannelId\n",
 			channel_info->ChannelId);
 		printk(BIOS_DEBUG, "      0x%02x: DimmCount\n",
 			channel_info->DimmCount);
-		for (dimm = 0; dimm < channel_info->DimmCount;
-			dimm++) {
+		for (dimm = 0; dimm < channel_info->DimmCount &&
+			dimm < ARRAY_SIZE(channel_info->DimmInfo); dimm++) {
 			dimm_info = &channel_info->DimmInfo[dimm];
 			printk(BIOS_DEBUG, "   DIMM %d\n", dimm);
 			printk(BIOS_DEBUG, "      0x%02x: DimmId\n",

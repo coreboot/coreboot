@@ -57,14 +57,16 @@ void save_lpddr4_dimm_info_part_num(const char *dram_part_num)
 
 	for (node = 0; node < MAX_NODE_NUM; node++) {
 		ctrl_info = &memory_info_hob->Controller[node];
-		for (channel = 0; channel < ctrl_info->ChannelCount;
+		for (channel = 0; channel < ctrl_info->ChannelCount &&
+			channel < ARRAY_SIZE(ctrl_info->ChannelInfo);
 			channel++) {
 			if (index >= dimm_max)
 				break;
 
 			channel_info = &ctrl_info->ChannelInfo[channel];
 
-			for (dimm = 0; dimm < channel_info->DimmCount; dimm++) {
+			for (dimm = 0; dimm < channel_info->DimmCount &&
+			     dimm < ARRAY_SIZE(channel_info->DimmInfo); dimm++) {
 				if (index >= dimm_max)
 					break;
 				src_dimm = &channel_info->DimmInfo[dimm];

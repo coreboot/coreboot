@@ -273,12 +273,14 @@ static void soc_display_fsp_smbios_memory_info(const FSP_SMBIOS_MEMORY_INFO *hob
 	printk(BIOS_DEBUG, "\t MemoryFrequencyInMHz: 0x%x\n", hob->MemoryFrequencyInMHz);
 	printk(BIOS_DEBUG, "\t ErrorCorrectionType: 0x%x\n", hob->ErrorCorrectionType);
 	printk(BIOS_DEBUG, "\t ChannelCount: 0x%x\n", hob->ChannelCount);
-	for (uint8_t channel = 0; channel < hob->ChannelCount; channel++) {
+	for (uint8_t channel = 0; channel < hob->ChannelCount &&
+		    channel < ARRAY_SIZE(hob->ChannelInfo); channel++) {
 		const CHANNEL_INFO *channel_info = &hob->ChannelInfo[channel];
 		printk(BIOS_DEBUG, "\t ChannelInfo[%d]\n", channel);
 		printk(BIOS_DEBUG, "\t\t ChannelId: 0x%x\n", channel_info->ChannelId);
 		printk(BIOS_DEBUG, "\t\t DimmCount: 0x%x\n", channel_info->DimmCount);
-		for (uint8_t dimm = 0; dimm < channel_info->DimmCount; dimm++) {
+		for (uint8_t dimm = 0; dimm < channel_info->DimmCount &&
+			   dimm < ARRAY_SIZE(channel_info->DimmInfo); dimm++) {
 			const DIMM_INFO *dimm_info = &channel_info->DimmInfo[dimm];
 			printk(BIOS_DEBUG, "\t\t\t DimmInfo[%d]\n", dimm);
 			printk(BIOS_DEBUG, "\t\t\t\t DimmId: 0x%x\n", dimm_info->DimmId);

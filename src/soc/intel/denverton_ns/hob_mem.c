@@ -45,11 +45,13 @@ void soc_save_dimm_info(void)
 	/* Describe the first N DIMMs in the system */
 	index = 0;
 	dimm_max = ARRAY_SIZE(mem_info->dimm);
-	for (channel = 0; channel < memory_info_hob->ChannelCount; channel++) {
+	for (channel = 0; channel < memory_info_hob->ChannelCount &&
+		    channel < ARRAY_SIZE(memory_info_hob->ChannelInfo); channel++) {
 		if (index >= dimm_max)
 			break;
 		channel_info = &memory_info_hob->ChannelInfo[channel];
-		for (dimm = 0; dimm < channel_info->DimmCount; dimm++) {
+		for (dimm = 0; dimm < channel_info->DimmCount &&
+		    dimm < ARRAY_SIZE(channel_info->DimmInfo); dimm++) {
 			if (index >= dimm_max)
 				break;
 			dimm_info = &channel_info->DimmInfo[dimm];

@@ -188,4 +188,6 @@ enum dload_mode_cookies {
 	DLOAD_BOTH = (DLOAD_FULL_DUMP | DLOAD_MINI_DUMP)
 };
 
+#define SOC_BOOT_CONFIG			0x361C8600
+
 #endif /*  __SOC_QUALCOMM_CALYPSO_ADDRESS_MAP_H__ */

@@ -299,6 +299,207 @@ static void test_leap_day_secday(void **state)
 	assert_rtc_time_equal(&tm_out, &tm_expected);
 }
 
+static void test_rtc_invalid(void **state)
+{
+	struct rtc_invalid_case {
+		struct rtc_time tm;
+		int expected;
+	};
+	/* clang-format off */
+	const struct rtc_invalid_case cases[] = {
+		/* Epoch and upper time-field boundaries. */
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 1 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 31, .hour = 23,
+				.min = 59, .sec = 59 },
+			.expected = 0,
+		},
+		/* Last valid day of each month in a non-leap year. */
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 31 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 2, .mday = 28 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 3, .mday = 31 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 4, .mday = 30 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 5, .mday = 31 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 6, .mday = 30 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 7, .mday = 31 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 8, .mday = 31 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 9, .mday = 30 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 10, .mday = 31 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 11, .mday = 30 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 12, .mday = 31 },
+			.expected = 0,
+		},
+		/* February 29 is valid in leap years divisible by 400. */
+		{
+			.tm = { .year = 2000, .mon = 2, .mday = 29 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 2400, .mon = 2, .mday = 29 },
+			.expected = 0,
+		},
+		/* Days beyond each month's maximum are invalid. */
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 32 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 2, .mday = 29 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 2000, .mon = 2, .mday = 30 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 3, .mday = 32 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 4, .mday = 31 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 5, .mday = 32 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 6, .mday = 31 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 7, .mday = 32 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 8, .mday = 32 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 9, .mday = 31 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 10, .mday = 32 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 11, .mday = 31 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 12, .mday = 32 },
+			.expected = 1,
+		},
+		/* Century years not divisible by 400 are not leap years. */
+		{
+			.tm = { .year = 1999, .mon = 2, .mday = 29 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 2100, .mon = 2, .mday = 29 },
+			.expected = 1,
+		},
+		/* Upper bounds for time fields and lower date range bounds. */
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 1, .sec = 60 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 1, .min = 60 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 1, .hour = 24 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 0, .mday = 1 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1970, .mon = 13, .mday = 1 },
+			.expected = 1,
+		},
+		{
+			.tm = { .year = 1969, .mon = 1, .mday = 1 },
+			.expected = 1,
+		},
+		/*
+		 * These lower-bound results characterize current behavior. A future
+		 * production fix should reject these values.
+		 */
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 1, .sec = -1 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 1, .min = -1 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 1, .hour = -1 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = 0 },
+			.expected = 0,
+		},
+		{
+			.tm = { .year = 1970, .mon = 1, .mday = -1 },
+			.expected = 0,
+		},
+	};
+	/* clang-format on */
+
+	for (size_t i = 0; i < ARRAY_SIZE(cases); i++) {
+		const struct rtc_invalid_case *const test_case = &cases[i];
+
+		print_message("case %zu: year=%d, mon=%d, mday=%d, hour=%d, min=%d, sec=%d\n",
+			      i, test_case->tm.year, test_case->tm.mon,
+			      test_case->tm.mday, test_case->tm.hour,
+			      test_case->tm.min, test_case->tm.sec);
+		assert_int_equal(test_case->expected, rtc_invalid(&test_case->tm));
+	}
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -306,6 +507,7 @@ int main(void)
 		cmocka_unit_test(test_mktime),
 		cmocka_unit_test(test_rtc_mktime_with_rtc_to_tm),
 		cmocka_unit_test(test_leap_day_secday),
+		cmocka_unit_test(test_rtc_invalid),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);

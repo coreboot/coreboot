@@ -2,6 +2,7 @@
 
 #include <arch/io.h>
 #include <assert.h>
+#include <cpu/x86/lapic.h>
 #include <pc80/i8259.h>
 #include <console/console.h>
 #include <stdint.h>
@@ -45,11 +46,8 @@ void pic_irq_enable(u8 int_num, u8 mask)
 	pic_read_irq_mask();
 }
 
-void setup_i8259(void)
+static void init_i8259(void)
 {
-	if (CONFIG(NO_PCAT_8259))
-		dead_code();
-
 	/* A write to ICW1 starts the Interrupt Controller Initialization
 	 * Sequence. This implicitly causes the following to happen:
 	 *   - Interrupt Mask register is cleared
@@ -116,4 +114,21 @@ void i8259_configure_irq_trigger(int int_num, int is_level_triggered)
 	/* Write new values */
 	outb((u8)(int_bits & 0xff), ELCR1);
 	outb((u8)(int_bits >> 8), ELCR2);
+}
+
+void setup_i8259(void)
+{
+	if (CONFIG(NO_PCAT_8259))
+		dead_code();
+
+	init_i8259();
+
+	/**
+	 * Since the reset state of i8259 output INT signal is not clearly documented assume
+	 * LAPIC LINT0 and IOAPIC pin 0 may have been floating and have pending interrupts.
+	 * That pending flag is known to cause spurious interrupt errors and also deadlocks in
+	 * EDK2. Make sure EXTINT is only enabled after i8259 is put to a known state with all
+	 * interrupt sources masked in its OCW1 register.
+	 */
+	lapic_enable_extint();
 }

@@ -182,6 +182,7 @@ void stop_this_cpu(void);
 void enable_lapic(void);
 void enable_lapic_mode(bool try_set_x2apic);
 void setup_lapic_interrupts(void);
+void lapic_enable_extint(void);
 
 static inline unsigned int early_lapicid(void)
 {

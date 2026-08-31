@@ -15,6 +15,7 @@ u8 get_ioapic_version(uintptr_t ioapic_base);
 unsigned int ioapic_get_max_vectors(uintptr_t ioapic_base);
 void ioapic_set_max_vectors(uintptr_t ioapic_base, int mre_count);
 void ioapic_lock_max_vectors(uintptr_t ioapic_base);
+int ioapic_enable_extint(void);
 
 struct device *ioapic_create_dev(struct device *parent,
 				 const uintptr_t ioapic_base,

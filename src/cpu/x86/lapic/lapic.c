@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/ioapic.h>
 #include <assert.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
@@ -83,12 +84,22 @@ void setup_lapic_interrupts(void)
 	uint32_t mask = LAPIC_LVT_MASKED | LAPIC_LVT_LEVEL_TRIGGER | LAPIC_INPUT_POLARITY |
 			LAPIC_DELIVERY_MODE_MASK;
 
-	/* Put the local APIC in virtual wire mode when using the legacy PIC. */
-	if (boot_cpu() && !CONFIG(NO_PCAT_8259))
-		lapic_update32(LAPIC_LVT0, ~mask, LAPIC_DELIVERY_MODE_EXTINT);
-	else
-		lapic_update32(LAPIC_LVT0, ~mask, LAPIC_LVT_MASKED |
-						  LAPIC_DELIVERY_MODE_EXTINT);
-
+	/* Put LINT0 in virtual wire mode but leave it masked. */
+	lapic_update32(LAPIC_LVT0, ~mask, LAPIC_LVT_MASKED | LAPIC_DELIVERY_MODE_EXTINT);
 	lapic_update32(LAPIC_LVT1, ~mask, LAPIC_DELIVERY_MODE_NMI);
+}
+
+int __weak ioapic_enable_extint(void) { return -1; }
+
+void lapic_enable_extint(void)
+{
+	uint32_t mask = LAPIC_LVT_MASKED | LAPIC_LVT_LEVEL_TRIGGER | LAPIC_INPUT_POLARITY |
+			LAPIC_DELIVERY_MODE_MASK;
+
+	/**
+	 * When using the legacy PIC, unmask EXTINT if IOAPIC is not present.
+	 * With IOAPIC, EXTINT is driven as an MSI instead of the LINT0 pin.
+	 */
+	if (0 > ioapic_enable_extint())
+		lapic_update32(LAPIC_LVT0, ~mask, LAPIC_DELIVERY_MODE_EXTINT);
 }

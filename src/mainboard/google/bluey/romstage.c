@@ -225,7 +225,7 @@ static void update_battery_status(void)
 	battery_is_cutoff = (battery_cfet_status == -1) && (battery_dfet_status == -1);
 }
 
-bool mainboard_needs_pcie_init(void)
+__weak bool mainboard_needs_pcie_init(void)
 {
 	if (CONFIG(MAINBOARD_HAS_UFS))
 		return false;

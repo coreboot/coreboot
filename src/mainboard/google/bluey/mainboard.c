@@ -112,7 +112,7 @@ static void setup_usb_late(void)
 	setup_usb_host0();
 }
 
-bool mainboard_needs_pcie_init(void)
+__weak bool mainboard_needs_pcie_init(void)
 {
 	if (CONFIG(MAINBOARD_HAS_UFS))
 		return false;
@@ -301,7 +301,7 @@ void mainboard_soc_init(void)
 	if (boot_mode == LB_BOOT_MODE_NORMAL || boot_mode == LB_BOOT_MODE_NO_BATTERY)
 		display_startup();
 
-	if (CONFIG(MAINBOARD_HAS_UFS))
+	if (!mainboard_needs_pcie_init())
 		ufs_rpmh_init();
 
 	/* Enable touchpad power */
@@ -328,29 +328,3 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 	.init = mainboard_init,
 };
-
-void fw_config_get_mainboard_override(uint64_t *fw_config)
-{
-	if (!CONFIG(SOC_QUALCOMM_CDT))
-		return;
-
-	uint16_t soc_id;
-	switch (platform_get_soc_id()) {
-	case SOC_ID_HAMOA:
-		soc_id = HAMOA_ID_SCP;
-		break;
-	case SOC_ID_X1P42100:
-		soc_id = X1P42100_ID_SCP;
-		break;
-	default:
-		printk(BIOS_WARNING, "CDT: Unknown SoC ID, skipping fw_config override\n");
-		return;
-	}
-
-	uint16_t platform_id = cdt_get_platform_id();
-	uint32_t soc_platform_id = ((uint32_t)soc_id << 16) | platform_id;
-
-	printk(BIOS_INFO, "CDT: soc_platform_id=0x%08x\n", soc_platform_id);
-
-	*fw_config = soc_platform_id;
-}

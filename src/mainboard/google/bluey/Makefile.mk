@@ -11,9 +11,11 @@ bootblock-y += bootblock.c
 romstage-y += romstage.c
 
 romstage-y += charging.c
+romstage-$(CONFIG_SOC_QUALCOMM_CDT) += fw_config_bluey.c
 
 ramstage-y += charging.c
 
 ramstage-y += mainboard.c
+ramstage-$(CONFIG_SOC_QUALCOMM_CDT) += fw_config_bluey.c
 
 ramstage-y += display.c

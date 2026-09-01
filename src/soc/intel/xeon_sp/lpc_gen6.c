@@ -6,6 +6,7 @@
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
+#include <pc80/i8259.h>
 #include <soc/irq.h>
 #include <soc/pcr_ids.h>
 
@@ -83,6 +84,9 @@ static void soc_pch_pirq_init(void)
 void lpc_soc_init(struct device *dev)
 {
 	printk(BIOS_SPEW, "pch: lpc_init\n");
+
+	if (!CONFIG(NO_PCAT_8259))
+		setup_i8259();
 
 	soc_pch_pirq_init();
 }

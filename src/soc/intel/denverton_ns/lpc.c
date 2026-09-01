@@ -10,6 +10,7 @@
 #include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
 #include <bootstate.h>
+#include <pc80/i8259.h>
 
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
@@ -442,6 +443,9 @@ static void lpc_init(struct device *dev)
 
 	/* IO APIC initialization. */
 	pch_enable_ioapic(dev);
+
+	if (!CONFIG(NO_PCAT_8259))
+		setup_i8259();
 
 	/* Setup the PIRQ. */
 	pch_pirq_init(dev);

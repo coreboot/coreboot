@@ -3,6 +3,7 @@
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <intelblocks/lpc_lib.h>
+#include <pc80/i8259.h>
 
 void lpc_soc_init(struct device *dev)
 {
@@ -13,4 +14,7 @@ void lpc_soc_init(struct device *dev)
 		 * Let coreboot handle all IOAPICs and assign unique IDs to each. */
 		register_new_ioapic_gsi0(IO_APIC_ADDR);
 	}
+
+	if (!CONFIG(NO_PCAT_8259))
+		setup_i8259();
 }

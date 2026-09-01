@@ -8,6 +8,7 @@
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
+#include <pc80/i8259.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/itss.h>
@@ -56,6 +57,9 @@ void lpc_soc_init(struct device *dev)
 	ioapic_set_max_vectors(IO_APIC_ADDR, PCH_REDIR_ETR);
 	register_new_ioapic_gsi0_fixed(IO_APIC_ADDR, PCH_IOAPIC_ID);
 	ioapic_set_boot_config(IO_APIC_ADDR, true);
+
+	if (!CONFIG(NO_PCAT_8259))
+		setup_i8259();
 
 	soc_pch_pirq_init();
 }

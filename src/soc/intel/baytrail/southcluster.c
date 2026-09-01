@@ -10,6 +10,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <pc80/i8259.h>
 #include <pc80/mc146818rtc.h>
 #include <drivers/uart/uart8250reg.h>
 
@@ -156,6 +157,9 @@ static void sc_init(struct device *dev)
 
 	/* Route SCI to IRQ9 */
 	write32(actl, (read32(actl) & ~SCIS_MASK) | SCIS_IRQ9);
+
+	if (!CONFIG(NO_PCAT_8259))
+		setup_i8259();
 
 	cmos_init(rtc_failure());
 

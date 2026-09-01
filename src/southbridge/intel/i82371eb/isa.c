@@ -6,6 +6,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
+#include <pc80/i8259.h>
 #include <pc80/isa-dma.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/ioapic.h>
@@ -65,6 +66,9 @@ static void isa_init(struct device *dev)
 		if (ioapic_id != get_ioapic_id(IO_APIC_ADDR))
 			die("IOAPIC error!\n");
 	}
+
+	if (!CONFIG(NO_PCAT_8259))
+		setup_i8259();
 }
 
 #define ACPI_SCI_IRQ	9

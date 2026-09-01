@@ -29,7 +29,7 @@ platforms.
 recommendations for what could be changed to resolve the issue the patch
 addresses.
 * Don't modify other people's patches without their consent.
-* Be respectful to others when commenting.
+* Be respectful to others when commenting. Don't use AI to reply to humans.
 * Don’t submit patches that you know will break other platforms.
 
 
@@ -119,7 +119,10 @@ be kept to the code, and should be kept in a polite tone. We are a
 worldwide community and English is a difficult language. Assume your
 colleagues are intelligent and do not intend disrespect. Resist the urge to
 retaliate against perceived verbal misconduct, such behavior is not
-conducive to getting patches merged.
+conducive to getting patches merged. When receiving a comment from human
+reviewers, respect the time they put into it by writing your reply in person
+— do not respond with AI-generated answers (see
+[AI comment policy](#ai-comment-policy) for details).
 
 * Don’t submit code that you know will break other platforms. If your patch
 affects code that is used by other platforms, it should be compatible with
@@ -389,6 +392,57 @@ be noticed and acted upon.
 is criticising your code, but the whole idea is to get better code into our
 codebase. Again, this also applies in the other direction: review code,
 criticize code, but don’t make it personal.
+
+AI comment policy
+-----------------
+You may use AI agents to review a patch for issues and post comments about them
+on Gerrit according to the following rules. You can use the built-in "Create
+AI Review Prompt" button to get a starting point for the prompt, or you may
+invent your own process. Regardless of how you prompt your agent, if Gerrit
+comments containing AI-generated content are submitted in your name, you *must
+always* follow each of these rules:
+
+* You must *never* use AI to set review flags like Code-Review +2 or trigger
+Gerrit actions like Submit. You may set review flags at the same time as you
+submit AI-generated comments, but only if the decision to set the flag was made
+by you and not automated through AI.
+
+* Every AI-generated comment must be prefixed with `[AI-generated]`. Use exactly
+this string, nothing else, don't mention the name of the model used.
+
+* You must manually review every AI-generated comment before posting it on
+Gerrit and ensure that it makes logical sense, actually relates to the patch in
+question (not pre-existing surrounding code), expresses a viewpoint that you
+actually support, and is in line with the above respectfullness/courtesy
+guidelines as well as the coreboot coding style. Any AI-generated comment
+posted in your name is considered something that *you* said and you are held
+responsible for its contents.
+
+* AI-generated comments must use the Gerrit commenting system in the same way
+humans would do. That means each single issue should be posted as a separate
+comment on the line it occurs, and comments should only contain English language
+relevant to that issue and (if applicable) references to other files or patches.
+Comments should not contain AI-specific tracking tags (other than the
+`[AI-generated]` prefix mentioned above), model names or version numbers,
+metadata, additional "analysis" or "confidence" fields or anything like that.
+
+* You must take care to keep the amount and detail of your AI-generated comments
+in a similar scope that would be expected for a human review. For example, when
+a refactoring patch contains the same mistake 100 times, a human reviewer would
+normally make a single comment saying that the same issue appears throughout
+the patch. You should ensure that your AI does the same and doesn't spam the
+author with hundreds of boilerplate comments.
+
+* You must *never* use an AI-generated comment to reply to another comment left
+by a human. This applies both to the case where you are the patch author and
+replying to review feedback, and the case where the author responded to (AI or
+human) review feedback and you are the reviewer claryfing your point.
+
+* It is permissible for human patch authors to close AI comments with few words
+and no detailed explanation if they make no sense or otherwise feel
+inapplicable. The reviewer whose AI posted those comments should then either
+reopen the comment and make their point without AI, or take this as a hint that
+they may need to review their AI-generated comments better before submission.
 
 Gerrit user roles
 -----------------

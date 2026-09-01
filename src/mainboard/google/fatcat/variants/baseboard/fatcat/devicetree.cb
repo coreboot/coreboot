@@ -59,7 +59,7 @@ chip soc/intel/pantherlake
 	# DPTF enable
 	register "dptf_enable" = "true"
 
-	# Setting TCC of 100C = Tj max (110) - TCC_Offset (10)
+	# Setting TCC of 90C = Tj max (100) - TCC_Offset (10)
 	register "tcc_offset" = "10"
 
 	# CPU Ratio Override

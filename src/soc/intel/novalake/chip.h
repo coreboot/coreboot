@@ -701,11 +701,15 @@ struct soc_intel_novalake_config {
 	uint8_t thc_mode[NUM_THC];
 
 	/*
-	 * Touch Host Controller Wake On Touch
-	 * Based on this setting vGPIO for given THC will be in native mode, and additional _CRS
-	 * for wake will be exposed in ACPI
+	 * Touch Wake On Touch
+	 * Based on this setting,  vGPIO for given THC will be in native mode, and additional _CRS
+	 * for wake will be exposed in ACPI. For touch via LPSS i2c4 or i2c5, the driver config will
+	 * need to be changed properly.
+	 * NOTE: NUM_THC is the same number of touch interface regardless of THC or LPSS mode. For
+	 * touch using LPSS mode in Atria, only i2c4 and i2c5 are assigned/available for I2C-based
+	 * touch device. gspi0 and gspi1 are available for SPI-based touch device.
 	 */
-	bool thc_wake_on_touch[NUM_THC];
+	bool wake_on_touch[NUM_THC];
 
 	/* Enable the progress bar during MRC training operations (disabled by default). */
 	bool enable_progress_bar;

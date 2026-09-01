@@ -530,14 +530,14 @@ static void fill_fsps_thc_params(FSP_S_CONFIG *s_cfg, const config_t *config)
 	if (is_devfn_enabled(PCI_DEVFN_THC0)) {
 		s_cfg->ThcAssignment[0] = THC_0;
 		s_cfg->ThcMode[0] = config->thc_mode[0];
-		s_cfg->ThcWakeOnTouch[0] = config->thc_wake_on_touch[0];
+		s_cfg->ThcWakeOnTouch[0] = config->wake_on_touch[0];
 	} else
 		s_cfg->ThcAssignment[0] = THC_NONE;
 
 	if (is_devfn_enabled(PCI_DEVFN_THC1)) {
 		s_cfg->ThcAssignment[1] = THC_1;
 		s_cfg->ThcMode[1] = config->thc_mode[1];
-		s_cfg->ThcWakeOnTouch[1] = config->thc_wake_on_touch[1];
+		s_cfg->ThcWakeOnTouch[1] = config->wake_on_touch[1];
 	} else
 		s_cfg->ThcAssignment[1] = THC_NONE;
 }

@@ -295,6 +295,9 @@ config VBOOT
 #### Update below when adding a new derivative board. ####
 ##########################################################
 
+config DEVICETREE
+	default "devicetree_bluey.cb" if BOARD_GOOGLE_MODEL_BLUEY
+
 config MAINBOARD_PART_NUMBER
 	default "Bluey" if BOARD_GOOGLE_MODEL_BLUEY
 	default "Quenbi" if BOARD_GOOGLE_QUENBI

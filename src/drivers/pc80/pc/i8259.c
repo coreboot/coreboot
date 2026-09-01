@@ -121,6 +121,7 @@ void setup_i8259(void)
 	if (CONFIG(NO_PCAT_8259))
 		dead_code();
 
+	lapic_disable_extint();
 	init_i8259();
 
 	/**

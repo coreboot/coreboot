@@ -24,6 +24,9 @@
 #define SMI		(2 << 8)
 #define INT		(1 << 8)
 
+static uintptr_t ioapic_gsi0;
+static int pending_enable_extint;
+
 static u32 io_apic_read(uintptr_t ioapic_base, u32 reg)
 {
 	write32p(ioapic_base, reg);
@@ -104,11 +107,8 @@ static void clear_vectors(uintptr_t ioapic_base, u8 first, u8 last)
 	}
 }
 
-static void route_i8259_irq0(uintptr_t ioapic_base)
+static int route_i8259_irq0(uintptr_t ioapic_base)
 {
-	static uintptr_t ioapic_gsi0;
-	static int pending_enable_extint;
-
 	u32 bsp_lapicid = lapicid();
 	u32 low, high;
 
@@ -118,17 +118,31 @@ static void route_i8259_irq0(uintptr_t ioapic_base)
 		pending_enable_extint = 1;
 
 	if (!(pending_enable_extint && ioapic_gsi0))
-		return;
+		return -1;
 
+	ASSERT(bsp_lapicid < 255);
 	low = INT_ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
 	high = bsp_lapicid << (56 - 32);
+	lapic_disable_extint();
 	write_vector(ioapic_gsi0, 0, high, low);
+	return 0;
+}
+
+void ioapic_disable_extint(void)
+{
+	u32 low, high;
+
+	if (!ioapic_gsi0)
+		return;
+
+	low = io_apic_read(ioapic_gsi0, 0x10);
+	high = io_apic_read(ioapic_gsi0, 0x11);
+	write_vector(ioapic_gsi0, 0, high, low | INT_DISABLED);
 }
 
 int ioapic_enable_extint(void)
 {
-	route_i8259_irq0(0);
-	return 0;
+	return route_i8259_irq0(0);
 }
 
 static void set_ioapic_id(uintptr_t ioapic_base, u8 ioapic_id)

@@ -182,7 +182,10 @@ void stop_this_cpu(void);
 void enable_lapic(void);
 void enable_lapic_mode(bool try_set_x2apic);
 void setup_lapic_interrupts(void);
+/* Enable ExtINT through IOAPIC GSI0, or LAPIC LINT0 until GSI0 is registered. */
 void lapic_enable_extint(void);
+/* Mask ExtINT on LINT0 and on GSI0 (if registered), e.g. before PIC reinit. */
+void lapic_disable_extint(void);
 
 static inline unsigned int early_lapicid(void)
 {

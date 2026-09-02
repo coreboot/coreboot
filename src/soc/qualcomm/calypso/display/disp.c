@@ -32,8 +32,8 @@ static struct clock_freq_config disp_cc_mdss_ahb_cfg[] = {
 static struct clock_freq_config disp_cc_mdss_mdp_cfg[] = {
 	{
 		.hz = CLK_600MHZ,
-		.src = SRC_DISP_CC_PLL1_MAIN_MDP,
-		.div = QCOM_CLOCK_DIV(1),
+		.src = SRC_DISP_CC_PLL0_MAIN_MDP,
+		.div = QCOM_CLOCK_DIV(3),
 	},
 };
 
@@ -49,6 +49,7 @@ void enable_mdss_clk(void)
 	mdss_clock_enable(GCC_DISP_AHB_CBCR);
 	clock_enable_disp_gdsc(DISP_CC_CORE_GDSC);
 	mdss_clock_enable(GCC_DISP_HF_AXI_CBCR);
+	disp_pll_init_and_set(apss_disp_pll0, L_VAL_1800MHz, DISP_PLL0_ALPHA_VAL);
 	disp_pll_init_and_set(apss_disp_pll1, L_VAL_600MHz, DISP_PLL1_ALPHA_VAL);
 	clock_configure(&disp_cc->mdss_ahb_rcg,
 		disp_cc_mdss_ahb_cfg, CLK_75MHZ, ARRAY_SIZE(disp_cc_mdss_ahb_cfg));

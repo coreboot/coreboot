@@ -26,7 +26,9 @@
 
 /* DISP PLL */
 #define L_VAL_600MHz		0x1F
+#define L_VAL_1800MHz           0x5D
 #define DISP_PLL1_ALPHA_VAL	0x4000
+#define DISP_PLL0_ALPHA_VAL	0xC000
 
 #define QUPV3_WRAP0_CLK_ENA_S(idx)              (13 + idx)
 #define QUPV3_WRAP1_CLK_ENA_S(idx)              (15 + idx)

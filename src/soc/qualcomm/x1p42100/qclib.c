@@ -4,6 +4,7 @@
 #include <arch/cache.h>
 #include <arch/mmu.h>
 #include <cbfs.h>
+#include <cbmem.h>
 #include <soc/qclib_common.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>
@@ -11,6 +12,9 @@
 #include <soc/mmu_common.h>
 #include <soc/platform_info.h>
 #include <soc/symbols_common.h>
+
+#define CBMEM_META_SIZE (16 * MiB)
+#define CBMEM_META_ADDR ((void *)(cbmem_top_chipset() - CBMEM_META_SIZE))
 
 __weak int qclib_mainboard_override(struct qclib_cb_if_table *table) { return 0; }
 
@@ -115,6 +119,8 @@ int qclib_soc_override(struct qclib_cb_if_table *table)
 
 		qclib_add_if_table_entry(QCLIB_TE_SHRM_META_SETTINGS, _qc_blob_meta, data_size, 0);
 	}
+
+	qclib_add_if_table_entry(QCLIB_TE_CBMEM_META_SETTINGS, CBMEM_META_ADDR, CBMEM_META_SIZE, 0);
 
 	/* hook for platform specific policy configuration */
 	if (qclib_mainboard_override(table)) {

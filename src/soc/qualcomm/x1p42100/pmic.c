@@ -5,6 +5,9 @@
 #include <soc/qcom_spmi.h>
 #include <types.h>
 
+#define WARM_RESET	1
+#define PON_VALUE_INVALID	0xFFFF
+
 /*
  * pm_pon_get_pon_event - Search for a specific event type in the PON log.
  * @event: The event type to search for.
@@ -118,17 +121,13 @@ int pm_pon_read_pon_hist(uint8_t *pon_hist_raw)
 	return status;
 }
 
-/*
- * is_pon_on_ac - Checks if the system was powered on by an AC/cable insertion event.
- *
- * This function reads and parses the PMIC Power-On (PON) history log to determine
- * the specific cause of the system power-up. It specifically looks for the
- * PON_CBLPWR_RSN trigger, which indicates that external power (AC/charging cable)
- * was the reason for the boot sequence initiation.
- *
- * @return true if AC/Cable Power was the PON reason, false otherwise.
- */
-bool is_pon_on_ac(void)
+struct pon_history_status {
+	uint16_t pon_reason;
+	uint16_t reset_type;
+	uint16_t poff_reason;
+};
+
+static bool parse_pon_history(struct pon_history_status *status)
 {
 	uint16_t data, data2;
 	uint32_t i;
@@ -136,40 +135,120 @@ bool is_pon_on_ac(void)
 	uint8_t *pon_hist_curr_addr;
 	uint8_t pon_hist_raw[PON_EVENT_TOTAL_LOG_AREA_SIZE] = {0};
 
+	/* Initialize to invalid sentinel so we know which events were actually logged */
+	status->pon_reason = PON_VALUE_INVALID;
+	status->reset_type = PON_VALUE_INVALID;
+	status->poff_reason = PON_VALUE_INVALID;
+
 	printk(BIOS_INFO, "PON: Show power on reason -\n");
-	if (pm_pon_read_pon_hist(pon_hist_raw))
+	if (pm_pon_read_pon_hist(pon_hist_raw)) {
+		printk(BIOS_ERR, "PON: Failed to read PON history\n");
 		return false;
-
+	}
 	pon_hist_curr_addr = pon_hist_raw;
-
 	for (i = 0; i < PON_EVENT_LOG_AREA_SIZE - 2; i += 4) {
 		if (current_index >= PON_EVENT_PARSE_LIMIT) {
 			pon_hist_curr_addr += 4;
 			continue;
 		}
 		data = ((uint16_t)(*(pon_hist_curr_addr + 1)) << 8) | *pon_hist_curr_addr;
-
-		if (BEGIN_PON  == *(pon_hist_curr_addr + 2)) {
-			pm_pon_get_pon_event(BEGIN_PON, pon_hist_curr_addr, (PON_EVENT_LOG_AREA_SIZE - 2) - (uint8_t)(pon_hist_curr_addr - pon_hist_raw), &data2);
+		uint8_t event_type = *(pon_hist_curr_addr + 2);
+		if (event_type == BEGIN_PON) {
+			pm_pon_get_pon_event(BEGIN_PON, pon_hist_curr_addr,
+					     (PON_EVENT_LOG_AREA_SIZE - 2) -
+					     (uint8_t)(pon_hist_curr_addr - pon_hist_raw),
+					     &data2);
 			current_index += 1;
-		} else if (PM_PON_EVENT_PON_TRIGGER == *(pon_hist_curr_addr + 2)) {
-			switch (data) { /* SID<<12|PID<<4|IRQ */
-			case PON_CBLPWR_RSN:
+		} else if (event_type == PM_PON_EVENT_PON_TRIGGER) {
+			status->pon_reason = data;
+			if (data == PON_CBLPWR_RSN)
 				printk(BIOS_INFO, " PON Reason : cblpwr\n");
-				return true;
-			default:
+			else
 				printk(BIOS_INFO, " PON Reason : %d\n", data);
-				return false;
-			}
-		} else if (PM_PON_EVENT_RESET_TYPE == *(pon_hist_curr_addr + 2)) {
-			printk(BIOS_INFO, " Reset Reason : %d\n", data & 0xFF);
-			return false;
-		} else if (PM_PON_EVENT_FUNDAMENTAL_RESET == *(pon_hist_curr_addr + 2)) {
-			printk(BIOS_INFO, " POFF Reason : %d\n", data & PON_RAW_XVDD_RB_MASK);
-			return false;
+		} else if (event_type == PM_PON_EVENT_RESET_TYPE) {
+			status->reset_type = data & 0xFF;
+			printk(BIOS_INFO, " Reset Reason : %d\n", status->reset_type);
+		} else if (event_type == PM_PON_EVENT_FUNDAMENTAL_RESET) {
+			status->poff_reason = data & PON_RAW_XVDD_RB_MASK;
+			printk(BIOS_INFO, " POFF Reason : %d\n", status->poff_reason);
 		}
 		pon_hist_curr_addr += 4;
 	}
-	printk(BIOS_INFO, " Unable to detect PON reason.\n");
-	return false;
+
+	if (status->pon_reason == PON_VALUE_INVALID &&
+	    status->reset_type == PON_VALUE_INVALID)
+		printk(BIOS_INFO, " Unable to detect PON reason / reset type.\n");
+
+	return true;
+}
+/* Cached status to avoid repeatedly reading the PMIC buffer over SPMI/I2C */
+static struct pon_history_status cached_pon;
+static bool pon_cached;
+
+static const struct pon_history_status *get_pon_status(void)
+{
+	if (!pon_cached) {
+		parse_pon_history(&cached_pon);
+		pon_cached = true;
+	}
+
+	return &cached_pon;
+}
+/*
+ * get_pon_reason - Retrieve the PMIC Power-On Reason (Trigger)
+ *
+ * Return: PON reason (e.g. PON_CBLPWR_RSN) on success, or negative error.
+ */
+static int get_pon_reason(void)
+{
+	const struct pon_history_status *status = get_pon_status();
+
+	if (!status)
+		return -1;
+
+	return (int)status->pon_reason;
+}
+
+/*
+ * get_reset_type - Retrieve the PMIC Reset Type
+ *
+ * Return: Reset type (0-255) on success, or negative error if not present.
+ */
+static int get_reset_type(void)
+{
+	const struct pon_history_status *status = get_pon_status();
+
+	if (!status)
+		return -1;
+
+	return (int)status->reset_type;
+}
+
+/*
+ * is_pon_on_ac - Check if system powered on via AC charger insertion
+ *
+ * This function reads and parses the PMIC Power-On (PON) history log to determine
+ * the specific cause of the system power-up. It specifically looks for the
+ * PON_CBLPWR_RSN trigger, which indicates that external power (AC/charging cable)
+ * was the reason for the boot sequence initiation.
+ *
+ * Return: true if boot trigger was cable power, false otherwise.
+ */
+bool is_pon_on_ac(void)
+{
+	return get_pon_reason() == PON_CBLPWR_RSN;
+}
+
+/*
+ * is_reset_type_warm - Check if the system rebooted via warm reset.
+ *
+ * Inspects the PMIC PON history log to check whether the boot sequence was
+ * initiated by a warm reset event (WARM_RESET).
+ *
+ * Return: true if reset type is WARM_RESET, false otherwise (e.g. cold boot
+ *         or error reading PMIC history).
+ */
+bool is_reset_type_warm(void)
+{
+	return get_reset_type() == WARM_RESET;
 }

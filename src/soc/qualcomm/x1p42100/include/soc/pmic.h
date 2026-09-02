@@ -53,5 +53,6 @@
 
 int pm_pon_read_pon_hist(uint8_t *pon_hist_raw);
 bool is_pon_on_ac(void);
+bool is_reset_type_warm(void);
 
 #endif  // _SOC_QUALCOMM_X1P42100_PMIC_H__

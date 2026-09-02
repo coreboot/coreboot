@@ -119,3 +119,36 @@ void variant_get_spd_info(struct mem_spd *spd_info)
 	spd_info->topo = MEM_TOPO_MEMORY_DOWN;
 	spd_info->cbfs_index = variant_memory_sku();
 }
+
+void variant_update_soc_memory_init_params(FSPM_UPD *memupd)
+{
+	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
+
+	/*
+	 * GPP_D08 High -> keep baseboard settings (up to 7467 MT/s)
+	 * GPP_D08 Low  -> limit max DRAM speed to 6400 MT/s
+	 */
+	if (gpio_get(GPP_D08))
+		return;
+
+	/*
+	 * Override FSP-M SaGv frequency and gear to cap DRAM speed at
+	 * 6400 MT/s. This hook runs after the baseboard devicetree settings
+	 * have been applied to FSP-M, so every value written below
+	 * overwrites the baseboard default.
+	 */
+	m_cfg->SaGvFreq[0] = 2400;
+	m_cfg->SaGvGear[0] = GEAR_4;
+
+	m_cfg->SaGvFreq[1] = 3200;
+	m_cfg->SaGvGear[1] = GEAR_4;
+
+	m_cfg->SaGvFreq[2] = 6000;
+	m_cfg->SaGvGear[2] = GEAR_4;
+
+	m_cfg->SaGvFreq[3] = 6400;
+	m_cfg->SaGvGear[3] = GEAR_4;
+
+	/* Override baseboard max_dram_speed_mts (7467) as well */
+	m_cfg->DdrFreqLimit = 6400;
+}

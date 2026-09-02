@@ -345,6 +345,21 @@ static void check_first_boot_and_reset(enum boot_mode_t mode)
 	}
 }
 
+/*
+ * check_invalid_recovery_request - Check if recovery mode was entered via warm reset
+ *
+ * If the AP is running in RO firmware (!ap_running_rw(), typical for recovery mode)
+ * and the boot was initiated by a warm reset, stale memory contents and registers
+ * from the previous boot cycle (e.g., RW firmware or OS) could still reside in
+ * memory. A board reset is required to guarantee a clean slate.
+ *
+ * Return: true if running in RO after a warm reset, false otherwise.
+ */
+static bool check_invalid_recovery_request(void)
+{
+	return !ap_running_rw() && is_reset_type_warm();
+}
+
 void platform_romstage_main(void)
 {
 	static bool ramdump_mode = false;
@@ -385,6 +400,11 @@ void platform_romstage_main(void)
 
 	/* Underlying PMIC registers are accessible only at this point */
 	boot_mode = init_boot_mode();
+	if (check_invalid_recovery_request()) {
+		printk(BIOS_INFO,
+			"Issuing board reset to wipe out stale memory context before recovery request\n");
+		do_board_reset();
+	}
 
 	if (!chipset_dload_mode_active) {
 		aop_fw_load_reset();

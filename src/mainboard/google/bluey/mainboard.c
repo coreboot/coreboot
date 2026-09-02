@@ -174,7 +174,7 @@ static bool board_support_dead_battery_charging(void)
  * This function handles the transitions needed when the device is powered
  * solely to show a charging status rather than a full OS boot.
  */
-static void handle_low_power_charging_boot(void)
+static void handle_low_power_charging_boot(enum boot_mode_t boot_mode)
 {
 	if (!pll_init_and_set(apss_ncc0, L_VAL_710P4MHz))
 		printk(BIOS_DEBUG, "CPU Frequency set to 710MHz\n");
@@ -203,7 +203,7 @@ static void handle_low_power_charging_boot(void)
 	enable_fast_battery_charging();
 
 	/* Boot to charging applet; if this fails, the applet should trigger a reset */
-	launch_charger_applet();
+	launch_charger_applet(boot_mode);
 }
 
 static void load_qc_se_firmware_early(void)
@@ -251,7 +251,7 @@ static void mainboard_init(void *chip_info)
 
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging" */
 	if (is_low_power_boot_with_charger()) {
-		handle_low_power_charging_boot();
+		handle_low_power_charging_boot(boot_mode);
 		halt();
 	}
 }

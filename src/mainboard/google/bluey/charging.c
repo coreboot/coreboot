@@ -295,7 +295,7 @@ static void chromeec_finalize_and_poweroff(bool skip_heartbeat)
 	google_chromeec_ap_poweroff();
 }
 
-void launch_charger_applet(void)
+void launch_charger_applet(enum boot_mode_t boot_mode)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
 		return;
@@ -304,6 +304,7 @@ void launch_charger_applet(void)
 	struct stopwatch sw;
 	bool has_crossed_threshold = false;
 	bool has_entered_dead_battery_mode = false;
+	bool skip_heartbeat = false;
 
 	printk(BIOS_INFO, "Inside %s. Initiating charging\n", __func__);
 
@@ -321,7 +322,7 @@ void launch_charger_applet(void)
 		if (detect_ac_unplug_event(true)) {
 			printk(BIOS_INFO, "Issuing power-off due to changer disconnection.\n");
 			indicate_charging_status();
-			chromeec_finalize_and_poweroff(false);
+			chromeec_finalize_and_poweroff(skip_heartbeat);
 		}
 
 		if (stopwatch_expired(&sw)) {
@@ -335,7 +336,11 @@ void launch_charger_applet(void)
 			printk(BIOS_INFO, "Issuing power-off.\n");
 			if (detect_ac_unplug_event(false))
 				indicate_charging_status();
-			chromeec_finalize_and_poweroff(false);
+
+			if (boot_mode == LB_BOOT_MODE_LOW_BATTERY_CHARGING)
+				skip_heartbeat = true;
+
+			chromeec_finalize_and_poweroff(skip_heartbeat);
 		}
 		mdelay(200);
 	}
@@ -377,7 +382,8 @@ void launch_charger_applet(void)
 			printk(BIOS_INFO, "Issuing power-off due to change in charging state.\n");
 			if (detect_ac_unplug_event(false))
 				indicate_charging_status();
-			chromeec_finalize_and_poweroff(true);
+			skip_heartbeat = true;
+			chromeec_finalize_and_poweroff(skip_heartbeat);
 		}
 
 		/*
@@ -398,7 +404,7 @@ void launch_charger_applet(void)
 		qcom_tsens_monitor_all(&has_crossed_threshold);
 		if (has_crossed_threshold) {
 			printk(BIOS_INFO, "Issuing power-off due to temperature trip.\n");
-			chromeec_finalize_and_poweroff(false);
+			chromeec_finalize_and_poweroff(skip_heartbeat);
 		}
 	} while (true);
 }

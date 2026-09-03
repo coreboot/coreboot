@@ -50,22 +50,31 @@ chip soc/intel/pantherlake
 	# Apply PTL-U's thermal settings here to avoid thermal issues.
 
 	register "power_limits_config[PTL_CORE_1]" = "{
-		.tdp_pl1_override = 18,
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 55,
+		.tdp_pl4 = 152,
+	}"
+
+	register "power_limits_config[PTL_CORE_2]" = "{
+		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 152,
 	}"
 
 	register "power_limits_config[PTL_CORE_3]" = "{
-		.tdp_pl1_override = 18,
+		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 152,
 	}"
 
 	register "power_limits_config[PTL_CORE_4]" = "{
-		.tdp_pl1_override = 18,
+		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 55,
 		.tdp_pl4 = 152,
 	}"
+
+	# Setting TCC of 93C = Tj max (100) - TCC_Offset (7)
+	register "tcc_offset" = "7"
 
 	# VCCSA Shutdown configuration
 	register "vccsa_shutdown" = "1"
@@ -208,7 +217,7 @@ chip soc/intel/pantherlake
 				## Passive Policy
 				# TODO: below values are initial reference values only
 				register "policies.passive" = "{
-						[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+						[0] = DPTF_PASSIVE(CPU,         CPU,           96, 5000),
 						[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 80, 5000),
 						[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 80, 5000),
 						[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 75, 5000),
@@ -217,7 +226,7 @@ chip soc/intel/pantherlake
 				## Critical Policy
 				# TODO: below values are initial reference values only
 				register "policies.critical" = "{
-						[0] = DPTF_CRITICAL(CPU,          105, SHUTDOWN),
+						[0] = DPTF_CRITICAL(CPU,          100, SHUTDOWN),
 						[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 85, SHUTDOWN),
 						[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 85, SHUTDOWN),
 						[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 85, SHUTDOWN),

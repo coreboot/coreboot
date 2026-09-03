@@ -245,7 +245,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	bool is_iaa_enabled = is_devfn_enabled(PCI_DEVFN_IAA);
 	bool is_telemetry_enabled = is_devfn_enabled(PCI_DEVFN_TELEMETRY);
 
-	printk(BIOS_DEBUG, "%s - gfxvtbar:0x%llx  0x%x\n", __func__, gfxvtbar, MCHBAR32(GFXVTBAR));
+	printk(BIOS_DEBUG, "%s - gfxvtbar:0x%llx  0x%x\n", __func__, gfxvtbar, vtd_engine_enabled);
 	if (vtd_engine_enabled & GFXVT_ENABLED) {
 		const unsigned long tmp = current;
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar, GFXVT_BASE_SIZE);

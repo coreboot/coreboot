@@ -39,3 +39,5 @@ smm-y += rom_armor_boot_device_rw_nommap.c
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP_ROM_ARMOR3
 
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_SPI
+
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_SPI_HID2) += hid2.c

@@ -32,6 +32,13 @@ config SOC_AMD_COMMON_BLOCK_SPI_4DW_BURST
 	help
 	  Select this option to keep the 4 DWORD burst support enabled.
 
+config SOC_AMD_COMMON_BLOCK_SPI_HID2
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_AOAC
+	help
+	  Select this option to add support for the FCH's second SPI-HID
+	  companion controller (HID2).
+
 config SOC_AMD_COMMON_BLOCK_SPI_MMAP_USE_ROM3
 	bool
 	default y if ROM_SIZE > 0x01000000

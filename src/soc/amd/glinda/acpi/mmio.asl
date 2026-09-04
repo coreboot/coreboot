@@ -694,3 +694,27 @@ Device (MISC)
 		Return (0x0b)
 	}
 }
+
+Device (HID2)
+{
+	Name (_HID, "AMDI0063")
+	Name (_CID, "PNP0C51")
+	Name (_UID, 0x2)
+
+	Name (_CRS, ResourceTemplate ()
+	{
+		Memory32Fixed (ReadWrite, APU_HID2_BASE, 0x200)
+		GpioInt (Edge, ActiveHigh, SharedAndWake, PullNone, 0x0000, "\\_SB.GPIO",,,,)
+		{
+			171
+		}
+	})
+
+	Name (STAT, 0x0)
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (STAT)
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_HID2, 0)
+}

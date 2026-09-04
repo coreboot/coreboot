@@ -5,8 +5,8 @@ config DRIVERS_INTEL_MIPI_CAMERA
 	depends on HAVE_ACPI_TABLES
 	default n
 	help
-	  MIPI CSI I2C camera SSDT generator. Generates SSDB and PWDB
-	  structures which are used by the Intel kernel drivers.
+	  MIPI CSI I2C camera SSDT generator. Generates SSDB, CLDB and
+	  PWDB structures which are used by the Intel kernel drivers.
 
 if DRIVERS_INTEL_MIPI_CAMERA
 
@@ -40,4 +40,14 @@ config MIPI_ACPI_TYPE_CHROMEOS
 	  This is the preferred method for ChromeOS.
 
 endchoice
+
+config DRIVERS_INTEL_MIPI_CAMERA_HAS_PMIC
+	bool
+	default n
+	help
+	  Build the optional INT3472 PMIC / control-logic SSDT generator
+	  (drivers/intel/mipi_camera/pmic). Boards that need CLDB/_DSM for
+	  Windows or mainline Linux should select this and add a
+	  drivers/intel/mipi_camera/pmic chip; cldb.platform must be set.
+
 endif

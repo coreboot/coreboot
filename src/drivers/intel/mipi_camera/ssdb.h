@@ -11,7 +11,8 @@
 enum camera_device_type {
 	DEV_TYPE_SENSOR = 0,
 	DEV_TYPE_VCM,
-	DEV_TYPE_ROM
+	DEV_TYPE_ROM,
+	DEV_TYPE_PMIC = 0xB
 };
 
 enum platform_type {

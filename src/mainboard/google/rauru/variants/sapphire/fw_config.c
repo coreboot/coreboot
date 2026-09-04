@@ -15,11 +15,18 @@ enum audio_amplifier_id get_audio_amp_id(void)
 
 void fw_config_get_mainboard_override(uint64_t *fw_config)
 {
-	/* Handle unprovisioned fw_config. */
+	/* Set fw_config to a default value for unprovisioned devices. */
 	if (*fw_config == UNDEFINED_FW_CONFIG) {
-		/* Reset fw_config to a default value with boot-necessary fields.
-		   For now, setting to 0 is sufficient. */
 		*fw_config = 0;
+		/*
+		 * Sapphire only supports TAS2563,
+		 * so set it to enable audio on unprovisioned devices.
+		 */
+		uint64_t value = FW_CONFIG_VALUE(AUDIO_AMPLIFIER, AUDIO_AMPLIFIER_TAS2563);
+		printk(BIOS_INFO, "Overriding fw_config AUDIO_AMPLIFIER with %llu\n", value);
+		fw_config_value_set_field(fw_config,
+					  FW_CONFIG_FIELD(AUDIO_AMPLIFIER),
+					  value);
 	}
 
 	uint32_t id = panel_id();

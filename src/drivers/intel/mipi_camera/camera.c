@@ -1282,6 +1282,13 @@ static struct device_operations camera_ops = {
 
 static void camera_enable(struct device *dev)
 {
+	/*
+	 * Board provides full camera ASL (e.g. nautilus/soraka ChromeOS).
+	 * Keep the driver selected so chip_ops link; do not attach ops.
+	 */
+	if (CONFIG(VARIANT_HAS_CAMERA_ACPI))
+		return;
+
 	/* Validate Camera Parameters */
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
 	bool params_error = false;

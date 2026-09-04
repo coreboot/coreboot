@@ -93,6 +93,7 @@ chip soc/intel/novalake
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)" # Discrete Bluetooth
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)" # Type-A Port A0
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)" # Type-A Port A1
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # USB FPMCU
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # CRD-1 eUSB2 Camera
 
 	register "usb2_camera_ports[7]" = "true"
@@ -968,6 +969,13 @@ chip soc/intel/novalake
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(6, 1)"
 						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 FPMCU""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port7 on
+							probe FINGERPRINT_INTERFACE FINGERPRINT_INTERFACE_USB
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-A Port 1""

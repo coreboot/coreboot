@@ -97,6 +97,7 @@ chip soc/intel/tigerlake
 				register "sensor_name" = ""CJFLE23""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 				register "has_power_resource" = "true"
+				register "low_power_probe" = "1"
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
@@ -136,6 +137,8 @@ chip soc/intel/tigerlake
 				register "acpi_name" = ""NVM0""
 				register "chip_name" = ""AT24 EEPROM""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+				register "low_power_probe" = "1"
+				register "acpi_dep" = ""\\_SB.PCI0.I2C2.CAM1""
 				register "pr0" = ""\\_SB.PCI0.I2C2.CAM1.PRIC""
 
 				register "nvm_size" = "0x2000"

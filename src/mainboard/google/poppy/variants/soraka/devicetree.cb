@@ -1,8 +1,5 @@
 chip soc/intel/skylake
 
-	# IGD Displays
-	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
-
 	register "panel_cfg" = "{
 		.up_delay_ms		=  100,
 		.down_delay_ms		=  500,
@@ -227,7 +224,19 @@ chip soc/intel/skylake
 	register "sdcard_cd_gpio" = "GPP_E15"
 
 	device domain 0 on
-		device ref igpu			on  end
+		device ref igpu			on
+			chip drivers/gfx/generic
+				register "device_count" = "2"
+				register "device[0].name" = ""LCD0""
+				# Internal panel on the first port of the graphics chip
+				register "device[0].type" = "panel"
+				# SKC0 for IPUs
+				register "device[1].name" = ""SKC0""
+				register "device[1].non_vga_device" = "true"
+				register "device[1].addr" = "0xCA00"
+				device generic 0 on end
+			end
+		end
 		device ref sa_thermal		on  end
 		device ref imgu			on  end
 		device ref south_xhci		on
@@ -272,9 +281,95 @@ chip soc/intel/skylake
 				device i2c 50 on end
 			end
 		end
-		device ref i2c2			on  end
+		device ref i2c2			on
+			chip drivers/intel/mipi_camera/pmic
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CLP0""
+				register "acpi_sta" = ""\\_SB.PCI0.CSTA""
+
+				register "cldb.pmic_type" = "CL_TYPE_TPS68470"
+				register "cldb.pmic_id" = "PMIC_NODE_1"
+				register "cldb.sensor_card_sku.card_type" = "SKU_CRD_G2"
+				register "cldb.platform" = "PLAT_SKC"
+				register "cldb.platform_sub" = "PLAT_SUB_FFD"
+
+				register "has_power_resource" = "true"
+				register "reset_once" = "true"
+				register "use_gpio_for_status" = "true"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C11)" #EN_PP3300_DX_CAM
+				register "enable_delay_ms" = "3"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)" #EN_CAM_PMIC_RST_L
+				register "reset_delay_ms" = "3"
+				device i2c 4d on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""OVTID858""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM0""
+				register "acpi_sta" = ""\\_SB.PCI0.CSTA""
+				register "acpi_dep" = ""\\_SB.PCI0.I2C2.CLP0""
+				register "chip_name" = ""OV 13858 Camera""
+				register "sensor_name" = ""7BAD06T2""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+
+				register "ssdb.sensor_card_sku.card_type" = "SKU_CRD_G2"
+				register "ssdb.control_logic_id" = "PMIC_NODE_1"
+				register "ssdb.camera_position" = "CAM_POS_CRD_G2_LEFT"
+
+				register "ssdb.lanes_used" = "4"
+				register "ssdb.link_used" = "0"
+				register "ssdb.platform" = "PLAT_SKC"
+				register "ssdb.platform_sub" = "PLAT_SUB_FFD"
+				register "ssdb.mclk_speed" = "CLK_FREQ_19_2MHZ"
+				register "num_freq_entries" = "2"
+				register "link_freq[0]" = "540000000"
+				register "link_freq[1]" = "270000000"
+
+				register "ssdb.vcm_type" = "VCM_DW9714"
+				register "vcm_address" = "0x0C"
+
+				register "ssdb.rom_type" = "ROM_EEPROM_CAT24C16"
+				register "rom_address" = "0x50"
+
+				register "pld.panel" = "PLD_PANEL_BACK"
+				register "pld.vertical_position" = "PLD_VERTICAL_POSITION_CENTER"
+				register "pld.horizontal_position" = "PLD_HORIZONTAL_POSITION_CENTER"
+
+				device i2c 10 on end
+			end
+		end
 		device ref heci1		on  end
 		device ref uart2		on  end
+		device ref i2c4			on
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""INT3479""
+				register "acpi_uid" = "1"
+				register "acpi_name" = ""CAM1""
+				register "acpi_sta" = ""\\_SB.PCI0.CSTA""
+				register "acpi_dep" = ""\\_SB.PCI0.I2C2.CLP0""
+				register "chip_name" = ""OV 5670 Camera""
+				register "sensor_name" = ""4BF523T2""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+
+				register "ssdb.sensor_card_sku.card_type" = "SKU_CRD_G2"
+				register "ssdb.control_logic_id" = "PMIC_NODE_1"
+				register "ssdb.camera_position" = "CAM_POS_CRD_G2_RIGHT"
+
+				register "ssdb.lanes_used" = "2"
+				register "ssdb.link_used" = "1"
+				register "ssdb.platform" = "PLAT_SKC"
+				register "ssdb.platform_sub" = "PLAT_SUB_FFD"
+				register "ssdb.mclk_speed" = "CLK_FREQ_19_2MHZ"
+				register "num_freq_entries" = "1"
+				register "link_freq[0]" = "422400000"
+
+				register "pld.panel" = "PLD_PANEL_FRONT"
+				register "pld.vertical_position" = "PLD_VERTICAL_POSITION_CENTER"
+				register "pld.horizontal_position" = "PLD_HORIZONTAL_POSITION_CENTER"
+
+				device i2c 36 on end
+			end
+		end
 		device ref i2c5			on
 			chip drivers/i2c/max98927
 				register "interleave_mode" = "1"
@@ -303,7 +398,6 @@ chip soc/intel/skylake
 				device i2c 13 on end
 			end
 		end
-		device ref i2c4			on  end
 		device ref pcie_rp1		on
 			register "PcieRpClkReqSupport[0]" = "true"
 			register "PcieRpClkReqNumber[0]" = "1"

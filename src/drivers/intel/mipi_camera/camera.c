@@ -506,6 +506,14 @@ static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *c
 
 	if (!config->ssdb.mclk_speed)
 		config->ssdb.mclk_speed = CLK_FREQ_19_2MHZ;
+
+	/*
+	 * lane_config is 0-based (0 = 1 lane) while lanes_used is a count.
+	 * Derive it so SSDB stays consistent; 0 is a valid lane_config and
+	 * cannot be used as an "unset" sentinel.
+	 */
+	if (config->ssdb.lanes_used >= 1 && config->ssdb.lanes_used <= 4)
+		config->ssdb.lane_config = config->ssdb.lanes_used - 1;
 }
 
 /*

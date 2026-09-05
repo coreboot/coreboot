@@ -136,6 +136,8 @@ struct drivers_intel_mipi_camera_config {
 	unsigned int acpi_uid;
 	/* Absolute ACPI path for _DEP (e.g. "\\_SB.PCI0.I2C2.CLP0" or a sensor path) */
 	const char *acpi_dep;
+	/* If set, _STA returns this object (e.g. "\\_SB.PCI0.CSTA") */
+	const char *acpi_sta;
 	const char *pr0;
 
 	/* Settings specific to CIO2 device */

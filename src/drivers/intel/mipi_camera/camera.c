@@ -1008,7 +1008,10 @@ static void write_i2c_camera_device(const struct device *dev, const char *scope)
 		acpigen_emit_namestring(config->acpi_dep);
 		acpigen_pop_len();		/* Package */
 	}
-	acpigen_write_STA(acpi_device_status(dev));
+	if (config->acpi_sta)
+		acpigen_write_STA_ext(config->acpi_sta);
+	else
+		acpigen_write_STA(acpi_device_status(dev));
 	acpigen_write_method("_DSC", 0);
 	acpigen_write_return_integer(config->max_dstate_for_probe);
 	acpigen_pop_len(); /* Method _DSC */

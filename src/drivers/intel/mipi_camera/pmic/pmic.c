@@ -417,6 +417,11 @@ static void pmic_fill_ssdt(const struct device *dev)
 		acpigen_write_name_string("_HID", "INT3472");
 	acpigen_write_name_integer("_UID", config->acpi_uid);
 
+	if (config->acpi_sta)
+		acpigen_write_STA_ext(config->acpi_sta);
+	else
+		acpigen_write_STA(acpi_device_status(dev));
+
 	pmic_write_resources(dev, scope);
 
 	/* _DSM */

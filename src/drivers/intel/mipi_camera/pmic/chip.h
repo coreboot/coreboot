@@ -32,6 +32,9 @@ struct drivers_intel_mipi_camera_pmic_config {
 	const char *acpi_name;
 	unsigned int acpi_uid;
 
+	/* If set, _STA returns this object (e.g. "\\_SB.PCI0.CSTA") */
+	const char *acpi_sta;
+
 	/* GPIO used for camera in discrete mode */
 	struct mipicam_gpio_ctrl_panel gpio_panel[MAX_MIPICAM_GPIO_CONFIGS];
 

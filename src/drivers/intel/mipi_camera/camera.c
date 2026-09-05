@@ -20,6 +20,7 @@
 #define UUID_DSM_SENSOR		"822ace8f-2814-4174-a56b-5f029fe079ee"
 #define UUID_DSM_I2C		"26257549-9271-4ca4-bb43-c4899d5a4881"
 #define UUID_DSM_I2C_V2		"5815c5c8-c47d-477b-9a8d-76173176414b"
+#define UUID_DSM_GPIO		"79234640-9e10-4fea-a5c1-b5aa8b19756f"
 #define UUID_DSM_CVF		"02f55f0c-2e63-4f05-84f3-bf1980f9af79"
 #define DEFAULT_ENDPOINT	0
 #define DEFAULT_REMOTE_NAME	"\\_SB.PCI0.CIO2"
@@ -391,6 +392,47 @@ static void camera_generate_dsm_i2c_v2(const struct device *dev)
 }
 
 /*
+ * Generate ASL DSM code for GPIO device count and descriptors.
+ *
+ * Windows INT347x sensor drivers query this UUID during bind. Boards that put
+ * camera GPIOs on the PMIC / discrete control-logic device report an empty set
+ * here. Emitting the UUID with count 0 still satisfies the probe; omitting it
+ * fails the DSM.
+ *
+ * INT347x only calls function 1 (GPIO count) on this UUID - there is no
+ * function-0 "query supported functions" step (same pattern as the I2C
+ * address UUID DSM above). Only function 1 is implemented.
+ *
+ * Generated ASL:
+ * If (LEqual (Local0, ToUUID ("79234640-9e10-4fea-a5c1-b5aa8b19756f"))) {
+ *     ToInteger (Arg2, Local1)
+ *     If (LEqual (Local1, 1)) {
+ *         Return (Zero)  // gpio_count
+ *     }
+ * }
+ */
+static void camera_generate_dsm_gpio(const struct device *dev)
+{
+	/*
+	 * Sensor-local GPIO descriptors are unused on current boards (GPIOs live
+	 * on the control-logic / PMIC device). Keep |dev| for future expansion.
+	 */
+	(void)dev;
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_uuid(UUID_DSM_GPIO);
+	acpigen_write_to_integer(ARG2_OP, LOCAL1_OP);
+
+	/* Function 1: GPIO count (no sensor-local GPIOs); see comment above */
+	acpigen_write_if_lequal_op_int(LOCAL1_OP, 1);
+	acpigen_write_return_integer(0);
+	acpigen_pop_len();
+
+	acpigen_pop_len();	/* If uuid */
+}
+
+/*
  * Generate ASL DSM code for Computer Vision Framework (CVF)
  *
  * Generated ASL:
@@ -432,6 +474,7 @@ static void camera_generate_dsm(const struct device *dev)
 	camera_generate_dsm_sensor(dev);
 	camera_generate_dsm_i2c(dev);
 	camera_generate_dsm_i2c_v2(dev);
+	camera_generate_dsm_gpio(dev);
 	camera_generate_dsm_cvf(dev);
 
 	/* Return (Buffer (One) { 0x0 }) */
@@ -472,7 +515,8 @@ static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *c
  * VCM or NVM devices to be grouped together in the camera sensor ACPI device. The OS driver
  * uses the "_DSM" method to disambiguate the I2C resources in the camera sensor ACPI device.
  * Drivers typically query "SSDB" for configuration information (represented as a binary blob
- * dump of struct).
+ * dump of struct). Graph _DSD (ports/endpoints/link-frequencies) is also emitted to help
+ * mainline cio2-bridge / libcamera.
  *
  * Multi ACPI device mode: The drivers for ChromeOS expect the camera sensor device and any
  * related nvram / vcm devices to be separate ACPI devices.
@@ -482,28 +526,12 @@ static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *c
  * assumes a camera only has 1 port). The PRT0 table specifies a table for each endpoint
  * (though only 1 endpoint is supported by this implementation so the table only has an
  * "endpoint0" that points to a EP00 table). The EP00 table primarily describes the # of lanes
- * in "data-lanes", a list of frequencies in "list-frequencies", and specifies the name of the
+ * in "data-lanes", a list of frequencies in "link-frequencies", and specifies the name of the
  * other side in "remote-endpoint" (typically "\_SB.PCI0.CIO2").
  */
 static void camera_fill_sensor(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
-
-	camera_generate_pld(dev);
-
-	camera_fill_ssdb_defaults(config);
-
-	/* _DSM */
-	camera_generate_dsm(dev);
-
-	if (CONFIG(MIPI_ACPI_TYPE_WINDOWS_LINUX)) {
-		acpigen_write_method_serialized("SSDB", 0);
-		acpigen_write_return_byte_buffer((uint8_t *)&config->ssdb, sizeof(config->ssdb));
-		acpigen_pop_len(); /* Method */
-		return;
-	}
-
-	/* Multi-device mode: add _DSD with endpoint information */
 	struct acpi_dp *ep00 = NULL;
 	struct acpi_dp *prt0 = NULL;
 	struct acpi_dp *dsd = NULL;
@@ -513,6 +541,18 @@ static void camera_fill_sensor(const struct device *dev)
 	const char *remote_name;
 	struct device *cio2 = pcidev_on_root(CIO2_PCI_DEV, CIO2_PCI_FN);
 
+	camera_generate_pld(dev);
+
+	camera_fill_ssdb_defaults(config);
+
+	/* _DSM */
+	camera_generate_dsm(dev);
+
+	/*
+	 * Graph _DSD (port/endpoint, data-lanes, link-frequencies) is useful for
+	 * both ChromeOS and mainline cio2-bridge / libcamera. SSDB remains the
+	 * primary config blob for the Intel/Windows stack.
+	 */
 	ep00 = acpi_dp_new_table("EP00");
 	acpi_dp_add_integer(ep00, "endpoint", DEFAULT_ENDPOINT);
 	acpi_dp_add_integer(ep00, "clock-lanes", 0);
@@ -560,7 +600,13 @@ static void camera_fill_sensor(const struct device *dev)
 	if (config->ssdb.degree)
 		acpi_dp_add_integer(dsd, "rotation", 180);
 
-	if (config->ssdb.vcm_type) {
+	/*
+	 * lens-focus references a separate VCM ACPI device. Only ChromeOS
+	 * multi-device mode emits VCM devices; Windows/Linux packs the VCM
+	 * address into the sensor _CRS and must not reference a missing
+	 * VCM node (board trees often still set vcm_name for ChromeOS).
+	 */
+	if (config->ssdb.vcm_type && CONFIG(MIPI_ACPI_TYPE_CHROMEOS)) {
 		if (config->vcm_name) {
 			vcm_name = config->vcm_name;
 		} else {

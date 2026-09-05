@@ -25,6 +25,11 @@
 #define MCON_FREQ_24MHZ		0
 #define MCON_FREQ_19_2MHZ	1
 
+#define PMIC_POWER_RES_NAME	"CPMC"
+#define PMIC_RESET_ONCE_NAME	"RSTO"
+/* Delay while PMIC reset is held asserted during the one-shot pulse */
+#define PMIC_RESET_ASSERT_MS	1
+
 static uint32_t address_for_dev_type(const struct device *dev, uint8_t dev_type)
 {
 	uint16_t i2c_bus = dev->upstream ? dev->upstream->secondary : 0xFFFF;
@@ -361,6 +366,92 @@ static void pmic_write_resources(const struct device *dev, const char *scope)
 	acpigen_write_resourcetemplate_footer();
 }
 
+/*
+ * Match ChromeOS TPS68470 ASL: enable power on every _ON, but pulse reset
+ * only once after boot so S3/S0ix cycles do not re-reset the PMIC.
+ * stop_gpio is intentionally unused on this path.
+ */
+static void pmic_add_power_res_reset_once(struct drivers_intel_mipi_camera_pmic_config *config)
+{
+	static const char * const power_res_dev_states[] = { "_PR0", "_PR3" };
+	const bool has_enable = config->enable_gpio.pin_count > 0;
+	const bool has_reset = config->reset_gpio.pin_count > 0;
+
+	if (!has_enable && !has_reset) {
+		printk(BIOS_ERR,
+		       "MIPI PMIC: reset_once set but no enable/reset GPIO\n");
+		return;
+	}
+
+	acpigen_write_power_res(PMIC_POWER_RES_NAME, 0, 0, power_res_dev_states,
+				ARRAY_SIZE(power_res_dev_states));
+
+	/* Name (RSTO, 1) */
+	acpigen_write_name_integer(PMIC_RESET_ONCE_NAME, 1);
+
+	/* Method (_STA, 0, Serialized) */
+	acpigen_write_method_serialized("_STA", 0);
+	if (config->use_gpio_for_status && has_enable) {
+		acpigen_get_tx_gpio(&config->enable_gpio);
+		acpigen_write_return_op(LOCAL0_OP);
+	} else {
+		acpigen_write_return_integer(1);
+	}
+	acpigen_pop_len(); /* _STA */
+
+	/* Method (_ON, 0, Serialized) */
+	acpigen_write_method_serialized("_ON", 0);
+	if (has_enable) {
+		acpigen_enable_tx_gpio(&config->enable_gpio);
+		if (config->enable_delay_ms)
+			acpigen_write_sleep(config->enable_delay_ms);
+	}
+	if (has_reset) {
+		acpigen_write_if_lequal_namestr_int(PMIC_RESET_ONCE_NAME, 1);
+		acpigen_enable_tx_gpio(&config->reset_gpio);
+		acpigen_write_sleep(PMIC_RESET_ASSERT_MS);
+		acpigen_disable_tx_gpio(&config->reset_gpio);
+		if (config->reset_delay_ms)
+			acpigen_write_sleep(config->reset_delay_ms);
+		acpigen_write_store_int_to_namestr(0, PMIC_RESET_ONCE_NAME);
+		acpigen_write_if_end();
+	}
+	acpigen_pop_len(); /* _ON */
+
+	/* Method (_OFF, 0, Serialized) - disable power only; leave reset alone */
+	acpigen_write_method_serialized("_OFF", 0);
+	if (has_enable) {
+		acpigen_disable_tx_gpio(&config->enable_gpio);
+		if (config->enable_off_delay_ms)
+			acpigen_write_sleep(config->enable_off_delay_ms);
+	}
+	acpigen_pop_len(); /* _OFF */
+
+	acpigen_pop_len(); /* PowerResource */
+}
+
+static void pmic_add_power_res(struct drivers_intel_mipi_camera_pmic_config *config)
+{
+	if (config->reset_once) {
+		pmic_add_power_res_reset_once(config);
+		return;
+	}
+
+	const struct acpi_power_res_params power_res_params = {
+		&config->reset_gpio,
+		config->reset_delay_ms,
+		config->reset_off_delay_ms,
+		&config->enable_gpio,
+		config->enable_delay_ms,
+		config->enable_off_delay_ms,
+		&config->stop_gpio,
+		config->stop_delay_ms,
+		config->stop_off_delay_ms,
+		config->use_gpio_for_status
+	};
+	acpi_device_add_power_res(&power_res_params);
+}
+
 static void pmic_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_pmic_config *config = dev->chip_info;
@@ -431,22 +522,9 @@ static void pmic_fill_ssdt(const struct device *dev)
 	acpigen_write_return_byte_buffer((uint8_t *)&config->cldb, sizeof(config->cldb));
 	acpigen_pop_len(); /* Method */
 
-	/* Power Resource (named PR## via acpi_device_add_power_res) */
-	if (config->has_power_resource) {
-		const struct acpi_power_res_params power_res_params = {
-			&config->reset_gpio,
-			config->reset_delay_ms,
-			config->reset_off_delay_ms,
-			&config->enable_gpio,
-			config->enable_delay_ms,
-			config->enable_off_delay_ms,
-			&config->stop_gpio,
-			config->stop_delay_ms,
-			config->stop_off_delay_ms,
-			config->use_gpio_for_status
-		};
-		acpi_device_add_power_res(&power_res_params);
-	}
+	/* Power Resource */
+	if (config->has_power_resource)
+		pmic_add_power_res(config);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

@@ -41,6 +41,9 @@ struct drivers_intel_mipi_camera_pmic_config {
 	/* Device has a power resource */
 	bool has_power_resource;
 
+	/* Pulse reset_gpio only on the first _ON after boot */
+	bool reset_once;
+
 	/* GPIO used to take device out of reset or put it into reset */
 	struct acpi_gpio reset_gpio;
 	/* Delay after device is taken out of reset */

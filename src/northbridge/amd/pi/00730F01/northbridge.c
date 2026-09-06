@@ -87,9 +87,19 @@ static void nb_read_resources(struct device *dev)
 	add_fixed_resources(dev, 0);
 }
 
+#define IOMMU_MMIO_CTRL_LO 0x80
+#define IOMMU_GA_SUPPORT (BIT(7))
+#define IOMMU_GAM_SUPPORT (BIT(21) | BIT(22) | BIT(23))
+
 static void northbridge_init(struct device *dev)
 {
 	ioapic_setup(IO_APIC2_ADDR);
+
+	if (is_dev_enabled(DEV_PTR(iommu))) {
+		/* Disable GA & GAM support - not supported by the northbridge */
+		pci_and_config32(DEV_PTR(iommu), IOMMU_MMIO_CTRL_LO,
+				 ~(IOMMU_GA_SUPPORT | IOMMU_GAM_SUPPORT));
+	}
 }
 
 uintptr_t acpi_soc_fill_hest(acpi_hest_t *hest, uintptr_t current, void *log_mem)

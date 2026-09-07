@@ -159,7 +159,8 @@ $($(1)-sysobjs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
 ifeq ($(strip $(filter-out 0 n no,$($(1)-no_test_framework))),)
 ifneq ($(USE_SYSTEM_CMOCKA),1)
 $($(1)-objs): TEST_CFLAGS += -I$(cmockasrc)/include
-$($(1)-bin): TEST_LDFLAGS += -L$(cmockaobj)/src -Wl,-rpath=$(cmockaobj)/src
+$($(1)-bin): TEST_LDFLAGS += -L$(abspath $(cmockaobj)/src) \
+	-Wl,--disable-new-dtags -Wl,-rpath,$(abspath $(cmockaobj)/src)
 $($(1)-bin): TEST_CFLAGS += -I$(cmockasrc)/include
 $($(1)-bin): $(CMOCKA_LIB)
 endif

@@ -223,7 +223,14 @@ static __always_inline void cpu_relax(void)
 	__asm__ __volatile__("rep;nop" : : : "memory");
 }
 
+/* regparm is an x86-32 ABI attribute only; GCC 16 warns about it (and -Werror
+   turns that into an error) when ignored on x86-64, e.g. in the host-compiled
+   unit tests. */
+#if defined(__i386__)
 #define asmlinkage __attribute__((regparm(0)))
+#else
+#define asmlinkage
+#endif
 
 /*
  * The car_stage_entry() is the symbol jumped to for each stage

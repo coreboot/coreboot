@@ -223,4 +223,7 @@ chip soc/amd/glinda
 	chip drivers/amd/ftpm
 		device mmio 0xfd2108d0 on end
 	end
+
+	# ADAU1860 audio codec companion controller
+	device ref hid2 on end
 end

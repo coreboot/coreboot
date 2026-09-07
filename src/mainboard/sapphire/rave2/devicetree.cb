@@ -33,6 +33,9 @@ chip soc/amd/glinda
 
 	register "s0ix_enable" = "true"
 
+	# ACP: NAU88C22 codec via I2S/TDM (analog mics, external 12.288 MHz MCLK)
+	register "common_config.acp_config.acp_pin_cfg" = "ACP_PINS_I2S"
+
 	# TODO: verify PSPP policy in hardware
 	register "pspp_policy" = "DXIO_PSPP_DISABLED"
 
@@ -93,6 +96,7 @@ chip soc/amd/glinda
 					end
 				end
 			end
+			device ref acp on end # Audio Processor (ACP)
 			device ref mp2 on end # Sensor Fusion Hub (MP2)
 		end
 
@@ -188,6 +192,32 @@ chip soc/amd/glinda
 		end
 	end
 
+	device ref i2c_3 on
+		chip drivers/i2c/generic
+			register "hid" = ""NVTN2023""
+			register "cid" = ""NVTN2022""
+			register "desc" = ""NAU88C22 Audio Codec""
+			register "uid" = "0"
+			register "compat_string" = ""nuvoton,nau88c22""
+			register "property_count" = "5"
+			register "property_list[0].type" = "ACPI_DP_TYPE_STRING"
+			register "property_list[0].name" = ""audio-format""
+			register "property_list[0].string" = ""i2s""
+			register "property_list[1].type" = "ACPI_DP_TYPE_INTEGER"
+			register "property_list[1].name" = ""mclk-frequency""
+			register "property_list[1].integer" = "12288000"
+			register "property_list[2].type" = "ACPI_DP_TYPE_INTEGER"
+			register "property_list[2].name" = ""bitclock-master""
+			register "property_list[2].integer" = "0"
+			register "property_list[3].type" = "ACPI_DP_TYPE_INTEGER"
+			register "property_list[3].name" = ""frame-master""
+			register "property_list[3].integer" = "0"
+			register "property_list[4].type" = "ACPI_DP_TYPE_STRING"
+			register "property_list[4].name" = ""model""
+			register "property_list[4].string" = ""AMD-V4000-NAU88C22""
+			device i2c 0x1a on end
+		end
+	end
 	device ref uart_0 on end # UART0 - debug header J7
 
 	chip drivers/amd/ftpm

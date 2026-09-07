@@ -20,8 +20,18 @@ typedef __WCHAR_TYPE__ wchar_t;
 typedef __WINT_TYPE__ wint_t;
 
 #if __STDC_VERSION__ >= 202300L
-#define NULL nullptr
 typedef typeof(nullptr) nullptr_t;
+/*
+ * In the unit test environment, NULL must remain a plain null pointer
+ * constant: Cmocka's cast_to_void_pointer(NULL) expands to
+ * `(uintptr_t)nullptr`, which is invalid since nullptr_t cannot be cast to
+ * an integer. `__TEST__` is defined via -D for the test build only.
+ */
+#if defined(__TEST__)
+#define NULL ((void *)0)
+#else
+#define NULL nullptr
+#endif
 #else
 #define nullptr ((void *)0)
 #define NULL ((void *)0)

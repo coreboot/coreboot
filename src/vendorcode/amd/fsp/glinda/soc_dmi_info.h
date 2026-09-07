@@ -16,5 +16,6 @@
 
 #define SMBIOS_3_2_SUPPORT                1
 #define SMBIOS_3_3_SUPPORT                1
+#define SMBIOS_3_7_SUPPORT                1
 
 #endif /* SOC_DMI_INFO_H */

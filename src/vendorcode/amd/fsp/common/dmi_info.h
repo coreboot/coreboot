@@ -181,6 +181,13 @@ typedef struct {
 #ifdef SMBIOS_3_3_SUPPORT
   OUT UINT32                    ExtendedSpeed;          ///< Extended Speed
   OUT UINT32                    ExtendedConfiguredMemorySpeed; ///< Extended Configured memory speed
+  // SMBIOS 3.7
+#ifdef SMBIOS_3_7_SUPPORT
+  OUT UINT16                    PMIC0ManufacturerID;    ///< The two-byte PMIC0 manufacturer ID found in the SPD of this memory device; LSB first.
+  OUT UINT16                    PMIC0RevisionNumber;    ///< The PMIC 0 Revision Number found in the SPD of this memory device.
+  OUT UINT16                    RCDManufacturerID;      ///< The two-byte RCD manufacturer ID found in the SPD of this memory device; LSB first.
+  OUT UINT16                    RCDRevisionNumber;      ///< The RCD 0 Revision Number found in the SPD of this memory device.
+#endif
 #endif
 #endif
 } __packed TYPE17_DMI_INFO;

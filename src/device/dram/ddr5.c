@@ -22,6 +22,10 @@ enum ddr5_speed_grade {
 	DDR5_6000,
 	DDR5_6400,
 	DDR5_7500,
+	DDR5_8000,
+	DDR5_8400,
+	DDR5_8533,
+	DDR5_8800,
 };
 
 struct ddr5_speed_attr {
@@ -113,6 +117,26 @@ static const struct ddr5_speed_attr ddr5_speeds[] = {
 		.min_clock_mhz = 3201,
 		.max_clock_mhz = 3750,
 		.reported_mts = 7500
+	},
+	[DDR5_8000] = {
+		.min_clock_mhz = 3751,
+		.max_clock_mhz = 4000,
+		.reported_mts = 8000
+	},
+	[DDR5_8400] = {
+		.min_clock_mhz = 4001,
+		.max_clock_mhz = 4200,
+		.reported_mts = 8400
+	},
+	[DDR5_8533] = {
+		.min_clock_mhz = 4201,
+		.max_clock_mhz = 4267,
+		.reported_mts = 8533
+	},
+	[DDR5_8800] = {
+		.min_clock_mhz = 4268,
+		.max_clock_mhz = 4400,
+		.reported_mts = 8800
 	},
 };
 

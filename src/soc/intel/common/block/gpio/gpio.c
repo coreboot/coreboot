@@ -649,6 +649,8 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 	}
 
 	p2sb_hide();
+
+	return 0;
 }
 
 static void

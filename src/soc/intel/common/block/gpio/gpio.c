@@ -719,7 +719,12 @@ int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action lock_action)
 		.lock_action = lock_action
 	};
 
-	if (!ENV_SMM && !CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_LOCK_GPIO_PADS))
+	/*
+	 * gpio_lock_pads() only works in SMM. Pads locked while configuring
+	 * them, i.e. from the pad tables in ramstage, have to go through the
+	 * non-SMM path even when the SoC also locks pads from SMM.
+	 */
+	if (!ENV_SMM)
 		return gpio_non_smm_lock_pad(&pads);
 
 	return gpio_lock_pads(&pads, 1);

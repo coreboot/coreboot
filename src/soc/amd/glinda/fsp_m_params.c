@@ -160,6 +160,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	mcfg->enable_nb_azalia = is_dev_enabled(DEV_PTR(gfx_hda));
 	mcfg->hda_enable = is_dev_enabled(DEV_PTR(hda));
+	mcfg->audio_io_ctl = config->common_config.acp_config.acp_pin_cfg;
 
 	/* Faegan only: RAS Config Options */
 	if (get_soc_type() == SOC_FAEGAN) {

@@ -4,6 +4,7 @@
 #define MAINBOARD_GOOGLE_CALYPSO_BOARD_H
 
 #include <assert.h>
+#include <commonlib/coreboot_tables.h>
 #include <gpio.h>
 
 /* GPIO Pin Definitions */
@@ -59,7 +60,7 @@ void setup_chromeos_gpios(void);
 void configure_debug_access_port(void);
 void enable_slow_battery_charging(void);
 void disable_slow_battery_charging(void);
-void launch_charger_applet(void);
+void launch_charger_applet(enum boot_mode_t boot_mode);
 bool platform_get_battery_soc_information(uint32_t *batt_pct);
 void enable_fast_battery_charging(void);
 void init_sdam_config(void);

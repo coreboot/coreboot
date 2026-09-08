@@ -1,42 +1,118 @@
 # SMM based flash storage driver
 
 This documents the API exposed by the x86 system management based
-storage driver.
+storage driver. The current protocol is the former SMMSTORE version 2
+API; the legacy version 1 key/value protocol has been removed.
 
 ## SMMSTORE
 
-SMMSTORE is a [SMM] mediated driver to read from, write to and erase a
-predefined region in flash. It can be enabled by setting
+SMMSTORE is a [SMM] mediated driver to read from, write to and erase
+a predefined region in flash. It can be enabled by setting
 `CONFIG_SMMSTORE=y` in menuconfig.
 
 This can be used by the OS or the payload to implement persistent
-storage to hold for instance configuration data, without needing
-to implement a (platform specific) storage driver in the payload
-itself.
+storage to hold for instance configuration data, without needing to
+implement a (platform specific) storage driver in the payload itself.
 
-The API provides append-only semantics for key/value pairs.
+### Storage size and alignment
+
+SMMSTORE uses a configurable logical block size
+(`CONFIG_SMMSTORE_BLOCK_SIZE`, default 64 KiB). Platforms may select a
+smaller size such as 4 KiB when that matches flash erase geometry.
+Not having to perform read-modify-write operations is desired, as it
+reduces complexity and potential for bugs.
+
+This can be used by a FTW (FaultTolerantWrite) implementation that uses
+at least two regions in an A/B update scheme. The FTW implementation in
+edk2 uses three different regions in the store:
+
+- The variable store
+- The FTW spare block
+- The FTW working block
+
+All regions must be block-aligned, and the FTW spare size must be larger
+than that of the variable store. FTW working block can be much smaller.
+With 64 KiB as block size, the minimum size of the FTW-enabled store is:
+
+- The variable store: 1 block = 64 KiB
+- The FTW spare block: 2 blocks = 2 * 64 KiB
+- The FTW working block: 1 block = 64 KiB
+
+Therefore, the minimum size for edk2 FTW is 4 blocks, or 256 KiB using
+64 KiB blocks.
 
 ## API
+
+The API provides read and write access to an unformatted block storage.
 
 ### Storage region
 
 By default SMMSTORE will operate on a separate FMAP region called
-`SMMSTORE`. The default generated FMAP will include such a region.
-On systems with a locked FMAP, e.g. in an existing vboot setup
-with a locked RO region, the option exists to add a cbfsfile
-called `smm_store` in the `RW_LEGACY` (if CHROMEOS) or in the
-`COREBOOT` FMAP regions. It is recommended for new builds using
-a handcrafted FMD that intend to make use of SMMSTORE to include a
-sufficiently large `SMMSTORE` FMAP region. It is recommended to
-align the `SMMSTORE` region to 64KiB for the largest flash erase
-op compatibility.
+`SMMSTORE`. The default generated FMAP will include such a region. On
+systems with a locked FMAP, e.g. in an existing vboot setup with a
+locked RO region, the option exists to add a cbfsfile called `smm_store`
+in the `RW_LEGACY` (if CHROMEOS) or in the `COREBOOT` FMAP regions. It
+is recommended for new builds using a handcrafted FMD that intend to
+make use of SMMSTORE to include a sufficiently large `SMMSTORE` FMAP
+region. The region must be aligned to the logical block size and should
+be aligned to the largest flash erase block. The FMAP region must be at
+least 64 KiB even when the logical block size is smaller.
 
-When a default generated FMAP is used the size of the FMAP region
-is equal to `CONFIG_SMMSTORE_SIZE`. UEFI payloads expect at least
-64KiB. Given that the current implementation lacks a way to rewrite
-key-value pairs at least a multiple of this is recommended.
+When a default generated FMAP is used, the size of the FMAP region is
+equal to `CONFIG_SMMSTORE_SIZE`. UEFI payloads expect at least 64 KiB.
+To support a fault tolerant write mechanism, at least a multiple of
+this size is recommended.
 
-### generating the SMI
+### Communication buffer
+
+To prevent malicious ring0 code to access arbitrary memory locations,
+SMMSTORE uses a communication buffer in CBMEM/HOB for all transfers.
+This buffer is sized to match the logical block size and must be
+installed before calling any of the SMMSTORE read or write operations.
+Usually, coreboot will install this buffer to transfer data between
+ring0 and the [SMM] handler.
+
+In order to get the communication buffer address, the payload or OS
+has to read the coreboot table with tag `0x0039`, containing:
+
+```C
+struct lb_smmstorev2 {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t num_blocks;		/* Number of writable blocks in SMM */
+	uint32_t block_size;		/* Size of a block in bytes. Default: 64 KiB */
+	uint32_t mmap_addr_deprecated;	/* 32-bit MMIO address of the store for read only access.
+					   Prefer 'mmap_addr' for new software.
+					   Zero when the address won't fit into 32-bits. */
+	uint32_t com_buffer;		/* Physical address of the communication buffer */
+	uint32_t com_buffer_size;	/* Size of the communication buffer in bytes */
+	uint8_t apm_cmd;		/* The command byte to write to the APM I/O port */
+	uint8_t unused[3];		/* Set to zero */
+	uint64_t mmap_addr;		/* 64-bit MMIO address of the store for read only access.
+					   Introduced after the initial implementation. Users of
+					   this table must check the 'size' field to detect if its
+					   written out by coreboot. */
+};
+```
+
+The absence of this coreboot table entry indicates that there's no
+SMMSTORE support. The table and type name retain the historical
+`smmstorev2` spelling for ABI compatibility.
+
+`mmap_addr` is an optional field added after the initial implementation.
+Users of this table must check the size field to know if it's written by coreboot.
+In case it's not present 'mmap_addr_deprecated' is to be used as the SPI ROM MMIO
+address and it must be below 4 GiB.
+
+### Blocks
+
+SMMSTORE splits the SMMSTORE FMAP partition into smaller chunks called
+*blocks*. The logical block size defaults to 64 KiB and is advertised in
+the coreboot table as `block_size`. A payload or OS must use that value
+and make no further assumptions about the block or communication buffer
+size.
+
+### Generating the SMI
 
 SMMSTORE is called via an SMI, which is generated via a write to the
 IO port defined in the smi_cmd entry of the FADT ACPI table. `%al`
@@ -47,89 +123,142 @@ parameter buffer to the SMMSTORE command.
 ### Return values
 
 If a command succeeds, SMMSTORE will return with
-`SMMSTORE_RET_SUCCESS=0` on `%eax`. On failure SMMSTORE will return
+`SMMSTORE_RET_SUCCESS=0` in `%eax`. On failure SMMSTORE will return
 `SMMSTORE_RET_FAILURE=1`. For unsupported SMMSTORE commands
-`SMMSTORE_REG_UNSUPPORTED=2` is returned.
+`SMMSTORE_RET_UNSUPPORTED=2` is returned.
 
-**NOTE1**: The caller **must** check the return value and should make
+**NOTE 1**: The caller **must** check the return value and should make
 no assumption on the returned data if `%eax` does not contain
 `SMMSTORE_RET_SUCCESS`.
 
-**NOTE2**: If the SMI returns without changing `%ax` assume that the
-SMMSTORE feature is not installed.
+**NOTE 2**: If the SMI returns without changing `%ax`, it can be assumed
+that the SMMSTORE feature is not installed.
 
 ### Calling arguments
 
-SMMSTORE supports 3 subcommands that are passed via `%ah`, the additional
-calling arguments are passed via `%ebx`.
+SMMSTORE supports the following subcommands that are passed via `%ah`;
+the additional calling arguments are passed via `%ebx`.
 
 **NOTE**: The size of the struct entries are in the native word size of
 smihandler. This means 32 bits in almost all cases.
 
 
-#### - SMMSTORE_CMD_CLEAR = 1
+#### - SMMSTORE_CMD_INIT_DEPRECATED = 4
 
-This clears the `SMMSTORE` storage region. The argument in `%ebx` is
-unused.
+Unused, returns `SMMSTORE_RET_UNSUPPORTED`.
 
-#### - SMMSTORE_CMD_READ = 2
+#### - SMMSTORE_CMD_RAW_READ = 5
+
+SMMSTORE allows reading arbitrary data. It is up to the caller to
+initialize the store with meaningful data before using it.
+
+The additional parameter buffer `%ebx` contains a pointer to the
+following struct:
+
+```C
+struct smmstore_params_raw_read {
+	uint32_t bufsize;
+	uint32_t bufoffset;
+	uint32_t block_id;
+} __packed;
+```
+
+INPUT:
+- `bufsize`: Size of data to read within the communication buffer
+- `bufoffset`: Offset within the communication buffer
+- `block_id`: Block to read from
+
+#### - SMMSTORE_CMD_RAW_WRITE = 6
+
+SMMSTORE allows writing arbitrary data. It is up to the caller to
+erase a block before writing it.
 
 The additional parameter buffer `%ebx` contains a pointer to
 the following struct:
 
 ```C
-struct smmstore_params_read {
-	void *buf;
-	ssize_t bufsize;
-};
+struct smmstore_params_raw_write {
+        uint32_t bufsize;
+        uint32_t bufoffset;
+        uint32_t block_id;
+} __packed;
 ```
 
 INPUT:
-- `buf`: is a pointer to where the data needs to be read
-- `bufsize`: is the size of the buffer
+- `bufsize`: Size of data to write within the communication buffer
+- `bufoffset`: Offset within the communication buffer
+- `block_id`: Block to write to
 
-OUTPUT:
-- `buf`
-- `bufsize`: returns the amount of data that has actually been read.
+#### - SMMSTORE_CMD_RAW_CLEAR = 7
 
-#### - SMMSTORE_CMD_APPEND = 3
+SMMSTORE allows clearing blocks. A cleared block will read as `0xff`.
+By providing multiple blocks the caller can implement a fault tolerant
+write mechanism. It is up to the caller to clear blocks before writing
+to them.
 
-SMMSTORE takes a key-value approach to appending data. key-value pairs
-are never updated, they are always appended. It is up to the caller to
-walk through the key-value pairs after reading SMMSTORE to find the
-latest one.
-
-The additional parameter buffer `%ebx` contains a pointer to
-the following struct:
 
 ```C
-struct smmstore_params_append {
-	void *key;
-	size_t keysize;
-	void *val;
-	size_t valsize;
-};
+struct smmstore_params_raw_clear {
+	uint32_t block_id;
+} __packed;
 ```
 
 INPUT:
-- `key`: pointer to the key data
-- `keysize`: size of the key data
-- `val`: pointer to the value data
-- `valsize`: size of the value data
+- `block_id`: Block to erase
 
 #### Security
 
-Pointers provided by the payload or OS are checked to not overlap with the SMM.
-That protects the SMM handler from being manipulated.
+Pointers provided by the payload or OS are checked to not overlap with
+SMM. This protects the SMM handler from being compromised.
 
-*However there's no validation done on the source or destination pointing to
-DRAM. A malicious application that is able to issue SMIs could extract arbitrary
-data or modify the currently running kernel.*
+As all information is exchanged using the communication buffer and
+coreboot tables, there's no risk that a malicious application capable
+of issuing SMIs could extract arbitrary data or modify the currently
+running kernel.
+
+## Capsule update API
+
+Availability of this command is tied to `CONFIG_DRIVERS_EFI_UPDATE_CAPSULES`.
+
+To allow updating full flash content (except if locked at hardware
+level), few new calls were added. They reuse communication buffer, SMI
+command, return values and calling arguments of SMMSTORE commands listed
+above, with the exception of subcommand passed via `%ah`. If the
+subcommand is to operate on full flash size, it has the highest bit set,
+e.g. it is `0x85` for `SMMSTORE_CMD_RAW_READ` and `0x86` for
+`SMMSTORE_CMD_RAW_WRITE`. Every `block_id` describes block relative to
+the beginning of a flash, maximum value depends on its size.
+
+Attempts to write the protected memory regions can lead to undesired
+consequences ranging from system instability to bricking and security
+vulnerabilities. When this feature is used, care must be taken to temporarily
+lift protections for the duration of an update when the whole flash is
+rewritten or the update must be constrained to affect only writable portions of
+the flash (e.g., "BIOS" region).
+
+There is one new subcommand that must be called before any other subcommands
+with highest bit set can be used.
+
+### - SMMSTORE_CMD_USE_FULL_FLASH = 0x80
+
+This command can only be executed once and is done by the firmware.
+Calling this function at runtime has no effect. It takes one additional
+parameter that, contrary to other commands, isn't a pointer. Instead,
+`%ebx` indicates requested state of full flash access. If it equals 0,
+commands for accessing full flash are permanently disabled, otherwise
+they are permanently enabled until the next boot.
+
+The assumption is that if capsule updates are enabled at build time and
+whole flash access is enabled at runtime, a UEFI payload (highly likely
+EDK2 or its derivative) won't allow a regular OS to boot if the handler is
+enabled without rebooting first. There could be a way of deactivating the
+handler, but coreboot, having no way of enforcing its usage, might as well
+permit access until a reboot and rely on the payload to do the right thing.
 
 ## External links
 
 * [A Tour Beyond BIOS Implementing UEFI Authenticated Variables in SMM with EDK II](https://github.com/tianocore-docs/Docs/raw/master/White_Papers/A_Tour_Beyond_BIOS_Implementing_UEFI_Authenticated_Variables_in_SMM_with_EDKII_V2.pdf)
 
-Note, this differs significantly from coreboot's implementation.
+Note that this differs significantly from coreboot's implementation.
 
 [SMM]: ../security/smm.md

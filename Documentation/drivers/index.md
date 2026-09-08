@@ -25,7 +25,6 @@ Intel DPTF <dptf.md>
 IPMI BT (Block Transfer) <ipmi_bt.md>
 IPMI KCS <ipmi_kcs.md>
 SMMSTORE <smmstore.md>
-SMMSTOREv2 <smmstorev2.md>
 SoundWire <soundwire.md>
 USB4 Retimer <retimer.md>
 CBFS SMBIOS hooks <cbfs_smbios.md>

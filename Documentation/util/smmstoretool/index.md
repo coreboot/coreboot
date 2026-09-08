@@ -15,9 +15,9 @@ region (e.g., extracted via `cbfstool`).
 
 If SMMSTORE presence isn't detected and an update operation is requested, the
 store spanning the whole region is created automatically.  Size of the store
-region must be a multiple of 64 KiB (block size in version 2 of SMMSTORE
-protocol), the variable storage itself will be 64 KiB in size.  That's the way
-EDK2 makes use of it.
+region must be a multiple of 64 KiB (the block size assumed by this tool and
+the default SMMSTORE logical block size), and the variable storage itself will
+be 64 KiB in size.  That's the way EDK2 typically makes use of it.
 
 Unlike online editing which mostly appends new variable entries each storage
 update with this tool drops all deleted or incomplete entries.

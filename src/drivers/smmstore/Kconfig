@@ -18,9 +18,9 @@ config SMMSTORE_SIZE
 	help
 	  Sets the size of the default SMMSTORE FMAP region.
 	  If using an UEFI payload, note that UEFI specifies at least 64K.
-	  The current implementation of SMMSTORE is append only, so until
-	  garbage collection is implemented it is better to set this to
-	  a rather large value.
+	  Fault-tolerant UEFI variable stores typically need multiple
+	  blocks (often at least 256K with 64K blocks), so prefer a
+	  rather large value.
 
 config SMMSTORE_BLOCK_SIZE
 	int

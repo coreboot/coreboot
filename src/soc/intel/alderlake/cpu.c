@@ -285,6 +285,19 @@ enum adl_cpu_type get_adl_cpu_type(void)
 		PCI_DID_INTEL_RPL_P_ID_8,
 	};
 
+	const uint16_t btl_s_mch_ids[] = {
+		PCI_DID_INTEL_BTL_S_ID_1,
+		PCI_DID_INTEL_BTL_S_ID_2,
+		PCI_DID_INTEL_BTL_S_ID_3,
+		PCI_DID_INTEL_BTL_S_ID_4,
+		PCI_DID_INTEL_BTL_S_ID_5,
+		PCI_DID_INTEL_BTL_S_ID_6,
+		PCI_DID_INTEL_BTL_S_ID_7,
+		PCI_DID_INTEL_BTL_S_ID_8,
+		PCI_DID_INTEL_BTL_S_ID_9,
+		PCI_DID_INTEL_BTL_S_ID_10
+	};
+
 	const uint16_t mchid = pci_s_read_config16(PCI_DEV(0, PCI_SLOT(SA_DEVFN_ROOT),
 							   PCI_FUNC(SA_DEVFN_ROOT)),
 						   PCI_DEVICE_ID);
@@ -312,6 +325,11 @@ enum adl_cpu_type get_adl_cpu_type(void)
 	for (size_t i = 0; i < ARRAY_SIZE(rpl_s_mch_ids); i++) {
 		if (rpl_s_mch_ids[i] == mchid)
 			return RPL_S;
+	}
+
+	for (size_t i = 0; i < ARRAY_SIZE(btl_s_mch_ids); i++) {
+		if (btl_s_mch_ids[i] == mchid)
+			return BTL_S;
 	}
 
 	for (size_t i = 0; i < ARRAY_SIZE(adl_n_mch_ids); i++) {
@@ -348,6 +366,7 @@ uint8_t get_supported_lpm_mask(void)
 		return LPM_S0i2_0 | LPM_S0i3_0;
 	case ADL_S:
 	case RPL_S:
+	case BTL_S:
 	case RPL_HX:
 		return LPM_S0i2_0 | LPM_S0i2_1;
 	default:

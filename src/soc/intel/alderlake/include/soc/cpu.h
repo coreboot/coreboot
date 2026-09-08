@@ -29,6 +29,7 @@ enum adl_cpu_type {
 	RPL_HX,
 	RPL_P,
 	RPL_S,
+	BTL_S,
 };
 
 enum adl_cpu_type get_adl_cpu_type(void);

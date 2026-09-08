@@ -278,6 +278,108 @@ chip soc/intel/alderlake
 		.tdp_pl4 = 65,
 	}"
 
+	register "power_limits_config[BTL_S_8_16_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 219,
+		.tdp_pl4 = 341,
+	}"
+
+	register "power_limits_config[BTL_S_8_16_45W_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 135,
+		.tdp_pl4 = 197,
+	}"
+
+	register "power_limits_config[BTL_S_6_8_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 154,
+		.tdp_pl4 = 212,
+	}"
+
+	register "power_limits_config[BTL_S_6_8_45W_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 106,
+		.tdp_pl4 = 184,
+	}"
+
+	register "power_limits_config[BTL_S_6_4_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 148,
+		.tdp_pl4 = 194,
+	}"
+
+	register "power_limits_config[BTL_S_6_4_45W_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 106,
+		.tdp_pl4 = 184,
+	}"
+
+	register "power_limits_config[BTL_S_4_0_60W_CORE]" = "{
+		.tdp_pl1_override = 60,
+		.tdp_pl2_override = 110,
+		.tdp_pl4 = 170,
+	}"
+
+	register "power_limits_config[BTL_S_4_0_45W_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 106,
+		.tdp_pl4 = 184,
+	}"
+
+	register "power_limits_config[BTL_S_12_0_125W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 253,
+		.tdp_pl4 = 380,
+	}"
+
+	register "power_limits_config[BTL_S_12_0_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 219,
+		.tdp_pl4 = 341,
+	}"
+
+	register "power_limits_config[BTL_S_12_0_45W_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 219,
+		.tdp_pl4 = 341,
+	}"
+
+	register "power_limits_config[BTL_S_10_0_125W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 253,
+		.tdp_pl4 = 380,
+	}"
+
+	register "power_limits_config[BTL_S_10_0_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 219,
+		.tdp_pl4 = 341,
+	}"
+
+	register "power_limits_config[BTL_S_10_0_45W_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 219,
+		.tdp_pl4 = 341,
+	}"
+
+	register "power_limits_config[BTL_S_8_0_125W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 253,
+		.tdp_pl4 = 380,
+	}"
+
+	register "power_limits_config[BTL_S_8_0_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 219,
+		.tdp_pl4 = 341,
+	}"
+
+	register "power_limits_config[BTL_S_8_0_45W_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 219,
+		.tdp_pl4 = 341,
+	}"
+
 	# NOTE: if any variant wants to override this value, use the same format
 	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
 	# putting it under register "common_soc_config" in overridetree.cb file.

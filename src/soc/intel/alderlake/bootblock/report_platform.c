@@ -41,6 +41,11 @@ static struct {
 	{ CPUID_RAPTORLAKE_H0, "Raptorlake H0 Platform" },
 	{ CPUID_RAPTORLAKE_J0, "Raptorlake J0 Platform" },
 	{ CPUID_RAPTORLAKE_Q0, "Raptorlake Q0 Platform" },
+	{ CPUID_BARTLETTLAKE_A0, "Bartlettlake A0 Platform" },
+	{ CPUID_BARTLETTLAKE_B0, "Bartlettlake B0 Platform" },
+	{ CPUID_BARTLETTLAKE_C0_1, "Bartlettlake C0 Platform" },
+	{ CPUID_BARTLETTLAKE_C0_2, "Bartlettlake C0 Platform" },
+	{ CPUID_BARTLETTLAKE_H0, "Bartlettlake H0 Platform" },
 };
 
 static struct {
@@ -105,6 +110,16 @@ static struct {
 	{ PCI_DID_INTEL_RPL_S_ID_4, "Raptorlake-S (6+8)" },
 	{ PCI_DID_INTEL_RPL_S_ID_5, "Raptorlake-S (6+4)" },
 	{ PCI_DID_INTEL_RPL_S_ID_6, "Raptorlake-S (8+12)" },
+	{ PCI_DID_INTEL_BTL_S_ID_1, "Bartlettlake-S (8+16)" },
+	{ PCI_DID_INTEL_BTL_S_ID_2, "Bartlettlake-S (6+8)" },
+	{ PCI_DID_INTEL_BTL_S_ID_3, "Bartlettlake-S (6+4)" },
+	{ PCI_DID_INTEL_BTL_S_ID_4, "Bartlettlake-S (6+8)" },
+	{ PCI_DID_INTEL_BTL_S_ID_5, "Bartlettlake-S (6+4)" },
+	{ PCI_DID_INTEL_BTL_S_ID_6, "Bartlettlake-S (4+0)" },
+	{ PCI_DID_INTEL_BTL_S_ID_7, "Bartlettlake-S (2+0)" },
+	{ PCI_DID_INTEL_BTL_S_ID_8, "Bartlettlake-S (12+0)" },
+	{ PCI_DID_INTEL_BTL_S_ID_9, "Bartlettlake-S (10+0)" },
+	{ PCI_DID_INTEL_BTL_S_ID_10, "Bartlettlake-S (8+0)" },
 };
 
 static struct {

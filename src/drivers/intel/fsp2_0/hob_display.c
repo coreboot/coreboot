@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <fsp/util.h>
+#include <lib.h>
 
 struct hob_type_name {
 	uint16_t type;
@@ -225,4 +226,8 @@ void fsp_display_hobs(void)
 
 __weak void soc_display_hob(const struct hob_header *hob)
 {
+#if CONFIG(DISPLAY_HOB_HEXDUMP)
+	if (console_log_level(BIOS_SPEW))
+		hexdump(hob, hob->length);
+#endif
 }

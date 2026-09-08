@@ -19,7 +19,18 @@ config DISPLAY_HOBS
 	bool "Display the hand-off-blocks"
 	default n
 	help
-	  Display the FSP HOBs which are provided for coreboot.
+	  Display the FSP HOBs which are provided for coreboot. Shows the headers
+	  for all HOBs and their parsed contents for those HOBs where coreboot knows
+	  how to parse them.
+
+config DISPLAY_HOB_HEXDUMP
+	depends on DISPLAY_HOBS
+	bool "Hexdump unknown HOBs"
+	default n
+	help
+	  Display HOB content as hexdump for those HOBs where coreboot does not know
+	  how to parse them. Log level must be set to BIOS_SPEW. Note that this is
+	  excessively verbose and will add several hundred kilobytes to the debug output.
 
 config DISPLAY_UPD_DATA
 	bool "Display UPD data"

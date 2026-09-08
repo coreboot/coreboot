@@ -14,14 +14,13 @@
 unsigned long tsc_freq_mhz(void)
 {
 	union pstate_msr pstate_reg;
-	uint8_t high_state;
 	static unsigned long mhz;
 
 	if (mhz)
 		return mhz;
 
-	high_state = rdmsr(PS_LIM_REG).lo & 0x7;
-	pstate_reg.raw = rdmsr(PSTATE_MSR(high_state)).raw;
+	/* The TSC counts at the P0 rate, whatever the P-state limit is */
+	pstate_reg.raw = rdmsr(PSTATE_MSR(get_pstate_0_reg())).raw;
 	if (!pstate_reg.pstate_en)
 		die("Unknown error: cannot determine P-state 0\n");
 

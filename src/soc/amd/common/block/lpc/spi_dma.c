@@ -228,8 +228,6 @@ static void *spi_dma_mmap(const struct region_device *rd, size_t offset, size_t 
 
 	if (spi_dma_readat(rd, mapping, offset, size) != size) {
 		printk(BIOS_ERR, "%s: Error reading into mmap buffer\n", __func__);
-		mem_pool_free(&cbfs_cache, mapping);
-		/* Fall-back to memory mapped read - not expected to fail atleast for now */
 		spi_dma_readat_mmap(rd, mapping, offset, size);
 	}
 

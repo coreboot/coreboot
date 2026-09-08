@@ -660,11 +660,6 @@ static int gpio_pad_config_lock(const struct gpio_lock_config *pad_info)
 
 int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 {
-	const struct pad_community *comm;
-	uint16_t offset;
-	size_t rel_pad;
-	gpio_t pad;
-
 	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_LOCK_GPIO_PADS))
 		return -1;
 
@@ -685,27 +680,14 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 		return -1;
 	}
 
-	p2sb_unhide();
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_SBI))
+		p2sb_unhide();
 
-	for (int x = 0; x < count; x++) {
-		pad = pad_list[x].pad;
-		comm = gpio_get_community(pad);
-		rel_pad = relative_pad_in_comm(comm, pad);
-		offset = comm->pad_cfg_lock_offset;
-		if (!offset) {
-			printk(BIOS_ERR, "%s: Error: offset not defined for pad %d!\n",
-					__func__, pad);
-			continue;
-		}
-		/* PADCFGLOCK and PADCFGLOCKTX registers for each community are contiguous */
-		offset += gpio_group_index_scaled(comm, rel_pad, 2 * sizeof(uint32_t));
+	for (int x = 0; x < count; x++)
+		gpio_pad_config_lock(&pad_list[x]);
 
-		const uint32_t bit_mask = gpio_bitmask_within_group(comm, rel_pad);
-
-		gpio_pad_config_lock_using_sbi(&pad_list[x], comm->port, offset, bit_mask);
-	}
-
-	p2sb_hide();
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_SBI))
+		p2sb_hide();
 
 	return 0;
 }

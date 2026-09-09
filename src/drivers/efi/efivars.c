@@ -420,6 +420,7 @@ enum cb_err efi_fv_print_options(const struct region_device *rdev)
 /*
  * efi_fv_get_option
  * - writes up to *size bytes into a buffer pointed to by *dest
+ * - on success, updates *size to the actual number of bytes written
  * - rdev is the spi flash region to operate on
  * - the FVH and variable store header must have been initialized by a third party
  */

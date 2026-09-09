@@ -2,6 +2,11 @@ chip soc/intel/braswell
 
 	register "PcdEnableI2C0" = "1"		# Touchscreen
 
+	register "PcdSdcardMode" = "PCH_ACPI_MODE"
+	register "PcdEmmcMode" = "PCH_ACPI_MODE"
+	register "emmc_acpi_mode" = "1"
+	register "sd_acpi_mode" = "1"
+
 	register "PcdPchSsicEnable" = "0"
 	register "PcdPchUsbHsicPort" = "0"
 

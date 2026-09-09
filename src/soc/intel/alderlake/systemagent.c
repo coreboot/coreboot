@@ -189,8 +189,8 @@ void soc_systemagent_init(struct device *dev)
 	}
 
 	if (i == ARRAY_SIZE(cpuid_to_adl)) {
-		printk(BIOS_ERR, "unknown SA ID: 0x%4x, skipped power limits configuration.\n",
-			sa_pci_id);
+		printk(BIOS_ERR, "unknown combination of SA ID: 0x%4x and TDP: %uW, skipped power limits configuration.\n",
+			sa_pci_id, tdp);
 		return;
 	}
 }

@@ -1,0 +1,11 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config DRIVERS_GENERIC_CFR_ASSET_TAG
+	bool "SMBIOS asset tag from CFR"
+	depends on DRIVERS_EFI_VARIABLE_STORE && SMMSTORE
+	default n
+	help
+	  Enable this option to fill in the SMBIOS values for the mainboard
+	  and chassis asset tag from an EFI variable which can be modified
+	  by the user via firmware setup.
+	  You need to add the 'cfr_asset_tag' SM object to your CFR forms.

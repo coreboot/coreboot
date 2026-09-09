@@ -206,6 +206,12 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 
 	sa_get_mem_map(dev, &sa_map_values[0]);
 
+	printk(BIOS_SPEW, "%s: sa_map_values\n", __func__);
+	for (int i = 0; i < MAX_MAP_ENTRIES; i++) {
+		printk(BIOS_SPEW, "  [%d] %s = 0x%16" PRIx64 "\n",
+			i, sa_memory_map[i].description, sa_map_values[i]);
+	}
+
 	/*
 	 * top_of_ram -> TOLUD: This contains TSEG which needs to be uncacheable
 	 * for proper operation of the smihandler.

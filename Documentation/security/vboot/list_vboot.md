@@ -43,6 +43,7 @@
 - QuenbiH
 - Quartz
 - Mica
+- Aneto
 - Annite
 - Brox
 - Brox RTK EC

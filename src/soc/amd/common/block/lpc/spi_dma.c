@@ -16,8 +16,16 @@
 #include <thread.h>
 #include <types.h>
 
-/* The ROM is memory mapped just below 4GiB. Form a pointer for the base. */
-#define rom_base ((void *)(uintptr_t)(0x100000000ULL - CONFIG_ROM_SIZE))
+/*
+ * This backend uses the default ROM2 window for the first 16 MiB.
+ * Match mmap_boot.c: DMA tails and unaligned reads use this decode window.
+ */
+#if CONFIG_ROM_SIZE >= (16 * MiB)
+#define MMAP_ROM_SIZE (16 * MiB)
+#else
+#define MMAP_ROM_SIZE CONFIG_ROM_SIZE
+#endif
+#define rom_base ((void *)(uintptr_t)(0x100000000ULL - MMAP_ROM_SIZE))
 
 struct spi_dma_transaction {
 	uint8_t *destination;
@@ -249,7 +257,7 @@ const struct region_device_ops spi_dma_rdev_ro_ops = {
 
 static const struct mem_region_device boot_dev = {
 	.base = rom_base,
-	.rdev = REGION_DEV_INIT(&spi_dma_rdev_ro_ops, 0, CONFIG_ROM_SIZE),
+	.rdev = REGION_DEV_INIT(&spi_dma_rdev_ro_ops, 0, MMAP_ROM_SIZE),
 };
 
 const struct region_device *boot_device_ro(void)
@@ -261,7 +269,7 @@ uint32_t spi_flash_get_mmap_windows(struct flash_mmap_window *table)
 {
 	table->flash_base = 0;
 	table->host_base = (uint32_t)(uintptr_t)rom_base;
-	table->size = CONFIG_ROM_SIZE;
+	table->size = MMAP_ROM_SIZE;
 
 	return 1;
 }

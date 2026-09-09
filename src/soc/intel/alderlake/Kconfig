@@ -111,7 +111,7 @@ config SOC_INTEL_ALDERLAKE
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select TSC_MONOTONIC_TIMER
 	select UDELAY_TSC
-	select UDK_202305_BINDING if SOC_INTEL_RAPTORLAKE
+	select UDK_202305_BINDING if SOC_INTEL_RAPTORLAKE || SOC_INTEL_BARTLETTLAKE
 	select UDK_202111_BINDING if SOC_INTEL_ALDERLAKE_PCH_N
 	select UDK_202005_BINDING if !SOC_INTEL_ALDERLAKE_PCH_N && !SOC_INTEL_RAPTORLAKE
 	select VBOOT_LIB
@@ -125,6 +125,13 @@ config SOC_INTEL_RAPTORLAKE
 	help
 	 Intel Raptorlake support. Mainboards using RPL should select
 	 SOC_INTEL_RAPTORLAKE and SOC_INTEL_ALDERLAKE_PCH_* together.
+
+config SOC_INTEL_BARTLETTLAKE
+	bool
+	select FSP_TYPE_IOT
+	help
+	 Intel Bartlettlake support. Mainboards using BTL should select
+	 SOC_INTEL_BARTLETTLAKE and SOC_INTEL_ALDERLAKE_PCH_* together.
 
 config SOC_INTEL_TWINLAKE
 	bool
@@ -189,7 +196,7 @@ config ALDERLAKE_CONFIGURE_DESCRIPTOR
 
 config MAX_CPUS
 	int
-	default 32 if SOC_INTEL_RAPTORLAKE
+	default 32 if SOC_INTEL_RAPTORLAKE || SOC_INTEL_BARTLETTLAKE
 	default 24
 
 config DCACHE_RAM_BASE
@@ -428,6 +435,7 @@ config FSP_HEADER_PATH
 	default "src/vendorcode/intel/fsp/fsp2_0/alderlake_n/"  if !FSP_USE_REPO && SOC_INTEL_ALDERLAKE_PCH_N
 	default "src/vendorcode/intel/fsp/fsp2_0/raptorlake/"   if !FSP_USE_REPO && SOC_INTEL_RAPTORLAKE
 	default "src/vendorcode/intel/fsp/fsp2_0/alderlake/"    if !FSP_USE_REPO
+	default "3rdparty/fsp/BartlettLakeFspBinPkg/IoT/Include/"           if SOC_INTEL_BARTLETTLAKE
 	default "3rdparty/fsp/RaptorLakeFspBinPkg/IoT/RaptorLakeP/Include/" if FSP_TYPE_IOT && SOC_INTEL_ALDERLAKE_PCH_P && SOC_INTEL_RAPTORLAKE
 	default "3rdparty/fsp/RaptorLakeFspBinPkg/IoT/RaptorLakeS/Include/" if FSP_TYPE_IOT && SOC_INTEL_RAPTORLAKE_PCH_S
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeP/Include/"   if FSP_TYPE_IOT && SOC_INTEL_ALDERLAKE_PCH_P
@@ -439,6 +447,7 @@ config FSP_HEADER_PATH
 config FSP_FD_PATH
 	string
 	depends on FSP_USE_REPO
+	default "3rdparty/fsp/BartlettLakeFspBinPkg/IoT/FSP.fd"             if SOC_INTEL_BARTLETTLAKE
 	default "3rdparty/fsp/RaptorLakeFspBinPkg/IoT/RaptorLakeP/FSP.fd"   if FSP_TYPE_IOT && SOC_INTEL_ALDERLAKE_PCH_P && SOC_INTEL_RAPTORLAKE
 	default "3rdparty/fsp/RaptorLakeFspBinPkg/IoT/RaptorLakeS/FSP.fd"   if FSP_TYPE_IOT && SOC_INTEL_RAPTORLAKE_PCH_S
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeP/Fsp.fd"     if FSP_TYPE_IOT && SOC_INTEL_ALDERLAKE_PCH_P

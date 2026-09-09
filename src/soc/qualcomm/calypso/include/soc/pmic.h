@@ -28,5 +28,6 @@
 #define PON_RAW_XVDD_RB_MASK			0x8000
 
 bool is_pon_on_ac(void);
+bool is_reset_type_warm(void);
 
 #endif  /* _SOC_QUALCOMM_CALYPSO_PMIC_H__ */

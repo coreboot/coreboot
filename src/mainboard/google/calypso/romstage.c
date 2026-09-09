@@ -222,6 +222,14 @@ void platform_romstage_main(void)
 	mainboard_setup_peripherals_early();
 	chipset_dload_mode_active = qclib_check_dload_mode();
 
+	if (!CONFIG(QC_RAMDUMP_ENABLE) && chipset_dload_mode_active) {
+		printk(BIOS_INFO,
+		       "Ramdump mode detected even without QC_RAMDUMP_ENABLE "
+		       "Kconfig being set. Issuing board reset to avoid hung state.\n");
+
+		do_board_reset();
+	}
+
 	if (CONFIG(EC_GOOGLE_CHROMEEC) && CONFIG(CONSOLE_SERIAL)) {
 		uint32_t batt_pct;
 		if (platform_get_battery_soc_information(&batt_pct))

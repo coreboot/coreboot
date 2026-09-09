@@ -12,9 +12,6 @@ __weak int qclib_mainboard_override(struct qclib_cb_if_table *table) { return 0;
 
 bool qclib_check_dload_mode(void)
 {
-	if (!CONFIG(QC_RAMDUMP_ENABLE))
-		return false;
-
 	uint32_t boot_misc_detect = read32((void *)TCSR_BOOT_MISC_DETECT);
 
 	if (boot_misc_detect & DLOAD_BOTH) {

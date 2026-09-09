@@ -116,8 +116,8 @@ chip soc/intel/skylake
 		# M.2 WLAN x1
 		device ref pcie_rp3 on
 			register "PcieRpClkReqSupport[2]"		= "true"
-			register "PcieRpClkReqNumber[2]"		= "1"
-			register "PcieRpClkSrcNumber[2]"		= "1"
+			register "PcieRpClkReqNumber[2]"		= "2"
+			register "PcieRpClkSrcNumber[2]"		= "2"
 			register "PcieRpAdvancedErrorReporting[2]"	= "true"
 			register "PcieRpLtrEnable[2]"			= "true"
 			smbios_slot_desc "SlotTypeM2Socket1_DP" "SlotLengthOther" "M.2/A 2230" "SlotDataBusWidth1X"
@@ -126,7 +126,7 @@ chip soc/intel/skylake
 		# Ethernet
 		device ref gbe on
 			register "LanClkReqSupported"	= "true"
-			register "LanClkReqNumber"	= "2"
+			register "LanClkReqNumber"	= "3"
 			register "EnableLanLtr"		= "true"
 			register "EnableLanK1Off"	= "true"
 		end

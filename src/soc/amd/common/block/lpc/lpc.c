@@ -46,7 +46,7 @@ void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags)
 static void fch_ioapic_init(void)
 {
 	fch_enable_ioapic_decode();
-	register_new_ioapic_gsi0(IO_APIC_ADDR);
+	ioapic_setup_gsi0(IO_APIC_ADDR);
 }
 
 static void lpc_init(struct device *dev)

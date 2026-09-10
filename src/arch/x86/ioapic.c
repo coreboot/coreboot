@@ -225,9 +225,9 @@ struct device *ioapic_create_dev(struct device *parent,
 		return NULL;
 
 	if (gsi_base == 0)
-		register_new_ioapic_gsi0(ioapic_base);
+		ioapic_setup_gsi0(ioapic_base);
 	else
-		register_new_ioapic(ioapic_base);
+		ioapic_setup(ioapic_base);
 
 	path.type = DEVICE_PATH_IOAPIC;
 	path.ioapic.ioapic_id = get_ioapic_id(ioapic_base);
@@ -240,7 +240,7 @@ struct device *ioapic_create_dev(struct device *parent,
 	return dev;
 }
 
-void register_new_ioapic_gsi0_fixed(uintptr_t ioapic_base, u8 ioapic_id)
+void ioapic_setup_gsi0_id(uintptr_t ioapic_base, u8 ioapic_id)
 {
 	set_ioapic_id(ioapic_base, ioapic_id);
 	clear_vectors(ioapic_base, 0, ioapic_get_max_vectors(ioapic_base) - 1);
@@ -249,13 +249,13 @@ void register_new_ioapic_gsi0_fixed(uintptr_t ioapic_base, u8 ioapic_id)
 	route_i8259_irq0(ioapic_base);
 }
 
-void register_new_ioapic_gsi0(uintptr_t ioapic_base)
+void ioapic_setup_gsi0(uintptr_t ioapic_base)
 {
-	register_new_ioapic_gsi0_fixed(ioapic_base, CONFIG(IOAPIC_USE_PRESET_ID) ?
+	ioapic_setup_gsi0_id(ioapic_base, CONFIG(IOAPIC_USE_PRESET_ID) ?
 					get_ioapic_id(ioapic_base) : 0);
 }
 
-void register_new_ioapic(uintptr_t ioapic_base)
+void ioapic_setup(uintptr_t ioapic_base)
 {
 	static u8 ioapic_id;
 	ioapic_id++;

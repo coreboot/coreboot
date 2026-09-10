@@ -39,7 +39,7 @@ static void i82801dx_enable_ioapic(struct device *dev)
 	pci_write_config32(dev, GEN_CNTL, reg32);
 	printk(BIOS_DEBUG, "IOAPIC Southbridge enabled %x\n", reg32);
 
-	register_new_ioapic_gsi0(IO_APIC_ADDR);
+	ioapic_setup_gsi0(IO_APIC_ADDR);
 
 	ioapic_set_boot_config(IO_APIC_ADDR, true);
 }

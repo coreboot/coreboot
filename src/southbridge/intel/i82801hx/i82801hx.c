@@ -179,7 +179,7 @@ static void lpc_enable_apic(struct device *dev)
 	ioapic_lock_max_vectors(IO_APIC_ADDR);
 
 	/* Register the IOAPIC with the coreboot device model. */
-	register_new_ioapic_gsi0(IO_APIC_ADDR);
+	ioapic_setup_gsi0(IO_APIC_ADDR);
 }
 
 static void lpc_enable_serial_irqs(struct device *dev)

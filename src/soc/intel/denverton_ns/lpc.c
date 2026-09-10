@@ -35,7 +35,7 @@ static void pch_enable_ioapic(struct device *dev)
 	/* affirm full set of redirection table entries ("write once") */
 	ioapic_set_max_vectors(IO_APIC_ADDR, PCH_REDIR_ETR);
 
-	register_new_ioapic_gsi0(IO_APIC_ADDR);
+	ioapic_setup_gsi0(IO_APIC_ADDR);
 }
 
 /* interrupt router lookup for internal devices */

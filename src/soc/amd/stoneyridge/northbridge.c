@@ -75,7 +75,7 @@ static void set_resources(struct device *dev)
 
 static void northbridge_init(struct device *dev)
 {
-	register_new_ioapic(IO_APIC2_ADDR);
+	ioapic_setup(IO_APIC2_ADDR);
 }
 
 /* Used by \_SB.PCI0._CRS */

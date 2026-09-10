@@ -89,7 +89,7 @@ static void nb_read_resources(struct device *dev)
 
 static void northbridge_init(struct device *dev)
 {
-	register_new_ioapic(IO_APIC2_ADDR);
+	ioapic_setup(IO_APIC2_ADDR);
 }
 
 uintptr_t acpi_soc_fill_hest(acpi_hest_t *hest, uintptr_t current, void *log_mem)

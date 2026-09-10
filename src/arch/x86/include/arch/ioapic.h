@@ -23,9 +23,9 @@ int ioapic_enable_extint(void);
 struct device *ioapic_create_dev(struct device *parent,
 				 const uintptr_t ioapic_base,
 				 const u32 gsi_base);
-void register_new_ioapic(uintptr_t ioapic_base);
-void register_new_ioapic_gsi0_fixed(uintptr_t ioapic_base, u8 ioapic_id);
-void register_new_ioapic_gsi0(uintptr_t ioapic_base);
+void ioapic_setup_gsi0(uintptr_t ioapic_base);
+void ioapic_setup_gsi0_id(uintptr_t ioapic_base, u8 ioapic_id);
+void ioapic_setup(uintptr_t ioapic_base);
 
 void ioapic_set_boot_config(uintptr_t ioapic_base, bool irq_on_fsb);
 

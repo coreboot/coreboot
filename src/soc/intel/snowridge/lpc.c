@@ -55,7 +55,7 @@ void lpc_soc_init(struct device *dev)
 	lpc_set_serirq_mode(CONFIG(SERIRQ_CONTINUOUS_MODE) ? SERIRQ_CONTINUOUS : SERIRQ_QUIET);
 
 	ioapic_set_max_vectors(IO_APIC_ADDR, PCH_REDIR_ETR);
-	register_new_ioapic_gsi0_fixed(IO_APIC_ADDR, PCH_IOAPIC_ID);
+	ioapic_setup_gsi0_id(IO_APIC_ADDR, PCH_IOAPIC_ID);
 	ioapic_set_boot_config(IO_APIC_ADDR, true);
 
 	if (!CONFIG(NO_PCAT_8259))

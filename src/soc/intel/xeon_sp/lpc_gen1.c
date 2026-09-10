@@ -12,7 +12,7 @@ void lpc_soc_init(struct device *dev)
 	if (CONFIG(SOC_INTEL_SKYLAKE_SP)) {
 		/* FSP only configures PCH IOAPIC, but it doesn't configure PCI IOAPICs.
 		 * Let coreboot handle all IOAPICs and assign unique IDs to each. */
-		register_new_ioapic_gsi0(IO_APIC_ADDR);
+		ioapic_setup_gsi0(IO_APIC_ADDR);
 	}
 
 	if (!CONFIG(NO_PCAT_8259))

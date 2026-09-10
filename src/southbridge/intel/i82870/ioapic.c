@@ -34,7 +34,7 @@ static void p64h2_ioapic_init(struct device *dev)
 
 	memoryBase = (uintptr_t)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
-	register_new_ioapic(memoryBase);
+	ioapic_setup(memoryBase);
 
 	// Use Processor System Bus to deliver interrupts
 	ioapic_set_boot_config(memoryBase, true);

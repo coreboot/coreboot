@@ -240,6 +240,16 @@ struct device *ioapic_create_dev(struct device *parent,
 	return dev;
 }
 
+/**
+ * Set up the GSI0 IOAPIC with a fixed APIC ID.
+ *
+ * Sets the IOAPIC ID, clears all RTE vectors, and records this IOAPIC as the
+ * GSI0 controller that may later drive PIC i8259 virtual-wire EXTINT via
+ * ioapic_enable_extint().
+ *
+ * @param ioapic_base MMIO base of the GSI0 IOAPIC
+ * @param ioapic_id   APIC ID to program into the IOAPIC
+ */
 void ioapic_setup_gsi0_id(uintptr_t ioapic_base, u8 ioapic_id)
 {
 	set_ioapic_id(ioapic_base, ioapic_id);
@@ -249,12 +259,28 @@ void ioapic_setup_gsi0_id(uintptr_t ioapic_base, u8 ioapic_id)
 	route_i8259_irq0(ioapic_base);
 }
 
+/**
+ * Set up the GSI0 IOAPIC.
+ *
+ * Same as ioapic_setup_gsi0_id(), but chooses the APIC ID automatically:
+ * keep a pre-programmed ID when IOAPIC_USE_PRESET_ID is set, otherwise use 0.
+ *
+ * @param ioapic_base MMIO base of the GSI0 IOAPIC
+ */
 void ioapic_setup_gsi0(uintptr_t ioapic_base)
 {
 	ioapic_setup_gsi0_id(ioapic_base, CONFIG(IOAPIC_USE_PRESET_ID) ?
 					get_ioapic_id(ioapic_base) : 0);
 }
 
+/**
+ * Set up a non-GSI0 IOAPIC.
+ *
+ * Programs an APIC ID and clears RTE vectors. Unlike the GSI0 helpers, this
+ * does not register the IOAPIC for PIC i8259 virtual-wire EXTINT.
+ *
+ * @param ioapic_base MMIO base of the IOAPIC
+ */
 void ioapic_setup(uintptr_t ioapic_base)
 {
 	static u8 ioapic_id;

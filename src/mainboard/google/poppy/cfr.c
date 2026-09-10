@@ -10,7 +10,7 @@ static const struct sm_object ipu_camera = SM_DECLARE_BOOL({
 	.ui_name	= "IPU Camera",
 	.ui_helptext	= "Enable or disable integrated camera devices",
 	.default_value	= true,
-	#if !CONFIG(VARIANT_HAS_CAMERA_ACPI)
+	#if !CONFIG(DRIVERS_INTEL_MIPI_CAMERA) && !CONFIG(VARIANT_HAS_CAMERA_ACPI)
 	.flags		= CFR_OPTFLAG_SUPPRESS,
 	#endif
 });

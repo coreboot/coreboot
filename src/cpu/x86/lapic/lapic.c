@@ -89,6 +89,7 @@ void setup_lapic_interrupts(void)
 	lapic_update32(LAPIC_LVT1, ~mask, LAPIC_DELIVERY_MODE_NMI);
 }
 
+/* No IOAPIC in this link: tell lapic_enable_extint() to unmask LINT0. */
 int __weak ioapic_enable_extint(void) { return -1; }
 void __weak ioapic_disable_extint(void) { }
 

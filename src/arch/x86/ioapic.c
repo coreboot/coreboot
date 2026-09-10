@@ -107,6 +107,11 @@ static void clear_vectors(uintptr_t ioapic_base, u8 first, u8 last)
 	}
 }
 
+/*
+ * Virtual-wire ExtINT needs both the GSI0 IOAPIC base and an enable request
+ * from setup_i8259()/lapic_enable_extint(). Either side may run first; defer
+ * programming the RTE until both have been seen.
+ */
 static int route_i8259_irq0(uintptr_t ioapic_base)
 {
 	u32 bsp_lapicid = lapicid();
@@ -117,14 +122,27 @@ static int route_i8259_irq0(uintptr_t ioapic_base)
 	else
 		pending_enable_extint = 1;
 
-	if (!(pending_enable_extint && ioapic_gsi0))
+	if (!pending_enable_extint || !ioapic_gsi0) {
+		printk(BIOS_DEBUG,
+		       "IOAPIC: ExtINT deferred (pending=%d, gsi0=%" PRIxPTR ")\n",
+		       pending_enable_extint, ioapic_gsi0);
 		return -1;
+	}
+
+	printk(BIOS_DEBUG,
+	       "IOAPIC: Enabling virtual-wire ExtINT on %" PRIxPTR
+	       ", BSP LAPIC = 0x%02x\n",
+	       ioapic_gsi0, bsp_lapicid);
 
 	ASSERT(bsp_lapicid < 255);
 	low = INT_ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
 	high = bsp_lapicid << (56 - 32);
 	lapic_disable_extint();
 	write_vector(ioapic_gsi0, 0, high, low);
+
+	if (io_apic_read(ioapic_gsi0, 0x10) == 0xffffffff)
+		printk(BIOS_WARNING, "IOAPIC not responding.\n");
+
 	return 0;
 }
 
@@ -140,6 +158,13 @@ void ioapic_disable_extint(void)
 	write_vector(ioapic_gsi0, 0, high, low | INT_DISABLED);
 }
 
+/**
+ * Request virtual-wire ExtINT via the GSI0 IOAPIC.
+ *
+ * @return 0 when the GSI0 ExtINT RTE was programmed (LINT0 must stay masked).
+ *         Negative when GSI0 is not ready yet or will never be registered;
+ *         caller should unmask LINT0 instead (possibly temporarily).
+ */
 int ioapic_enable_extint(void)
 {
 	return route_i8259_irq0(0);

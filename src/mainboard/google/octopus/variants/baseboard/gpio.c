@@ -54,7 +54,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPIO_38, UP_20K), /* TRACE_3_DATA2_VNN -- debug header NC */
 	PAD_NC(GPIO_39, UP_20K), /* TRACE_3_DATA3_VNN -- unused */
 	PAD_NC(GPIO_40, UP_20K), /* TRACE_3_DATA4_VNN -- unused */
-	PAD_NC(GPIO_41, DN_20K), /* TRACE_3_DATA5_VNN -- unused */
+	PAD_NC_LOCK(GPIO_41, DN_20K, LOCK_CONFIG), /* TRACE_3_DATA5_VNN -- unused */
 	PAD_NC(GPIO_42, DN_20K), /* GP_INTD_DSI_TE1 -- unused */
 	PAD_NC(GPIO_43, DN_20K), /* GP_INTD_DSI_TE2 -- debug header NC */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_44, UP_20K, DEEP, NF1, TxDRxE, ENPU), /* USB_OC0_B */

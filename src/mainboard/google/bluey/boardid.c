@@ -51,7 +51,7 @@ uint32_t soc_id(void)
 	if (id != UNDEFINED_STRAPPING_ID)
 		return id;
 
-	id = platform_get_soc_hw_id();
+	id = SOC_ID_COMBINE(platform_get_jtag_chip_id(), platform_get_soc_hw_id());
 
 	return id;
 }

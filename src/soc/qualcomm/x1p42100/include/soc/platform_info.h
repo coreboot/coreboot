@@ -32,6 +32,7 @@
 /* Purwa Compute (SC8340XP / X1P4x100) */
 #define X1P42100_FAMILY				0x009A
 #define X1P42100_ID_SCP				0x027B
+#define CANIM_ID_SCP				0x031F
 
 #define CHIPINFO_CHIP_VERSION			0x00020000 /* nChipVersion (SMEM) */
 #define CHIPINFO_CHIP_VERSION_MAJOR		0x02
@@ -46,6 +47,17 @@
 
 #define TCSR_SOC_HW_VERSION_DEVICE_NUM_HAMOA    0x09
 #define TCSR_SOC_HW_VERSION_DEVICE_NUM_X1P42100 0x16
+
+/* JTAG chip_id values (QFPROM_RAW_PTE_ROW0_LSB bits[15:0] = JTAG_ID[27:12]) */
+#define JTAG_ID_SCP_CANIM			0x3BF
+
+#define SOC_ID_JTAG_SHIFT			16
+#define SOC_ID_HW_MASK				0xFFFF
+#define SOC_ID_COMBINE(jtag_id, hw_id)		\
+	(((jtag_id) << SOC_ID_JTAG_SHIFT) | ((hw_id) & SOC_ID_HW_MASK))
+
+#define CANIM_SOC_ID				\
+	SOC_ID_COMBINE(JTAG_ID_SCP_CANIM, TCSR_SOC_HW_VERSION_DEVICE_NUM_X1P42100)
 
 enum qclib_soc_id {
 	SOC_ID_UNKNOWN,
@@ -63,7 +75,8 @@ union tcsr_soc_hw_version {
 	uint32_t data;
 };
 
-enum qclib_soc_id platform_get_soc_id(void);
 uint32_t platform_get_soc_hw_id(void);
+enum qclib_soc_id platform_get_soc_id(void);
+uint32_t platform_get_jtag_chip_id(void);
 
 #endif /* __SOC_QUALCOMM_X1P42100_PLATFORM_INFO_H__ */

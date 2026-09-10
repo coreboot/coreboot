@@ -48,8 +48,8 @@ enum cb_err ufs_rpmh_init(void)
 	struct rpmh_vreg clk;
 	int rc;
 
-	if (platform_get_soc_id() != SOC_ID_X1P42100) {
-		printk(BIOS_DEBUG, "UFS: Skipping RPMh init for non-X1P42100 SoC\n");
+	if (platform_get_soc_id() == SOC_ID_HAMOA) {
+		printk(BIOS_DEBUG, "UFS: Skipping RPMh init for Hamoa SoC\n");
 		return CB_SUCCESS;
 	}
 

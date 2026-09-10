@@ -472,6 +472,13 @@
 #define PAD_CFG_GPI_SMI_HIGH(pad, pull, rst, trig)	\
 	PAD_CFG_GPI_SMI(pad, pull, rst, trig, NONE)
 
+/* General purpose input with lock, routed to SMI */
+#define PAD_CFG_GPI_SMI_LOCK(pad, pull, rst, trig, inv, lock_action)			\
+	_PAD_CFG_STRUCT_LOCK(pad,						\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE) |	\
+		PAD_IRQ_CFG(SMI, trig, inv), PAD_PULL(pull) |			\
+		PAD_IOSSTATE(TxDRxE), PAD_LOCK(lock_action))
+
 /* General purpose input, routed to SCI */
 #define PAD_CFG_GPI_SCI(pad, pull, rst, trig, inv)				\
 	_PAD_CFG_STRUCT(pad,							\

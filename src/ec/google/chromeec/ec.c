@@ -164,6 +164,12 @@ static bool google_chromeec_rgb_color_to_struct(enum google_chromeec_rgbkbd_colo
 
 bool google_chromeec_has_rgbkbd(void)
 {
+	static bool cached;
+	static bool has_rgbkbd;
+
+	if (cached)
+		return has_rgbkbd;
+
 	struct ec_params_rgbkbd params = {
 		.subcmd = EC_RGBKBD_SUBCMD_GET_CONFIG,
 	};
@@ -172,12 +178,16 @@ bool google_chromeec_has_rgbkbd(void)
 	/* Query the EC to determine if RGB keyboard is supported. */
 	if (ec_cmd_rgbkbd(PLAT_EC, &params, &resp) == 0 &&
 			resp.rgbkbd_type != EC_RGBKBD_TYPE_UNKNOWN) {
-		printk(BIOS_DEBUG, "ChromeEC: RGB keyboard detected (type: %d)\n", resp.rgbkbd_type);
-		return true;
+		printk(BIOS_DEBUG, "ChromeEC: RGB keyboard detected (type: %d)\n",
+		       resp.rgbkbd_type);
+		has_rgbkbd = true;
+	} else {
+		printk(BIOS_DEBUG, "Chrome EC: No RGB keyboard\n");
+		has_rgbkbd = false;
 	}
 
-	printk(BIOS_DEBUG, "Chrome EC: No RGB keyboard\n");
-	return false;
+	cached = true;
+	return has_rgbkbd;
 }
 
 int google_chromeec_rgbkbd_set_color(enum google_chromeec_rgbkbd_color color)

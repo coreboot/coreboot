@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <assert.h>
 #include <amdblocks/ioapic.h>
 #include <amdblocks/vbt.h>
+#include <assert.h>
+#include <console/console.h>
 #include <device/pci.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -76,8 +77,10 @@ static void fill_dxio_descriptors(FSP_S_CONFIG *scfg,
 {
 	size_t i;
 
-	ASSERT_MSG(num <= FSPS_UPD_DXIO_DESCRIPTOR_COUNT,
-			"Too many DXIO descriptors provided.");
+	if (num > FSPS_UPD_DXIO_DESCRIPTOR_COUNT) {
+		printk(BIOS_ERR, "Too many DXIO descriptors provided.\n");
+		return;
+	}
 
 	for (i = 0; i < num; i++) {
 		memcpy(scfg->dxio_descriptor[i], &descs[i], sizeof(scfg->dxio_descriptor[0]));
@@ -89,8 +92,10 @@ static void fill_ddi_descriptors(FSP_S_CONFIG *scfg,
 {
 	size_t i;
 
-	ASSERT_MSG(num <= FSPS_UPD_DDI_DESCRIPTOR_COUNT,
-			"Too many DDI descriptors provided.");
+	if (num > FSPS_UPD_DDI_DESCRIPTOR_COUNT) {
+		printk(BIOS_ERR, "Too many DDI descriptors provided.\n");
+		return;
+	}
 
 	for (i = 0; i < num; i++) {
 		memcpy(&scfg->ddi_descriptor[i], &descs[i], sizeof(scfg->ddi_descriptor[0]));

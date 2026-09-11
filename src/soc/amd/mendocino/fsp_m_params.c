@@ -5,7 +5,6 @@
 #include <amdblocks/apob_cache.h>
 #include <amdblocks/ioapic.h>
 #include <amdblocks/memmap.h>
-#include <assert.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <device/device.h>
@@ -27,8 +26,10 @@ static void fill_dxio_descriptors(FSP_M_CONFIG *mcfg,
 {
 	size_t i;
 
-	ASSERT_MSG(num <= FSPM_UPD_DXIO_DESCRIPTOR_COUNT,
-			"Too many DXIO descriptors provided.");
+	if (num > FSPM_UPD_DXIO_DESCRIPTOR_COUNT) {
+		printk(BIOS_ERR, "Too many DXIO descriptors provided.\n");
+		return;
+	}
 
 	for (i = 0; i < num; i++) {
 		memcpy(mcfg->dxio_descriptor[i], &descs[i], sizeof(mcfg->dxio_descriptor[0]));
@@ -40,8 +41,10 @@ static void fill_ddi_descriptors(FSP_M_CONFIG *mcfg,
 {
 	size_t i;
 
-	ASSERT_MSG(num <= FSPM_UPD_DDI_DESCRIPTOR_COUNT,
-			"Too many DDI descriptors provided.");
+	if (num > FSPM_UPD_DDI_DESCRIPTOR_COUNT) {
+		printk(BIOS_ERR, "Too many DDI descriptors provided.\n");
+		return;
+	}
 
 	for (i = 0; i < num; i++) {
 		memcpy(&mcfg->ddi_descriptor[i], &descs[i], sizeof(mcfg->ddi_descriptor[0]));

@@ -25,6 +25,11 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	acpi_device_write_pci_dev(dev);
 
 	acpigen_write_scope(scope);
+	/* Device transitions are handled by the driver and power resource. */
+	acpigen_write_method("_PS0", 0);
+	acpigen_pop_len();
+	acpigen_write_method("_PS3", 0);
+	acpigen_pop_len();
 /*
  *	OperationRegion(CWAR, SystemMemory, \_SB_.PCI0.BASE(_ADR), 0x100)
  *	Field(CWAR, WordAcc, NoLock, Preserve) {

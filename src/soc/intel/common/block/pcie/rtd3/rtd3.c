@@ -623,6 +623,14 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 	/* The RTD3 power resource is added to the root port, not the device. */
 	acpigen_write_scope(scope);
 
+	/* Leave non-PCH ports' platform-specific power methods unchanged. */
+	if (rp_type == PCIE_RP_PCH) {
+		acpigen_write_method("_PS0", 0);
+		acpigen_pop_len();
+		acpigen_write_method("_PS3", 0);
+		acpigen_pop_len();
+	}
+
 	if (config->use_rp_mutex)
 		acpigen_write_mutex(RP_MUTEX_NAME, 0);
 

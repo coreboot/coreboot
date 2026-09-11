@@ -463,7 +463,7 @@ static int relocate_patch_table(void *fsp, size_t size, size_t offset,
 				read_le32(&table->patch_entries[num]));
 
 		if (reloc == NULL) {
-			printk(BIOS_ERR, "Ignoring FSPP entry: %x\n",
+			printk(FSP_DBG_LVL, "Ignoring FSPP entry: %x\n",
 				read_le32(&table->patch_entries[num]));
 			continue;
 		}

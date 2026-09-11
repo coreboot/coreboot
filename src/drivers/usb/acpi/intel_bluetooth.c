@@ -288,6 +288,20 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 	acpigen_pop_len();
 
 /*
+ *	Name (_PR2, Package (0x01)
+ *	{
+ *		BTRT
+ *	})
+ */
+	/* Keep the Bluetooth resource on during USB D2 selective suspend. */
+	acpigen_write_name("_PR2");
+	{
+		acpigen_write_package(1);
+		acpigen_emit_namestring("BTRT");
+	}
+	acpigen_pop_len();
+
+/*
  *	Name (_PR3, Package (0x01)
  *	{
  *		BTRT

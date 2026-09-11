@@ -440,4 +440,20 @@ config PLATFORM_POST_RENDER_DELAY_SEC
 	int
 	default 8
 
+config BATTERY_TRICKLE_VOLTAGE_MV
+	int
+	default 4200 if BOARD_GOOGLE_MODEL_QUENBI
+	default 6400 if BOARD_GOOGLE_MODEL_QUARTZ
+	default 9600 if BOARD_GOOGLE_MODEL_MICA
+	default 6300
+	help
+	  Battery voltage threshold in millivolts (mV) below which firmware
+	  must wait for slow/trickle recovery before booting.
+	  - Standard SMB2360 trickle limit (2.1V/cell):
+	    * 2S battery designs (e.g., Quenbi): 4200 mV
+	    * 3S battery designs (e.g., Bluey): 6300 mV
+	  - SMB2360 FULLON / fast-charge entry limit (3.2V/cell):
+	    * 2S battery designs (e.g., Quartz): 6400 mV
+	    * 3S battery designs (e.g., Mica): 9600 mV
+
 endif # BOARD_GOOGLE_BLUEY_COMMON

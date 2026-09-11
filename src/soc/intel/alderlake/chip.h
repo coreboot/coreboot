@@ -509,7 +509,7 @@ struct soc_intel_alderlake_config {
 		 */
 		IGD_AP_SZ_4G_512MB = 0x03,
 		IGD_AP_SZ_4G_1024MB = 0x07,
-		IGD_AP_SZ_4G_2048MB = 0x15,
+		IGD_AP_SZ_4G_2048MB = 0x0f,
 	} igd_aperture_size;
 
 	bool skip_ext_gfx_scan;

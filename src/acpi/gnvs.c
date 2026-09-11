@@ -18,15 +18,14 @@ static void acpi_create_gnvs(void *unused)
 	const size_t dnvs_size = ALIGN_UP(size_of_dnvs(), sizeof(uint64_t));
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-	if (gnvs)
-		return;
+	if (!gnvs) {
+		/* Allocate for both GNVS and DNVS OpRegions. */
+		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, gnvs_size + dnvs_size);
+		if (!gnvs)
+			return;
 
-	/* Allocate for both GNVS and DNVS OpRegions. */
-	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, gnvs_size + dnvs_size);
-	if (!gnvs)
-		return;
-
-	memset(gnvs, 0, gnvs_size + dnvs_size);
+		memset(gnvs, 0, gnvs_size + dnvs_size);
+	}
 
 	if (dnvs_size)
 		dnvs = (char *)gnvs + gnvs_size;

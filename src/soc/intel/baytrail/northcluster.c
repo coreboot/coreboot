@@ -123,6 +123,7 @@ static void nc_generate_ssdt(const struct device *dev)
 
 static struct device_operations nc_ops = {
 	.read_resources   = nc_read_resources,
+	.set_resources    = pci_dev_set_resources,
 	.acpi_fill_ssdt   = nc_generate_ssdt,
 	.ops_pci          = &soc_pci_ops,
 };

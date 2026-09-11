@@ -571,8 +571,11 @@ static void touch_dev_fill_ssdt_generator(const struct device *dev)
 			 * THC0, the _DSM will be available for it to check and exit without
 			 * error.
 			 */
-			if (config->connected_device == TH_SENSOR_NONE)
+			if (config->connected_device == TH_SENSOR_NONE) {
+				acpigen_write_device_end();
+				acpigen_write_scope_end();
 				return;
+			}
 
 			if (config->mode == THC_HID_I2C_MODE) {
 				touch_generate_acpi_i2cdev_dsd(dev);

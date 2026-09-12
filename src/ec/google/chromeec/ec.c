@@ -2048,6 +2048,80 @@ int google_chromeec_read_batt_remaining_capacity(uint32_t *capacity)
 }
 
 /*
+ * Reads the current battery voltage using CHARGE_STATE_CMD_GET_STATE CMD.
+ *
+ * This function communicates with the Embedded Controller (EC) via a host
+ * command to retrieve the battery voltage in millivolts (mV).
+ *
+ * Return: 0 on success, -1 on failure (communication error or EC rejection).
+ * Return Value (voltage): Pointer to a uint32_t where the battery voltage
+ * (in mV) will be stored.
+ */
+static int google_chromeec_read_batt_voltage_cmd(uint32_t *voltage)
+{
+	struct ec_params_charge_state params;
+	struct ec_response_charge_state resp;
+
+	params.cmd = CHARGE_STATE_CMD_GET_STATE;
+
+	if (ec_cmd_charge_state(PLAT_EC, &params, &resp) < 0)
+		return -1;
+
+	*voltage = resp.get_state.chg_voltage;
+	return 0;
+}
+
+/*
+ * Reads battery voltage from dynamic battery data.
+ *
+ * This function fetches "dynamic" battery metrics (voltage, current, and capacity)
+ * to retrieve the actual battery terminal voltage in millivolts (mV). This is
+ * used when the high-level "Get Charge State" command is unavailable.
+ *
+ * Return: 0 on success, -1 on communication failure or invalid battery data.
+ * Return Value (voltage): Pointer to store the battery voltage (in mV).
+ */
+static int google_chromeec_read_batt_voltage_raw(uint32_t *voltage)
+{
+	struct ec_params_battery_dynamic_info params = {
+		.index = 0,
+	};
+	struct ec_response_battery_dynamic_info resp;
+
+	if (ec_cmd_battery_get_dynamic(PLAT_EC, &params, &resp) != 0)
+		return -1;
+
+	if (resp.actual_voltage <= 0)
+		return -1;
+
+	*voltage = (uint32_t)resp.actual_voltage;
+
+	return 0;
+}
+
+/*
+ * Reads the current battery voltage.
+ *
+ * This function communicates with the Embedded Controller (EC) via a host
+ * command to retrieve the battery voltage in millivolts (mV).
+ *
+ * Return: 0 on success, -1 on failure (communication error or EC rejection).
+ * Return Value (voltage): Pointer to a uint32_t where the battery voltage
+ * (in mV) will be stored.
+ */
+int google_chromeec_read_batt_voltage(uint32_t *voltage)
+{
+	int ret;
+
+	if (CONFIG(EC_GOOGLE_CHROMEEC_BATTERY_SOC_DYNAMIC))
+		ret = google_chromeec_read_batt_voltage_raw(voltage);
+	else
+		ret = google_chromeec_read_batt_voltage_cmd(voltage);
+
+	return ret;
+}
+
+/*
  * Query the EC for the Battery MISC Information.
  *
  * Sends a host command to the ChromeOS Embedded Controller to retrieve the status

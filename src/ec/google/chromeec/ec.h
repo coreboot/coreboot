@@ -583,6 +583,18 @@ int google_chromeec_read_batt_state_of_charge(uint32_t *state);
 int google_chromeec_read_batt_remaining_capacity(uint32_t *capacity);
 
 /*
+ * Reads the current battery voltage.
+ *
+ * This function communicates with the Embedded Controller (EC) via a host
+ * command to retrieve the battery voltage in millivolts (mV).
+ *
+ * Return: 0 on success, -1 on failure (communication error or EC rejection).
+ * Return Value (voltage): Pointer to a uint32_t where the battery voltage
+ * (in mV) will be stored.
+ */
+int google_chromeec_read_batt_voltage(uint32_t *voltage);
+
+/*
  * Query the EC for the Battery MISC Information.
  *
  * Return: 0 on success, or -1 if the command fails or is

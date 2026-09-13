@@ -98,7 +98,7 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_XHCI:	return "XHCI";
 	case PCH_DEVFN_USBOTG:	return "XDCI";
 	case PCH_DEVFN_THERMAL:	return "THRM";
-	case PCH_DEVFN_CIO:	return "ICIO";
+	case PCH_DEVFN_CIO:	return "CIO2";
 	case PCH_DEVFN_I2C0:	return "I2C0";
 	case PCH_DEVFN_I2C1:	return "I2C1";
 	case PCH_DEVFN_I2C2:	return "I2C2";

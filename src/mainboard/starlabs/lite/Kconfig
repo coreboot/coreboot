@@ -107,4 +107,9 @@ config WEBCAM_USB_PORT
 	int
 	default 4 if BOARD_STARLABS_LITE_GLK
 	default 7 if BOARD_STARLABS_LITE_GLKR
+
+config CARD_READER_USB_PORT
+	int
+	default 6 if BOARD_STARLABS_LITE_GLK
+	default 5 if BOARD_STARLABS_LITE_GLKR
 endif

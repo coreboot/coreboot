@@ -32,7 +32,7 @@ static const unsigned int ram_voltages[] = {
 	[7] = 1342616,
 };
 
-_Static_assert(ARRAY_SIZE(ram_voltages) == ADC_LEVELS, "Wrong array size of ram_voltages");
+static_assert(ARRAY_SIZE(ram_voltages) == ADC_LEVELS, "Wrong array size of ram_voltages");
 
 static const unsigned int panel_voltages[] = {
 	/* ID : Voltage (unit: uV) */
@@ -46,7 +46,7 @@ static const unsigned int panel_voltages[] = {
 	[7] = 1427880,
 };
 
-_Static_assert(ARRAY_SIZE(panel_voltages) == ADC_LEVELS, "Wrong array size of panel_voltages");
+static_assert(ARRAY_SIZE(panel_voltages) == ADC_LEVELS, "Wrong array size of panel_voltages");
 
 static const unsigned int *adc_voltages[] = {
 	[RAM_ID_LOW_CHANNEL] = ram_voltages,

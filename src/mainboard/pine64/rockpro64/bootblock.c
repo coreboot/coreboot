@@ -9,8 +9,8 @@
 void bootblock_mainboard_early_init(void)
 {
 	if (CONFIG(CONSOLE_SERIAL)) {
-		_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,
-			       "CONSOLE_SERIAL_UART should be UART2");
+		static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,
+			      "CONSOLE_SERIAL_UART should be UART2");
 
 		/* iomux: select gpio4c[4:3] as uart2 dbg port */
 		write32(&rk3399_grf->iomux_uart2c, IOMUX_UART2C);

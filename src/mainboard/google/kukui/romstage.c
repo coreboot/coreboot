@@ -16,8 +16,8 @@
 #define CAL_REGION_RW_DDR_TRAINING		"RW_DDR_TRAINING"
 #define CAL_REGION_RW_DDR_TRAINING_SIZE		0x2000
 
-_Static_assert(sizeof(struct dramc_param) <= CAL_REGION_RW_DDR_TRAINING_SIZE,
-	       "sizeof(struct dramc_param) exceeds " CAL_REGION_RW_DDR_TRAINING);
+static_assert(sizeof(struct dramc_param) <= CAL_REGION_RW_DDR_TRAINING_SIZE,
+	      "sizeof(struct dramc_param) exceeds " CAL_REGION_RW_DDR_TRAINING);
 
 static bool read_calibration_data_from_flash(struct dramc_param *dparam)
 {

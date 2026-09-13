@@ -40,12 +40,12 @@ union __packed save_state {
 	};
 };
 
-_Static_assert(sizeof(union save_state) == sizeof(amd64_smm_state_save_area_t),
-	       "Incorrect save state union size");
+static_assert(sizeof(union save_state) == sizeof(amd64_smm_state_save_area_t),
+	      "Incorrect save state union size");
 
-_Static_assert(offsetof(union save_state, amd64.smm_revision)
-	       == offsetof(union save_state, legacy.smm_revision),
-	       "Incompatible SMM save state revision offset");
+static_assert(offsetof(union save_state, amd64.smm_revision)
+	      == offsetof(union save_state, legacy.smm_revision),
+	      "Incompatible SMM save state revision offset");
 
 static void relocation_handler(int cpu, uintptr_t curr_smbase,
 			       uintptr_t staggered_smbase)

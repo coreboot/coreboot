@@ -18,7 +18,7 @@ union eeprom_dimm_layout {
 	uint8_t raw[0x80];
 };
 
-_Static_assert(sizeof(union eeprom_dimm_layout) == 0x80,
+static_assert(sizeof(union eeprom_dimm_layout) == 0x80,
 		"union eeprom_dimm_layout has invalid size!");
 
 struct __packed eeprom_board_layout {
@@ -35,7 +35,7 @@ struct __packed eeprom_board_layout {
 	};
 };
 
-_Static_assert(sizeof(struct eeprom_board_layout) == (617 + sizeof(uint32_t)),
+static_assert(sizeof(struct eeprom_board_layout) == (617 + sizeof(uint32_t)),
 		"struct eeprom_board_layout has invalid size!");
 
 struct __packed eeprom_reset_cause_regs {
@@ -70,7 +70,7 @@ enum {
 	PRIMARY_VIDEO_INTEL  = 1,
 };
 
-_Static_assert(sizeof(struct eeprom_board_settings) == (12 + sizeof(uint32_t)),
+static_assert(sizeof(struct eeprom_board_settings) == (12 + sizeof(uint32_t)),
 		"struct eeprom_board_settings has invalid size!");
 
 struct __packed eeprom_bmc_settings {
@@ -115,9 +115,9 @@ struct __packed eeprom_layout {
 	};
 };
 
-_Static_assert(sizeof(FSPM_UPD) <= 0x600, "FSPM_UPD too big");
-_Static_assert(sizeof(FSPS_UPD) <= 0xc00, "FSPS_UPD too big");
-_Static_assert(sizeof(struct eeprom_layout) == 0x2000, "EEPROM layout size mismatch");
+static_assert(sizeof(FSPM_UPD) <= 0x600, "FSPM_UPD too big");
+static_assert(sizeof(FSPS_UPD) <= 0xc00, "FSPS_UPD too big");
+static_assert(sizeof(struct eeprom_layout) == 0x2000, "EEPROM layout size mismatch");
 
 bool eeprom_read_buffer(void *blob, size_t read_offset, size_t size);
 int check_signature(const size_t offset, const uint64_t signature);

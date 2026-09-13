@@ -29,7 +29,7 @@ static const int id_readings[] = {
 /*	14 : 1.684V:       956 :  926 -  989	*/	989,
 /*	15 : 1.800V:      1023 :  990 - 1023	*/	1023
 };
-_Static_assert(ARRAY_SIZE(id_readings) == 16, "Yo' messed up da table, bruh!");
+static_assert(ARRAY_SIZE(id_readings) == 16, "Yo' messed up da table, bruh!");
 static int cached_board_id = -1;
 static int cached_ram_id = -1;
 

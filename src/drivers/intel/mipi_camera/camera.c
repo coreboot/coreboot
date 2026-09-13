@@ -583,14 +583,12 @@ static void camera_fill_sensor(const struct device *dev)
 
 	remote = acpi_dp_new_table("remote-endpoint");
 
-	if (config->remote_name) {
+	if (config->remote_name)
 		remote_name = config->remote_name;
-	} else {
-		if (cio2)
-			remote_name = acpi_device_path(cio2);
-		else
-			remote_name = DEFAULT_REMOTE_NAME;
-	}
+	else if (cio2)
+		remote_name = acpi_device_path(cio2);
+	else
+		remote_name = DEFAULT_REMOTE_NAME;
 
 	acpi_dp_add_reference(remote, NULL, remote_name);
 	acpi_dp_add_integer(remote, NULL, config->ssdb.link_used);
@@ -1150,6 +1148,90 @@ static void write_camera_device_common(const struct device *dev)
 	}
 }
 
+/*
+ * When scope_into_parent is set, the DSDT already declares the IPU/CIO PCI
+ * device (e.g. Device (CIO2) on SKL/KBL). Scope into that object via the
+ * parent ACPI path and emit port/_DSD only.
+ *
+ * Otherwise create Device () under the PCI parent (typical JSL+ boards with
+ * no DSDT IPU0 stub). Returns true if SSDT generation for this device is
+ * complete.
+ */
+static bool camera_fill_existing_cio2(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	const struct device *pdev;
+	const char *path;
+	char cio2_path[DEVICE_PATH_MAX];
+
+	if (!config->scope_into_parent)
+		return false;
+
+	if (config->device_type != INTEL_ACPI_CAMERA_CIO2)
+		return false;
+
+	pdev = dev->upstream ? dev->upstream->dev : NULL;
+	if (!pdev || pdev->path.type != DEVICE_PATH_PCI) {
+		printk(BIOS_ERR,
+		       "%s: CIO2 chip must be nested under the IPU/CIO PCI device\n",
+		       dev_path(dev));
+		return false;
+	}
+
+	path = acpi_device_path(pdev);
+	if (!path) {
+		printk(BIOS_ERR, "%s: failed to get ACPI path for %s\n",
+		       dev_path(dev), dev_path(pdev));
+		return false;
+	}
+	snprintf(cio2_path, sizeof(cio2_path), "%s", path);
+
+	acpigen_write_scope(cio2_path);
+	camera_fill_cio2(dev);
+	acpigen_pop_len(); /* Scope */
+	printk(BIOS_INFO, "%s: %s (existing device)\n", cio2_path,
+	       dev->chip_ops->name);
+	return true;
+}
+
+/*
+ * Create Device (IPU0/...) under the PCI parent and emit port/_DSD.
+ * Used when scope_into_parent is unset (no DSDT IPU/CIO stub).
+ */
+static void camera_fill_new_cio2(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	const struct device *pdev = dev->upstream->dev;
+	const char *scope;
+
+	if (config->device_type != INTEL_ACPI_CAMERA_CIO2)
+		return;
+
+	if (!pdev || pdev->path.type != DEVICE_PATH_PCI) {
+		printk(BIOS_ERR,
+		       "%s: CIO2 chip must be nested under the IPU/CIO PCI device\n",
+		       dev_path(dev));
+		return;
+	}
+
+	scope = acpi_device_scope(pdev);
+	if (!scope) {
+		printk(BIOS_ERR, "Failed to get scope for device %s\n",
+		       dev_path(pdev));
+		return;
+	}
+
+	acpigen_write_scope(scope);
+	write_pci_camera_device(pdev);
+	write_camera_device_common(dev);
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+
+	printk(BIOS_INFO, "%s: %s at PCI %02x.%01x\n", acpi_device_path(pdev),
+	       dev->chip_ops->name, PCI_SLOT(pdev->path.pci.devfn),
+	       PCI_FUNC(pdev->path.pci.devfn));
+}
+
 static void camera_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
@@ -1157,13 +1239,22 @@ static void camera_fill_ssdt(const struct device *dev)
 	const struct device *pdev = dev->upstream->dev;
 
 	if (CONFIG(MIPI_ACPI_TYPE_WINDOWS_LINUX)) {
-		/* Only generate SSDT for an i2c-attached sensor device */
-		if (dev->path.type != DEVICE_PATH_I2C || config->device_type != INTEL_ACPI_CAMERA_SENSOR)
+		if (dev->path.type == DEVICE_PATH_GENERIC &&
+		    config->device_type == INTEL_ACPI_CAMERA_CIO2) {
+			if (!camera_fill_existing_cio2(dev))
+				camera_fill_new_cio2(dev);
+			return;
+		}
+
+		/* Sensors: generate SSDT for an i2c-attached SENSOR only */
+		if (dev->path.type != DEVICE_PATH_I2C ||
+		    config->device_type != INTEL_ACPI_CAMERA_SENSOR)
 			return;
 
 		scope = acpi_device_scope(dev);
 		if (!scope) {
-			printk(BIOS_ERR, "Failed to get scope for device %s\n", dev_path(dev));
+			printk(BIOS_ERR, "Failed to get scope for device %s\n",
+			       dev_path(dev));
 			return;
 		}
 
@@ -1210,6 +1301,13 @@ static void camera_fill_ssdt(const struct device *dev)
 		write_i2c_camera_device(dev, scope);
 		break;
 	case DEVICE_PATH_GENERIC:
+		if (camera_fill_existing_cio2(dev))
+			return;
+		if (config->device_type == INTEL_ACPI_CAMERA_CIO2) {
+			camera_fill_new_cio2(dev);
+			return;
+		}
+
 		scope = acpi_device_scope(pdev);
 		if (!scope)
 			return;

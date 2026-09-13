@@ -145,6 +145,13 @@ struct drivers_intel_mipi_camera_config {
 	uint32_t cio2_lanes_used[MAX_PORT_ENTRIES];
 	const char *cio2_lane_endpoint[MAX_PORT_ENTRIES];
 	uint32_t cio2_prt[MAX_PORT_ENTRIES];
+	/*
+	 * When true, Scope into the parent PCI device's existing ACPI object
+	 * (DSDT Device (CIO2) / Device (IPU0)) and only emit port/_DSD.
+	 * When false (default), create Device () under the PCI parent -- needed
+	 * on platforms whose DSDT has no IPU/CIO stub (typical JSL+ Chromebooks).
+	 */
+	bool scope_into_parent;
 
 	/* Settings specific to camera sensor */
 

@@ -12,8 +12,8 @@
  * platform's soc/pci_devs.h header.
  */
 
-_Static_assert(CONFIG_SOC_INTEL_SPI_DEV_MAX <= 5,
-	       "CONFIG_SOC_INTEL_SPI_DEV_MAX greater than 5 is not supported.");
+static_assert(CONFIG_SOC_INTEL_SPI_DEV_MAX <= 5,
+	      "CONFIG_SOC_INTEL_SPI_DEV_MAX greater than 5 is not supported.");
 
 int spi_soc_devfn_to_bus(unsigned int devfn)
 {

@@ -93,8 +93,8 @@ struct tcss_port_config {
 	uint8_t ocpin;
 };
 
-_Static_assert(sizeof(struct tcss_port_config) == 2,
-	       "tcss_port_config layout changed");
+static_assert(sizeof(struct tcss_port_config) == 2,
+	      "tcss_port_config layout changed");
 
 #define TCSS_PORT_EMPTY { \
 	.enable           = 0, \

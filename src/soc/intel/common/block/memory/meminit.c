@@ -8,9 +8,9 @@
 #include <string.h>
 #include <types.h>
 
-_Static_assert(CONFIG_MRC_CHANNEL_WIDTH > 0, "MRC channel width must be >0!");
-_Static_assert(CONFIG_DATA_BUS_WIDTH > 0, "Data bus width must be >0!");
-_Static_assert(CONFIG_DIMMS_PER_CHANNEL > 0, "DIMMS per channel must be >0!");
+static_assert(CONFIG_MRC_CHANNEL_WIDTH > 0, "MRC channel width must be >0!");
+static_assert(CONFIG_DATA_BUS_WIDTH > 0, "Data bus width must be >0!");
+static_assert(CONFIG_DIMMS_PER_CHANNEL > 0, "DIMMS per channel must be >0!");
 
 /*
  * Given mask of channels that are populated, this function returns the flags
@@ -65,7 +65,7 @@ static void read_spd_md(const struct soc_mem_cfg *soc_mem_cfg, const struct mem_
 		printk(BIOS_DEBUG, "SPD index = %zu\n", info->cbfs_index);
 
 		/* Memory leak is ok as long as we have memory mapped boot media */
-		_Static_assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED),
+		static_assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED),
 				"Function assumes memory-mapped boot media");
 
 		*spd_len = CONFIG_DIMM_SPD_SIZE;

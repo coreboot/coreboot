@@ -202,8 +202,8 @@ static void mem_init_dq_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_dat
 
 	const size_t upd_size = sizeof(mem_cfg->DqMapCpu2DramMc0Ch0);
 
-	_Static_assert(sizeof(mem_cfg->DqMapCpu2DramMc0Ch0) == CONFIG_MRC_CHANNEL_WIDTH,
-		       "Incorrect DQ UPD size!");
+	static_assert(sizeof(mem_cfg->DqMapCpu2DramMc0Ch0) == CONFIG_MRC_CHANNEL_WIDTH,
+		      "Incorrect DQ UPD size!");
 
 	mem_init_dq_dqs_upds(dq_upds, mb_cfg->dq_map, upd_size, data, auto_detect);
 }
@@ -224,8 +224,8 @@ static void mem_init_dqs_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 
 	const size_t upd_size = sizeof(mem_cfg->DqsMapCpu2DramMc0Ch0);
 
-	_Static_assert(sizeof(mem_cfg->DqsMapCpu2DramMc0Ch0) == CONFIG_MRC_CHANNEL_WIDTH / 8,
-		       "Incorrect DQS UPD size!");
+	static_assert(sizeof(mem_cfg->DqsMapCpu2DramMc0Ch0) == CONFIG_MRC_CHANNEL_WIDTH / 8,
+		      "Incorrect DQS UPD size!");
 
 	mem_init_dq_dqs_upds(dqs_upds, mb_cfg->dqs_map, upd_size, data, auto_detect);
 }

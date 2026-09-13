@@ -13,8 +13,8 @@
  *   function name (e.g., PCH_DEVFN_I2Cn or PCI_DEVFN_I2Cn)
  */
 
-_Static_assert(CONFIG_SOC_INTEL_I2C_DEV_MAX <= 8,
-	       "CONFIG_SOC_INTEL_I2C_DEV_MAX greater than 8 is not supported.");
+static_assert(CONFIG_SOC_INTEL_I2C_DEV_MAX <= 8,
+	      "CONFIG_SOC_INTEL_I2C_DEV_MAX greater than 8 is not supported.");
 
 int dw_i2c_soc_devfn_to_bus(unsigned int devfn)
 {

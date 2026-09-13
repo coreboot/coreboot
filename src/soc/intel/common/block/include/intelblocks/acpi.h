@@ -37,11 +37,11 @@ enum cb_err soc_read_core_scaling_factors(u16 *performance, u16 *efficient);
 #else
 static inline enum cb_err soc_read_core_scaling_factors(u16 *performance, u16 *efficient)
 {
-	_Static_assert(CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR != 0,
-		       "CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR must not be zero");
+	static_assert(CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR != 0,
+		      "CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR must not be zero");
 
-	_Static_assert(CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR != 0,
-		       "CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR must not be zero");
+	static_assert(CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR != 0,
+		      "CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR must not be zero");
 
 	*performance = CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR;
 	*efficient = CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR;

@@ -42,7 +42,7 @@
 		((size) & ((size) - 1)) || ((base) & ((size) - 1))))
 #define LPC_IO_CHECK(base, size) \
 	(sizeof(struct { \
-		_Static_assert(!LPC_IO_INVALID(base, size), \
+		static_assert(!LPC_IO_INVALID(base, size), \
 			"LPC_IO: size must be power of 2 in [4,256], base aligned to size"); \
 		int dummy; \
 	}) * 0)

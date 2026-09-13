@@ -9,8 +9,8 @@
  * platform's soc/pci_devs.h header.
  */
 
-_Static_assert(CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX <= 7,
-	       "CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX greater than 7 is not supported.");
+static_assert(CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX <= 7,
+	      "CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX greater than 7 is not supported.");
 
 int gspi_soc_bus_to_devfn(unsigned int gspi_bus)
 {

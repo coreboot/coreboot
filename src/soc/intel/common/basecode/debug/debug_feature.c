@@ -31,7 +31,7 @@ struct debug_feature_cntrl {
 
 static struct debug_feature_cntrl dbg_feature_cntrl;
 
-_Static_assert(sizeof(struct debug_feature_cntrl) % 64 == 0
+static_assert(sizeof(struct debug_feature_cntrl) % 64 == 0
 		&& sizeof(struct debug_feature_cntrl) <= 256,
 		"sizeof(struct debug_feature_cntrl) must be a multiple of 64 bytes and up to 256 bytes");
 

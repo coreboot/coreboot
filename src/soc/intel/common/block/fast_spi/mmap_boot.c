@@ -114,8 +114,8 @@ static void bios_mmap_init(void)
 			  fixed_win_size);
 	win_count++;
 
-	_Static_assert(CONFIG_EXT_BIOS_WIN_BASE != 0, "Extended BIOS window base cannot be 0!");
-	_Static_assert(CONFIG_EXT_BIOS_WIN_SIZE != 0, "Extended BIOS window size cannot be 0!");
+	static_assert(CONFIG_EXT_BIOS_WIN_BASE != 0, "Extended BIOS window base cannot be 0!");
+	static_assert(CONFIG_EXT_BIOS_WIN_SIZE != 0, "Extended BIOS window size cannot be 0!");
 
 	/*
 	 * Remaining portion of the BIOS region up to a maximum of CONFIG_EXT_BIOS_WIN_SIZE is

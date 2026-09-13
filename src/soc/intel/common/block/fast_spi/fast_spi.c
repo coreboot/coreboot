@@ -354,10 +354,10 @@ static void fast_spi_enable_ext_bios(void)
 	 * size of 32 MiB even if the actual BIOS region is smaller. The mapping of the BIOS
 	 * region happens at the top of the extended window in this case.
 	 */
-	_Static_assert(ALIGN_UP(CONFIG_EXT_BIOS_WIN_BASE, 32 * MiB) == CONFIG_EXT_BIOS_WIN_BASE,
-		       "Extended BIOS window base must be a multiple of 32 * MiB!");
-	_Static_assert(CONFIG_EXT_BIOS_WIN_SIZE == (32 * MiB),
-		       "Only 32MiB windows are supported for extended BIOS!");
+	static_assert(ALIGN_UP(CONFIG_EXT_BIOS_WIN_BASE, 32 * MiB) == CONFIG_EXT_BIOS_WIN_BASE,
+		      "Extended BIOS window base must be a multiple of 32 * MiB!");
+	static_assert(CONFIG_EXT_BIOS_WIN_SIZE == (32 * MiB),
+		      "Only 32MiB windows are supported for extended BIOS!");
 #endif
 
 	/* Configure Source decode for Extended BIOS Region */

@@ -33,6 +33,10 @@ void mb_devtree_update(void)
 	if (get_uint_option("webcam", 1) == 0)
 		cfg->usb2_ports[CONFIG_CCD_PORT].enable = 0;
 
+	/* Enable/Disable Card Reader based on CMOS settings */
+	if (get_uint_option("card_reader", 1) == 0)
+		cfg->usb2_ports[3].enable = 0;
+
 	/* Enable/Disable Thunderbolt based on CMOS settings */
 	if (get_uint_option("thunderbolt", 1) == 0) {
 		disable_dev_if_present(DEV_PTR(tbt_pcie_rp0));

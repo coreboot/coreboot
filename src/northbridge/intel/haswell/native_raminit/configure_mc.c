@@ -696,7 +696,7 @@ static void program_scheduler(struct sysinfo *ctrl)
 
 static uint8_t biggest_channel(const struct sysinfo *const ctrl)
 {
-	_Static_assert(NUM_CHANNELS == 2, "Code assumes exactly two channels");
+	static_assert(NUM_CHANNELS == 2, "Code assumes exactly two channels");
 	return !!(ctrl->channel_size_mb[0] < ctrl->channel_size_mb[1]);
 }
 
@@ -737,7 +737,7 @@ static void dram_zones(struct sysinfo *ctrl)
 
 static uint8_t biggest_dimm(const struct raminit_dimm_info *dimms)
 {
-	_Static_assert(NUM_SLOTS <= 2, "Code assumes at most two DIMMs per channel.");
+	static_assert(NUM_SLOTS <= 2, "Code assumes at most two DIMMs per channel.");
 	if (NUM_SLOTS == 1)
 		return 0;
 

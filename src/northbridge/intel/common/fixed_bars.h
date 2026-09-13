@@ -6,7 +6,7 @@
 #include <device/mmio.h>
 #include <stdint.h>
 
-_Static_assert(CONFIG_FIXED_MCHBAR_MMIO_BASE != 0, "MCHBAR base address is zero");
+static_assert(CONFIG_FIXED_MCHBAR_MMIO_BASE != 0, "MCHBAR base address is zero");
 
 static __always_inline uint8_t mchbar_read8(const uintptr_t offset)
 {
@@ -61,7 +61,7 @@ static __always_inline void mchbar_clrsetbits32(uintptr_t offset, uint32_t clear
 #define mchbar_clrbits16(addr, clear)		mchbar_clrsetbits16(addr, clear, 0)
 #define mchbar_clrbits32(addr, clear)		mchbar_clrsetbits32(addr, clear, 0)
 
-_Static_assert(CONFIG_FIXED_DMIBAR_MMIO_BASE != 0, "DMIBAR base address is zero");
+static_assert(CONFIG_FIXED_DMIBAR_MMIO_BASE != 0, "DMIBAR base address is zero");
 
 static __always_inline uint8_t dmibar_read8(const uintptr_t offset)
 {
@@ -116,7 +116,7 @@ static __always_inline void dmibar_clrsetbits32(uintptr_t offset, uint32_t clear
 #define dmibar_clrbits16(addr, clear)		dmibar_clrsetbits16(addr, clear, 0)
 #define dmibar_clrbits32(addr, clear)		dmibar_clrsetbits32(addr, clear, 0)
 
-_Static_assert(CONFIG_FIXED_EPBAR_MMIO_BASE  != 0,  "EPBAR base address is zero");
+static_assert(CONFIG_FIXED_EPBAR_MMIO_BASE  != 0,  "EPBAR base address is zero");
 
 static __always_inline uint8_t epbar_read8(const uintptr_t offset)
 {

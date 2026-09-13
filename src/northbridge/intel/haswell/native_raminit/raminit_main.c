@@ -153,7 +153,7 @@ static const struct task_entry fast_boot[] = {
 	{ raminit_done,                                           true, "RAMINITEND", },
 };
 
-_Static_assert(ARRAY_SIZE(cold_boot) >= ARRAY_SIZE(fast_boot),
+static_assert(ARRAY_SIZE(cold_boot) >= ARRAY_SIZE(fast_boot),
 		"Code assumes cold boot task list is the longest one");
 
 /* Return a generic stepping value to make stepping checks simpler */

@@ -57,7 +57,6 @@ static struct sm_obj_form security_group = {
 #if CONFIG(BOOTMEDIA_SMM_BWP_RUNTIME_OPTION)
 		&bios_lock,
 #endif
-		&intel_tme,
 		NULL
 	},
 };

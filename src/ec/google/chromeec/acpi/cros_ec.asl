@@ -65,11 +65,11 @@ CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE)
 
 		Method (_STA, 0)
 		{
-			If (DFUD || KEYB) {
-				Return (0xF)
-			}
-
+#if CONFIG(SYSTEM_TYPE_MINIPC) || CONFIG(SYSTEM_TYPE_ALL_IN_ONE)
 			Return (0)
+#else
+			Return (0xF)
+#endif
 		}
 	}
 #endif

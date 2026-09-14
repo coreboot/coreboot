@@ -2,6 +2,7 @@
 
 ramstage-y += vtxprintf.c printk.c vsprintf.c
 ramstage-y += init.c console.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-y += post.c
 ramstage-y += die.c
 ifeq ($(CONFIG_HWBASE_DEBUG_CB),y)

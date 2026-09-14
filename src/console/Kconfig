@@ -54,6 +54,10 @@ config CONSOLE_SERIAL_RUNTIME
 	  Compile serial console support and control it at runtime with the
 	  "serial_console" option (e.g. from a CFR setup menu). Select this
 	  on boards that expose that option; it is not enabled by default.
+	  When DRIVERS_OPTION_CFR is enabled, a Console form is added
+	  automatically (log level and serial console). The serial option is
+	  hidden unless CONSOLE_SERIAL_RUNTIME is set and a console UART is
+	  enabled on the board.
 
 	  Typical use: leave CONSOLE_SERIAL disabled so boots stay fast when no
 	  serial cable is attached, and enable serial_console from setup when

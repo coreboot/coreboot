@@ -51,6 +51,13 @@ chip soc/amd/cezanne
 							device ref usb2_port1 on end
 						end
 						chip drivers/usb/acpi
+							register "desc" = ""Right Rear Type-A Port""
+							register "type" = "UPC_TYPE_USB3_A"
+							register "use_custom_pld" = "true"
+							register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 2))"
+							device ref usb3_port1 on end
+						end
+						chip drivers/usb/acpi
 							register "desc" = ""Internal USB 2.0 Hub""
 							register "type" = "UPC_TYPE_HUB"
 							device ref usb2_port2 on end

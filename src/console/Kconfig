@@ -43,6 +43,27 @@ config CONSOLE_SERIAL
 	  shown on the following menu line. Supporting multiple different types
 	  of UARTs in one build is not supported.
 
+	  When CONSOLE_SERIAL_RUNTIME is also enabled, this option only sets the
+	  default for the "serial_console" runtime option (see that Kconfig).
+
+config CONSOLE_SERIAL_RUNTIME
+	bool "Allow enabling serial console via option API"
+	depends on DRIVERS_UART
+	depends on !OPTION_BACKEND_NONE
+	help
+	  Compile serial console support and control it at runtime with the
+	  "serial_console" option (e.g. from a CFR setup menu). Select this
+	  on boards that expose that option; it is not enabled by default.
+
+	  Typical use: leave CONSOLE_SERIAL disabled so boots stay fast when no
+	  serial cable is attached, and enable serial_console from setup when
+	  debug output is needed. If the option cannot be read, the value of
+	  CONSOLE_SERIAL is used as the fallback.
+
+	  Note: with USE_UEFI_VARIABLE_STORE, get_uint_option() is unavailable
+	  in separate verstage and postcar, so those stages always use the
+	  CONSOLE_SERIAL fallback for serial_console.
+
 config FIXED_UART_FOR_CONSOLE
 	bool
 	help
@@ -50,7 +71,7 @@ config FIXED_UART_FOR_CONSOLE
 	  specific UART has to be used (e.g. when the platform code
 	  performs dangerous configurations).
 
-if CONSOLE_SERIAL || CONSOLE_CBMEM_DUMP_TO_UART
+if CONSOLE_SERIAL || CONSOLE_SERIAL_RUNTIME || CONSOLE_CBMEM_DUMP_TO_UART
 
 	comment "I/O mapped, 8250-compatible"
 	depends on DRIVERS_UART_8250IO
@@ -169,7 +190,7 @@ config TTYS0_LCS
 	default 3
 	depends on DRIVERS_UART_8250IO || DRIVERS_UART_8250MEM
 
-endif # CONSOLE_SERIAL
+endif # CONSOLE_SERIAL || CONSOLE_SERIAL_RUNTIME || CONSOLE_CBMEM_DUMP_TO_UART
 
 config SPKMODEM
 	bool "spkmodem (console on speaker) console output"
@@ -250,7 +271,7 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 	  even the BIOS_SPEW level.
 
 config CONSOLE_CBMEM_DUMP_TO_UART
-	depends on !CONSOLE_SERIAL
+	depends on !CONSOLE_SERIAL && !CONSOLE_SERIAL_RUNTIME
 	bool "Dump CBMEM console on resets"
 	default n
 	help

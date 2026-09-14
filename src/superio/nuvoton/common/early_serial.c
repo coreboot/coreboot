@@ -5,6 +5,7 @@
  */
 
 #include <arch/io.h>
+#include <console/uart.h>
 #include <device/pnp_ops.h>
 #include <device/pnp.h>
 #include <stdint.h>
@@ -13,7 +14,7 @@
 /* Bring up early serial debugging output before the RAM is initialized. */
 void nuvoton_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
-	if (!CONFIG(CONSOLE_SERIAL))
+	if (!console_serial_enabled())
 		return;
 
 	nuvoton_pnp_enter_conf_state(dev);

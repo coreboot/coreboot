@@ -272,7 +272,7 @@ config SERIRQ_CONTINUOUS_MODE
 	  Otherwise it is in quiet mode.
 
 config CONSOLE_UART_BASE_ADDRESS
-	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
+	depends on (CONSOLE_SERIAL || CONSOLE_SERIAL_RUNTIME) && AMD_SOC_CONSOLE_UART
 	hex
 	default 0xfedc9000 if UART_FOR_CONSOLE = 0
 	default 0xfedca000 if UART_FOR_CONSOLE = 1

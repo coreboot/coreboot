@@ -252,7 +252,7 @@ config SERIRQ_CONTINUOUS_MODE
 	  Otherwise it is in quiet mode.
 
 config CONSOLE_UART_BASE_ADDRESS
-	depends on CONSOLE_SERIAL
+	depends on CONSOLE_SERIAL || CONSOLE_SERIAL_RUNTIME
 	hex
 	default 0xfedc6000
 

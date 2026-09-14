@@ -162,7 +162,8 @@ bool uart_is_debug_controller(struct device *dev)
 
 /*
  * This is a workaround to enable UART controller for the debug port if:
- * 1. CONSOLE_SERIAL is not enabled in coreboot, and
+ * 1. Serial console is not active this boot (CONSOLE_SERIAL off, or
+ *    CONSOLE_SERIAL_RUNTIME with serial_console option disabled), and
  * 2. This boot is S3 resume, and
  * 3. SoC wants to initialize debug UART controller.
  *
@@ -172,10 +173,10 @@ bool uart_is_debug_controller(struct device *dev)
 static bool uart_controller_needs_init(struct device *dev)
 {
 	/*
-	 * If coreboot has CONSOLE_SERIAL enabled, the skip re-initializing
-	 * controller here.
+	 * If coreboot is using the serial console this boot, skip
+	 * re-initializing the controller here (already brought up).
 	 */
-	if (CONFIG(CONSOLE_SERIAL))
+	if (console_serial_enabled())
 		return false;
 
 	/* If this device does not correspond to debug port, then skip. */

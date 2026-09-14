@@ -1,12 +1,20 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <console/uart.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <tests/test.h>
 
 #ifndef TEST_PRINT
 #define TEST_PRINT 0
+#endif
+
+#if __CONSOLE_SERIAL_SUPPORT__
+bool console_serial_enabled(void)
+{
+	return CONFIG(CONSOLE_SERIAL);
+}
 #endif
 
 int printk(int msg_level, const char *fmt, ...)

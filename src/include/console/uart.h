@@ -4,6 +4,7 @@
 #define CONSOLE_UART_H
 
 #include <stdint.h>
+#include <types.h>
 
 /* Return the clock frequency UART uses as reference clock for
  * baudrate generator. */
@@ -68,23 +69,30 @@ static inline void *uart_platform_baseptr(unsigned int idx)
 
 void oxford_remap(unsigned int new_base);
 
-#define __CONSOLE_SERIAL_ENABLE__	(CONFIG(CONSOLE_SERIAL) && \
+#define __CONSOLE_SERIAL_SUPPORT__ \
+	(CONFIG(CONSOLE_SERIAL) || CONFIG(CONSOLE_SERIAL_RUNTIME))
+
+#define __CONSOLE_SERIAL_ENABLE__	(__CONSOLE_SERIAL_SUPPORT__ && \
 	(ENV_BOOTBLOCK || ENV_SEPARATE_ROMSTAGE || ENV_RAMSTAGE || ENV_SEPARATE_VERSTAGE \
 	 || ENV_POSTCAR || (ENV_SMM && CONFIG(DEBUG_SMI))))
 
+/*
+ * Whether the serial console should be used this stage.
+ * With CONSOLE_SERIAL_RUNTIME, reads option "serial_console" (fallback:
+ * CONSOLE_SERIAL). Result is cached for the life of the stage.
+ * USE_UEFI_VARIABLE_STORE stubs option reads in separate verstage/postcar,
+ * so those stages use the CONSOLE_SERIAL fallback only.
+ */
+#if __CONSOLE_SERIAL_SUPPORT__
+bool console_serial_enabled(void);
+#else
+static inline bool console_serial_enabled(void) { return false; }
+#endif
+
 #if __CONSOLE_SERIAL_ENABLE__
-static inline void __uart_init(void)
-{
-	uart_init(get_uart_for_console());
-}
-static inline void __uart_tx_byte(u8 data)
-{
-	uart_tx_byte(get_uart_for_console(), data);
-}
-static inline void __uart_tx_flush(void)
-{
-	uart_tx_flush(get_uart_for_console());
-}
+void __uart_init(void);
+void __uart_tx_byte(u8 data);
+void __uart_tx_flush(void);
 #else
 static inline void __uart_init(void)		{}
 static inline void __uart_tx_byte(u8 data)	{}

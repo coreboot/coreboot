@@ -12,6 +12,7 @@
 #include <spi-generic.h>
 #include <stdint.h>
 #include <console/console.h>
+#include <console/uart.h>
 
 const FSPT_UPD temp_ram_init_params = {
 	.FspUpdHeader = {
@@ -80,9 +81,8 @@ static void sanity_check_pci_mmconf(void)
 
 void bootblock_soc_early_init(void)
 {
-#if (CONFIG(CONSOLE_SERIAL))
-	early_uart_init();
-#endif
+	if (console_serial_enabled())
+		early_uart_init();
 	fast_spi_early_init(DEFAULT_SPI_BASE);
 };
 

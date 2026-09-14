@@ -12,7 +12,7 @@ config SUPERIO_ASPEED_HAS_UART_DELAY_WORKAROUND
 
 config SUPERIO_ASPEED_USE_UART_DELAY_WORKAROUND
 	bool "Workaround for BMC serial console setup bug"
-	depends on CONSOLE_SERIAL && SUPERIO_ASPEED_HAS_UART_DELAY_WORKAROUND
+	depends on (CONSOLE_SERIAL || CONSOLE_SERIAL_RUNTIME) && SUPERIO_ASPEED_HAS_UART_DELAY_WORKAROUND
 	default y
 	help
 	  Some mainboards with an ASPEED BMC have scrambled console output in early boot phases

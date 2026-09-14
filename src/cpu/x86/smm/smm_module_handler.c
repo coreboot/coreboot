@@ -5,6 +5,7 @@
 #include <commonlib/region.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>
+#include <console/uart.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <rmodule.h>
@@ -192,7 +193,7 @@ asmlinkage void smm_handler_start(void *arg)
 
 	printk(BIOS_SPEW, "\nSMI# #%d\n", cpu);
 
-	if (CONFIG(DEBUG_SMI) && CONFIG(CONSOLE_SERIAL))
+	if (CONFIG(DEBUG_SMI) && console_serial_enabled())
 		exception_init();
 
 	/* Allow drivers to initialize variables in SMM context. */

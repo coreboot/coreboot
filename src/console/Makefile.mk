@@ -42,3 +42,13 @@ bootblock-y += post.c
 bootblock-y += die.c
 
 decompressor-y += die.c
+
+# serial_console.c: gated __uart_* / console_serial_enabled() (incl. PSP verstage)
+ifneq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_CONSOLE_SERIAL_RUNTIME),)
+ramstage-y += serial_console.c
+smm-$(CONFIG_DEBUG_SMI) += serial_console.c
+verstage-y += serial_console.c
+romstage-$(CONFIG_SEPARATE_ROMSTAGE) += serial_console.c
+postcar-$(CONFIG_POSTCAR_CONSOLE) += serial_console.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += serial_console.c
+endif

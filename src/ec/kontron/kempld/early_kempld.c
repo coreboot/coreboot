@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <console/uart.h>
 #include <delay.h>
 
 #include "chip.h"
@@ -34,7 +35,7 @@ void kempld_release_mutex(void)
 
 void kempld_enable_uart_for_console(void)
 {
-	if (!CONFIG(CONSOLE_SERIAL))
+	if (!console_serial_enabled())
 		return;
 
 	if (kempld_get_mutex(100) < 0)

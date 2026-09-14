@@ -23,6 +23,7 @@
 #include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <console/uart.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <device/mmio.h>
@@ -1359,7 +1360,7 @@ static void acpi_create_spcr(acpi_header_t *header, void *unused)
 	acpi_spcr_t *spcr = (acpi_spcr_t *)header;
 	struct lb_serial serial;
 
-	if (!CONFIG(CONSOLE_SERIAL))
+	if (!console_serial_enabled())
 		return;
 
 	if (fill_lb_serial(&serial) != CB_SUCCESS)

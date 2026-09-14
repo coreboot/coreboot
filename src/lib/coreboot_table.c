@@ -586,7 +586,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	lb_mainboard(head);
 
 	/* Record the serial ports and consoles */
-	if (CONFIG(CONSOLE_SERIAL))
+	if (console_serial_enabled())
 		lb_add_serial(head);
 
 	if (CONFIG(CONSOLE_USB))

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
-#include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <intelblocks/aspm.h>
@@ -86,11 +85,6 @@ static struct sm_obj_form battery_group = {
 					     &power_on_ac,
 #endif
 					     NULL},
-};
-
-static struct sm_obj_form debug_group = {
-	.ui_name = "Debug",
-	.obj_list = (const struct sm_object *[]){&debug_level, NULL},
 };
 
 #if CONFIG(EC_STARLABS_POWER_LED) || CONFIG(EC_STARLABS_CHARGE_LED)
@@ -212,7 +206,6 @@ static struct sm_obj_form *sm_root[] = {
 	&audio_video_group,
 #endif
 	&battery_group,
-	&debug_group,
 #if CONFIG(BOARD_STARLABS_LITE_ADL)
 	&display_group,
 	&io_expansion_group,

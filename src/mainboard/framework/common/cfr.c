@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <boot/coreboot_tables.h>
-#include <console/cfr.h>
 #include <console/console.h>
 #include <drivers/option/cfr_frontend.h>
 #include <mainboard/framework/common/board_host_command.h>
@@ -47,14 +46,6 @@ static const struct sm_object fp_led_level = SM_DECLARE_ENUM({
 	.default_value	= FP_LED_LEVEL_EC_DEFAULT,
 	.values		= fp_led_level_values,
 });
-
-static struct sm_obj_form debug = {
-	.ui_name = "Debug",
-	.obj_list = (const struct sm_object *[]) {
-		&debug_level,
-		NULL
-	},
-};
 
 static const struct sm_object battery_charge_limit = SM_DECLARE_NUMBER({
 	.opt_name	= BATTERY_CHARGE_LIMIT_OPTION_NAME,
@@ -126,7 +117,6 @@ static struct sm_obj_form ec = {
 };
 
 static struct sm_obj_form *sm_root[] = {
-	&debug,
 	&ec,
 	NULL
 };

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
-#include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <intelblocks/aspm.h>
@@ -109,14 +108,6 @@ static struct sm_obj_form battery_group = {
 		#if CONFIG(EC_STARLABS_ADAPTER_AUTO_POWER_ON)
 		&power_on_ac,
 		#endif
-		NULL
-	},
-};
-
-static struct sm_obj_form debug_group = {
-	.ui_name = "Debug",
-	.obj_list = (const struct sm_object *[]) {
-		&debug_level,
 		NULL
 	},
 };
@@ -247,7 +238,6 @@ static struct sm_obj_form wireless_group = {
 static struct sm_obj_form *sm_root[] = {
 	&audio_group,
 	&battery_group,
-	&debug_group,
 	#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
 	&io_expansion_group,
 	#endif

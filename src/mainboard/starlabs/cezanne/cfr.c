@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
-#include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <variants.h>
@@ -138,14 +137,6 @@ static struct sm_obj_form battery_group = {
 	},
 };
 
-static struct sm_obj_form debug_group = {
-	.ui_name = "Debug",
-	.obj_list = (const struct sm_object *[]) {
-		&debug_level,
-		NULL
-	},
-};
-
 static struct sm_obj_form keyboard_group = {
 	.ui_name = "Keyboard",
 	.obj_list = (const struct sm_object *[]) {
@@ -213,7 +204,6 @@ static struct sm_obj_form wireless_group = {
 static struct sm_obj_form *sm_root[] = {
 	&audio_video_group,
 	&battery_group,
-	&debug_group,
 	&keyboard_group,
 	&leds_group,
 	&pcie_power_management_group,

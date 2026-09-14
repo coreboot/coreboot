@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
-#include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <soc/cfr.h>
 
@@ -10,7 +9,6 @@ static struct sm_obj_form system = {
 	.obj_list = (const struct sm_object *[]) {
 		&igd_dvmt,
 		&igd_aperture,
-		&debug_level,
 		NULL
 	},
 };

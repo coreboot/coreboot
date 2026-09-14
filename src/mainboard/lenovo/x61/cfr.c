@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
-#include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <northbridge/intel/gm965/cfr.h>
 #include <southbridge/intel/i82801hx/cfr.h>
@@ -37,7 +36,6 @@ static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]) {
 		&boot_option,
-		&debug_level,
 		&nmi,
 		NULL
 	},

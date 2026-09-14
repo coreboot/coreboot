@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
-#include <console/cfr.h>
 #include <cpu/intel/model_206ax/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <northbridge/intel/sandybridge/cfr.h>
@@ -9,7 +8,7 @@
 
 static struct sm_obj_form system = {
 	.ui_name = "System",
-	.obj_list = (const struct sm_object *[]){&debug_level, &gfx_uma_size,
+	.obj_list = (const struct sm_object *[]){&gfx_uma_size,
 						 &nmi,
 						 &hyper_threading, &sata_mode,
 						 NULL},

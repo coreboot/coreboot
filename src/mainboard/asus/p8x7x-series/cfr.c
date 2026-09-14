@@ -2,7 +2,6 @@
 
 #include <boot/coreboot_tables.h>
 #include <drivers/option/cfr_frontend.h>
-#include <console/cfr.h>
 #include <northbridge/intel/sandybridge/cfr.h>
 #include <southbridge/intel/bd82x6x/cfr.h>
 #include <superio/nuvoton/common/nuvoton.h>
@@ -117,7 +116,6 @@ static struct sm_obj_form system = {
 	.ui_name = "Other System Settings",
 	.obj_list = (const struct sm_object *[]) {
 		&nmi,
-		&debug_level,
 		NULL
 	},
 };

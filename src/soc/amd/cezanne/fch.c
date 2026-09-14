@@ -136,6 +136,8 @@ static void fch_init_acpi_ports(void)
 				PM_ACPI_GLOBAL_EN |
 				PM_ACPI_RTC_EN_EN |
 				PM_ACPI_TIMER_EN_EN);
+	if (CONFIG(SOC_AMD_COMMON_ACPI_RTC_WAKE))
+		pm_write32(PM_ACPI_CONF, pm_read32(PM_ACPI_CONF) | PM_ACPI_RTC_WAKE_EN);
 }
 
 /* Configure the general purpose PCIe clock outputs according to the devicetree settings */

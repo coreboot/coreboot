@@ -10,6 +10,12 @@ config SOC_AMD_COMMON_BLOCK_ACPI
 	help
 	  Select this option to use the AcpiMmio ACPI registers.
 
+config SOC_AMD_COMMON_ACPI_RTC_WAKE
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_ACPI
+	help
+	  Enable RTC wake through the FCH ACPI configuration register.
+
 config SOC_AMD_COMMON_BLOCK_ACPI_ALIB
 	bool
 

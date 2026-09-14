@@ -47,6 +47,6 @@ chip soc/intel/apollolake
 			end
 		end
 		device ref uart1	off end
-		device ref uart2	off end
+		device ref uart2	on  end
 	end
 end

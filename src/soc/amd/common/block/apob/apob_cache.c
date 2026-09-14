@@ -42,10 +42,10 @@
 #error Incorrect APOB configuration setting(s)
 #endif
 
-_Static_assert(CONFIG_PSP_APOB_DRAM_SIZE == DEFAULT_MRC_CACHE_SIZE,
+static_assert(CONFIG_PSP_APOB_DRAM_SIZE == DEFAULT_MRC_CACHE_SIZE,
 	"APOB DRAM reserved space != to MRC CACHE size - check your config");
 
-_Static_assert(CONFIG_PSP_APOB_DRAM_SIZE == RECOVERY_MRC_CACHE_SIZE,
+static_assert(CONFIG_PSP_APOB_DRAM_SIZE == RECOVERY_MRC_CACHE_SIZE,
 	"APOB DRAM reserved space != to RECOVERY MRC CACHE size - check your config");
 
 #define APOB_SIGNATURE 0x424F5041	/* 'APOB' */

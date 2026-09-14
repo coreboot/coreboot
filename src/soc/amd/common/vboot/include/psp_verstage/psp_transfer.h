@@ -44,7 +44,7 @@ struct transfer_info_struct {
 	uint32_t	psp_info;		/* Offset 0x3C */
 };
 
-_Static_assert(sizeof(struct transfer_info_struct) == TRANSFER_INFO_SIZE,
+static_assert(sizeof(struct transfer_info_struct) == TRANSFER_INFO_SIZE,
 		"TRANSFER_INFO_SIZE is incorrect");
 
 /* Make sure the PSP transferred information over to x86 side. */

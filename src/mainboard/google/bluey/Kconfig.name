@@ -28,3 +28,6 @@ config BOARD_GOOGLE_PIC
 
 config BOARD_GOOGLE_ANETO
 	bool "->  Aneto"
+
+config BOARD_GOOGLE_MERU
+	bool "->  Meru"

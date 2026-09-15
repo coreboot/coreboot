@@ -2,6 +2,7 @@
 
 config SOC_INTEL_COMMON_BLOCK_SMM
 	bool
+	select HAVE_INSMM_STS if !SOC_INTEL_APOLLOLAKE
 	help
 	  Intel Processor common SMM support
 

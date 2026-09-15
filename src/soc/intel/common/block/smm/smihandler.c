@@ -278,6 +278,9 @@ static void southbridge_smi_gsmi(
 
 static void set_insmm_sts(const bool enable_writes)
 {
+	if (!CONFIG(HAVE_INSMM_STS))
+		return;
+
 	msr_t msr = {
 		.lo = read32p(0xfed30880),
 		.hi = 0,

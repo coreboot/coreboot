@@ -25,6 +25,7 @@ config D3COLD_SUPPORT
 	default n
 
 config DIMM_SPD_SIZE
+	default 1024 if BOARD_STARLABS_STARBOOK_MTL
 	default 512
 
 config FMDFILE

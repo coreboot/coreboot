@@ -34,6 +34,18 @@
 #define SMBx_SCHG_TYPE_C_SUSPEND_LEGACY_CHARGERS(x) \
 (((x) << 16) | SCHG_TYPE_C_SUSPEND_LEGACY_CHARGERS)
 
+#define SCHG_CHGR_PRE_CHARGE_CURRENT_CFG 0x2660
+#define PRE_CHARGE_CURRENT_250MA_STEP_50MA 0x5 /* 50mA * 5 */
+#define SMB1_CHGR_MAX_PRE_CHARGE_CFG ((SMB1_SLAVE_ID << 16) | SCHG_CHGR_PRE_CHARGE_CURRENT_CFG)
+#define SMB2_CHGR_MAX_PRE_CHARGE_CFG ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_PRE_CHARGE_CURRENT_CFG)
+#define SMB3_CHGR_MAX_PRE_CHARGE_CFG ((SMB3_SLAVE_ID << 16) | SCHG_CHGR_PRE_CHARGE_CURRENT_CFG)
+
+#define SCHG_CHGR_STATUS_REG 0x2606
+#define SMB1_CHGR_STATUS_REG ((SMB1_SLAVE_ID << 16) | SCHG_CHGR_STATUS_REG)
+#define SMB2_CHGR_STATUS_REG ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_STATUS_REG)
+#define SMB3_CHGR_STATUS_REG ((SMB3_SLAVE_ID << 16) | SCHG_CHGR_STATUS_REG)
+#define CHGR_STATUS_MASK 0x07
+#define CHGR_STATUS_FAST_CHARGE 0x03
 #define SCHG_CHGR_CHARGING_FCC 0x260A
 #define SMB1_CHGR_CHARGING_FCC ((SMB1_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_FCC)
 #define SMB2_CHGR_CHARGING_FCC ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_FCC)
@@ -90,6 +102,24 @@ void init_sdam_config(void)
 	for (size_t i = 0; i < count; i++)
 		spmi_rmw8(default_sdam_config[i].addr, default_sdam_config[i].mask,
 				default_sdam_config[i].value);
+}
+
+/*
+ * Check if the SMBxxxx charger has transitioned from trickle/pre-charge
+ * into fast charge mode (BATFET closed and FCC loop engaged).
+ */
+bool is_fast_charge_ready(void)
+{
+	int smb1_status1 = spmi_read8_safe(SMB1_CHGR_STATUS_REG);
+	int smb2_status1 = spmi_read8_safe(SMB2_CHGR_STATUS_REG);
+	int smb3_status1 = spmi_read8_safe(SMB3_CHGR_STATUS_REG);
+
+	if ((smb1_status1 >= 0 && (smb1_status1 & CHGR_STATUS_MASK) == CHGR_STATUS_FAST_CHARGE) ||
+	    (smb2_status1 >= 0 && (smb2_status1 & CHGR_STATUS_MASK) == CHGR_STATUS_FAST_CHARGE) ||
+	    (smb3_status1 >= 0 && (smb3_status1 & CHGR_STATUS_MASK) == CHGR_STATUS_FAST_CHARGE))
+		return true;
+
+	return false;
 }
 
 /*
@@ -377,6 +407,12 @@ void enable_slow_battery_charging(void)
 	spmi_write8(SMB1_CHGR_MAX_FCC_CFG, FCC_3A_STEP_50MA);
 	spmi_write8(SMB2_CHGR_MAX_FCC_CFG, FCC_3A_STEP_50MA);
 	spmi_write8(SMB3_CHGR_MAX_FCC_CFG, FCC_3A_STEP_50MA);
+
+	/* Set pre-charge current to 1A so recovery completes quickly */
+	spmi_write8(SMB1_CHGR_MAX_PRE_CHARGE_CFG, PRE_CHARGE_CURRENT_250MA_STEP_50MA);
+	spmi_write8(SMB2_CHGR_MAX_PRE_CHARGE_CFG, PRE_CHARGE_CURRENT_250MA_STEP_50MA);
+	spmi_write8(SMB3_CHGR_MAX_PRE_CHARGE_CFG, PRE_CHARGE_CURRENT_250MA_STEP_50MA);
+
 	spmi_write8(SMB1_CHGR_CHRG_EN_CMD, CHRG_ENABLE);
 	spmi_write8(SMB2_CHGR_CHRG_EN_CMD, CHRG_ENABLE);
 	spmi_write8(SMB3_CHGR_CHRG_EN_CMD, CHRG_ENABLE);

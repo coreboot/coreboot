@@ -18,8 +18,14 @@
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
 #include <soc/watchdog.h>
+#include <timer.h>
 
 #define DELAY_FOR_SHIP_MODE 11000 /* 11sec */
+/* Up to 300 seconds for ship/trickle recovery */
+#define DELAY_FOR_BATT_RECOVERY_MODE (300 * 1000)
+#define DELAY_FOR_BATT_AT_FULL_ON_MODE (60 * 1000)
+#define BATT_RECOVERY_MODE_POLL_INTERVAL_MS 500 /* Poll every 500 ms */
+
 static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
 static bool battery_present = true;
 static bool battery_below_threshold = false;
@@ -28,6 +34,7 @@ static int32_t battery_dfet_status = 1; /* Active D-FET */
 static bool battery_is_cutoff = false;
 static bool battery_needs_recovery = false;
 static bool chipset_dload_mode_active = false; /* Mode for crashlog */
+static bool below_trickle_battery_voltage = false;
 
 /*
  * is_off_mode - Check if the system is booting due to an off-mode power event.
@@ -80,6 +87,31 @@ static enum boot_mode_t init_boot_mode(void)
 }
 
 /*
+ * Check if the current battery voltage is at or below the trickle-charge
+ * threshold (CONFIG_BATTERY_TRICKLE_VOLTAGE_MV).
+ *
+ * Return: true if battery voltage <= threshold (or if EC read fails/BMS asleep),
+ *         false if battery voltage is above the trickle threshold.
+ */
+static bool is_battery_below_trickle_threshold(void)
+{
+	uint32_t battery_voltage = 0;
+	/*
+	 * If EC fails to read battery voltage (e.g., BMS is unpowered in ship mode),
+	 * treat it as being in the trickle-charge region.
+	 */
+	if (google_chromeec_read_batt_voltage(&battery_voltage) != 0) {
+		printk(BIOS_WARNING, "Failed to read battery voltage; assuming trickle state\n");
+		return true;
+	}
+
+	printk(BIOS_DEBUG, "Battery voltage: %u mV (trickle threshold: %d mV)\n",
+	       battery_voltage, CONFIG_BATTERY_TRICKLE_VOLTAGE_MV);
+
+	return (battery_voltage <= CONFIG_BATTERY_TRICKLE_VOLTAGE_MV);
+}
+
+/*
  * Update and cache battery status from the EC.
  * This should be called once, early in the boot process,
  * after the EC is reachable.
@@ -129,6 +161,12 @@ static void update_battery_status(void)
 	 */
 	battery_is_cutoff = (battery_cfet_status == -1) && (battery_dfet_status == -1);
 
+	/*
+	 * TRICKLE BATTERY MODE DETECTION:
+	 * Determine if the battery is deeply depleted or has an unpowered BMS
+	 * (voltage <= CONFIG_BATTERY_TRICKLE_VOLTAGE_MV) requiring trickle recovery.
+	 */
+	below_trickle_battery_voltage = is_battery_below_trickle_threshold();
 }
 
 /* Perform romstage early hardware initialization */
@@ -174,15 +212,69 @@ static void mainboard_setup_peripherals_late(int mode)
 	}
 }
 
-static void handle_battery_shipping_recovery(bool board_reset)
+/*
+ * Poll until the battery transitions from trickle/pre-charge to fast-charge mode,
+ * or until the timeout expires.
+ */
+static void wait_for_fast_charge_ready(void)
 {
+	if (!CONFIG(EC_GOOGLE_CHROMEEC) || !google_chromeec_is_charger_present())
+		return;
+
+	struct stopwatch sw;
+
+	stopwatch_init_msecs_expire(&sw, DELAY_FOR_BATT_RECOVERY_MODE);
+
+	/* Poll until the battery exits trickle/pre-charge or timeout occurs */
+	while (!stopwatch_expired(&sw)) {
+		if (is_fast_charge_ready()) {
+			printk(BIOS_INFO, "\nBattery recovered to fast-charge stage after %lld ms\n",
+			       stopwatch_duration_msecs(&sw));
+			/* Waiting before existing battery recovery mode */
+			mdelay(DELAY_FOR_BATT_AT_FULL_ON_MODE);
+			return;
+		}
+		mdelay(BATT_RECOVERY_MODE_POLL_INTERVAL_MS);
+		/* Print heartbeat to keep user informed */
+		printk(BIOS_INFO, ".");
+	}
+
+	printk(BIOS_WARNING, "\nBattery failed to reach fast-charge threshold after %d ms.\n",
+		DELAY_FOR_BATT_RECOVERY_MODE);
+
+	return;
+}
+
+static void handle_battery_shipping_recovery(bool board_reset, bool need_trickle_charge)
+{
+	printk(BIOS_INFO, "Boot mode is %d\n", boot_mode);
+
 	printk(BIOS_INFO, "==================================================\n");
 	printk(BIOS_INFO, "Device has entered into shipping recovery mode.\n");
 	printk(BIOS_INFO, "Please wait ...\n");
 	printk(BIOS_INFO, "==================================================\n");
 
 	enable_slow_battery_charging();
-	mdelay(DELAY_FOR_SHIP_MODE);
+
+	/*
+	 * For deeply depleted battery recovery, dynamically poll until the charger exits
+	 * trickle/pre-charge into fast-charge mode.
+	 *
+	 * Note: skip trickle charging during no-battery boot (aka LB_BOOT_MODE_NO_BATTERY)
+	 *
+	 * For standard factory ship-mode exit (where cells hold nominal charge),
+	 * a fixed delay is sufficient to bias and wake the BMS protection circuit.
+	 */
+	if (need_trickle_charge && boot_mode != LB_BOOT_MODE_NO_BATTERY) {
+		/*
+		 * Override board_reset after trickle charging if the battery
+		 * voltage has recovered above the trickle-charge threshold.
+		 */
+		board_reset = true;
+		wait_for_fast_charge_ready();
+	} else {
+		mdelay(DELAY_FOR_SHIP_MODE);
+	}
 
 	if (board_reset) {
 		printk(BIOS_INFO, "Issuing board reset\n");
@@ -244,14 +336,15 @@ void platform_romstage_main(void)
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
 
+	/* Underlying PMIC registers are accessible only at this point */
+	boot_mode = init_boot_mode();
+
 	/* Recovery from battery shipping mode */
-	if (battery_needs_recovery || battery_is_cutoff)
-		handle_battery_shipping_recovery(battery_needs_recovery);
+	if (battery_needs_recovery || battery_is_cutoff || below_trickle_battery_voltage)
+		handle_battery_shipping_recovery(battery_needs_recovery, below_trickle_battery_voltage);
 
 	init_sdam_config();
 
-	/* Underlying PMIC registers are accessible only at this point */
-	boot_mode = init_boot_mode();
 	if (check_invalid_recovery_request()) {
 		printk(BIOS_INFO,
 			"Issuing board reset to wipe out stale memory context before recovery request\n");

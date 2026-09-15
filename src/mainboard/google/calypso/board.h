@@ -82,5 +82,5 @@ int detect_ac_unplug_event(void);
  */
 void chromeec_finalize_and_poweroff(bool skip_heartbeat);
 void configure_gpios_defaults(void);
-
+bool is_fast_charge_ready(void);
 #endif /* MAINBOARD_GOOGLE_CALYPSO_BOARD_H */

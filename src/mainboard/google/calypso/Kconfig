@@ -182,4 +182,14 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if MAINBOARD_HAS_GOOGLE_TPM
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nogsc.fmd"
 
+config BATTERY_TRICKLE_VOLTAGE_MV
+	int
+	default 6400
+	help
+	  Battery voltage threshold in millivolts (mV) below which firmware
+	  must wait for slow/trickle recovery before booting.
+	  - SMB2370 FULLON / fast-charge entry limit (3.2V/cell):
+	    * 2S battery designs: 6400 mV
+	    * 3S battery designs: 9600 mV
+
 endif # BOARD_GOOGLE_CALYPSO_COMMON

@@ -326,6 +326,11 @@ bool cl_copy_data_from_sram(uintptr_t src_bar, u32 offset, size_t size, u32 *des
 
 cl_node_t *malloc_cl_node(size_t len)
 {
+	if (len > (CONFIG_HEAP_SIZE / sizeof(u32))) {
+		printk(BIOS_ERR, "Crashlog: rejecting oversized record len=0x%zx\n", len);
+		return NULL;
+	}
+
 	cl_node_t *node = malloc(sizeof(cl_node_t));
 	if (!node)
 		return NULL;

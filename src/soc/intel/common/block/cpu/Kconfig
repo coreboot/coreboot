@@ -81,6 +81,16 @@ config INTEL_CAR_NEM_ENHANCED
 	  ENHANCED NEM guarantees that modified data is always
 	  kept in cache while clean data is replaced.
 
+config INTEL_CAR_NEM_FLUSH_L1D
+	bool
+	depends on INTEL_CAR_NEM
+	help
+	  Flush the L1 data cache once the CAR region is populated and before
+	  no-eviction run state is entered. The backend may access code as
+	  data while CAR is active, and this bounds the resulting false
+	  self-modifying-code detection. Only select this on SoCs that
+	  enumerate IA32_FLUSH_CMD, as writing the MSR faults otherwise.
+
 config INTEL_CAR_ENEM_USE_EFFECTIVE_WAY_SIZE
 	bool
 	depends on INTEL_CAR_NEM_ENHANCED

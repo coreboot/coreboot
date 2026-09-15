@@ -338,6 +338,14 @@ car_nem:
 
 	clear_car
 
+#if CONFIG(INTEL_CAR_NEM_FLUSH_L1D)
+	/* Must complete before the run stage is entered. */
+	mov     $IA32_FLUSH_CMD, %ecx
+	mov     $L1D_FLUSH, %eax
+	xor     %edx, %edx
+	wrmsr
+#endif
+
 	post_code(POSTCODE_SOC_DISABLE_CACHE_EVICT)
 
 	/* Disable cache eviction (run stage) */

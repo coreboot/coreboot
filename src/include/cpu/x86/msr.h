@@ -40,6 +40,8 @@
 #define IA32_SMM_MONITOR_CTL_MSR	0x9B
 #define SMBASE_RO_MSR			0x98
 #define  IA32_SMM_MONITOR_VALID		(1 << 0)
+#define IA32_FLUSH_CMD			0x10b
+#define  L1D_FLUSH			(1 << 0)
 #define IA32_SYSENTER_EIP		0x176
 #define IA32_MCG_CAP			0x179
 #define  MCG_CTL_P			(1 << 8)

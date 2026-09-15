@@ -109,11 +109,15 @@ config BOOTMEDIA_SMM_BWP
 
 config BOOTMEDIA_SMM_BWP_RUNTIME_OPTION
 	bool "Boot media only writable in SMM can be controlled via option API"
-	depends on BOOTMEDIA_SMM_BWP
-	depends on DRIVERS_OPTION_CFR
+	depends on !CONSOLE_SPI_FLASH
+	depends on BOOT_DEVICE_SPI_FLASH && HAVE_SMI_HANDLER
+	depends on SOUTHBRIDGE_INTEL_COMMON_SPI || SOC_INTEL_COMMON_BLOCK_SPI
+	depends on !OPTION_BACKEND_NONE
+	select SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE if SOC_INTEL_COMMON_BLOCK_SPI
 	help
 	  Provide a runtime option "bios_lock" to enable or disable SMM BIOS Write Protection
-	  via the option API.
+	  via the option API. BOOTMEDIA_SMM_BWP is used only as the default for that option
+	  (so the protection can default off and still be enabled at runtime).
 
 choice
 	prompt "SPI Flash write protection duration"

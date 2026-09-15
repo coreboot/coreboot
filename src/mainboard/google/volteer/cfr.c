@@ -31,6 +31,7 @@ static struct sm_obj_form system = {
 		&s0ix_enable,
 		&touchpad_wake,
 		&vtd,
+		&bios_lock,
 		NULL
 	},
 };

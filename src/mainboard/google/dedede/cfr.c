@@ -38,6 +38,7 @@ static struct sm_obj_form system = {
 		&pciexp_speed,
 		&s0ix_enable,
 		&vtd,
+		&bios_lock,
 		NULL
 	},
 };

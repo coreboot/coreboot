@@ -266,6 +266,8 @@
  * The pins in the community are divided into 3 groups :
  * GPIO 0 ~ 31, GPIO 32 ~ 63, GPIO 64 ~ 95
  */
+#define PAD_CFG_LOCK			0x80
+
 #define HOSTSW_OWN_REG_0		0xB0
 
 #define GPI_INT_STS_0			0x100

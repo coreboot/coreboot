@@ -65,7 +65,8 @@
 #define DELAY_CHARGING_ACTIVE_LB_MS 4000 /* 4sec */
 #define SMB_FCC_MULTIPLIER_MA 50
 #define SMB_READ_DELAY_MS 5
-
+#define ICURR_READ_RETRY_COUNT 5
+#define ICURR_READ_RETRY_DELAY_MS 100 /* 5 * 100ms = 500ms total window */
 enum charging_status {
 	CHRG_DISABLE,
 	CHRG_ENABLE,
@@ -140,19 +141,32 @@ static int get_battery_icurr_ma(void)
 		SMB2_CHGR_CHARGING_FCC,
 		SMB3_CHGR_CHARGING_FCC,
 	};
-
 	int icurr = 0;
-	for (size_t i = 0; i < ARRAY_SIZE(smb_regs); i++) {
-		mdelay(SMB_READ_DELAY_MS);
-		icurr = spmi_read8_safe(smb_regs[i]);
 
-		if (icurr > 0)
-			return icurr * SMB_FCC_MULTIPLIER_MA;
+	for (int retry = 0; retry < ICURR_READ_RETRY_COUNT; retry++) {
+		for (size_t i = 0; i < ARRAY_SIZE(smb_regs); i++) {
+			mdelay(SMB_READ_DELAY_MS);
+			icurr = spmi_read8_safe(smb_regs[i]);
+			/* Valid charging current detected */
+			if (icurr > 0)
+				return icurr * SMB_FCC_MULTIPLIER_MA;
+		}
+
+		/* Transient drop to zero: wait before next retry */
+		if (retry < ICURR_READ_RETRY_COUNT - 1) {
+			printk(BIOS_DEBUG, "Transient zero icurr (retry %d/%d)\n",
+			       retry + 1, ICURR_READ_RETRY_COUNT);
+			mdelay(ICURR_READ_RETRY_DELAY_MS);
+		}
 	}
 
-	printk(BIOS_ERR, "Critical: All SMB registers failed to read.\n");
+	/* Final safety: if all failed (still negative), treat as 0 */
+	if (icurr < 0)
+		printk(BIOS_ERR, "Critical: All SMB registers failed to read.\n");
+
 	return 0;
 }
+
 
 static void clear_ec_manual_poweron_event(void)
 {

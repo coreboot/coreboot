@@ -101,6 +101,17 @@ chip soc/intel/pantherlake
 		},
 	}"
 
+	# Acoustic Noise settings and slew rate configuration:
+	register "enable_acoustic_noise_mitigation" = "true"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_IA]" = "false"
+	register "slow_slew_rate_config[VR_DOMAIN_IA]" = "SLEW_FAST_4"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_GT]" = "true"
+	register "slow_slew_rate_config[VR_DOMAIN_GT]" = "SLEW_FAST_8"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_SA]" = "false"
+	register "slow_slew_rate_config[VR_DOMAIN_SA]" = "SLEW_FAST_4"
+	register "pcore_hysteresis_window_ms" = "30"	#ms
+	register "ecore_hysteresis_window_ms" = "30"	#ms
+
 	device domain 0 on
 		subsystemid 0x1043 0x15e4 inherit
 		device ref dtt on

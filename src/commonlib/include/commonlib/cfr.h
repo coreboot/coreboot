@@ -70,7 +70,12 @@ enum cfr_tags {
  * The optional flags describe the visibilty of the option and the
  * effect on the non-volatile variable.
  * CFR_OPTFLAG_READONLY:
- *   Prevents writes to the variable.
+ *   Display-only: show a fixed or status value in the UI (serial number,
+ *   SKU, ME version, warnings, and similar). Not a setting the user can
+ *   change. With EDK2 the UI is read-only and Variable Policy locks the
+ *   backing store immediately. Prefer VOLATILE when the value is not a
+ *   persistent option variable. For setup-writable options that must not
+ *   be changed by the OS, use LOCK_AT_BOOT instead.
  * CFR_OPTFLAG_INACTIVE:
  *   Implies READONLY. The option is visible, but cannot be modified
  *   because one of the dependencies are not given. However there's a
@@ -83,16 +88,22 @@ enum cfr_tags {
  *   This option is never shown in the UI.
  * CFR_OPTFLAG_VOLATILE:
  *   Implies READONLY.
- *   The option is not backed by a non-volatile variable. This is useful
- *   to display the current state of a specific component, a dependency or
- *   a serial number. This information could be passed in a new coreboot
- *   table, but it not useful other than to be shown at this spot in the
- *   UI.
+ *   The option is not backed by a non-volatile variable. Use with
+ *   READONLY for display-only values that are filled in at runtime
+ *   (serial number, part number, live ME state, and similar).
  * CFR_OPTFLAG_RUNTIME:
- *  The option is allowed to be changed by a post payload entity. On UEFI
- *  this sets the EFI_VARIABLE_RUNTIME_ACCESS attribute.
- *  It is out of scope of this specification how non runtime variables
- *  are protected after the payload has hand over control.
+ *   Expose the backing option variable to the OS after firmware handoff.
+ *   With EDK2 this sets the EFI_VARIABLE_RUNTIME_ACCESS attribute. By
+ *   default that also allows the OS to write the variable; pair with
+ *   LOCK_AT_BOOT when OS writes must be denied while setup can still
+ *   change the value.
+ * CFR_OPTFLAG_LOCK_AT_BOOT:
+ *   The variable may be written during firmware setup; write access is
+ *   locked before handing off to the OS. With EDK2 this registers a
+ *   deferred Variable Policy LOCK_NOW at ReadyToBoot (or equivalent).
+ *   Ignored if CFR_OPTFLAG_READONLY is set (display-only locks
+ *   immediately). Without CFR_OPTFLAG_RUNTIME the OS cannot see or write
+ *   the variable after handoff regardless of this flag.
  */
 enum cfr_option_flags {
 	CFR_OPTFLAG_READONLY	= 1 << 0,
@@ -100,6 +111,7 @@ enum cfr_option_flags {
 	CFR_OPTFLAG_SUPPRESS	= 1 << 2,
 	CFR_OPTFLAG_VOLATILE	= 1 << 3,
 	CFR_OPTFLAG_RUNTIME	= 1 << 4,
+	CFR_OPTFLAG_LOCK_AT_BOOT = 1 << 5,
 };
 
 struct __packed lb_cfr_varbinary {

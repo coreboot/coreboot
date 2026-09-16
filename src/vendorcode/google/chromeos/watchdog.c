@@ -2,6 +2,7 @@
 
 #include <device/mmio.h>
 #include <assert.h>
+#include <bootmode.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
@@ -22,8 +23,10 @@ static void elog_handle_watchdog_tombstone(void *unused)
 
 	flag |= reset_watchdog_tombstone();
 
-	if (flag)
+	if (flag) {
+		set_boot_reason(LB_BOOT_REASON_WATCHDOG);
 		elog_add_event(ELOG_TYPE_ASYNC_HW_TIMER_EXPIRED);
+	}
 }
 
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,

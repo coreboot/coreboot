@@ -51,6 +51,7 @@
 #define STM_ID_N25Q256__1E	0xbb19
 
 #define XMC_ID_XM25RU256C	0x4419
+#define XMC_ID_XM25QU256D	0x4119
 
 static const struct spi_flash_part_id flash_table_se32k[] = {
 	{
@@ -195,6 +196,11 @@ static const struct spi_flash_part_id flash_table_sse[] = {
 	{
 		/* XMC XM25RU256C */
 		.id[0] = XMC_ID_XM25RU256C,
+		.nr_sectors_shift = 13,
+	},
+	{
+		/* XMC XM25QU256D */
+		.id[0] = XMC_ID_XM25QU256D,
 		.nr_sectors_shift = 13,
 	},
 };

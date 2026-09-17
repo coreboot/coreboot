@@ -150,6 +150,9 @@ static void mainboard_init(void *chip_info)
 		handle_low_power_charging_boot(boot_mode);
 		halt();
 	}
+
+	/* FIXME: Enable slow battery charging until fast charging support is added */
+	enable_slow_battery_charging();
 }
 
 static void setup_audio_gpios(void)

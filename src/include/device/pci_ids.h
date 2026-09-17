@@ -2881,6 +2881,7 @@
 
 /* Intel SDMA device Ids */
 #define PCI_DID_INTEL_LPT_LP_SDMA			0x9c60
+#define PCI_DID_INTEL_WPT_LP_SDMA			0x9ce0
 
 /* Intel LPC device ids  */
 #define PCI_DID_INTEL_LPT_MOBILE_SAMPLE			0x8c41
@@ -3994,6 +3995,8 @@
 /* Intel I2C device Ids */
 #define PCI_DID_INTEL_LPT_LP_I2C0		0x9c61
 #define PCI_DID_INTEL_LPT_LP_I2C1		0x9c62
+#define PCI_DID_INTEL_WPT_LP_I2C0		0x9ce1
+#define PCI_DID_INTEL_WPT_LP_I2C1		0x9ce2
 #define PCI_DID_INTEL_SPT_I2C0			0x9d60
 #define PCI_DID_INTEL_SPT_I2C1			0x9d61
 #define PCI_DID_INTEL_SPT_I2C2			0x9d62
@@ -4159,6 +4162,8 @@
 /* Intel UART device Ids */
 #define PCI_DID_INTEL_LPT_LP_UART0		0x9c63
 #define PCI_DID_INTEL_LPT_LP_UART1		0x9c64
+#define PCI_DID_INTEL_WPT_LP_UART0		0x9ce3
+#define PCI_DID_INTEL_WPT_LP_UART1		0x9ce4
 #define PCI_DID_INTEL_SPT_UART0			0x9d27
 #define PCI_DID_INTEL_SPT_UART1			0x9d28
 #define PCI_DID_INTEL_SPT_UART2			0x9d66
@@ -4263,6 +4268,8 @@
 /* Intel SPI device Ids */
 #define PCI_DID_INTEL_LPT_LP_GSPI0		0x9c65
 #define PCI_DID_INTEL_LPT_LP_GSPI1		0x9c66
+#define PCI_DID_INTEL_WPT_LP_GSPI0		0x9ce5
+#define PCI_DID_INTEL_WPT_LP_GSPI1		0x9ce6
 #define PCI_DID_INTEL_SPT_SPI1			0x9d24
 #define PCI_DID_INTEL_SPT_SPI2			0x9d29
 #define PCI_DID_INTEL_SPT_SPI3			0x9d2a
@@ -5087,6 +5094,7 @@
 
 /* Intel SD device Ids */
 #define PCI_DID_INTEL_LPT_LP_SD			0x9c35
+#define PCI_DID_INTEL_WPT_LP_SD			0x9cb5
 #define PCI_DID_INTEL_APL_SD			0x5aca
 #define PCI_DID_INTEL_GLK_SD			0x31ca
 #define PCI_DID_INTEL_SKL_SD			0x9d2d

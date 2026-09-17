@@ -9,16 +9,35 @@
 #include <device/pci_ids.h>
 #include <soc/nvs.h>
 #include <types.h>
-#include "chip.h"
+
 #include "iobp.h"
 #include "pch.h"
 
-/* Enable clock in PCI mode */
-static void serialio_enable_clock(struct resource *bar0)
+#if CONFIG(SOUTHBRIDGE_INTEL_LYNXPOINT)
+#include "chip.h"
+#endif
+
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+#include <soc/device_nvs.h>
+#include <southbridge/intel/wildcatpoint/chip.h>
+#endif
+
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+/* Set D3Hot Power State in ACPI mode */
+static void serialio_enable_d3hot(struct resource *res)
 {
-	u32 reg32 = read32(res2mmio(bar0, SIO_REG_PPR_CLOCK, 0));
+	u32 reg32 = read32(res2mmio(res, PCH_PCS, 0));
+	reg32 |= PCH_PCS_PS_D3HOT;
+	write32(res2mmio(res, PCH_PCS, 0), reg32);
+}
+#endif
+
+/* Enable clock in PCI mode */
+static void serialio_enable_clock(struct resource *res)
+{
+	u32 reg32 = read32(res2mmio(res, SIO_REG_PPR_CLOCK, 0));
 	reg32 |= SIO_REG_PPR_CLOCK_EN;
-	write32(res2mmio(bar0, SIO_REG_PPR_CLOCK, 0), reg32);
+	write32(res2mmio(res, SIO_REG_PPR_CLOCK, 0), reg32);
 }
 
 static bool serialio_uart_is_debug(struct device *dev)
@@ -31,7 +50,7 @@ static bool serialio_uart_is_debug(struct device *dev)
 			return CONFIG_UART_FOR_CONSOLE == 1;
 		}
 	}
-	return 0;
+	return false;
 }
 
 /* Put Serial IO D21:F0-F6 device into desired mode. */
@@ -143,15 +162,34 @@ static void serialio_init_once(int acpi_mode)
 	pch_iobp_update(0xcb000180, ~0x0000003f, 0x0000003f);
 }
 
-static void update_bars(int sio_index, u32 bar0, u32 bar1)
+static void update_bars(struct device *dev, int sio_index,
+			struct resource *bar0, struct resource *bar1)
 {
+#if CONFIG(SOUTHBRIDGE_INTEL_LYNXPOINT)
 	/* Find ACPI NVS to update BARs */
 	struct global_nvs *gnvs = acpi_get_gnvs();
 	if (!gnvs)
 		return;
 
-	gnvs->s0b[sio_index] = bar0;
-	gnvs->s1b[sio_index] = bar1;
+	gnvs->s0b[sio_index] = (u32)bar0->base;
+	gnvs->s1b[sio_index] = (u32)bar1->base;
+#endif
+#if CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
+	struct device_nvs *dev_nvs = acpi_get_device_nvs();
+
+	/* Save BAR0 and BAR1 to ACPI NVS */
+	dev_nvs->bar0[sio_index] = (u32)bar0->base;
+	dev_nvs->bar1[sio_index] = (u32)bar1->base;
+
+	if (!serialio_uart_is_debug(dev)) {
+		/* Do not enable UART if it is used as debug port */
+		dev_nvs->enable[sio_index] = 1;
+
+		/* Put device in D3hot state via BAR1 */
+		if (dev->path.pci.devfn != PCH_DEVFN_SDMA)
+			serialio_enable_d3hot(bar1); /* all but SDMA */
+	}
+#endif
 }
 
 static void serialio_init(struct device *dev)
@@ -234,7 +272,7 @@ static void serialio_init(struct device *dev)
 
 	/* Save BAR0 and BAR1 to ACPI NVS */
 	if (config->sio_acpi_mode)
-		update_bars(sio_index, (u32)bar0->base, (u32)bar1->base);
+		update_bars(dev, sio_index, bar0, bar1);
 }
 
 static void serialio_read_resources(struct device *dev)
@@ -259,6 +297,7 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+	/* Lynx Point LP */
 	PCI_DID_INTEL_LPT_LP_SDMA,
 	PCI_DID_INTEL_LPT_LP_I2C0,
 	PCI_DID_INTEL_LPT_LP_I2C1,
@@ -267,6 +306,15 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_LPT_LP_UART0,
 	PCI_DID_INTEL_LPT_LP_UART1,
 	PCI_DID_INTEL_LPT_LP_SD,
+	/* Wildcat Point LP */
+	PCI_DID_INTEL_WPT_LP_SDMA,
+	PCI_DID_INTEL_WPT_LP_I2C0,
+	PCI_DID_INTEL_WPT_LP_I2C1,
+	PCI_DID_INTEL_WPT_LP_GSPI0,
+	PCI_DID_INTEL_WPT_LP_GSPI1,
+	PCI_DID_INTEL_WPT_LP_UART0,
+	PCI_DID_INTEL_WPT_LP_UART1,
+	PCI_DID_INTEL_WPT_LP_SD,
 	0
 };
 

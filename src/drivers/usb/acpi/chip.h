@@ -66,6 +66,9 @@ struct drivers_usb_acpi_config {
 	unsigned int enable_delay_ms;
 	/* Delay to be inserted after device is disabled. */
 	unsigned int enable_off_delay_ms;
+	/* Optional CNVi BTEN / BT_IF_SELECT; pulsed in BTRT._RST only. */
+	struct acpi_gpio cnvi_bt_en_gpio;
+	struct acpi_gpio cnvi_bt_if_select_gpio;
 
 	/*
 	 * Define a GPIO that shows the privacy status of the USB device.
@@ -93,6 +96,8 @@ bool usb_acpi_get_pld(const struct device *usb_device, struct acpi_pld *pld);
 /* Intel Bluetooth */
 void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 			  const struct acpi_gpio *reset_gpio,
+			  const struct acpi_gpio *cnvi_bt_en_gpio,
+			  const struct acpi_gpio *cnvi_bt_if_select_gpio,
 			  bool audio_offload,
 			  bool cnvi_bluetooth);
 

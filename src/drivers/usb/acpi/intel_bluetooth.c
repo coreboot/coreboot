@@ -61,6 +61,8 @@ void (*reset_unsupported[])(void *) = { not_supported };
 
 void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 			  const struct acpi_gpio *reset_gpio,
+			  const struct acpi_gpio *cnvi_bt_en_gpio,
+			  const struct acpi_gpio *cnvi_bt_if_select_gpio,
 			  bool audio_offload,
 			  bool cnvi_bluetooth)
 {
@@ -220,11 +222,24 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 
 				acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
 				{
+					/* Pulse optional CNVi BTEN / BT_IF_SELECT with reset. */
+					if (cnvi_bt_en_gpio && cnvi_bt_en_gpio->pin_count)
+						acpigen_disable_tx_gpio(cnvi_bt_en_gpio);
+					if (cnvi_bt_if_select_gpio &&
+					    cnvi_bt_if_select_gpio->pin_count)
+						acpigen_disable_tx_gpio(cnvi_bt_if_select_gpio);
+
 					acpigen_emit_namestring("\\_SB.PCI0.BTRK");
 					acpigen_emit_byte(0);
 
 					acpigen_emit_ext_op(SLEEP_OP);
 					acpigen_emit_namestring("RDLY");
+
+					if (cnvi_bt_en_gpio && cnvi_bt_en_gpio->pin_count)
+						acpigen_enable_tx_gpio(cnvi_bt_en_gpio);
+					if (cnvi_bt_if_select_gpio &&
+					    cnvi_bt_if_select_gpio->pin_count)
+						acpigen_enable_tx_gpio(cnvi_bt_if_select_gpio);
 
 					acpigen_emit_namestring("\\_SB.PCI0.BTRK");
 					acpigen_emit_byte(1);

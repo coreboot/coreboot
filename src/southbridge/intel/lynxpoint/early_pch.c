@@ -86,6 +86,10 @@ void __weak mainboard_config_superio(void)
 {
 }
 
+void __weak mainboard_config_rcba(void)
+{
+}
+
 void early_pch_init(void)
 {
 	pch_enable_bars();

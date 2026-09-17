@@ -3,10 +3,6 @@
 #include <northbridge/intel/haswell/haswell.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 
-void mainboard_config_rcba(void)
-{
-}
-
 const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS] = {
 	/* FIXME: Length and Location are computed from IOBP values, may be inaccurate */
 	/* Length, Enable, OCn#, Location */

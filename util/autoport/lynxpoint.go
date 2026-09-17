@@ -277,6 +277,7 @@ void mainboard_config_superio(void)
 	sb.WriteString(`#include <northbridge/intel/haswell/haswell.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 
+/* FIXME: remove this if not needed */
 void mainboard_config_rcba(void)
 {
 }

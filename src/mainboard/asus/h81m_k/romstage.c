@@ -2,10 +2,6 @@
 
 #include <southbridge/intel/lynxpoint/pch.h>
 
-void mainboard_config_rcba(void)
-{
-}
-
 const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS] = {
 	/* Length, Enable, OCn#, Location */
 	{ 0x0040, 1, 0, USB_PORT_FLEX },

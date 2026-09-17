@@ -1,25 +1,29 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
 #include <arch/io.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
+#include <cpu/intel/em64t101_save_state.h>
+#include <cpu/intel/haswell/haswell.h>
+#include <cpu/intel/msr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
-#include <device/pci_def.h>
 #include <cpu/x86/smm.h>
-#include <cpu/intel/em64t101_save_state.h>
-#include <cpu/intel/msr.h>
+#include <delay.h>
+#include <device/mmio.h>
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
+#include <drivers/intel/gma/i915_reg.h>
 #include <elog.h>
 #include <halt.h>
+#include <northbridge/intel/haswell/haswell.h>
 #include <option.h>
+#include <smmstore.h>
+#include <soc/nvs.h>
 #include <southbridge/intel/common/finalize.h>
 #include <southbridge/intel/common/insmm_sts.h>
 #include <southbridge/intel/common/lpc_def.h>
-#include <northbridge/intel/haswell/haswell.h>
-#include <cpu/intel/haswell/haswell.h>
-#include <soc/nvs.h>
-#include <smmstore.h>
+#include <types.h>
+
 #include "me.h"
 #include "pch.h"
 
@@ -63,6 +67,47 @@ static void busmaster_disable_on_bus(int bus)
 	}
 }
 
+/*
+ * Turn off the backlight if it is on, and wait for the specified
+ * backlight off delay.  This will allow panel power timings to meet
+ * spec and prevent brief garbage on the screen when turned off
+ * during firmware with power button triggered SMI.
+ */
+static void backlight_off(void)
+{
+	void *reg_base = (void *)((uintptr_t)pci_read_config32(PCI_DEV(0, 2, 0),
+		PCI_BASE_ADDRESS_0) & ~0xf);
+
+	/* Validate pointer before using it */
+	if (smm_points_to_smram(reg_base, PCH_PP_OFF_DELAYS + sizeof(uint32_t)))
+		return;
+
+	/* Check if backlight is enabled */
+	uint32_t pp_ctrl = read32(reg_base + PCH_PP_CONTROL);
+	if (!(pp_ctrl & EDP_BLC_ENABLE))
+		return;
+
+	/* Enable writes to this register */
+	pp_ctrl &= ~PANEL_UNLOCK_MASK;
+	pp_ctrl |= PANEL_UNLOCK_REGS;
+
+	/* Turn off backlight */
+	pp_ctrl &= ~EDP_BLC_ENABLE;
+
+	write32(reg_base + PCH_PP_CONTROL, pp_ctrl);
+	read32(reg_base + PCH_PP_CONTROL);
+
+	/* Read backlight off delay in 100us units */
+	uint32_t bl_off_delay = read32(reg_base + PCH_PP_OFF_DELAYS);
+	bl_off_delay &= PANEL_LIGHT_OFF_DELAY_MASK;
+	bl_off_delay *= 100;
+
+	/* Wait for backlight to turn off */
+	udelay(bl_off_delay);
+
+	printk(BIOS_INFO, "Backlight turned off\n");
+}
+
 static int power_on_after_fail(void)
 {
 	/* save and recover RTC port values */
@@ -96,7 +141,7 @@ static void southbridge_smi_sleep(void)
 	mainboard_smi_sleep(slp_typ);
 
 	/* USB sleep preparations */
-#if !CONFIG(FINALIZE_USB_ROUTE_XHCI)
+#if !CONFIG(FINALIZE_USB_ROUTE_XHCI) && !CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
 	usb_ehci_sleep_prepare(PCH_EHCI1_DEV, slp_typ);
 	usb_ehci_sleep_prepare(PCH_EHCI2_DEV, slp_typ);
 #endif
@@ -105,6 +150,12 @@ static void southbridge_smi_sleep(void)
 	/* Log S3, S4, and S5 entry */
 	if (slp_typ >= ACPI_S3)
 		elog_gsmi_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
+
+	/* TODO: Consolidate */
+	if (CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)) {
+		/* Clear pending GPE events */
+		clear_gpe_status();
+	}
 
 	/* Next, do the deed.
 	 */
@@ -127,6 +178,12 @@ static void southbridge_smi_sleep(void)
 		break;
 	case ACPI_S5:
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
+
+		/* TODO: Consolidate */
+		if (CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)) {
+			/* Turn off backlight if needed */
+			backlight_off();
+		}
 
 		/* Disable all GPE */
 		disable_all_gpe();
@@ -272,7 +329,9 @@ static void southbridge_smi_apmc(void)
 		}
 
 		enable_smm_code_access_check();
-		intel_pch_finalize_smm();
+		/* TODO: Consolidate */
+		if (!CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT))
+			intel_pch_finalize_smm();
 
 		chipset_finalized = 1;
 		break;
@@ -282,9 +341,11 @@ static void southbridge_smi_apmc(void)
 	case APM_CNT_ACPI_ENABLE:
 		enable_pm1_control(SCI_EN);
 		break;
+#if !CONFIG(SOUTHBRIDGE_INTEL_WILDCATPOINT)
 	case APM_CNT_ROUTE_ALL_XHCI:
 		usb_xhci_route_all();
 		break;
+#endif
 	case APM_CNT_ELOG_GSMI:
 		if (CONFIG(ELOG_GSMI))
 			southbridge_smi_gsmi();
@@ -308,7 +369,7 @@ static void southbridge_smi_pm1(void)
 	if (pm1_sts & PWRBTN_STS) {
 		/* power button pressed */
 		elog_gsmi_add_event(ELOG_TYPE_POWER_BUTTON);
-		disable_pm1_control(-1);
+		disable_pm1_control(~0);
 		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << 10));
 	}
 }

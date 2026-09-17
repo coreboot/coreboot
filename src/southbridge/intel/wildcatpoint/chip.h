@@ -74,6 +74,9 @@ struct southbridge_intel_wildcatpoint_config {
 	/* Deep SX enable */
 	int deep_sx_enable_ac;
 	int deep_sx_enable_dc;
+
+	/* Information for the ACPI FADT. */
+	bool docking_supported;
 };
 
 /* Temporary, to make it easier to unify LPT and WPT */

@@ -12,6 +12,11 @@ cpu_microcode_bins += \
        3rdparty/intel-microcode/intel-ucode/06-cc-03
 endif
 
+ifeq ($(CONFIG_SOC_INTEL_WILDCATLAKE),y)
+cpu_microcode_bins += \
+       3rdparty/intel-microcode/intel-ucode/06-d5-01
+endif
+
 # all (bootblock, verstage, romstage, postcar, ramstage)
 all-y += gpio.c
 all-y += isclk.c

@@ -299,6 +299,13 @@ static void cb_parse_boot_mode(void *ptr, struct sysinfo_t *info)
 	info->boot_mode = mode->boot_mode;
 }
 
+static void cb_parse_boot_reason(void *ptr, struct sysinfo_t *info)
+{
+	const struct cb_boot_reason *reason = ptr;
+
+	info->boot_reason = reason->boot_reason;
+}
+
 static void cb_parse_rsdp(void *ptr, struct sysinfo_t *info)
 {
 	const struct cb_acpi_rsdp *cb_acpi_rsdp = ptr;
@@ -462,6 +469,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_BOOT_MODE:
 			cb_parse_boot_mode(ptr, info);
+			break;
+		case CB_TAG_BOOT_REASON:
+			cb_parse_boot_reason(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);

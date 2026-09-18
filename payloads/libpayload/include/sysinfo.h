@@ -181,6 +181,7 @@ struct sysinfo_t {
 	uintptr_t pvmfw;
 	uint32_t pvmfw_size;
 	enum boot_mode_t boot_mode;
+	enum cb_boot_reason_t boot_reason;
 
 	uintptr_t memory_info;
 	uintptr_t cb_panel_poweroff;

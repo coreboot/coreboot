@@ -38,4 +38,7 @@ void prevent_unsupported_s3_resume(void);
 enum boot_mode_t get_boot_mode(void);
 void set_boot_mode(const enum boot_mode_t mode);
 
+enum lb_boot_reason_t get_boot_reason(void);
+void set_boot_reason(const enum lb_boot_reason_t reason);
+
 #endif /* __BOOTMODE_H__ */

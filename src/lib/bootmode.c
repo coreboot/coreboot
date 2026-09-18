@@ -93,3 +93,32 @@ void prevent_unsupported_s3_resume(void)
 		board_reset();
 	}
 }
+
+/*
+ * Record the boot reason in cbmem for payload.
+ */
+enum lb_boot_reason_t get_boot_reason(void)
+{
+	enum lb_boot_reason_t boot_reason = LB_BOOT_REASON_UNKNOWN;
+	if (ENV_HAS_CBMEM && cbmem_online()) {
+		enum lb_boot_reason_t *boot_reason_ptr = cbmem_find(CBMEM_ID_BOOT_REASON);
+		if (boot_reason_ptr)
+			boot_reason = *boot_reason_ptr;
+	}
+	printk(BIOS_INFO, "Boot reason is %d\n", boot_reason);
+
+	return boot_reason;
+}
+
+/*
+ * Set the boot reason in cbmem for payload.
+ */
+void set_boot_reason(const enum lb_boot_reason_t reason)
+{
+	enum lb_boot_reason_t *boot_reason_ptr =
+		cbmem_add(CBMEM_ID_BOOT_REASON, sizeof(enum lb_boot_reason_t));
+	if (boot_reason_ptr) {
+		*boot_reason_ptr = reason;
+		printk(BIOS_INFO, "Boot reason set to %d\n", reason);
+	}
+}

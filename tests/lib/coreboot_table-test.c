@@ -2,6 +2,7 @@
 
 #include <tests/test.h>
 #include <boardid.h>
+#include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <boot/tables.h>
 #include <cbfs.h>
@@ -314,6 +315,11 @@ uint64_t get_fmap_flash_offset(void)
 	return FMAP_OFFSET;
 }
 
+enum lb_boot_reason_t get_boot_reason(void)
+{
+	return LB_BOOT_REASON_UNKNOWN;
+}
+
 uint32_t freq_khz = 5000 * 1000;
 void lb_arch_add_records(struct lb_header *header)
 {
@@ -494,6 +500,9 @@ static void test_write_tables(void **state)
 			uint32_t platform_blob_version_size =
 				ALIGN_UP(sizeof(struct lb_string) + sizeof(platform_blob_version), 8);
 			assert_int_equal(platform_blob_version_size, record->size);
+			break;
+		case LB_TAG_BOOT_REASON:
+			assert_int_equal(sizeof(struct lb_boot_reason), record->size);
 			break;
 		default:
 			fail_msg("Unexpected tag found in record. Tag ID: 0x%x", record->tag);

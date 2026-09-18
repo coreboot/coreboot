@@ -93,6 +93,7 @@ enum {
 	LB_TAG_ROOT_BRIDGE_INFO		= 0x0048,
 	LB_TAG_PANEL_POWEROFF		= 0x0049,
 	LB_TAG_SDHCI_NONPCI		= 0x004a,
+	LB_TAG_BOOT_REASON		= 0x004b,
 	/* The following options are CMOS-related */
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,
@@ -672,6 +673,21 @@ struct lb_boot_mode {
 	uint32_t size;
 
 	enum boot_mode_t boot_mode;
+};
+
+enum lb_boot_reason_t {
+	LB_BOOT_REASON_UNKNOWN = 0,
+	LB_BOOT_REASON_WATCHDOG = 1,
+};
+
+/*
+ * Boot Reason: Pass the reset/boot reason to payload.
+ */
+struct lb_boot_reason {
+	uint32_t tag;
+	uint32_t size;
+
+	uint32_t boot_reason;
 };
 
 #endif

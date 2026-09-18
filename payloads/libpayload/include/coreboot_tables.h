@@ -86,6 +86,7 @@ enum {
 	CB_TAG_ACPI_RSDP                = 0x0043,
 	CB_TAG_PCIE			= 0x0044,
 	CB_TAG_PANEL_POWEROFF		= 0x0049,
+	CB_TAG_BOOT_REASON		= 0x004b,
 	CB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	CB_TAG_OPTION			= 0x00c9,
 	CB_TAG_OPTION_ENUM		= 0x00ca,
@@ -481,6 +482,21 @@ struct cb_boot_mode {
 	uint32_t size;
 
 	enum boot_mode_t boot_mode;
+};
+
+enum cb_boot_reason_t {
+	CB_BOOT_REASON_UNKNOWN = 0,
+	CB_BOOT_REASON_WATCHDOG = 1,
+};
+
+/*
+ * Boot Reason: Pass the reset/boot reason to payload.
+ */
+struct cb_boot_reason {
+	uint32_t tag;
+	uint32_t size;
+
+	uint32_t boot_reason;
 };
 
 /* Helpful inlines */

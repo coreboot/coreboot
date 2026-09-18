@@ -21,6 +21,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <bootmem.h>
+#include <bootmode.h>
 #include <bootsplash.h>
 #include <inttypes.h>
 #include <spi_flash.h>
@@ -522,6 +523,17 @@ static void lb_add_boot_mode(struct lb_header *header)
 	mode->boot_mode = get_boot_mode();
 }
 
+static void lb_add_boot_reason(struct lb_header *head)
+{
+	struct lb_boot_reason *rec;
+
+	rec = (struct lb_boot_reason *)lb_new_record(head);
+	memset(rec, 0, sizeof(*rec));
+	rec->tag = LB_TAG_BOOT_REASON;
+	rec->size = sizeof(*rec);
+	rec->boot_reason = get_boot_reason();
+}
+
 size_t write_coreboot_forwarding_table(uintptr_t entry, uintptr_t target)
 {
 	struct lb_header *head;
@@ -647,6 +659,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 		lb_add_acpi_rsdp(head);
 
 	lb_add_boot_mode(head);
+	lb_add_boot_reason(head);
 
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head);

@@ -173,9 +173,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 			if (mp->mainboard.spd_addrs[i]) {
 				i2c_eeprom_read(mp->mainboard.spd_addrs[i],
 					0, SPD_SIZE, spd_buf[i]);
-				/* NOTE: MRC looks for Channel 1 SPD at array
-					index 1 */
-				mp->mainboard.dram_data[i] = spd_buf;
+				mp->mainboard.dram_data[i] = spd_buf[i];
 			}
 		}
 	}

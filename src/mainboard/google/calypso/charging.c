@@ -455,6 +455,25 @@ bool is_low_power_boot_with_charger(void)
 	return ret;
 }
 
+bool board_support_dead_battery_charging(void)
+{
+	uint32_t capacity;
+
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return false;
+
+	if (google_chromeec_read_batt_remaining_capacity(&capacity) < 0) {
+		printk(BIOS_WARNING, "Failed to get battery capacity; defaulting to slow charging\n");
+		return true;
+	}
+
+	/*
+	 * If the remaining battery capacity is less than or equal to the
+	 * threshold, set dead battery charging mode.
+	 */
+	return capacity <= DEAD_BATT_CHG_THRESHOLD_MAH;
+}
+
 bool platform_get_battery_soc_information(uint32_t *batt_pct)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))

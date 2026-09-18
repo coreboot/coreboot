@@ -376,9 +376,13 @@ void platform_romstage_postram(void)
 	if (!chipset_dload_mode_active)
 		aop_fw_load_reset();
 
-	if (is_low_power_boot_with_charger())
+	if (is_low_power_boot_with_charger()) {
+		if (board_support_dead_battery_charging())
+			configure_dead_battery_boot();
+
 		/* FIXME: Add fast charging support */
 		enable_slow_battery_charging();
+	}
 
 	qclib_rerun();
 

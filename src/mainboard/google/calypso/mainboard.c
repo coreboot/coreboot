@@ -59,25 +59,6 @@ bool platform_is_off_mode_charging_active(void)
 }
 #endif
 
-static bool board_support_dead_battery_charging(void)
-{
-	uint32_t capacity;
-
-	if (!CONFIG(EC_GOOGLE_CHROMEEC))
-		return false;
-
-	if (google_chromeec_read_batt_remaining_capacity(&capacity) < 0) {
-		printk(BIOS_WARNING, "Failed to get battery capacity; defaulting to slow charging\n");
-		return true;
-	}
-
-	/*
-	 * If the remaining battery capacity is less than or equal to the
-	 * threshold, set dead battery charging mode.
-	 */
-	return capacity <= DEAD_BATT_CHG_THRESHOLD_MAH;
-}
-
 /*
  * Handle charging and UI states for low-power or off-mode boot scenarios.
  * This function handles the transitions needed when the device is powered
@@ -87,9 +68,6 @@ static void handle_low_power_charging_boot(enum boot_mode_t boot_mode)
 {
 	if (!pll_init_and_set(apss_ncc0, L_VAL_710P4MHz))
 		printk(BIOS_DEBUG, "CPU Frequency set to 710MHz\n");
-
-	if (board_support_dead_battery_charging())
-		configure_dead_battery_boot();
 
 	/* Placeholder for display stop before launching charging applet */
 

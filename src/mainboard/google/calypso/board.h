@@ -84,5 +84,6 @@ void chromeec_finalize_and_poweroff(bool skip_heartbeat);
 void configure_gpios_defaults(void);
 bool is_fast_charge_ready(void);
 bool is_low_power_boot_with_charger(void);
+bool board_support_dead_battery_charging(void);
 
 #endif /* MAINBOARD_GOOGLE_CALYPSO_BOARD_H */

@@ -7,6 +7,7 @@ config BOARD_GOOGLE_CALYPSO_COMMON
 	# FIXME: keep ADB for development phase
 	select GBB_FLAG_ENABLE_ADB if VBOOT
 	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_REINIT_QUP_SE
 	select SOC_QUALCOMM_PCIE_ASYNCHRONOUS_INIT
 	select SPI_FLASH
 	select SPI_FLASH_FORCE_4_BYTE_ADDR_MODE
@@ -177,6 +178,16 @@ config MAINBOARD_GPIO_PIN_FOR_GSC_AP_INTERRUPT
 	  This option specifies the GPIO pin number on the mainboard that is
 	  used for the interrupt line from the Google Security Chip (GSC) to the
 	  Application Processor (AP).
+
+config MAINBOARD_REINIT_QUP_SE
+	bool
+	default n
+	help
+	  Select this option if QCLIB execution overrides or clobbers the QUP
+	  Serial Engine (SE) configurations set up earlier in boot, causing
+	  broken communication with peripherals such as the GSC/TPM over I2C
+	  or the ChromeOS EC over SPI. When enabled, the mainboard/SoC will
+	  re-initialize the affected I2C and SPI buses after QCLIB runs.
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if MAINBOARD_HAS_GOOGLE_TPM

@@ -16,6 +16,10 @@
 #include <soc/pmic.h>
 #include <soc/qcom_spmi.h>
 #include <soc/qclib_common.h>
+#include <soc/qupv3_config_common.h>
+#include <soc/qupv3_i2c_common.h>
+#include <soc/qupv3_spi_common.h>
+#include <soc/qup_se_handlers_common.h>
 #include <soc/shrm.h>
 #include <soc/watchdog.h>
 #include <timer.h>
@@ -356,6 +360,15 @@ void platform_romstage_main(void)
 	check_first_boot_and_reset(boot_mode);
 }
 
+static void mainboard_peripherals_reinit(void)
+{
+	if (CONFIG(I2C_TPM))
+		i2c_init(CONFIG_DRIVER_TPM_I2C_BUS, I2C_SPEED_FAST); /* H1/TPM I2C */
+
+	if (CONFIG(EC_GOOGLE_CHROMEEC))
+		qup_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, 3200 * KHz); /* EC SPI */
+}
+
 void platform_romstage_postram(void)
 {
 	set_boot_mode(boot_mode);
@@ -364,4 +377,7 @@ void platform_romstage_postram(void)
 		aop_fw_load_reset();
 
 	qclib_rerun();
+
+	if (CONFIG(MAINBOARD_REINIT_QUP_SE))
+		mainboard_peripherals_reinit();
 }

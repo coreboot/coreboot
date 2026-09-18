@@ -421,6 +421,7 @@ int pcr_execute_sideband_msg(pci_devfn_t dev, struct pcr_sbi_msg *msg, uint32_t 
 	 * 8. Check if P2SB PCI offset D8h[2:1] = 00b for
 	 * successful transaction
 	 */
+	sbi_status = pci_read_config16(dev, P2SB_CR_SBI_STATUS);
 	*response = (sbi_status & P2SB_CR_SBI_STATUS_MASK) >> 1;
 	if (*response == P2SB_CR_SBI_STATUS_SUCCESS) {
 		switch (msg->opcode) {

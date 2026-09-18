@@ -383,11 +383,13 @@ config FSP_HEADER_PATH
 	default "src/vendorcode/intel/fsp/fsp2_0/wildcatlake" if !FSP_USE_REPO && SOC_INTEL_WILDCATLAKE
 	default "src/vendorcode/intel/fsp/fsp2_0/pantherlake/" if !FSP_USE_REPO
 	default "3rdparty/fsp/PantherLakeFspBinPkg/IoT/PantherLake/Include/" if FSP_TYPE_IOT && SOC_INTEL_PANTHERLAKE
+	default "3rdparty/fsp/WildcatLakeFspBinPkg/IoT/WildcatLake/Include/" if FSP_TYPE_IOT && SOC_INTEL_WILDCATLAKE
 
 config FSP_FD_PATH
 	string
 	depends on FSP_USE_REPO
 	default "3rdparty/fsp/PantherLakeFspBinPkg/IoT/PantherLake/Fsp.fd"   if FSP_TYPE_IOT && SOC_INTEL_PANTHERLAKE
+	default "3rdparty/fsp/WildcatLakeFspBinPkg/IoT/WildcatLake/Fsp.fd"   if FSP_TYPE_IOT && SOC_INTEL_WILDCATLAKE
 
 # Override platform debug consent value:
 #  0: Disabled,

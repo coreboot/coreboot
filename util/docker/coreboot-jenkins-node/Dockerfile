@@ -19,7 +19,7 @@ USER root
 
 RUN apt-get -y update && \
 	apt-get -y install \
-		default-jre-headless \
+		openjdk-25-jdk-headless \
 		jq \
 		libcmocka-dev \
 		liblua5.4-dev \

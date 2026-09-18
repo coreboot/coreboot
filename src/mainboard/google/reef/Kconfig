@@ -64,6 +64,10 @@ config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 60 # GPE0_DW1_28
 
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select HAS_RECOVERY_MRC_CACHE

@@ -157,6 +157,10 @@ config UART_FOR_CONSOLE
 	int
 	default 2
 
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
 config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio"
 	select NHLT_DMIC_2CH_16B

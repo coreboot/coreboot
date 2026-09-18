@@ -358,10 +358,10 @@ void platform_romstage_main(void)
 
 void platform_romstage_postram(void)
 {
+	set_boot_mode(boot_mode);
+
 	if (!chipset_dload_mode_active)
 		aop_fw_load_reset();
 
 	qclib_rerun();
-
-	set_boot_mode(boot_mode);
 }

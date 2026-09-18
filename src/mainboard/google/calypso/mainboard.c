@@ -52,18 +52,6 @@ static void load_qc_se_firmware_early(void)
 	gpi_firmware_load(QUP_3_GSI_BASE);
 }
 
-static bool is_low_power_boot_with_charger(void)
-{
-	bool ret = false;
-	enum boot_mode_t boot_mode = get_boot_mode();
-	if ((boot_mode == LB_BOOT_MODE_LOW_BATTERY_CHARGING) ||
-	    (boot_mode == LB_BOOT_MODE_OFFMODE_CHARGING) ||
-	    (boot_mode == LB_BOOT_MODE_RTC_WAKE))
-		ret = true;
-
-	return ret;
-}
-
 #if CONFIG(PLATFORM_HAS_OFF_MODE_CHARGING_INDICATOR)
 bool platform_is_off_mode_charging_active(void)
 {
@@ -107,9 +95,6 @@ static void handle_low_power_charging_boot(enum boot_mode_t boot_mode)
 
 	if (CONFIG(EC_GOOGLE_CHROMEEC) && detect_ac_unplug_event())
 		chromeec_finalize_and_poweroff(false);
-
-	/* FIXME: Add fast charging support */
-	enable_slow_battery_charging();
 
 	/* Boot to charging applet; if this fails, the applet should trigger a reset */
 	launch_charger_applet(boot_mode);

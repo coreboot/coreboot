@@ -11,89 +11,54 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/smbus_host.h>
+#include <lib.h>
 #include <mrc_cache.h>
-#include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>
+#include <soc/mrc_wrapper.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
-#include <security/vboot/vboot_common.h>
 
-uintptr_t smbus_base(void)
-{
-	return SMBUS_BASE_ADDRESS;
-}
-
-int smbus_enable_iobar(uintptr_t base)
-{
-	uint32_t reg;
-	const uint32_t smbus_dev = PCI_DEV(0, SMBUS_DEV, SMBUS_FUNC);
-
-	/* SMBus I/O BAR */
-	reg = base | 2;
-	pci_write_config32(smbus_dev, PCI_BASE_ADDRESS_4, reg);
-	/* Enable decode of I/O space. */
-	reg = pci_read_config16(smbus_dev, PCI_COMMAND);
-	reg |= PCI_COMMAND_IO;
-	pci_write_config16(smbus_dev, PCI_COMMAND, reg);
-	/* Enable Host Controller */
-	reg = pci_read_config8(smbus_dev, 0x40);
-	reg |= 1;
-	pci_write_config8(smbus_dev, 0x40, reg);
-
-	/* Configure pads to be used for SMBus */
-	score_select_func(PCU_SMB_CLK_PAD, 1);
-	score_select_func(PCU_SMB_DATA_PAD, 1);
-
-	return 0;
-}
-
-static void ABI_X86 send_to_console(unsigned char b)
+static void MRC_ABI_X86 send_to_console(unsigned char b)
 {
 	do_putchar(b);
 }
 
-static void populate_smbios_tables(void *dram_data, int speed, int num_channels)
+static void populate_smbios_tables(struct memory_init_params *memory_init_params,
+				   int speed, uint32_t channel_mask)
 {
-	struct dimm_attr_ddr3_st dimm;
-	enum spd_status status;
-
-	/* Decode into dimm_attr struct */
-	status = spd_decode_ddr3(&dimm, *(spd_ddr3_raw_data *)dram_data);
-
-	/* Some SPDs have bad CRCs, nothing we can do about it */
-	if (status == SPD_STATUS_OK || status == SPD_STATUS_CRC_ERROR) {
-		/* Add table 17 entry for each channel */
-		for (int i = 0; i < num_channels; i++)
-			spd_add_smbios17(i, 0, speed, &dimm);
+	for (size_t ch = 0; ch < NUM_CHANNELS; ++ch) {
+		struct spd_cfg *cfg = &memory_init_params->spd_cfgs[ch];
+		if (channel_mask & BIT(ch))
+			spd_add_smbios17(ch, 0, speed, &cfg->dimm);
 	}
 }
 
-static void print_dram_info(void *dram_data)
+static void print_dram_info(struct memory_init_params *memory_init_params)
 {
 	const int mrc_ver_reg = 0xf0;
 	const uint32_t soc_dev = PCI_DEV(0, SOC_DEV, SOC_FUNC);
 	uint32_t reg;
-	int num_channels;
+	uint32_t channel_mask;
 	int speed;
 	uint32_t ch0;
 	uint32_t ch1;
 
 	reg = pci_read_config32(soc_dev, mrc_ver_reg);
 
-	printk(BIOS_INFO, "MRC v%d.%02d\n", (reg >> 8) & 0xff, reg & 0xff);
+	printk(BIOS_INFO, "MRC v%u.%02u\n", (reg >> 8) & 0xff, reg & 0xff);
 
 	/* Number of channels enabled and DDR3 type. Determine number of
 	 * channels by keying of the rank enable bits [3:0]. * */
 	ch0 = iosf_dunit_ch0_read(DRP);
 	ch1 = iosf_dunit_ch1_read(DRP);
-	num_channels = 0;
+	channel_mask = 0;
 	if (ch0 & DRP_RANK_MASK)
-		num_channels++;
+		channel_mask |= BIT(0);
 	if (ch1 & DRP_RANK_MASK)
-		num_channels++;
+		channel_mask |= BIT(1);
 
-	printk(BIOS_INFO, "%d channels of %sDDR3 @ ", num_channels,
+	printk(BIOS_INFO, "%u channels of %sDDR3 @ ", popcnt(channel_mask),
 	       (reg & (1 << 22)) ? "LP" : "");
 
 	/* DRAM frequency -- all channels run at same frequency. */
@@ -108,41 +73,95 @@ static void print_dram_info(void *dram_data)
 	case 3:
 		speed = 1600; break;
 	}
-	printk(BIOS_INFO, "%dMHz\n", speed);
+	printk(BIOS_INFO, "%d MT/s\n", speed);
 
-	populate_smbios_tables(dram_data, speed, num_channels);
+	populate_smbios_tables(memory_init_params, speed, channel_mask);
 }
 
-#define SPD_SIZE 256
-static u8 spd_buf[NUM_CHANNELS][SPD_SIZE];
-
-void raminit(struct mrc_params *mp, int prev_sleep_state)
+void raminit(struct memory_init_params *memory_init_params, int prev_sleep_state)
 {
-	int ret;
+	bool s3resume = prev_sleep_state == ACPI_S3;
+	struct mrc_params mrc_params = {};
+	size_t mrc_cache_size;
 	mrc_wrapper_entry_t mrc_entry;
-	size_t i;
-	size_t mrc_size;
+	int mrc_ret;
+
+	printk(BIOS_DEBUG, "MRC params at %p %zd bytes\n", &mrc_params, sizeof(mrc_params));
 
 	/* Fill in default entries. */
-	mp->version = MRC_PARAMS_VER;
-	mp->console_out = &send_to_console;
-	mp->prev_sleep_state = prev_sleep_state;
-	mp->rmt_enabled = CONFIG(MRC_RMT);
+	mrc_params.version = MRC_PARAMS_VER;
+	mrc_params.console_out = &send_to_console;
+	mrc_params.prev_sleep_state = prev_sleep_state;
+	mrc_params.rmt_enabled = CONFIG(MRC_RMT);
+	mrc_params.io_hole_mb = 2048;
 
-	bool s3resume = prev_sleep_state == ACPI_S3;
+	/* Transcribe params into MRC format. */
+	switch (memory_init_params->dram_type) {
+	case DRAM_TYPE_DDR3:
+		mrc_params.mainboard.dram_type = MRC_DRAM_DDR3;
+		break;
+	case DRAM_TYPE_DDR3L:
+		mrc_params.mainboard.dram_type = MRC_DRAM_DDR3L;
+		break;
+	case DRAM_TYPE_LPDDR3:
+		mrc_params.mainboard.dram_type = MRC_DRAM_LPDDR3;
+		break;
+	}
+	mrc_params.mainboard.dram_is_slotted = memory_init_params->dram_is_slotted;
+	mrc_params.mainboard.weaker_odt_settings = memory_init_params->weaker_odt_settings;
+	mrc_params.mainboard.cpu_odt_value = memory_init_params->cpu_odt_value;
+	mrc_params.mainboard.dram_odt_value = memory_init_params->dram_odt_value;
 
-	/* Default to 2GiB IO hole. */
-	if (!mp->io_hole_mb)
-		mp->io_hole_mb = 2048;
+	mrc_params.mainboard.dram_info_location = MRC_DRAM_INFO_SPD_MEM;
+	for (size_t ch = 0; ch < NUM_CHANNELS; ch++) {
+		if (memory_init_params->spd_cfgs[ch].src == SPD_SRC_SMBUS) {
+			enable_smbus();
+			break;
+		}
+	}
+	for (size_t ch = 0; ch < NUM_CHANNELS; ch++) {
+		struct spd_cfg *cfg = &memory_init_params->spd_cfgs[ch];
 
-	/* Assume boot device is memory mapped. */
-	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
+		/* Channel unused by board. */
+		if (cfg->src == SPD_SRC_NONE)
+			continue;
 
-	mp->saved_data = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
-						     0,
-						     &mrc_size);
-	if (mp->saved_data) {
-		mp->saved_data_size = mrc_size;
+		/* Read SPD from SMBUS if requested. */
+		if (cfg->src == SPD_SRC_SMBUS &&
+		    i2c_eeprom_read(cfg->addr, 0, sizeof(spd_ddr3_raw_data), cfg->data) < 0) {
+			printk(BIOS_INFO, "Channel %zu SPD read failed\n", ch);
+			continue;
+		}
+
+		/* Decode into dimm_attr struct. */
+		enum spd_status status = spd_decode_ddr3(&cfg->dimm, cfg->data);
+
+		/* Some SPDs have bad CRCs, nothing we can do about it. */
+		if (status == SPD_STATUS_OK || status == SPD_STATUS_CRC_ERROR) {
+			printk(BIOS_INFO, "Channel %zu SPD\n", ch);
+			dram_print_spd_ddr3(&cfg->dimm);
+		} else {
+			printk(BIOS_INFO, "Channel %zu SPD decode failed\n", ch);
+			continue;
+		}
+
+		/* Force DIMM type to SO-DIMM and always mark DIMM
+		 * to be operable at 1.35V.
+		 * The Bay Trail MRC enforces form-factor and voltage
+		 * values and panics if the above are not met. */
+		cfg->data[3] = SPD_DDR3_DIMM_TYPE_SO_DIMM;
+		cfg->data[6] |= (1 << 1);
+
+		/* Provide pointer to channel SPD data to MRC. */
+		mrc_params.mainboard.dram_data[ch] = cfg->data;
+	}
+
+	/* Retrieve saved MRC cache. */
+	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED)); /* Assume boot device is memory mapped. */
+
+	mrc_params.saved_data = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA, 0, &mrc_cache_size);
+	if (mrc_params.saved_data) {
+		mrc_params.saved_data_size = mrc_cache_size;
 	} else if (s3resume) {
 		/* If waking from S3 and no cache then. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
@@ -165,20 +184,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	 */
 	mrc_entry = (void *)(uintptr_t)CONFIG_MRC_BIN_ADDRESS;
 
-	if (mp->mainboard.dram_info_location == DRAM_INFO_SPD_SMBUS) {
-		/* Workaround for broken SMBus support in the MRC */
-		enable_smbus();
-		mp->mainboard.dram_info_location = DRAM_INFO_SPD_MEM;
-		for (i = 0; i < NUM_CHANNELS; ++i) {
-			if (mp->mainboard.spd_addrs[i]) {
-				i2c_eeprom_read(mp->mainboard.spd_addrs[i],
-					0, SPD_SIZE, spd_buf[i]);
-				mp->mainboard.dram_data[i] = spd_buf[i];
-			}
-		}
-	}
-
-	ret = mrc_entry(mp);
+	mrc_ret = mrc_entry(&mrc_params);
 
 	bool cbmem_was_initted = !cbmem_recovery(s3resume);
 	if (s3resume && !cbmem_was_initted) {
@@ -187,13 +193,13 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 		system_reset();
 	}
 
-	print_dram_info(mp->mainboard.dram_data[0]);
+	print_dram_info(memory_init_params);
 
-	printk(BIOS_DEBUG, "MRC Wrapper returned %d\n", ret);
-	printk(BIOS_DEBUG, "MRC data at %p %d bytes\n", mp->data_to_save,
-	       mp->data_to_save_size);
+	printk(BIOS_DEBUG, "MRC Wrapper returned %d\n", mrc_ret);
+	printk(BIOS_DEBUG, "MRC data at %p %d bytes\n", mrc_params.data_to_save,
+	       mrc_params.data_to_save_size);
 
-	if (mp->data_to_save != NULL && mp->data_to_save_size > 0)
-		mrc_cache_stash_data(MRC_TRAINING_DATA, 0, mp->data_to_save,
-					mp->data_to_save_size);
+	if (mrc_params.data_to_save != NULL && mrc_params.data_to_save_size > 0)
+		mrc_cache_stash_data(MRC_TRAINING_DATA, 0, mrc_params.data_to_save,
+					mrc_params.data_to_save_size);
 }

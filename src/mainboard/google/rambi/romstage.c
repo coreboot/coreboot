@@ -4,8 +4,8 @@
 #include <console/console.h>
 #include <device/dram/ddr3.h>
 #include <soc/gpio.h>
-#include <soc/mrc_wrapper.h>
 #include <soc/romstage.h>
+#include <string.h>
 #include <variant/variant.h>
 
 static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
@@ -42,7 +42,7 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 	return &spd_file_content[SPD_SIZE_MAX_DDR3 * ram_id];
 }
 
-void mainboard_fill_mrc_params(struct mrc_params *mp)
+void mainboard_memory_init_params(struct memory_init_params *memory_init_params)
 {
 	void *spd_content;
 	int dual_channel = 0;
@@ -56,11 +56,11 @@ void mainboard_fill_mrc_params(struct mrc_params *mp)
 	spd_content = get_spd_pointer(spd_file, spd_fsize / SPD_SIZE_MAX_DDR3,
 	                              &dual_channel);
 
-	mp->mainboard.dram_type = DRAM_DDR3L;
-	mp->mainboard.dram_info_location = DRAM_INFO_SPD_MEM,
-	mp->mainboard.weaker_odt_settings = 1,
+	memory_init_params->dram_type = DRAM_TYPE_DDR3L;
+	memory_init_params->weaker_odt_settings = true;
 
-	mp->mainboard.dram_data[0] = spd_content;
+	memory_init_params->spd_cfgs[0].src = SPD_SRC_MEM;
+	memcpy(memory_init_params->spd_cfgs[0].data, spd_content, sizeof(spd_ddr3_raw_data));
 	if (dual_channel)
-		mp->mainboard.dram_data[1] = spd_content;
+		memory_init_params->spd_cfgs[1] = memory_init_params->spd_cfgs[0];
 }

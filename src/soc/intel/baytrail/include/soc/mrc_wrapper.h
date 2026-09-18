@@ -4,33 +4,33 @@
 
 #define MRC_PARAMS_VER  5
 
-#define NUM_CHANNELS 2
+#define MRC_NUM_CHANNELS 2
 
 /* Provide generic x86 calling conventions. */
-#define ABI_X86 __attribute((regparm(0)))
+#define MRC_ABI_X86 __attribute((regparm(0)))
 
 enum {
-	DRAM_INFO_SPD_SMBUS, /* Use the typical SPD smbus access. */
-	DRAM_INFO_SPD_MEM,   /* SPD info in memory. */
-	DRAM_INFO_DETAILED,  /* Timing info not in SPD format. */
+	MRC_DRAM_INFO_SPD_SMBUS, /* Use the typical SPD smbus access. */
+	MRC_DRAM_INFO_SPD_MEM,   /* SPD info in memory. */
+	MRC_DRAM_INFO_DETAILED,  /* Timing info not in SPD format. */
 };
 
-enum dram_type {
-	DRAM_DDR3,
-	DRAM_DDR3L,
-	DRAM_LPDDR3,
+enum mrc_dram_type {
+	MRC_DRAM_DDR3,
+	MRC_DRAM_DDR3L,
+	MRC_DRAM_LPDDR3,
 };
 
 /* Errors returned by the MRC wrapper. */
 enum mrc_wrapper_error {
-	INVALID_VER = -1,
-	INVALID_DRAM_TYPE = -2,
-	INVALID_SLEEP_MODE = -3,
-	PLATFORM_SETTINGS_FAIL = -4,
-	DIMM_DETECTION_FAILURE = -5,
-	MEMORY_CONFIG_FAILURE = -6,
-	INVALID_CPU_ODT_SETTING = -7,
-	INVALID_DRAM_ODT_SETTING = -8,
+	MRC_INVALID_VER = -1,
+	MRC_INVALID_DRAM_TYPE = -2,
+	MRC_INVALID_SLEEP_MODE = -3,
+	MRC_PLATFORM_SETTINGS_FAIL = -4,
+	MRC_DIMM_DETECTION_FAILURE = -5,
+	MRC_MEMORY_CONFIG_FAILURE = -6,
+	MRC_INVALID_CPU_ODT_SETTING = -7,
+	MRC_INVALID_DRAM_ODT_SETTING = -8,
 };
 
 struct mrc_mainboard_params {
@@ -48,8 +48,8 @@ struct mrc_mainboard_params {
 	int cpu_odt_value;
 	/* Allowed settings: 60 and 120. */
 	int dram_odt_value;
-	int spd_addrs[NUM_CHANNELS];
-	void *dram_data[NUM_CHANNELS]; /* SPD or Timing specific data. */
+	int spd_addrs[MRC_NUM_CHANNELS];
+	void *dram_data[MRC_NUM_CHANNELS]; /* SPD or Timing specific data. */
 } __packed;
 
 struct mrc_params {
@@ -58,7 +58,7 @@ struct mrc_params {
 
 	struct mrc_mainboard_params mainboard;
 
-	void ABI_X86(*console_out)(unsigned char byte);
+	void MRC_ABI_X86(*console_out)(unsigned char byte);
 
 	int prev_sleep_state;
 
@@ -76,6 +76,6 @@ struct mrc_params {
 } __packed;
 
 /* Call into wrapper. */
-typedef int ABI_X86(*mrc_wrapper_entry_t)(struct mrc_params *);
+typedef int MRC_ABI_X86(*mrc_wrapper_entry_t)(struct mrc_params *);
 
 #endif /* _MRC_WRAPPER_H_ */

@@ -4,3 +4,4 @@ romstage-y += romstage.c
 romstage-y += raminit.c
 romstage-y += gfx.c
 romstage-y += pmc.c
+romstage-y += smbus.c

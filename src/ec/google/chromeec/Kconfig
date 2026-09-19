@@ -209,6 +209,19 @@ config EC_GOOGLE_CHROMEEC_SWITCHES
 	  Enable support for ChromeOS mode switches provided by the ChromeOS
 	  EC.
 
+config EC_GOOGLE_CHROMEEC_LID_SHUTDOWN
+	bool "Power off when booting with lid closed"
+	default y if !CHROMEOS && (SYSTEM_TYPE_LAPTOP || SYSTEM_TYPE_CONVERTIBLE || \
+				   SYSTEM_TYPE_DETACHABLE)
+	help
+	  Before loading the payload, query the Chrome EC lid switch and
+	  shut down the AP if the lid is closed and no external display is
+	  present. This avoids accidental high-power boots (for example when
+	  AC is attached with the lid shut).
+
+	  This does not require vboot; lid state is read via the EC switches
+	  memmap. Chromebox / desktop form factors should leave this disabled.
+
 config EC_GOOGLE_CHROMEEC_FW_CONFIG_FROM_UFSC
 	depends on FW_CONFIG_SOURCE_CHROMEEC_CBI
 	bool

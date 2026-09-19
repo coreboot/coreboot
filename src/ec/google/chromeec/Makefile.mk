@@ -66,6 +66,8 @@ verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
 romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
 
+ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_LID_SHUTDOWN) += lid_shutdown.c
+
 ramstage-$(CONFIG_DRIVERS_INTEL_DPTF) += ec_dptf_helpers.c
 
 CHROMEEC_SOURCE ?= $(top)/3rdparty/chromeec

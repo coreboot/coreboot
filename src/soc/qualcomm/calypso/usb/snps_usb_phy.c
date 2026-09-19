@@ -71,6 +71,15 @@ void hs_usb_phy_init(int index)
 	case 1:
 		hs_phy_reg = (void *)HS_USB_MP1_PHY_BASE;
 		break;
+	case 2:
+		hs_phy_reg = (void *)HS_USB_SS0_PHY_BASE;
+		break;
+	case 3:
+		hs_phy_reg = (void *)HS_USB_SS1_PHY_BASE;
+		break;
+	case 4:
+		hs_phy_reg = (void *)HS_USB_SS2_PHY_BASE;
+		break;
 	default:
 		printk(BIOS_ERR, "%s: invalid PHY index %d\n", __func__, index);
 		return;

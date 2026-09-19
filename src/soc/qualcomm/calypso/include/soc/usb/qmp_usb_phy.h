@@ -76,3 +76,6 @@ struct ss_usb_phy_reg {
 };
 /* Initialize a specific QMP USB3 PHY instance */
 bool ss_qmp_phy_init(u32 phy_idx);
+
+/* Initialize SS0/SS1 QMP PHY - pass 0 for SS0, 1 for SS1 */
+enum cb_err qmp_usb4_dp_phy_ss_init(int phy_instance, bool polarity_inverse);

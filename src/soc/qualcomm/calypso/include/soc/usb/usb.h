@@ -119,15 +119,85 @@
 #define USB3_HOST_EN_GPIO	6	/* GPIO6: USB3 + eUSB3 VBUS enable */
 #define USB4_6_HOST_EN_GPIO	8	/* GPIO8: USB4 SS + eUSB6 VBUS enable */
 
+/* USB4 SS USB3 DRD SP 0 (Primary) Register Addresses */
+#define USB4_SS_USB3_DRD_SP_0_USB31_PRIMCGCTL_REG \
+	((void *)0x0A6F8828)
+#define USB4_SS_USB3_DRD_SP_0_USB31_PRIMLINK_REGS_0_LU3LFPSRXTIM_ADDR \
+	((void *)0x0A61D010)
+#define USB4_SS_USB3_DRD_SP_0_USB31_PRIMGUSB2PHYCFG_REGS_0_GUSB2PHYCFG_ADDR \
+	((void *)0x0A60C200)
+#define USB4_SS_USB3_DRD_SP_0_USB31_PRIMPORTSC_20_REGS_0_PORTSC_20_ADDR \
+	((void *)0x0A600420)
+#define USB4_SS_USB3_DRD_SP_0_USB31_PRIMPORTSC_30_REGS_0_PORTSC_30_ADDR \
+	((void *)0x0A600430)
+#define USB4_SS_USB3_DRD_SP_0_USB31_PRIMGENERAL_CFG	0xA6F8808
+/* USB4 SS USB3 DRD SP 1 (Secondary) Register Addresses */
+#define USB4_SS_USB3_DRD_SP_1_USB31_SECCGCTL_REG \
+	((void *)0x0A8F8828)
+#define USB4_SS_USB3_DRD_SP_1_USB31_SECLINK_REGS_0_LU3LFPSRXTIM_ADDR \
+	((void *)0x0A81D010)
+#define USB4_SS_USB3_DRD_SP_1_USB31_SECGUSB2PHYCFG_REGS_0_GUSB2PHYCFG_ADDR \
+	((void *)0x0A80C200)
+#define USB4_SS_USB3_DRD_SP_1_USB31_SECPORTSC_20_REGS_0_PORTSC_20_ADDR \
+	((void *)0x0A800420)
+#define USB4_SS_USB3_DRD_SP_1_USB31_SECPORTSC_30_REGS_0_PORTSC_30_ADDR \
+	((void *)0x0A800430)
+#define USB4_SS_USB3_DRD_SP_1_USB31_SECGENERAL_CFG	0xA8F8808
+/* USB4 SS USB3 DRD SP 2 (Tertiary) Register Addresses */
+#define USB4_SS_USB3_DRD_SP_2_USB31_TERTCGCTL_REG \
+	((void *)0x0A0F8828)
+#define USB4_SS_USB3_DRD_SP_2_USB31_TERTLINK_REGS_0_LU3LFPSRXTIM_ADDR \
+	((void *)0x0A00D010)
+#define USB4_SS_USB3_DRD_SP_2_USB31_TERTGUSB2PHYCFG_REGS_0_GUSB2PHYCFG_ADDR \
+	((void *)0x0A00C200)
+#define USB4_SS_USB3_DRD_SP_2_USB31_TERTPORTSC_20_REGS_0_PORTSC_20_ADDR \
+	((void *)0x0A000430)
+#define USB4_SS_USB3_DRD_SP_2_USB31_TERTPORTSC_30_REGS_0_PORTSC_30_ADDR \
+	((void *)0x0A000440)
+#define USB4_SS_USB3_DRD_SP_2_USB31_TERTGENERAL_CFG	0xA0F8808
+
+/* Type-C register offsets */
+#define SCHG_TYPE_C_TYPE_C_MISC_STATUS		0x2B0B	/* CC polarity, VBUS status */
+#define SCHG_TYPE_C_TYPE_C_SRC_STATUS		0x2B08	/* Source detection status */
+#define SCHG_TYPE_C_STATE_MACHINE_STATUS	0x2B09	/* Current state machine state */
+#define SCHG_TYPE_C_CC_STATUS			0x2B0E	/* CC connection state */
+#define SCHG_TYPE_C_U_USB_STATUS		0x2B0F	/* USB active status */
+#define SCHG_TYPE_C_INT_RT_STS			0x2B10	/* Interrupt real-time status */
+#define SCHG_TYPE_C_TYPE_C_MODE_CFG		0x2B44	/* Mode configuration */
+#define CCOUT_INVERT_POLARITY			0x03
+
+/* USB Repeater SPMI Tune register offsets */
+#define EUSB2_TUNE_IUSB2		0xFD51
+#define EUSB2_TUNE_HSDISC		0xFD53	/* HS disconnect threshold */
+#define EUSB2_TUNE_SQUELCH_U		0xFD54	/* Squelch threshold */
+#define EUSB2_TUNE_USB2_SLEW		0xFD55	/* HS TX slew rate */
+#define EUSB2_TUNE_USB2_PREEM		0xFD57	/* HS TX pre-emphasis */
+#define EUSB2_TUNE_EUSB2_EQU		0xFD5A	/* eUSB2 equalization */
+#define EUSB2_TUNE_EHS_COMP_CURRENT	0xFD5B	/* EHS comparator current */
+
+/* USB 2.0 tuning parameter values (from board repeater_cfg table) */
+#define EUSB2_TUNE_IUSB2_DEFAULT		0x0B
+#define EUSB2_TUNE_HSDISC_VAL			0x07
+#define EUSB2_TUNE_SQUELCH_U_VAL		0x03
+#define EUSB2_TUNE_USB2_SLEW_FAST		0x05
+#define EUSB2_TUNE_USB2_PREEM_25PCT		0x05
+#define EUSB2_TUNE_EUSB2_EQU_VAL		0x03
+#define EUSB2_TUNE_EHS_COMP_CURRENT_VAL		0x03
+
+/* USB Shared SPMI Init register offsets */
+#define EUSB2_EN_CTL1			0xFD46
+#define EUSB2_EN_CTL1_ENABLE		BIT(7)
+#define EUSB2_EN_CTL1_DISABLE		0x00
+#define EUSB2_RPTR_STATUS		0xFD08
+#define EUSB2_RPTR_INFRA_STATUS		0xFD09
+
+/* SMB2370 (Barrington) charger Slave IDs on eSPMI Bus E2 (Glymur PMIC table) */
+#define SMB1_SLAVE_ID 0x09	/* Port-0, eSPMI E2 Slave 9 (J_2) */
+#define SMB2_SLAVE_ID 0x0A	/* Port-1, eSPMI E2 Slave 10 (K_2) */
+#define SMB3_SLAVE_ID	0x0B
 /* Initialize HS USB PHY for the given port index */
 void hs_usb_phy_init(int index);
 /* Initializes and configures the USB HOST0 controller */
 void setup_usb_host0(void);
-/* Enable USB Type-A (MP) GDSCs and clocks */
-enum cb_err qcom_enable_usb_clk(void);
-/* Configure TCSR QREFS CXO repeater/receiver registers */
-void enable_clock_tcsr(void);
-/* Enable or disable USB reference clock for the specified core */
-void usb_update_refclk_for_core(u32 core_num, bool enable);
 
 #endif /* __SOC_QUALCOMM_CALYPSO_USB_H__ */

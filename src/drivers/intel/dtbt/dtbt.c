@@ -226,8 +226,35 @@ static void dtbt_enable(struct device *dev)
 	}
 }
 
+static void dtbt_power_up(struct device *dev)
+{
+	u16 pm_cap, pmcsr;
+
+	pm_cap = pci_find_capability(dev, PCI_CAP_ID_PM);
+	if (!pm_cap)
+		return;
+
+	pmcsr = pci_read_config16(dev, pm_cap + PCI_PM_CTRL);
+	printk(BIOS_DEBUG, "%s: power state D%d\n", dev_path(dev),
+	       pmcsr & PCI_PM_CTRL_STATE_MASK);
+	if ((pmcsr & PCI_PM_CTRL_STATE_MASK) == PCI_PM_CTRL_POWER_STATE_D0)
+		return;
+
+	printk(BIOS_INFO, "%s: waking it up\n", dev_path(dev));
+
+	pmcsr &= ~(PCI_PM_CTRL_STATE_MASK | PCI_PM_CTRL_PME_ENABLE);
+	/* Writing back a set PME_STATUS clears it */
+	pci_write_config16(dev, pm_cap + PCI_PM_CTRL,
+			   pmcsr | PCI_PM_CTRL_PME_STATUS);
+
+	/* PCI PM 1.2: 10 ms to become accessible again after leaving D3hot */
+	mdelay(10);
+}
+
 static void dtbt_scan_bridge(struct device *dev)
 {
+	dtbt_power_up(dev);
+
 	if (CONFIG(PCIEXP_HOTPLUG) && dev->upstream && dev->upstream->dev &&
 	    dev->upstream->dev->ops == &dtbt_device_ops)
 		pciexp_hotplug_scan_bridge(dev);

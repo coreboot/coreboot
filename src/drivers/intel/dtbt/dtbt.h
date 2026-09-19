@@ -85,4 +85,7 @@
 // Timeout for controller to ack GO2SX/GO2SX_NO_WAKE mailbox command.
 #define GO2SX_TIMEOUT_MS		600
 
+// Timeout for Connect_Topology.
+#define CONNECT_TOPOLOGY_TIMEOUT_MS	10000
+
 #endif /* _DRIVERS_INTEL_DTBT_H_ */

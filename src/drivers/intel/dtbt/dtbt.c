@@ -218,6 +218,11 @@ static void dtbt_enable(struct device *dev)
 		} else {
 			printk(BIOS_ERR, "dTBT BOOT_ON failed, skipping USB_ON\n");
 		}
+
+		printk(BIOS_DEBUG, "dTBT connect topology\n");
+		if (!dtbt_cmd(dev, PCIE2TBT_CONNECT_TOPOLOGY, 0,
+			      CONNECT_TOPOLOGY_TIMEOUT_MS))
+			printk(BIOS_ERR, "dTBT Connect_Topology failed\n");
 	}
 }
 

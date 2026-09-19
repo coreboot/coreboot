@@ -193,8 +193,18 @@ static int lookup_block_in_store(struct region_device *store, uint32_t block_id)
 		return -1;
 	}
 
-	if ((block_id * SMM_BLOCK_SIZE) >= region_device_sz(store)) {
+	if (block_id >= region_device_sz(store) / SMM_BLOCK_SIZE) {
 		printk(BIOS_ERR, "smm store: block ID out of range\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+static int validate_block_range(uint32_t offset, uint32_t bufsize)
+{
+	if (offset > SMM_BLOCK_SIZE || bufsize > SMM_BLOCK_SIZE - offset) {
+		printk(BIOS_ERR, "smm store: block range out of bounds\n");
 		return -1;
 	}
 
@@ -209,7 +219,8 @@ static void *mmap_com_buf(struct region_device *com_buf, uint32_t offset, uint32
 		return NULL;
 	}
 
-	if (offset >= region_device_sz(com_buf)) {
+	if (offset > region_device_sz(com_buf) ||
+	    bufsize > region_device_sz(com_buf) - offset) {
 		printk(BIOS_ERR, "smm store: offset out of range\n");
 		return NULL;
 	}
@@ -238,6 +249,8 @@ int smmstore_rawread_region(uint32_t block_id, uint32_t offset, uint32_t bufsize
 	struct region_device com_buf;
 
 	if (lookup_block_in_store(&store, block_id) < 0)
+		return -1;
+	if (validate_block_range(offset, bufsize) < 0)
 		return -1;
 
 	void *ptr = mmap_com_buf(&com_buf, offset, bufsize);
@@ -273,8 +286,11 @@ int smmstore_rawwrite_region(uint32_t block_id, uint32_t offset, uint32_t bufsiz
 
 	if (lookup_block_in_store(&store, block_id) < 0)
 		return -1;
+	if (validate_block_range(offset, bufsize) < 0)
+		return -1;
 
-	if (rdev_chain(&store, &store, block_id * SMM_BLOCK_SIZE + offset, bufsize)) {
+	if (rdev_chain(&store, &store, (size_t)block_id * SMM_BLOCK_SIZE + offset,
+			       bufsize)) {
 		printk(BIOS_ERR, "smm store: not enough space for new data\n");
 		return -1;
 	}

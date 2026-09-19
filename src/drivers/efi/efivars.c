@@ -332,7 +332,7 @@ static enum cb_err walk_variables(struct region_device *rdev,
 				  void *walker_arg)
 {
 	AUTHENTICATED_VARIABLE_HEADER auth_hdr;
-	size_t header_size, var_size;
+	size_t header_size, var_size, region_size;
 	VARIABLE_HEADER hdr;
 	bool stop;
 	enum cb_err ret;
@@ -343,6 +343,7 @@ static enum cb_err walk_variables(struct region_device *rdev,
 		header_size = sizeof(VARIABLE_HEADER);
 
 	do {
+		region_size = region_device_sz(rdev);
 		if (auth_format) {
 			if (rdev_readat(rdev, &auth_hdr, 0, sizeof(auth_hdr))
 					!= sizeof(auth_hdr))
@@ -372,6 +373,12 @@ static enum cb_err walk_variables(struct region_device *rdev,
 		print_guid(BIOS_SPEW, &hdr.VendorGuid);
 		printk(BIOS_SPEW, "\n");
 
+		/* Reject a malformed entry before handing it to the callback. */
+		if (header_size > region_size ||
+		    hdr.NameSize > region_size - header_size ||
+		    hdr.DataSize > region_size - header_size - hdr.NameSize)
+			return CB_EFI_ACCESS_ERROR;
+
 		stop = false;
 
 		ret = walker(rdev, &hdr, header_size, walker_arg, &stop);
@@ -379,9 +386,14 @@ static enum cb_err walk_variables(struct region_device *rdev,
 		if (ret != CB_SUCCESS || stop)
 			return ret;
 
-		var_size = ALIGN_UP(header_size + hdr.NameSize + hdr.DataSize,
-				    HEADER_ALIGNMENT);
-	} while (!rdev_chain(rdev, rdev, var_size, region_device_sz(rdev) - var_size));
+		var_size = header_size + hdr.NameSize + hdr.DataSize;
+		if (region_size < HEADER_ALIGNMENT - 1 ||
+		    var_size > region_size - (HEADER_ALIGNMENT - 1))
+			return CB_EFI_ACCESS_ERROR;
+		var_size = ALIGN_UP(var_size, HEADER_ALIGNMENT);
+		if (var_size > region_size)
+			return CB_EFI_ACCESS_ERROR;
+	} while (!rdev_chain(rdev, rdev, var_size, region_size - var_size));
 
 	return CB_EFI_OPTION_NOT_FOUND;
 }

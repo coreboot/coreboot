@@ -55,8 +55,8 @@ struct mtk_i2c mtk_i2c_bus_controller[] = {
 	},
 };
 
-_Static_assert(ARRAY_SIZE(mtk_i2c_bus_controller) == I2C_BUS_NUMBER,
-	       "Wrong size of mtk_i2c_bus_controller");
+static_assert(ARRAY_SIZE(mtk_i2c_bus_controller) == I2C_BUS_NUMBER,
+	      "Wrong size of mtk_i2c_bus_controller");
 
 static const struct pad_func i2c_funcs[I2C_BUS_NUMBER][2] = {
 	[0] = {

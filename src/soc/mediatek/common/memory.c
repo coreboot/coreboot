@@ -14,8 +14,8 @@
 #include <symbols.h>
 #include <timer.h>
 
-_Static_assert(sizeof(struct dramc_param) <= FMAP_SECTION_RW_MRC_CACHE_SIZE,
-	       "sizeof(struct dramc_param) exceeds RW_MRC_CACHE size");
+static_assert(sizeof(struct dramc_param) <= FMAP_SECTION_RW_MRC_CACHE_SIZE,
+	      "sizeof(struct dramc_param) exceeds RW_MRC_CACHE size");
 
 
 static const struct ddr_base_info *curr_ddr_info;

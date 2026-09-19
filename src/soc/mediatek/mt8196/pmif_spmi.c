@@ -133,8 +133,8 @@ static int pmif_spmi_config_master(struct pmif *arb)
 
 void pmif_spmi_config(struct pmif *arb)
 {
-	_Static_assert(ARRAY_SIZE(chan_perm[0]) == ARRAY_SIZE(arb->mtk_pmif->inf_cmd_per),
-		       "Inconsistent array size for chan_perm and inf_cmd_per");
+	static_assert(ARRAY_SIZE(chan_perm[0]) == ARRAY_SIZE(arb->mtk_pmif->inf_cmd_per),
+		      "Inconsistent array size for chan_perm and inf_cmd_per");
 	const uint32_t *perm = chan_perm[arb->mstid % 2];
 	/*
 	 * all cmd permission for per channel
@@ -272,8 +272,8 @@ static void pmif_spmi_enable_cmd_issue(struct pmif *arb, bool en)
 
 static void pmif_spmi_enable(struct pmif *arb)
 {
-	_Static_assert(ARRAY_SIZE(lat_limit[0]) == ARRAY_SIZE(arb->mtk_pmif->lat_limit),
-		       "Inconsistent array size for lat_limit and arb->mtk_pmif->lat_limit");
+	static_assert(ARRAY_SIZE(lat_limit[0]) == ARRAY_SIZE(arb->mtk_pmif->lat_limit),
+		      "Inconsistent array size for lat_limit and arb->mtk_pmif->lat_limit");
 	const uint32_t *lat_limit_value = lat_limit[arb->mstid % 2];
 	u32 pmif_spmi_inf;
 	int i;

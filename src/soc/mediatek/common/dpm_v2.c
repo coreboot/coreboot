@@ -4,8 +4,8 @@
 #include <soc/dpm_v2.h>
 #include <soc/mcu_common.h>
 
-_Static_assert(!CONFIG(DPM_FOUR_CHANNEL),
-	       "DPM_FOUR_CHANNEL not implemented in dpm_v2");
+static_assert(!CONFIG(DPM_FOUR_CHANNEL),
+	      "DPM_FOUR_CHANNEL not implemented in dpm_v2");
 
 static struct mtk_mcu dpm_mcu_ch0[] = {
 	{

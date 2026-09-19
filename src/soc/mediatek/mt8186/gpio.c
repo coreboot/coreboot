@@ -221,8 +221,8 @@ static const struct gpio_drv_info gpio_driving_info[] = {
 	[184] = { 0x10, 0, 3, },
 };
 
-_Static_assert(ARRAY_SIZE(gpio_driving_info) == GPIO_NUM,
-	       "gpio_driving_info array size not match");
+static_assert(ARRAY_SIZE(gpio_driving_info) == GPIO_NUM,
+	      "gpio_driving_info array size not match");
 
 /* Unimplemented GPIOs are intentionally omitted here with width=0 */
 static const struct gpio_drv_info gpio_driving_adv_info[GPIO_NUM] = {

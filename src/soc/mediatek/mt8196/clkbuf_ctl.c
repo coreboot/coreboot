@@ -155,7 +155,7 @@ static const struct ox_cfg ox[] = {
 	},
 };
 
-_Static_assert(ARRAY_SIZE(ox) == XO_NUMBER, "Wrong array size of ox");
+static_assert(ARRAY_SIZE(ox) == XO_NUMBER, "Wrong array size of ox");
 
 static u16 mt6685_read_low_high(u32 low_reg, u32 high_reg)
 {
@@ -217,10 +217,10 @@ static void dump_clkbuf_log(void)
 	u32 dig26m_div2;
 	int i;
 
-	_Static_assert(MT6685_XO_BUF_CTL0_L + 2 * (XO_NUMBER - 1) == MT6685_XO_BUF_CTL12_L,
-		       "Wrong reg for MT6685_XO_BUF_CTL12_L");
-	_Static_assert(MT6685_XO_BUF_CTL0_H + 2 * (XO_NUMBER - 1) == MT6685_XO_BUF_CTL12_H,
-		       "Wrong reg for MT6685_XO_BUF_CTL12_H");
+	static_assert(MT6685_XO_BUF_CTL0_L + 2 * (XO_NUMBER - 1) == MT6685_XO_BUF_CTL12_L,
+		      "Wrong reg for MT6685_XO_BUF_CTL12_L");
+	static_assert(MT6685_XO_BUF_CTL0_H + 2 * (XO_NUMBER - 1) == MT6685_XO_BUF_CTL12_H,
+		      "Wrong reg for MT6685_XO_BUF_CTL12_H");
 
 	for (i = 0; i < XO_NUMBER; i++) {
 		xo_buf_cw[i] = mt6685_read8(MT6685_DCXO_EXTBUF1_CW0 + i);

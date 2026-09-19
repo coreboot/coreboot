@@ -220,6 +220,6 @@ const struct eint_info eint_data[] = {
 	[208] = { EINT_C, 26 },
 	[209] = { EINT_C, 27 },
 };
-_Static_assert(ARRAY_SIZE(eint_data) == 210, "Incorrect eint_data size");
+static_assert(ARRAY_SIZE(eint_data) == 210, "Incorrect eint_data size");
 
 const size_t eint_data_len = ARRAY_SIZE(eint_data);

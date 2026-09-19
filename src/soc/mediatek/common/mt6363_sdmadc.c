@@ -58,8 +58,8 @@ static const struct auxadc_chan_spec mt6363_sdmadc_chan_specs[] = {
 	[AUXADC_CHAN_VIN7] = SDMADC_CHAN_SPEC(7),
 };
 
-_Static_assert(ARRAY_SIZE(mt6363_sdmadc_chan_specs) == AUXADC_CHAN_MAX,
-	       "Wrong array size for mt6363_sdmadc_chan_specs");
+static_assert(ARRAY_SIZE(mt6363_sdmadc_chan_specs) == AUXADC_CHAN_MAX,
+	      "Wrong array size for mt6363_sdmadc_chan_specs");
 
 int mt6363_sdmadc_read(enum auxadc_channel channel, u32 *val,
 		       enum sdmadc_pures pures, enum auxadc_val_type type)

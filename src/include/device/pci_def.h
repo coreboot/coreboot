@@ -429,6 +429,7 @@
 #define  PCI_EXP_LNKCAP_L0SEL	0x7000	/* L0s Exit Latency */
 #define  PCI_EXP_LNKCAP_L1EL	0x38000	/* L1 Exit Latency */
 #define  PCI_EXP_CLK_PM		0x40000	/* Clock Power Management */
+#define  PCI_EXP_LNKCAP_DLLLARC	0x100000 /* Data Link Layer Link Active Reporting Capable */
 #define  PCI_EXP_LNKCAP_PORT	0xff000000 /* Port Number */
 #define PCI_EXP_LNKCTL		16	/* Link Control */
 #define  PCI_EXP_LNKCTL_LD	0x10	/* Link Disable */
@@ -437,6 +438,7 @@
 #define  PCI_EXP_EN_CLK_PM	0x100	/* Enable Clock Power Management */
 #define PCI_EXP_LNKSTA		18	/* Link Status */
 #define  PCI_EXP_LNKSTA_LT	0x800	/* Link Training */
+#define  PCI_EXP_LNKSTA_DLLLA	0x2000	/* Data Link Layer Link Active */
 #define  PCI_EXP_LNKSTA_SLC	0x1000	/* Slot Clock Configuration */
 #define PCI_EXP_SLTCAP		20	/* Slot Capabilities */
 #define  PCI_EXP_SLTCAP_HPS	0x0020	/* Hot-Plug Surprise */

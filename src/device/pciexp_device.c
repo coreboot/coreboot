@@ -9,6 +9,7 @@
 #include <device/pci_ops.h>
 #include <device/pciexp.h>
 #include <thread.h>
+#include <timer.h>
 
 static unsigned int ext_cap_id(unsigned int cap)
 {
@@ -193,6 +194,36 @@ static bool pcie_is_endpoint(struct device *dev)
 	return ((pcie_type == PCI_EXP_TYPE_ENDPOINT) || (pcie_type == PCI_EXP_TYPE_LEG_END));
 }
 
+/*
+ * The Link Training bit going low only means the LTSSM has stopped training,
+ * not that the link can carry traffic again. A port that reports Data Link
+ * Layer Link Active is not usable until that bit is set, so wait for it before
+ * the caller goes on to configure whatever is behind the link.
+ */
+#define PCIE_LINK_ACTIVE_TIMEOUT_MS 1000
+static int pciexp_wait_for_link_active(struct device *dev, unsigned int cap)
+{
+	struct stopwatch sw;
+
+	/*
+	 * A port that does not report Data Link Layer Link Active has nothing
+	 * to wait for, so don't hold up boards where the capability is absent.
+	 */
+	if (!(pci_read_config32(dev, cap + PCI_EXP_LNKCAP) & PCI_EXP_LNKCAP_DLLLARC))
+		return 0;
+
+	stopwatch_init_msecs_expire(&sw, PCIE_LINK_ACTIVE_TIMEOUT_MS);
+	while (!(pci_read_config16(dev, cap + PCI_EXP_LNKSTA) & PCI_EXP_LNKSTA_DLLLA)) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "%s: Link did not become active after retrain\n",
+			       dev_path(dev));
+			return -1;
+		}
+		udelay(1);
+	}
+
+	return 0;
+}
 
 /*
  * Re-train a PCIe link
@@ -230,7 +261,7 @@ static int pciexp_retrain_link(struct device *dev, unsigned int cap)
 	for (try = PCIE_TRAIN_RETRY; try > 0; try--) {
 		lnk = pci_read_config16(dev, cap + PCI_EXP_LNKSTA);
 		if (!(lnk & PCI_EXP_LNKSTA_LT))
-			return 0;
+			return pciexp_wait_for_link_active(dev, cap);
 		udelay(100);
 	}
 

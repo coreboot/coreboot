@@ -119,6 +119,7 @@ attribution-keys-$(CONFIG_PAYLOAD_LINUXBOOT)	+= payload_linuxboot
 attribution-keys-$(CONFIG_PAYLOAD_SKIBOOT)	+= payload_skiboot
 attribution-keys-$(CONFIG_PAYLOAD_UBOOT)	+= payload_uboot
 attribution-keys-$(CONFIG_PAYLOAD_BOOTBOOT)	+= payload_bootboot
+attribution-keys-$(CONFIG_PAYLOAD_CRABEFI)	+= payload_crabefi
 attribution-keys-$(CONFIG_PAYLOAD_LINUX)	+= payload_linux
 
 attribution-keys-$(CONFIG_PAYLOAD_LEANEFI)	+= payload_leanefi

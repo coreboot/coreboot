@@ -64,6 +64,7 @@ vga_bios|Video BIOS option ROM|proprietary (binary)|(vendor-supplied)|Proprietar
 payload_bootboot|BOOTBOOT (payload)|MIT|https://gitlab.com/bztsrc/bootboot|Copyright bzt; boot protocol/loader used as the coreboot payload|binary
 payload_coredoom|coreDOOM (payload)|GPL-2.0-only|https://github.com/nic3-14159/coreDOOM|Copyright id Software and the doomgeneric/coreDOOM authors; DOOM used as a (secondary) payload|binary
 payload_coreinfo|coreinfo (payload)|GPL-2.0-only|https://coreboot.org|Copyright the coreboot project authors; libpayload-based system information payload|binary
+payload_crabefi|CrabEFI (payload)|Apache-2.0|https://github.com/ArthurHeymans/CrabEFI|Copyright Arthur Heymans and contributors; minimal UEFI payload|binary
 payload_depthcharge|depthcharge (payload)|GPL-2.0-or-later|https://chromium.googlesource.com/chromiumos/platform/depthcharge|Copyright The ChromiumOS Authors; ChromeOS bootloader used as the coreboot payload|binary
 payload_edk2|TianoCore edk2 UEFI payload|BSD-2-Clause-Patent|https://github.com/tianocore/edk2|Copyright TianoCore contributors; UEFI payload built from edk2|binary
 payload_edk2_mrchromebox|edk2 UEFI payload - MrChromebox fork|BSD-2-Clause-Patent|https://github.com/mrchromebox/edk2|MrChromebox's customized edk2 fork used to build the UEFI payload; based on TianoCore EDK II|binary

@@ -43,7 +43,7 @@ chip soc/intel/tigerlake
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 	}"
 

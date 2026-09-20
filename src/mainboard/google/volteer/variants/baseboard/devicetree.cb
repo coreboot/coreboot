@@ -104,7 +104,7 @@ chip soc/intel/tigerlake
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 	}"
 
@@ -414,6 +414,8 @@ chip soc/intel/tigerlake
 		# MIPI camera devices are on I2C buses 2 and 3
 		device ref i2c2 on end
 		device ref i2c3 on end
+		# Keep I2C4 enabled so 00:19.0 is present when I2C5 is used
+		device ref i2c4 on end
 		device ref heci1 on end
 		device ref sata on
 			register "SataSalpSupport" = "1"

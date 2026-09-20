@@ -219,6 +219,9 @@ config EC_GOOGLE_CHROMEEC_LID_SHUTDOWN
 	  present. This avoids accidental high-power boots (for example when
 	  AC is attached with the lid shut).
 
+	  When DRIVERS_OPTION_CFR is enabled, this is also exposed as the
+	  "lid_shutdown" runtime option (default matches this Kconfig).
+
 	  This does not require vboot; lid state is read via the EC switches
 	  memmap. Chromebox / desktop form factors should leave this disabled.
 

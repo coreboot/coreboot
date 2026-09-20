@@ -69,9 +69,26 @@ static const struct sm_object ec_rgb_kb_color = SM_DECLARE_ENUM({
 	.values		= ec_rgb_backlight_values,
 }, WITH_CALLBACK(update_rgb_kb_backlight));
 
+static void update_lid_shutdown(struct sm_object *new)
+{
+	if (!CONFIG(EC_GOOGLE_CHROMEEC_LID_SHUTDOWN)) {
+		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+		new->sm_bool.default_value = false;
+	}
+}
+
+static const struct sm_object lid_shutdown = SM_DECLARE_BOOL({
+	.opt_name	= "lid_shutdown",
+	.ui_name	= "Power Off On Lid-Closed Boot",
+	.ui_helptext	= "Shut down before loading the payload when the lid is closed"
+			  " and no external display is attached.",
+	.default_value	= CONFIG(EC_GOOGLE_CHROMEEC_LID_SHUTDOWN),
+}, WITH_CALLBACK(update_lid_shutdown));
+
 /*
  * Shared ChromeEC CFR menu. Options that do not apply to a given board are
- * hidden by the callbacks above (fan, keyboard backlight, RGB keyboard).
+ * hidden by the callbacks above (fan, keyboard backlight, RGB keyboard,
+ * lid shutdown).
  *
  * Framework boards provide their own EC CFR options, so suppress this form
  * there to avoid a duplicate/conflicting ChromeEC menu.
@@ -83,6 +100,7 @@ static const __cfr_form struct sm_obj_form chromeec = {
 		&auto_fan_control,
 		&ec_kb_backlight,
 		&ec_rgb_kb_color,
+		&lid_shutdown,
 		NULL,
 	},
 };

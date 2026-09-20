@@ -5,10 +5,14 @@
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <framebuffer_info.h>
+#include <option.h>
 
 static void chromeec_lid_shutdown(void *unused)
 {
 	const struct lb_framebuffer *fb;
+
+	if (!get_uint_option("lid_shutdown", CONFIG(EC_GOOGLE_CHROMEEC_LID_SHUTDOWN)))
+		return;
 
 	/* Lid open: continue boot. */
 	if (google_chromeec_get_switches() & EC_SWITCH_LID_OPEN)

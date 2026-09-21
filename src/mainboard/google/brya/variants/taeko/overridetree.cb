@@ -505,7 +505,6 @@ chip soc/intel/alderlake
 				device i2c 10 on end
 			end
 		end
-		device ref i2c4 on end
 		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

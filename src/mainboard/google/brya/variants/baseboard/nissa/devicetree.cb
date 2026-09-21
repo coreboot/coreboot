@@ -69,7 +69,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoPci,
 		[PchSerialIoIndexI2C3] = PchSerialIoPci,
-		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4] = PchSerialIoPci,
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
@@ -215,6 +215,7 @@ chip soc/intel/alderlake
 				device i2c 50 on end
 			end
 		end
+		device ref i2c4 on end
 		device ref heci1 on end
 		device ref emmc on end
 		device ref pcie_rp7 on

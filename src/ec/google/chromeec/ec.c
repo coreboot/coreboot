@@ -2177,6 +2177,21 @@ int google_chromeec_get_battery_misc_info(struct ec_response_battery_get_misc_in
 }
 
 /*
+ * Query current charge control settings from the EC.
+ *
+ * @param resp	Pointer to response structure to store charge control mode and thresholds.
+ * @return	0 on success, or -1 if the command fails.
+ */
+int google_chromeec_get_charge_control(struct ec_response_charge_control *resp)
+{
+	const struct ec_params_charge_control params = {
+		.cmd = EC_CHARGE_CONTROL_CMD_GET,
+	};
+
+	return ec_cmd_charge_control_v2(PLAT_EC, &params, resp);
+}
+
+/*
  * Set the RGB color of a specific LED on the Lightbar.
  *
  * This function communicates with the Embedded Controller (EC)

@@ -162,4 +162,14 @@ config QC_SPI_DRIVE_STRENGTH_MA
 	  Allow SoC/mainboard to override the SPI drive strength as applicable.
 	  Refer to `GPIO TLMM: Drive Strength` enum inside gpio_common.h
 
+config SOC_QUALCOMM_SPLIT_AOP_CBFS
+	bool
+	default n
+	help
+	  Select this option to package separate RO (`_ro`, compressed in
+	  COREBOOT) and RW (`_rw`, uncompressed in FW_MAIN_A/B) CBFS entries
+	  for AOP firmware and metadata (`aop`, `aop_meta`, `aop_cfg`,
+	  `aop_devcfg_meta`). This saves flash space in the RO region while
+	  avoiding decompression overhead during normal RW boot.
+
 endif

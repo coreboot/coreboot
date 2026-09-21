@@ -13,6 +13,7 @@
 #include <option.h>
 #include <reset.h>
 #include <security/vboot/misc.h>
+#include <soc/aop_common.h>
 #include <soc/cdt.h>
 #include <soc/mmu.h>
 #include <soc/mmu_common.h>
@@ -184,9 +185,9 @@ const char *qclib_file_default(enum qclib_cbfs_file file)
 	case QCLIB_CBFS_SHRM_META:
 		return CONFIG_CBFS_PREFIX "/shrm_meta";
 	case QCLIB_CBFS_AOP_META:
-		return CONFIG_CBFS_PREFIX "/aop_meta";
+		return AOP_CBFS_NAME("aop_meta");
 	case QCLIB_CBFS_AOP_DEVCFG_META:
-		return CONFIG_CBFS_PREFIX "/aop_devcfg_meta";
+		return AOP_CBFS_NAME("aop_devcfg_meta");
 	case QCLIB_CBFS_APDP_META:
 		return CONFIG_CBFS_PREFIX "/apdp_meta";
 	case QCLIB_CBFS_RAMDUMP_META:
@@ -536,8 +537,7 @@ void qclib_rerun(void)
 	init_qclib_cb_if_table(&qclib_cb_if_table);
 
 	if(!qclib_check_dload_mode()){
-		struct prog aop_cfg_fw_prog =
-					PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/aop_cfg");
+		struct prog aop_cfg_fw_prog = PROG_INIT(PROG_PAYLOAD, AOP_CBFS_NAME("aop_cfg"));
 
 		if (!selfload(&aop_cfg_fw_prog))
 			die("SOC image: AOP load failed");

@@ -83,6 +83,18 @@
 #define SDAM15_MEM_061_ADDR	0x7E7D
 #define DEAD_BATT_STS	BIT(6)
 
+#define SDAM15_CHG_LIMIT_ENABLE_ADDR	0x7E73
+#define SDAM15_TARGET_SOC_ADDR		0x7E75
+#define SDAM15_DELTA_SOC_ADDR		0x7E76
+
+#define BATT_EMPTY_PERCENTAGE		0
+#define BATT_FULL_PERCENTAGE		100
+
+enum chg_limit_enable {
+	CHG_LIMIT_DISABLE,
+	CHG_LIMIT_ENABLE,
+};
+
 #define DELAY_CHARGING_APPLET_MS 2000 /* 2sec */
 #define CHARGING_RAIL_STABILIZATION_DELAY_MS 15000 /* 15sec */
 #define LOW_BATTERY_CHARGING_LOOP_EXIT_MS (3 * 60 * 1000) /* 3min */
@@ -535,6 +547,34 @@ static void adsp_skip_port_reset(void)
 }
 
 /*
+ * Configure battery charge limits in SDAM for ADSP charging applet.
+ * Queries current charge limit thresholds from the EC via host command.
+ */
+static void configure_charge_limit_sdam(void)
+{
+	struct ec_response_charge_control resp;
+
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return;
+
+	if (google_chromeec_get_charge_control(&resp) != 0)
+		return;
+
+	if (resp.mode != CHARGE_CONTROL_NORMAL ||
+	    resp.sustain_soc.lower < BATT_EMPTY_PERCENTAGE ||
+	    resp.sustain_soc.lower > resp.sustain_soc.upper ||
+	    resp.sustain_soc.upper > BATT_FULL_PERCENTAGE)
+		return;
+
+	uint8_t lower = (uint8_t)resp.sustain_soc.lower;
+	uint8_t upper = (uint8_t)resp.sustain_soc.upper;
+
+	spmi_write8(SDAM15_CHG_LIMIT_ENABLE_ADDR, CHG_LIMIT_ENABLE);
+	spmi_write8(SDAM15_TARGET_SOC_ADDR, upper);
+	spmi_write8(SDAM15_DELTA_SOC_ADDR, upper - lower);
+}
+
+/*
  * Enable fast battery charging with ADSP support.
  *
  * This function loads ADSP firmware and configures fast charging.
@@ -542,6 +582,7 @@ static void adsp_skip_port_reset(void)
 void enable_fast_battery_charging(void)
 {
 	adsp_skip_port_reset();
+	configure_charge_limit_sdam();
 
 	/* Load ADSP firmware first */
 	adsp_fw_load();

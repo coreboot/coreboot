@@ -1009,7 +1009,12 @@ static void write_i2c_camera_device(const struct device *dev, const char *scope)
 
 	acpigen_write_device(acpi_device_name(dev));
 
-	/* add power resource */
+	/*
+	 * Local PRIC when has_power_resource is set. May coexist with an
+	 * INT3472 control-logic device (acpi_dep): Windows uses CLDB/_DSM,
+	 * while sensors that do not consume INT3472 regulators still need
+	 * ACPI _PR0 (e.g. imx208).
+	 */
 	if (config->has_power_resource) {
 		acpigen_write_power_res(POWER_RESOURCE_NAME, 0, 0, NULL, 0);
 		acpigen_write_name_integer("STA", 0);
@@ -1056,7 +1061,13 @@ static void write_i2c_camera_device(const struct device *dev, const char *scope)
 		acpigen_write_name_string("_DDN", config->sensor_name);
 	else
 		acpigen_write_name_string("_DDN", config->chip_name);
-	if (config->acpi_dep) {
+	/*
+	 * ChromeOS + local PRIC: skip _DEP on a Win-only INT3472 (pmic_enable
+	 * does not emit it). VCM/NVM keep their _DEP (e.g. on the sensor).
+	 */
+	if (config->acpi_dep &&
+	    !(CONFIG(MIPI_ACPI_TYPE_CHROMEOS) && config->has_power_resource &&
+	      config->device_type == INTEL_ACPI_CAMERA_SENSOR)) {
 		acpigen_write_name("_DEP");
 		acpigen_write_package(1);
 		acpigen_emit_namestring(config->acpi_dep);
@@ -1076,17 +1087,19 @@ static void write_i2c_camera_device(const struct device *dev, const char *scope)
 	acpi_device_write_i2c(&i2c);
 
 	/*
-	 * The optional vcm/nvram devices are presumed to be on the same I2C bus as the camera
-	 * sensor.
+	 * Windows/Linux: optional VCM/NVM share the sensor ACPI device _CRS.
+	 * ChromeOS: VCM/NVM are separate devices; do not pack their addresses.
 	 */
-	if (config->device_type == INTEL_ACPI_CAMERA_SENSOR &&
+	if (CONFIG(MIPI_ACPI_TYPE_WINDOWS_LINUX) &&
+	    config->device_type == INTEL_ACPI_CAMERA_SENSOR &&
 	    config->ssdb.vcm_type && config->vcm_address) {
 		struct acpi_i2c i2c_vcm = i2c;
 		i2c_vcm.address = config->vcm_address;
 		acpi_device_write_i2c(&i2c_vcm);
 	}
 
-	if (config->device_type == INTEL_ACPI_CAMERA_SENSOR &&
+	if (CONFIG(MIPI_ACPI_TYPE_WINDOWS_LINUX) &&
+	    config->device_type == INTEL_ACPI_CAMERA_SENSOR &&
 	    config->ssdb.rom_type && config->rom_address) {
 		struct acpi_i2c i2c_rom = i2c;
 		i2c_rom.address = config->rom_address;
@@ -1113,10 +1126,9 @@ static void write_camera_device_common(const struct device *dev)
 		acpigen_write_name("_PR0");
 		acpigen_write_package(1);
 		if (config->pr0)
-			acpigen_emit_namestring(config->pr0); /* External power resource */
+			acpigen_emit_namestring(config->pr0);
 		else
 			acpigen_emit_namestring(POWER_RESOURCE_NAME);
-
 		acpigen_pop_len(); /* _PR0 */
 	}
 

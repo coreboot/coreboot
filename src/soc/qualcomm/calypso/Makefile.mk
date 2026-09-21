@@ -205,13 +205,6 @@ $(I2C_FW_CBFS)-compression := none
 cbfs-files-y += $(I2C_FW_CBFS)
 
 ################################################################################
-AOP_CBFS := $(CONFIG_CBFS_PREFIX)/aop
-$(AOP_CBFS)-file := $(AOP_FILE)
-$(AOP_CBFS)-type := payload
-$(AOP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
-cbfs-files-y += $(AOP_CBFS)
-
-################################################################################
 # Rule to create aop_meta from aop.mbn
 # This rule depends on aop.mbn built and the extractor script existing.
 $(obj)/mainboard/$(MAINBOARDDIR)/aop_meta: $(AOP_FILE) util/qualcomm/elf_segment_extractor.py
@@ -219,20 +212,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/aop_meta: $(AOP_FILE) util/qualcomm/elf_segment
 	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
 
 AOP_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/aop_meta
-AOP_META_CBFS := $(CONFIG_CBFS_PREFIX)/aop_meta
-$(AOP_META_CBFS)-file := $(AOP_META_FILE)
-$(AOP_META_CBFS)-type := raw
-$(AOP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
-cbfs-files-y += $(AOP_META_CBFS)
 
-################################################################################
-AOP_CFG_CBFS := $(CONFIG_CBFS_PREFIX)/aop_cfg
-$(AOP_CFG_CBFS)-file := $(AOP_CFG_FILE)
-$(AOP_CFG_CBFS)-type := payload
-$(AOP_CFG_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
-cbfs-files-y += $(AOP_CFG_CBFS)
-
-################################################################################
 # Rule to create aop_meta from aop_devcfg.mbn
 # This rule depends on aop_devcfg.mbn built and the extractor script existing.
 $(obj)/mainboard/$(MAINBOARDDIR)/aop_devcfg_meta: $(AOP_CFG_FILE) util/qualcomm/elf_segment_extractor.py
@@ -240,12 +220,92 @@ $(obj)/mainboard/$(MAINBOARDDIR)/aop_devcfg_meta: $(AOP_CFG_FILE) util/qualcomm/
 	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
 
 AOP_DEVCFG_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/aop_devcfg_meta
+
+ifeq ($(CONFIG_SOC_QUALCOMM_SPLIT_AOP_CBFS),y)
+
+AOP_CBFS_RW := $(CONFIG_CBFS_PREFIX)/aop_rw
+regions-for-file-$(AOP_CBFS_RW) = FW_MAIN_A,FW_MAIN_B
+$(AOP_CBFS_RW)-file := $(AOP_FILE)
+$(AOP_CBFS_RW)-type := payload
+$(AOP_CBFS_RW)-compression := none
+cbfs-files-y += $(AOP_CBFS_RW)
+
+AOP_CBFS_RO := $(CONFIG_CBFS_PREFIX)/aop_ro
+regions-for-file-$(AOP_CBFS_RO) = COREBOOT
+$(AOP_CBFS_RO)-file := $(AOP_FILE)
+$(AOP_CBFS_RO)-type := payload
+$(AOP_CBFS_RO)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_CBFS_RO)
+
+AOP_META_CBFS_RW := $(CONFIG_CBFS_PREFIX)/aop_meta_rw
+regions-for-file-$(AOP_META_CBFS_RW) = FW_MAIN_A,FW_MAIN_B
+$(AOP_META_CBFS_RW)-file := $(AOP_META_FILE)
+$(AOP_META_CBFS_RW)-type := raw
+$(AOP_META_CBFS_RW)-compression := none
+cbfs-files-y += $(AOP_META_CBFS_RW)
+
+AOP_META_CBFS_RO := $(CONFIG_CBFS_PREFIX)/aop_meta_ro
+regions-for-file-$(AOP_META_CBFS_RO) = COREBOOT
+$(AOP_META_CBFS_RO)-file := $(AOP_META_FILE)
+$(AOP_META_CBFS_RO)-type := raw
+$(AOP_META_CBFS_RO)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_META_CBFS_RO)
+
+AOP_CFG_CBFS_RW := $(CONFIG_CBFS_PREFIX)/aop_cfg_rw
+regions-for-file-$(AOP_CFG_CBFS_RW) = FW_MAIN_A,FW_MAIN_B
+$(AOP_CFG_CBFS_RW)-file := $(AOP_CFG_FILE)
+$(AOP_CFG_CBFS_RW)-type := payload
+$(AOP_CFG_CBFS_RW)-compression := none
+cbfs-files-y += $(AOP_CFG_CBFS_RW)
+
+AOP_CFG_CBFS_RO := $(CONFIG_CBFS_PREFIX)/aop_cfg_ro
+regions-for-file-$(AOP_CFG_CBFS_RO) = COREBOOT
+$(AOP_CFG_CBFS_RO)-file := $(AOP_CFG_FILE)
+$(AOP_CFG_CBFS_RO)-type := payload
+$(AOP_CFG_CBFS_RO)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_CFG_CBFS_RO)
+
+AOP_DEVCFG_META_CBFS_RW := $(CONFIG_CBFS_PREFIX)/aop_devcfg_meta_rw
+regions-for-file-$(AOP_DEVCFG_META_CBFS_RW) = FW_MAIN_A,FW_MAIN_B
+$(AOP_DEVCFG_META_CBFS_RW)-file := $(AOP_DEVCFG_META_FILE)
+$(AOP_DEVCFG_META_CBFS_RW)-type := raw
+$(AOP_DEVCFG_META_CBFS_RW)-compression := none
+cbfs-files-y += $(AOP_DEVCFG_META_CBFS_RW)
+
+AOP_DEVCFG_META_CBFS_RO := $(CONFIG_CBFS_PREFIX)/aop_devcfg_meta_ro
+regions-for-file-$(AOP_DEVCFG_META_CBFS_RO) = COREBOOT
+$(AOP_DEVCFG_META_CBFS_RO)-file := $(AOP_DEVCFG_META_FILE)
+$(AOP_DEVCFG_META_CBFS_RO)-type := raw
+$(AOP_DEVCFG_META_CBFS_RO)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_DEVCFG_META_CBFS_RO)
+
+else
+
+AOP_CBFS := $(CONFIG_CBFS_PREFIX)/aop
+$(AOP_CBFS)-file := $(AOP_FILE)
+$(AOP_CBFS)-type := payload
+$(AOP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_CBFS)
+
+AOP_META_CBFS := $(CONFIG_CBFS_PREFIX)/aop_meta
+$(AOP_META_CBFS)-file := $(AOP_META_FILE)
+$(AOP_META_CBFS)-type := raw
+$(AOP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_META_CBFS)
+
+AOP_CFG_CBFS := $(CONFIG_CBFS_PREFIX)/aop_cfg
+$(AOP_CFG_CBFS)-file := $(AOP_CFG_FILE)
+$(AOP_CFG_CBFS)-type := payload
+$(AOP_CFG_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_CFG_CBFS)
+
 AOP_DEVCFG_META_CBFS := $(CONFIG_CBFS_PREFIX)/aop_devcfg_meta
 $(AOP_DEVCFG_META_CBFS)-file := $(AOP_DEVCFG_META_FILE)
 $(AOP_DEVCFG_META_CBFS)-type := raw
 $(AOP_DEVCFG_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(AOP_DEVCFG_META_CBFS)
 
+endif
 ################################################################################
 CPUCP_FILE := $(CALYPSO_BLOB)/cpucp/cpucp.elf
 

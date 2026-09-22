@@ -24,8 +24,6 @@ static void pcie_generic_fill_ssdt(const struct device *dev)
 	if (!is_dev_enabled(dev))
 		return;
 
-	pci_rom_ssdt(dev);
-
 	config = dev->chip_info;
 	if (!config || !dev->upstream || !dev->upstream->dev)
 		return;
@@ -47,6 +45,9 @@ static void pcie_generic_fill_ssdt(const struct device *dev)
 
 	acpigen_write_device_end();
 	acpigen_write_scope_end();
+
+	/* The device must exist in the namespace before _ROM opens its scope. */
+	pci_rom_ssdt(dev);
 
 	printk(BIOS_INFO, "%s.%s: Enable ACPI properties for %s (%s)\n", scope, name,
 		dev_path(dev), dev->chip_ops->name);

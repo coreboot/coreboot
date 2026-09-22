@@ -199,8 +199,6 @@ binaries if only flashing the `bios` region.
   - Power enable code is buggy
   - Proprietary driver does not work at all
   - Nouveau only works on linux 6.8-6.9
-- Headphone jack detection
-  - Both headphone jack and speakers work when manually selected via pulseaudio
 
 ## Verified Working
 
@@ -208,6 +206,7 @@ binaries if only flashing the `bios` region.
 - Integrated graphics init with libgfxinit
 - video output: internal (eDP), miniDP
 - ACPI support
+- audio, including headphone jack detection
 - keyboard and trackpoint
 - SATA
 - M.2 SATA SSD

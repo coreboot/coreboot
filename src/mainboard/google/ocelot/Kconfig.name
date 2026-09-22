@@ -5,6 +5,9 @@ comment "Ocelot (Intel WildcatLake (Ultra 3rd Gen))"
 config BOARD_GOOGLE_BIANCO
 	bool "->  bianco"
 
+config BOARD_GOOGLE_BLANC
+	bool "->  Blanc"
+
 config BOARD_GOOGLE_HEKLA
 	bool "->  Hekla"
 

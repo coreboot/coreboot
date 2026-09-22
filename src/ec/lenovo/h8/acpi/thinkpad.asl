@@ -41,7 +41,6 @@ Device (HKEY)
 		Local0 = BTN
 		If (Local0 != 0) {
 			BTN = 0
-			Local0 += 0x1000
 			Return (Local0)
 		}
 		Local0 = BTAB
@@ -53,10 +52,18 @@ Device (HKEY)
 		Return (0)
 	}
 
-	/* Report event  */
+	/* Report legacy HKEY event. */
 	Method (RHK, 1, NotSerialized) {
 		Local0 = 1 << (Arg0 - 1)
 		If (EMSK & Local0) {
+			BTN = 0x1000 + Arg0
+			Notify (HKEY, 0x80)
+		}
+	}
+
+	/* Report extended HKEY event. */
+	Method (RHKX, 1, NotSerialized) {
+		If (EN) {
 			BTN = Arg0
 			Notify (HKEY, 0x80)
 		}

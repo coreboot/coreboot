@@ -193,7 +193,6 @@ binaries if only flashing the `bios` region.
 
 ## Known Issues
 
-- Some Fn+F{1-12} keys aren't handled correctly
 - Nvidia dGPU is finicky
   - Needs option ROM
   - Power enable code is buggy
@@ -207,7 +206,7 @@ binaries if only flashing the `bios` region.
 - video output: internal (eDP), miniDP
 - ACPI support
 - audio, including headphone jack detection
-- keyboard and trackpoint
+- keyboard, including Fn hotkeys, and trackpoint
 - SATA
 - M.2 SATA SSD
 - NVMe

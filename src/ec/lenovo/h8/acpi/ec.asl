@@ -233,6 +233,31 @@ Device(EC)
 		^HKEY.RHK (0x08)
 	}
 
+#ifdef EC_LENOVO_H8_EXTENDED_FN_LAYOUT
+	/* Fn-F9: settings window */
+	Method (_Q66, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x09)
+	}
+
+	/* Fn-F10: Bluetooth */
+	Method (_Q60, 0, NotSerialized)
+	{
+		^HKEY.RHKX (0x1314)
+	}
+
+	/* Fn-F11: keyboard settings */
+	Method (_Q61, 0, NotSerialized)
+	{
+		^HKEY.RHKX (0x1315)
+	}
+
+	/* Fn-F12: favorite application */
+	Method (_Q62, 0, NotSerialized)
+	{
+		^HKEY.RHKX (0x1311)
+	}
+#else
 	Method (_Q66, 0, NotSerialized)
 	{
 		^HKEY.RHK (0x0A)
@@ -262,6 +287,7 @@ Device(EC)
 	{
 		^HKEY.RHK (0x0F)
 	}
+#endif
 
 	Method (_Q1F, 0, NotSerialized)
 	{

@@ -280,8 +280,10 @@ sub Main {
                         $commenter = $aliases{$commenter};
                     }
                 }
-                $commenter =~ s/"/'/g;
-                $commenter =~ s/,/./g;
+                if ($commenter) {
+                    $commenter =~ s/"/'/g;
+                    $commenter =~ s/,/./g;
+                }
                 if ( $commenter && $author && $commenter eq $author ) {
                     next;
                 }
@@ -314,8 +316,10 @@ sub Main {
                             $submitter = $aliases{$submitter};
                         }
                     }
-                    $submitter =~ s/"/'/g;
-                    $submitter =~ s/,/./g;
+                    if ($submitter) {
+                        $submitter =~ s/"/'/g;
+                        $submitter =~ s/,/./g;
+                    }
 
                     if ( $approval->{'type'} eq "Code-Review" ) {
                         my $patch_reviewer = $approval->{'by'}{'name'};

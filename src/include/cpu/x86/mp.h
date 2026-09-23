@@ -55,6 +55,12 @@ struct mp_ops {
 	 */
 	void (*pre_mp_smm_init)(void);
 	/*
+	 * Optionally replace INIT/SIPI dispatch with a platform-specific AP
+	 * launch after coreboot's startup vector has been copied. The launched
+	 * APs must enter that vector and update its normal check-in counter.
+	 */
+	enum cb_err (*start_aps)(int ap_count);
+	/*
 	 * Optional function to use to trigger SMM to perform relocation. If
 	 * not provided, smm_initiate_relocation() is used.
 	 * This function is called on each CPU.

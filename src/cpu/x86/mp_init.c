@@ -92,6 +92,7 @@ struct mp_params {
 	/* Flight plan  for APs and BSP. */
 	struct mp_flight_record *flight_plan;
 	int num_records;
+	enum cb_err (*platform_start_aps)(int ap_count);
 };
 
 /* This needs to match the layout in the .module_parametrs section. */
@@ -461,9 +462,22 @@ static enum cb_err send_sipi_to_aps(int ap_count, atomic_t *num_aps, int sipi_ve
 	return CB_SUCCESS;
 }
 
+static enum cb_err wait_for_all_aps(atomic_t *num_aps, int ap_count)
+{
+	const int total_delay = 50000 * ap_count; /* 50 ms per AP */
+
+	if (wait_for_aps(num_aps, ap_count, total_delay, 50 /* us */) != CB_SUCCESS) {
+		printk(BIOS_ERR, "Not all APs checked in: %d/%d.\n",
+		       atomic_read(num_aps), ap_count);
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
+
 static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 {
-	int sipi_vector, total_delay;
+	int sipi_vector;
 	/* Max location is 4KiB below 1MiB */
 	const int max_vector_loc = ((1 << 20) - (1 << 12)) >> 12;
 
@@ -512,15 +526,19 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 	if (send_sipi_to_aps(ap_count, num_aps, sipi_vector) != CB_SUCCESS)
 		return CB_ERR;
 
-	/* Wait for CPUs to check in. */
-	total_delay = 50000 * ap_count; /* 50 ms per AP */
-	if (wait_for_aps(num_aps, ap_count, total_delay, 50 /* us */) != CB_SUCCESS) {
-		printk(BIOS_ERR, "Not all APs checked in: %d/%d.\n",
-		       atomic_read(num_aps), ap_count);
-		return CB_ERR;
-	}
+	return wait_for_all_aps(num_aps, ap_count);
+}
 
-	return CB_SUCCESS;
+static enum cb_err launch_aps(const struct mp_params *p, struct bus *cpu_bus, int ap_count,
+			      atomic_t *num_aps)
+{
+	if (!p->platform_start_aps)
+		return start_aps(cpu_bus, ap_count, num_aps);
+
+	if (p->platform_start_aps(ap_count) != CB_SUCCESS)
+		return CB_ERR;
+
+	return wait_for_all_aps(num_aps, ap_count);
 }
 
 static enum cb_err bsp_do_flight_plan(struct mp_params *mp_params)
@@ -684,7 +702,7 @@ static enum cb_err mp_init(struct bus *cpu_bus, struct mp_params *p)
 
 	/* Start the APs providing number of APs and the cpus_entered field. */
 	global_num_aps = p->num_cpus - 1;
-	if (start_aps(cpu_bus, global_num_aps, ap_count) != CB_SUCCESS) {
+	if (launch_aps(p, cpu_bus, global_num_aps, ap_count) != CB_SUCCESS) {
 		mdelay(1000);
 		printk(BIOS_DEBUG, "%d/%d eventually checked in?\n",
 		       atomic_read(ap_count), global_num_aps);
@@ -1204,6 +1222,7 @@ static enum cb_err do_mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops 
 			&mp_params.parallel_microcode_load);
 	mp_params.flight_plan = &mp_steps[0];
 	mp_params.num_records = ARRAY_SIZE(mp_steps);
+	mp_params.platform_start_aps = mp_ops->start_aps;
 
 	/* Perform backup of default SMM area when using SMM relocation handler. */
 	if (!CONFIG(X86_SMM_SKIP_RELOCATION_HANDLER))

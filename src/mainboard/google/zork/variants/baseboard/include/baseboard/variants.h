@@ -6,7 +6,6 @@
 #include <stddef.h>
 #include <boardid.h>
 #include <ec/google/chromeec/ec.h>
-#include <FspmUpd.h>
 #include <soc/amd/picasso/chip.h>
 #include <soc/platform_descriptors.h>
 
@@ -37,8 +36,6 @@ const struct soc_amd_gpio *variant_espi_gpio_table(size_t *size);
 
 /* This function provides GPIO settings for TPM i2c bus. */
 const struct soc_amd_gpio *variant_tpm_gpio_table(size_t *size);
-
-void variant_updm_update(FSP_M_CONFIG *mcfg);
 
 /* Program any required GPIOs at the finalize phase */
 void finalize_gpios(int slp_typ);

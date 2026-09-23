@@ -6,7 +6,6 @@ sconfigobj += main.o
 
 SCONFIGFLAGS += -I$(top)/util/sconfig -I$(objutil)/sconfig
 SCONFIGFLAGS += -I$(top)/src/commonlib/include -I$(top)/src/commonlib/bsd/include
-SCONFIGFLAGS += -std=gnu23
 
 $(objutil)/sconfig:
 	mkdir -p $@

@@ -283,6 +283,14 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 
 			continue;
 		}
+		if (!iommu_dev->enabled) {
+			printk(BIOS_WARNING, "%s: IOMMU device disabled on domain %u\n",
+			       __func__, domain);
+			if (domain == 0)
+				return (unsigned long)ivrs;
+
+			continue;
+		}
 
 		ivhd->type = IVHD_BLOCK_TYPE_LEGACY__FIXED;
 		ivhd->length = sizeof(struct acpi_ivrs_ivhd);
@@ -292,6 +300,15 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 		ivhd->capability_offset = pci_find_capability(iommu_dev, IOMMU_CAP_ID);
 		ivhd->iommu_base_low = pci_read_config32(iommu_dev, IOMMU_CAP_BASE_LO) & 0xffffc000;
 		ivhd->iommu_base_high = pci_read_config32(iommu_dev, IOMMU_CAP_BASE_HI);
+		if (!ivhd->capability_offset ||
+		    (!ivhd->iommu_base_low && !ivhd->iommu_base_high)) {
+			printk(BIOS_WARNING, "%s: IOMMU capability/BAR invalid on domain %u\n",
+			       __func__, domain);
+			if (domain == 0)
+				return (unsigned long)ivrs;
+
+			continue;
+		}
 
 		cap_offset_0 = pci_read_config32(iommu_dev, ivhd->capability_offset);
 		cap_offset_c = pci_read_config32(iommu_dev,
@@ -391,6 +408,11 @@ unsigned long acpi_add_ivrs_table(unsigned long current, acpi_rsdp_t *rsdp)
 	current = acpi_align_current(current);
 	ivrs = (acpi_ivrs_t *)current;
 	acpi_create_ivrs(ivrs, acpi_fill_ivrs);
+	if (ivrs->ivhd.length < sizeof(ivrs->ivhd)) {
+		printk(BIOS_WARNING, "IVRS omitted: no valid IOMMU was found\n");
+		return current;
+	}
+
 	current += ivrs->header.length;
 	acpi_add_table(rsdp, ivrs);
 

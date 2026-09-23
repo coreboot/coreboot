@@ -193,8 +193,9 @@ static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
 	 * Add all possible PCI devices in the domain that can generate transactions
 	 * processed by IOMMU. Start with device <bus>:01.0
 	 */
-	current = ivhd_dev_range(current, PCI_DEVFN(0, 3) | (dev->downstream->secondary << 8),
-				 0xff | (dev->downstream->subordinate << 8), 0);
+	const uint16_t devid_start = PCI_DEVFN(0, 3) | (dev->downstream->secondary << 8);
+	const uint16_t devid_end = PCI_DEVFN(0x1f, 7) | (dev->downstream->subordinate << 8);
+	current = ivhd_dev_range(current, devid_start, devid_end, 0);
 
 	add_ivhd_device_entries(NULL, dev, 0, -1, &root_level,
 		&current, dev->downstream->secondary);
@@ -202,8 +203,10 @@ static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
 	res = probe_resource(dev, IOMMU_IOAPIC_IDX);
 	if (res) {
 		/* Describe IOAPIC associated with the IOMMU */
+		const uint16_t devid_ioapic = PCI_DEVFN(0, 1) |
+					      (dev->downstream->secondary << 8);
 		current = acpi_fill_ivrs_ioapic(current, (uintptr_t)res->base,
-				      PCI_DEVFN(0, 1) | (dev->downstream->secondary << 8), 0);
+						devid_ioapic, 0);
 	}
 
 	/* If the domain has secondary bus as zero then associate HPET & FCH IOAPIC */

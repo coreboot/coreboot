@@ -86,6 +86,14 @@ config MAINBOARD_PART_NUMBER
 	default "X280" if BOARD_LENOVO_X280
 	default "X380 Yoga" if BOARD_LENOVO_X380_YOGA
 
+config MAINBOARD_VERSION
+	default "ThinkPad T470s" if BOARD_LENOVO_T470S
+	default "ThinkPad T480" if BOARD_LENOVO_T480
+	default "ThinkPad T480s" if BOARD_LENOVO_T480S
+	default "ThinkPad T580" if BOARD_LENOVO_T580
+	default "ThinkPad X280" if BOARD_LENOVO_X280
+	default "ThinkPad X380 Yoga" if BOARD_LENOVO_X380_YOGA
+
 config CBFS_SIZE
 	default 0x900000
 

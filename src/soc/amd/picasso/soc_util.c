@@ -154,7 +154,10 @@ enum soc_type get_soc_type(void)
 		/* add is_fam17_20() CPUID sanity check here? */
 		return SOC_POLLOCK;
 	case SOCKET_AM4:
-		/* AM4 SoC type detection logic not implemented */
+		/* Raven Ridge and Picasso desktop APUs use the Family 17h model-1x
+		 * identification path. Dali and Pollock are not AM4 packages. */
+		if (is_fam17_1x())
+			return SOC_PICASSO;
 		break;
 	}
 

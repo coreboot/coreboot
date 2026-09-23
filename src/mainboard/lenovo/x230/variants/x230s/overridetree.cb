@@ -16,6 +16,8 @@ chip northbridge/intel/sandybridge
 		subsystemid 0x17aa 0x2209 inherit
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
 			# X230s does not support docking
+			register "docking_supported" = "false"
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
 			# Enable SATA ports 0 (HDD bay) & 1 (WWAN M.2 SATA)
 			register "sata_port_map" = "0x3"
 			register "usb_port_config" = "{
@@ -34,13 +36,18 @@ chip northbridge/intel/sandybridge
 				{1, 3, -1}, /* B1P5: WLAN USB */
 				{1, 1, -1}, /* B1P6: Camera */
 			}"
+			# No ExpressCard slot
+			device ref pcie_rp3 off end
 			device ref lpc on
 				chip ec/lenovo/h8
 					register "config1" = "0x05"
 					register "config3" = "0xc4"
 					register "event5_enable" = "0x3c"
+					register "eventa_enable" = "0x00"
 					register "evente_enable" = "0x1d"
-					register "has_keyboard_backlight" = "1"
+					# No ThinkLight
+					register "has_thinklight" = "false"
+					register "config1_reserved_mask" = "0"
 					device ref lenovo_ec on end
 				end
 			end

@@ -69,7 +69,7 @@ config MAINBOARD_PART_NUMBER
 	default "ThinkPad X230s" if BOARD_LENOVO_X230S
 
 config OVERRIDE_DEVICETREE
-	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb" if BOARD_LENOVO_X230S
 
 config INTEL_GMA_VBT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/variants/x230_edp/data.vbt" if BOARD_LENOVO_X230_EDP

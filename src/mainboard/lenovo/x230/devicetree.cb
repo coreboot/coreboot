@@ -23,7 +23,7 @@ chip northbridge/intel/sandybridge
 		device ref peg10 off end
 		device ref igd on end
 
-		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+		chip southbridge/intel/bd82x6x # Intel 7 Series Panther Point PCH
 			# GPI routing
 			#  0 No effect (default)
 			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
@@ -31,6 +31,8 @@ chip northbridge/intel/sandybridge
 			register "alt_gp_smi_en" = "0x0000"
 			register "gpi1_routing" = "2"
 			register "gpi13_routing" = "2"
+
+			register "docking_supported" = "true"
 
 			# Enable SATA ports 0 (HDD bay) & 1 (dock) & 2 (msata)
 			register "sata_port_map" = "0x7"
@@ -41,12 +43,30 @@ chip northbridge/intel/sandybridge
 			register "gen2_dec" = "LPC_IO(0x15e0, 0x10)"
 			register "gen4_dec" = "LPC_IO(0x6a0, 0x10)"
 
+			register "usb_port_config" = "{
+				{1, 0, 0 }, /* P0 (left, fan side), OC 0 */
+				{1, 0, 1 }, /* P1 (left touchpad side), OC 1 */
+				{1, 1, 3 }, /* P2: dock, OC 3 */
+				{1, 1, -1}, /* P3: wwan, no OC */
+				{1, 1, -1}, /* P4: Wacom tablet on X230t, otherwise empty */
+				{1, 1, -1}, /* P5: Expresscard, no OC */
+				{0, 0, -1}, /* P6: Empty */
+				{1, 2, -1}, /* P7: dock, no OC */
+				{0, 0, -1}, /* P8: Empty */
+				{1, 2, 5 }, /* P9: Right (EHCI debug), OC 5 */
+				{1, 1, -1}, /* P10: fingerprint reader, no OC */
+				{1, 1, -1}, /* P11: bluetooth, no OC. */
+				{1, 1, -1}, /* P12: wlan, no OC */
+				{1, 1, -1}, /* P13: webcam, no OC */
+			}"
+
 			# Do not enable xHCI Port 4 since WWAN USB is EHCI-only
 			register "xhci_switchable_ports" = "0x7"
 			register "superspeed_capable_ports" = "0x7"
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "true"
+			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
 
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"
@@ -69,7 +89,9 @@ chip northbridge/intel/sandybridge
 				end
 			end
 			device ref pcie_rp2 on end
-			device ref pcie_rp3 off end
+			device ref pcie_rp3 on
+				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
+			end
 			device ref pcie_rp4 off end
 			device ref pcie_rp5 off end
 			device ref pcie_rp6 off end
@@ -98,8 +120,13 @@ chip northbridge/intel/sandybridge
 
 					register "config0" = "0xa6"
 					register "config1" = "0x09"
+					# Avoid H8_CONFIG1 bit 2: it leaves ThinkLight stuck on.
+					register "config1_reserved_mask" = "1 << 2"
 					register "config2" = "0xa0"
 					register "config3" = "0xe0"
+
+					register "has_thinklight" = "true"
+					register "has_keyboard_backlight" = "true"
 
 					register "beepmask0" = "0x00"
 					register "beepmask1" = "0x86"
@@ -112,6 +139,7 @@ chip northbridge/intel/sandybridge
 					register "event7_enable" = "0x01"
 					register "event8_enable" = "0x7b"
 					register "event9_enable" = "0xff"
+					register "eventa_enable" = "0x01"
 					register "eventb_enable" = "0x00"
 					register "eventc_enable" = "0xff"
 					register "eventd_enable" = "0xff"

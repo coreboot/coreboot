@@ -434,6 +434,7 @@ static void check_first_boot_and_reset(enum boot_mode_t mode)
 
 	if ((mode == LB_BOOT_MODE_RTC_WAKE) && (boot_count_read() == 1)) {
 		printk(BIOS_INFO, "First boot detected in non-normal mode; triggering reset.\n");
+		elog_add_event_dword(ELOG_TYPE_BOOT, 1);
 		do_board_reset();
 	}
 }

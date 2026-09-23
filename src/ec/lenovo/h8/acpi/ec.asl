@@ -238,11 +238,6 @@ Device(EC)
 		^HKEY.RHK (0x0A)
 	}
 
-	Method (_Q6A, 0, NotSerialized)
-	{
-		^HKEY.RHK (0x1B)
-	}
-
 	Method (_Q1A, 0, NotSerialized)
 	{
 		^HKEY.RHK (0x0B)
@@ -296,6 +291,11 @@ Device(EC)
 	Method (_Q1D, 0, NotSerialized)
 	{
 		^HKEY.RHK (0x1A)
+	}
+
+	Method (_Q6A, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x1B)
 	}
 
 	Method (_Q5C, 0, NotSerialized)

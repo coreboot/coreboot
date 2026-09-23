@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_mmconf.h>
 #include <amdblocks/cpu.h>
 #include <bootblock_common.h>
@@ -15,6 +16,9 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	enable_pci_mmconf();
 	early_cache_setup();
+	/* write_resume_eip() reads the ACPI PM registers to detect S3 resume. */
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_ACPIMMIO_PM_IO_ACCESS))
+		enable_acpimmio_decode_pm04();
 	write_resume_eip();
 
 	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))

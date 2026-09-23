@@ -16,6 +16,7 @@ all_x86-y += uart.c
 bootblock-y += early_fch.c
 
 romstage-y += fsp_m_params.c
+romstage-y += platform_descriptors.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_crat.c
@@ -27,6 +28,7 @@ ramstage-y += graphics.c
 ramstage-y += mca.c
 ramstage-y += memmap.c
 ramstage-y += pcie_gpp.c
+ramstage-y += platform_descriptors.c
 ramstage-y += root_complex.c
 ramstage-y += sata.c
 ramstage-y += soc_util.c

@@ -156,9 +156,9 @@ struct soc_amd_picasso_config {
 	uint8_t min_soc_vid_offset;
 	uint8_t aclk_dpm0_freq_400MHz;
 	uint32_t telemetry_vddcr_vdd_slope_mA;
-	uint32_t telemetry_vddcr_vdd_offset;
+	int32_t telemetry_vddcr_vdd_offset;
 	uint32_t telemetry_vddcr_soc_slope_mA;
-	uint32_t telemetry_vddcr_soc_offset;
+	int32_t telemetry_vddcr_soc_offset;
 
 	/*
 	 * HDMI 2.0 disable setting

@@ -21,7 +21,20 @@
 #define EMMC_HS400		10
 #define EMMC_HS300		11
 
-/* Mainboard callback to obtain DXI/PCIe and DDI descriptors. */
+struct picasso_smu_telemetry {
+	uint32_t vdd_slope;
+	int32_t vdd_offset;
+	uint32_t soc_slope;
+	int32_t soc_offset;
+};
+
+/* Devicetree telemetry calibration with the mainboard adjustments applied */
+struct picasso_smu_telemetry picasso_get_smu_telemetry(void);
+
+/* Allow the mainboard to adjust the SMU telemetry calibration from the devicetree */
+void mainboard_update_picasso_smu_telemetry(struct picasso_smu_telemetry *telemetry);
+
+/* Mainboard callback to obtain the DXIO/PCIe and DDI descriptors */
 void mainboard_get_dxio_ddi_descriptors(
 		const dxio_descriptor **dxio_descs, size_t *dxio_num,
 		const ddi_descriptor **ddi_descs, size_t *ddi_num);

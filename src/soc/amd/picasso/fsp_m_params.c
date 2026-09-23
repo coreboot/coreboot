@@ -61,10 +61,13 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->core_dldo_bypass = config->core_dldo_bypass;
 	mcfg->min_soc_vid_offset = config->min_soc_vid_offset;
 	mcfg->aclk_dpm0_freq_400MHz = config->aclk_dpm0_freq_400MHz;
-	mcfg->telemetry_vddcr_vdd_slope_mA = config->telemetry_vddcr_vdd_slope_mA;
-	mcfg->telemetry_vddcr_vdd_offset = config->telemetry_vddcr_vdd_offset;
-	mcfg->telemetry_vddcr_soc_slope_mA = config->telemetry_vddcr_soc_slope_mA;
-	mcfg->telemetry_vddcr_soc_offset = config->telemetry_vddcr_soc_offset;
+
+	const struct picasso_smu_telemetry telemetry = picasso_get_smu_telemetry();
+	mcfg->telemetry_vddcr_vdd_slope_mA = telemetry.vdd_slope;
+	mcfg->telemetry_vddcr_vdd_offset = telemetry.vdd_offset;
+	mcfg->telemetry_vddcr_soc_slope_mA = telemetry.soc_slope;
+	mcfg->telemetry_vddcr_soc_offset = telemetry.soc_offset;
+
 	mcfg->hd_audio_enable = is_dev_enabled(DEV_PTR(hda));
 	mcfg->sata_enable = is_dev_enabled(DEV_PTR(sata));
 	mcfg->hdmi2_disable = config->hdmi2_disable;

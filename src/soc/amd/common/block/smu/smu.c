@@ -8,9 +8,6 @@
 #include <thread.h>
 #include <types.h>
 
-#define SMU_MESG_RESP_TIMEOUT	0x00
-#define SMU_MESG_RESP_OK	0x01
-
 /* returns SMU_MESG_RESP_OK, SMU_MESG_RESP_TIMEOUT or a negative number */
 static int32_t smu_poll_response(bool print_command_duration)
 {
@@ -42,31 +39,44 @@ static int32_t smu_poll_response(bool print_command_duration)
  * Send a message and bi-directional payload to the SMU. SMU response, if any, is returned via
  * *arg.
  */
-enum cb_err send_smu_message(enum smu_message_id message_id, struct smu_payload *arg)
+int32_t send_smu_message_raw(enum smu_message_id message_id, struct smu_payload *arg)
 {
+	int32_t response;
 	size_t i;
 
-	/* wait until SMU can process a new request; don't care if an old request failed */
+	/* Wait until the SMU can process a new request; an old failed response is harmless. */
 	if (smu_poll_response(false) == SMU_MESG_RESP_TIMEOUT)
-		return CB_ERR;
+		return SMU_MESG_RESP_TIMEOUT;
 
-	/* clear response register */
+	/* Clear response register */
 	smn_write32(SMN_SMU_MESG_RESP, 0);
 
-	/* populate arguments */
-	for (i = 0 ; i < SMU_NUM_ARGS ; i++)
+	/* Populate arguments */
+	for (i = 0; i < SMU_NUM_ARGS; i++)
 		smn_write32(SMN_SMU_MESG_ARG(i), arg->msg[i]);
 
-	/* send message to SMU */
+	/* Send message to SMU */
 	smn_write32(SMN_SMU_MESG_ID, message_id);
 
-	/* wait until SMU has processed the message and check if it was successful */
-	if (smu_poll_response(true) != SMU_MESG_RESP_OK)
-		return CB_ERR;
+	/* Wait until the SMU has processed the message */
+	response = smu_poll_response(true);
+	if (response == SMU_MESG_RESP_TIMEOUT)
+		return SMU_MESG_RESP_TIMEOUT;
 
-	/* copy returned values */
-	for (i = 0 ; i < SMU_NUM_ARGS ; i++)
+	/* Copy returned values, even when the response isn't SMU_MESG_RESP_OK */
+	for (i = 0; i < SMU_NUM_ARGS; i++)
 		arg->msg[i] = smn_read32(SMN_SMU_MESG_ARG(i));
 
+	return response;
+}
+
+enum cb_err send_smu_message(enum smu_message_id message_id, struct smu_payload *arg)
+{
+	struct smu_payload response = *arg;
+
+	if (send_smu_message_raw(message_id, &response) != SMU_MESG_RESP_OK)
+		return CB_ERR;
+
+	*arg = response;
 	return CB_SUCCESS;
 }

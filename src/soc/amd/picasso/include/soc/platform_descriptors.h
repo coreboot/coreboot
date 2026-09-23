@@ -4,8 +4,7 @@
 #define AMD_PICASSO_PLATFORM_DESCRIPTORS_H
 
 #include <types.h>
-#include <platform_descriptors.h>
-#include <FspsUpd.h>
+#include <vendorcode/amd/fsp/picasso/platform_descriptors.h>
 
 /* These temporary macros apply to emmc0_mode field in FSP_S_CONFIG.
  * TODO: Remove when official definitions arrive. */

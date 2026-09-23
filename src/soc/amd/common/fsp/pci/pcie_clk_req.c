@@ -67,8 +67,8 @@ void pcie_gpp_dxio_update_clk_req_config(enum gpp_clk_req *gpp_clk_config,
 			gpp_clk_config[gpp_req_index] = GPP_CLK_OFF;
 			printk(BIOS_WARNING,
 			       "Cannot find PCIe device %d.%d, disabling GPP clk req %d, DXIO descriptor %d\n",
-			       dxio_desc->device_number, dxio_desc->function_number, i,
-			       gpp_req_index);
+			       dxio_desc->device_number, dxio_desc->function_number,
+			       gpp_req_index, i);
 			continue;
 		}
 

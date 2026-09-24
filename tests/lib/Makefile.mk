@@ -10,6 +10,7 @@ tests-y += edid-test
 tests-y += cbmem_console-romstage-test
 tests-y += cbmem_console-ramstage-test
 tests-y += fmap-test
+tests-y += fw_config-test
 tests-y += imd_cbmem-romstage-test
 tests-y += imd_cbmem-ramstage-test
 tests-y += region_file-test
@@ -81,6 +82,15 @@ fmap-test-srcs += tests/stubs/console.c
 fmap-test-srcs += src/lib/boot_device.c
 fmap-test-srcs += src/commonlib/region.c
 fmap-test-cflags += -I tests/include/tests/lib/fmap
+
+fw_config-test-stage := romstage
+fw_config-test-srcs += tests/lib/fw_config-test.c
+fw_config-test-srcs += tests/stubs/console.c
+fw_config-test-config += CONFIG_FW_CONFIG=1 \
+			 CONFIG_FW_CONFIG_SOURCE_CHROMEEC_CBI=1 \
+			 CONFIG_FW_CONFIG_SOURCE_CBFS=0 \
+			 CONFIG_FW_CONFIG_SOURCE_VPD=0 \
+			 CONFIG_FW_CONFIG_MAINBOARD_OVERRIDE=1
 
 imd_cbmem-ramstage-test-stage := ramstage
 imd_cbmem-ramstage-test-srcs += tests/lib/imd_cbmem-test.c

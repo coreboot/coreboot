@@ -35,8 +35,8 @@ uint32_t sku_id(void)
 
 bool mainboard_nvme_present(void)
 {
-	if (!fw_config_is_provisioned()) {
-		printk(BIOS_WARNING, "FW_CONFIG is not provisioned, Exiting\n");
+	if (fw_config_get_field(FW_CONFIG_FIELD(STORAGE_TYPE)) == UNDEFINED_FW_CONFIG) {
+		printk(BIOS_WARNING, "FW_CONFIG STORAGE_TYPE is not available, Exiting\n");
 		return false;
 	}
 

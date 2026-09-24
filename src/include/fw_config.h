@@ -48,26 +48,16 @@ struct fw_config_field {
 })
 
 /**
- * fw_config_get() - Provide firmware configuration value.
+ * fw_config_mainboard_override() - Allow mainboard to override fw_config fields.
  *
- * Return 64bit firmware configuration value determined for the system.
+ * Implementations should call fw_config_override_field() to override specific
+ * fw_config fields at runtime. If fields are overridden when the underlying
+ * FW_CONFIG source is unprovisioned (UNDEFINED_FW_CONFIG),
+ * fw_config_is_provisioned() will still return %false, while fw_config_get(),
+ * fw_config_probe(), and fw_config_get_field() will evaluate the overridden
+ * fields.
  */
-uint64_t fw_config_get(void);
-
-/**
- * fw_config_is_provisioned() - Determine if FW_CONFIG has been provisioned.
- * Return %true if FW_CONFIG has been provisioned, %false otherwise.
- */
-static inline bool fw_config_is_provisioned(void)
-{
-	return fw_config_get() != UNDEFINED_FW_CONFIG;
-}
-
-/**
- * fw_config_get_mainboard_override() - Allow mainboard to override fw_config.
- * @fw_config: Pointer to the current fw_config value to modify.
- */
-void fw_config_get_mainboard_override(uint64_t *fw_config);
+void fw_config_mainboard_override(void);
 
 /**
  * fw_config_probe_mainboard_override() - Mainboard hook to override specific probes
@@ -86,24 +76,41 @@ bool fw_config_probe_mainboard_override(const struct fw_config *match, bool *res
 #if CONFIG(FW_CONFIG)
 
 /**
+ * fw_config_get() - Provide firmware configuration value.
+ *
+ * Return 64-bit firmware configuration value determined for the system,
+ * including any runtime modifications from fw_config_mainboard_override().
+ */
+uint64_t fw_config_get(void);
+
+/**
  * fw_config_get_field() - Provide firmware configuration field value.
  * @field: Structure containing field name and mask
  *
  * Return 64bit firmware configuration value determined for the system.
- * Will return UNDEFINED_FW_CONFIG if unprovisioned, caller should treat
+ * Will return UNDEFINED_FW_CONFIG if undefined, caller should treat
  * as error value for the case.
  */
 uint64_t fw_config_get_field(const struct fw_config_field *field);
 
 /**
- * fw_config_value_set_field() - Update a field within a raw fw_config value.
- * @fw_config: Pointer to the raw fw_config value to modify.
- * @field: The field to set.
+ * fw_config_override_field() - Override a field in the cached fw_config value.
+ * @field: The field to override.
  * @value: The new value for the field.
+ *
+ * Must only be called from fw_config_mainboard_override(). Updates the field
+ * in the cached fw_config value and records field->mask in the override mask.
  */
-void fw_config_value_set_field(uint64_t *fw_config,
-			       const struct fw_config_field *field,
-			       uint64_t value);
+void fw_config_override_field(const struct fw_config_field *field,
+			      uint64_t value);
+
+/**
+ * fw_config_get_override_mask() - Provide mask of overridden fw_config bits.
+ *
+ * Return 64-bit bitmask of fw_config fields that were overridden at runtime
+ * by fw_config_mainboard_override().
+ */
+uint64_t fw_config_get_override_mask(void);
 
 /**
  * fw_config_probe() - Check if field and option matches.
@@ -140,10 +147,19 @@ bool fw_config_probe_dev(const struct device *dev, const struct fw_config **matc
 
 #else
 
-static inline void fw_config_value_set_field(uint64_t *fw_config,
-					     const struct fw_config_field *field,
-					     uint64_t value)
+static inline uint64_t fw_config_get(void)
 {
+	return UNDEFINED_FW_CONFIG;
+}
+
+static inline void fw_config_override_field(const struct fw_config_field *field,
+					    uint64_t value)
+{
+}
+
+static inline uint64_t fw_config_get_override_mask(void)
+{
+	return 0;
 }
 
 static inline bool fw_config_probe(const struct fw_config *match)
@@ -168,5 +184,18 @@ static inline uint64_t fw_config_get_field(const struct fw_config_field *field)
 }
 
 #endif /* CONFIG(FW_CONFIG) */
+
+/**
+ * fw_config_is_provisioned() - Determine if FW_CONFIG has been provisioned.
+ *
+ * Return %true if the underlying FW_CONFIG source (CBI, CBFS, or VPD) has been
+ * provisioned, %false otherwise (ignoring any runtime field overrides from
+ * fw_config_mainboard_override()).
+ */
+static inline bool fw_config_is_provisioned(void)
+{
+	return (fw_config_get() & ~fw_config_get_override_mask()) !=
+	       (UNDEFINED_FW_CONFIG & ~fw_config_get_override_mask());
+}
 
 #endif /* __FW_CONFIG__ */

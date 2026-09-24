@@ -7,7 +7,7 @@
 #include <soc/pcie.h>
 #include <soc/platform_info.h>
 
-void fw_config_get_mainboard_override(uint64_t *fw_config)
+void fw_config_mainboard_override(void)
 {
 	if (!CONFIG(SOC_QUALCOMM_CDT))
 		return;
@@ -39,12 +39,9 @@ void fw_config_get_mainboard_override(uint64_t *fw_config)
 	uint8_t storage_type = (soc_hw_id == TCSR_SOC_HW_VERSION_DEVICE_NUM_X1P42100) ?
 			       platform_get_fast_boot() : CALYPSO_STORAGE_TYPE_NVME;
 
-	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(PLATFORM_ID), platform_id);
-	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(SOC_ID), cdt_soc_id);
-	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(STORAGE_TYPE), storage_type);
-
-	printk(BIOS_INFO, "CDT: soc_id=0x%04x platform_id=0x%04x storage_type=%u\n",
-	       cdt_soc_id, platform_id, storage_type);
+	fw_config_override_field(FW_CONFIG_FIELD(PLATFORM_ID), platform_id);
+	fw_config_override_field(FW_CONFIG_FIELD(SOC_ID), cdt_soc_id);
+	fw_config_override_field(FW_CONFIG_FIELD(STORAGE_TYPE), storage_type);
 }
 
 bool mainboard_needs_pcie_init(void)

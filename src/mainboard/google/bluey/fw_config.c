@@ -4,11 +4,8 @@
 #include <fw_config.h>
 #include <soc/platform_info.h>
 
-void fw_config_get_mainboard_override(uint64_t *fw_config)
+void fw_config_mainboard_override(void)
 {
-	if (*fw_config == UNDEFINED_FW_CONFIG)
-		*fw_config = 0;
-
 	uint64_t fw_config_soc_id = FW_CONFIG_VALUE(SOC_ID, HAMOA);
 	uint32_t raw_soc_id = soc_id();
 	uint16_t soc_hw_id = raw_soc_id & SOC_ID_HW_MASK;
@@ -27,6 +24,5 @@ void fw_config_get_mainboard_override(uint64_t *fw_config)
 		printk(BIOS_WARNING, "Unknown SoC ID detected: 0x%x\n", soc_hw_id);
 	}
 
-	printk(BIOS_INFO, "Overriding fw_config SOC_ID with %llu\n", fw_config_soc_id);
-	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(SOC_ID), fw_config_soc_id);
+	fw_config_override_field(FW_CONFIG_FIELD(SOC_ID), fw_config_soc_id);
 }

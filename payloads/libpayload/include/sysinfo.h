@@ -128,13 +128,15 @@ struct sysinfo_t {
 	u32		board_id;
 	u32		ram_code;
 	u32		sku_id;
-	u32		soc_id;
 
 	/*
-	 * A payload using this field is responsible for ensuring it checks its
-	 * value against UNDEFINED_FW_CONFIG before using it.
+	 * A payload using fw_config is responsible for checking it against
+	 * UNDEFINED_FW_CONFIG (accounting for fw_config_override_mask) before
+	 * using it. fw_config_override_mask indicates which bits of fw_config
+	 * were overridden at runtime by coreboot mainboard code.
 	 */
 	u64		fw_config;
+	u64		fw_config_override_mask;
 
 	uintptr_t	wifi_calibration;
 	uint64_t	ramoops_buffer;

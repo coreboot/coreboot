@@ -611,7 +611,7 @@ config FW_CONFIG_MAINBOARD_OVERRIDE
 	depends on FW_CONFIG
 	help
 	  Select this option if the mainboard provides a
-	  fw_config_get_mainboard_override() implementation to dynamically
+	  fw_config_mainboard_override() implementation to dynamically
 	  override fw_config bits at runtime.
 
 config HAVE_RAMPAYLOAD

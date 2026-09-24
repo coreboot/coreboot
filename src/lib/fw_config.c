@@ -11,15 +11,22 @@
 #include <lib.h>
 #include <drivers/vpd/vpd.h>
 
-uint64_t fw_config_get(void)
-{
-	static uint64_t fw_config_value;
-	static bool fw_config_value_initialized;
+enum fw_config_state {
+	FW_CONFIG_UNINITIALIZED,
+	FW_CONFIG_IN_OVERRIDE,
+	FW_CONFIG_INITIALIZED,
+};
 
-	/* Nothing to prepare if setup is already done. */
-	if (fw_config_value_initialized)
-		return fw_config_value;
-	fw_config_value_initialized = true;
+static uint64_t fw_config_value;
+static uint64_t fw_config_override_mask;
+static enum fw_config_state fw_config_state;
+
+static void fw_config_setup(void)
+{
+	/* Nothing to prepare if setup is already done or in override. */
+	if (fw_config_state != FW_CONFIG_UNINITIALIZED)
+		return;
+
 	fw_config_value = UNDEFINED_FW_CONFIG;
 
 	/* Read the value from EC CBI. */
@@ -54,16 +61,33 @@ uint64_t fw_config_get(void)
 				__func__);
 	}
 
-	if (CONFIG(FW_CONFIG_MAINBOARD_OVERRIDE))
-		fw_config_get_mainboard_override(&fw_config_value);
+	if (CONFIG(FW_CONFIG_MAINBOARD_OVERRIDE)) {
+		fw_config_state = FW_CONFIG_IN_OVERRIDE;
+		fw_config_mainboard_override();
+	}
 
+	fw_config_state = FW_CONFIG_INITIALIZED;
+}
+
+uint64_t fw_config_get(void)
+{
+	fw_config_setup();
 	return fw_config_value;
+}
+
+/*
+ * A field is valid to read or probe if fw_config is provisioned or if the
+ * field was overridden at runtime by fw_config_mainboard_override().
+ */
+static bool fw_config_field_is_valid(uint64_t field_mask)
+{
+	return fw_config_is_provisioned() ||
+	       (field_mask & fw_config_get_override_mask());
 }
 
 uint64_t fw_config_get_field(const struct fw_config_field *field)
 {
-	/* If fw_config is not provisioned, then there is nothing to get. */
-	if (!fw_config_is_provisioned())
+	if (!fw_config_field_is_valid(field->mask))
 		return UNDEFINED_FW_CONFIG;
 
 	int shift = __ffs64(field->mask);
@@ -75,13 +99,24 @@ uint64_t fw_config_get_field(const struct fw_config_field *field)
 	return value;
 }
 
-void fw_config_value_set_field(uint64_t *fw_config,
-			       const struct fw_config_field *field,
-			       uint64_t value)
+void fw_config_override_field(const struct fw_config_field *field,
+			      uint64_t value)
 {
+	assert(fw_config_state == FW_CONFIG_IN_OVERRIDE);
+
+	printk(BIOS_INFO, "Overriding fw_config %s with 0x%" PRIx64 "\n",
+	       field->field_name, value);
+
 	const int shift = __ffs64(field->mask);
-	*fw_config &= ~field->mask;
-	*fw_config |= (value << shift) & field->mask;
+	fw_config_value &= ~field->mask;
+	fw_config_value |= (value << shift) & field->mask;
+	fw_config_override_mask |= field->mask;
+}
+
+uint64_t fw_config_get_override_mask(void)
+{
+	fw_config_setup();
+	return fw_config_override_mask;
 }
 
 bool __weak fw_config_probe_mainboard_override(const struct fw_config *match, bool *result)
@@ -97,8 +132,7 @@ bool fw_config_probe(const struct fw_config *match)
 	if (fw_config_probe_mainboard_override(match, &result))
 		return result;
 
-	/* If fw_config is not provisioned, then there is nothing to match. */
-	if (!fw_config_is_provisioned())
+	if (!fw_config_field_is_valid(match->mask))
 		return false;
 
 	/* Compare to system value. */
@@ -127,7 +161,11 @@ bool fw_config_probe_dev(const struct device *dev, const struct fw_config **matc
 	if (!dev->probe_list)
 		return true;
 
-	/* If the device wants to be enabled during unprovisioned fw_config */
+	/*
+	 * If the device wants to be enabled during unprovisioned fw_config,
+	 * check the raw provisioning state (ignoring runtime overrides from
+	 * fw_config_mainboard_override()).
+	 */
 	if (!fw_config_is_provisioned() && dev->enable_on_unprovisioned_fw_config)
 		return true;
 

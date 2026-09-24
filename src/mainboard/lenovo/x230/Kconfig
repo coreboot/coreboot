@@ -70,9 +70,13 @@ config MAINBOARD_PART_NUMBER
 
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb" if BOARD_LENOVO_X230S
+	default "variants/x230_edp/overridetree.cb" if BOARD_LENOVO_X230_EDP
 
 config INTEL_GMA_VBT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/variants/x230_edp/data.vbt" if BOARD_LENOVO_X230_EDP
+
+config GFX_GMA_PANEL_1_PORT
+	default "DP3" if BOARD_LENOVO_X230_EDP
 
 config USBDEBUG_HCD_INDEX
 	int

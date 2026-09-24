@@ -9,12 +9,11 @@ use HW.GFX.GMA.Display_Probing;
 private package GMA.Mainboard is
 
    ports : constant Port_List :=
-     (DP1,
+     (DP3, -- Internal display
+      DP1,
       DP2,
-      DP3,
       HDMI1,
       HDMI2,
-      HDMI3,
       Analog,
       others => Disabled);
 

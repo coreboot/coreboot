@@ -231,7 +231,7 @@ static const struct sm_object trackpoint = SM_DECLARE_BOOL({
 	.flags		= CONFIG(EC_LENOVO_PMH7) ? 0 : CFR_OPTFLAG_SUPPRESS,
 });
 
-__cfr_form static struct sm_obj_form cfr_power = {
+__cfr_form static const struct sm_obj_form cfr_power = {
 	.ui_name = "Power",
 	.obj_list = (const struct sm_object *[]) {
 		&first_battery,
@@ -240,7 +240,7 @@ __cfr_form static struct sm_obj_form cfr_power = {
 	},
 };
 
-__cfr_form static struct sm_obj_form cfr_devices = {
+__cfr_form static const struct sm_obj_form cfr_devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
 		&fw_version,
@@ -252,7 +252,7 @@ __cfr_form static struct sm_obj_form cfr_devices = {
 	},
 };
 
-__cfr_form static struct sm_obj_form cfr_hid = {
+__cfr_form static const struct sm_obj_form cfr_hid = {
 	.ui_name = "Keyboard/Mouse",
 	.obj_list = (const struct sm_object *[]) {
 		&backlight,
@@ -265,7 +265,7 @@ __cfr_form static struct sm_obj_form cfr_hid = {
 	},
 };
 
-__cfr_form static struct sm_obj_form cfr_misc = {
+__cfr_form static const struct sm_obj_form cfr_misc = {
 	.ui_name = "Other",
 	.obj_list = (const struct sm_object *[]) {
 		&volume,

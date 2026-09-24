@@ -87,7 +87,7 @@ void sb_cfr_set_string(enum sb_cfr_strings e, const char *value)
 	}
 }
 
-__cfr_form static struct sm_obj_form cfr_sm_management_engine = {
+__cfr_form static const struct sm_obj_form cfr_sm_management_engine = {
 	.ui_name = "Intel Management Engine",
 	.obj_list = (const struct sm_object *[]) {
 		&me_state,

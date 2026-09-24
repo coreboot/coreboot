@@ -54,13 +54,10 @@ uint64_t fw_config_get(void)
 				__func__);
 	}
 
-	fw_config_get_mainboard_override(&fw_config_value);
+	if (CONFIG(FW_CONFIG_MAINBOARD_OVERRIDE))
+		fw_config_get_mainboard_override(&fw_config_value);
 
 	return fw_config_value;
-}
-
-void __weak fw_config_get_mainboard_override(uint64_t *fw_config)
-{
 }
 
 uint64_t fw_config_get_field(const struct fw_config_field *field)

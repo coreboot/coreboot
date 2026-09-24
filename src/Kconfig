@@ -606,6 +606,14 @@ config FW_CONFIG_SOURCE_VPD
 	  configuration value in VPD key name "fw_config".  This option runs if no
 	  FW_CONFIG value is set by either CBI or CBFS.
 
+config FW_CONFIG_MAINBOARD_OVERRIDE
+	bool
+	depends on FW_CONFIG
+	help
+	  Select this option if the mainboard provides a
+	  fw_config_get_mainboard_override() implementation to dynamically
+	  override fw_config bits at runtime.
+
 config HAVE_RAMPAYLOAD
 	bool
 

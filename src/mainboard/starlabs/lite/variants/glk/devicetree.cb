@@ -1,5 +1,5 @@
 chip soc/intel/apollolake
-	register "common_soc_config.chipset_lockdown" = "CHIPSET_LOCKDOWN_FSP"
+	register "common_soc_config.chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 
 	# Graphics
 	# TODO:

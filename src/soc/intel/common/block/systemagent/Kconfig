@@ -29,6 +29,28 @@ config SA_ENABLE_DPR
 	help
 	  This option allows you to add the DMA Protected Range (DPR).
 
+config SA_RESERVE_LOW_IOVA_FOR_EXTERNAL_DMA
+	bool
+	default n
+	help
+	  Reserve address space between TOUUD and
+	  SA_RESERVE_LOW_IOVA_FOR_EXTERNAL_DMA_LIMIT as unusable for PCI MMIO
+	  BAR placement, so the coreboot resource allocator places 64-bit
+	  MMIO BARs starting at that limit instead of directly above TOUUD.
+	  This frees up the address range below the limit for use as
+	  contiguous IOVA space by devices with large IOMMU-mapped DMA
+	  address requirements (e.g. an NPU), matching the placement behavior
+	  of the EDK2 UEFI BIOS on the same platform.
+
+config SA_RESERVE_LOW_IOVA_FOR_EXTERNAL_DMA_LIMIT
+	hex
+	default 0x10000000000
+	depends on SA_RESERVE_LOW_IOVA_FOR_EXTERNAL_DMA
+	help
+	  Upper bound (exclusive) of the [TOUUD, limit) range reserved by
+	  SA_RESERVE_LOW_IOVA_FOR_EXTERNAL_DMA. Defaults to 1TiB
+	  (0x10000000000).
+
 config ACPI_BERT_SIZE
 	hex
 	default 0x10000 if ACPI_BERT

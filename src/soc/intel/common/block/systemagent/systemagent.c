@@ -215,6 +215,13 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 	/* 4GiB -> TOUUD */
 	upper_ram_end(dev, index++, sa_map_values[SA_TOUUD_REG]);
 
+	if (CONFIG(SA_RESERVE_LOW_IOVA_FOR_EXTERNAL_DMA))
+		/* TOUUD -> limit: reserved so 64-bit MMIO BARs start at the
+		   limit, leaving the range below it free for external DMA
+		   (e.g. NPU) IOVA use */
+		mmio_from_to(dev, index++, sa_map_values[SA_TOUUD_REG],
+			     CONFIG_SA_RESERVE_LOW_IOVA_FOR_EXTERNAL_DMA_LIMIT);
+
 	/*
 	 * Reserve everything between A segment and 1MB:
 	 *
@@ -324,15 +331,21 @@ void ssdt_set_above_4g_pci(const struct device *dev)
 	uint64_t touud;
 	sa_read_map_entry(pcidev_path_on_root(SA_DEVFN_ROOT), &sa_memory_map[SA_TOUUD_REG],
 			  &touud);
-	const uint64_t len = POWER_OF_2(soc_phys_address_size()) - touud;
+
+	uint64_t above_4g_base = touud;
+	if (CONFIG(SA_RESERVE_LOW_IOVA_FOR_EXTERNAL_DMA))
+		above_4g_base = CONFIG_SA_RESERVE_LOW_IOVA_FOR_EXTERNAL_DMA_LIMIT;
+
+	const uint64_t len = POWER_OF_2(soc_phys_address_size()) - above_4g_base;
 
 	const char *scope = acpi_device_path(dev);
 	acpigen_write_scope(scope);
-	acpigen_write_name_qword("A4GB", touud);
+	acpigen_write_name_qword("A4GB", above_4g_base);
 	acpigen_write_name_qword("A4GS", len);
 	acpigen_pop_len();
 
-	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is at 0x%llx, len = 0x%llx\n", touud, len);
+	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is at 0x%llx, len = 0x%llx\n",
+	       above_4g_base, len);
 }
 
 uint64_t sa_get_mmcfg_size(void)

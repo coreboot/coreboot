@@ -1,7 +1,7 @@
-# Lenovo ThinkPad T470s/T480/T480s/T580/X280
+# Lenovo ThinkPad T470s/T480/T480s/T580/X280/X380 Yoga
 
 This page describes how to run coreboot on the Lenovo [Thinkpad T470s], [ThinkPad T480],
-[Thinkpad T480s], [Thinkpad T580], and [Thinkpad X280].
+[Thinkpad T480s], [Thinkpad T580], [Thinkpad X280], and [ThinkPad X380 Yoga].
 
 ## Important Notes
 
@@ -225,6 +225,7 @@ binaries if only flashing the `bios` region.
 [ThinkPad T480s]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t480s-type-20l7-20l8/
 [Thinkpad T580]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t580-type-20l9-20la/
 [Thinkpad X280]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-x-series-laptops/thinkpad-x280-type-20kf-20ke/
+[ThinkPad X380 Yoga]: https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-x-series-laptops/thinkpad-x380-yoga/
 [on Lenovo's site]: https://support.lenovo.com/us/en/downloads/ds502355-bios-update-utility-bootable-cd-for-windows-10-64-bit-linux-thinkpad-t480
 [from Lenovo's site]: https://pcsupport.lenovo.com/gb/en/products/laptops-and-netbooks/thinkpad-t-series-laptops/thinkpad-t480s-type-20l7-20l8/solutions/ht508988-critical-intel-thunderbolt-software-and-firmware-updates-thinkpad
 [how to externally flash the TB3 firmware]: https://libreboot.org/docs/install/t480.html#thunderbolt-issue-read-this-before-flashing

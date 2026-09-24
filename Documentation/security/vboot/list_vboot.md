@@ -20,6 +20,11 @@
 - fbg1701
 - Facebook Monolith
 
+## Framework
+- Laptop 13 (Intel Core Ultra Series 1)
+- Laptop 13 Pro (Intel Core Ultra Series 3)
+- Laptop 12 (13th Gen Intel Core)
+
 ## Google
 - Asurada
 - Hayato (ASUS Chromebook Flip CM3 (CM3200))
@@ -43,8 +48,10 @@
 - QuenbiH
 - Quartz
 - Mica
-- Aneto
 - Annite
+- Pic
+- Aneto
+- Meru
 - Brox
 - Brox RTK EC
 - Brox EC ISH
@@ -267,6 +274,7 @@
 - Oak
 - Elm (Acer Chromebook R13)
 - Hana (Lenovo N23 Yoga Chromebook)
+- Hekla
 - Kodkod
 - Matsu
 - Ocelot

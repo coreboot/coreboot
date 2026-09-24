@@ -1622,8 +1622,8 @@ static void override_devicetree(struct bus *base_parent,
  * |                    |                                            |
  * +-----------------------------------------------------------------+
  * |                    |                                            |
- * | subsystem_vendor   | Copy from override device only if any one  |
- * | subsystem_device   | of the ids is non-zero.                    |
+ * | subsystem_vendor   | Copy from override device only if the ids  |
+ * | subsystem_device   | are set, i.e. not -1.                      |
  * |                    |                                            |
  * +-----------------------------------------------------------------+
  * |                    |                                            |
@@ -1718,11 +1718,11 @@ static void update_device(struct device *base_dev, struct device *override_dev)
 
 	/*
 	 * Copy subsystem vendor and device ids from override device to base
-	 * device only if the ids are non-zero in override device. Else, honor
+	 * device only if the ids are set in override device. Else, honor
 	 * the values in base device.
 	 */
-	if (override_dev->subsystem_vendor ||
-	    override_dev->subsystem_device) {
+	if (override_dev->subsystem_vendor != -1 ||
+	    override_dev->subsystem_device != -1) {
 		base_dev->subsystem_vendor = override_dev->subsystem_vendor;
 		base_dev->subsystem_device = override_dev->subsystem_device;
 	}

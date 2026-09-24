@@ -46,9 +46,6 @@ static void load_qc_se_firmware_early(void)
 	if (is_low_power_boot_with_charger())
 		return;
 
-	/* ADSP I2C (Charger/Fuel gauge) */
-	qupv3_se_fw_load_and_init(QUPV3_2_SE4, SE_PROTOCOL_I2C, MIXED);
-
 	gpi_firmware_load(QUP_0_GSI_BASE);
 	gpi_firmware_load(QUP_1_GSI_BASE);
 	gpi_firmware_load(QUP_2_GSI_BASE);

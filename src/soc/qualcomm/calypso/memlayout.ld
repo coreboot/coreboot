@@ -179,7 +179,7 @@
  * 0x14A5F000    +----------------------------------------------------------+      |
  *               |                     TIMESTAMP                            |      |
  * 0x14A5E000    +----------------------------------------------------------+      |
- *               |                    aop_blob_meta                         |      |
+ *               |                    qc_blob_meta_1                        |      |
  * 0x14A5A000    +----------------------------------------------------------+      |
  *               |                    qc_blob_meta                          |      |
  * 0x14A56000    +----------------------------------------------------------+      |
@@ -284,7 +284,7 @@ SECTIONS
 	REGION(qclib, 0x148A0000, 1728K, 4K)
 	PRERAM_CBMEM_CONSOLE(0x14A50000, 24K)
 	REGION(qc_blob_meta, 0x14A56000, 16K, 4K)
-	REGION(aop_blob_meta, 0x14A5A000, 16K, 4K)
+	REGION(qc_blob_meta_1, 0x14A5A000, 16K, 4K)
 	TIMESTAMP(0x14A5E000, 4K)
 	REGION(qclib_serial_log, 0x14A5F000, 4K, 4K)
 

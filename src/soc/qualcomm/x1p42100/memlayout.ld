@@ -134,7 +134,7 @@
  * 0x14891000    +----------------------------------------------------------+      |
  *               |                  apdp_ramdump_meta                       |      |
  * 0x14890000    +----------------------------------------------------------+      |
- *               |                    aop_blob_meta                         |      |
+ *               |                    qc_blob_meta_1                        |      |
  * 0x1488C000    +----------------------------------------------------------+      |
  *               |                    qc_blob_meta                          |      |
  * 0x14888000    +----------------------------------------------------------+      |
@@ -246,7 +246,7 @@ SECTIONS
 	REGION(dtb, 0x14870000, 32K, 4K)
 	REGION(ddr_training, 0x14878000, 64K, 4K)
 	REGION(qc_blob_meta, 0x14888000, 16K, 4K)
-	REGION(aop_blob_meta, 0x1488c000, 16K, 4K)
+	REGION(qc_blob_meta_1, 0x1488c000, 16K, 4K)
 	REGION(apdp_ramdump_meta, 0x14890000, 4K, 4K)
 #if CONFIG(SOC_QUALCOMM_CDT)
 	REGION(cdt_data, 0x14891000, 4K, 4K)

@@ -444,15 +444,15 @@ void qclib_load_and_run(void)
 		qclib_add_if_table_entry(QCLIB_TE_PMIC_SETTINGS, _pmic, data_size, 0);
 	}
 
-	if (_delta_dcb) {
+	if (_qc_blob_meta_1) {
 		/* Attempt to load DELTA_DCB Blob */
 		data_size = cbfs_load(qclib_file(QCLIB_CBFS_DELTA_DCB),
-				_delta_dcb, REGION_SIZE(delta_dcb));
+				_qc_blob_meta_1, REGION_SIZE(qc_blob_meta_1));
 		if (!data_size) {
 			printk(BIOS_ERR, "[%s] /delta_dcb failed\n", __func__);
 			goto fail;
 		}
-		qclib_add_if_table_entry(QCLIB_TE_DELTA_DCB_SETTINGS, _delta_dcb, data_size, 0);
+		qclib_add_if_table_entry(QCLIB_TE_DELTA_DCB_SETTINGS, _qc_blob_meta_1, data_size, 0);
 	}
 
 	if (CONFIG(QC_SDI_ENABLE) && (!CONFIG(VBOOT) ||
@@ -556,13 +556,13 @@ void qclib_rerun(void)
 
 		/* Attempt to load aop_devcfg_meta Blob. */
 		data_size = cbfs_load(qclib_file(QCLIB_CBFS_AOP_DEVCFG_META),
-				_aop_blob_meta, REGION_SIZE(aop_blob_meta));
+				_qc_blob_meta_1, REGION_SIZE(qc_blob_meta_1));
 		if (!data_size) {
 			printk(BIOS_ERR, "[%s] /aop_devcfg_meta failed\n", __func__);
 			goto fail;
 		}
 
-		qclib_add_if_table_entry(QCLIB_TE_AOP_DEVCFG_META_SETTINGS, _aop_blob_meta, data_size, 0);
+		qclib_add_if_table_entry(QCLIB_TE_AOP_DEVCFG_META_SETTINGS, _qc_blob_meta_1, data_size, 0);
 
 		if (CONFIG(QC_HYP_AC_CFG_PRERAM)) {
 			/* Attempt to load hyp_ac_meta Blob. */

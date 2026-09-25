@@ -54,7 +54,7 @@ void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header)
 		printk(BIOS_DEBUG, "OK\n");
 }
 
-enum cb_err psp_get_ftpm_capabilties(uint32_t *capabilities)
+enum cb_err psp_get_ftpm_capabilities(uint32_t *capabilities)
 {
 	int cmd_status;
 	struct mbox_cmd_capability_query_buffer buffer = {

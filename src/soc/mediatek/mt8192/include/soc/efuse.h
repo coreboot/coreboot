@@ -7,7 +7,7 @@
 #include <types.h>
 
 struct efuse_regs {
-	uint32_t rserved[109];
+	uint32_t reserved[109];
 	uint32_t adc_cali_reg;
 };
 

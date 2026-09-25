@@ -18,7 +18,7 @@ enum board_type {
 	BOARD_TYPE_USER2,		/* SV desktop */
 	BOARD_TYPE_USER3,		/* SV server */
 	BOARD_TYPE_ULT,			/* ULT */
-	BOARD_TYPE_CRB_EMBDEDDED,	/* CRB Embedded */
+	BOARD_TYPE_CRB_EMBEDDED,	/* CRB Embedded */
 	BOARD_TYPE_UNKNOWN,
 };
 

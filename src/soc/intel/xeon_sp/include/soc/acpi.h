@@ -38,7 +38,7 @@ void acpigen_write_PRT_pre_routed(const struct device *br);
 #define PCIE_AER_CONTROL             0x08
 #define PCIE_CAP_STRUCTURE_CONTROL   0x10
 #define PCIE_LTR_CONTROL             0x20
-#define PCIE_DPC_COTROL              0x80
+#define PCIE_DPC_CONTROL             0x80
 
 #define CXL_ERROR_REPORTING_CONTROL  0x01
 

@@ -146,7 +146,7 @@ struct mpc_config_lintsrc {
  */
 
 #define MAX_IRQ_SOURCES 128
-#define MAX_MP_BUSSES 32
+#define MAX_MP_BUSES 32
 enum mp_bustype {
 	MP_BUS_ISA = 0,
 	MP_BUS_EISA,

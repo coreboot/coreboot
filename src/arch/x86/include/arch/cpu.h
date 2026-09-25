@@ -103,7 +103,7 @@ static inline unsigned int cpuid_get_max_func(void)
 
 // Intel leaf 0x5
 #define CPUID_FEATURE_MONITOR_MWAIT		(1 << 0)
-#define CPUID_FEATURE_INTERUPT_BREAK_EVENT	(1 << 1)
+#define CPUID_FEATURE_INTERRUPT_BREAK_EVENT	(1 << 1)
 
 unsigned int cpu_cpuid_extended_level(void);
 int cpu_have_cpuid(void);

@@ -58,16 +58,16 @@ static int find_on_bus(int bus, unsigned short vid, unsigned short did,
 		hdr &= 0x7F;
 
 		if (hdr == HEADER_TYPE_BRIDGE || hdr == HEADER_TYPE_CARDBUS) {
-			unsigned int busses;
-			busses = pci_read_config32(PCI_DEV(bus, slot, func),
+			unsigned int buses;
+			buses = pci_read_config32(PCI_DEV(bus, slot, func),
 						   REG_PRIMARY_BUS);
-			busses = (busses >> 8) & 0xFF;
+			buses = (buses >> 8) & 0xFF;
 
 			/* Avoid recursion if the new bus is the same as
 			 * the old bus (insert lame The Who joke here) */
 
-			if ((busses != bus) &&
-			    find_on_bus(busses, vid, did, dev))
+			if ((buses != bus) &&
+			    find_on_bus(buses, vid, did, dev))
 				return 1;
 		}
 	}

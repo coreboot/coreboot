@@ -212,8 +212,8 @@ check_member(rk_edp_regs, pll_reg_5, 0xa00);
 
 /* video_ctl_10 */
 #define F_SEL					(0x1 << 4)
-#define INTERACE_SCAN_CFG			(0x1 << 2)
-#define INTERACD_SCAN_CFG_OFFSET		2
+#define INTERLACE_SCAN_CFG			(0x1 << 2)
+#define INTERLACE_SCAN_CFG_OFFSET		2
 #define VSYNC_POLARITY_CFG			(0x1 << 1)
 #define VSYNC_POLARITY_CFG_OFFSET		1
 #define HSYNC_POLARITY_CFG			(0x1 << 0)

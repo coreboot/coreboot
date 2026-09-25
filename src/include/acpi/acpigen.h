@@ -63,7 +63,7 @@ enum {
 	 FROM_BCD_OP		= 0x28,
 	 TO_BCD_OP		= 0x29,
 	 UNLOAD_OP		= 0x2A,
-	 REVISON_OP		= 0x30,
+	 REVISION_OP		= 0x30,
 	 DEBUG_OP		= 0x31,
 	 FATAL_OP		= 0x32,
 	 TIMER_OP		= 0x33,

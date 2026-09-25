@@ -994,8 +994,8 @@ void exynos_dp_config_video_slave_mode(struct edp_video_info *video_info)
 
 	/* Configure Interlaced for slave mode video */
 	reg = lread32(&dp_regs->video_ctl10);
-	reg &= ~INTERACE_SCAN_CFG;
-	reg |= (video_info->interlaced << INTERACE_SCAN_CFG_SHIFT);
+	reg &= ~INTERLACE_SCAN_CFG;
+	reg |= (video_info->interlaced << INTERLACE_SCAN_CFG_SHIFT);
 	printk(BIOS_SPEW, "interlaced %d\n", video_info->interlaced);
 	lwrite32(reg, &dp_regs->video_ctl10);
 

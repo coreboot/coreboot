@@ -73,7 +73,7 @@ struct i2c_bus
 	unsigned int clk_div;
 };
 
-static struct i2c_bus i2c_busses[] = {
+static struct i2c_bus i2c_buses[] = {
 	{
 		.bus_num = 0,
 		.regs = (void *)0x12c60000,
@@ -346,7 +346,7 @@ static void i2c_ch_init(struct i2c_bus *i2c, int speed)
 
 void i2c_init(unsigned int bus, int speed, int slaveadd)
 {
-	struct i2c_bus *i2c = &i2c_busses[bus];
+	struct i2c_bus *i2c = &i2c_buses[bus];
 
 	if (i2c->is_highspeed) {
 		hsi2c_reset(i2c);
@@ -606,7 +606,7 @@ static int i2c_recv_buf(struct i2c_regs *regs, uint8_t *data, int len)
 
 int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments, int count)
 {
-	struct i2c_bus *i2c = &i2c_busses[bus];
+	struct i2c_bus *i2c = &i2c_buses[bus];
 	if (i2c->is_highspeed)
 		return hsi2c_transfer(i2c, segments, count);
 

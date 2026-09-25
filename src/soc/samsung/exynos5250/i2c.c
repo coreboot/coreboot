@@ -54,7 +54,7 @@ enum {
 	I2cStatMasterXmit = 0x3 << 6
 };
 
-static struct s3c24x0_i2c_bus i2c_busses[] = {
+static struct s3c24x0_i2c_bus i2c_buses[] = {
 	{
 		.bus_num = 0,
 		.regs = (void *)0x12c60000,
@@ -219,7 +219,7 @@ static int i2c_recv_buf(struct i2c_regs *regs, uint8_t *data, int len)
 int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 			  int seg_count)
 {
-	struct s3c24x0_i2c_bus *i2c = &i2c_busses[bus];
+	struct s3c24x0_i2c_bus *i2c = &i2c_buses[bus];
 	struct i2c_regs *regs = i2c->regs;
 	int res = 0;
 
@@ -248,7 +248,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 
 void i2c_init(unsigned int bus, int speed, int slaveadd)
 {
-	struct s3c24x0_i2c_bus *i2c = &i2c_busses[bus];
+	struct s3c24x0_i2c_bus *i2c = &i2c_buses[bus];
 
 	unsigned long freq, pres = 16, div;
 	unsigned long val;

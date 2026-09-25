@@ -21,7 +21,7 @@
 }
 
 const struct SystemMemoryMapHob *get_system_memory_map(void);
-const struct SystemMemoryMapElement *get_system_memory_map_elment(uint8_t *num);
+const struct SystemMemoryMapElement *get_system_memory_map_element(uint8_t *num);
 
 const CXL_NODE_SOCKET *get_cxl_node(void);
 uint8_t get_cxl_node_count(void);

@@ -10,14 +10,14 @@
 #define SYSTEM_FAN	2
 
 /* Boundaries in celsius, sections in percent */
-static u8 cpu_boudaries[FINTEK_BOUNDARIES_SIZE] = {
+static u8 cpu_boundaries[FINTEK_BOUNDARIES_SIZE] = {
 	80,
 	65,
 	50,
 	35
 };
 
-static u8 system_boudaries[FINTEK_BOUNDARIES_SIZE] = {
+static u8 system_boundaries[FINTEK_BOUNDARIES_SIZE] = {
 	70,
 	55,
 	40,
@@ -51,7 +51,7 @@ struct fintek_fan cpu_fan = {
 	FAN_UP_RATE_10HZ,
 	FAN_DOWN_RATE_10HZ,
 	FAN_FOLLOW_INTERPOLATION,
-	cpu_boudaries,
+	cpu_boundaries,
 	cpu_section
 };
 
@@ -66,7 +66,7 @@ struct fintek_fan system_fan = {
 	FAN_UP_RATE_10HZ,
 	FAN_DOWN_RATE_10HZ,
 	FAN_FOLLOW_INTERPOLATION,
-	system_boudaries,
+	system_boundaries,
 	system_section
 };
 

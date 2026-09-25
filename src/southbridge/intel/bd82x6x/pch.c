@@ -188,7 +188,7 @@ static void check_device_present(struct device *dev)
 {
 	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
 	struct stopwatch timeout;
-	bool present, hot_plugable;
+	bool present, hot_pluggable;
 	uint32_t cap;
 
 	/* Set slot implemented. */
@@ -207,13 +207,13 @@ static void check_device_present(struct device *dev)
 	 *
 	 * It also allows to detect device before PCI enumeration has run.
 	 */
-	hot_plugable = config && config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)];
+	hot_pluggable = config && config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)];
 	present = !!(pci_read_config16(dev, cap + PCI_EXP_SLTSTA) & PCI_EXP_SLTSTA_PDS);
 
 	printk(BIOS_DEBUG, "%s: %s downstream device\n",
 	       dev_path(dev), present ? "Found a" : "No");
 
-	if (!present && !hot_plugable) {
+	if (!present && !hot_pluggable) {
 		/* No device present. */
 		stopwatch_init_usecs_expire(&timeout, 50 * 1000);
 		pci_or_config32(dev, 0x338, 1 << 26);
@@ -224,7 +224,7 @@ static void check_device_present(struct device *dev)
 			udelay(100);
 		}
 		dev->enabled = 0;
-	} else if (present && !hot_plugable && !dev->enabled) {
+	} else if (present && !hot_pluggable && !dev->enabled) {
 		/* Port will be disabled, but device present. Disable link. */
 		pci_or_config32(dev, cap + PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_LD);
 	}

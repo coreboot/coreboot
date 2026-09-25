@@ -32,7 +32,7 @@
 #define IIO_PORT_SETTINGS (1 + 5 * 8)
 
 const struct SystemMemoryMapHob *get_system_memory_map(void);
-const struct SystemMemoryMapElement *get_system_memory_map_elment(uint8_t *num);
+const struct SystemMemoryMapElement *get_system_memory_map_element(uint8_t *num);
 
 void soc_display_iio_universal_data_hob(const IIO_UDS *hob);
 void soc_display_memmap_hob(const struct SystemMemoryMapHob **hob_addr);

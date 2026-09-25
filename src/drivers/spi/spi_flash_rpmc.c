@@ -86,8 +86,8 @@ static enum cb_err spi_flash_rpmc_op2_read(const struct spi_flash *flash,
 	return CB_SUCCESS;
 }
 
-static enum cb_err spi_flash_rpmc_op2_get_exteded_status(const struct spi_flash *flash,
-							 uint8_t *extended_status)
+static enum cb_err spi_flash_rpmc_op2_get_extended_status(const struct spi_flash *flash,
+							  uint8_t *extended_status)
 {
 	return spi_flash_rpmc_op2_read(flash, extended_status, NULL, NULL, NULL);
 }
@@ -131,7 +131,7 @@ static enum cb_err spi_flash_rpmc_check_extended_status(const struct spi_flash *
 {
 	uint8_t extended_status;
 
-	if (spi_flash_rpmc_op2_get_exteded_status(flash, &extended_status) != CB_SUCCESS)
+	if (spi_flash_rpmc_op2_get_extended_status(flash, &extended_status) != CB_SUCCESS)
 		return CB_ERR;
 
 	if (spi_flash_rpmc_is_extended_status_successful(extended_status))
@@ -152,7 +152,7 @@ static enum cb_err spi_flash_rpmc_poll_op2(const struct spi_flash *flash, uint64
 	do {
 		attempt++;
 
-		if (spi_flash_rpmc_op2_get_exteded_status(flash, &extended_status)) {
+		if (spi_flash_rpmc_op2_get_extended_status(flash, &extended_status)) {
 			printk(BIOS_WARNING,
 			       "SPI command failed on attempt %d\n", attempt);
 			return CB_ERR;

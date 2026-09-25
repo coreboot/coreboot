@@ -94,7 +94,7 @@ union cse_fwsts6 {
 	uint32_t data;
 	struct {
 		uint32_t	reserved1:		30;
-		uint32_t	fpf_commited:		1;
+		uint32_t	fpf_committed:		1;
 		uint32_t	reserved2:		1;
 	} __packed fields;
 };

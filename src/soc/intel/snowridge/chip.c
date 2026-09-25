@@ -129,14 +129,14 @@ static void chip_domain_resource_table_load(config_t *chip_info)
 }
 
 static void chip_cfg_domain_resource_table_split(config_t *chip_info, int base_domain_index,
-						 int addtional_domain_index)
+						 int additional_domain_index)
 {
 	assert(base_domain_index < MAX_DOMAIN);
-	assert(addtional_domain_index < MAX_DOMAIN);
+	assert(additional_domain_index < MAX_DOMAIN);
 
 	struct snr_domain *base_domain = &chip_info->domain[base_domain_index];
-	struct snr_domain *addtional_domain = &chip_info->domain[addtional_domain_index];
-	memcpy(addtional_domain, base_domain, sizeof(*addtional_domain));
+	struct snr_domain *additional_domain = &chip_info->domain[additional_domain_index];
+	memcpy(additional_domain, base_domain, sizeof(*additional_domain));
 
 	/**
 	 * Base + (Limit - Base) / 2 to avoid overflow.
@@ -144,27 +144,27 @@ static void chip_cfg_domain_resource_table_split(config_t *chip_info, int base_d
 	if (base_domain->bus_base < base_domain->bus_limit) {
 		base_domain->bus_limit = base_domain->bus_base +
 					 (base_domain->bus_limit - base_domain->bus_base) / 2;
-		addtional_domain->bus_base = base_domain->bus_limit + 1;
+		additional_domain->bus_base = base_domain->bus_limit + 1;
 	}
 
 	if (base_domain->io_base < base_domain->io_limit) {
 		base_domain->io_limit = base_domain->io_base +
 					(base_domain->io_limit - base_domain->io_base) / 2;
-		addtional_domain->io_base = base_domain->io_limit + 1;
+		additional_domain->io_base = base_domain->io_limit + 1;
 	}
 
 	if (base_domain->mem32_base < base_domain->mem32_limit) {
 		base_domain->mem32_limit =
 			base_domain->mem32_base +
 			(base_domain->mem32_limit - base_domain->mem32_base) / 2;
-		addtional_domain->mem32_base = base_domain->mem32_limit + 1;
+		additional_domain->mem32_base = base_domain->mem32_limit + 1;
 	}
 
 	if (base_domain->mem64_base < base_domain->mem64_limit) {
 		base_domain->mem64_limit =
 			base_domain->mem64_base +
 			(base_domain->mem64_limit - base_domain->mem64_base) / 2;
-		addtional_domain->mem64_base = base_domain->mem64_limit + 1;
+		additional_domain->mem64_base = base_domain->mem64_limit + 1;
 	}
 }
 
@@ -173,14 +173,14 @@ static void chip_domain_resource_table_handle_multi_root(config_t *chip_info)
 	/**
 	 * Split domains that have more than 1 root bus.
 	 */
-	int addtional_domain = BL_MAX_LOGIC_IIO_STACK;
+	int additional_domain = BL_MAX_LOGIC_IIO_STACK;
 	chip_cfg_domain_resource_table_split(chip_info, 7,
-					     addtional_domain++); /**< Domain 8 (Ubox1). */
+					     additional_domain++); /**< Domain 8 (Ubox1). */
 
 	if (chip_info->domain[2].enabled)
 		chip_cfg_domain_resource_table_split(
 			chip_info, 2,
-			addtional_domain++); /**< Domain 2 (S2) has an extra root bus for Intel DLB. */
+			additional_domain++); /**< Domain 2 (S2) has an extra root bus for Intel DLB. */
 }
 
 static void chip_domain_resource_table_dump(config_t *chip_info)

@@ -250,10 +250,10 @@ void domain_read_resources(struct device *dev)
 {
 	uint64_t uma_base = get_uma_base();
 	uint32_t uma_size = get_uma_size();
-	uint32_t mem_useable = cbmem_top();
+	uint32_t mem_usable = cbmem_top();
 	uint32_t tom = get_top_of_mem_below_4gb();
 	uint64_t high_tom = get_top_of_mem_above_4gb();
-	uint64_t high_mem_useable;
+	uint64_t high_mem_usable;
 	int idx = 0x10;
 
 	pci_domain_read_resources(dev);
@@ -273,10 +273,10 @@ void domain_read_resources(struct device *dev)
 	 * 0x100000 (1MiB) -> low top usable RAM
 	 * cbmem_top() accounts for low UMA and TSEG if they are used.
 	 */
-	ram_from_to(dev, idx++, 1 * MiB, mem_useable);
+	ram_from_to(dev, idx++, 1 * MiB, mem_usable);
 
 	/* Low top usable RAM -> Low top RAM (bottom pci mmio hole) */
-	reserved_ram_from_to(dev, idx++, mem_useable, tom);
+	reserved_ram_from_to(dev, idx++, mem_usable, tom);
 
 	/* NB IOAPIC2 resource. IOMMU_IOAPIC_IDX is used as index, so that the common AMD MADT
 	   code can find this resource */
@@ -286,11 +286,11 @@ void domain_read_resources(struct device *dev)
 	if (high_tom >> 32) {
 		/* 4GiB -> high top usable */
 		if (uma_base >= (4ull * GiB))
-			high_mem_useable = uma_base;
+			high_mem_usable = uma_base;
 		else
-			high_mem_useable = high_tom;
+			high_mem_usable = high_tom;
 
-		ram_from_to(dev, idx++, 4ull * GiB, high_mem_useable);
+		ram_from_to(dev, idx++, 4ull * GiB, high_mem_usable);
 
 		/* High top usable RAM -> high top RAM */
 		if (uma_base >= (4ull * GiB)) {

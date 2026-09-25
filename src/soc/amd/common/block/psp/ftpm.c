@@ -26,7 +26,7 @@ bool psp_ftpm_is_active(void)
 	uint32_t caps = 0;
 
 	/* PSP must report fTPM capability support */
-	if (psp_get_ftpm_capabilties(&caps) != CB_SUCCESS)
+	if (psp_get_ftpm_capabilities(&caps) != CB_SUCCESS)
 		return false;
 
 	if (!(caps & MBOX_FTPM_CAP_TPM_SUPPORTED))
@@ -67,7 +67,7 @@ void psp_ftpm_needs_recovery(bool *psp_rpmc_nvram,
 		return;
 	}
 
-	if (psp_get_ftpm_capabilties(&caps) != CB_SUCCESS) {
+	if (psp_get_ftpm_capabilities(&caps) != CB_SUCCESS) {
 		printk(BIOS_ERR, "FTPM: Failed to get fTPM capabilities\n");
 		return;
 	}

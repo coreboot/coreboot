@@ -730,7 +730,7 @@ int print_pciexbar(struct pci_dev *nb)
 	uint64_t pciexbar_reg;
 	uint64_t pciexbar_phys;
 	volatile uint8_t *pciexbar;
-	int max_busses, devbase, i;
+	int max_buses, devbase, i;
 	int bus, dev, fn;
 
 	printf("========= PCIEXBAR ========\n\n");
@@ -851,15 +851,15 @@ int print_pciexbar(struct pci_dev *nb)
 	switch ((pciexbar_reg >> 1) & 3) {
 	case 0: // 256MB
 		pciexbar_phys = pciexbar_reg & (0xffULL << 28);
-		max_busses = 256;
+		max_buses = 256;
 		break;
 	case 1: // 128M
 		pciexbar_phys = pciexbar_reg & (0x1ffULL << 27);
-		max_busses = 128;
+		max_buses = 128;
 		break;
 	case 2: // 64M
 		pciexbar_phys = pciexbar_reg & (0x3ffULL << 26);
-		max_busses = 64;
+		max_buses = 64;
 		break;
 	default: // RSVD
 		printf("Undefined address base. Bailing out.\n");
@@ -868,14 +868,14 @@ int print_pciexbar(struct pci_dev *nb)
 
 	printf("PCIEXBAR: 0x%08" PRIx64 "\n", pciexbar_phys);
 
-	pciexbar = map_physical(pciexbar_phys, (max_busses * 1024 * 1024));
+	pciexbar = map_physical(pciexbar_phys, (max_buses * 1024 * 1024));
 
 	if (pciexbar == NULL) {
 		perror("Error mapping PCIEXBAR");
 		exit(1);
 	}
 
-	for (bus = 0; bus < max_busses; bus++) {
+	for (bus = 0; bus < max_buses; bus++) {
 		for (dev = 0; dev < 32; dev++) {
 			for (fn = 0; fn < 8; fn++) {
 				devbase = (bus * 1024 * 1024) + (dev * 32 * 1024) + (fn * 4 * 1024);
@@ -903,7 +903,7 @@ int print_pciexbar(struct pci_dev *nb)
 		}
 	}
 
-	unmap_physical((void *)pciexbar, (max_busses * 1024 * 1024));
+	unmap_physical((void *)pciexbar, (max_buses * 1024 * 1024));
 
 	return 0;
 }

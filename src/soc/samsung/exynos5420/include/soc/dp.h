@@ -503,8 +503,8 @@ static struct exynos_dp * const exynos_dp1 = (void *)EXYNOS5_DP1_BASE;
 
 /* EXYNOS_DP_VIDEO_CTL_10 */
 #define FORMAT_SEL				(0x1 << 4)
-#define INTERACE_SCAN_CFG			(0x1 << 2)
-#define INTERACE_SCAN_CFG_SHIFT			(2)
+#define INTERLACE_SCAN_CFG			(0x1 << 2)
+#define INTERLACE_SCAN_CFG_SHIFT		(2)
 #define VSYNC_POLARITY_CFG			(0x1 << 1)
 #define V_S_POLARITY_CFG_SHIFT			(1)
 #define HSYNC_POLARITY_CFG			(0x1 << 0)

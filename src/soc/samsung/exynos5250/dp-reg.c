@@ -450,7 +450,7 @@ void s5p_dp_config_video_slave_mode(struct s5p_dp_device *dp,
 	write32(&base->func_en_1, reg);
 
 	reg = read32(&base->video_ctl_10);
-	reg &= ~INTERACE_SCAN_CFG;
+	reg &= ~INTERLACE_SCAN_CFG;
 	reg |= (video_info->interlaced << 2);
 	write32(&base->video_ctl_10, reg);
 

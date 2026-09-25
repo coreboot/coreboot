@@ -14,7 +14,7 @@ static const char msg_err_mode[] = "mode";
 static const char msg_err_rate[] = "change rate";
 static const char msg_err_frequency[] = "frequency";
 static const char msg_err_temp_sensor[] = "temperature sensor";
-static const char msg_err_bondary[] = "boundary";
+static const char msg_err_boundary[] = "boundary";
 static const char msg_err_section[] = "section";
 static const char no_msg[] = "";
 
@@ -58,14 +58,14 @@ static int message_invalid_2(int err, u8 fan)
 	switch (err) {
 	case HWM_STATUS_INVALID_BOUNDARY_VALUE:
 		printk(BIOS_ERR, "%s fan %d %s value!\n", msg_err_invalid, fan,
-					msg_err_bondary);
+					msg_err_boundary);
 		break;
 	case HWM_STATUS_INVALID_SECTION_VALUE:
 		printk(BIOS_ERR, "%s fan %d %s value!\n", msg_err_invalid, fan,
 					msg_err_section);
 		break;
 	case HWM_STATUS_BOUNDARY_WRONG_ORDER:
-		printk(BIOS_ERR, "%s fan %d %s!\n", msg_err_wrong_order, fan, msg_err_bondary);
+		printk(BIOS_ERR, "%s fan %d %s!\n", msg_err_wrong_order, fan, msg_err_boundary);
 		break;
 	case HWM_STATUS_SECTIONS_WRONG_ORDER:
 		printk(BIOS_ERR, "%s fan %d %s!\n", msg_err_wrong_order, fan, msg_err_section);

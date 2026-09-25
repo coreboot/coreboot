@@ -92,7 +92,7 @@ uint16_t ddr4_speed_mhz_to_reported_mts(uint16_t speed_mhz);
  *	uint32_t mrs;
  *	chipset_enable_mrs_command_mode();
  *	mrs = ddr4_get_mr0(rtt_wr, srt, cas, asr, cwl)
- *	if (rank_has_mirrorred_pins)
+ *	if (rank_has_mirrored_pins)
  *		mrs = ddr4_mrs_mirror_pins(mrs);
  *	addr = chipset_specific_get_mrs_addr(mrs);
  *	volatile_read(addr);

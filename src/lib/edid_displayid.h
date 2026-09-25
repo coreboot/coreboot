@@ -29,7 +29,7 @@ struct displayid_section_header {
 
 struct displayid_block_header {
 	u8 tag;
-	u8 revison;
+	u8 revision;
 	u8 length;
 } ___packed;
 

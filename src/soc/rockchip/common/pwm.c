@@ -29,10 +29,10 @@ check_member(rk_pwm_regs, int_en, 0x44);
 #define PWM_CONTINUOUS                  (1 << 1)
 #define RK_PWM_CAPTURE                  (1 << 2)
 
-#define PWM_DUTY_POSTIVE                (1 << 3)
+#define PWM_DUTY_POSITIVE               (1 << 3)
 #define PWM_DUTY_NEGATIVE               (0 << 3)
 
-#define PWM_INACTIVE_POSTIVE            (1 << 4)
+#define PWM_INACTIVE_POSITIVE           (1 << 4)
 #define PWM_INACTIVE_NEGATIVE           (0 << 4)
 
 #define PWM_OUTPUT_LEFT                 (0 << 5)
@@ -57,7 +57,7 @@ void pwm_init(u32 id, u32 period_ns, u32 duty_ns)
 
 	write32(&rk_pwm->pwm[id].pwm_ctrl, PWM_SEL_SRC_CLK |
 		PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_CONTINUOUS |
-		PWM_DUTY_POSTIVE | PWM_INACTIVE_POSTIVE | RK_PWM_DISABLE);
+		PWM_DUTY_POSITIVE | PWM_INACTIVE_POSITIVE | RK_PWM_DISABLE);
 
 	period = (PWM_CLOCK_HZ / 1000) * period_ns / USECS_PER_SEC;
 	duty = (PWM_CLOCK_HZ / 1000) * duty_ns / USECS_PER_SEC;

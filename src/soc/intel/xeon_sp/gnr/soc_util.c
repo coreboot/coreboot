@@ -94,7 +94,7 @@ const struct SystemMemoryMapHob *get_system_memory_map(void)
 	return *memmap_addr;
 }
 
-const struct SystemMemoryMapElement *get_system_memory_map_elment(uint8_t *num)
+const struct SystemMemoryMapElement *get_system_memory_map_element(uint8_t *num)
 {
 	const struct SystemMemoryMapHob *hob = get_system_memory_map();
 	if (!hob)

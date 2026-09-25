@@ -186,16 +186,16 @@ static struct pci_dev *pci_scan_single_bus(struct pci_dev *dev, uint8_t bus)
 		hdr &= 0x7F;
 
 		if (hdr == HEADER_TYPE_BRIDGE || hdr == HEADER_TYPE_CARDBUS) {
-			uint8_t busses;
-			busses = (uint8_t)(pci_read_config32(
+			uint8_t buses;
+			buses = (uint8_t)(pci_read_config32(
 				PCI_DEV(bus, slot, func),
 				REG_PRIMARY_BUS) >> 8);
 
 			/* Avoid recursion if the new bus is the same as
 			 * the old bus (insert lame The Who joke here) */
 
-			if (busses != bus)
-				dev = pci_scan_single_bus(dev, busses);
+			if (buses != bus)
+				dev = pci_scan_single_bus(dev, buses);
 		}
 	}
 

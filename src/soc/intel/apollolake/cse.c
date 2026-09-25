@@ -195,7 +195,7 @@ static void dump_cse_state(void)
 	printk(BIOS_DEBUG, "CSE: Verified Boot Test     : %s\n",
 		fwsts4.fields.txe_veri_boot_test ? "YES" : "NO");
 	printk(BIOS_DEBUG, "CSE: FPF status             : %s\n",
-		fwsts6.fields.fpf_commited ? "FUSED" : "UNFUSED");
+		fwsts6.fields.fpf_committed ? "FUSED" : "UNFUSED");
 	printk(BIOS_DEBUG, "CSE: Error Status Code      : %u\n",
 		fwsts5.fields.error_status_code);
 }

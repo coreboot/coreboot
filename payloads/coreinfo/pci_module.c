@@ -192,11 +192,11 @@ static void ci_pci_scan_bus(int bus)
 			hdr &= ~HEADER_TYPE_MULTIFUNCTION;
 			if (hdr == HEADER_TYPE_BRIDGE ||
 			    hdr == HEADER_TYPE_CARDBUS) {
-				unsigned int busses;
+				unsigned int buses;
 
-				busses = pci_read_config32(dev, REG_PRIMARY_BUS);
+				buses = pci_read_config32(dev, REG_PRIMARY_BUS);
 
-				ci_pci_scan_bus((busses >> 8) & 0xff);
+				ci_pci_scan_bus((buses >> 8) & 0xff);
 
 			}
 		}

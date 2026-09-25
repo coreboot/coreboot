@@ -155,27 +155,29 @@ choice
 	default XGBE_10G_1G_BACKPLANE
 	depends on XGBE_BACKPLANE_CONNECTION
 	help
-	  Select to Use 10G/1G Backplane an on modes.
+	  Select the XGBE backplane platform configuration
+	  (XgbePortPlatformConfig).
 
 config XGBE_10G_1G_BACKPLANE
-	bool "XGBE XGBE_10G_1G_BACKPLANE"
+	bool "10G/1G backplane (autonegotiation on)"
 	help
-	  Select to Use 10G/1G Backplane an on modes.
+	  10G/1G backplane mode with autonegotiation enabled.
 
 config XGBE_2_5G_BACKPLANE
-	bool "XGBE XGBE_2_5G_BACKPLANE"
+	bool "2.5G backplane (autonegotiation off)"
 	help
-	  Select to Use 2.5 G Backplane an of modes.
+	  2.5G backplane mode with autonegotiation disabled.
 
 config XGBE_PORT_SGMII_BACKPLANE
-	bool "XGBE XGBE_PORT_SGMII_BACKPLANE"
+	bool "SGMII backplane (all speeds, autonegotiation off)"
 	help
-	  Select to Use all speed with Backplane an of modes.
+	  SGMII backplane mode supporting all speeds, with
+	  autonegotiation disabled.
 
 config XGBE_SFP_PLUS_CONNECTOR
-	bool "XGBE XGBE_SFP_PLUS_CONNECTOR"
+	bool "SFP+ connector"
 	help
-	  Select to Use 10M/100M/1000M  with SGMI modes 10G with SFI mode.
+	  SFP+ connector mode: 10M/100M/1000M with SGMII, 10G with SFI.
 endchoice
 
 choice

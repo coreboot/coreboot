@@ -72,7 +72,7 @@ void stout_ec_finalize_smm(void)
 	}
 
 	if (critical_shutdown) {
-		printk(BIOS_ERR, "EC critical_shutdown");
+		printk(BIOS_ERR, "EC critical_shutdown\n");
 
 		/* Go to S5 */
 		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | (0xf << 10));

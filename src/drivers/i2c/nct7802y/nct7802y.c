@@ -24,7 +24,7 @@ static void nct7802y_init(struct device *const dev)
 {
 	if (!dev->chip_info) {
 		printk(BIOS_WARNING,
-		       "NCT7802Y driver selected but not configured.");
+		       "NCT7802Y driver selected but not configured.\n");
 		return;
 	}
 

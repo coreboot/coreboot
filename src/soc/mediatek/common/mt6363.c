@@ -111,7 +111,7 @@ void mt6363_buck_set_voltage(u32 buck_id, u32 buck_uv)
 		vol_step = 6250;
 		break;
 	default:
-		printk(BIOS_WARNING, "[%s] Unknown buck_id %u", __func__, buck_id);
+		printk(BIOS_WARNING, "[%s] Unknown buck_id %u\n", __func__, buck_id);
 		return;
 	};
 
@@ -139,7 +139,7 @@ u32 mt6363_buck_get_voltage(u32 buck_id)
 		vol_step = 6250;
 		break;
 	default:
-		printk(BIOS_WARNING, "[%s] Unknown buck_id %u", __func__, buck_id);
+		printk(BIOS_WARNING, "[%s] Unknown buck_id %u\n", __func__, buck_id);
 		return 0;
 	};
 

@@ -8,13 +8,13 @@
 const struct gpio_operations *dev_get_gpio_ops(struct device *dev)
 {
 	if (!dev) {
-		printk(BIOS_ERR, "Could not get gpio operations, device is NULL.");
+		printk(BIOS_ERR, "Could not get gpio operations, device is NULL.\n");
 		return NULL;
 	} else if (!dev->ops) {
-		printk(BIOS_ERR, "Could not get gpio operations, dev->ops is NULL.");
+		printk(BIOS_ERR, "Could not get gpio operations, dev->ops is NULL.\n");
 		return NULL;
 	} else if (!dev->ops->ops_gpio) {
-		printk(BIOS_ERR, "Could not get gpio operations, ops_gpio is NULL.");
+		printk(BIOS_ERR, "Could not get gpio operations, ops_gpio is NULL.\n");
 		return NULL;
 	}
 

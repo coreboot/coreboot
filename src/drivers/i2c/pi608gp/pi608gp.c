@@ -30,7 +30,7 @@ static uint8_t pi608gp_encode_amp_lvl(uint32_t level_mv)
 	/* Allowed drive amplitude levels are in units of mV in range 0 to 475 mV with 25 mV
 	   steps, based on Table 6-6 from the PI7C9X2G608GP datasheet. */
 	if (level_mv > 475) {
-		printk(BIOS_ERR, "PI608GP: Drive level %u mV out of range 0 to 475 mV!",
+		printk(BIOS_ERR, "PI608GP: Drive level %u mV out of range 0 to 475 mV!\n",
 		       level_mv);
 		return PI608GP_ENCODE_ERR;
 	}

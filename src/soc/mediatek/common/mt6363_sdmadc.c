@@ -91,7 +91,7 @@ int mt6363_sdmadc_read(enum auxadc_channel channel, u32 *val,
 		if (regval & chan->hw_info.ready_mask)
 			break;
 		if (elapsed > chan->hw_info.max_time) {
-			printk(BIOS_ERR, "[%s] Auxadc read time out", __func__);
+			printk(BIOS_ERR, "[%s] Auxadc read time out\n", __func__);
 			return  ERR_TIMED_OUT;
 		}
 		udelay(chan->hw_info.poll_time);

@@ -1302,12 +1302,12 @@ static int tegra_dc_dp_explore_link_cfg(struct tegra_dc_dp_data *dp,
 
 	if (!config->pixel_clock || !config->xres || !config->yres) {
 		printk(BIOS_ERR,
-			"dp: error mode configuration");
+			"dp: error mode configuration\n");
 		return -EINVAL;
 	}
 	if (!link_cfg->max_link_bw || !link_cfg->max_lane_count) {
 		printk(BIOS_ERR,
-			"dp: error link configuration");
+			"dp: error link configuration\n");
 		return -EINVAL;
 	}
 

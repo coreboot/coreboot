@@ -238,12 +238,12 @@ static enum cb_err fast_spi_dma_mmap_readat(const struct region_device *rd, void
 {
 	ssize_t count = mmap_ops->readat(rd, b, offset, size);
 	if (count < 0) {
-		printk(BIOS_ERR, "Fast-SPI: Failed to read %zu bytes", size);
+		printk(BIOS_ERR, "Fast-SPI: Failed to read %zu bytes\n", size);
 		return CB_ERR;
 	}
 	*transferred += count;
 	if (count != size) {
-		printk(BIOS_ERR, "Fast-SPI: Partial read detected %zu/%zu bytes",
+		printk(BIOS_ERR, "Fast-SPI: Partial read detected %zu/%zu bytes\n",
 		       count, size);
 		return CB_ERR;
 	}
@@ -389,7 +389,7 @@ static ssize_t fast_spi_dma_transfer(const struct region_device *rd, void *b,
 		memmove((char *)b + early_bytes, b, transferred);
 		ret = fast_spi_dma_mmap_readat(rd, b, offset, early_bytes, &transferred);
 		if (ret != CB_SUCCESS) {
-			printk(BIOS_ERR, "Fast-SPI: Failed to read leading DMA block bytes");
+			printk(BIOS_ERR, "Fast-SPI: Failed to read leading DMA block bytes\n");
 			return -1;
 		}
 	}
@@ -400,7 +400,7 @@ static ssize_t fast_spi_dma_transfer(const struct region_device *rd, void *b,
 		ret = fast_spi_dma_mmap_readat(rd, (char *)b + transferred,
 					       offset + transferred, remaining, &transferred);
 		if (ret != CB_SUCCESS) {
-			printk(BIOS_ERR, "Fast-SPI: Failed to read the remaining bytes");
+			printk(BIOS_ERR, "Fast-SPI: Failed to read the remaining bytes\n");
 			return transferred;
 		}
 	}

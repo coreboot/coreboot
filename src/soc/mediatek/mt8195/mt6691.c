@@ -54,7 +54,7 @@ static uint8_t get_mt6691_chip_id(uint8_t i2c_num)
 
 	if (i2c_read_field(i2c_num, MT6691_SLAVE_ADDR, MT6691_MONITOR,
 			   &id, 0x1, MT6691_PGOOD_SHIFT) < 0) {
-		printk(BIOS_ERR, "%s: failed to read from i2c", __func__);
+		printk(BIOS_ERR, "%s: failed to read from i2c\n", __func__);
 		return 0;
 	}
 

@@ -250,7 +250,7 @@ static int calibrate_receive_enable(u8 channel, u8 lane,
 	/* Advance a little further. */
 	if (increase_medium(timing)) {
 		/* A finer search could be implemented */
-		printk(BIOS_WARNING, "Cannot increase medium further");
+		printk(BIOS_WARNING, "Cannot increase medium further\n");
 		return -1;
 	}
 	program_timing(timing, channel, lane);

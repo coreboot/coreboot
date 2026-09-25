@@ -151,7 +151,7 @@ retry_edp:
 				/* Rerun entire init sequence */
 				goto retry_edp;
 			}
-			printk(BIOS_ERR, "EDP preparation failed.");
+			printk(BIOS_ERR, "EDP preparation failed.\n");
 			return;
 		}
 		break;

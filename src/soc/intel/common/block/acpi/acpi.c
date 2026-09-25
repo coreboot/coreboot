@@ -570,7 +570,7 @@ unsigned long acpi_soc_fill_wdat(acpi_wdat_t *wdat, unsigned long current)
 
 out_err:
 	wdat->flags = ACPI_WDAT_FLAG_DISABLED;
-	printk(BIOS_ERR, "Fail to populate WDAT ACPI Table");
+	printk(BIOS_ERR, "Fail to populate WDAT ACPI Table\n");
 
 	return current;
 }

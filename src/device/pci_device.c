@@ -420,7 +420,7 @@ static void configure_adjustable_base(const struct device *dev,
 	if (!(res->flags & IORESOURCE_PCI64) && max_requested_bits > 32) {
 		printk(BIOS_ERR, "Resizable BAR requested"
 		       " above 32 bits, but PCI function reported a"
-		       " 32-bit BAR.");
+		       " 32-bit BAR.\n");
 		return;
 	}
 

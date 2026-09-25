@@ -543,7 +543,7 @@ static int unmarshal_nv_read(struct ibuf *ib, struct nv_read_response *nvr)
 	if (nvr->params_size !=
 	    (nvr->buffer.t.size + sizeof(nvr->buffer.t.size))) {
 		printk(BIOS_ERR,
-		       "%s:%d - parameter/buffer %d/%d size mismatch",
+		       "%s:%d - parameter/buffer %d/%d size mismatch\n",
 		       __func__, __LINE__, nvr->params_size,
 		       nvr->buffer.t.size);
 		return -1;

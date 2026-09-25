@@ -775,7 +775,7 @@ static enum cb_err espi_set_alert_pin_cfg(enum espi_alert_pin alert_pin, uint32_
 		return CB_SUCCESS;
 	case ESPI_ALERT_PIN_OPEN_DRAIN:
 		if (!(slave_caps & ESPI_SLAVE_OPEN_DRAIN_ALERT_SUPP)) {
-			printk(BIOS_ERR, "eSPI peripheral does not support open drain alert!");
+			printk(BIOS_ERR, "eSPI peripheral does not support open drain alert!\n");
 			return CB_ERR;
 		}
 

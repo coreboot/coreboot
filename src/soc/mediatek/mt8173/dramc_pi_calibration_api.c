@@ -787,7 +787,7 @@ void tx_delay_for_wrleveling(u32 channel,
 			 * the Clk/DQS margin by keeping the clk out delay.
 			 */
 			printk(BIOS_ERR, "[Warning] DQSO %d in TX "
-					 "per-bit = %d > DQSO %d in WL = %d  ",
+					 "per-bit = %d > DQSO %d in WL = %d\n",
 					 index, max_dqsdly_byte[index], index,
 					 wrlevel_dqs_dly[channel][index]);
 		}

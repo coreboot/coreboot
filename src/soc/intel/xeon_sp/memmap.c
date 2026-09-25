@@ -61,7 +61,7 @@ union dpr_register txt_get_chipset_dpr(void)
 	dpr.raw = 0;
 
 	if (!dev) {
-		printk(BIOS_ERR, "BUS 0: Unable to find VTD PCI dev");
+		printk(BIOS_ERR, "BUS 0: Unable to find VTD PCI dev\n");
 		return dpr;
 	}
 
@@ -73,7 +73,7 @@ union dpr_register txt_get_chipset_dpr(void)
 		/* Compare the LTDPR register on all iio stacks */
 		union dpr_register test_dpr = { .raw = pci_read_config32(dev, VTD_LTDPR) };
 		if (dpr.raw != test_dpr.raw) {
-			printk(BIOS_ERR, "LTDPR not the same on all IIO's");
+			printk(BIOS_ERR, "LTDPR not the same on all IIO's\n");
 			dpr.raw = 0;
 			return dpr;
 		}

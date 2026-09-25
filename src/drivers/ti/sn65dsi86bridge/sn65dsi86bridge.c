@@ -364,7 +364,7 @@ static void sn65dsi86_bridge_set_dp_clock_range(uint8_t bus, uint8_t chip,
 	if (dp_rate_idx < ARRAY_SIZE(sn65dsi86_bridge_dp_rate_lut))
 		i2c_write_field(bus, chip, SN_DATARATE_CONFIG_REG, dp_rate_idx, 8, 5);
 	else
-		printk(BIOS_ERR, "valid dp rate not found");
+		printk(BIOS_ERR, "valid dp rate not found\n");
 }
 
 static void sn65dsi86_bridge_set_bridge_active_timing(uint8_t bus,

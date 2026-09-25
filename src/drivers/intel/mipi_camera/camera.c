@@ -732,7 +732,7 @@ static int get_resource_index(const struct resource_config *res_config)
 		break;
 	default:
 		printk(BIOS_ERR, "Unsupported power operation: %x\n"
-				 "OS camera driver will likely not work", type);
+				 "OS camera driver will likely not work\n", type);
 		return -1;
 	}
 
@@ -802,7 +802,7 @@ static void add_clk_op(const struct clk_config *clk_config, enum action_type act
 	default:
 		acpigen_write_debug_string("Unsupported clock action");
 		printk(BIOS_ERR, "Unsupported clock action: %x\n"
-				 "OS camera driver will likely not work", action);
+				 "OS camera driver will likely not work\n", action);
 	}
 }
 

@@ -107,7 +107,7 @@ static enum cb_err fetch_mac_vpd_key(u8 *macstrbuf, const char *vpd_key)
 	size_t offset;
 
 	if (fmap_locate_area_as_rdev("RO_VPD", &rdev)) {
-		printk(BIOS_ERR, "Couldn't find RO_VPD region.");
+		printk(BIOS_ERR, "Couldn't find RO_VPD region.\n");
 		return CB_ERR;
 	}
 	search_address = rdev_mmap_full(&rdev);

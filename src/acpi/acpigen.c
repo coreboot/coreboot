@@ -564,14 +564,14 @@ static void acpigen_write_field_offset(uint32_t offset, uint32_t current_bit_pos
 	uint32_t diff_bits;
 
 	if (offset < current_bit_pos) {
-		printk(BIOS_WARNING, "%s: Cannot move offset backward", __func__);
+		printk(BIOS_WARNING, "%s: Cannot move offset backward\n", __func__);
 		return;
 	}
 
 	diff_bits = offset - current_bit_pos;
 	/* Upper limit */
 	if (diff_bits > 0xFFFFFFF) {
-		printk(BIOS_WARNING, "%s: Offset very large to encode", __func__);
+		printk(BIOS_WARNING, "%s: Offset very large to encode\n", __func__);
 		return;
 	}
 

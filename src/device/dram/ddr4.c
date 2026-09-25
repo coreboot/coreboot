@@ -212,7 +212,7 @@ int spd_decode_ddr4(struct dimm_attr_ddr4_st *dimm, spd_ddr4_raw_data spd)
 	dimm->ranks = reg8 + 1;
 
 	if (!bus_width || !sdram_width) {
-		printk(BIOS_ERR, "SPD information is invalid");
+		printk(BIOS_ERR, "SPD information is invalid\n");
 		dimm->size_mb = 0;
 		return SPD_STATUS_INVALID;
 	}

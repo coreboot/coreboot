@@ -122,7 +122,7 @@ static void enable_tmpin(const u16 base, const u8 tmpin,
 			pnp_write_hwm5_index(base, ITE_EC_ADC_TEMP_EXTRA_CHANNEL_ENABLE,
 					     reg_extra);
 		} else {
-			printk(BIOS_WARNING, "PECI to TMPIN%d not supported on this Super I/O",
+			printk(BIOS_WARNING, "PECI to TMPIN%d not supported on this Super I/O\n",
 			       tmpin);
 			return;
 		}

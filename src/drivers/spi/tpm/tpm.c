@@ -664,7 +664,7 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 		 * TODO(vbendeb): at least drain the FIFO here or somehow let
 		 * the TPM know that the response can be dropped.
 		 */
-		printk(BIOS_ERR, " Incorrect size of TPM response (%zd bytes)",
+		printk(BIOS_ERR, " Incorrect size of TPM response (%zd bytes)\n",
 		       payload_size);
 		return 0;
 	}

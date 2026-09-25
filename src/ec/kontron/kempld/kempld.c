@@ -19,14 +19,14 @@ static void kempld_uart_read_resources(struct device *dev)
 
 	const enum kempld_uart_io io = config->uart[uart].io;
 	if (io >= ARRAY_SIZE(io_addr)) {
-		printk(BIOS_ERR, "KEMPLD: Bad io value '%d' for UART#%u\n.", io, uart);
+		printk(BIOS_ERR, "KEMPLD: Bad io value '%d' for UART#%u.\n", io, uart);
 		dev->enabled = false;
 		return;
 	}
 
 	const int irq = config->uart[uart].irq;
 	if (irq >= 16) {
-		printk(BIOS_ERR, "KEMPLD: Bad irq value '%d' for UART#%u\n.", irq, uart);
+		printk(BIOS_ERR, "KEMPLD: Bad irq value '%d' for UART#%u.\n", irq, uart);
 		dev->enabled = false;
 		return;
 	}

@@ -96,10 +96,10 @@ bool mainboard_needs_pcie_init(void)
 	uint32_t sku = sku_id();
 
 	if (sku == CROS_SKU_UNKNOWN) {
-		printk(BIOS_WARNING, "Unknown SKU (%#x); assuming PCIe", sku);
+		printk(BIOS_WARNING, "Unknown SKU (%#x); assuming PCIe\n", sku);
 		return true;
 	} else if (sku == CROS_SKU_UNPROVISIONED) {
-		printk(BIOS_WARNING, "Unprovisioned SKU (%#x); assuming PCIe", sku);
+		printk(BIOS_WARNING, "Unprovisioned SKU (%#x); assuming PCIe\n", sku);
 		return true;
 	}
 

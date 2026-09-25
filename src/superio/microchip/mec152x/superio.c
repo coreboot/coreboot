@@ -109,7 +109,7 @@ static void set_iobase(struct device *espiioc, struct device *dev,
 {
 	if (index != 0x60) {
 		printk(BIOS_WARNING,
-			"%s: invalid base register index (io 0x%02x), ignoring",
+			"%s: invalid base register index (io 0x%02x), ignoring\n",
 			dev_path(dev), index);
 		return;
 	}
@@ -123,7 +123,7 @@ static void set_iobase(struct device *espiioc, struct device *dev,
 		pnp_write_config(espiioc, bar + 0, 1); // valid bit
 	} else {
 		printk(BIOS_WARNING,
-			"%s: could not lookup true base register index for io 0x%02x, ignoring",
+			"%s: could not lookup true base register index for io 0x%02x, ignoring\n",
 			dev_path(dev), index);
 	}
 }
@@ -151,7 +151,7 @@ static void set_irq(struct device *espiioc, struct device *dev,
 		pnp_write_config(espiioc, true_index, irq);
 	} else {
 		printk(BIOS_WARNING,
-			"%s: could not lookup true irq register index for irq 0x%02x, ignoring",
+			"%s: could not lookup true irq register index for irq 0x%02x, ignoring\n",
 			dev_path(dev), index);
 	}
 }

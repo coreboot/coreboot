@@ -243,7 +243,7 @@ static void set_vga_bridge_bits(void)
 		printk(BIOS_DEBUG, "found VGA at %s\n", dev_path(dev));
 		if (dev->upstream->no_vga16) {
 			printk(BIOS_WARNING,
-				"A bridge on the path doesn't support 16-bit VGA decoding!");
+				"A bridge on the path doesn't support 16-bit VGA decoding!\n");
 		}
 
 		if (dev->on_mainboard)
@@ -467,7 +467,7 @@ void dev_enumerate(void)
 	thread_yield();
 
 	if (!root->ops || !root->ops->scan_bus) {
-		printk(BIOS_ERR, "dev_root missing scan_bus operation");
+		printk(BIOS_ERR, "dev_root missing scan_bus operation\n");
 		return;
 	}
 	scan_bus(root);

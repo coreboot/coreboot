@@ -434,7 +434,7 @@ static enum cb_err cse_set_next_boot_partition(enum boot_partition_id bp)
 	};
 
 	if (bp != RO && bp != RW) {
-		printk(BIOS_ERR, "cse_lite: Incorrect partition id(%d) is provided", bp);
+		printk(BIOS_ERR, "cse_lite: Incorrect partition id(%d) is provided\n", bp);
 		return CB_ERR_ARG;
 	}
 

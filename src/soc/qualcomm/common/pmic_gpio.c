@@ -10,7 +10,7 @@ void pmic_gpio_configure(uint8_t sid, uint8_t gpio_num,
 				uint8_t mode)
 {
 	if (gpio_num < PMIC_GPIO_NUMBER_MIN || gpio_num > PMIC_GPIO_NUMBER_MAX) {
-		printk(BIOS_ERR, "Invalid PMIC GPIO (%d:%d)", sid, gpio_num);
+		printk(BIOS_ERR, "Invalid PMIC GPIO (%d:%d)\n", sid, gpio_num);
 		return;
 	}
 

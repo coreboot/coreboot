@@ -250,7 +250,7 @@ static int rk_mipi_dsi_phy_init(struct rk_mipi_dsi *dsi)
 			return 0;
 	} while (!stopwatch_expired(&sw));
 
-	printk(BIOS_ERR, "failed to wait for phy clk lane stop state");
+	printk(BIOS_ERR, "failed to wait for phy clk lane stop state\n");
 	return -1;
 }
 

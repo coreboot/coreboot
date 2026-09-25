@@ -284,12 +284,12 @@ void verstage_main(void)
 		if (CONFIG(TPM_SETUP_HIBERNATE_ON_ERR) &&
 				tpm_rc == TPM_CB_COMMUNICATION_ERROR) {
 			printk(BIOS_ERR, "Failed to communicate with TPM\n"
-					"Next reboot will hibernate to reset TPM");
+					"Next reboot will hibernate to reset TPM\n");
 			/* Command the EC to hibernate on next AP shutdown */
 			if (google_chromeec_reboot(
 					EC_REBOOT_HIBERNATE,
 					EC_REBOOT_FLAG_ON_AP_SHUTDOWN)) {
-				printk(BIOS_ERR, "Failed to get EC to schedule hibernate");
+				printk(BIOS_ERR, "Failed to get EC to schedule hibernate\n");
 			}
 		}
 	}

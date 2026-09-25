@@ -98,7 +98,7 @@ size_t start_cpu(size_t cpu, void (*entry_64)(size_t core_id))
 
 	if (stopwatch_expired(&sw)) {
 		printk(BIOS_ERR, "Timeout waiting for reset "
-		       "pending to clear.");
+		       "pending to clear.\n");
 		return 1;
 	}
 

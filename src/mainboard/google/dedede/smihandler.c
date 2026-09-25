@@ -75,7 +75,7 @@ static void mainboard_config_cbi_wp(void)
 	 */
 	if (spi_flash_status(spi_flash_dev, &sr1) < 0) {
 		printk(BIOS_ERR, "MB: Failed to read SPI status register 1\n");
-		printk(BIOS_ERR, "MB: CBI EEPROM WP cannot change!");
+		printk(BIOS_ERR, "MB: CBI EEPROM WP cannot change!\n");
 		return;
 	}
 

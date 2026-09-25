@@ -37,7 +37,7 @@ static int segment_targets_type(void *dest, unsigned long memsz,
 	   selfload_check(). */
 	if (!ENV_RAMSTAGE) {
 		printk(BIOS_ERR,
-		       "Callers not supposed to call selfload_check() in romstage");
+		       "Callers not supposed to call selfload_check() in romstage\n");
 		return 0;
 	}
 

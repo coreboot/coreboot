@@ -691,12 +691,12 @@ int p6_configure_l2_cache(void)
 
 	if (calculate_l2_physical_address_range() != 0) {
 		printk(BIOS_ERR,
-			"Failed to calculate L2 physical address range");
+			"Failed to calculate L2 physical address range\n");
 		goto bad;
 	}
 
 	if (calculate_l2_cache_size() != 0) {
-		printk(BIOS_ERR, "Failed to calculate L2 cache size");
+		printk(BIOS_ERR, "Failed to calculate L2 cache size\n");
 		goto bad;
 	}
 

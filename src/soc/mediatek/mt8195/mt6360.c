@@ -129,7 +129,7 @@ static int mt6360_i2c_read_byte(u8 index, u8 reg, u8 *data)
 	crc = crc8(crc8_table[index], chunk, 3);
 
 	if (chunk[3] != crc) {
-		printk(BIOS_ERR, "%s: incorrect CRC: expected %#x, got %#x",
+		printk(BIOS_ERR, "%s: incorrect CRC: expected %#x, got %#x\n",
 		       __func__, crc, chunk[3]);
 		return -1;
 	}

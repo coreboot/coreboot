@@ -208,7 +208,7 @@ void gpio_configure_dnv_pads(const struct dnv_pad_config *gpio, size_t num)
 
 		if (PadOwnVal != GpioPadOwnHost) {
 			printk(BIOS_ERR, "GPIO WARNING: Accessing pad not "
-					 "owned by host (Group=%d, Pad=%d)!",
+					 "owned by host (Group=%d, Pad=%d)!\n",
 			       GroupIndex, PadNumber);
 			if (PadOwnVal == GpioPadOwnCsme)
 				printk(BIOS_ERR, "The owner is CSME\n");

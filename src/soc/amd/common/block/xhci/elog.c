@@ -65,7 +65,7 @@ static void xhci_cap_callback(void *data, const struct xhci_supported_protocol *
 		break;
 
 	default:
-		printk(BIOS_WARNING, "Skipping logging XHCI events for controller %u, unsupported protocol",
+		printk(BIOS_WARNING, "Skipping logging XHCI events for controller %u, unsupported protocol\n",
 		       controller);
 		break;
 	}

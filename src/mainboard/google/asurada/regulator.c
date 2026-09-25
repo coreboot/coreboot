@@ -117,7 +117,7 @@ bool mainboard_regulator_is_enabled(enum mtk_regulator regulator)
 
 	id = get_mt6360_regulator_id(regulator);
 	if (id < 0) {
-		printk(BIOS_WARNING, "Invalid regulator ID: %d\n; assuming disabled",
+		printk(BIOS_WARNING, "Invalid regulator ID: %d; assuming disabled\n",
 		       regulator);
 		return false;
 	}
@@ -125,7 +125,7 @@ bool mainboard_regulator_is_enabled(enum mtk_regulator regulator)
 	uint8_t enabled;
 	if (google_chromeec_regulator_is_enabled(id, &enabled) < 0) {
 		printk(BIOS_WARNING,
-		       "Failed to query regulator ID: %d\n; assuming disabled",
+		       "Failed to query regulator ID: %d; assuming disabled\n",
 		       regulator);
 		return false;
 	}

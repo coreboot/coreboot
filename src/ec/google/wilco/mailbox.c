@@ -172,7 +172,7 @@ static int wilco_ec_transfer(struct wilco_ec_message *msg)
 
 	/* EC always returns EC_MAILBOX_DATA_SIZE bytes */
 	if (rs.data_size > EC_MAILBOX_DATA_SIZE) {
-		printk(BIOS_ERR, "%s: packet too long (%d bytes, expected %d)",
+		printk(BIOS_ERR, "%s: packet too long (%d bytes, expected %d)\n",
 		       __func__, rs.data_size, EC_MAILBOX_DATA_SIZE);
 		return -1;
 	}
@@ -181,7 +181,7 @@ static int wilco_ec_transfer(struct wilco_ec_message *msg)
 	skip_size = (msg->type == WILCO_EC_MSG_DEFAULT) ? 1 : 0;
 
 	if (msg->response_size > rs.data_size - skip_size) {
-		printk(BIOS_ERR, "%s: data too short (%zu bytes, expected %zu)",
+		printk(BIOS_ERR, "%s: data too short (%zu bytes, expected %zu)\n",
 		       __func__, rs.data_size - skip_size, msg->response_size);
 		return -1;
 	}

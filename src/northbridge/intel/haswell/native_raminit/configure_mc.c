@@ -614,7 +614,7 @@ static void enable_2x_refresh(struct sysinfo *ctrl)
 			const uint32_t current_cfg = reg32;
 			if (current_cfg != desired_cfg) {
 				printk(BIOS_ERR,
-					"Mailbox 2x Refresh locked with wrong values: %x != %x",
+					"Mailbox 2x Refresh locked with wrong values: %x != %x\n",
 					current_cfg, desired_cfg);
 			}
 		} else {

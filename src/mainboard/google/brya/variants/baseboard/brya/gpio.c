@@ -382,7 +382,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_VGPIO_21, NONE),
 
 	/* Put option BT_I2S and SoC SSP2 pins in NC mode, ensure that
-	 * all the relevant VGPIOs were able to be overritten via
+	 * all the relevant VGPIOs were able to be overwritten via
 	 *  override_gpio_table of each variant of gpio.c
 	 */
 	/* BT_I2S_BCLK */

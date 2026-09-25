@@ -149,7 +149,7 @@ static void gpio_configure_owner(const struct pad_config *cfg,
 	pin = relative_pad_in_comm(comm, cfg->pad);
 
 	/* Based on the gpio pin number configure the corresponding bit in
-	 * HOSTSW_OWN register. Value of 0x1 indicates GPIO Driver onwership.
+	 * HOSTSW_OWN register. Value of 0x1 indicates GPIO Driver ownership.
 	 */
 	hostsw_own_offset = comm->host_own_reg_0;
 	hostsw_own_offset += gpio_group_index_scaled(comm, pin,

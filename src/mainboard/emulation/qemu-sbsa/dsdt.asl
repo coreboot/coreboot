@@ -182,7 +182,7 @@ DefinitionBlock(
 				0,	 // AddressMinimum - Minimum Bus Number
 				255,	 // AddressMaximum - Maximum Bus Number
 				0,	 // AddressTranslation - Set to 0
-				256	// RangeLength - Number of Busses
+				256	// RangeLength - Number of Buses
 				)
 
 				DWordMemory ( // 32-bit BAR Windows
@@ -235,7 +235,7 @@ DefinitionBlock(
 			Method (_OSC,4) {
 				// Check for proper UUID
 				If (Arg0 == ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")) {
-					// Create DWord-adressable fields from the Capabilities Buffer
+					// Create DWord-addressable fields from the Capabilities Buffer
 					CreateDWordField (Arg3,0,CDW1)
 					CreateDWordField (Arg3,4,CDW2)
 					CreateDWordField (Arg3,8,CDW3)

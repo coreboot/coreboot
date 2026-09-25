@@ -518,7 +518,7 @@ static void tegra_spi_dma_start(struct tegra_spi_channel *spi)
 	/*
 	 * The DMA triggers have units of packets. As each packet is currently
 	 * 1 byte the triggers need to be set to 4 packets (0b01) to match
-	 * the AHB 32-bit (4 byte) tranfser. Otherwise the FIFO errors can
+	 * the AHB 32-bit (4 byte) transfer. Otherwise the FIFO errors can
 	 * occur.
 	 */
 	if (spi->dma_out) {
@@ -635,7 +635,7 @@ static int xfer_setup(struct tegra_spi_channel *spi, void *buf,
 		spi->in_buf = buf;
 
 	/*
-	 * Alignment consideratons:
+	 * Alignment considerations:
 	 * When we enable caching we'll need to clean/invalidate portions of
 	 * memory. So we need to be careful about memory alignment. Also, DMA
 	 * likes to operate on 4-bytes at a time on the AHB side. So for

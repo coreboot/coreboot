@@ -129,7 +129,7 @@ static const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio52 = GPIO_MODE_GPIO,
 	.gpio53 = GPIO_MODE_GPIO,
 	.gpio54 = GPIO_MODE_GPIO,
-	/* GPIO55 marekd as WL_OFF#, but is native (GNT3#) */
+	/* GPIO55 marked as WL_OFF#, but is native (GNT3#) */
 	.gpio56 = GPIO_MODE_GPIO,
 	.gpio57 = GPIO_MODE_GPIO,
 	.gpio60 = GPIO_MODE_GPIO,  /* DRAMRST_CNTRL_PCH */

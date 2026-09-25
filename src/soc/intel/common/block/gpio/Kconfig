@@ -60,7 +60,7 @@ config SOC_INTEL_COMMON_BLOCK_GPIO_PMODE_4BITS
 	bool
 	default n
 	help
-	 SoC user to select this config if Pad Mode (PMODE) width of PAD_CFG_DW0 regiser
+	 SoC user to select this config if Pad Mode (PMODE) width of PAD_CFG_DW0 register
 	 is 4 bits to support Native Function 1 to 15.
 
 config SOC_INTEL_COMMON_BLOCK_GPIO_16BIT_CPU_PORTID

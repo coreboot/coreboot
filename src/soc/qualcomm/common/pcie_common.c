@@ -839,7 +839,7 @@ static enum cb_err qcom_dw_pcie_enable(struct qcom_pcie_cntlr_t *pcie)
 	/* de-assert PCIe reset link to bring EP out of reset */
 	gpio_set(pcierc->perst, 1);
 
-	/* establisth the link */
+	/* establish the link */
 	ret = qcom_pcie_dw_link_up(pcie);
 	if (ret) {
 		printk(BIOS_ERR, "PCIe Link init failed\n");

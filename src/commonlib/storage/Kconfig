@@ -18,7 +18,7 @@ config STORAGE_ERASE
 	bool "Support SD/MMC erase operations"
 	default n
 	help
-	  Select to enable SD/MMC erase oprations
+	  Select to enable SD/MMC erase operations
 
 config STORAGE_EARLY_ERASE
 	bool "Enable erase operations in bootblock and verstage"
@@ -29,7 +29,7 @@ config STORAGE_WRITE
 	bool "Support SD/MMC write operations"
 	default n
 	help
-	  Select to enable SD/MMC write oprations
+	  Select to enable SD/MMC write operations
 
 config STORAGE_EARLY_WRITE
 	bool "Enable write operations in bootblock and verstage"

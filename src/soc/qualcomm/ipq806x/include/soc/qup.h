@@ -170,7 +170,7 @@ qup_return_t qup_reset_i2c_master_status(gsbi_id_t gsbi_id);
  * Send data to the peripheral on the bus.
  * gsbi_id[IN]: GSBI block for which data is to be sent.
  * p_tx_obj[IN]: Data to be sent to the slave on the bus.
- * stop_seq[IN]: When set to non-zero QUP engine sends i2c stop sequnce.
+ * stop_seq[IN]: When set to non-zero QUP engine sends i2c stop sequence.
  *
  * return: QUP_SUCCESS, when data is sent successfully to the peripheral.
  */

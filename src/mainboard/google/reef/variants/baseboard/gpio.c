@@ -51,7 +51,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_178, UP_20K, DEEP, NF1), /* SDCARD_CMD */
 	/* CLK feedback, internal signal, needs 20K pull down */
 	PAD_CFG_NF(GPIO_179, DN_20K, DEEP, NF1), /* SDCARD_CLK_FB */
-	/* No h/w write proect for uSD cards, pull down by 20K */
+	/* No h/w write protect for uSD cards, pull down by 20K */
 	PAD_CFG_NF(GPIO_186, DN_20K, DEEP, NF1), /* SDCARD_LVL_WP */
 	/* EN_SD_SOCKET_PWR_L for SD slot power control. Default on. */
 	PAD_CFG_GPO(GPIO_183, 0, DEEP),		 /* SDIO_PWR_DOWN_N */

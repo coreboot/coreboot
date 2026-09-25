@@ -48,5 +48,5 @@ IFWI Boot Flow
  ╚════════════════════╝
 
  We keep copying the chunks until there is none left, then send
- one final acknowledgement to the CSE - so it can know that the
+ one final acknowledgment to the CSE - so it can know that the
  bootflow is complete.

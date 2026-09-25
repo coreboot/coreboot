@@ -471,7 +471,7 @@ void cpu_cl_cleanup(void)
 	}
 
 	/* If storage-off is supported, turn off the PUNIT SRAM
-	 * stroage to save power. This clears crashlog records also.
+	 * storage to save power. This clears crashlog records also.
 	 */
 
 	if (!cpu_cl_disc_tab.header.fields.storage_off_support) {

@@ -149,7 +149,7 @@ config TPM_ON_FAST_SPI
 	default n
 	depends on MEMORY_MAPPED_TPM
 	help
-	  TPM part is conntected on Fast SPI interface and is mapped to the
+	  TPM part is connected on Fast SPI interface and is mapped to the
 	  linear address space.
 
 config PCR_BASE_ADDRESS

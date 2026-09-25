@@ -155,7 +155,7 @@ void stm_setup(uintptr_t mseg, int cpu, uintptr_t smbase,
 		return;
 	}
 
-	// This code moved here because paralled SMM set can cause
+	// This code moved here because parallel SMM set can cause
 	// some processor to receive a bad value
 	// calculate the location in SMRAM
 	addr_calc = mseg - CONFIG_BIOS_RESOURCE_LIST_SIZE;

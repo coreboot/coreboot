@@ -226,7 +226,7 @@ void s5p_dp_config_video_slave_mode(struct s5p_dp_device *dp,
 			struct video_info *video_info);
 
 /*
- * Wait unitl HW link training done
+ * Wait until HW link training done
  *
  * param dp		pointer to main s5p-dp structure
  */

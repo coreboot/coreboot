@@ -14,7 +14,7 @@
 #include "ipmi.h"
 #include "vpd.h"
 
-/* Convert the vpd integer to the DDR frenquency limit enum */
+/* Convert the vpd integer to the DDR frequency limit enum */
 static enum ddr_freq_limit ddr_freq_limit(int num)
 {
 	switch (num) {

@@ -186,7 +186,7 @@ static void mainboard_init(struct device *dev)
 
 	/*
 	 * Confirmed by NVIDIA hardware team, we need to take ALL audio devices
-	 * conntected to AHUB (AUDIO, APBIF, I2S, DAM, AMX, ADX, SPDIF, AFC) out
+	 * connected to AHUB (AUDIO, APBIF, I2S, DAM, AMX, ADX, SPDIF, AFC) out
 	 * of reset and clock-enabled, otherwise reading AHUB devices (In our
 	 * case, I2S/APBIF/AUDIO<XBAR>) will hang.
 	 *

@@ -202,7 +202,7 @@ static int tegra_dc_sor_enable_lane_sequencer(struct tegra_dc_sor_data *sor,
 			100, TEGRA_SOR_TIMEOUT_MS*1000)) {
 		printk(BIOS_ERR,
 			"dp: timeout while waiting for SOR lane sequencer "
-			"to power down langes\n");
+			"to power down lanes\n");
 		return -1;
 	}
 	return 0;

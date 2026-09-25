@@ -167,13 +167,13 @@ void spi_flash_print_sfdp_headers(const struct spi_flash *flash)
 							  &tbl_len_dwords, &tbl_pointer);
 
 		if (stat == CB_SUCCESS) {
-			printk(BIOS_DEBUG, "SFPD header with index %d:\n", i);
+			printk(BIOS_DEBUG, "SFDP header with index %d:\n", i);
 			printk(BIOS_DEBUG, "  table ID %#x, major rev %#x, minor rev %#x\n",
 			       tbl_id, tbl_rev >> 8, tbl_rev & 0xff);
 			printk(BIOS_DEBUG, "  table pointer %#x, table length DWORDS %#x\n",
 			       tbl_pointer, tbl_len_dwords);
 		} else {
-			printk(BIOS_ERR, "Cound't read SFPD header with index %d.\n", i);
+			printk(BIOS_ERR, "Couldn't read SFDP header with index %d.\n", i);
 		}
 	}
 }
@@ -210,7 +210,7 @@ static enum cb_err find_sfdp_parameter_header(const struct spi_flash *flash, uin
 		}
 	}
 
-	printk(BIOS_WARNING, "Cound't find SFPD header with table ID %#x.\n", table_id);
+	printk(BIOS_WARNING, "Couldn't find SFDP header with table ID %#x.\n", table_id);
 
 	return CB_ERR;
 }

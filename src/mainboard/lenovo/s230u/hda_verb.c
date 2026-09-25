@@ -27,7 +27,7 @@ const u32 cim_verb_data[] = {
 	 *   0 Line out  4 S/PDIF out     8 Line in    c S/PDIF in
 	 *   1 Speaker   5 Digital out    9 Aux        d Digital in
 	 *   2 HP out    6 Modem line     a Mic in     e Reserved
-	 *   3 CD        7 Modem handse   b Telephony  f Other
+	 *   3 CD        7 Modem handset  b Telephony  f Other
 	 * 19:16 Connection type
 	 *   0 Unknown    4 RCA      8 Multichannel analog DIN
 	 *   1 1/8" jack  5 Optical  9 XLR

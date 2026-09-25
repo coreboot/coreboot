@@ -39,7 +39,7 @@ static const struct funit_cfg funits[] = {
 	FUNIT_CFG(I2C5, PLLP, 400, pmic_pads, ARRAY_SIZE(pmic_pads)),
 	/* SPI flash at 24MHz on QSPI controller. */
 	FUNIT_CFG(QSPI, PLLP, 24000, spiflash_pads, ARRAY_SIZE(spiflash_pads)),
-	/* Foster has no TPM yet. This is for futurn TPM on I2C3  @ 400kHz. */
+	/* Foster has no TPM yet. This is for future TPM on I2C3  @ 400kHz. */
 	FUNIT_CFG(I2C3, PLLP, 400, tpm_pads, ARRAY_SIZE(tpm_pads)),
 };
 

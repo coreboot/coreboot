@@ -759,7 +759,7 @@ void mt_pll_init(void)
 	/* switch sram control to bypass mode for PCIE_MAC_P0 */
 	setbits32(&mtk_spm->ap_mdsrc_req, 0x1);
 
-	/* ctitical clock */
+	/* critical clock */
 	write32(&mt8195_infracfg_ao->module_sw_cg_0_clr, 0x00000020);
 	write32(&mt8195_infracfg_ao->module_sw_cg_1_clr, 0x00100000);
 	write32(&mt8195_infracfg_ao->module_sw_cg_2_clr, 0x02000000);

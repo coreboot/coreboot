@@ -626,7 +626,7 @@ struct ec_response_wake_on_lan_control {
  * the board ID needs to be measured at run-time.
  *
  * For the Framework 16 inputmodules there is a dedicated command, which abstracts the logic,
- * because there is also a mux involed: EC_CMD_CHECK_DECK_STATE
+ * because there is also a mux involved: EC_CMD_CHECK_DECK_STATE
  *
  * For Framework 13 we have multiple versions of the touchpad and speakers (audio board)
  * that BIOS/OS need to distinguish through this host command.

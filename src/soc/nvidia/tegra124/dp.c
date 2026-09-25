@@ -1212,13 +1212,13 @@ static int tegra_dc_dp_fast_link_training(struct tegra_dc_dp_data *dp,
 		tegra_dc_sor_read_link_config(&dp->sor, &link_bw,
 			&lane_count);
 		printk(BIOS_ERR,
-			"Fast link trainging failed, link bw %d, lane # %d\n",
+			"Fast link training failed, link bw %d, lane # %d\n",
 			link_bw, lane_count);
 		return -EFAULT;
 	}
 
 	printk(BIOS_INFO,
-		"Fast link trainging succeeded, link bw %d, lane %d\n",
+		"Fast link training succeeded, link bw %d, lane %d\n",
 		link_cfg->link_bw, link_cfg->lane_count);
 
 	return 0;

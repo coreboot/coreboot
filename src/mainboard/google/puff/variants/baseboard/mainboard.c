@@ -83,9 +83,9 @@ static void wait_for_hpd(gpio_t gpio, long timeout)
  * Hence, Iinput (Amps) = 9.6A
  * Since there is no voltage information from PSYS, different voltage input
  * would map to different Psys_pmax settings:
- * For Type-C 15V, the Psys_pmax sholud be 15v x 9.6A = 144W
+ * For Type-C 15V, the Psys_pmax should be 15v x 9.6A = 144W
  * For Type-C 20V, the Psys_pmax should be 20v x 9.6A = 192W
- * For a barral jack, the Psys_pmax should be 19v x 9.6A = 182.4W
+ * For a barrel jack, the Psys_pmax should be 19v x 9.6A = 182.4W
  */
 #define PSYS_IMAX    9600
 #define BJ_VOLTS_MV  19000

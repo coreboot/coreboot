@@ -201,7 +201,7 @@ static void wifi_power_reset_configure_active_high_power(void)
 	 * When GPIO_42 is configured as active high for enabling WiFi power, WIFI_AUX_RESET_L
 	 * gets pulled high because of external PU to PP3300_WIFI. Thus, EN_PWR_WIFI needs to be
 	 * set low before driving it high to trigger a WiFi power cycle to meet PCIe
-	 * requirements. Thus, configura GPIOs such that:
+	 * requirements. Thus, configure GPIOs such that:
 	 * - WIFI_AUX_RESET_L is configured first to assert PERST# to WiFi device
 	 * - Disable power to WiFi.
 	 * - Wait 10ms for WiFi power to go low.

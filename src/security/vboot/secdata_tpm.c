@@ -162,7 +162,7 @@ tpm_result_t antirollback_write_space_kernel(struct vb2_context *ctx)
 	 * there is a power loss or other unexpected event. The AP does not
 	 * write to the TPM during normal boot flow; it only writes during
 	 * recovery, software sync, or other special boot flows. When the AP
-	 * wants to write, it is imporant to actually commit changes.
+	 * wants to write, it is important to actually commit changes.
 	 */
 	if (CONFIG(TPM_GOOGLE_IMMEDIATELY_COMMIT_FW_SECDATA))
 		tlcl_cr50_enable_nvcommits();

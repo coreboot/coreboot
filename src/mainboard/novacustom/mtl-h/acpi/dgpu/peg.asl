@@ -41,7 +41,7 @@ Method (DL23, 0, Serialized)
 	NCB7 = 1
 }
 
-/* L2/3 exit seqeuence */
+/* L2/3 exit sequence */
 Method (LD23, 0, Serialized)
 {
 	If (!NCB7)

@@ -29,7 +29,7 @@ union psp_rpmc_caps {
 		uint32_t psp_rpmc_all_slots_used	:  1; /* [27..27] */
 		uint32_t				:  2; /* [28..29] */
 		uint32_t psp_rpmc_revision		:  2; /* [30..31] */
-	} r1; /* RPMC revison 1: 16 RPMC fuse slots in SoC */
+	} r1; /* RPMC revision 1: 16 RPMC fuse slots in SoC */
 	uint32_t raw;
 };
 
@@ -204,7 +204,7 @@ static void psp_rpmc_provision(union psp_rpmc_caps psp_caps, uint32_t hsti_state
 
 	if (get_first_available_spi_rpmc_counter(psp_caps, &rpmc_counter_addr) != CB_SUCCESS) {
 		printk(BIOS_ERR,
-		       "No more RPMC conters available for provisioning in the SPI flash\n");
+		       "No more RPMC counters available for provisioning in the SPI flash\n");
 		return;
 	}
 

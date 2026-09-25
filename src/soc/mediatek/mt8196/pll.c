@@ -1208,7 +1208,7 @@ static void vote_init(void)
 	write32(VOTE_MTCMOS_DIS_MUX_0, 0xFFFFFFFF);
 	write32(VOTE_MTCMOS_DIS_MUX_1, 0xFFFFFFFF);
 
-	/* Lock donmain */
+	/* Lock domain */
 	write32(VOTE_REG_KEY, VOTE_LOCK_REG_CFG);
 
 	/* Vote enable */

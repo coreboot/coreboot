@@ -282,7 +282,7 @@ struct ddr_data_regs {
 /* Control Status Register */
 struct ctrl_stat {
 	uint32_t resv1[16];
-	uint32_t statusreg; /* ofset 0x40 */
+	uint32_t statusreg; /* offset 0x40 */
 	uint32_t resv2[51];
 	uint32_t secure_emif_sdram_config; /* offset 0x0110 */
 	uint32_t resv3[319];

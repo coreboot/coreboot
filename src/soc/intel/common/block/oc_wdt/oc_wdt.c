@@ -35,7 +35,7 @@ static void oc_wdt_start(unsigned int timeout)
 				     " using config default: %ds\n", timeout);
 	}
 
-	printk(BIOS_SPEW, "OC Watchdog: start and relaod timer (timeout %ds)\n", timeout);
+	printk(BIOS_SPEW, "OC Watchdog: start and reload timer (timeout %ds)\n", timeout);
 
 	oc_wdt_ctrl = inl(PCH_OC_WDT_CTL);
 	oc_wdt_ctrl |= (PCH_OC_WDT_CTL_EN | PCH_OC_WDT_CTL_FORCE_ALL | PCH_OC_WDT_CTL_ICCSURV);

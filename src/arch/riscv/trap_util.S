@@ -105,7 +105,7 @@ trap_entry:
 	# before jumping to m-mode firmware we always set trap vector to the entry point of the
 	# payload and we don't care about mscratch anymore. mscratch is only ever used as
 	# exception stack if whatever coreboot jumps to is in s-mode.
-	#TODO we could check MPP field in mstatus to see if come from unpriviledged code. That
+	#TODO we could check MPP field in mstatus to see if come from unprivileged code. That
 	#     way we could still use mscratch for other purposes inside the code base.
 	#TODO In case we got called from s-mode firmware we need to protect our stack and trap
 	#     handler with a PMP region.

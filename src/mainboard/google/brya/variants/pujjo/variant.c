@@ -58,7 +58,7 @@ void variant_init(void)
 {
 	if (fw_config_probe(FW_CONFIG(WWAN_5G, WWAN_5G_PRESENT))) {
 		/*
-		 * FM350 power on seuqence:
+		 * FM350 power on sequence:
 		 * De-assert WWAN_EN -> 20ms -> de-assert WWAN_RST -> 30ms ->
 		 * de-assert WWAN_PERST
 		 * WWAN_EN is de-asserted in ramstage gpio configuration, de-assert

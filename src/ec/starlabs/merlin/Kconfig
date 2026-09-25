@@ -93,13 +93,13 @@ config EC_STARLABS_LID_SWITCH
 	  Select if the mainboard supports disabling the lid switch
 
 config EC_STARLABS_POWER_LED
-	bool "Enable lowering the brightess of the Power LED"
+	bool "Enable lowering the brightness of the Power LED"
 	default y
 	help
 	  Select if the mainboard supports reducing the power LED brightness
 
 config EC_STARLABS_CHARGE_LED
-	bool "Enable lowering the brightess of the Charge LED"
+	bool "Enable lowering the brightness of the Charge LED"
 	default y
 	help
 	  Select if the mainboard supports reducing the charge LED brightness

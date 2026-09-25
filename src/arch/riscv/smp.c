@@ -90,7 +90,7 @@ void smp_resume(void (*fn)(void *), void *arg)
 
 		if (atomic_read(&OTHER_HLS(i)->entry.sync_a) != HART_SLEEPING) {
 			/*
-			 * we assmue here that the time between smp_pause and smp_resume
+			 * we assume here that the time between smp_pause and smp_resume
 			 * is enough for all harts to reach the smp_pause state.
 			 * But for some reason that was not the case for this hart ...
 			 */

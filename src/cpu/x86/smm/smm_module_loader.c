@@ -231,7 +231,7 @@ static void smm_stub_place_staggered_entry_points(const struct smm_loader_params
  * created to avoid this corruption, see smm_create_map() above.
  * This module setup code works for the default (0x30000) SMM handler setup and the
  * permanent SMM handler.
- * The CPU stack is decided at runtime in the stub and is treaded as a continuous
+ * The CPU stack is decided at runtime in the stub and is treated as a continuous
  * region. As this might not fit the default SMRAM region, the same region used
  * by the permanent handler can be used during relocation.
  */

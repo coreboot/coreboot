@@ -67,7 +67,7 @@ enum cfr_tags {
 };
 
 /*
- * The optional flags describe the visibilty of the option and the
+ * The optional flags describe the visibility of the option and the
  * effect on the non-volatile variable.
  * CFR_OPTFLAG_READONLY:
  *   Display-only: show a fixed or status value in the UI (serial number,

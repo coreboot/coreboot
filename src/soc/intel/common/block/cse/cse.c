@@ -339,7 +339,7 @@ bool cse_get_s0ix_enable_state(bool fallback)
  * Starting from TGL platform, HFSTS1.spi_protection_mode replaces mfg_mode to indicate
  * SPI protection status as well as end-of-manufacturing(EOM) status where EOM flow is
  * triggered in single staged operation (either through first boot with required MFIT
- * configuratin or FPT /CLOSEMANUF).
+ * configuration or FPT /CLOSEMANUF).
  * In staged manufacturing flow, spi_protection_mode alone doesn't indicate the EOM status.
  *
  * HFSTS1.spi_protection_mode description:

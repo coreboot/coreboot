@@ -12,7 +12,7 @@ This works for Stoney Ridge and Zen class AMD processors.
  - parse-bkdg.pl
 
 Before you can use them, you need to massage the relevant BKDG
-sections into useable data. Here's how.
+sections into usable data. Here's how.
 
   1. First, you need to acquire a copy of the K8 BKDG. Go here:
      Rev F: https://www.amd.com/content/dam/amd/en/documents/archived-tech-docs/programmer-references/32559.pdf

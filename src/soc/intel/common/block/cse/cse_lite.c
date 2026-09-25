@@ -115,7 +115,7 @@ static enum cse_fw_state get_cse_state(const struct fw_version *cur_cse_fw_ver,
 	 */
 	if (memcmp(cmos_cse_fw_ver, cur_cse_fw_ver, size)) {
 		/*
-		 * CMOS CSE versioin is invalid, possibly two scenarios
+		 * CMOS CSE version is invalid, possibly two scenarios
 		 * 1.  CSE FW update
 		 * 2.  First boot
 		 */
@@ -301,7 +301,7 @@ static struct get_bp_info_rsp *sync_cse_bp_info_to_cbmem(void)
 		sizeof(struct get_bp_info_rsp));
 
 	if (!cse_bp_info_in_cbmem) {
-		printk(BIOS_ERR, "Unable to store Boot Parition Info in cbmem\n");
+		printk(BIOS_ERR, "Unable to store Boot Partition Info in cbmem\n");
 		return NULL;
 	}
 

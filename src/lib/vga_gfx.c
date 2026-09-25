@@ -353,14 +353,14 @@ void render_text_to_bitmap_buffer(unsigned char *image_bitmap_buffer,
 		if (line_length == 0)
 			continue;
 
-		/* Calculate x-cordinate for the current line */
+		/* Calculate x-coordinate for the current line */
 		int current_line_x = (effective_screen_width - line_length * FONT_WIDTH) / 2;
 
 		/* Draw the string on the buffer */
 		draw_string(current_line_x, current_line_y, line_start,
 				line_length, effective_screen_width);
 
-		/* Update the y-cordinate for the next line */
+		/* Update the y-coordinate for the next line */
 		current_line_y += FONT_HEIGHT;
 	}
 

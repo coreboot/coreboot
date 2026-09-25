@@ -583,7 +583,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		 * spi_setup_opcode() above. Tell the chip to send the
 		 * command.
 		 *
-		 * On ICH9 the control register is not natually aligned.
+		 * On ICH9 the control register is not naturally aligned.
 		 * Write the high byte first to prevent triggering a transfer
 		 * when writing two bytes on the bus using outw instruction.
 		 */
@@ -659,7 +659,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		control |= (data_length - 1) << 8;
 
 		/*
-		 * On ICH9 the control register is not natually aligned.
+		 * On ICH9 the control register is not naturally aligned.
 		 * Write the high byte first to prevent triggering a transfer
 		 * when writing two bytes on the bus using outw instruction.
 		 */

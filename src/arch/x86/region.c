@@ -27,7 +27,7 @@ struct preload_region_device {
 /* The delay to wait for the CPU to prefetch one cacheline */
 static uint32_t prefetch_delay; /* usec */
 
-/* Perfomance counters */
+/* Performance counters */
 static uint32_t stat_max_loops = 0;
 static uint32_t stat_loops = 0;
 
@@ -110,7 +110,7 @@ static ssize_t mdev_readat(const struct region_device *rd, void *b, size_t offse
 //works
 	timer_monotonic_get(&t1);
 	for (size_t loops = 0; remaining >= CACHELINE_SIZE; remaining -= CACHELINE_SIZE) {
-		/* Get pointer to chached MMIO SPI ROM mapping */
+		/* Get pointer to cached MMIO SPI ROM mapping */
 		char *src = rdev_mmap(rdev, offset, CACHELINE_SIZE);
 		/* Sanity check. Should not happen. */
 		if (!src) {

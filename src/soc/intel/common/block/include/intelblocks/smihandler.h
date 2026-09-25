@@ -67,7 +67,7 @@ void smihandler_southbridge_mc(
 
 /*
  * This function should be implemented in SOC specific code to handle
- * minitor event. The default functionality is provided in
+ * monitor event. The default functionality is provided in
  * soc/intel/common/block/smm/smihandler.c
  */
 void smihandler_southbridge_monitor(

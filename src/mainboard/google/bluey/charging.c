@@ -377,7 +377,7 @@ void launch_charger_applet(enum boot_mode_t boot_mode)
 
 		/* Relying on debounce logic before bailing out */
 		if (detect_ac_unplug_event(true)) {
-			printk(BIOS_INFO, "Issuing power-off due to changer disconnection.\n");
+			printk(BIOS_INFO, "Issuing power-off due to charger disconnection.\n");
 			indicate_charging_status();
 			chromeec_finalize_and_poweroff(skip_heartbeat);
 		}

@@ -51,7 +51,7 @@ static void log_txt_error(const char *phase)
 }
 
 /**
- * Dump useful informaation about the BIOS ACM state.
+ * Dump useful information about the BIOS ACM state.
  * Should run right after console_init() in romstage.
  * Resets the platform if TXT reset is active and MLE cannot be established.
  **/

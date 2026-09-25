@@ -384,7 +384,7 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 		return;
 
 	assert(config->num_dfps <= DFP_NUM_MAX);
-	/* All existing boards have 2 DFPs. If num_dfps is not configfured, then
+	/* All existing boards have 2 DFPs. If num_dfps is not configured, then
 	   set it to 2 by default. */
 	if (!config->num_dfps)
 		config->num_dfps = 2;

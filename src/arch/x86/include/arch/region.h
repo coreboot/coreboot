@@ -11,7 +11,7 @@
  * a preloading version that uses the prefetchnta instruction to preload data in the background,
  * when the read size is large enough and the thread is a preload thread.
  *
- * Architectual requirements:
+ * Architectural requirements:
  * - The SPIROM region must be memory mapped and marked as cachable.
  * - The CPU must support the prefetchnta instruction.
  * - The CPU must support the rdtsc instruction.

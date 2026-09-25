@@ -32,7 +32,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		printk(BIOS_INFO, "IPMI at 0x%04x initialized successfully\n",
 			CONFIG_BMC_KCS_BASE);
 
-	/* Set BIOS regeion UPD, otherwise MTRR might set incorrectly during TempRamExit API */
+	/* Set BIOS region UPD, otherwise MTRR might set incorrectly during TempRamExit API */
 	struct flash_mmap_window table;
 	spi_flash_get_mmap_windows(&table);
 

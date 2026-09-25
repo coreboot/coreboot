@@ -308,7 +308,7 @@ static unsigned int exynos_dp_training_pattern_dis(void)
 	ret = exynos_dp_write_byte_to_dpcd(DPCD_TRAINING_PATTERN_SET,
 			DPCD_TRAINING_PATTERN_DISABLED);
 	if (ret != EXYNOS_DP_SUCCESS) {
-		printk(BIOS_ERR, "DP requst_link_traninig_req failed\n");
+		printk(BIOS_ERR, "DP request_link_training_req failed\n");
 		return -1;
 	}
 

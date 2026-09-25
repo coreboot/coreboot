@@ -333,7 +333,7 @@ Scope (\_SB.PCI0.I2C2)
 				BODI = 3
 				/* Set buck clock divider */
 				BUDI = 2
-				/* Set the PLL_REF_CLK cyles */
+				/* Set the PLL_REF_CLK cycles */
 				PSWR = 19
 				/* Set the reference crystal divider */
 				XTDV = 170

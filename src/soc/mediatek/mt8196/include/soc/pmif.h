@@ -131,14 +131,14 @@ enum {
 	PMIF_VLPCK_TARGET_FREQ_MHZ	= 520,
 };
 
-/* calibation miss rate, unit: 0.1% */
+/* calibration miss rate, unit: 0.1% */
 #define CAL_MIS_RATE			20
 #define FREQ_METER_VLP_OSC_CK		24
 #define FREQ_METER_VLP_AD_OSC_SYNC_CK	48
 #define FREQ_METER_VLP_AD_OSC_CK	59
 #define PMIF_USE_FIX_26M_CLK            0
 
-/* calibation tolerance rate, unit: 0.1% */
+/* calibration tolerance rate, unit: 0.1% */
 enum {
 	CAL_TOL_RATE = 40,
 	CAL_MAX_VAL = 0x1FF,

@@ -68,7 +68,7 @@ void sio1036_enable_serial(pnp_devfn_t dev, u16 iobase)
 	/*UART Mode */
 	pnp_write_config(dev, 0x0C, 0x02);
 
-	/* GPIO polarity regisgter 2 */
+	/* GPIO polarity register 2 */
 	pnp_write_config(dev, 0x034, 0x00);
 
 	/* Enable SMSC UART 0 */

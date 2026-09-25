@@ -203,7 +203,7 @@ static void lvts_enable_sensing_points(const struct lvts_thermal_controller *tc)
 }
 
 /*
- * disable ALL periodoc temperature sensing point
+ * disable ALL periodic temperature sensing point
  */
 static void lvts_disable_all_sensing_points(void)
 {

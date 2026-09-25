@@ -1137,7 +1137,7 @@ static int parse_displayid(
 
 	/* Support Display ID structure 2.0 only */
 	if (sh->revision != DISPLAY_ID_STRUCTURE_VERSION_20) {
-		printk(BIOS_SPEW, "Unsupported Display ID revison: %x\n", sh->revision);
+		printk(BIOS_SPEW, "Unsupported Display ID revision: %x\n", sh->revision);
 		goto validate_checksum;
 	}
 

@@ -166,7 +166,7 @@ static void lock_fan_register_set_and_check(uint8_t error_code)
 	fan_eng_sts = hwm_reg_read(FAN_ENGINE_STS_REG);
 
 	if (fan_eng_sts & FAN_CFG_INVALID) {
-		printk(BIOS_WARNING, "NCT6687D: Configuration error ocurred\n");
+		printk(BIOS_WARNING, "NCT6687D: Configuration error occurred\n");
 		print_last_err(error_code);
 	}
 

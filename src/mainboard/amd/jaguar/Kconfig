@@ -170,7 +170,7 @@ config XGBE_2_5G_BACKPLANE
 config XGBE_PORT_SGMII_BACKPLANE
 	bool "XGBE XGBE_PORT_SGMII_BACKPLANE"
 	help
-	  Select to Use all speeed with Backplane an of modes.
+	  Select to Use all speed with Backplane an of modes.
 
 config XGBE_SFP_PLUS_CONNECTOR
 	bool "XGBE XGBE_SFP_PLUS_CONNECTOR"

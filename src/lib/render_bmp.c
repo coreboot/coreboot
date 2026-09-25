@@ -734,7 +734,7 @@ static int load_and_render_logo_to_framebuffer(
 
 /*
  * Loads, converts, and renders a BMP logo to the framebuffer.
- * The logo type (primary or low battery etc.) is seletcted dynamically.
+ * The logo type (primary or low battery etc.) is selected dynamically.
  *
  * config: Logo configuration information.
  *

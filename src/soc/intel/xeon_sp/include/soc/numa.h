@@ -35,7 +35,7 @@ enum proximity_domain_type {
 
 /*
  * This proximity domain structure records all data related to
- * a proximity doamin needed for following purpose:
+ * a proximity domain needed for following purpose:
  * a. Device resource allocation. IIO stack involving CXL device
  *    needs to have different resource allocation method.
  * b. e820 table setup. For example, CXL memory region may need to

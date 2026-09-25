@@ -44,7 +44,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams)
 {
 	printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
-	//FchParams_reset->EcChannel0 = TRUE; /* logical devicd 3 */
+	//FchParams_reset->EcChannel0 = TRUE; /* logical device 3 */
 	FchParams->LegacyFree = 0; /* don't clear LPC IO decodes for serial console */
 	FchParams->FchReset.SataEnable = hudson_sata_enable();
 	FchParams->FchReset.IdeEnable = hudson_ide_enable();

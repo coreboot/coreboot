@@ -66,7 +66,7 @@ config SOC_INTEL_GFX_MBUS_JOIN
 	  driver will initialize the display to bring up the login screen although the firmware
 	  has initialized the display using the GFX MMIO registers and framebuffer.
 
-	  When enabled, saves 75ms-80ms of the boot time by avoiding redundent display
+	  When enabled, saves 75ms-80ms of the boot time by avoiding redundant display
 	  initialization by kernel graphics driver (i.e., i915_gfx).
 
 endif

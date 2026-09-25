@@ -5,7 +5,7 @@
 
 #include <types.h>
 
-/* [CHANNEL][EXT_REVISON][LANE][2*SLOT+RANK][CLOCK_SPEED] */
+/* [CHANNEL][EXT_REVISION][LANE][2*SLOT+RANK][CLOCK_SPEED] */
 extern const u8 u8_FFFD1240[2][5][9][4][4];
 
 extern const u16 u16_FFFE0EB8[2][4];

@@ -19,8 +19,8 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 		return;
 
 	/*
-	 * Add MTRR for ramstage, TSEG and extended BIOS region if exiting CAR without FSP is supporated.
+	 * Add MTRR for ramstage, TSEG and extended BIOS region if exiting CAR without FSP is supported.
 	 */
 	static_assert(!CONFIG(NO_FSP_TEMP_RAM_EXIT),
-		      "NO_FSP_TEMP_RAM_EXIT is not supportted currently!");
+		      "NO_FSP_TEMP_RAM_EXIT is not supported currently!");
 }

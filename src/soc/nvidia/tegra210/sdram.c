@@ -539,7 +539,7 @@ static void sdram_init_mc(const struct sdram_params *param,
 	write32(&regs->video_protect_gpu_override_1,
 		param->McVideoProtectGpuOverride1);
 
-	/* Program SDRAM geometry paarameters */
+	/* Program SDRAM geometry parameters */
 	write32(&regs->emem_adr_cfg, param->McEmemAdrCfg);
 	write32(&regs->emem_adr_cfg_dev0, param->McEmemAdrCfgDev0);
 	write32(&regs->emem_adr_cfg_dev1, param->McEmemAdrCfgDev1);
@@ -551,7 +551,7 @@ static void sdram_init_mc(const struct sdram_params *param,
 	write32(&regs->emem_adr_cfg_bank_mask_1, param->McEmemAdrCfgBankMask1);
 	write32(&regs->emem_adr_cfg_bank_mask_2, param->McEmemAdrCfgBankMask2);
 
-	/* Program external memory aperature (base and size) */
+	/* Program external memory aperture (base and size) */
 	write32(&regs->emem_cfg, param->McEmemCfg);
 
 	/* Program SEC carveout (base and size) */

@@ -24,7 +24,7 @@ static void flush_cache(uintptr_t start, uintptr_t size)
 
 /*
  * This function is intentionally comment heavy, as the documentation for
- * APL and GLK is almost non-existant.
+ * APL and GLK is almost non-existent.
  */
 
 bool load_ibb(uint32_t ibb_dest, uint32_t ibb_size)

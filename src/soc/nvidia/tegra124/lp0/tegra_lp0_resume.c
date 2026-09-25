@@ -464,7 +464,7 @@ static void power_on_partition(unsigned int id)
 		// Partition is not on. Turn it on.
 		write32(pmc_ctlr_pwrgate_toggle_ptr, id | PWRGATE_TOGGLE_START);
 
-		// Wait until the partition is powerd on.
+		// Wait until the partition is powered on.
 		while (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit))
 			;
 

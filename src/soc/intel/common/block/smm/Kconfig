@@ -36,7 +36,7 @@ config SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE
 	bool "Enable TCO SMI"
 	default n
 	help
-	  Enable TCO SMI source to e.g. handle case instrusion.
+	  Enable TCO SMI source to e.g. handle case intrusion.
 
 config SOC_INTEL_COMMON_BLOCK_SMM_TCO_INTRUDER_SMI_ENABLE
 	bool "Enable TCO INTRUDER# SMI"

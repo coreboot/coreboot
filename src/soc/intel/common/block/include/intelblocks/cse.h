@@ -579,8 +579,8 @@ enum cse_device_state get_cse_device_state(unsigned int devfn);
 bool set_cse_device_state(unsigned int devfn, enum cse_device_state requested_state);
 
 /*
- * Check if cse sub-parition update is required or not.
- * Returns true if cse sub-parition update is required otherwise false.
+ * Check if cse sub-partition update is required or not.
+ * Returns true if cse sub-partition update is required otherwise false.
  */
 bool skip_cse_sub_part_update(void);
 

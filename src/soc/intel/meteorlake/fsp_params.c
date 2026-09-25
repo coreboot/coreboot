@@ -400,7 +400,7 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 
 	/*
 	 * Set ITbtConnectTopologyTimeoutInMs to 0 if config selected,
-	 * in order to skip sending the connect toplogy (CNTP) command.
+	 * in order to skip sending the connect topology (CNTP) command.
 	 */
 	if (CONFIG(SKIP_SEND_CONNECT_TOPOLOGY_CMD))
 		s_cfg->ITbtConnectTopologyTimeoutInMs = 0;

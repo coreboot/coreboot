@@ -8,7 +8,7 @@
 #define GPIO_PCH_WP		GPP_E17
 
 /* FPR feature need add SLP_S0_GATE_R to control.
-Pujjoniru reference baord did not have HAVE_SLP_S0_GATE.
+Pujjoniru reference board did not have HAVE_SLP_S0_GATE.
 So we add a variant specific S0ix hook to fill the SSDT
 table to control FPR feature. GPP_A7 pull down when do
 suspend and pull high when resume. */

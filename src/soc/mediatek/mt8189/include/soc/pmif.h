@@ -142,7 +142,7 @@ enum {
 	PMIF_TARGET_FREQ_MHZ = 260,
 };
 
-/* calibation tolerance rate, unit: 0.1% */
+/* calibration tolerance rate, unit: 0.1% */
 enum {
 	CAL_TOL_RATE = 40,
 	CAL_MAX_VAL = 0x7F,

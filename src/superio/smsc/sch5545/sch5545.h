@@ -113,7 +113,7 @@
 #define SCH5545_BAR_UART1			0x68
 #define SCH5545_BAR_UART2			0x6c
 #define SCH5545_BAR_RUNTIME_REG			0x70
-/* Certain SMSC parts have SPI controller LDN 0xf with BAR rgeister at 0x74 */
+/* Certain SMSC parts have SPI controller LDN 0xf with BAR register at 0x74 */
 #define SCH5545_BAR_KBC				0x78
 #define SCH5545_BAR_FLOPPY			0x7c
 #define SCH5545_BAR_PARPORT			0x80

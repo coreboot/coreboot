@@ -169,7 +169,7 @@
  *	pin		the pin to be programmed
  *	pull		pull up, pull down or no pull
  *	event trigger	LEVEL_LOW, LEVEL_HIGH
- * PAD_NF_SCI		Define native alternate function and confiure SCI source
+ * PAD_NF_SCI		Define native alternate function and configure SCI source
  *	pin		the pin to be programmed
  *	function	the native function
  *	pull		pull up, pull down or no pull

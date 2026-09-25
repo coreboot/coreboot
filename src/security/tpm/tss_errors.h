@@ -35,7 +35,7 @@ typedef uint32_t tpm_result_t;
 #define TPM_NEEDS_SELFTEST ((tpm_result_t) (TPM_NON_FATAL + 0x01))
 #define TPM_DOING_SELFTEST ((tpm_result_t) (TPM_NON_FATAL + 0x02))
 
-/* The following values are defind at the offset 0x480 which is a combination
+/* The following values are defined at the offset 0x480 which is a combination
  *    of the 32-bit vendor specific value from the TCG standard(0x400) and an
  *    offset of 0x80 to assist in identifying these return values when the 8-bit
  *    truncated value is used.

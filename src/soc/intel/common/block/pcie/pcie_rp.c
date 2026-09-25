@@ -18,7 +18,7 @@ static int pcie_rp_original_idx(
 	const uint16_t clist = pci_s_find_capability(dev, PCI_CAP_ID_PCIE);
 	if (clist == 0) {
 		printk(BIOS_WARNING,
-		       "%s: Can't find PCIe capapilities for PCI: 00:%02x.%x, ignoring.\n",
+		       "%s: Can't find PCIe capabilities for PCI: 00:%02x.%x, ignoring.\n",
 		       __func__, group->slot, PCI_FUNC(PCI_DEV2DEVFN(dev)));
 		return -1;
 	}

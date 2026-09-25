@@ -139,7 +139,7 @@ _start:
 	 * on one thread per core on Hyper-Threading enabled CPUs. Due to this complex
 	 * code would be necessary to determine the core #ID, initializing and picking
 	 * the right semaphore out of CONFIG_MAX_CPUS / 2.
-	 * Instead of the per core approachm, as recommended, use one global spinlock.
+	 * Instead of the per core approach, as recommended, use one global spinlock.
 	 * Assuming that only pre-FIT platforms with Hyper-Threading enabled and at
 	 * most 8 threads will ever run into this condition, the boot delay is negligible.
 	 */

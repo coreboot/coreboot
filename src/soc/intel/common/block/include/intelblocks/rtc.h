@@ -13,7 +13,7 @@ enum ts_config {
 
 void enable_rtc_upper_bank(void);
 
-/* Expect return rtc failed bootlean in case of coin removal */
+/* Expect return rtc failed boolean in case of coin removal */
 int soc_get_rtc_failed(void);
 
 void rtc_init(void);

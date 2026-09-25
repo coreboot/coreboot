@@ -198,7 +198,7 @@ static void check_device_present(struct device *dev)
 	/*
 	 * By setting the PCI_EXP_FLAGS_SLOT bit in register PCI_EXP_FLAGS the
 	 * PCI_EXP_SLTSTA_PDS bit will be updated with in band device
-	 * detection from the PCIe PHY. While this is primarly used for PCIe
+	 * detection from the PCIe PHY. While this is primarily used for PCIe
 	 * hot-plug detection, it is more reliable than probing for downstream
 	 * devices by reading DID/VID PCI registers of such.
 	 *

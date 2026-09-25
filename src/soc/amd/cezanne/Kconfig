@@ -311,7 +311,7 @@ config VGA_BIOS_ID
 	default "1002,1638"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
-	  result of the map_oprom_vendev() function in grapthics.c.
+	  result of the map_oprom_vendev() function in graphics.c.
 
 config VGA_BIOS_FILE
 	string

@@ -188,7 +188,7 @@ int intel_early_me_init_done(u8 status)
 	meDID = did.uma_base | (1 << 28);// | (1 << 23);
 	pci_write_config32(PCH_ME_DEV, PCI_ME_H_GS, meDID);
 
-	/* Must wait for ME acknowledgement */
+	/* Must wait for ME acknowledgment */
 	if (opmode == ME_HFS_MODE_DEBUG) {
 		printk(BIOS_NOTICE,
 			"ME: ME is reporting as disabled, "

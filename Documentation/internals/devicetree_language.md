@@ -976,7 +976,7 @@ assigned in code if they're non-standard.
 Only a single segment group is supported per domain, but there can be multiple
 domains to support the case of multiple segment groups, each with a bus 0.
 Because the bus is not specified, It's assumed that all pci devices that are
-not behind a pci bridge device are on bus 0. If there are additional pci busses
+not behind a pci bridge device are on bus 0. If there are additional pci buses
 in a chip, they can be added behind their bridge device.
 
 Examples:

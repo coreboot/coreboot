@@ -601,7 +601,7 @@ static int xfer_setup(struct tegra_spi_channel *spi, void *buf,
 		spi->in_buf = buf;
 
 	/*
-	 * Alignment consideratons:
+	 * Alignment considerations:
 	 * When we enable caching we'll need to clean/invalidate portions of
 	 * memory. So we need to be careful about memory alignment. Also, DMA
 	 * likes to operate on 4-bytes at a time on the AHB side. So for

@@ -121,7 +121,7 @@ static void usb_ehci_reset_and_prepare(struct usb_ctlr *usb, enum usb_phy_type t
 
 	/* Controller mode: HOST */
 	write32(&usb->usb_mode, 3 << 0);
-	/* Parallel transceiver selct */
+	/* Parallel transceiver select */
 	write32(&usb->lpm_ctrl, type << 29);
 	/* Tx FIFO Burst thresh */
 	write32(&usb->tx_fill_tuning, 0x10 << 16);

@@ -36,7 +36,7 @@ struct pptt_cache l1i = {
 
 /*
  * private resources of a cpu core. Same for
- * each core, thus we can reuse this struture
+ * each core, thus we can reuse this structure
  * instead of creating it dynamically.
  */
 struct pptt_cpu_resources core_resources = {

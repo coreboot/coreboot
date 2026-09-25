@@ -96,7 +96,7 @@ enum {
 	/* pattern0 and base address for test engine when we do calibration */
 	DEFAULT_TEST2_1_CAL = 0x55000000,
 	/* for testing, to separate TA4-3 address for running simultaneously */
-	/* pattern1 and offset address for test engine when we  do calibraion */
+	/* pattern1 and offset address for test engine when we  do calibration */
 	DEFAULT_TEST2_2_CAL = 0xaa000400,
 	/* pattern0 and base addr. for test engine when doing dqs GW */
 	DEFAULT_TEST2_1_DQSIEN = 0x55000000,

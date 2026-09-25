@@ -64,7 +64,7 @@ void pci_domain_fill_ssdt(const struct device *domain)
 	acpigen_write_resourcetemplate_header();
 
 	/* PCI bus number range in domain */
-	printk(BIOS_DEBUG, "%s _CRS: adding busses [%02x-%02x] in segment group %x\n",
+	printk(BIOS_DEBUG, "%s _CRS: adding buses [%02x-%02x] in segment group %x\n",
 	       acpi_device_name(domain), domain->downstream->secondary,
 	       domain->downstream->max_subordinate, domain->downstream->segment_group);
 	acpigen_resource_producer_bus_number(domain->downstream->secondary,

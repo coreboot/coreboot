@@ -144,7 +144,7 @@ int intel_early_me_init_done(u8 status)
 	if (status == ME_INIT_STATUS_NOMEM || status == ME_INIT_STATUS_ERROR)
 		return 0;
 
-	/* Must wait for ME acknowledgement */
+	/* Must wait for ME acknowledgment */
 	for (count = ME_RETRY; count > 0; --count) {
 		hfs.raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
 		if (hfs.bios_msg_ack)
@@ -206,7 +206,7 @@ void intel_me_hsio_version(uint16_t *version, uint16_t *checksum)
 	pci_write_config32(PCH_ME_DEV, PCI_ME_H_GS,
 			   ME_HSIO_MESSAGE | ME_HSIO_CMD_GETHSIOVER);
 
-	/* Must wait for ME acknowledgement */
+	/* Must wait for ME acknowledgment */
 	for (count = ME_RETRY; count > 0; --count) {
 		union me_hfs hfs = { .raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS) };
 		if (hfs.bios_msg_ack)

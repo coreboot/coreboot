@@ -106,7 +106,7 @@ int intel_early_me_init_done(u8 status)
 
 	pci_write_config32(PCH_ME_DEV, PCI_ME_H_GS, did.raw);
 
-	/* Must wait for ME acknowledgement */
+	/* Must wait for ME acknowledgment */
 	for (count = ME_RETRY; count > 0; --count) {
 		hfs.raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
 		if (hfs.bios_msg_ack)
@@ -122,7 +122,7 @@ int intel_early_me_init_done(u8 status)
 	printk(BIOS_NOTICE, "ME: Requested BIOS Action: %s\n",
 	       me_ack_values[hfs.ack_data]);
 
-	/* Check status after acknowledgement */
+	/* Check status after acknowledgment */
 	intel_early_me_status();
 
 	reset = 0;

@@ -21,6 +21,6 @@ config HAVE_GIGABYTE_BMC_BIOS_UPDATE
 	  Select this option if the Gigabyte board has a BMC and accepts
 	  RBU files as input to update the BIOS. Build system will
 	  additionally produce the coreboot ROM packed into a RBU file,
-	  that can be diectly passed to BMC for BIOS update.
+	  that can be directly passed to BMC for BIOS update.
 
 endif # VENDOR_GIGABYTE

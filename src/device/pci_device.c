@@ -1494,11 +1494,11 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 	}
 
 	if (link->secondary > link->max_subordinate)
-		die("%s: No more busses available!\n", __func__);
+		die("%s: No more buses available!\n", __func__);
 
 	/* This ought to only happen with hotplug buses.  */
 	if (link->subordinate > link->max_subordinate) {
-		printk(BIOS_WARNING, "%s: Limiting subordinate busses\n", __func__);
+		printk(BIOS_WARNING, "%s: Limiting subordinate buses\n", __func__);
 		link->subordinate = link->max_subordinate;
 	}
 

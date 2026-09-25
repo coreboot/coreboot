@@ -170,6 +170,6 @@ static void init_selftest(void *unused)
 
 /*
  * Individual self-tests can be called in any boot state, so we initialize
- * the infrastructure in the earlist boot state BS_PRE_DEVICE.
+ * the infrastructure in the earliest boot state BS_PRE_DEVICE.
  */
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, init_selftest, NULL);

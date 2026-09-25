@@ -485,8 +485,8 @@ static void usb_repeater_spmi_init(const struct dwc3_controller_config *config)
  * get_usb_typec_polarity - Reads Type-C polarity from PMIC
  * @config: Controller configuration containing SMB slave address
  *
- * @return TRUE if polarify is inverse
- * @return FALSE if polarify is normal
+ * @return TRUE if polarity is inverse
+ * @return FALSE if polarity is normal
  */
 static bool get_usb_typec_polarity(const struct dwc3_controller_config *config)
 {

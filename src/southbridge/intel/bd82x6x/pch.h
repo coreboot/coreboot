@@ -168,7 +168,7 @@ void early_usb_init(void);
 #define CIR3		0x1100	/* 16bit */
 #define UPDCR		0x1114	/* 32bit */
 
-/* Root Port configuratinon space hide */
+/* Root Port configuration space hide */
 #define RPFN_HIDE(port)         (1 << (((port) * 4) + 3))
 /* Get the function number assigned to a Root Port */
 #define RPFN_FNGET(reg,port)    (((reg) >> ((port) * 4)) & 7)

@@ -12841,11 +12841,11 @@ union bdk_gsernx_lanex_rx_margin_dbg_cnt
                                                                  another transaction is issued.
                                                                    0 = No mbus transactions are outstanding.
                                                                    1 = An mbus transaction is outstanding. */
-        uint64_t write_commit          : 1;  /**< [ 62: 62](R/W) This bit will determin to the mbus transactor if the write operation is a
-                                                                 commited write or an uncommited write.  When doing a read, this bit is a
+        uint64_t write_commit          : 1;  /**< [ 62: 62](R/W) This bit will determine to the mbus transactor if the write operation is a
+                                                                 committed write or an uncommitted write.  When doing a read, this bit is a
                                                                  don't care.
-                                                                   0 = If executing a write, this write operation is not-commited type.
-                                                                   1 = If executing a write, this write operation is a commited type. */
+                                                                   0 = If executing a write, this write operation is not-committed type.
+                                                                   1 = If executing a write, this write operation is a committed type. */
         uint64_t read_writen           : 1;  /**< [ 61: 61](R/W) This bit indicates if we are doing a read or write operation.
                                                                    0 = Performing a write operation.
                                                                    1 = Performing a read operation. */
@@ -12861,11 +12861,11 @@ union bdk_gsernx_lanex_rx_margin_dbg_cnt
         uint64_t read_writen           : 1;  /**< [ 61: 61](R/W) This bit indicates if we are doing a read or write operation.
                                                                    0 = Performing a write operation.
                                                                    1 = Performing a read operation. */
-        uint64_t write_commit          : 1;  /**< [ 62: 62](R/W) This bit will determin to the mbus transactor if the write operation is a
-                                                                 commited write or an uncommited write.  When doing a read, this bit is a
+        uint64_t write_commit          : 1;  /**< [ 62: 62](R/W) This bit will determine to the mbus transactor if the write operation is a
+                                                                 committed write or an uncommitted write.  When doing a read, this bit is a
                                                                  don't care.
-                                                                   0 = If executing a write, this write operation is not-commited type.
-                                                                   1 = If executing a write, this write operation is a commited type. */
+                                                                   0 = If executing a write, this write operation is not-committed type.
+                                                                   1 = If executing a write, this write operation is a committed type. */
         uint64_t ready                 : 1;  /**< [ 63: 63](R/W) Handshake bit to indicate there is a valid request from the RSL bus to transact
                                                                  on the mesage bus.  Setting this bit triggers the mbus_fsm to execute the
                                                                  transaction.  Once a transaction is done, this bit has to be cleared before

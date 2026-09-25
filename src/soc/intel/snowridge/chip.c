@@ -215,7 +215,7 @@ static void devicetree_domain_definition_update(config_t *chip_info)
 	int domain;
 
 	/**
-	 * Check static domain id agaginst dynamic and fill domain device.
+	 * Check static domain id against dynamic and fill domain device.
 	 */
 	while ((dev = dev_find_path(dev, DEVICE_PATH_DOMAIN)) != NULL) {
 		domain = dev_get_domain_id(dev);

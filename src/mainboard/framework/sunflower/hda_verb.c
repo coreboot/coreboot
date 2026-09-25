@@ -71,7 +71,7 @@ static const u32 realtek_alc285_verbs[] = {
 	/* HP-JD Enable + For Nokia type (+power down JD2) */
 	0x0205004a, 0x02042010, 0x02050008, 0x02046a2c,
 
-	/* EAPD set to verb-control (I2C unuse & DVDD= +3.3V) */
+	/* EAPD set to verb-control (I2C unused & DVDD= +3.3V) */
 	0x02050010, 0x02040020, 0x02050034, 0x0204a2b1,
 
 	/* Class D silent detection enable -84dB threshold */

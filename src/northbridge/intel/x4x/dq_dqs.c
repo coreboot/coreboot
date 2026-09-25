@@ -721,7 +721,7 @@ static enum cb_err increment_to_dqs_edge(struct sysinfo *s, u8 channel, u8 rank)
 
 /*
  * DDR3 uses flyby topology where the clock signal takes a different path
- * than the data signal, to allow for better signal intergrity.
+ * than the data signal, to allow for better signal integrity.
  * Therefore the delay on the data signals needs to account for this.
  * This is done by sampling the DQS write (tx) signal back over the DQ
  * signal and looking for delay values where the sample transitions

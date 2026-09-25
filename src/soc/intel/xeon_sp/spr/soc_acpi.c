@@ -29,7 +29,7 @@ int soc_madt_sci_irq_polarity(int sci)
 
 uint32_t soc_read_sci_irq_select(void)
 {
-	/* PMC controller is hidden - hence PWRMBASE can't be accessbile using PCI cfg space */
+	/* PMC controller is hidden - hence PWRMBASE can't be accessible using PCI cfg space */
 	uintptr_t pmc_bar = PCH_PWRM_BASE_ADDRESS;
 	return read32((void *)pmc_bar + PMC_ACPI_CNT);
 }

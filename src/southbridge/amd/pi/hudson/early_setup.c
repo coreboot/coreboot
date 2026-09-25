@@ -105,7 +105,7 @@ static void enable_wideio(uint8_t port, uint16_t size)
 	uint32_t tmp;
 
 	/* Only allow port 0-2 */
-	assert(port <= ARRAY_SIZE(wideio_enable));
+	assert(port < ARRAY_SIZE(wideio_enable));
 
 	if (size == 16) {
 		tmp = pci_read_config32(dev, LPC_ALT_WIDEIO_RANGE_ENABLE);

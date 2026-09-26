@@ -14,6 +14,9 @@
 
 static void pdp_fw_load(void)
 {
+	/* map to cached region to force address to be 4 byte aligned */
+	mmu_config_range((void *)_dram_pdp, REGION_SIZE(dram_pdp), CACHED_RAM);
+
 	const char *pdp_name = (CONFIG(VBOOT) && !vboot_recovery_mode_enabled())
 			 ? CONFIG_CBFS_PREFIX "/pdp_rw"
 			 : CONFIG_CBFS_PREFIX "/pdp_ro";
@@ -29,6 +32,11 @@ static void pdp_fw_load(void)
 	if (!selfload(&pdp_cdb_fw_prog))
 		die("SOC image: 'pdp_cdb' load failed");
 	printk(BIOS_DEBUG, "SOC image: 'pdp_cdb' loaded successfully.\n");
+
+	/* flush cached region */
+	dcache_clean_by_mva(_dram_pdp, REGION_SIZE(dram_pdp));
+	/* remap back to device memory */
+	mmu_config_range((void *)_dram_pdp, REGION_SIZE(dram_pdp), DEV_MEM);
 }
 
 static void cpucp_fw_load(void)

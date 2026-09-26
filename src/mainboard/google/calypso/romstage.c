@@ -373,8 +373,8 @@ static void mainboard_peripherals_reinit(void)
 
 bool qclib_do_load_soccp_fw(void)
 {
-	/* FIXME: Load SoCCP FW always */
-	return is_low_power_boot_with_charger();
+	/* Always load SoCCP FW */
+	return true;
 }
 
 void platform_romstage_postram(void)
@@ -387,12 +387,10 @@ void platform_romstage_postram(void)
 	if (!chipset_dload_mode_active)
 		hyp_ac_config_fw_load();
 
-	if (is_low_power_boot_with_charger()) {
-		if (board_support_dead_battery_charging())
-			configure_dead_battery_boot();
+	if (board_support_dead_battery_charging())
+		configure_dead_battery_boot();
 
-		enable_fast_battery_charging();
-	}
+	enable_fast_battery_charging();
 
 	qclib_rerun();
 

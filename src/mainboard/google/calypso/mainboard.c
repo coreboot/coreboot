@@ -41,17 +41,6 @@ static void trigger_critical_battery_shutdown(void)
 	google_chromeec_ap_poweroff();
 }
 
-static void load_qc_se_firmware_early(void)
-{
-	if (is_low_power_boot_with_charger())
-		return;
-
-	gpi_firmware_load(QUP_0_GSI_BASE);
-	gpi_firmware_load(QUP_1_GSI_BASE);
-	gpi_firmware_load(QUP_2_GSI_BASE);
-	gpi_firmware_load(QUP_3_GSI_BASE);
-}
-
 #if CONFIG(PLATFORM_HAS_OFF_MODE_CHARGING_INDICATOR)
 bool platform_is_off_mode_charging_active(void)
 {
@@ -105,8 +94,6 @@ static void mainboard_init(void *chip_info)
 	 */
 	if (boot_mode == LB_BOOT_MODE_LOW_BATTERY)
 		trigger_critical_battery_shutdown();
-
-	load_qc_se_firmware_early();
 
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging" */
 	if (is_low_power_boot_with_charger()) {

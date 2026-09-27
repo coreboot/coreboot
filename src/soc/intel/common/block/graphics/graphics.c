@@ -209,7 +209,7 @@ static int is_graphics_disabled(struct device *dev)
 	return 0;
 }
 
-static uintptr_t graphics_get_bar(struct device *dev, unsigned long index)
+static uint64_t graphics_get_bar(struct device *dev, unsigned long index)
 {
 	struct resource *gm_res;
 
@@ -220,9 +220,9 @@ static uintptr_t graphics_get_bar(struct device *dev, unsigned long index)
 	return gm_res->base;
 }
 
-uintptr_t graphics_get_framebuffer_address(void)
+uint64_t graphics_get_framebuffer_address(void)
 {
-	uintptr_t memory_base;
+	uint64_t memory_base;
 	struct device *dev = pcidev_path_on_root(SA_DEVFN_IGD);
 
 	if (is_graphics_disabled(dev))

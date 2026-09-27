@@ -30,7 +30,7 @@ struct hob_graphics_info {
  * Must be called after PCI enumeration to make sure that the BAR
  * doesn't change any more.
  */
-void fsp_report_framebuffer_info(const uintptr_t framebuffer_bar,
+void fsp_report_framebuffer_info(const uint64_t framebuffer_bar,
 				 enum lb_fb_orientation orientation);
 
 /* SoC Overrides */

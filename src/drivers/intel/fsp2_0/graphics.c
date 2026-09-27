@@ -63,7 +63,7 @@ static void update_fw_splash_screen_event(enum fw_splash_screen_status status)
 	elog_add_event_byte(ELOG_TYPE_FW_SPLASH_SCREEN, status);
 }
 
-void fsp_report_framebuffer_info(const uintptr_t framebuffer_bar,
+void fsp_report_framebuffer_info(const uint64_t framebuffer_bar,
 				 enum lb_fb_orientation orientation)
 {
 	size_t size;

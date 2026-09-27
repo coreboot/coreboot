@@ -107,7 +107,6 @@ chip soc/amd/picasso
 		end
 		chip drivers/i2c/hid
 			register "generic.hid" = ""SYNA0000""
-			register "generic.cid" = ""ACPI0C50""
 			register "generic.desc" = ""Synaptics Touchpad""
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPIO_9)"
 			register "generic.detect" = "1"

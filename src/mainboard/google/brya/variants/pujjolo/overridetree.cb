@@ -488,7 +488,6 @@ chip soc/intel/alderlake
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GXTP5100""
-				register "generic.cid" = ""ACPI0C50""
 				register "generic.desc" = ""Goodix Touchpad""
 				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
 				register "generic.wake" = "GPE0_DW2_14"
@@ -498,7 +497,6 @@ chip soc/intel/alderlake
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""FCAL0000""
-				register "generic.cid" = ""ACPI0C50""
 				register "generic.desc" = ""Focal Touchpad""
 				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
 				register "generic.wake" = "GPE0_DW2_14"

@@ -601,6 +601,63 @@ gpio_pad_config_lock_using_sbi(const struct gpio_lock_config *pad_info,
 	}
 }
 
+static void
+gpio_pad_config_lock_using_pcr(const struct gpio_lock_config *pad_info,
+	uint8_t pid, uint16_t offset, const uint32_t bit_mask)
+{
+	if ((pad_info->lock_action & GPIO_LOCK_CONFIG) == GPIO_LOCK_CONFIG) {
+		if (CONFIG(DEBUG_GPIO))
+			printk(BIOS_INFO, "%s: Locking pad %d configuration\n",
+						__func__, pad_info->pad);
+		pcr_or32(pid, offset, bit_mask);
+	}
+
+	if ((pad_info->lock_action & GPIO_LOCK_TX) == GPIO_LOCK_TX) {
+		if (CONFIG(DEBUG_GPIO))
+			printk(BIOS_INFO, "%s: Locking pad %d TX state\n",
+				__func__, pad_info->pad);
+		pcr_or32(pid, offset + sizeof(uint32_t), bit_mask);
+	}
+}
+
+/*
+ * Set the lock bits of a single pad using the method selected by the SoC.
+ * Checks that depend on the calling environment are left to the callers.
+ */
+static int gpio_pad_config_lock(const struct gpio_lock_config *pad_info)
+{
+	const struct pad_community *comm = gpio_get_community(pad_info->pad);
+	uint16_t offset;
+	size_t rel_pad;
+
+	rel_pad = relative_pad_in_comm(comm, pad_info->pad);
+	offset = comm->pad_cfg_lock_offset;
+	if (!offset) {
+		printk(BIOS_ERR, "%s: Error: offset not defined for pad %d!\n",
+						__func__, pad_info->pad);
+		return -1;
+	}
+
+	/* PADCFGLOCK and PADCFGLOCKTX registers for each community are contiguous */
+	offset += gpio_group_index_scaled(comm, rel_pad, 2 * sizeof(uint32_t));
+	const uint32_t bit_mask = gpio_bitmask_within_group(comm, rel_pad);
+
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_PCR)) {
+		if (CONFIG(DEBUG_GPIO))
+			printk(BIOS_INFO, "Locking pad configuration using PCR\n");
+		gpio_pad_config_lock_using_pcr(pad_info, comm->port, offset, bit_mask);
+	} else if (CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_SBI)) {
+		if (CONFIG(DEBUG_GPIO))
+			printk(BIOS_INFO, "Locking pad configuration using SBI\n");
+		gpio_pad_config_lock_using_sbi(pad_info, comm->port, offset, bit_mask);
+	} else {
+		printk(BIOS_ERR, "%s: Error: No pad configuration lock method is selected!\n",
+						__func__);
+	}
+
+	return 0;
+}
+
 int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 {
 	const struct pad_community *comm;
@@ -653,31 +710,8 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 	return 0;
 }
 
-static void
-gpio_pad_config_lock_using_pcr(const struct gpio_lock_config *pad_info,
-	uint8_t pid, uint16_t offset, const uint32_t bit_mask)
-{
-	if ((pad_info->lock_action & GPIO_LOCK_CONFIG) == GPIO_LOCK_CONFIG) {
-		if (CONFIG(DEBUG_GPIO))
-			printk(BIOS_INFO, "%s: Locking pad %d configuration\n",
-						__func__, pad_info->pad);
-		pcr_or32(pid, offset, bit_mask);
-	}
-
-	if ((pad_info->lock_action & GPIO_LOCK_TX) == GPIO_LOCK_TX) {
-		if (CONFIG(DEBUG_GPIO))
-			printk(BIOS_INFO, "%s: Locking pad %d TX state\n",
-				__func__, pad_info->pad);
-		pcr_or32(pid, offset + sizeof(uint32_t), bit_mask);
-	}
-}
-
 static int gpio_non_smm_lock_pad(const struct gpio_lock_config *pad_info)
 {
-	const struct pad_community *comm = gpio_get_community(pad_info->pad);
-	uint16_t offset;
-	size_t rel_pad;
-
 	if (!pad_info) {
 		printk(BIOS_ERR, "%s: Error: pad_info is null!\n", __func__);
 		return -1;
@@ -689,32 +723,7 @@ static int gpio_non_smm_lock_pad(const struct gpio_lock_config *pad_info)
 		return -1;
 	}
 
-	rel_pad = relative_pad_in_comm(comm, pad_info->pad);
-	offset = comm->pad_cfg_lock_offset;
-	if (!offset) {
-		printk(BIOS_ERR, "%s: Error: offset not defined for pad %d!\n",
-						__func__, pad_info->pad);
-		return -1;
-	}
-
-	/* PADCFGLOCK and PADCFGLOCKTX registers for each community are contiguous */
-	offset += gpio_group_index_scaled(comm, rel_pad, 2 * sizeof(uint32_t));
-	const uint32_t bit_mask = gpio_bitmask_within_group(comm, rel_pad);
-
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_PCR)) {
-		if (CONFIG(DEBUG_GPIO))
-			printk(BIOS_INFO, "Locking pad configuration using PCR\n");
-		gpio_pad_config_lock_using_pcr(pad_info, comm->port, offset, bit_mask);
-	} else if (CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_SBI)) {
-		if (CONFIG(DEBUG_GPIO))
-			printk(BIOS_INFO, "Locking pad configuration using SBI\n");
-		gpio_pad_config_lock_using_sbi(pad_info, comm->port, offset, bit_mask);
-	} else {
-		printk(BIOS_ERR, "%s: Error: No pad configuration lock method is selected!\n",
-						__func__);
-	}
-
-	return 0;
+	return gpio_pad_config_lock(pad_info);
 }
 
 int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action lock_action)

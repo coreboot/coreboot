@@ -723,6 +723,10 @@ void render_logo_to_framebuffer(struct logo_config *config)
 		/* Exit if framebuffer is still not available */
 		if (!fb)
 			return;
+		if ((uintptr_t)fb->physical_address != fb->physical_address) {
+			printk(BIOS_WARNING, "Framebuffer above 4GiB, skipping logo\n");
+			return;
+		}
 		config->framebuffer_base = fb->physical_address;
 		config->horizontal_resolution = fb->x_resolution;
 		config->vertical_resolution = fb->y_resolution;

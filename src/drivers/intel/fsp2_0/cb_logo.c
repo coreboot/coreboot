@@ -85,6 +85,11 @@ void soc_load_logo_by_coreboot(void)
 		return;
 	}
 
+	if ((uintptr_t)ginfo->framebuffer_base != ginfo->framebuffer_base) {
+		printk(BIOS_WARNING, "Framebuffer above 4GiB, skipping logo\n");
+		return;
+	}
+
 	/* Program the IGD LMEMBAR */
 	program_igd_lmembar(GMADR_BASE);
 

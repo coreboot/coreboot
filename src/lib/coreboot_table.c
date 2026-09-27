@@ -151,6 +151,10 @@ static void lb_framebuffer(struct lb_header *header)
 	framebuffer->size = sizeof(*framebuffer);
 
 	if (CONFIG(BOOTSPLASH)) {
+		if ((uintptr_t)framebuffer->physical_address != framebuffer->physical_address) {
+			printk(BIOS_WARNING, "Framebuffer above 4GiB, skipping bootsplash\n");
+			return;
+		}
 		uint8_t *fb_ptr = (uint8_t *)(uintptr_t)framebuffer->physical_address;
 		unsigned int width = framebuffer->x_resolution;
 		unsigned int height = framebuffer->y_resolution;

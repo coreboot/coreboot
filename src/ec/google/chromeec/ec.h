@@ -192,6 +192,11 @@ bool google_chromeec_is_barrel_charger_present(void);
  */
 int google_chromeec_wait_for_stable_power(void);
 
+ /**
+  * True if EC_CMD_CHARGE_CONTROL supports battery sustainer (v2+).
+ */
+bool google_chromeec_charge_control_sustainer_supported(void);
+
 /*
  * Set max current and voltage of a dedicated charger.
  *

@@ -616,6 +616,17 @@ int google_chromeec_get_cmd_versions(int command, uint32_t *pmask)
 	return 0;
 }
 
+bool google_chromeec_charge_control_sustainer_supported(void)
+{
+	uint32_t mask = 0;
+
+	if (google_chromeec_get_cmd_versions(EC_CMD_CHARGE_CONTROL, &mask))
+		return false;
+
+	/* Sustainer thresholds exist from command version 2 onward. */
+	return !!(mask & EC_VER_MASK(2));
+}
+
 int google_chromeec_get_vboot_hash(uint32_t offset,
 				struct ec_response_vboot_hash *resp)
 {
@@ -1610,6 +1621,79 @@ int google_chromeec_get_pd_port_caps(int port,
 	return 0;
 }
 
+static int google_chromeec_charge_control(bool v3,
+					  const struct ec_params_charge_control *params,
+					  struct ec_response_charge_control *resp)
+{
+	return CROS_EC_COMMAND(PLAT_EC, EC_CMD_CHARGE_CONTROL, v3 ? 3 : 2,
+			       params, sizeof(*params), resp, sizeof(*resp));
+}
+
+/*
+ * Battery charge sustainer (CHARGE_CONTROL v2+). Limits are applied only when
+ * the override is on and they are not the full-range default (100%/0%);
+ * otherwise the sustainer is disabled. If the EC already has the target
+ * limits, leave it alone so a reboot doesn't reset its charging state.
+ *
+ * EC firmware with CHARGE_CONTROL v3 treats a v2 request with lower < upper
+ * as NO_IDLE, which cycles the battery between the limits on AC. Use v3 with
+ * no flags there so the EC holds at the upper limit instead.
+ */
+static void google_chromeec_init_charge_limits(void)
+{
+	const unsigned int override =
+		get_uint_option("ec_charge_limit_override", 0);
+	const unsigned int max_charge = get_uint_option("ec_max_charge", 100);
+	const unsigned int min_charge = get_uint_option("ec_min_charge", 0);
+	struct ec_params_charge_control params = {
+		.cmd = EC_CHARGE_CONTROL_CMD_GET,
+	};
+	struct ec_response_charge_control cur = {};
+	uint32_t mask = 0;
+	int upper = -1, lower = -1;
+	bool v3;
+
+	if (google_chromeec_get_cmd_versions(EC_CMD_CHARGE_CONTROL, &mask) ||
+	    !(mask & EC_VER_MASK(2)))
+		return;
+	v3 = !!(mask & EC_VER_MASK(3));
+
+	if (google_chromeec_charge_control(v3, &params, &cur))
+		return;
+
+	if (!override) {
+		printk(BIOS_INFO, "ChromeEC: charge limit override disabled\n");
+	} else if (max_charge == 100 && min_charge == 0) {
+		printk(BIOS_INFO, "ChromeEC: full-range limits; sustainer disabled\n");
+	} else if (min_charge >= max_charge) {
+		printk(BIOS_WARNING,
+		       "ChromeEC: ignoring invalid charge limits min=%u max=%u\n",
+		       min_charge, max_charge);
+	} else {
+		upper = max_charge;
+		lower = min_charge;
+	}
+
+	if (cur.sustain_soc.upper == upper && cur.sustain_soc.lower == lower &&
+	    !(v3 && cur.flags))
+		return;
+
+	/* The EC needs the sustainer cleared before new limits take effect. */
+	params.cmd = EC_CHARGE_CONTROL_CMD_SET;
+	params.mode = CHARGE_CONTROL_NORMAL;
+	params.sustain_soc.lower = -1;
+	params.sustain_soc.upper = -1;
+	google_chromeec_charge_control(v3, &params, &cur);
+	if (upper == -1)
+		return;
+
+	params.sustain_soc.lower = lower;
+	params.sustain_soc.upper = upper;
+	if (google_chromeec_charge_control(v3, &params, &cur))
+		printk(BIOS_ERR, "ChromeEC: failed to set charge limits min=%d max=%d\n",
+		       lower, upper);
+}
+
 void google_chromeec_init(void)
 {
 	google_chromeec_log_uptimeinfo();
@@ -1631,6 +1715,9 @@ void google_chromeec_init(void)
 	int rgb_color = get_uint_option("ec_rgb_kb_color", -1);
 	if (rgb_color != -1 && !acpi_is_wakeup_s3() && google_chromeec_has_rgbkbd())
 		google_chromeec_rgbkbd_set_color((enum google_chromeec_rgbkbd_color)rgb_color);
+
+	if (!acpi_is_wakeup_s3())
+		google_chromeec_init_charge_limits();
 }
 
 int google_ec_running_ro(void)

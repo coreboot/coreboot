@@ -87,8 +87,11 @@
 #define SDAM15_TARGET_SOC_ADDR		0x7E75
 #define SDAM15_DELTA_SOC_ADDR		0x7E76
 
-#define BATT_EMPTY_PERCENTAGE		0
-#define BATT_FULL_PERCENTAGE		100
+/* Minimum safe SoC (%) for off-mode/low-battery charge limiting; must be well above the
+ * EC critical battery threshold (~5%) so the device can always boot to OS.
+ */
+#define BATT_MIN_CHG_LIMIT_PERCENTAGE 20
+#define BATT_FULL_PERCENTAGE          100
 
 enum chg_limit_enable {
 	CHG_LIMIT_DISABLE,
@@ -554,6 +557,9 @@ static void configure_charge_limit_sdam(void)
 {
 	struct ec_response_charge_control resp;
 
+	/* Default to disabled so stale SDAM state is always cleared on early return */
+	spmi_write8(SDAM15_CHG_LIMIT_ENABLE_ADDR, CHG_LIMIT_DISABLE);
+
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
 		return;
 
@@ -561,17 +567,17 @@ static void configure_charge_limit_sdam(void)
 		return;
 
 	if (resp.mode != CHARGE_CONTROL_NORMAL ||
-	    resp.sustain_soc.lower < BATT_EMPTY_PERCENTAGE ||
+	    resp.sustain_soc.lower < BATT_MIN_CHG_LIMIT_PERCENTAGE ||
 	    resp.sustain_soc.lower > resp.sustain_soc.upper ||
-	    resp.sustain_soc.upper > BATT_FULL_PERCENTAGE)
+	    resp.sustain_soc.upper >= BATT_FULL_PERCENTAGE)
 		return;
 
 	uint8_t lower = (uint8_t)resp.sustain_soc.lower;
 	uint8_t upper = (uint8_t)resp.sustain_soc.upper;
 
-	spmi_write8(SDAM15_CHG_LIMIT_ENABLE_ADDR, CHG_LIMIT_ENABLE);
 	spmi_write8(SDAM15_TARGET_SOC_ADDR, upper);
 	spmi_write8(SDAM15_DELTA_SOC_ADDR, upper - lower);
+	spmi_write8(SDAM15_CHG_LIMIT_ENABLE_ADDR, CHG_LIMIT_ENABLE);
 }
 
 /*

@@ -348,10 +348,9 @@ Device (EC0)
 #endif
 	}
 
-	// AC Connected
-	Method (_Q04, 0, NotSerialized)
+	/* Update and notify the AC adapter state */
+	Method (ACUP, 0, NotSerialized)
 	{
-		Printf ("EC: AC CONNECTED")
 		\PWRS = ACEX
 		Notify (AC, 0x80)
 #ifdef DPTF_ENABLE_CHARGER
@@ -368,24 +367,18 @@ Device (EC0)
 		\PNOT ()
 	}
 
+	// AC Connected
+	Method (_Q04, 0, NotSerialized)
+	{
+		Printf ("EC: AC CONNECTED")
+		ACUP ()
+	}
+
 	// AC Disconnected
 	Method (_Q05, 0, NotSerialized)
 	{
 		Printf ("EC: AC DISCONNECTED")
-		\PWRS = ACEX
-		Notify (AC, 0x80)
-#ifdef DPTF_ENABLE_CHARGER
-		If (CondRefOf (\_SB.DPTF.TCHG)) {
-			Notify (\_SB.DPTF.TCHG, 0x80)
-		}
-#endif
-		/*
-		 * Call PNOT (Platform Notify) to inform platform code
-		 * about the current battery state. This handles all cases,
-		 * the battery transitioning into and out of having critically
-		 * low charge.
-		 */
-		\PNOT ()
+		ACUP ()
 	}
 
 	// Battery Low Event

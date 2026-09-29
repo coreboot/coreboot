@@ -126,6 +126,13 @@ static void add_cb_fdt_data(struct device_tree *tree)
 
 	dt_add_string_prop(coreboot_node, "compatible", "coreboot");
 
+	/*
+	 * Linux inherits missing cell sizes from the parent node instead of
+	 * using the FDT defaults that 'reg' below is encoded with, so state them.
+	 */
+	dt_add_u32_prop(firmware_node, "#address-cells", addr_cells);
+	dt_add_u32_prop(firmware_node, "#size-cells", size_cells);
+
 	/* Fetch CB tables from cbmem */
 	void *cbtable = cbmem_find(CBMEM_ID_CBTABLE);
 	if (!cbtable) {

@@ -29,6 +29,13 @@
 uint32_t data_fabric_read32(uint16_t fn_reg, uint8_t instance_id);
 void data_fabric_write32(uint16_t fn_reg, uint8_t instance_id, uint32_t data);
 
+static inline void data_fabric_clrsetbits32(uint16_t fn_reg, uint8_t instance_id,
+					    uint32_t clear, uint32_t set)
+{
+	data_fabric_write32(fn_reg, instance_id,
+			    (data_fabric_read32(fn_reg, instance_id) & ~clear) | set);
+}
+
 static __always_inline
 uint32_t data_fabric_broadcast_read32(uint16_t fn_reg)
 {

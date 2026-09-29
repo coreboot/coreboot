@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <soc/cpucp.h>
 #include <soc/mmu.h>
 #include <soc/mmu_common.h>
 #include <soc/symbols_common.h>
@@ -15,9 +16,15 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_range(dev, 5, (uintptr_t)_dram_cpucp, REGION_SIZE(dram_cpucp));
 }
 
+static void soc_init(struct device *dev)
+{
+	cpucp_fw_load_reset();
+}
+
 static struct device_operations soc_ops = {
 	.read_resources = soc_read_resources,
 	.set_resources = noop_set_resources,
+	.init = soc_init,
 };
 
 static void enable_soc_dev(struct device *dev)

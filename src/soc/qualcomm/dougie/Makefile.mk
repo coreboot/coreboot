@@ -29,6 +29,7 @@ romstage-y += cbmem.c
 romstage-y += ../common/shrm_load_reset.c
 romstage-y += ../common/qclib.c
 romstage-y += ../common/aop_load_reset.c
+romstage-y += cpucp_load_reset.c
 romstage-y += ../common/mmu.c
 romstage-y += ../common/watchdog.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
@@ -36,6 +37,7 @@ romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ################################################################################
 ramstage-y += soc.c
 ramstage-y += cbmem.c
+ramstage-y += cpucp_load_reset.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
@@ -121,6 +123,14 @@ $(AOP_CBFS)-file := $(AOP_FILE)
 $(AOP_CBFS)-type := payload
 $(AOP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(AOP_CBFS)
+
+################################################################################
+CPUCP_FILE := $(DOUGIE_BLOB)/cpucp/cpucp.elf
+CPUCP_CBFS := $(CONFIG_CBFS_PREFIX)/cpucp
+$(CPUCP_CBFS)-file := $(CPUCP_FILE)
+$(CPUCP_CBFS)-type := payload
+$(CPUCP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(CPUCP_CBFS)
 
 endif # ifeq ($(CONFIG_USE_QC_BLOBS),y)
 endif # ifeq ($(CONFIG_QC_BLOBS_UPSTREAM),y)

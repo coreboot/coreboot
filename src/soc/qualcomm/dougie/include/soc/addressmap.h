@@ -6,6 +6,8 @@
 #include <stdint.h>
 
 #define AOSS_CC_BASE			0x0C2A0000
+#define EPSSFAST_BASE_ADDR		0x18580000
+#define EPSSTOP_EPSS_TOP		0x18598000
 #define GCC_BASE			0x00100000
 #define L3_PLL_BASE			0x18284000
 #define QSPI_BASE			0x088DC000

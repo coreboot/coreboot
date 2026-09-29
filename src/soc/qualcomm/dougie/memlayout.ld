@@ -42,6 +42,8 @@ SECTIONS
 	PRERAM_CBMEM_CONSOLE(0x14950000, 32K)
 	BSRAM_END(0x14958000)
 
+	REGION(cpucp, 0x18500000, 64K, 4K)
+
 	DRAM_START(0x80000000)
 	/* Various hardware/software subsystems make use of this area */
 	REGION(dram_aop, 0x80800000, 0x080000, 0x1000)

@@ -13,6 +13,7 @@
 #include <device/mmio.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <limits.h>
 #include <soc/data_fabric.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -315,9 +316,21 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 						ivhd->capability_offset + 0xC);
 		cap_offset_10 = pci_read_config32(iommu_dev,
 						ivhd->capability_offset + 0x10);
-		mmio_x18_value = read64p(ivhd->iommu_base_low + 0x18);
-		mmio_x30_value = read64p(ivhd->iommu_base_low + 0x30);
-		mmio_x4000_value = read64p(ivhd->iommu_base_low + 0x4000);
+		const u64 iommu_base64 = ivhd->iommu_base_low |
+			((u64)ivhd->iommu_base_high << 32);
+		if (iommu_base64 > UINTPTR_MAX) {
+			printk(BIOS_WARNING,
+			       "%s: IOMMU BAR 0x%llx is not addressable on domain %u\n",
+			       __func__, iommu_base64, domain);
+			if (domain == 0)
+				return (unsigned long)ivrs;
+
+			continue;
+		}
+		const uintptr_t iommu_base = (uintptr_t)iommu_base64;
+		mmio_x18_value = read64p(iommu_base + 0x18);
+		mmio_x30_value = read64p(iommu_base + 0x30);
+		mmio_x4000_value = read64p(iommu_base + 0x4000);
 
 		ivhd->flags |= ((mmio_x30_value & MMIO_EXT_FEATURE_PPR_SUP) ?
 							IVHD_FLAG_PPE_SUP : 0);

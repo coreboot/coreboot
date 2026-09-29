@@ -26,6 +26,7 @@ verstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
 romstage-y += cbmem.c
+romstage-y += ../common/shrm_load_reset.c
 romstage-y += ../common/qclib.c
 romstage-y += ../common/mmu.c
 romstage-y += ../common/watchdog.c
@@ -103,6 +104,14 @@ $(I2C_FW_CBFS)-file := $(I2C_FW_FILE)
 $(I2C_FW_CBFS)-type := raw
 $(I2C_FW_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 cbfs-files-y += $(I2C_FW_CBFS)
+
+################################################################################
+SHRM_FILE := $(DOUGIE_BLOB)/shrm/shrm.elf
+SHRM_CBFS := $(CONFIG_CBFS_PREFIX)/shrm
+$(SHRM_CBFS)-file := $(SHRM_FILE)
+$(SHRM_CBFS)-type := payload
+$(SHRM_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+cbfs-files-y += $(SHRM_CBFS)
 
 endif # ifeq ($(CONFIG_USE_QC_BLOBS),y)
 endif # ifeq ($(CONFIG_QC_BLOBS_UPSTREAM),y)

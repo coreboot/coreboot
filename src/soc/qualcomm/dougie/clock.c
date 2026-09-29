@@ -89,6 +89,79 @@ static struct clock_freq_config qupv3_wrap_cfg[] = {
 	},
 };
 
+static struct pcie pcie_cfg[] = {
+	[PCIE_1_GDSC] = {
+		.gdscr = &gcc->pcie_1.gdscr,
+	},
+	[PCIE_1_SLV_Q2A_AXI_CLK] = {
+		.clk = &gcc->pcie_1.slv_q2a_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = PCIE_1_SLV_Q2A_AXI_CLK_ENA,
+	},
+	[PCIE_1_SLV_AXI_CLK] = {
+		.clk = &gcc->pcie_1.slv_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = PCIE_1_SLV_AXI_CLK_ENA,
+	},
+	[PCIE_1_MSTR_AXI_CLK] = {
+		.clk = &gcc->pcie_1.mstr_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = PCIE_1_MSTR_AXI_CLK_ENA,
+	},
+	[PCIE_1_CFG_AHB_CLK] = {
+		.clk = &gcc->pcie_1.cfg_ahb_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = PCIE_1_CFG_AHB_CLK_ENA,
+	},
+	[PCIE_1_AUX_CLK] = {
+		.clk = &gcc->pcie_1.aux_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = PCIE_1_AUX_CLK_ENA,
+	},
+	[AGGRE_NOC_PCIE_TBU_CLK] = {
+		.clk = &gcc->aggre_noc_pcie_tbu_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = AGGRE_NOC_PCIE_TBU_CLK_ENA,
+	},
+	[AGGRE_NOC_PCIE_1_AXI_CLK] = {
+		.clk = &gcc->pcie_1.aggre_noc_pcie_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = AGGRE_NOC_PCIE_1_AXI_CLK_ENA,
+	},
+	[DDRSS_PCIE_SF_CLK] = {
+		.clk = &gcc->pcie_1.ddrss_pcie_sf_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = DDRSS_PCIE_SF_CLK_ENA,
+	},
+	[PCIE1_PHY_RCHNG_CLK] = {
+		.clk = &gcc->pcie_1.phy_rchng_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = PCIE1_PHY_RCHNG_CLK_ENA,
+	},
+	[AGGRE_NOC_PCIE_CENTER_SF_AXI_CLK] = {
+		.clk = &gcc->pcie_1.aggre_noc_pcie_center_sf_axi_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en1,
+		.vote_bit = AGGRE_NOC_PCIE_CENTER_SF_AXI_CLK_ENA,
+	},
+	[PCIE_1_PIPE_CLK] = {
+		.clk = &gcc->pcie_1.pipe_cbcr,
+		.clk_br_en = &gcc->apcs_clk_br_en,
+		.vote_bit = PCIE_1_PIPE_CLK_ENA,
+	},
+	[PCIE_CLKREF_EN] = {
+		.clk = &gcc->pcie_clkref_en,
+		.vote_bit = NO_VOTE_BIT,
+	},
+	[GCC_PCIE_1_PIPE_MUXR] = {
+		.clk = &gcc->pcie_1.pipe_muxr,
+		.vote_bit = NO_VOTE_BIT,
+	},
+};
+
+static u32 *gdsc[MAX_GDSC] = {
+	[PCIE_1_GDSC] = &gcc->pcie_1.gdscr,
+};
+
 static enum cb_err clock_configure_gpll0(void)
 {
 	struct alpha_pll_reg_val_config gpll0_cfg = {0};
@@ -178,6 +251,43 @@ static enum cb_err pll_init_and_set(struct dougie_apss_clock *apss, u32 l_val)
 	gfmux_val = read32(&apss->cfg_gfmux) & ~GFMUX_SRC_SEL_BMSK;
 	gfmux_val |= APCS_SRC_EARLY;
 	write32(&apss->cfg_gfmux, gfmux_val);
+
+	return CB_SUCCESS;
+}
+
+enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type)
+{
+	if (gdsc_type >= MAX_GDSC)
+		return CB_ERR;
+
+	return enable_and_poll_gdsc_status(gdsc[gdsc_type]);
+}
+
+enum cb_err clock_enable_pcie(enum clk_pcie clk_type)
+{
+	int clk_vote_bit;
+
+	if (clk_type >= PCIE_CLK_COUNT)
+		return CB_ERR;
+
+	clk_vote_bit = pcie_cfg[clk_type].vote_bit;
+	if (clk_vote_bit < 0)
+		return clock_enable(pcie_cfg[clk_type].clk);
+
+	clock_enable_vote(pcie_cfg[clk_type].clk,
+			pcie_cfg[clk_type].clk_br_en,
+			pcie_cfg[clk_type].vote_bit);
+
+	return CB_SUCCESS;
+}
+
+enum cb_err clock_configure_mux(enum clk_pcie clk_type, u32 src_type)
+{
+	if (clk_type >= PCIE_CLK_COUNT)
+		return CB_ERR;
+
+	/* Set clock src */
+	write32(pcie_cfg[clk_type].clk, src_type);
 
 	return CB_SUCCESS;
 }

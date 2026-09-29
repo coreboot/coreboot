@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <soc/pcie.h>
 #include <soc/qcom_qup_se.h>
 #include <soc/qup_se_handlers_common.h>
 #include <soc/qupv3_config_common.h>
@@ -17,6 +18,11 @@ static struct usb_board_data usb0_board_data = {
 static void setup_usb(void)
 {
 	setup_usb_host0(&usb0_board_data);
+}
+
+bool mainboard_needs_pcie_init(void)
+{
+	return true;
 }
 
 static void mainboard_init(struct device *dev)

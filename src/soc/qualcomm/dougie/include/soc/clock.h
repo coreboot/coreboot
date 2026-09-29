@@ -26,15 +26,31 @@ enum clk_pll_src {
 	SRC_GPLL0_EVEN_300MHZ = 6,
 };
 
+enum clk_pcie_src_sel {
+	PCIE_1_PIPE_SRC_SEL = 0,
+	PCIE_1_XO_SRC_SEL = 2,
+};
+
 enum apcs_branch_en_vote {
 	QUPV3_WRAP_0_M_AHB_CLK_ENA = 6,
 	QUPV3_WRAP_0_S_AHB_CLK_ENA = 7,
 	QUPV3_WRAP0_CORE_CLK_ENA = 8,
 	QUPV3_WRAP0_CORE_2X_CLK_ENA = 9,
+	AGGRE_NOC_PCIE_1_AXI_CLK_ENA = 11,
 	QUPV3_WRAP1_CORE_2X_CLK_ENA = 18,
+	AGGRE_NOC_PCIE_TBU_CLK_ENA = 18,
 	QUPV3_WRAP1_CORE_CLK_ENA = 19,
+	DDRSS_PCIE_SF_CLK_ENA = 19,
 	QUPV3_WRAP_1_M_AHB_CLK_ENA = 20,
 	QUPV3_WRAP_1_S_AHB_CLK_ENA = 21,
+	PCIE1_PHY_RCHNG_CLK_ENA = 23,
+	PCIE_1_SLV_Q2A_AXI_CLK_ENA = 25,
+	PCIE_1_SLV_AXI_CLK_ENA = 26,
+	PCIE_1_MSTR_AXI_CLK_ENA = 27,
+	PCIE_1_CFG_AHB_CLK_ENA = 28,
+	AGGRE_NOC_PCIE_CENTER_SF_AXI_CLK_ENA = 28,
+	PCIE_1_AUX_CLK_ENA = 29,
+	PCIE_1_PIPE_CLK_ENA = 30,
 	NO_VOTE_BIT = -1,
 };
 
@@ -56,6 +72,36 @@ struct dougie_gpll {
 	u8 _res1[0x40 - 0x3c];
 	u32 alpha;
 };
+
+struct dougie_pcie {
+	u32 pcie_1_bcr;
+	u32 gdscr;
+	u8 _res1[0x18d010 - 0x18d008];
+	u32 slv_q2a_axi_cbcr;
+	u32 slv_axi_cbcr;
+	u8 _res2[0x18d01c - 0x18d018];
+	u32 mstr_axi_cbcr;
+	u8 _res3[0x18d024 - 0x18d020];
+	u32 cfg_ahb_cbcr;
+	u32 aux_cbcr;
+	u8 _res4[0x18d030 - 0x18d02c];
+	u32 pipe_cbcr;
+	u8 _res5[0x18d038 - 0x18d034];
+	u32 phy_rchng_cbcr;
+	u8 _res6[0x18d054 - 0x18d03c];
+	u32 pipe_muxr;
+	u8 _res7[0x18d080 - 0x18d058];
+	u32 ddrss_pcie_sf_cbcr;
+	u32 aggre_noc_pcie_axi_cbcr;
+	u32 aggre_noc_pcie_center_sf_axi_cbcr;
+	u8 _res8[0x18e01c - 0x18d08c];
+	u32 phy_bcr;
+};
+check_member(dougie_pcie, slv_q2a_axi_cbcr, 0x10);
+check_member(dougie_pcie, mstr_axi_cbcr, 0x1c);
+check_member(dougie_pcie, pipe_cbcr, 0x30);
+check_member(dougie_pcie, ddrss_pcie_sf_cbcr, 0x80);
+check_member(dougie_pcie, phy_bcr, 0x101c);
 
 struct dougie_gcc {
 	struct dougie_gpll gpll0;
@@ -101,7 +147,13 @@ struct dougie_gcc {
 	u32 apcs_pll_br_en;
 	u8 _res18[0x6a000 - 0x52014];
 	u32 usb_phy_cfg_ahb2phy_bcr;
-	u8 _res19[0x9e000 - 0x6a004];
+	u8 _res19[0x8c004 - 0x6a004];
+	u32 pcie_clkref_en;
+	u8 _res21[0x8d000 - 0x8c008];
+	struct dougie_pcie pcie_1;
+	u8 _res22[0x90010 - 0x8e020];
+	u32 aggre_noc_pcie_tbu_cbcr;
+	u8 _res23[0x9e000 - 0x90014];
 	u32 usb30_sec_bcr;
 };
 check_member(dougie_gcc, qusb2phy_prim_bcr, 0x12000);
@@ -113,6 +165,8 @@ check_member(dougie_gcc, usb3_phy_prim_bcr, 0x50000);
 check_member(dougie_gcc, apcs_clk_br_en1, 0x52008);
 check_member(dougie_gcc, apcs_pll_br_en, 0x52010);
 check_member(dougie_gcc, usb_phy_cfg_ahb2phy_bcr, 0x6a000);
+check_member(dougie_gcc, pcie_clkref_en, 0x8c004);
+check_member(dougie_gcc, aggre_noc_pcie_tbu_cbcr, 0x90010);
 check_member(dougie_gcc, usb30_sec_bcr, 0x9e000);
 
 struct dougie_apss_pll {
@@ -137,6 +191,13 @@ struct dougie_apss_clock {
 	u32 cfg_gfmux;
 };
 
+struct pcie {
+	uint32_t *gdscr;
+	uint32_t *clk;
+	uint32_t *clk_br_en;
+	int vote_bit;
+};
+
 enum clk_qup {
 	QUP_WRAP0_S0,
 	QUP_WRAP0_S1,
@@ -154,6 +215,28 @@ enum clk_qup {
 	QUP_WRAP1_S5,
 	QUP_WRAP1_S6,
 	QUP_WRAP1_S7,
+};
+
+enum clk_gdsc {
+	PCIE_1_GDSC,
+	MAX_GDSC
+};
+
+enum clk_pcie {
+	PCIE_1_SLV_Q2A_AXI_CLK,
+	PCIE_1_SLV_AXI_CLK,
+	PCIE_1_MSTR_AXI_CLK,
+	PCIE_1_CFG_AHB_CLK,
+	PCIE_1_AUX_CLK,
+	AGGRE_NOC_PCIE_TBU_CLK,
+	AGGRE_NOC_PCIE_1_AXI_CLK,
+	DDRSS_PCIE_SF_CLK,
+	PCIE1_PHY_RCHNG_CLK,
+	AGGRE_NOC_PCIE_CENTER_SF_AXI_CLK,
+	PCIE_1_PIPE_CLK,
+	PCIE_CLKREF_EN,
+	GCC_PCIE_1_PIPE_MUXR,
+	PCIE_CLK_COUNT,
 };
 
 enum subsystem_reset {
@@ -203,6 +286,9 @@ void clock_init(void);
 void clock_configure_qspi(uint32_t hz);
 void clock_enable_qup(int qup);
 void clock_configure_dfsr(int qup);
+enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type);
+enum cb_err clock_enable_pcie(enum clk_pcie clk_type);
+enum cb_err clock_configure_mux(enum clk_pcie clk_type, u32 src_type);
 
 /* Subsystem Reset */
 static struct aoss *const aoss = (void *)AOSS_CC_BASE;

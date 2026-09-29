@@ -23,6 +23,7 @@
 enum clk_pll_src {
 	SRC_XO_19_2MHZ = 0,
 	SRC_GPLL0_MAIN_600MHZ = 1,
+	SRC_GCC_DISP_GPLL0_CLK = 4,
 	SRC_GPLL0_EVEN_300MHZ = 6,
 };
 
@@ -72,6 +73,44 @@ struct dougie_gpll {
 	u8 _res1[0x40 - 0x3c];
 	u32 alpha;
 };
+
+struct dougie_disp_cc {
+	u8 _res0[0x1004];
+	u32 core_gdsc;
+	u8 _res1[0x1014 - 0x1008];
+	u32 mdp_cbcr;
+	u8 _res2[0x102c - 0x1018];
+	u32 vsync_cbcr;
+	u8 _res3[0x1050 - 0x1030];
+	u32 ahb_cbcr;
+	u32 edp_pixel_cbcr;
+	u32 edp_link_cbcr;
+	u32 edp_link_intf_cbcr;
+	u32 edp_aux_cbcr;
+	u8 _res4[0x1090 - 0x1064];
+	struct clock_rcg mdp;
+	u8 _res5[0x10c0 - 0x1098];
+	struct clock_rcg vsync;
+	u8 _res6[0x1170 - 0x10c8];
+	struct clock_rcg mdss_ahb;
+	u8 _res7[0x1188 - 0x1178];
+	struct clock_rcg_mnd edp_pixel;
+	u8 _res8[0x11a0 - 0x119c];
+	struct clock_rcg edp_link;
+	u8 _res9[0x11d0 - 0x11a8];
+	struct clock_rcg edp_aux;
+	u8 _res10[0x20000 - 0x11d8];
+};
+check_member(dougie_disp_cc, mdp_cbcr, 0x1014);
+check_member(dougie_disp_cc, vsync_cbcr, 0x102c);
+check_member(dougie_disp_cc, ahb_cbcr, 0x1050);
+check_member(dougie_disp_cc, edp_aux_cbcr, 0x1060);
+check_member(dougie_disp_cc, mdp, 0x1090);
+check_member(dougie_disp_cc, vsync, 0x10c0);
+check_member(dougie_disp_cc, mdss_ahb, 0x1170);
+check_member(dougie_disp_cc, edp_pixel, 0x1188);
+check_member(dougie_disp_cc, edp_link, 0x11a0);
+check_member(dougie_disp_cc, edp_aux, 0x11d0);
 
 struct dougie_pcie {
 	u32 pcie_1_bcr;
@@ -130,7 +169,13 @@ struct dougie_gcc {
 	u32 qup_wrap1_core_cdivr;
 	u32 qup_wrap1_core_2x_cbcr;
 	struct clock_rcg qup_wrap1_core_2x;
-	u8 _res10[0x4b000 - 0x2314c];
+	u8 _res10[0x27004 - 0x2314c];
+	u32 disp_ahb_cbcr;
+	u8 _res11[0x2700c - 0x27008];
+	u32 disp_hf_axi_cbcr;
+	u8 _res12[0x27014 - 0x27010];
+	u32 disp_sf_axi_cbcr;
+	u8 _res13[0x4b000 - 0x27018];
 	u32 qspi_bcr;
 	u32 qspi_cnoc_ahb_cbcr;
 	u32 qspi_core_cbcr;
@@ -149,7 +194,8 @@ struct dougie_gcc {
 	u32 usb_phy_cfg_ahb2phy_bcr;
 	u8 _res19[0x8c004 - 0x6a004];
 	u32 pcie_clkref_en;
-	u8 _res21[0x8d000 - 0x8c008];
+	u32 edp_clkref_en;
+	u8 _res21[0x8d000 - 0x8c00c];
 	struct dougie_pcie pcie_1;
 	u8 _res22[0x90010 - 0x8e020];
 	u32 aggre_noc_pcie_tbu_cbcr;
@@ -166,6 +212,7 @@ check_member(dougie_gcc, apcs_clk_br_en1, 0x52008);
 check_member(dougie_gcc, apcs_pll_br_en, 0x52010);
 check_member(dougie_gcc, usb_phy_cfg_ahb2phy_bcr, 0x6a000);
 check_member(dougie_gcc, pcie_clkref_en, 0x8c004);
+check_member(dougie_gcc, edp_clkref_en, 0x8c008);
 check_member(dougie_gcc, aggre_noc_pcie_tbu_cbcr, 0x90010);
 check_member(dougie_gcc, usb30_sec_bcr, 0x9e000);
 
@@ -218,8 +265,24 @@ enum clk_qup {
 };
 
 enum clk_gdsc {
+	MDSS_CORE_GDSC,
 	PCIE_1_GDSC,
 	MAX_GDSC
+};
+
+enum clk_mdss {
+	GCC_DISP_AHB,
+	GCC_DISP_HF_AXI,
+	GCC_DISP_SF_AXI,
+	GCC_EDP_CLKREF_EN,
+	MDSS_CLK_MDP,
+	MDSS_CLK_VSYNC,
+	MDSS_CLK_AHB,
+	MDSS_CLK_EDP_PIXEL,
+	MDSS_CLK_EDP_LINK,
+	MDSS_CLK_EDP_LINK_INTF,
+	MDSS_CLK_EDP_AUX,
+	MDSS_CLK_COUNT
 };
 
 enum clk_pcie {
@@ -281,12 +344,18 @@ enum apss_gfmux {
 static struct dougie_gcc *const gcc = (void *)GCC_BASE;
 static struct dougie_apss_clock *const apss_silver = (void *)SILVER_PLL_BASE;
 static struct dougie_apss_clock *const apss_l3 = (void *)L3_PLL_BASE;
+static struct dougie_disp_cc *const mdss = (void *)DISP_CC_BASE;
 
 void clock_init(void);
 void clock_configure_qspi(uint32_t hz);
 void clock_enable_qup(int qup);
 void clock_configure_dfsr(int qup);
 enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type);
+
+enum cb_err mdss_clock_configure(enum clk_mdss clk_type, uint32_t hz,
+			uint32_t source, uint32_t divider,
+			uint32_t m, uint32_t n, uint32_t d_2);
+enum cb_err mdss_clock_enable(enum clk_mdss clk_type);
 enum cb_err clock_enable_pcie(enum clk_pcie clk_type);
 enum cb_err clock_configure_mux(enum clk_pcie clk_type, u32 src_type);
 

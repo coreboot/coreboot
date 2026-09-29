@@ -158,8 +158,54 @@ static struct pcie pcie_cfg[] = {
 	},
 };
 
+static struct clock_freq_config mdss_mdp_cfg[] = {
+	{
+		.hz = 200 * MHz,
+		.src = SRC_GCC_DISP_GPLL0_CLK,
+		.div = QCOM_CLOCK_DIV(3),
+	},
+	{
+		.hz = 300 * MHz,
+		.src = SRC_GCC_DISP_GPLL0_CLK,
+		.div = QCOM_CLOCK_DIV(2),
+	},
+	{
+		.hz = 400 * MHz,
+		.src = SRC_GCC_DISP_GPLL0_CLK,
+		.div = QCOM_CLOCK_DIV(1.5),
+	},
+};
+
+static struct clock_rcg *mdss_clock[MDSS_CLK_COUNT] = {
+	[MDSS_CLK_MDP] = &mdss->mdp,
+	[MDSS_CLK_VSYNC] = &mdss->vsync,
+	[MDSS_CLK_AHB] = &mdss->mdss_ahb,
+	[MDSS_CLK_EDP_LINK] = &mdss->edp_link,
+	[MDSS_CLK_EDP_LINK_INTF] = &mdss->edp_link,
+	[MDSS_CLK_EDP_AUX] = &mdss->edp_aux,
+};
+
+static struct clock_rcg_mnd *mdss_clock_mnd[MDSS_CLK_COUNT] = {
+	[MDSS_CLK_EDP_PIXEL] = &mdss->edp_pixel,
+};
+
+static u32 *mdss_cbcr[MDSS_CLK_COUNT] = {
+	[GCC_DISP_AHB] = &gcc->disp_ahb_cbcr,
+	[GCC_DISP_HF_AXI] = &gcc->disp_hf_axi_cbcr,
+	[GCC_DISP_SF_AXI] = &gcc->disp_sf_axi_cbcr,
+	[GCC_EDP_CLKREF_EN] = &gcc->edp_clkref_en,
+	[MDSS_CLK_MDP] = &mdss->mdp_cbcr,
+	[MDSS_CLK_VSYNC] = &mdss->vsync_cbcr,
+	[MDSS_CLK_AHB] = &mdss->ahb_cbcr,
+	[MDSS_CLK_EDP_PIXEL] = &mdss->edp_pixel_cbcr,
+	[MDSS_CLK_EDP_LINK] = &mdss->edp_link_cbcr,
+	[MDSS_CLK_EDP_LINK_INTF] = &mdss->edp_link_intf_cbcr,
+	[MDSS_CLK_EDP_AUX] = &mdss->edp_aux_cbcr,
+};
+
 static u32 *gdsc[MAX_GDSC] = {
 	[PCIE_1_GDSC] = &gcc->pcie_1.gdscr,
+	[MDSS_CORE_GDSC] = &mdss->core_gdsc,
 };
 
 static enum cb_err clock_configure_gpll0(void)
@@ -261,6 +307,56 @@ enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type)
 		return CB_ERR;
 
 	return enable_and_poll_gdsc_status(gdsc[gdsc_type]);
+}
+
+enum cb_err mdss_clock_configure(enum clk_mdss clk_type, uint32_t hz,
+				uint32_t source, uint32_t divider, uint32_t m,
+				uint32_t n, uint32_t d_2)
+{
+	struct clock_freq_config mdss_clk_cfg;
+	uint32_t idx;
+
+	if (clk_type >= MDSS_CLK_COUNT)
+		return CB_ERR;
+
+	/* Initialize it with received arguments */
+	mdss_clk_cfg.div = divider ? QCOM_CLOCK_DIV(divider) : 0;
+	mdss_clk_cfg.src = source;
+	mdss_clk_cfg.m = m;
+	mdss_clk_cfg.n = n;
+	mdss_clk_cfg.d_2 = d_2;
+	mdss_clk_cfg.hz = hz;
+
+	if (clk_type == MDSS_CLK_MDP) {
+		for (idx = 0; idx < ARRAY_SIZE(mdss_mdp_cfg); idx++) {
+			if (hz <= mdss_mdp_cfg[idx].hz) {
+				mdss_clk_cfg.src = mdss_mdp_cfg[idx].src;
+				mdss_clk_cfg.div = mdss_mdp_cfg[idx].div;
+				mdss_clk_cfg.hz = mdss_mdp_cfg[idx].hz;
+				mdss_clk_cfg.m = 0;
+				break;
+			}
+		}
+	}
+
+	switch (clk_type) {
+	case MDSS_CLK_EDP_PIXEL:
+		return clock_configure((struct clock_rcg *)
+				       mdss_clock_mnd[clk_type],
+				       &mdss_clk_cfg, mdss_clk_cfg.hz, 1);
+	default:
+		return clock_configure(mdss_clock[clk_type],
+				       &mdss_clk_cfg, mdss_clk_cfg.hz, 1);
+	}
+}
+
+enum cb_err mdss_clock_enable(enum clk_mdss clk_type)
+{
+	if (clk_type >= MDSS_CLK_COUNT)
+		return CB_ERR;
+
+	/* Enable clock */
+	return clock_enable(mdss_cbcr[clk_type]);
 }
 
 enum cb_err clock_enable_pcie(enum clk_pcie clk_type)

@@ -1,6 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include "board.h"
+#include <bootmode.h>
+#include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
+#include <edid.h>
+#include <soc/display/edp_ctrl.h>
+#include <soc/display/mdssreg.h>
 #include <soc/pcie.h>
 #include <soc/qcom_qup_se.h>
 #include <soc/qup_se_handlers_common.h>
@@ -18,6 +25,35 @@ static struct usb_board_data usb0_board_data = {
 static void setup_usb(void)
 {
 	setup_usb_host0(&usb0_board_data);
+}
+
+static void edp_configure_gpios(void)
+{
+	/* Panel power on GPIO enable */
+	gpio_output(GPIO_PANEL_POWER_ON, 1);
+
+	/* Panel HPD GPIO enable */
+	gpio_input(GPIO_PANEL_HPD);
+}
+
+static void display_startup(void)
+{
+	struct edid ed;
+
+	if (!display_init_required() || (CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch())) {
+		printk(BIOS_INFO, "Skipping display init.\n");
+		return;
+	}
+
+	enable_mdss_clk();
+	edp_configure_gpios();
+	mdelay(250); /* Delay for the panel to be up */
+	if (edp_ctrl_init(&ed) == CB_SUCCESS) {
+		mdp_dsi_video_config(&ed);
+		mdp_dsi_video_on();
+		edid_set_framebuffer_bits_per_pixel(&ed, 32, 0);
+		fb_new_framebuffer_info_from_edid(&ed, (uintptr_t)0);
+	}
 }
 
 bool mainboard_needs_pcie_init(void)
@@ -43,6 +79,7 @@ static void mainboard_init(struct device *dev)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE4, SE_PROTOCOL_I2C, MIXED);	 /* HDMI bridge I2C */
 
 	setup_usb();
+	display_startup();
 }
 
 static void mainboard_enable(struct device *dev)

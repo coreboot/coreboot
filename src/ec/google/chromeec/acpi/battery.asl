@@ -280,8 +280,7 @@ Method (BBIX, 2, Serialized)
 //   Arg0 = battery index
 //   Arg1 = PBST
 //   Arg2 = BSTP
-//   Arg3 = BFWK
-Method (BBST, 4, Serialized)
+Method (BBST, 3, Serialized)
 {
 	If (Acquire (^BATM, 1000)) {
 		Return (Arg1)
@@ -340,7 +339,10 @@ Method (BBST, 4, Serialized)
 	// 2: BATTERY REMAINING CAPACITY
 	//
 	Local1 = BTRA
-	If (Arg3 && ACEX && !(BFDC && BFCG)) {
+#if CONFIG(EC_GOOGLE_CHROMEEC_NEEDS_BATTERY_WORKAROUND)
+	// Workaround for full battery status on older boards
+	// lacking EC compensation.
+	If (ACEX && !(BFDC && BFCG)) {
 		// On AC power and battery is neither charging
 		// nor discharging.  Linux expects a full battery
 		// to report same capacity as last full charge.
@@ -354,6 +356,7 @@ Method (BBST, 4, Serialized)
 			Local1 = Local2
 		}
 	}
+#endif
 	Arg1[2] = Local1
 
 	//
@@ -418,22 +421,6 @@ Device (BAT0)
 	})
 	Name (BSTP, 0)
 
-	// Workaround for full battery status, disabled by default,
-	// enabled via Kconfig for older boards lacking EC compensation.
-	Name (BFWK, CONFIG(EC_GOOGLE_CHROMEEC_NEEDS_BATTERY_WORKAROUND))
-
-	// Method to enable full battery workaround
-	Method (BFWE)
-	{
-		BFWK = 1
-	}
-
-	// Method to disable full battery workaround
-	Method (BFWD)
-	{
-		BFWK = 0
-	}
-
 	Method (_STA, 0, Serialized)
 	{
 		Return (BSTA (0))
@@ -451,7 +438,7 @@ Device (BAT0)
 
 	Method (_BST, 0, Serialized)
 	{
-		Return (BBST (0, PBST, RefOf (BSTP), BFWK))
+		Return (BBST (0, PBST, RefOf (BSTP)))
 	}
 }
 
@@ -509,22 +496,6 @@ Device (BAT1)
 	})
 	Name (BSTP, 0)
 
-	// Workaround for full battery status, disabled by default,
-	// enabled via Kconfig for older boards lacking EC compensation.
-	Name (BFWK, CONFIG(EC_GOOGLE_CHROMEEC_NEEDS_BATTERY_WORKAROUND))
-
-	// Method to enable full battery workaround
-	Method (BFWE)
-	{
-		BFWK = 1
-	}
-
-	// Method to disable full battery workaround
-	Method (BFWD)
-	{
-		BFWK = 0
-	}
-
 	Method (_STA, 0, Serialized)
 	{
 		Return (BSTA (1))
@@ -542,7 +513,7 @@ Device (BAT1)
 
 	Method (_BST, 0, Serialized)
 	{
-		Return (BBST (1, PBST, RefOf (BSTP), BFWK))
+		Return (BBST (1, PBST, RefOf (BSTP)))
 	}
 }
 #endif

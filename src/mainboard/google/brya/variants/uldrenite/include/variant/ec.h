@@ -5,9 +5,6 @@
 
 #include <baseboard/ec.h>
 
-/* Enable DPTF OEM variable */
-#define DPTF_ENABLE_OEM_VARIABLES
-
 #define DPTF_FEATURE_DYNAMIC_THERMAL_TABLE_SWITCH
 
 #endif

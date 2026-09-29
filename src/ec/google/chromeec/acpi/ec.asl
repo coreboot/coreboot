@@ -9,7 +9,6 @@
 // DTT Power Participant Device Notification
 #define POWER_STATE_CHANGE_NOTIFICATION 0x81
 // DTT OEM variables change notification
-#define EC_OEM_VARIABLE_DATA_MASK	0x7
 #define INT3400_ODVP_CHANGED		0x88
 
 #define ACPI_NOTIFY_CROS_EC_MKBP	0x80
@@ -29,9 +28,7 @@ External(\_SB.DPTC, MethodObj)
 
 External (\_SB.DPTF.TPWR, DeviceObj)
 
-#ifdef DPTF_ENABLE_OEM_VARIABLES
-External (\_SB.DPTF.ODVP, MethodObj)
-External (\_SB.DPTF.ODGT, MethodObj)
+#ifdef DPTF_FEATURE_DYNAMIC_THERMAL_TABLE_SWITCH
 External (\_SB.DPTF.ODUP, MethodObj)
 #endif
 

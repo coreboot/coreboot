@@ -17,7 +17,7 @@ Method (BTSW, 1)
 	If (Arg0 >= BTCN) {
 		Return (1)
 	}
-	\_SB.PCI0.LPCB.EC0.BTID = Arg0
+	^BTID = Arg0
 	Local0 = 5      // Timeout 5 msec
 	While (BTIX != Arg0)
 	{

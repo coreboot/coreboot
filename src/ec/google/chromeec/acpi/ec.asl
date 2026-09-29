@@ -280,30 +280,30 @@ Device (EC0)
 	/* Read requested temperature and check against EC error values */
 	Method (TSRD, 1, Serialized)
 	{
-		Local0 = \_SB.PCI0.LPCB.EC0.TINS (Arg0)
+		Local0 = ^TINS (Arg0)
 
 		/* Check for sensor not calibrated */
-		If (Local0 == \_SB.PCI0.LPCB.EC0.TNCA) {
+		If (Local0 == ^TNCA) {
 			Return (0)
 		}
 
 		/* Check for sensor not present */
-		If (Local0 == \_SB.PCI0.LPCB.EC0.TNPR) {
+		If (Local0 == ^TNPR) {
 			Return (0)
 		}
 
 		/* Check for sensor not powered */
-		If (Local0 == \_SB.PCI0.LPCB.EC0.TNOP) {
+		If (Local0 == ^TNOP) {
 			Return (0)
 		}
 
 		/* Check for sensor bad reading */
-		If (Local0 == \_SB.PCI0.LPCB.EC0.TBAD) {
+		If (Local0 == ^TBAD) {
 			Return (0)
 		}
 
 		/* Adjust by offset to get Kelvin */
-		Local0 += \_SB.PCI0.LPCB.EC0.TOFS
+		Local0 += ^TOFS
 
 		/* Convert to 1/10 Kelvin */
 		Local0 *= 10

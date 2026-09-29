@@ -16,6 +16,13 @@ config SOC_QUALCOMM_DOUGIE
 
 if SOC_QUALCOMM_DOUGIE
 
+config QC_BLOBS_UPSTREAM
+	bool "QC blobs are available in upstream repository"
+	select USE_QC_BLOBS
+	default n
+	help
+	  Select based on availability of QC blobs in upstream coreboot `3rdparty/qc_blobs`.
+
 config MEMLAYOUT_LD_FILE
 	string
 	default "src/soc/qualcomm/dougie/memlayout.ld"

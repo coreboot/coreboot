@@ -1,0 +1,35 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_GOOGLE_DOUGIE_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select COMMON_CBFS_SPI_WRAPPER
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_RTC
+	select EC_GOOGLE_CHROMEEC_SPI
+	select RTC
+	select SOC_QUALCOMM_DOUGIE
+	select SPI_FLASH
+	select SPI_FLASH_FORCE_4_BYTE_ADDR_MODE
+	select SPI_FLASH_INCLUDE_ALL_DRIVERS
+
+config BOARD_GOOGLE_DOUGIE
+	select BOARD_GOOGLE_DOUGIE_COMMON
+
+if BOARD_GOOGLE_DOUGIE_COMMON
+
+config MAINBOARD_DIR
+	default "google/dougie"
+
+##########################################################
+#### Update below when adding a new derivative board. ####
+##########################################################
+
+config MAINBOARD_PART_NUMBER
+	default "Dougie" if BOARD_GOOGLE_DOUGIE
+
+config EC_GOOGLE_CHROMEEC_SPI_BUS
+	hex
+	default 0xA
+
+endif # BOARD_GOOGLE_DOUGIE_COMMON

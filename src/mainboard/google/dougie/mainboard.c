@@ -4,6 +4,20 @@
 #include <soc/qcom_qup_se.h>
 #include <soc/qup_se_handlers_common.h>
 #include <soc/qupv3_config_common.h>
+#include <soc/usb/snps_usb_phy.h>
+#include <soc/usb/usb_common.h>
+
+static struct usb_board_data usb0_board_data = {
+	.parameter_override_x0 = 0xe6,
+	.parameter_override_x1 = 0x8b,
+	.parameter_override_x2 = 0x16,
+	.parameter_override_x3 = 0x03,
+};
+
+static void setup_usb(void)
+{
+	setup_usb_host0(&usb0_board_data);
+}
 
 static void mainboard_init(struct device *dev)
 {
@@ -21,6 +35,8 @@ static void mainboard_init(struct device *dev)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE5, SE_PROTOCOL_I2C, MIXED);	 /* Touch I2C */
 	qupv3_se_fw_load_and_init(QUPV3_0_SE7, SE_PROTOCOL_UART, FIFO);	 /* BT UART */
 	qupv3_se_fw_load_and_init(QUPV3_1_SE4, SE_PROTOCOL_I2C, MIXED);	 /* HDMI bridge I2C */
+
+	setup_usb();
 }
 
 static void mainboard_enable(struct device *dev)

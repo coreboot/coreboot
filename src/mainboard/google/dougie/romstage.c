@@ -5,7 +5,17 @@
 #include <soc/cpucp.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
+#include <soc/usb/usb_common.h>
 #include <soc/watchdog.h>
+
+static void prepare_usb(void)
+{
+	/*
+	 * Do DWC3 core and phy reset. Kick these resets
+	 * off early so they get at least 1ms to settle.
+	 */
+	reset_usb0();
+}
 
 void platform_romstage_main(void)
 {
@@ -16,4 +26,5 @@ void platform_romstage_main(void)
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
 	aop_fw_load_reset();
+	prepare_usb();
 }

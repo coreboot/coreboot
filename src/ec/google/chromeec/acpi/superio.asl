@@ -66,23 +66,6 @@ Device (SIO) {
 		})
 	}
 #endif
-
-#ifdef SIO_EC_ENABLE_COM1
-	Device (COM1) {
-		Name (_HID, EISAID ("PNP0501"))
-		Name (_UID, 1)
-
-		Method (_STA, 0, NotSerialized) {
-			Return (0x0F)
-		}
-
-		Name (_CRS, ResourceTemplate ()
-		{
-			IO (Decode16, 0x03F8, 0x3F8, 0x08, 0x08)
-			IRQNoFlags () {4}
-		})
-	}
-#endif
 }
 
 #ifdef SIO_EC_ENABLE_PS2K

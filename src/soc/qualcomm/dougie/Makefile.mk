@@ -5,6 +5,7 @@ decompressor-y += decompressor.c
 decompressor-y += mmu.c
 decompressor-y += ../common/timer.c
 all-y += ../common/timer.c
+all-y += ../common/gpio.c
 
 ################################################################################
 bootblock-y += bootblock.c

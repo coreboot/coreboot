@@ -26,6 +26,8 @@ verstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
 romstage-y += cbmem.c
+romstage-y += ../common/qclib.c
+romstage-y += ../common/mmu.c
 romstage-y += ../common/watchdog.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
@@ -53,6 +55,30 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.elf
 	@printf "\nqgpt.py 4K sector size\n"
 	@util/qualcomm/qgpt.py $(objcbfs)/merged_bb_qcsec.mbn \
 		$(objcbfs)/bootblock.bin
+
+################################################################################
+QCLIB_FILE := $(DOUGIE_BLOB)/boot/QcLib.elf
+QCLIB_CBFS := $(CONFIG_CBFS_PREFIX)/qclib
+$(QCLIB_CBFS)-file := $(QCLIB_FILE)
+$(QCLIB_CBFS)-type := stage
+$(QCLIB_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+cbfs-files-y += $(QCLIB_CBFS)
+
+################################################################################
+PMIC_FILE := $(DOUGIE_BLOB)/boot/Pmic.bin
+PMIC_CBFS := $(CONFIG_CBFS_PREFIX)/pmiccfg
+$(PMIC_CBFS)-file := $(PMIC_FILE)
+$(PMIC_CBFS)-type := raw
+$(PMIC_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(PMIC_CBFS)
+
+################################################################################
+DCB_FILE := $(DOUGIE_BLOB)/boot/dcb.bin
+DCB_CBFS := $(CONFIG_CBFS_PREFIX)/dcb
+$(DCB_CBFS)-file := $(DCB_FILE)
+$(DCB_CBFS)-type := raw
+$(DCB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(DCB_CBFS)
 
 ################################################################################
 UART_FW_FILE := $(DOUGIE_BLOB)/qup_fw/uart_fw.bin

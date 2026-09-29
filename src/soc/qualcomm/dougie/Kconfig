@@ -33,4 +33,8 @@ config VBOOT
 	select VBOOT_MUST_REQUEST_DISPLAY
 	select VBOOT_STARTS_IN_BOOTBLOCK
 
+config BOOT_DEVICE_SPI_FLASH_BUS
+	int
+	default 16
+
 endif

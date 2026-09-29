@@ -561,11 +561,12 @@ Device (EC0)
 	Mutex (PATM, 1)
 
 	/*
-	 * Set Aux Trip Point 0
+	 * Set Aux Trip Point
 	 *   Arg0 = Temp Sensor ID
 	 *   Arg1 = Value to set
+	 *   Arg2 = Commit value
 	 */
-	Method (PAT0, 2, Serialized)
+	Method (PATS, 3, Serialized)
 	{
 		If (Acquire (^PATM, 1000)) {
 			Return (0)
@@ -580,11 +581,21 @@ Device (EC0)
 		/* Adjust by EC temperature offset */
 		^PATT = Local1 - ^TOFS
 
-		/* Set commit value with SELECT=0 and ENABLE=1 */
-		^PATC = 0x02
+		^PATC = Arg2
 
 		Release (^PATM)
 		Return (1)
+	}
+
+	/*
+	 * Set Aux Trip Point 0
+	 *   Arg0 = Temp Sensor ID
+	 *   Arg1 = Value to set
+	 */
+	Method (PAT0, 2, NotSerialized)
+	{
+		/* Commit value with SELECT=0 and ENABLE=1 */
+		Return (PATS (Arg0, Arg1, 0x02))
 	}
 
 	/*
@@ -592,26 +603,10 @@ Device (EC0)
 	 *   Arg0 = Temp Sensor ID
 	 *   Arg1 = Value to set
 	 */
-	Method (PAT1, 2, Serialized)
+	Method (PAT1, 2, NotSerialized)
 	{
-		If (Acquire (^PATM, 1000)) {
-			Return (0)
-		}
-
-		/* Set sensor ID */
-		^PATI = ToInteger (Arg0)
-
-		/* Temperature is passed in 1/10 Kelvin */
-		Local1 = ToInteger (Arg1) / 10
-
-		/* Adjust by EC temperature offset */
-		^PATT = Local1 - ^TOFS
-
-		/* Set commit value with SELECT=1 and ENABLE=1 */
-		^PATC = 0x03
-
-		Release (^PATM)
-		Return (1)
+		/* Commit value with SELECT=1 and ENABLE=1 */
+		Return (PATS (Arg0, Arg1, 0x03))
 	}
 
 	/* Disable Aux Trip Points

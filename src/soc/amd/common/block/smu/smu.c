@@ -23,7 +23,12 @@ static int32_t smu_poll_response(bool print_command_duration)
 			break;
 
 		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR, "timeout sending SMU message\n");
+			printk(BIOS_ERR, "SMU timeout: resp=%08x msgid=%08x\n",
+			       smn_read32(SMN_SMU_MESG_RESP),
+			       smn_read32(SMN_SMU_MESG_ID));
+			for (size_t i = 0; i < SMU_NUM_ARGS; i++)
+				printk(BIOS_ERR, "SMU arg%zu=%08x\n", i,
+				       smn_read32(SMN_SMU_MESG_ARG(i)));
 			return SMU_MESG_RESP_TIMEOUT;
 		}
 		thread_yield();

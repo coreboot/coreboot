@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/stages.h>
+#include <soc/aop_common.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
 #include <soc/watchdog.h>
@@ -12,4 +13,5 @@ void platform_romstage_main(void)
 	shrm_fw_load_reset();
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
+	aop_fw_load_reset();
 }

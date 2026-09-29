@@ -160,8 +160,14 @@ static bool parse_pon_history(struct pon_history_status *status)
 					     &data2);
 			current_index += 1;
 		} else if (event_type == PM_PON_EVENT_PON_TRIGGER) {
-			status->pon_reason = data;
-			if (data == PON_CBLPWR_RSN)
+			/*
+			 * Mask bits [5:4] (lower 2 bits of the 8-bit PID in
+			 * SID<<12 | PID<<4 | IRQ) because PMIC PBS may log
+			 * CBLPWR on either peripheral 0x8C (0x18C0) or 0x8F
+			 * (0x18F0) across PMIC/PSI revisions.
+			 */
+			status->pon_reason = data & PON_CBLPWR_RSN_MASK;
+			if (status->pon_reason == PON_CBLPWR_RSN)
 				printk(BIOS_INFO, " PON Reason : CBLPWR\n");
 			else
 				printk(BIOS_INFO, " PON Reason : %d\n", data);
@@ -236,7 +242,12 @@ static int get_reset_type(void)
  */
 bool is_pon_on_ac(void)
 {
-	return get_pon_reason() == PON_CBLPWR_RSN;
+	uint16_t pon_reason = get_pon_reason();
+
+	if (pon_reason == PON_VALUE_INVALID)
+		return false;
+
+	return (pon_reason & PON_CBLPWR_RSN_MASK) == PON_CBLPWR_RSN;
 }
 
 /*

@@ -280,6 +280,8 @@ static void configure_child_lpc_windows(struct device *dev, struct device *child
 
 static void configure_child_espi_windows(struct device *child)
 {
+	const enum espi_controller other_espi =
+		CONFIG(SOC_AMD_COMMON_BLOCK_ESPI_USE_ESPI1) ? ESPI_CONTROLLER_0 : ESPI_CONTROLLER_1;
 	struct resource *res;
 
 	for (res = child->resource_list; res; res = res->next) {
@@ -287,6 +289,16 @@ static void configure_child_espi_windows(struct device *child)
 			printk(BIOS_DEBUG,
 				"FCH eSPI IO decode:%s, base=0x%08llx, end=0x%08llx\n",
 				dev_path(child), res->base, res->base + res->size - 1);
+			/*
+			 * Don't route a range to this eSPI controller when the firmware has
+			 * already routed it to the other one, since this would break access
+			 * to the device behind the other controller.
+			 */
+			if (espi_is_io_range_decoded(other_espi, res->base, res->size)) {
+				printk(BIOS_DEBUG, "  skipped, already decoded by eSPI%d\n",
+				       other_espi);
+				continue;
+			}
 			espi_open_io_window(res->base, res->size);
 		} else if (res->flags & IORESOURCE_MEM) {
 			/*

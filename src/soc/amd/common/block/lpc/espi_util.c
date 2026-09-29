@@ -297,6 +297,44 @@ enum cb_err espi_open_io_window(uint16_t base, size_t size)
 	}
 }
 
+bool espi_is_io_range_decoded(enum espi_controller controller, uint16_t base, size_t size)
+{
+	uintptr_t bar;
+	uint32_t decode;
+	int std_io;
+	int i;
+
+	if (!ENV_X86)
+		return false;
+
+	if (controller == ESPI_CONTROLLER_1 && !CONFIG(SOC_AMD_COMMON_BLOCK_HAS_ESPI1))
+		return false;
+
+	bar = lpc_get_spibase() + (controller == ESPI_CONTROLLER_1 ?
+				   ESPI1_OFFSET_FROM_BAR : ESPI_OFFSET_FROM_BAR);
+	decode = read32p(bar + ESPI_DECODE);
+
+	std_io = espi_std_io_decode(base, size);
+	if (std_io != -1)
+		return !!(decode & std_io);
+
+	for (i = 0; i < ESPI_GENERIC_IO_WIN_COUNT; i++) {
+		uint16_t win_base;
+		size_t win_size;
+
+		if (!(decode & espi_decode_io_range_en_bit(i)))
+			continue;
+
+		win_base = read16p(bar + espi_io_range_base_reg(i));
+		win_size = read8p(bar + espi_io_range_size_reg(i)) + 1;
+
+		if (base >= win_base && base + size <= win_base + win_size)
+			return true;
+	}
+
+	return false;
+}
+
 static int espi_find_mmio_window(uint32_t win_base)
 {
 	int i;

@@ -131,6 +131,17 @@ struct espi_config {
  */
 enum cb_err espi_open_io_window(uint16_t base, size_t size);
 
+enum espi_controller {
+	ESPI_CONTROLLER_0,
+	ESPI_CONTROLLER_1,
+};
+
+/*
+ * Check whether the given eSPI controller already decodes the whole I/O range. Returns false
+ * for ESPI_CONTROLLER_1 on SoCs that don't have a second eSPI controller.
+ */
+bool espi_is_io_range_decoded(enum espi_controller controller, uint16_t base, size_t size);
+
 /*
  * Open MMIO window using the provided base and size.
  */

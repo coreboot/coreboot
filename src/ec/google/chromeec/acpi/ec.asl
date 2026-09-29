@@ -220,6 +220,16 @@ Device (EC0)
 		Return (ECMD)
 	}
 
+	/* Update the AMD DPTC thermal settings for the current device mode */
+	Method (DPTU, 0, NotSerialized)
+	{
+#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
+		If (CondRefOf (\_SB.DPTC)) {
+			\_SB.DPTC ()
+		}
+#endif
+	}
+
 	Method (_REG, 2, NotSerialized)
 	{
 #ifdef EC_FRAMEWORK_ACPI_SHARED_MEM_IO
@@ -247,15 +257,8 @@ Device (EC0)
 		\LIDS = LIDS
 #endif
 
-#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
-		/*
-		 * Per the device mode (clamshell or tablet) to initialize
-		 * the thermal setting on OS startup.
-		 */
-		If (CondRefOf (\_SB.DPTC)) {
-			\_SB.DPTC()
-		}
-#endif
+		/* Initialize the thermal settings for the current device mode */
+		DPTU ()
 
 #ifdef DPTF_FEATURE_DYNAMIC_THERMAL_TABLE_SWITCH
 		\_SB.DPTF.ODUP(0, STTB)
@@ -315,11 +318,7 @@ Device (EC0)
 	Method (_Q01, 0, NotSerialized)
 	{
 		Printf ("EC: LID CLOSE")
-#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
-		If (CondRefOf (\_SB.DPTC)) {
-			\_SB.DPTC()
-		}
-#endif
+		DPTU ()
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
 #else
@@ -331,11 +330,7 @@ Device (EC0)
 	Method (_Q02, 0, NotSerialized)
 	{
 		Printf ("EC: LID OPEN")
-#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
-		If (CondRefOf (\_SB.DPTC)) {
-			\_SB.DPTC()
-		}
-#endif
+		DPTU ()
 		Notify (\_SB.CREC, 0x2)
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
@@ -550,22 +545,14 @@ Device (EC0)
 		Notify (VGBI, 0x81)
 #endif
 #endif
-#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
-		If (CondRefOf (\_SB.DPTC)) {
-			\_SB.DPTC()
-		}
-#endif
+		DPTU ()
 	}
 
 	// Body Detect Change Event
 	Method (_Q21, 0, NotSerialized)
 	{
 		Printf ("EC: Body Detect Change Event")
-#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
-		If (CondRefOf (\_SB.DPTC)) {
-			\_SB.DPTC()
-		}
-#endif
+		DPTU ()
 
 #ifdef DPTF_FEATURE_DYNAMIC_THERMAL_TABLE_SWITCH
 		\_SB.DPTF.ODUP(0, STTB)
@@ -661,12 +648,7 @@ Device (EC0)
 	 */
 	Method (_Q09, 0, NotSerialized)
 	{
-
-#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
-		If (CondRefOf (\_SB.DPTC)) {
-			\_SB.DPTC()
-		}
-#endif
+		DPTU ()
 		If (!Acquire (^PATM, 1000)) {
 			/* Read sensor ID for event */
 			Local0 = ^PATI

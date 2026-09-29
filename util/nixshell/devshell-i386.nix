@@ -6,7 +6,7 @@ pkgs.mkShell {
 	packages = [
 		cacert
 		gdb
-		git
+		gitMinimal
 		qemu
 	];
 

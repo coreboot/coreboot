@@ -48,16 +48,6 @@ static_assert(CONFIG_PSP_APOB_DRAM_SIZE == DEFAULT_MRC_CACHE_SIZE,
 static_assert(CONFIG_PSP_APOB_DRAM_SIZE == RECOVERY_MRC_CACHE_SIZE,
 	"APOB DRAM reserved space != to RECOVERY MRC CACHE size - check your config");
 
-#define APOB_SIGNATURE 0x424F5041	/* 'APOB' */
-
-/* APOB_BASE_HEADER from AGESA */
-struct apob_base_header {
-	uint32_t   signature;			/* APOB signature */
-	uint32_t   version;			/* Version */
-	uint32_t   size;			/* APOB Size */
-	uint32_t   offset_of_first_entry;	/* APOB Header Size */
-};
-
 static bool apob_header_valid(const struct apob_base_header *apob_header_ptr, const char *where)
 {
 	uint32_t size_plus_hash = apob_header_ptr->size + MRC_HASH_SIZE;

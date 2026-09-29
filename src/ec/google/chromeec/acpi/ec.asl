@@ -442,23 +442,21 @@ Device (EC0)
 		Notify (BAT0, 0x80)
 	}
 
+#ifdef EC_ENABLE_THROTTLING_HANDLER
 	// Throttle Start
 	Method (_Q12, 0, NotSerialized)
 	{
-#ifdef EC_ENABLE_THROTTLING_HANDLER
 		Printf ("EC: THROTTLE START")
 		\_TZ.THRT (1)
-#endif
 	}
 
 	// Throttle Stop
 	Method (_Q13, 0, NotSerialized)
 	{
-#ifdef EC_ENABLE_THROTTLING_HANDLER
 		Printf ("EC: THROTTLE STOP")
 		\_TZ.THRT (0)
-#endif
 	}
+#endif
 
 #ifdef EC_ENABLE_PD_MCU_DEVICE
 	// PD event

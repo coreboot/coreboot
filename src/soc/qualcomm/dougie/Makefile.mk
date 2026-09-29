@@ -38,6 +38,16 @@ ifeq ($(CONFIG_USE_QC_BLOBS),y)
 DOUGIE_BLOB := $(top)/3rdparty/qc_blobs/dougie
 
 ################################################################################
+QC_SEC_FILE := $(DOUGIE_BLOB)/qc_sec/qc_sec.mbn
+$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.elf
+	@util/qualcomm/createxbl.py --mbn_version 6 -f $(objcbfs)/bootblock.raw.elf \
+		-x $(QC_SEC_FILE) -o $(objcbfs)/merged_bb_qcsec.mbn \
+		-a 64 -d 64 -c 64
+	@printf "\nqgpt.py 4K sector size\n"
+	@util/qualcomm/qgpt.py $(objcbfs)/merged_bb_qcsec.mbn \
+		$(objcbfs)/bootblock.bin
+
+################################################################################
 UART_FW_FILE := $(DOUGIE_BLOB)/qup_fw/uart_fw.bin
 UART_FW_CBFS := $(CONFIG_CBFS_PREFIX)/uart_fw
 $(UART_FW_CBFS)-file := $(UART_FW_FILE)

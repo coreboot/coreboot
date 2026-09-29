@@ -79,13 +79,13 @@ enum starbook_dxio_port_idx {
 	STARBOOK_DXIO_DUMMY_MXM,
 };
 
-static fsp_dxio_descriptor starbook_dxio_descriptors[] = {
+static dxio_descriptor starbook_dxio_descriptors[] = {
 	[STARBOOK_DXIO_WIFI]		= STARBOOK_WIFI_DXIO_DESCRIPTOR,
 	[STARBOOK_DXIO_M2_STORAGE]	= STARBOOK_M2_NVME_DXIO_DESCRIPTOR,
 	[STARBOOK_DXIO_DUMMY_MXM]	= STARBOOK_DUMMY_MXM_DXIO_DESCRIPTOR,
 };
 
-static void starbook_set_dxio_aspm(fsp_dxio_descriptor *desc, unsigned int aspm)
+static void starbook_set_dxio_aspm(dxio_descriptor *desc, unsigned int aspm)
 {
 	desc->link_aspm = ASPM_L1;
 
@@ -108,7 +108,7 @@ static void starbook_set_dxio_aspm(fsp_dxio_descriptor *desc, unsigned int aspm)
 	}
 }
 
-static void starbook_set_dxio_l1ss(fsp_dxio_descriptor *desc, unsigned int l1ss)
+static void starbook_set_dxio_l1ss(dxio_descriptor *desc, unsigned int l1ss)
 {
 	desc->link_aspm_L1_1 = true;
 	desc->link_aspm_L1_2 = true;
@@ -130,8 +130,8 @@ static void starbook_set_dxio_l1ss(fsp_dxio_descriptor *desc, unsigned int l1ss)
 
 static void starbook_update_dxio_power_management(void)
 {
-	fsp_dxio_descriptor *wifi = &starbook_dxio_descriptors[STARBOOK_DXIO_WIFI];
-	fsp_dxio_descriptor *ssd = &starbook_dxio_descriptors[STARBOOK_DXIO_M2_STORAGE];
+	dxio_descriptor *wifi = &starbook_dxio_descriptors[STARBOOK_DXIO_WIFI];
+	dxio_descriptor *ssd = &starbook_dxio_descriptors[STARBOOK_DXIO_M2_STORAGE];
 
 	if (get_uint_option("wifi", 1) == 0) {
 		wifi->engine_type = UNUSED_ENGINE;
@@ -163,11 +163,11 @@ static void starbook_select_m2_storage_dxio(void)
 	} else {
 		printk(BIOS_INFO, "DXIO: detected SATA SSD; routing lanes 8-9 to SATA\n");
 		starbook_dxio_descriptors[STARBOOK_DXIO_M2_STORAGE] =
-			(fsp_dxio_descriptor)STARBOOK_M2_SATA_DXIO_DESCRIPTOR;
+			(dxio_descriptor)STARBOOK_M2_SATA_DXIO_DESCRIPTOR;
 	}
 }
 
-static fsp_ddi_descriptor starbook_ddi_descriptors[] = {
+static ddi_descriptor starbook_ddi_descriptors[] = {
 	/* DDI0:	eDP */
 	{
 		.connector_type		= DDI_EDP,
@@ -201,8 +201,8 @@ static fsp_ddi_descriptor starbook_ddi_descriptors[] = {
 };
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	starbook_select_m2_storage_dxio();
 	starbook_update_dxio_power_management();

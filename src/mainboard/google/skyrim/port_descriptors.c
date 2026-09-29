@@ -5,7 +5,7 @@
 #include <soc/platform_descriptors.h>
 #include <types.h>
 
-static const fsp_ddi_descriptor skyrim_mdn_ddi_descriptors[] = {
+static const ddi_descriptor skyrim_mdn_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -34,8 +34,8 @@ static const fsp_ddi_descriptor skyrim_mdn_ddi_descriptors[] = {
 };
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	variant_get_dxio_descriptors(dxio_descs, dxio_num);
 

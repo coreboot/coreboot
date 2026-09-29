@@ -40,8 +40,8 @@ const struct soc_amd_gpio *variant_tpm_gpio_table(size_t *size);
 
 bool variant_has_pcie_wwan(void);
 
-void variant_update_dxio_descriptors(fsp_dxio_descriptor *dxio_descriptors);
-void variant_update_ddi_descriptors(fsp_ddi_descriptor *ddi_descriptors);
+void variant_update_dxio_descriptors(dxio_descriptor *dxio_descriptors);
+void variant_update_ddi_descriptors(ddi_descriptor *ddi_descriptors);
 
 enum dxio_port_id {
 	WLAN,

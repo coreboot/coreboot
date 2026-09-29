@@ -152,7 +152,7 @@ bool devtree_xgbe_dev_enabled(uint8_t port_num);
 	       .end_logical_lane = 5,		\
 }
 
-static fsp_ddi_descriptor jaguar_ddi_descriptors[] = {
+static ddi_descriptor jaguar_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -181,10 +181,10 @@ static fsp_ddi_descriptor jaguar_ddi_descriptors[] = {
 };
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
-	static fsp_dxio_descriptor jaguar_dxio_descriptors[] = {
+	static dxio_descriptor jaguar_dxio_descriptors[] = {
 		jaguar_nvme0_dxio_descriptor,
 		jaguar_gpp1_dxio_descriptor,
 		jaguar_wlan_dxio_descriptor,
@@ -197,11 +197,11 @@ void mainboard_get_dxio_ddi_descriptors(
 		jaguar_gpp2_dxio_descriptor,
 #endif
 	};
-	fsp_dxio_descriptor *nvme_desc = &jaguar_dxio_descriptors[0];
-	fsp_dxio_descriptor *gpp1_desc = &jaguar_dxio_descriptors[1];
-	fsp_dxio_descriptor *wlan_desc = &jaguar_dxio_descriptors[2];
-	fsp_dxio_descriptor *mxm0 = &jaguar_dxio_descriptors[3];
-	fsp_dxio_descriptor *mxm1 = &jaguar_dxio_descriptors[4];
+	dxio_descriptor *nvme_desc = &jaguar_dxio_descriptors[0];
+	dxio_descriptor *gpp1_desc = &jaguar_dxio_descriptors[1];
+	dxio_descriptor *wlan_desc = &jaguar_dxio_descriptors[2];
+	dxio_descriptor *mxm0 = &jaguar_dxio_descriptors[3];
+	dxio_descriptor *mxm1 = &jaguar_dxio_descriptors[4];
 
 	switch (mb_cfg_pcie_bifurcation()) {
 	case EC_PCIE_MUX_NVMEX4:

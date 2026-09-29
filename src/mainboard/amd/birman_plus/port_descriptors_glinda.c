@@ -112,7 +112,7 @@
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
 
-static fsp_ddi_descriptor birmanplus_glinda_ddi_descriptors[] = {
+static ddi_descriptor birmanplus_glinda_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -181,12 +181,12 @@ static uint8_t get_ddi1_type(void)
 }
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	birmanplus_glinda_ddi_descriptors[1].connector_type = get_ddi1_type();
 
-	static fsp_dxio_descriptor birmanplus_glinda_dxio_descriptors[] = {
+	static dxio_descriptor birmanplus_glinda_dxio_descriptors[] = {
 		glinda_mxm_dxio_descriptor,
 		glinda_ssd1_dxio_descriptor,
 		glinda_ssd0_dxio_descriptor,
@@ -199,8 +199,8 @@ void mainboard_get_dxio_ddi_descriptors(
 		glinda_sd_dxio_descriptor,
 #endif
 	};
-	fsp_dxio_descriptor *mxm_desc = &birmanplus_glinda_dxio_descriptors[0];
-	fsp_dxio_descriptor *ssd1_desc = &birmanplus_glinda_dxio_descriptors[1];
+	dxio_descriptor *mxm_desc = &birmanplus_glinda_dxio_descriptors[0];
+	dxio_descriptor *ssd1_desc = &birmanplus_glinda_dxio_descriptors[1];
 
 	if (get_soc_type() == SOC_FAEGAN) {
 		/* Lanes 6 and 7 aren't usable */

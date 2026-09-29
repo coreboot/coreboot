@@ -124,7 +124,7 @@
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
 
-static fsp_ddi_descriptor maple_strix_halo_ddi_descriptors[] = {
+static ddi_descriptor maple_strix_halo_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -193,12 +193,12 @@ static uint8_t get_ddi1_type(void)
 }
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	maple_strix_halo_ddi_descriptors[1].connector_type = get_ddi1_type();
 
-	static const fsp_dxio_descriptor maple_strix_halo_dxio_descriptors[] = {
+	static const dxio_descriptor maple_strix_halo_dxio_descriptors[] = {
 		strix_halo_ssd1_dxio_descriptor,
 		strix_halo_dt_mpcie_dxio_descriptor,
 		strix_halo_ssd0_dxio_descriptor,

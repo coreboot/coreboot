@@ -110,7 +110,7 @@
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
 
-static fsp_ddi_descriptor birmanplus_ddi_descriptors[] = {
+static ddi_descriptor birmanplus_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -178,13 +178,13 @@ static uint8_t get_ddi1_type(void)
 
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor  **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor  **ddi_descs, size_t *ddi_num)
 {
 	birmanplus_ddi_descriptors[1].connector_type = get_ddi1_type();
 
 	printk(BIOS_DEBUG, "Using Birmanplus PHX DXIO\n");
-	static const fsp_dxio_descriptor birmanplus_phx_dxio_descriptors[] = {
+	static const dxio_descriptor birmanplus_phx_dxio_descriptors[] = {
 		phx_mxm_dxio_descriptor,
 		phx_ssd0_dxio_descriptor,
 		phx_wlan_dxio_descriptor,

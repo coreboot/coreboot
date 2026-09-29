@@ -135,7 +135,7 @@
 	.clk_req = CLK_REQ2,				\
 }
 
-static fsp_ddi_descriptor birman_ddi_descriptors[] = {
+static ddi_descriptor birman_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -164,8 +164,8 @@ static fsp_ddi_descriptor birman_ddi_descriptors[] = {
 };
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	birman_ddi_descriptors[1].connector_type = get_ddi1_type();
 
@@ -173,7 +173,7 @@ void mainboard_get_dxio_ddi_descriptors(
 
 	if (type == SOC_PHOENIX) {
 		printk(BIOS_DEBUG, "Using PHX DXIO\n");
-		static const fsp_dxio_descriptor birman_phx_dxio_descriptors[] = {
+		static const dxio_descriptor birman_phx_dxio_descriptors[] = {
 			phx_mxm_dxio_descriptor,
 			phx_ssd1_dxio_descriptor,
 			gbe_dxio_descriptor,
@@ -190,7 +190,7 @@ void mainboard_get_dxio_ddi_descriptors(
 		*dxio_num = ARRAY_SIZE(birman_phx_dxio_descriptors);
 	} else {
 		printk(BIOS_DEBUG, "Using PHX2 DXIO\n");
-		static const fsp_dxio_descriptor birman_phx2_dxio_descriptors[] = {
+		static const dxio_descriptor birman_phx2_dxio_descriptors[] = {
 			phx2_mxm_dxio_descriptor,
 			phx2_ssd1_dxio_descriptor,
 			gbe_dxio_descriptor,

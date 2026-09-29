@@ -4,7 +4,7 @@
 #include <soc/soc_util.h>
 #include <types.h>
 
-static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
+static const dxio_descriptor pco_dxio_descriptors[] = {
 	{ /* MXM */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
@@ -94,7 +94,7 @@ static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
 	}
 };
 
-static const fsp_dxio_descriptor dali_dxio_descriptors[] = {
+static const dxio_descriptor dali_dxio_descriptors[] = {
 	{ /* MXM */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
@@ -157,7 +157,7 @@ static const fsp_dxio_descriptor dali_dxio_descriptors[] = {
 	}
 };
 
-static const fsp_ddi_descriptor pco_ddi_descriptors[] = {
+static const ddi_descriptor pco_ddi_descriptors[] = {
 	{ /* DDI0 - DP */
 		.connector_type = DP,
 		.aux_index = AUX1,
@@ -180,7 +180,7 @@ static const fsp_ddi_descriptor pco_ddi_descriptors[] = {
 	}
 };
 
-static const fsp_ddi_descriptor dali_ddi_descriptors[] = {
+static const ddi_descriptor dali_ddi_descriptors[] = {
 	{ /* DDI0 - DP */
 		.connector_type = DP,
 		.aux_index = AUX1,
@@ -199,8 +199,8 @@ static const fsp_ddi_descriptor dali_ddi_descriptors[] = {
 };
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	if (soc_is_reduced_io_sku()) { /* Dali */
 		*dxio_descs = dali_dxio_descriptors;

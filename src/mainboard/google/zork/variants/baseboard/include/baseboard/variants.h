@@ -55,16 +55,16 @@ void baseboard_pcie_gpio_configure(void);
 
 /* Per variant FSP-S initialization, default implementation in baseboard and
  * overridable by the variant. */
-void variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
+void variant_get_dxio_ddi_descriptors(const dxio_descriptor **dxio_descs,
 				      size_t *dxio_num,
-				      const fsp_ddi_descriptor **ddi_descs,
+				      const ddi_descriptor **ddi_descs,
 				      size_t *ddi_num);
 
 /* Provide the descriptors for the associated baseboard for the variant. These functions
  * can be used for obtaining the baseboard's descriptors if the variant followed the
  * baseboard. */
-const fsp_dxio_descriptor *baseboard_get_dxio_descriptors(size_t *num);
-const fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num);
+const dxio_descriptor *baseboard_get_dxio_descriptors(size_t *num);
+const ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num);
 
 /* Retrieve attributes from FW_CONFIG in CBI. */
 /* Return value of SAR config. */

@@ -4,16 +4,16 @@
 #include <baseboard/variants.h>
 #include <platform_descriptors.h>
 
-void __weak variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
+void __weak variant_get_dxio_ddi_descriptors(const dxio_descriptor **dxio_descs,
 					     size_t *dxio_num,
-					     const fsp_ddi_descriptor **ddi_descs,
+					     const ddi_descriptor **ddi_descs,
 					     size_t *ddi_num)
 {
 	*dxio_descs = baseboard_get_dxio_descriptors(dxio_num);
 	*ddi_descs = baseboard_get_ddi_descriptors(ddi_num);
 }
 
-static const fsp_dxio_descriptor dxio_descriptors[] = {
+static const dxio_descriptor dxio_descriptors[] = {
 	{
 		// NVME SSD
 		.port_present = true,
@@ -58,13 +58,13 @@ static const fsp_dxio_descriptor dxio_descriptors[] = {
 	}
 };
 
-const fsp_dxio_descriptor *baseboard_get_dxio_descriptors(size_t *num)
+const dxio_descriptor *baseboard_get_dxio_descriptors(size_t *num)
 {
 	*num = ARRAY_SIZE(dxio_descriptors);
 	return dxio_descriptors;
 }
 
-const fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num)
+const ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num)
 {
 	/* Different configurations of dalboz have different ddi configurations.
 	 * Therefore, don't provide any baseboard defaults. */

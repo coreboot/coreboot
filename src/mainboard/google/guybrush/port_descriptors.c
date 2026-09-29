@@ -9,7 +9,7 @@
 #include <types.h>
 
 /* All PCIe Resets are handled in coreboot */
-static fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
+static dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 	{ /* WLAN */
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
@@ -95,7 +95,7 @@ static fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 	}
 };
 
-static fsp_ddi_descriptor guybrush_czn_ddi_descriptors[] = {
+static ddi_descriptor guybrush_czn_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -123,17 +123,17 @@ static fsp_ddi_descriptor guybrush_czn_ddi_descriptors[] = {
 	}
 };
 
-void __weak variant_update_dxio_descriptors(fsp_dxio_descriptor *dxio_descriptors)
+void __weak variant_update_dxio_descriptors(dxio_descriptor *dxio_descriptors)
 {
 }
 
-void __weak variant_update_ddi_descriptors(fsp_ddi_descriptor *ddi_descriptors)
+void __weak variant_update_ddi_descriptors(ddi_descriptor *ddi_descriptors)
 {
 }
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	/* Get Variant specific SD AUX Reset GPIO */
 	guybrush_czn_dxio_descriptors[SD].gpio_group_id = variant_sd_aux_reset_gpio();

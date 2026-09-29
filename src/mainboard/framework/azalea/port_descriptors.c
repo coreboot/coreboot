@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/platform_descriptors.h>
-static const fsp_dxio_descriptor dxio_descriptors[] = {
+static const dxio_descriptor dxio_descriptors[] = {
 	{
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
@@ -30,7 +30,7 @@ static const fsp_dxio_descriptor dxio_descriptors[] = {
 	},
 };
 
-static const fsp_ddi_descriptor ddi_descriptors[] = {
+static const ddi_descriptor ddi_descriptors[] = {
 	{ /* DP0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -59,8 +59,8 @@ static const fsp_ddi_descriptor ddi_descriptors[] = {
 };
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	*dxio_descs = dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(dxio_descriptors);

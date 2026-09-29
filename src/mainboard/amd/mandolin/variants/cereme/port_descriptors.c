@@ -3,7 +3,7 @@
 #include <soc/platform_descriptors.h>
 #include <types.h>
 
-static const fsp_dxio_descriptor pollock_dxio_descriptors[] = {
+static const dxio_descriptor pollock_dxio_descriptors[] = {
 	{ /* NVME SSD */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
@@ -58,7 +58,7 @@ static const fsp_dxio_descriptor pollock_dxio_descriptors[] = {
 	}
 };
 
-fsp_ddi_descriptor pollock_ddi_descriptors[] = {
+ddi_descriptor pollock_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = EDP,
 		.aux_index = AUX1,
@@ -77,8 +77,8 @@ fsp_ddi_descriptor pollock_ddi_descriptors[] = {
 };
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	*dxio_descs = pollock_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(pollock_dxio_descriptors);

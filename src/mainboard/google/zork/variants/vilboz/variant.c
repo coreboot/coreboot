@@ -7,7 +7,7 @@
 #include <soc/amd/picasso/chip.h>
 #include <static.h>
 
-static const fsp_ddi_descriptor hdmi_ddi_descriptors[] = {
+static const ddi_descriptor hdmi_ddi_descriptors[] = {
 	{ // DDI0, DP0, eDP
 		.connector_type = EDP,
 		.aux_index = AUX1,
@@ -25,9 +25,9 @@ static const fsp_ddi_descriptor hdmi_ddi_descriptors[] = {
 	}
 };
 
-void variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
+void variant_get_dxio_ddi_descriptors(const dxio_descriptor **dxio_descs,
 				      size_t *dxio_num,
-				      const fsp_ddi_descriptor **ddi_descs,
+				      const ddi_descriptor **ddi_descs,
 				      size_t *ddi_num)
 {
 	*dxio_descs = baseboard_get_dxio_descriptors(dxio_num);

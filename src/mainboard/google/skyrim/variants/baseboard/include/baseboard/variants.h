@@ -40,7 +40,7 @@ void variant_romstage_override_gpio_table(const struct soc_amd_gpio **gpio, size
 /*
  * This function allows a variant to override dxio descriptors passed to the FSP.
  */
-void variant_get_dxio_descriptors(const fsp_dxio_descriptor **dxio_descriptor,
+void variant_get_dxio_descriptors(const dxio_descriptor **dxio_descs,
 					   size_t *num);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

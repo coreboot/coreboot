@@ -11,8 +11,8 @@
 void pcie_gpp_dxio_update_clk_req_config(enum gpp_clk_req *gpp_clk_config,
 					 size_t gpp_clk_config_num)
 {
-	const fsp_dxio_descriptor *dxio_descs = NULL;
-	const fsp_ddi_descriptor *ddi_descs = NULL;
+	const dxio_descriptor *dxio_descs = NULL;
+	const ddi_descriptor *ddi_descs = NULL;
 	size_t dxio_num = 0;
 	size_t ddi_num = 0;
 
@@ -24,7 +24,7 @@ void pcie_gpp_dxio_update_clk_req_config(enum gpp_clk_req *gpp_clk_config,
 	}
 
 	for (int i = 0; i < dxio_num; i++) {
-		const fsp_dxio_descriptor *dxio_desc = &dxio_descs[i];
+		const dxio_descriptor *dxio_desc = &dxio_descs[i];
 
 		/*  Only consider PCIe and unused engine types. */
 		if (dxio_desc->engine_type != PCIE_ENGINE

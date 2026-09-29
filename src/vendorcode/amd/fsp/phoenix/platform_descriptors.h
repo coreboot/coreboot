@@ -212,7 +212,7 @@ typedef struct __packed {
 	uint8_t		aux_index;	// see ddi_aux_type
 	uint8_t		hdp_index;	// see ddi_hdp_type
 	uint8_t		reserved;
-} fsp_ddi_descriptor;
+} ddi_descriptor;
 
 /*
  * Phoenix DXIO Descriptor: Used for assigning lanes to PCIe engines, configure
@@ -252,6 +252,6 @@ typedef struct __packed {
 	uint8_t		reserved[4];
 	uint8_t		phy_params[NUM_DXIO_PHY_PARAMS*2];
 	uint16_t	port_params[NUM_DXIO_PORT_PARAMS*2];	// key-value parameters. see dxio_port_param_type
-} fsp_dxio_descriptor;
+} dxio_descriptor;
 
 #endif /* PI_PLATFORM_DESCRIPTORS_H */

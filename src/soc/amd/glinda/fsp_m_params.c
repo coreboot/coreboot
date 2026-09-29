@@ -27,7 +27,7 @@ __weak void mb_pre_fspm(FSP_M_CONFIG *mcfg)
 }
 
 static void fill_dxio_descriptors(FSP_M_CONFIG *mcfg,
-			const fsp_dxio_descriptor *descs, size_t num)
+			const dxio_descriptor *descs, size_t num)
 {
 	size_t i;
 
@@ -40,7 +40,7 @@ static void fill_dxio_descriptors(FSP_M_CONFIG *mcfg,
 }
 
 static void fill_ddi_descriptors(FSP_M_CONFIG *mcfg,
-			const fsp_ddi_descriptor *descs, size_t num)
+			const ddi_descriptor *descs, size_t num)
 {
 	size_t i;
 
@@ -54,8 +54,8 @@ static void fill_ddi_descriptors(FSP_M_CONFIG *mcfg,
 
 static void fsp_fill_pcie_ddi_descriptors(FSP_M_CONFIG *mcfg)
 {
-	const fsp_dxio_descriptor *fsp_dxio = NULL;
-	const fsp_ddi_descriptor *fsp_ddi = NULL;
+	const dxio_descriptor *fsp_dxio = NULL;
+	const ddi_descriptor *fsp_ddi = NULL;
 	size_t num_dxio = 0;
 	size_t num_ddi = 0;
 

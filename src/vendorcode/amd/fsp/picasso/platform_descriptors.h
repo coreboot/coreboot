@@ -126,7 +126,7 @@ typedef struct __packed {
 	uint8_t		aux_index;
 	uint8_t		hdp_index;
 	uint8_t		reserved;
-} fsp_ddi_descriptor;
+} ddi_descriptor;
 
 /*
  * Picasso DXIO Descriptor: Used for assigning lanes to PCIe/SATA/XGBE engines, configure
@@ -195,6 +195,6 @@ typedef struct __packed {
 	uint32_t	channel_type		:3;	// See dxio_sata_channel_type
 	uint32_t	turn_off_unused_lanes	:1;	// Power down lanes if device not present
 	uint8_t		reserved[4];
-} fsp_dxio_descriptor;
+} dxio_descriptor;
 
 #endif /* __PI_PICASSO_PLATFORM_DESCRIPTORS_H__ */

@@ -19,7 +19,7 @@
  * DDI3: USB Type C from APU
  * DDI4: Mini DisplayPort 2.1 (CN12) from APU
  */
-static const fsp_ddi_descriptor rave2_ddi_descriptors[] = {
+static const ddi_descriptor rave2_ddi_descriptors[] = {
 	{ /* DDI0 - CN9 mini DP */
 		.connector_type = DDI_DP,
 		.aux_index = DDI_AUX1,
@@ -47,7 +47,7 @@ static const fsp_ddi_descriptor rave2_ddi_descriptors[] = {
 	},
 };
 
-static const fsp_dxio_descriptor rave2_dxio_descriptors[] = {
+static const dxio_descriptor rave2_dxio_descriptors[] = {
 	{ /* M.2 M-key NVMe PCIe 4.0 x4 - M2 (M2M lanes 0-3) */
 		.engine_type = PCIE_ENGINE,
 		.gpio_group_id = GPIO_8,
@@ -123,8 +123,8 @@ static const fsp_dxio_descriptor rave2_dxio_descriptors[] = {
 };
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	*dxio_descs = rave2_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(rave2_dxio_descriptors);

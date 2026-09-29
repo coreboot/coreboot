@@ -130,7 +130,7 @@
 	.end_logical_lane = 1,  \
 }
 
-static fsp_ddi_descriptor crater_ddi_descriptors[] = {
+static ddi_descriptor crater_ddi_descriptors[] = {
 	{ /* DDI0 - DP */
 		.connector_type = DDI_DP,
 		.aux_index = DDI_AUX1,
@@ -159,8 +159,8 @@ static fsp_ddi_descriptor crater_ddi_descriptors[] = {
 };
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	uint8_t board_rev = crater_ec_get_board_revision();
 
@@ -176,7 +176,7 @@ void mainboard_get_dxio_ddi_descriptors(
 			crater_ddi_descriptors[1].connector_type = DDI_HDMI;
 	}
 
-	static const fsp_dxio_descriptor crater_dxio_descriptors[] = {
+	static const dxio_descriptor crater_dxio_descriptors[] = {
 		mxm_dxio_descriptor,
 		ssd_dxio_descriptor,
 		tb_dxio_descriptor,

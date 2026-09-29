@@ -81,7 +81,7 @@ config SOC_AMD_STRIX_HALO_BASE
 	select SOC_AMD_COMMON_BLOCK_UCODE		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_CCX_CPPC_HOB		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_DMI_TABLES		# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_FSP_PCIE_CLK_REQ          # TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_PCIE_CLK_REQ          # TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_PCI			# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_PRELOAD_FSPS          # TODO: Check if this is still correct
 	select SOC_AMD_COMMON_ROMSTAGE_LEGACY_DMA_FIXUP # TODO: Check if this is still correct

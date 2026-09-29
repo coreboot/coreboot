@@ -8,7 +8,7 @@
 
 
 
-static const fsp_dxio_descriptor mayan_dxio_descriptors[] = {
+static const dxio_descriptor mayan_dxio_descriptors[] = {
 	{
 		// MXM
 		.engine_type = PCIE_ENGINE,
@@ -89,7 +89,7 @@ static const fsp_dxio_descriptor mayan_dxio_descriptors[] = {
 	},
 };
 
-static fsp_ddi_descriptor mayan_ddi_descriptors[] = {
+static ddi_descriptor mayan_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -153,8 +153,8 @@ static uint8_t get_ddi1_type(void)
 }
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	mayan_ddi_descriptors[1].connector_type = get_ddi1_type();
 	*dxio_descs = mayan_dxio_descriptors;

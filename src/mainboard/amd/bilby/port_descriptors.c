@@ -4,7 +4,7 @@
 #include <types.h>
 #include "mainboard.h"
 
-static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
+static const dxio_descriptor pco_dxio_descriptors[] = {
 	{ /* MXM - Entry 0 */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
@@ -46,7 +46,7 @@ static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
 	},
 };
 
-static const fsp_ddi_descriptor pco_ddi_descriptors[] = {
+static const ddi_descriptor pco_ddi_descriptors[] = {
 	{ /* DDI0 - DP */
 		.connector_type = CONFIG_DDI0_CONNECTOR_TYPE,
 		.aux_index = AUX1,
@@ -75,8 +75,8 @@ int get_ddi_port_conn_type(uint8_t port_num)
 }
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	*dxio_descs = pco_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(pco_dxio_descriptors);

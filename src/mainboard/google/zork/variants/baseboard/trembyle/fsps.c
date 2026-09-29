@@ -5,9 +5,9 @@
 #include <platform_descriptors.h>
 #include <soc/soc_util.h>
 
-void __weak variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
+void __weak variant_get_dxio_ddi_descriptors(const dxio_descriptor **dxio_descs,
 					     size_t *dxio_num,
-					     const fsp_ddi_descriptor **ddi_descs,
+					     const ddi_descriptor **ddi_descs,
 					     size_t *ddi_num)
 {
 	*dxio_descs = baseboard_get_dxio_descriptors(dxio_num);
@@ -18,7 +18,7 @@ void __weak variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_de
  * Type 1 parts, while reporting as Picasso through cpuid, are fused like a Dali.
  * Those parts need to be configured as Type 2. */
 
-static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
+static const dxio_descriptor pco_dxio_descriptors[] = {
 	{
 		// NVME SSD
 		.port_present = true,
@@ -63,7 +63,7 @@ static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
 	}
 };
 
-static const fsp_dxio_descriptor dali_dxio_descriptors[] = {
+static const dxio_descriptor dali_dxio_descriptors[] = {
 	{
 		// NVME SSD
 		.port_present = true,
@@ -108,7 +108,7 @@ static const fsp_dxio_descriptor dali_dxio_descriptors[] = {
 	}
 };
 
-const fsp_dxio_descriptor *baseboard_get_dxio_descriptors(size_t *num)
+const dxio_descriptor *baseboard_get_dxio_descriptors(size_t *num)
 {
 	/* Type 2 or Type 1 fused like Type 2. */
 	if (soc_is_reduced_io_sku()) {
@@ -121,7 +121,7 @@ const fsp_dxio_descriptor *baseboard_get_dxio_descriptors(size_t *num)
 	}
 }
 
-static const fsp_ddi_descriptor pco_ddi_descriptors[] = {
+static const ddi_descriptor pco_ddi_descriptors[] = {
 	{
 		// DDI0, DP0, eDP
 		.connector_type = EDP,
@@ -148,7 +148,7 @@ static const fsp_ddi_descriptor pco_ddi_descriptors[] = {
 	}
 };
 
-static const fsp_ddi_descriptor dali_ddi_descriptors[] = {
+static const ddi_descriptor dali_ddi_descriptors[] = {
 	{
 		// DDI0, DP0, eDP
 		.connector_type = EDP,
@@ -169,7 +169,7 @@ static const fsp_ddi_descriptor dali_ddi_descriptors[] = {
 	}
 };
 
-const fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num)
+const ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num)
 {
 	/* Type 2 or Type 1 fused like Type 2. */
 	if (soc_is_reduced_io_sku()) {

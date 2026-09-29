@@ -5,7 +5,7 @@
 #include <types.h>
 #include <amdblocks/cpu.h>
 
-static const fsp_dxio_descriptor majolica_dxio_descriptors[] = {
+static const dxio_descriptor majolica_dxio_descriptors[] = {
 	{ /* MXM */
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
@@ -93,7 +93,7 @@ static const fsp_dxio_descriptor majolica_dxio_descriptors[] = {
 	}
 };
 
-static fsp_ddi_descriptor majolica_ddi_descriptors[] = {
+static ddi_descriptor majolica_ddi_descriptors[] = {
 	{ /* DDI0 - DP */
 		.connector_type = DDI_DP,
 		.aux_index = DDI_AUX1,
@@ -122,8 +122,8 @@ static fsp_ddi_descriptor majolica_ddi_descriptors[] = {
 };
 
 void mainboard_get_dxio_ddi_descriptors(
-		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
-		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+		const dxio_descriptor **dxio_descs, size_t *dxio_num,
+		const ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	if ((get_cpu_count() == 4 && get_threads_per_core() == 2) || get_cpu_count() == 2)
 		majolica_ddi_descriptors[1].connector_type = DDI_UNUSED_TYPE;

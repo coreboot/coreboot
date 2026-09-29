@@ -92,7 +92,7 @@ enum byte_dxio_port_idx {
 	BYTE_DXIO_SATA_SSD,
 };
 
-static fsp_dxio_descriptor byte_dxio_descriptors[] = {
+static dxio_descriptor byte_dxio_descriptors[] = {
 	[BYTE_DXIO_DUMMY]		= BYTE_DUMMY_DXIO_DESCRIPTOR,
 	[BYTE_DXIO_M2_SSD_DESC]		= BYTE_M2_NVME_DXIO_DESCRIPTOR,
 	[BYTE_DXIO_LAN]			= BYTE_LAN_DXIO_DESCRIPTOR,
@@ -102,7 +102,7 @@ static fsp_dxio_descriptor byte_dxio_descriptors[] = {
 
 static void byte_select_ssd_dxio_descriptor(void)
 {
-	fsp_dxio_descriptor *m2_ssd = &byte_dxio_descriptors[BYTE_DXIO_M2_SSD_DESC];
+	dxio_descriptor *m2_ssd = &byte_dxio_descriptors[BYTE_DXIO_M2_SSD_DESC];
 
 	gpio_input(GPIO_40);
 
@@ -117,10 +117,10 @@ static void byte_select_ssd_dxio_descriptor(void)
 	}
 
 	printk(BIOS_INFO, "DXIO: detected SATA SSD; routing lanes 2-3 to SATA\n");
-	*m2_ssd = (fsp_dxio_descriptor)BYTE_M2_SATA_DXIO_DESCRIPTOR;
+	*m2_ssd = (dxio_descriptor)BYTE_M2_SATA_DXIO_DESCRIPTOR;
 }
 
-static fsp_ddi_descriptor byte_ddi_descriptors[] = {
+static ddi_descriptor byte_ddi_descriptors[] = {
 	/* DDI0:	HDMI */
 	{
 		.connector_type		= DDI_HDMI,
@@ -153,8 +153,8 @@ static fsp_ddi_descriptor byte_ddi_descriptors[] = {
 	},
 };
 
-void mainboard_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
-					size_t *dxio_num, const fsp_ddi_descriptor **ddi_descs,
+void mainboard_get_dxio_ddi_descriptors(const dxio_descriptor **dxio_descs,
+					size_t *dxio_num, const ddi_descriptor **ddi_descs,
 					size_t *ddi_num)
 {
 	byte_select_ssd_dxio_descriptor();

@@ -193,46 +193,6 @@ Method(BRSX, 1, Serialized)
 	Return (Local0)
 }
 
-// _BIF implementation.
-//   Arg0 = battery index
-//   Arg1 = PBIF
-Method (BBIF, 2, Serialized)
-{
-	If (Acquire (^BATM, 1000)) {
-		Return (Arg1)
-	}
-
-	If (BTSW (Arg0)) {
-		Release (^BATM)
-		Return (Arg1)
-	}
-	// Last Full Charge Capacity
-	Arg1[2] = BTDF
-
-	// Design Voltage
-	Arg1[4] = BTDV
-
-	// Design Capacity
-	Local0 = BTDA
-	Arg1[1] = Local0
-
-	// Design Capacity of Warning
-	Local2 = Local0 * DWRN / 100
-	Arg1[5] = Local2
-
-	// Design Capacity of Low
-	Local2 = Local0 * DLOW / 100
-	Arg1[6] = Local2
-
-	// Get battery info from mainboard
-	Arg1[9] = BRSX (1)
-	Arg1[10] = BRSX (2)
-	Arg1[12] = BRSX (3)
-
-	Release (^BATM)
-	Return (Arg1)
-}
-
 // _BIX implementation.
 //   Arg0 = battery index
 //   Arg1 = PBIX
@@ -273,6 +233,26 @@ Method (BBIX, 2, Serialized)
 	Arg1[19] = BRSX (3)
 
 	Release (^BATM)
+	Return (Arg1)
+}
+
+// _BIF implementation, derived from the _BIX data.
+//   Arg0 = battery index
+//   Arg1 = PBIF
+//   Arg2 = PBIX
+Method (BBIF, 3, Serialized)
+{
+	Local0 = BBIX (Arg0, Arg2)
+
+	Arg1[1] = DeRefOf (Local0[2])	// Design Capacity
+	Arg1[2] = DeRefOf (Local0[3])	// Last Full Charge Capacity
+	Arg1[4] = DeRefOf (Local0[5])	// Design Voltage
+	Arg1[5] = DeRefOf (Local0[6])	// Design Capacity of Warning
+	Arg1[6] = DeRefOf (Local0[7])	// Design Capacity of Low
+	Arg1[9] = DeRefOf (Local0[16])	// Model Number
+	Arg1[10] = DeRefOf (Local0[17])	// Serial Number
+	Arg1[12] = DeRefOf (Local0[19])	// OEM Information
+
 	Return (Arg1)
 }
 
@@ -428,7 +408,7 @@ Device (BAT0)
 
 	Method (_BIF, 0, Serialized)
 	{
-		Return (BBIF (0, PBIF))
+		Return (BBIF (0, PBIF, PBIX))
 	}
 
 	Method (_BIX, 0, Serialized)
@@ -503,7 +483,7 @@ Device (BAT1)
 
 	Method (_BIF, 0, Serialized)
 	{
-		Return (BBIF (1, PBIF))
+		Return (BBIF (1, PBIF, PBIX))
 	}
 
 	Method (_BIX, 0, Serialized)

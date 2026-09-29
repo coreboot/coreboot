@@ -18,7 +18,7 @@
 #define ACPI_NOTIFY_CROS_EC_S0IX_ENTER	0x01
 #define ACPI_NOTIFY_CROS_EC_S0IX_EXIT	0x02
 
-// Mainboard specific throttle handler
+// DPTF charger participant device
 #ifdef DPTF_ENABLE_CHARGER
 External (\_SB.DPTF.TCHG, DeviceObj)
 #endif

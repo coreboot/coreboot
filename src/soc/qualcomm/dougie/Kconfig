@@ -1,0 +1,28 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_QUALCOMM_DOUGIE
+	bool
+	default n
+	select ARCH_BOOTBLOCK_ARMV8_64
+	select ARCH_RAMSTAGE_ARMV8_64
+	select ARCH_ROMSTAGE_ARMV8_64
+	select ARCH_VERSTAGE_ARMV8_64
+	select GENERIC_UDELAY
+	select HAVE_MONOTONIC_TIMER
+	select ARM64_USE_ARCH_TIMER
+	select SOC_QUALCOMM_COMMON
+	select COMPRESS_BOOTBLOCK
+
+if SOC_QUALCOMM_DOUGIE
+
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/qualcomm/dougie/memlayout.ld"
+
+config VBOOT
+	select VBOOT_SEPARATE_VERSTAGE
+	select VBOOT_RETURN_FROM_VERSTAGE
+	select VBOOT_MUST_REQUEST_DISPLAY
+	select VBOOT_STARTS_IN_BOOTBLOCK
+
+endif

@@ -47,5 +47,5 @@ build/initramfs_u-root.cpio: $(uroot_build)/u-root
 	cd $(uroot_build); \
 	echo "GOARCH=$(UROOT_ARCH-y) ./u-root $(uroot_args) -o initramfs_u-root.cpio $(uroot_cmds)"
 	cd $(uroot_build); \
-	GOARCH=$(UROOT_ARCH-y) ./u-root $(uroot_args) -o initramfs_u-root.cpio $(uroot_cmds)
+	GOOS=linux GOARCH=$(UROOT_ARCH-y) CGO_ENABLED=0 ./u-root $(uroot_args) -o initramfs_u-root.cpio $(uroot_cmds)
 	cp $(uroot_build)/initramfs_u-root.cpio $@

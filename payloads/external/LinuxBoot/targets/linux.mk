@@ -26,6 +26,8 @@ else ifeq ($(findstring x5.,x$(kernel_version)),x5.)
 kernel_mirror_path := $(kernel_mirror)/v5.x
 else ifeq ($(findstring x6.,x$(kernel_version)),x6.)
 kernel_mirror_path := $(kernel_mirror)/v6.x
+else ifeq ($(findstring x7.,x$(kernel_version)),x7.)
+kernel_mirror_path := $(kernel_mirror)/v7.x
 endif
 
 build/$(kernel_tarball).xz: | build/

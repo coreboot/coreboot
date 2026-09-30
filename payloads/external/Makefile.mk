@@ -436,6 +436,7 @@ ifeq ($(CONFIG_PAYLOAD_LINUXBOOT),y)
 endif # CONFIG_PAYLOAD_LINUXBOOT
 endif # CONFIG_LINUXBOOT_CROSS_COMPILE
 .PHONY: linuxboot
+payloads/external/LinuxBoot/build/Image: $(DOTCONFIG)
 payloads/external/LinuxBoot/build/Image payloads/external/LinuxBoot/build/initramfs linuxboot:
 	$(MAKE) -C payloads/external/LinuxBoot \
 		CPUS=$(CPUS) \
@@ -465,6 +466,7 @@ payloads/external/LinuxBoot/build/Image payloads/external/LinuxBoot/build/initra
 		CONFIG_LINUXBOOT_UROOT_FILES=$(CONFIG_LINUXBOOT_UROOT_FILES) \
 		CONFIG_LINUXBOOT_UROOT_REPOSITORY=$(CONFIG_LINUXBOOT_UROOT_REPOSITORY) \
 		CONFIG_LINUXBOOT_DTS_FILE=$(CONFIG_LINUXBOOT_DTS_FILE) \
+		DOTCONFIG=$(abspath $(DOTCONFIG)) \
 		$(subst payloads/external/LinuxBoot/,,$@)
 
 # BOOTBOOT

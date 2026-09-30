@@ -46,7 +46,7 @@ $(uroot_build)/u-root: | $(uroot_build)
 	cd $(uroot_build); \
 	go build -o u-root .
 
-build/initramfs_u-root.cpio: $(uroot_build)/u-root
+build/initramfs_u-root.cpio: $(uroot_build)/u-root $(DOTCONFIG)
 	cd $(uroot_build); \
 	echo "GOARCH=$(UROOT_ARCH-y) ./u-root $(uroot_args) -o initramfs_u-root.cpio $(uroot_cmds)"
 	cd $(uroot_build); \

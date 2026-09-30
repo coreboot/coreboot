@@ -3,6 +3,7 @@
 unexport $(COREBOOT_EXPORTS)
 
 DTC ?= dtc
+DOTCONFIG ?= $(abspath ../../../.config)
 
 LINUX_ARCH-$(CONFIG_LINUXBOOT_X86_64)     = x86_64
 LINUX_ARCH-$(CONFIG_LINUXBOOT_X86)        = i386
@@ -37,7 +38,7 @@ build/Image: $(CONFIG_LINUXBOOT_KERNEL_PATH) | build/
 
 endif
 
-build/initramfs: build/initramfs_u-root.cpio | build/
+build/initramfs: build/initramfs_u-root.cpio $(DOTCONFIG) | build/
 ifeq ($(CONFIG_LINUXBOOT_INITRAMFS_COMPRESSION_XZ),y)
 	xz --stdout --keep --force --check=crc32 --lzma2=dict=1MiB $< > $@
 else

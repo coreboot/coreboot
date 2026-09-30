@@ -12,10 +12,16 @@ romstage-y += romstage.c
 
 romstage-y += charging.c
 romstage-$(CONFIG_SOC_QUALCOMM_CDT) += fw_config_bluey.c
+ifneq ($(CONFIG_SOC_QUALCOMM_CDT),y)
+romstage-$(CONFIG_FW_CONFIG) += fw_config.c
+endif
 
 ramstage-y += charging.c
 
 ramstage-y += mainboard.c
 ramstage-$(CONFIG_SOC_QUALCOMM_CDT) += fw_config_bluey.c
+ifneq ($(CONFIG_SOC_QUALCOMM_CDT),y)
+ramstage-$(CONFIG_FW_CONFIG) += fw_config.c
+endif
 
 ramstage-y += display.c

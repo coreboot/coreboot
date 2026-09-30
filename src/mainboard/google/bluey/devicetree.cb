@@ -1,4 +1,11 @@
 ## SPDX-License-Identifier: GPL-2.0-only
+fw_config
+	field SOC_ID 56 57
+		option HAMOA 0
+		option X1P42100 1
+		option CANIM 2
+	end
+end
 
 chip soc/qualcomm/x1p42100
 	device cpu_cluster 0 on end

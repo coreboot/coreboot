@@ -5,7 +5,11 @@ chip soc/amd/glinda
 	register "common_config.espi_config" = "{
 		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X60_0X64_EN,
 		.generic_io_range[0] = {
-			.base = 0x3f8,
+			.base = 0x2e,
+			.size = 2,
+		},
+		.generic_io_range[1] = {
+			.base = 0x290,
 			.size = 8,
 		},
 		.io_mode = ESPI_IO_MODE_QUAD,
@@ -185,6 +189,19 @@ chip soc/amd/glinda
 							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 							register "group" = "ACPI_PLD_GROUP(0, 0)"
 							device ref usb2_port1 on end
+						end
+					end
+				end
+			end
+		end
+
+		device ref lpc_bridge on
+			chip superio/common
+				device pnp 2e.0 on		# SIO config base -> ACPI SSDT
+					chip superio/nuvoton/nct5525d
+						device pnp 2e.2 off end		# UART A, active at 0x3f8 by default
+						device pnp 2e.b on		# HW monitor, Front Panel LED
+							io 0x60 = 0x0290
 						end
 					end
 				end

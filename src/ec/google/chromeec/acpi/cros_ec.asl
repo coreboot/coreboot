@@ -1,7 +1,26 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#if CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE)
-#define LPC_GMR_SIZE 0x10000
+#define CREC_HAS_GMR	CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE)
+#define LPC_GMR_SIZE	0x10000
+
+#if defined(EC_ENABLE_SYNC_IRQ) || defined(EC_ENABLE_SYNC_IRQ_GPIO) || CREC_HAS_GMR
+#define CREC_HAS_CRS	1
+#else
+#define CREC_HAS_CRS	0
+#endif
+
+/* With a GPIO sync interrupt, the interrupt itself is the wake source instead of _PRW. */
+#if defined(EC_ENABLE_WAKE_PIN) && !defined(EC_ENABLE_SYNC_IRQ_GPIO)
+#define CREC_HAS_PRW	1
+#else
+#define CREC_HAS_PRW	0
+#endif
+
+#if defined(EC_SYNC_IRQ_WAKE_CAPABLE) || \
+	(defined(EC_ENABLE_SYNC_IRQ_GPIO) && defined(EC_ENABLE_WAKE_PIN))
+#define EC_SYNC_SHARE_TYPE	ExclusiveAndWake
+#else
+#define EC_SYNC_SHARE_TYPE	Exclusive
 #endif
 
 Device (CREC)
@@ -9,22 +28,11 @@ Device (CREC)
 	Name (_HID, CONFIG_EC_GOOGLE_CHROMEEC_ACPI_HID)
 	Name (_UID, 1)
 	Name (_DDN, "EC Command Device")
-#ifdef EC_ENABLE_WAKE_PIN
-#ifndef EC_ENABLE_SYNC_IRQ_GPIO
+#if CREC_HAS_PRW
 	Name (_PRW, Package () { EC_ENABLE_WAKE_PIN, 0x5 })
-#else
-#define EC_SYNC_IRQ_WAKE_CAPABLE
-#endif
 #endif
 
-#ifdef EC_SYNC_IRQ_WAKE_CAPABLE
-	#define EC_SYNC_SHARE_TYPE ExclusiveAndWake
-#else
-	#define EC_SYNC_SHARE_TYPE Exclusive
-#endif
-
-#if defined(EC_ENABLE_SYNC_IRQ) || defined(EC_ENABLE_SYNC_IRQ_GPIO) || \
-CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE)
+#if CREC_HAS_CRS
 	Method (_CRS, 0x0, NotSerialized)
 	{
 		Name (RBUF, ResourceTemplate()
@@ -41,12 +49,12 @@ CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE)
 			}
 #endif
 
-#if CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE)
+#if CREC_HAS_GMR
 		Memory32Fixed (ReadWrite, 0, 0, MADR)
 #endif
 		})
 
-#if CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE)
+#if CREC_HAS_GMR
 		CreateDWordField (RBUF, MADR._BAS, BAS0)
 		CreateDWordField (RBUF, MADR._LEN, LEN0)
 		BAS0 = \_SB.PCI0.LPCB.GLGM()

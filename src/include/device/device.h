@@ -56,6 +56,7 @@ struct device_operations {
 	unsigned long (*write_acpi_tables)(const struct device *dev,
 		unsigned long start, struct acpi_rsdp *rsdp);
 	void (*acpi_fill_ssdt)(const struct device *dev);
+	/* Returns the ACPI name, relative to the parent unless it starts with '\' */
 	const char *(*acpi_name)(const struct device *dev);
 	/* Returns the optional _HID (Hardware ID) */
 	const char *(*acpi_hid)(const struct device *dev);

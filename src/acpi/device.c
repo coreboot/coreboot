@@ -163,15 +163,15 @@ static ssize_t acpi_device_path_fill(const struct device *dev, char *buf,
 	if (!dev || (cur + strlen(name) + 2) > buf_len)
 		return cur;
 
-	/* Walk up the tree to the root device */
-	if (!is_root_device(dev) && dev->upstream && dev->upstream->dev)
+	/* Walk up the tree to the root device, unless the name is absolute */
+	if (!is_root_device(dev) && name[0] != '\\' && dev->upstream && dev->upstream->dev)
 		next = acpi_device_path_fill(dev->upstream->dev, buf, buf_len, cur);
 	if (next < 0)
 		return next;
 
 	/* Fill in the path from the root device */
 	next += snprintf(buf + next, buf_len - next, "%s%s",
-			 (is_root_device(dev) || (strlen(name) == 0)) ?
+			 (is_root_device(dev) || name[0] == '\\' || (strlen(name) == 0)) ?
 			 "" : ".", name);
 
 	return next;

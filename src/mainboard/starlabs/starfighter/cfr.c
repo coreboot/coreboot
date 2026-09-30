@@ -7,6 +7,7 @@
 #include <intelblocks/cfr.h>
 #include <variants.h>
 #include <common/cfr.h>
+#include <common/hda.h>
 
 static const struct pcie_pm_option_names pciexp_wifi_names = {
 	.clk_pm = "pciexp_wifi_clk_pm",
@@ -83,7 +84,7 @@ static const struct sm_object firmware_enable_amp = SM_DECLARE_BOOL({
 			  "Disabled: leave the speaker amp off for OS runtime "
 			  "sequencing.",
 	.default_value	= true,
-});
+}, WITH_DEP_VALUES(&hda_subsystem_id, STARLABS_HDA_SUBSYSTEM_ID_LEGACY));
 #endif
 
 static struct sm_obj_form audio_group = {

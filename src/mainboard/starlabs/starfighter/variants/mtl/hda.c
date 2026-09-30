@@ -52,7 +52,7 @@ void mainboard_azalia_program_runtime_verbs(uint8_t *base, uint32_t viddid)
 		azalia_program_verb_table(base, microphone_disable_verb,
 					  ARRAY_SIZE(microphone_disable_verb));
 
-	if (get_uint_option("firmware_enable_amp", 1))
+	if (starlabs_hda_use_legacy_subsystem_id() && get_uint_option("firmware_enable_amp", 1))
 		azalia_program_verb_table(base, speaker_amp_enable_verb,
 					  ARRAY_SIZE(speaker_amp_enable_verb));
 }

@@ -2,6 +2,9 @@
 
 uroot_package = github.com/u-root/u-root
 uroot_build = build/go/src/$(uroot_package)
+ifneq ($(CONFIG_LINUXBOOT_UROOT_REPOSITORY),https://github.com/u-root/u-root)
+uroot_build = build/u-root-$(subst /,_,$(CONFIG_LINUXBOOT_UROOT_VERSION))
+endif
 
 UROOT_ARCH-$(CONFIG_LINUXBOOT_X86_64)      = amd64
 UROOT_ARCH-$(CONFIG_LINUXBOOT_X86)         = 386
@@ -36,7 +39,7 @@ endif
 endif
 
 $(uroot_build): | build/
-	git clone https://$(uroot_package) $(uroot_build)
+	git clone $(CONFIG_LINUXBOOT_UROOT_REPOSITORY) $(uroot_build)
 	git -C $(uroot_build) checkout --quiet $(CONFIG_LINUXBOOT_UROOT_VERSION)
 
 $(uroot_build)/u-root: | $(uroot_build)

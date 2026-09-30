@@ -202,6 +202,10 @@ config LINUXBOOT_UROOT_CHECKOUT
 	string "U-root custom branch"
 	depends on LINUXBOOT_UROOT_CUSTOM
 
+config LINUXBOOT_UROOT_REPOSITORY
+	string "u-root Git repository"
+	default "https://github.com/u-root/u-root"
+
 config LINUXBOOT_UROOT_VERSION
 	string
 	default LINUXBOOT_UROOT_CHECKOUT if LINUXBOOT_UROOT_CUSTOM

@@ -48,7 +48,7 @@ build/:
 	mkdir -p build
 
 clean:
-	rm -rf build/kernel*
+	rm -rf build/kernel* build/u-root-*
 	rm -f  build/Image build/target.dtb build/u-root
 	rm -f  build/initramfs*
 	rm -f  build/bzImage

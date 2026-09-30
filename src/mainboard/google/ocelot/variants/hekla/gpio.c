@@ -157,8 +157,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D16, NONE),
 	/* GPP_D17:     Not used  */
 	PAD_NC(GPP_D17, NONE),
-	/* GPP_D19:     Not used */
-	PAD_NC(GPP_D19, NONE),
+	/* GPP_D19:     EN_TCHSCR_PWR ==> TOUCH_ENABLE */
+	PAD_CFG_GPO(GPP_D19, 1, PLTRST),
 	/* GPP_D21:     Not used */
 	PAD_NC(GPP_D21, NONE),
 

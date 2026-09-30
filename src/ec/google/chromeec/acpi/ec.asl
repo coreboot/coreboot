@@ -151,10 +151,10 @@ Device (EC0)
 			ENS0 = 1	// notify EC: entering S0ix (ENTER_CS)
 			/* Let EC settle before proceeding, same as vendor firmware */
 			Sleep (0xD2)
-			Notify (^CREC, ACPI_NOTIFY_CROS_EC_S0IX_ENTER)
+			Notify (\_SB.CREC, ACPI_NOTIFY_CROS_EC_S0IX_ENTER)
 		} Else {
 			RES0 = 1	// notify EC: resuming from S0ix (RESUME_CS)
-			Notify (^CREC, ACPI_NOTIFY_CROS_EC_S0IX_EXIT)
+			Notify (\_SB.CREC, ACPI_NOTIFY_CROS_EC_S0IX_EXIT)
 		}
 	}
 
@@ -336,7 +336,7 @@ Device (EC0)
 			\_SB.DPTC()
 		}
 #endif
-		Notify (CREC, 0x2)
+		Notify (\_SB.CREC, 0x2)
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
 #else
@@ -437,7 +437,7 @@ Device (EC0)
 	Method (_Q0D, 0, NotSerialized)
 	{
 		Printf ("EC: KEY PRESSED")
-		Notify (CREC, 0x2)
+		Notify (\_SB.CREC, 0x2)
 	}
 
 	// Thermal Shutdown Imminent
@@ -477,7 +477,7 @@ Device (EC0)
 	Method (_Q16, 0, NotSerialized)
 	{
 		Printf ("EC: GOT PD EVENT")
-		Notify (\_SB.PCI0.LPCB.EC0.CREC.ECPD, 0x80)
+		Notify (\_SB.CREC.ECPD, 0x80)
 		If (CondRefOf (\_SB.DPTF.TPWR)) {
 			Notify (\_SB.DPTF.TPWR, POWER_STATE_CHANGE_NOTIFICATION)
 		}
@@ -508,14 +508,14 @@ Device (EC0)
 	Method (_Q18, 0, NotSerialized)
 	{
 		Printf ("EC: PANIC")
-		Notify (CREC, ACPI_NOTIFY_CROS_EC_PANIC)
+		Notify (\_SB.CREC, ACPI_NOTIFY_CROS_EC_PANIC)
 	}
 
 	// MKBP interrupt.
 	Method (_Q1B, 0, NotSerialized)
 	{
 		Printf ("EC: MKBP")
-		Notify (CREC, ACPI_NOTIFY_CROS_EC_MKBP)
+		Notify (\_SB.CREC, ACPI_NOTIFY_CROS_EC_MKBP)
 	}
 
 #ifdef EC_ENABLE_PD_MCU_DEVICE
@@ -523,7 +523,7 @@ Device (EC0)
 	Method (_Q1C, 0, NotSerialized)
 	{
 		Printf ("EC: USB MUX")
-		Notify (\_SB.PCI0.LPCB.EC0.CREC.ECPD, 0x80)
+		Notify (\_SB.CREC.ECPD, 0x80)
 	}
 #endif
 
@@ -531,12 +531,12 @@ Device (EC0)
 	Method (_Q1D, 0, NotSerialized)
 	{
 		Printf ("EC: TABLET mode switch Event")
-		Notify (CREC, 0x2)
+		Notify (\_SB.CREC, 0x2)
 #ifdef EC_ENABLE_MULTIPLE_DPTF_PROFILES
 		\_SB.DPTF.TPET()
 #endif
 #ifdef EC_ENABLE_TBMC_DEVICE
-		Notify (^CREC.TBMC, 0x80)
+		Notify (\_SB.CREC.TBMC, 0x80)
 #endif
 #if CONFIG(EC_CHROMEEC_USE_VENDOR_TABLET_CONTROLS)
 #if CONFIG(SOC_INTEL_COMMON)
@@ -747,7 +747,14 @@ Device (EC0)
 
 	#include "ac.asl"
 	#include "battery.asl"
-	#include "cros_ec.asl"
+	/*
+	 * CREC may declare an APIC interrupt, which Windows cannot assign to a
+	 * device below the LPC (ISA) bridge, so place it at \_SB instead.
+	 */
+	Scope (\_SB)
+	{
+		#include "cros_ec.asl"
+	}
 
 #ifdef EC_ENABLE_ALS_DEVICE
 	#include "als.asl"

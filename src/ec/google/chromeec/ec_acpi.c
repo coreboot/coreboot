@@ -27,15 +27,10 @@
 const char *google_chromeec_acpi_name(const struct device *dev)
 {
 	/*
-	 * Chrome EC device (CREC - GOOG0004) is really a child of EC device (EC - PNP0C09) in
-	 * ACPI tables. However, in coreboot device tree, there is no separate chip/device for
-	 * EC0. Thus, Chrome EC device needs to return "EC0.CREC" as the ACPI name so that the
-	 * callers can get the correct acpi device path/scope for this device.
-	 *
-	 * If we ever enable a separate driver for generating AML for EC0 device, then this
-	 * function needs to be updated to return "CREC".
+	 * The Chrome EC device (CREC - GOOG0004) is placed at \_SB rather than below the LPC
+	 * bridge in the ACPI tables (see ec.asl), so return its absolute path.
 	 */
-	return "EC0.CREC";
+	return "\\_SB.CREC";
 }
 
 /*
@@ -277,7 +272,7 @@ static void fill_ssdt_ps2_keyboard(const struct device *dev)
 
 	/* Windows drivers expect function-row-physmap under CKSC (no keymap). */
 	if (!CONFIG(CHROMEOS))
-		acpigen_ps2_keyboard_physmap_dsd("_SB.PCI0.LPCB.EC0.CREC.CKSC",
+		acpigen_ps2_keyboard_physmap_dsd(acpi_device_path_join(dev, "CKSC"),
 						 keybd.num_top_row_keys, ps2_action_keys);
 }
 

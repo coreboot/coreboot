@@ -453,6 +453,31 @@ $(QUPV3_FW_CBFS)-type := payload
 cbfs-files-y += $(QUPV3_FW_CBFS)
 
 ################################################################################
+
+HYPAC_CFG_FILE := $(CALYPSO_BLOB)/ac_policy/hyp_ac_config.elf
+HYPAC_CFG_FILE_CBFS := $(CONFIG_CBFS_PREFIX)/hypac_cfg
+$(HYPAC_CFG_FILE_CBFS)-file := $(HYPAC_CFG_FILE)
+$(HYPAC_CFG_FILE_CBFS)-type := payload
+$(HYPAC_CFG_FILE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(HYPAC_CFG_FILE_CBFS)
+
+################################################################################
+
+# Rule to create hyp_ac_meta from hyp_ac_config.elf
+# This rule depends on hyp_ac_config.elf built and the extractor script existing.
+$(obj)/mainboard/$(MAINBOARDDIR)/hyp_ac_meta: $(CALYPSO_BLOB)/ac_policy/hyp_ac_config.elf util/qualcomm/elf_segment_extractor.py
+	@echo "Extracting ELF headers and hash table segment from $< to $@"
+	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
+
+HYP_AC_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/hyp_ac_meta
+HYP_AC_META_CBFS := $(CONFIG_CBFS_PREFIX)/hyp_ac_meta
+$(HYP_AC_META_CBFS)-file := $(HYP_AC_META_FILE)
+$(HYP_AC_META_CBFS)-type := raw
+$(HYP_AC_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(HYP_AC_META_CBFS)
+
+################################################################################
+
 ifeq ($(CONFIG_ARM64_USE_SECURE_OS),y)
 
 DEVCFG_TZ_FILE := $(CALYPSO_BLOB)/qtee/tz_oem_config.mbn
@@ -477,28 +502,6 @@ $(TZAC_CFG_FILE_CBFS)-file := $(TZAC_CFG_FILE)
 $(TZAC_CFG_FILE_CBFS)-type := payload
 $(TZAC_CFG_FILE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(TZAC_CFG_FILE_CBFS)
-
-################################################################################
-HYPAC_CFG_FILE := $(CALYPSO_BLOB)/ac_policy/hyp_ac_config.elf
-HYPAC_CFG_FILE_CBFS := $(CONFIG_CBFS_PREFIX)/hypac_cfg
-$(HYPAC_CFG_FILE_CBFS)-file := $(HYPAC_CFG_FILE)
-$(HYPAC_CFG_FILE_CBFS)-type := payload
-$(HYPAC_CFG_FILE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
-cbfs-files-y += $(HYPAC_CFG_FILE_CBFS)
-
-################################################################################
-# Rule to create hyp_ac_meta from hyp_ac_config.elf
-# This rule depends on hyp_ac_config.elf built and the extractor script existing.
-$(obj)/mainboard/$(MAINBOARDDIR)/hyp_ac_meta: $(CALYPSO_BLOB)/ac_policy/hyp_ac_config.elf util/qualcomm/elf_segment_extractor.py
-	@echo "Extracting ELF headers and hash table segment from $< to $@"
-	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
-
-HYP_AC_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/hyp_ac_meta
-HYP_AC_META_CBFS := $(CONFIG_CBFS_PREFIX)/hyp_ac_meta
-$(HYP_AC_META_CBFS)-file := $(HYP_AC_META_FILE)
-$(HYP_AC_META_CBFS)-type := raw
-$(HYP_AC_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
-cbfs-files-y += $(HYP_AC_META_CBFS)
 
 endif # ifeq ($(CONFIG_ARM64_USE_SECURE_OS),y)
 ################################################################################

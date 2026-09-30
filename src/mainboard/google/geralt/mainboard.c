@@ -4,12 +4,14 @@
 #include <bootmode.h>
 #include <device/device.h>
 #include <fw_config.h>
+#include <gpio.h>
 #include <soc/bl31.h>
 #include <soc/display.h>
 #include <soc/i2c.h>
 #include <soc/msdc.h>
 #include <soc/mt6359p.h>
 #include <soc/mtcmos.h>
+#include <soc/spi.h>
 #include <soc/usb.h>
 
 #define AFE_SE_SECURE_CON	(AUDIO_BASE + 0x17a8)
@@ -44,6 +46,13 @@ static void configure_audio(void)
 
 static void mainboard_init(struct device *dev)
 {
+	/* With vboot, the TPM and EC buses are set up in verstage. */
+	if (!CONFIG(VBOOT)) {
+		mtk_i2c_bus_init(CONFIG_DRIVER_TPM_I2C_BUS, I2C_SPEED_FAST);
+		gpio_eint_configure(GPIO_GSC_AP_INT_ODL, IRQ_TYPE_EDGE_RISING);
+		mtk_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, SPI_PAD0_MASK, 3 * MHz, 0);
+	}
+
 	mt6359p_init_pmif_arb();
 
 	if (display_init_required()) {

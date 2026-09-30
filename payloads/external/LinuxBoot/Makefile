@@ -49,7 +49,7 @@ build/:
 
 clean:
 	rm -rf build/kernel*
-	rm -f  build/u-root
+	rm -f  build/Image build/target.dtb build/u-root
 	rm -f  build/initramfs*
 	rm -f  build/bzImage
 	rm -f  build/uImage

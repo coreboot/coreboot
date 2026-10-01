@@ -21,7 +21,7 @@ endif
 
 subdirs-$(CONFIG_VENDOR_STARLABS) += cfr
 subdirs-$(CONFIG_VENDOR_STARLABS) += hda
-subdirs-$(CONFIG_BOARD_STARLABS_STARFIGHTER_SERIES) += touchpad
+subdirs-$(CONFIG_STARLABS_TOUCHPAD) += touchpad
 subdirs-$(CONFIG_VENDOR_STARLABS) += powercap
 subdirs-$(CONFIG_VENDOR_STARLABS) += fsp_params
 subdirs-$(CONFIG_VENDOR_STARLABS) += pin_mux

@@ -41,7 +41,7 @@ static int starlabs_touchpad_set_report(unsigned int bus, uint16_t cmd_reg,
 					const uint8_t *payload,
 					size_t payload_len)
 {
-	uint8_t buf[16];
+	uint8_t buf[32];
 	size_t cmd_len = 0;
 	size_t report_len = sizeof(uint16_t);
 
@@ -63,6 +63,9 @@ static int starlabs_touchpad_set_report(unsigned int bus, uint16_t cmd_reg,
 	if (report_id)
 		buf[cmd_len++] = report_id;
 
+	if (payload_len > sizeof(buf) - cmd_len)
+		return -1;
+
 	memcpy(buf + cmd_len, payload, payload_len);
 	cmd_len += payload_len;
 
@@ -74,7 +77,7 @@ static int starlabs_touchpad_get_report(unsigned int bus, uint16_t cmd_reg,
 					uint8_t *payload, size_t payload_len)
 {
 	uint8_t cmd_buf[8];
-	uint8_t rx_buf[16];
+	uint8_t rx_buf[32];
 	struct i2c_msg segs[2];
 	size_t cmd_len = 0;
 	size_t report_len;
@@ -137,15 +140,39 @@ static int starlabs_touchpad_reset(unsigned int bus, uint16_t cmd_reg)
 static int starlabs_touchpad_set_haptics(unsigned int bus, uint16_t cmd_reg,
 				 uint16_t data_reg, uint8_t level)
 {
+#if CONFIG(STARLABS_TOUCHPAD_CST)
+	uint8_t payload[STARLABS_TOUCHPAD_CST_REPORT_LEN] = { 0 };
+
+	payload[0] = STARLABS_TOUCHPAD_CST_WRITE_HAPTICS;
+	payload[1] = level;
+	payload[2] = payload[1];
+
+	return starlabs_touchpad_set_report(bus, cmd_reg, data_reg,
+					    STARLABS_TOUCHPAD_CST_REPORT_ID,
+					    payload, sizeof(payload));
+#else
 	return starlabs_touchpad_set_report(bus, cmd_reg, data_reg,
 				    STARLABS_TOUCHPAD_HAPTICS_REPORT_ID,
 				    &level, sizeof(level));
+#endif
 }
 
 static int starlabs_touchpad_set_force(unsigned int bus, uint16_t cmd_reg,
 				       uint16_t data_reg, uint16_t press,
 				       uint16_t release)
 {
+#if CONFIG(STARLABS_TOUCHPAD_CST)
+	uint8_t payload[STARLABS_TOUCHPAD_CST_REPORT_LEN] = { 0 };
+
+	payload[0] = STARLABS_TOUCHPAD_CST_WRITE_FORCE;
+	buf_set_le16(payload, 1, press);
+	buf_set_le16(payload, 3, release);
+	payload[5] = payload[1] ^ payload[2] ^ payload[3] ^ payload[4];
+
+	return starlabs_touchpad_set_report(bus, cmd_reg, data_reg,
+					    STARLABS_TOUCHPAD_CST_REPORT_ID,
+					    payload, sizeof(payload));
+#else
 	uint8_t payload[4];
 
 	buf_set_le16(payload, 0, press);
@@ -154,8 +181,10 @@ static int starlabs_touchpad_set_force(unsigned int bus, uint16_t cmd_reg,
 	return starlabs_touchpad_set_report(bus, cmd_reg, data_reg,
 					    STARLABS_TOUCHPAD_FORCE_REPORT_ID,
 					    payload, sizeof(payload));
+#endif
 }
 
+#if CONFIG(STARLABS_TOUCHPAD_PIXART)
 static int starlabs_touchpad_write_user_reg(unsigned int bus, uint16_t cmd_reg,
 					    uint16_t data_reg, uint8_t bank,
 					    uint8_t addr, uint8_t value)
@@ -166,19 +195,62 @@ static int starlabs_touchpad_write_user_reg(unsigned int bus, uint16_t cmd_reg,
 					    STARLABS_TOUCHPAD_USER_REG_REPORT_ID,
 					    payload, sizeof(payload));
 }
+#endif
 
 static int starlabs_touchpad_get_haptics(unsigned int bus, uint16_t cmd_reg,
 					 uint16_t data_reg, uint8_t *level)
 {
+#if CONFIG(STARLABS_TOUCHPAD_CST)
+	uint8_t payload[STARLABS_TOUCHPAD_CST_REPORT_LEN] = { 0 };
+	int ret;
+
+	payload[0] = STARLABS_TOUCHPAD_CST_READ_HAPTICS;
+	ret = starlabs_touchpad_set_report(bus, cmd_reg, data_reg,
+					   STARLABS_TOUCHPAD_CST_REPORT_ID,
+					   payload, sizeof(payload));
+	if (ret != 0)
+		return ret;
+
+	ret = starlabs_touchpad_get_report(bus, cmd_reg, data_reg,
+					   STARLABS_TOUCHPAD_CST_REPORT_ID,
+					   payload, sizeof(payload));
+	if (ret != 0)
+		return ret;
+
+	*level = payload[0];
+	return 0;
+#else
 	return starlabs_touchpad_get_report(bus, cmd_reg, data_reg,
 					    STARLABS_TOUCHPAD_HAPTICS_REPORT_ID,
 					    level, sizeof(*level));
+#endif
 }
 
 static int starlabs_touchpad_get_force(unsigned int bus, uint16_t cmd_reg,
 				       uint16_t data_reg, uint16_t *press,
 				       uint16_t *release)
 {
+#if CONFIG(STARLABS_TOUCHPAD_CST)
+	uint8_t payload[STARLABS_TOUCHPAD_CST_REPORT_LEN] = { 0 };
+	int ret;
+
+	payload[0] = STARLABS_TOUCHPAD_CST_READ_FORCE;
+	ret = starlabs_touchpad_set_report(bus, cmd_reg, data_reg,
+					   STARLABS_TOUCHPAD_CST_REPORT_ID,
+					   payload, sizeof(payload));
+	if (ret != 0)
+		return ret;
+
+	ret = starlabs_touchpad_get_report(bus, cmd_reg, data_reg,
+					   STARLABS_TOUCHPAD_CST_REPORT_ID,
+					   payload, sizeof(payload));
+	if (ret != 0)
+		return ret;
+
+	*press = payload[0] | (payload[1] << 8);
+	*release = payload[2] | (payload[3] << 8);
+	return 0;
+#else
 	uint8_t payload[4];
 	int ret;
 
@@ -192,8 +264,10 @@ static int starlabs_touchpad_get_force(unsigned int bus, uint16_t cmd_reg,
 	*release = payload[2] | (payload[3] << 8);
 
 	return 0;
+#endif
 }
 
+#if CONFIG(STARLABS_TOUCHPAD_PIXART)
 static int starlabs_touchpad_read_user_reg(unsigned int bus, uint16_t cmd_reg,
 					   uint16_t data_reg, uint8_t *bank,
 					   uint8_t *addr, uint8_t *value)
@@ -213,6 +287,7 @@ static int starlabs_touchpad_read_user_reg(unsigned int bus, uint16_t cmd_reg,
 
 	return 0;
 }
+#endif
 
 static int starlabs_touchpad_set_haptics_op(void *arg)
 {
@@ -231,6 +306,7 @@ static int starlabs_touchpad_set_force_op(void *arg)
 					   ctx->press, ctx->release);
 }
 
+#if CONFIG(STARLABS_TOUCHPAD_PIXART)
 static int starlabs_touchpad_write_user_reg_op(void *arg)
 {
 	const struct starlabs_touchpad_op_ctx *ctx = arg;
@@ -239,6 +315,7 @@ static int starlabs_touchpad_write_user_reg_op(void *arg)
 						ctx->data_reg, ctx->bank,
 						ctx->addr, ctx->value);
 }
+#endif
 
 static int starlabs_touchpad_reset_op(void *arg)
 {
@@ -282,6 +359,7 @@ static int starlabs_touchpad_verify_force(const struct starlabs_touchpad_op_ctx 
 	return ret == 0 ? -1 : ret;
 }
 
+#if CONFIG(STARLABS_TOUCHPAD_PIXART)
 static int starlabs_touchpad_verify_user_reg(const struct starlabs_touchpad_op_ctx *ctx)
 {
 	uint8_t bank = 0;
@@ -301,6 +379,7 @@ static int starlabs_touchpad_verify_user_reg(const struct starlabs_touchpad_op_c
 
 	return ret == 0 ? -1 : ret;
 }
+#endif
 
 static int starlabs_touchpad_wait_for_reset_ready(const struct starlabs_touchpad_op_ctx *ctx)
 {
@@ -321,20 +400,37 @@ static int starlabs_touchpad_wait_for_reset_ready(const struct starlabs_touchpad
 
 static void starlabs_touchpad_init_ctx(struct starlabs_touchpad_op_ctx *ctx)
 {
-	*ctx = (struct starlabs_touchpad_op_ctx) {
+	const struct option_constraints press = OPTION_ENUM(STARLABS_TOUCHPAD_PRESS_FORCE_MINIMAL,
+		STARLABS_TOUCHPAD_PRESS_FORCE_LOW, STARLABS_TOUCHPAD_PRESS_FORCE_AVERAGE,
+		STARLABS_TOUCHPAD_PRESS_FORCE_HIGH, STARLABS_TOUCHPAD_PRESS_FORCE_HULK);
+	const struct option_constraints release = OPTION_ENUM(
+		STARLABS_TOUCHPAD_RELEASE_FORCE_MINIMAL, STARLABS_TOUCHPAD_RELEASE_FORCE_LOW,
+		STARLABS_TOUCHPAD_RELEASE_FORCE_AVERAGE, STARLABS_TOUCHPAD_RELEASE_FORCE_HIGH,
+		STARLABS_TOUCHPAD_RELEASE_FORCE_HULK);
+
+	*ctx = (struct starlabs_touchpad_op_ctx){
 		.bus = STARLABS_TOUCHPAD_I2C_BUS,
 		.cmd_reg = STARLABS_TOUCHPAD_FALLBACK_CMD_REG,
 		.data_reg = STARLABS_TOUCHPAD_FALLBACK_DATA_REG,
-		.level = get_uint_option("touchpad_haptics",
-					 STARLABS_TOUCHPAD_HAPTICS_DEFAULT),
-		.press = get_uint_option("touchpad_force_press",
-					 STARLABS_TOUCHPAD_PRESS_FORCE_DEFAULT),
-		.release = get_uint_option("touchpad_force_release",
-					   STARLABS_TOUCHPAD_RELEASE_FORCE_DEFAULT),
+		.level = get_uint_option_checked("touchpad_haptics",
+						 STARLABS_TOUCHPAD_HAPTICS_DEFAULT,
+						 STARLABS_TOUCHPAD_HAPTICS_RULE),
+		.press = get_uint_option_checked("touchpad_force_press",
+						 STARLABS_TOUCHPAD_PRESS_FORCE_DEFAULT, press),
+		.release = get_uint_option_checked("touchpad_force_release",
+						   STARLABS_TOUCHPAD_RELEASE_FORCE_DEFAULT,
+						   release),
+#if CONFIG(STARLABS_TOUCHPAD_PIXART)
 		.bank = STARLABS_TOUCHPAD_USER_REG_BANK,
 		.addr = STARLABS_TOUCHPAD_USER_REG_ADDR_RATE,
-		.value = get_uint_option("touchpad_report_rate",
-					 STARLABS_TOUCHPAD_REPORT_RATE_DEFAULT),
+		.value = get_uint_option_checked("touchpad_report_rate",
+						 STARLABS_TOUCHPAD_REPORT_RATE_DEFAULT,
+						 OPTION_ENUM(STARLABS_TOUCHPAD_RATE_RELAXED,
+							     STARLABS_TOUCHPAD_RATE_BALANCED,
+							     STARLABS_TOUCHPAD_RATE_FAST,
+							     STARLABS_TOUCHPAD_RATE_LUDICROUS,
+							     STARLABS_TOUCHPAD_RATE_PLAID)),
+#endif
 	};
 }
 
@@ -372,6 +468,7 @@ static int starlabs_touchpad_wake(const struct starlabs_touchpad_op_ctx *ctx)
 	return 0;
 }
 
+#if CONFIG(STARLABS_TOUCHPAD_PIXART)
 static int starlabs_touchpad_ensure_user_reg(const struct starlabs_touchpad_op_ctx *ctx)
 {
 	int ret;
@@ -386,6 +483,7 @@ static int starlabs_touchpad_ensure_user_reg(const struct starlabs_touchpad_op_c
 
 	return starlabs_touchpad_verify_user_reg(ctx);
 }
+#endif
 
 static int starlabs_touchpad_ensure_force(const struct starlabs_touchpad_op_ctx *ctx)
 {
@@ -411,6 +509,7 @@ static void starlabs_touchpad_prepare_settings(void *arg)
 	starlabs_touchpad_cache_ctx();
 	starlabs_touchpad_wake(&starlabs_touchpad_cached_ctx);
 
+#if CONFIG(STARLABS_TOUCHPAD_PIXART)
 	ret = starlabs_touchpad_retry(starlabs_touchpad_write_user_reg_op,
 				      &starlabs_touchpad_cached_ctx);
 	if (ret != 0) {
@@ -418,6 +517,7 @@ static void starlabs_touchpad_prepare_settings(void *arg)
 		       "Touchpad settings: early report rate write %u failed: %d\n",
 		       starlabs_touchpad_cached_ctx.value, ret);
 	}
+#endif
 
 	ret = starlabs_touchpad_retry(starlabs_touchpad_set_force_op,
 				      &starlabs_touchpad_cached_ctx);
@@ -441,12 +541,14 @@ static void starlabs_touchpad_apply_settings(void *arg)
 
 	starlabs_touchpad_wake(ctx);
 
+#if CONFIG(STARLABS_TOUCHPAD_PIXART)
 	ret = starlabs_touchpad_ensure_user_reg(ctx);
 	if (ret != 0) {
 		printk(BIOS_ERR, "Touchpad settings: failed to verify report rate %u: %d\n",
 		       ctx->value, ret);
 		return;
 	}
+#endif
 
 	ret = starlabs_touchpad_ensure_force(ctx);
 	if (ret != 0) {
@@ -489,11 +591,19 @@ static void starlabs_touchpad_apply_settings(void *arg)
 		}
 	}
 
+#if CONFIG(STARLABS_TOUCHPAD_CST)
+	printk(BIOS_INFO,
+	       "Touchpad settings: applied via regs 0x%04x/0x%04x; "
+	       "haptics=%u click=%u release=%u\n",
+	       ctx->cmd_reg, ctx->data_reg, ctx->level,
+	       ctx->press, ctx->release);
+#else
 	printk(BIOS_INFO,
 	       "Touchpad settings: applied via regs 0x%04x/0x%04x; "
 	       "haptics=%u click=%u release=%u rate=%u\n",
 	       ctx->cmd_reg, ctx->data_reg, ctx->level,
 	       ctx->press, ctx->release, ctx->value);
+#endif
 }
 
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, starlabs_touchpad_prepare_settings,

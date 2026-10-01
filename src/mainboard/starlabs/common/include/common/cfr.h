@@ -240,11 +240,19 @@ static const struct sm_object touchpad_haptics = SM_DECLARE_ENUM({
 	.ui_helptext	= "Choose how strong the touchpad click vibration feels.",
 	.default_value	= STARLABS_TOUCHPAD_HAPTICS_DEFAULT,
 	.values		= (const struct sm_enum_value[]) {
-		{ "Off",	0 },
-		{ "Low",	1 },
-		{ "Medium",	2 },
-		{ "High",	3 },
-		{ "Maximum",	4 },
+#if CONFIG(STARLABS_TOUCHPAD_CST)
+		{ "Low",	STARLABS_TOUCHPAD_HAPTICS_LOW },
+		{ "Medium",	STARLABS_TOUCHPAD_HAPTICS_MEDIUM },
+		{ "High",	STARLABS_TOUCHPAD_HAPTICS_HIGH },
+		{ "Factory",	STARLABS_TOUCHPAD_HAPTICS_DEFAULT },
+		{ "Maximum",	STARLABS_TOUCHPAD_HAPTICS_MAX },
+#else
+		{ "Off",	STARLABS_TOUCHPAD_HAPTICS_MIN },
+		{ "Low",	STARLABS_TOUCHPAD_HAPTICS_LOW },
+		{ "Medium",	STARLABS_TOUCHPAD_HAPTICS_MEDIUM },
+		{ "High",	STARLABS_TOUCHPAD_HAPTICS_HIGH },
+		{ "Maximum",	STARLABS_TOUCHPAD_HAPTICS_MAX },
+#endif
 		SM_ENUM_VALUE_END,
 	},
 });
@@ -255,11 +263,11 @@ static const struct sm_object touchpad_force_press = SM_DECLARE_ENUM({
 	.ui_helptext	= "Choose how much force it takes to click the touchpad.",
 	.default_value	= STARLABS_TOUCHPAD_PRESS_FORCE_DEFAULT,
 	.values		= (const struct sm_enum_value[]) {
-		{ "Minimal",	STARLABS_TOUCHPAD_FORCE_MINIMAL },
-		{ "Low",	STARLABS_TOUCHPAD_FORCE_LOW },
-		{ "Average",	STARLABS_TOUCHPAD_FORCE_AVERAGE },
-		{ "High",	STARLABS_TOUCHPAD_FORCE_HIGH },
-		{ "Hulk",	STARLABS_TOUCHPAD_FORCE_HULK },
+		{ "Minimal",	STARLABS_TOUCHPAD_PRESS_FORCE_MINIMAL },
+		{ "Low",	STARLABS_TOUCHPAD_PRESS_FORCE_LOW },
+		{ "Average",	STARLABS_TOUCHPAD_PRESS_FORCE_AVERAGE },
+		{ "High",	STARLABS_TOUCHPAD_PRESS_FORCE_HIGH },
+		{ "Hulk",	STARLABS_TOUCHPAD_PRESS_FORCE_HULK },
 		SM_ENUM_VALUE_END,
 	},
 });
@@ -270,11 +278,11 @@ static const struct sm_object touchpad_force_release = SM_DECLARE_ENUM({
 	.ui_helptext	= "Choose how much force it takes for the touchpad click to release.",
 	.default_value	= STARLABS_TOUCHPAD_RELEASE_FORCE_DEFAULT,
 	.values		= (const struct sm_enum_value[]) {
-		{ "Minimal",	STARLABS_TOUCHPAD_FORCE_MINIMAL },
-		{ "Low",	STARLABS_TOUCHPAD_FORCE_LOW },
-		{ "Average",	STARLABS_TOUCHPAD_FORCE_AVERAGE },
-		{ "High",	STARLABS_TOUCHPAD_FORCE_HIGH },
-		{ "Hulk",	STARLABS_TOUCHPAD_FORCE_HULK },
+		{ "Minimal",	STARLABS_TOUCHPAD_RELEASE_FORCE_MINIMAL },
+		{ "Low",	STARLABS_TOUCHPAD_RELEASE_FORCE_LOW },
+		{ "Average",	STARLABS_TOUCHPAD_RELEASE_FORCE_AVERAGE },
+		{ "High",	STARLABS_TOUCHPAD_RELEASE_FORCE_HIGH },
+		{ "Hulk",	STARLABS_TOUCHPAD_RELEASE_FORCE_HULK },
 		SM_ENUM_VALUE_END,
 	},
 });

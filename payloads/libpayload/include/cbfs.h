@@ -39,7 +39,11 @@ static inline bool cbfs_ro_file_exists(const char *name);
 /**********************************************************************************************
  *                         INTERNAL HELPERS FOR INLINES, DO NOT USE.                          *
  **********************************************************************************************/
-ssize_t _cbfs_boot_lookup(const char *name, bool force_ro, union cbfs_mdata *mdata);
+struct cbfs_dev;
+typedef const struct cbfs_dev *cbfs_dev_t;
+
+ssize_t _cbfs_boot_lookup(const char *name, bool force_ro, union cbfs_mdata *mdata,
+			  cbfs_dev_t *dev_out);
 
 void *_cbfs_load(const char *name, void *buf, size_t *size_inout, bool force_ro);
 
@@ -94,7 +98,7 @@ static inline size_t cbfs_unverified_area_load(const char *area, const char *nam
 static inline size_t cbfs_get_size(const char *name)
 {
 	union cbfs_mdata mdata;
-	if (_cbfs_boot_lookup(name, false, &mdata) < 0)
+	if (_cbfs_boot_lookup(name, false, &mdata, NULL) < 0)
 		return 0;
 	else
 		return be32toh(mdata.h.len);
@@ -103,7 +107,7 @@ static inline size_t cbfs_get_size(const char *name)
 static inline size_t cbfs_ro_get_size(const char *name)
 {
 	union cbfs_mdata mdata;
-	if (_cbfs_boot_lookup(name, true, &mdata) < 0)
+	if (_cbfs_boot_lookup(name, true, &mdata, NULL) < 0)
 		return 0;
 	else
 		return be32toh(mdata.h.len);
@@ -112,7 +116,7 @@ static inline size_t cbfs_ro_get_size(const char *name)
 static inline enum cbfs_type cbfs_get_type(const char *name)
 {
 	union cbfs_mdata mdata;
-	if (_cbfs_boot_lookup(name, false, &mdata) < 0)
+	if (_cbfs_boot_lookup(name, false, &mdata, NULL) < 0)
 		return CBFS_TYPE_NULL;
 	else
 		return be32toh(mdata.h.type);
@@ -121,7 +125,7 @@ static inline enum cbfs_type cbfs_get_type(const char *name)
 static inline enum cbfs_type cbfs_ro_get_type(const char *name)
 {
 	union cbfs_mdata mdata;
-	if (_cbfs_boot_lookup(name, true, &mdata) < 0)
+	if (_cbfs_boot_lookup(name, true, &mdata, NULL) < 0)
 		return CBFS_TYPE_NULL;
 	else
 		return be32toh(mdata.h.type);
@@ -130,13 +134,13 @@ static inline enum cbfs_type cbfs_ro_get_type(const char *name)
 static inline bool cbfs_file_exists(const char *name)
 {
 	union cbfs_mdata mdata;
-	return _cbfs_boot_lookup(name, false, &mdata) >= 0;
+	return _cbfs_boot_lookup(name, false, &mdata, NULL) >= 0;
 }
 
 static inline bool cbfs_ro_file_exists(const char *name)
 {
 	union cbfs_mdata mdata;
-	return _cbfs_boot_lookup(name, true, &mdata) >= 0;
+	return _cbfs_boot_lookup(name, true, &mdata, NULL) >= 0;
 }
 
 #endif

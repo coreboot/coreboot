@@ -24,6 +24,7 @@ static const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro)
 		if (!rw.dev.size) {
 			rw.dev.offset = lib_sysinfo.cbfs_offset;
 			rw.dev.size = lib_sysinfo.cbfs_size;
+			rw.dev.read = boot_device_read;
 			rw.mcache = phys_to_virt(lib_sysinfo.cbfs_rw_mcache_offset);
 			rw.mcache_size = lib_sysinfo.cbfs_rw_mcache_size;
 		}
@@ -36,13 +37,15 @@ static const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro)
 	if (fmap_locate_area("COREBOOT", &ro.dev.offset, &ro.dev.size))
 		return NULL;
 
+	ro.dev.read = boot_device_read;
 	ro.mcache = phys_to_virt(lib_sysinfo.cbfs_ro_mcache_offset);
 	ro.mcache_size = lib_sysinfo.cbfs_ro_mcache_size;
 
 	return &ro;
 }
 
-ssize_t _cbfs_boot_lookup(const char *name, bool force_ro, union cbfs_mdata *mdata)
+ssize_t _cbfs_boot_lookup(const char *name, bool force_ro, union cbfs_mdata *mdata,
+			  cbfs_dev_t *dev_out)
 {
 	const struct cbfs_boot_device *cbd = cbfs_get_boot_device(force_ro);
 	if (!cbd)
@@ -60,7 +63,7 @@ ssize_t _cbfs_boot_lookup(const char *name, bool force_ro, union cbfs_mdata *mda
 	/* Fallback to RO if possible. */
 	if (CONFIG(LP_ENABLE_CBFS_FALLBACK) && !force_ro && err == CB_CBFS_NOT_FOUND) {
 		LOG("Fall back to RO region for '%s'\n", name);
-		return _cbfs_boot_lookup(name, true, mdata);
+		return _cbfs_boot_lookup(name, true, mdata, dev_out);
 	}
 
 	if (err) {
@@ -71,7 +74,10 @@ ssize_t _cbfs_boot_lookup(const char *name, bool force_ro, union cbfs_mdata *mda
 		return err;
 	}
 
-	return cbd->dev.offset + data_offset;
+	if (dev_out)
+		*dev_out = &cbd->dev;
+
+	return data_offset;
 }
 
 void cbfs_unmap(void *mapping)
@@ -101,8 +107,8 @@ static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
 	return false;
 }
 
-static size_t cbfs_load_and_decompress(size_t offset, size_t in_size, void *buffer,
-				       size_t buffer_size, uint32_t compression,
+static size_t cbfs_load_and_decompress(cbfs_dev_t dev, size_t offset, size_t in_size,
+				       void *buffer, size_t buffer_size, uint32_t compression,
 				       const union cbfs_mdata *mdata, bool skip_verification)
 {
 	void *load = buffer;
@@ -119,7 +125,7 @@ static size_t cbfs_load_and_decompress(size_t offset, size_t in_size, void *buff
 		}
 	}
 
-	if (boot_device_read(load, offset, in_size) != in_size) {
+	if (cbfs_dev_read(dev, load, offset, in_size) != in_size) {
 		ERROR("'%s' failed to read contents of file\n", mdata->h.filename);
 		goto out;
 	}
@@ -151,8 +157,8 @@ out:
 	return out_size;
 }
 
-static void *do_load(union cbfs_mdata *mdata, ssize_t offset, void *buf, size_t *size_inout,
-		     bool skip_verification)
+static void *do_load(cbfs_dev_t dev, union cbfs_mdata *mdata, size_t offset, void *buf,
+		     size_t *size_inout, bool skip_verification)
 {
 	bool malloced = false;
 	size_t buf_size = 0;
@@ -186,8 +192,8 @@ static void *do_load(union cbfs_mdata *mdata, ssize_t offset, void *buf, size_t 
 		malloced = true;
 	}
 
-	if (cbfs_load_and_decompress(offset, be32toh(mdata->h.len), buf, out_size, compression,
-				     mdata, skip_verification)
+	if (cbfs_load_and_decompress(dev, offset, be32toh(mdata->h.len), buf, out_size,
+				     compression, mdata, skip_verification)
 	    != out_size) {
 		if (malloced)
 			free(buf);
@@ -201,15 +207,16 @@ void *_cbfs_load(const char *name, void *buf, size_t *size_inout, bool force_ro)
 {
 	ssize_t offset;
 	union cbfs_mdata mdata;
+	cbfs_dev_t dev = NULL;
 
 	DEBUG("%s(name='%s', buf=%p, force_ro=%s)\n", __func__, name, buf,
 	      force_ro ? "true" : "false");
 
-	offset = _cbfs_boot_lookup(name, force_ro, &mdata);
-	if (offset < 0)
+	offset = _cbfs_boot_lookup(name, force_ro, &mdata, &dev);
+	if (offset < 0 || !dev)
 		return NULL;
 
-	return do_load(&mdata, offset, buf, size_inout, false);
+	return do_load(dev, &mdata, offset, buf, size_inout, false);
 }
 
 void *_cbfs_unverified_area_load(const char *area, const char *name, void *buf,
@@ -224,12 +231,14 @@ void *_cbfs_unverified_area_load(const char *area, const char *name, void *buf,
 	if (fmap_locate_area(area, &dev.offset, &dev.size) != CB_SUCCESS)
 		return NULL;
 
+	dev.read = boot_device_read;
+
 	if (cbfs_lookup(&dev, name, &mdata, &data_offset, NULL)) {
 		ERROR("'%s' not found in '%s'\n", name, area);
 		return NULL;
 	}
 
-	return do_load(&mdata, dev.offset + data_offset, buf, size_inout, true);
+	return do_load(&dev, &mdata, data_offset, buf, size_inout, true);
 }
 
 /* This should be overridden by payloads that want to enforce more explicit

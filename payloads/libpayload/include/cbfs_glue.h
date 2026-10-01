@@ -22,6 +22,7 @@
 struct cbfs_dev {
 	size_t offset;
 	size_t size;
+	ssize_t (*read)(void *buf, size_t offset, size_t size);
 };
 
 struct cbfs_boot_device {
@@ -34,10 +35,13 @@ typedef const struct cbfs_dev *cbfs_dev_t;
 
 static inline ssize_t cbfs_dev_read(cbfs_dev_t dev, void *buffer, size_t offset, size_t size)
 {
+	if (!dev || !dev->read)
+		return CB_ERR_ARG;
+
 	if (offset + size < offset || offset + size > dev->size)
 		return CB_ERR_ARG;
 
-	return boot_device_read(buffer, dev->offset + offset, size);
+	return dev->read(buffer, dev->offset + offset, size);
 }
 
 static inline size_t cbfs_dev_size(cbfs_dev_t dev)

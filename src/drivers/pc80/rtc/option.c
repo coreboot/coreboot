@@ -71,18 +71,31 @@ static struct cmos_option_table *get_cmos_layout(void)
 
 static struct cmos_entries *find_cmos_entry(struct cmos_option_table *ct, const char *name)
 {
-	/* Figure out how long name is */
-	const size_t namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 	struct cmos_entries *ce;
+
+	if (strnlen(name, CMOS_MAX_NAME_LENGTH) == CMOS_MAX_NAME_LENGTH)
+		return NULL;
 
 	/* Find the requested entry record */
 	ce = (struct cmos_entries *)((unsigned char *)ct + ct->header_length);
 	for (; ce->tag == LB_TAG_OPTION;
 		ce = (struct cmos_entries *)((unsigned char *)ce + ce->size)) {
-		if (memcmp(ce->name, name, namelen) == 0)
+		if (strncmp((const char *)ce->name, name, CMOS_MAX_NAME_LENGTH) == 0)
 			return ce;
 	}
 	return NULL;
+}
+
+static bool cmos_uint_entry_valid(const struct cmos_entries *ce)
+{
+	if (!ce->length || ce->length > sizeof(unsigned int) * 8)
+		return false;
+	if (ce->bit >= CMOS_IMAGE_BUFFER_SIZE * 8 ||
+	    ce->length > CMOS_IMAGE_BUFFER_SIZE * 8 - ce->bit)
+		return false;
+	if (ce->length <= 8)
+		return ce->bit % 8 + ce->length <= 8;
+	return ce->bit % 8 == 0 && ce->length % 8 == 0;
 }
 
 static enum cb_err cmos_get_uint_option(unsigned int *dest, const char *name)
@@ -101,7 +114,11 @@ static enum cb_err cmos_get_uint_option(unsigned int *dest, const char *name)
 	}
 
 	if (ce->config != 'e' && ce->config != 'h') {
-		printk(BIOS_ERR, "CMOS option '%s' is not of integer type.\n", name);
+		printk(BIOS_ERR, "CMOS option '%s' is not an integer entry.\n", name);
+		return CB_ERR_ARG;
+	}
+	if (!cmos_uint_entry_valid(ce)) {
+		printk(BIOS_ERR, "CMOS option '%s' has invalid width, alignment or bounds.\n", name);
 		return CB_ERR_ARG;
 	}
 
@@ -177,7 +194,11 @@ static enum cb_err cmos_set_uint_option(const char *name, unsigned int *value)
 	}
 
 	if (ce->config != 'e' && ce->config != 'h') {
-		printk(BIOS_ERR, "CMOS option '%s' is not of integer type.\n", name);
+		printk(BIOS_ERR, "CMOS option '%s' is not an integer entry.\n", name);
+		return CB_ERR_ARG;
+	}
+	if (!cmos_uint_entry_valid(ce)) {
+		printk(BIOS_ERR, "CMOS option '%s' has invalid width, alignment or bounds.\n", name);
 		return CB_ERR_ARG;
 	}
 

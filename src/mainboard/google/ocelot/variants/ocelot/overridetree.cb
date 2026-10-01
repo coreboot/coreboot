@@ -64,7 +64,7 @@ end
 chip soc/intel/pantherlake
 
 	# VCCSA Shutdown configuration
-	register "vccsa_shutdown" = "1"
+	register "vccsa_shutdown" = "0"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP1

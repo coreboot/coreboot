@@ -9,16 +9,22 @@ unsigned int get_uint_option(const char *name, const unsigned int fallback)
 	size_t size;
 	uint64_t value;
 	char full_name[CBFS_METADATA_MAX_SIZE];
-	snprintf(full_name, sizeof(full_name), "option/%s", name);
+	int length = snprintf(full_name, sizeof(full_name), "option/%s", name);
+	if (length < 0 || (size_t)length >= sizeof(full_name))
+		return fallback;
 
 	void *p = cbfs_ro_map(full_name, &size);
-	if (!p || size < sizeof(value)) {
-		value = fallback;
-	} else {
-		value = le64dec(p);
+	if (!p)
+		return fallback;
+	if (size != sizeof(value)) {
 		cbfs_unmap(p);
+		return fallback;
 	}
-	return (unsigned int)value;
+	value = le64dec(p);
+	cbfs_unmap(p);
+	if (value > UINT_MAX)
+		return fallback;
+	return value;
 }
 
 enum cb_err set_uint_option(const char *name, unsigned int value)

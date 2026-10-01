@@ -23,7 +23,7 @@ unsigned int get_uint_option(const char *name, const unsigned int fallback)
 	var = 0;
 	size = sizeof(var);
 	ret = efi_fv_get_option(&rdev, &EficorebootNvDataGuid, name, &var, &size);
-	if (ret != CB_SUCCESS)
+	if (ret != CB_SUCCESS || size != sizeof(var))
 		return fallback;
 
 	return var;

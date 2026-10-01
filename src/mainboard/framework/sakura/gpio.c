@@ -39,7 +39,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_C05, NONE, DEEP),				/* eSPI strap (enable low, ext pull-down) */
 	PAD_NC(GPP_C06, NONE),
 	PAD_NC(GPP_C07, NONE),
-	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF1),				/* SML1_ALERT# (10k to 1.8V_PRIM) */
+	PAD_NC(GPP_C08, NONE),						/* SML1_ALERT#, not connected */
 	PAD_NC(GPP_C09, NONE),
 	PAD_CFG_NF(GPP_C10, NONE, DEEP, NF1),				/* SRCCLKREQ1# (SSD) */
 	PAD_NC(GPP_C11, NONE),

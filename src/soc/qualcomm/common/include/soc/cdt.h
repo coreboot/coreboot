@@ -51,25 +51,8 @@ struct platform_id_cdt {
 #define CALYPSO_STORAGE_TYPE_NVME	1
 #define CALYPSO_STORAGE_TYPE_UFS	2
 
-/*
- * CDT fw_config 64-bit layout:
- *   [15:0]  : Platform ID (16-bit)
- *   [31:16] : SoC ID (16-bit)
- *   [39:32] : Fast Boot Config (8-bit)
- *   [63:40] : Reserved
- */
-#define CDT_FW_CFG_SOC_ID_SHIFT		16
-#define CDT_FW_CFG_BOOT_CFG_SHIFT	32
-
 #define EXTRACT_FIELD(val, mask, shift) \
 	(((val) & (mask)) >> (shift))
-
-#define CDT_COMBINE_SOC_PLATFORM_ID(soc, plat) \
-	(((uint32_t)(soc) << CDT_FW_CFG_SOC_ID_SHIFT) | (uint16_t)(plat))
-
-#define CDT_PACK_FW_CONFIG(boot_cfg, soc, plat) \
-	(((uint64_t)(boot_cfg) << CDT_FW_CFG_BOOT_CFG_SHIFT) | \
-	 (uint64_t)CDT_COMBINE_SOC_PLATFORM_ID(soc, plat))
 
 ssize_t cdt_read(void *buffer, size_t buffer_size);
 uint16_t cdt_get_platform_id(void);

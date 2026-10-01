@@ -18,15 +18,15 @@ void fw_config_get_mainboard_override(uint64_t *fw_config)
 
 	switch (soc_hw_id) {
 	case TCSR_SOC_HW_VERSION_DEVICE_NUM_HAMOA:
-		cdt_soc_id = HAMOA_ID_SCP;
+		cdt_soc_id = FW_CONFIG_VALUE(SOC_ID, HAMOA);
 		break;
 	case TCSR_SOC_HW_VERSION_DEVICE_NUM_X1P42100:
 		switch (raw_soc_id) {
 		case CANIM_SOC_ID:
-			cdt_soc_id = CANIM_ID_SCP;
+			cdt_soc_id = FW_CONFIG_VALUE(SOC_ID, CANIM);
 			break;
 		default:
-			cdt_soc_id = X1P42100_ID_SCP;
+			cdt_soc_id = FW_CONFIG_VALUE(SOC_ID, X1P42100);
 			break;
 		}
 		break;
@@ -36,12 +36,11 @@ void fw_config_get_mainboard_override(uint64_t *fw_config)
 	}
 
 	uint16_t platform_id = cdt_get_platform_id();
-
-	*fw_config = CDT_COMBINE_SOC_PLATFORM_ID(cdt_soc_id, platform_id);
-
 	uint8_t storage_type = (soc_hw_id == TCSR_SOC_HW_VERSION_DEVICE_NUM_X1P42100) ?
 			       platform_get_fast_boot() : CALYPSO_STORAGE_TYPE_NVME;
 
+	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(PLATFORM_ID), platform_id);
+	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(SOC_ID), cdt_soc_id);
 	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(STORAGE_TYPE), storage_type);
 
 	printk(BIOS_INFO, "CDT: soc_id=0x%04x platform_id=0x%04x storage_type=%u\n",

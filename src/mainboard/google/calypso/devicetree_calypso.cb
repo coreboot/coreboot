@@ -5,6 +5,8 @@
 #   [31:16] : SoC ID
 #   [34:32] : Storage Type (normalized from BOOT_CONFIG FAST_BOOT field)
 fw_config
+	field PLATFORM_ID 0 15 end
+	field SOC_ID 16 31 end
 	field STORAGE_TYPE 32 34
 		option STORAGE_TYPE_UNKNOWN	0
 		option STORAGE_TYPE_NVME	1

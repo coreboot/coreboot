@@ -20,8 +20,8 @@ void fw_config_get_mainboard_override(uint64_t *fw_config)
 	uint16_t platform_id = cdt_get_platform_id();
 	uint8_t storage_type = platform_get_fast_boot();
 
-	*fw_config = CDT_COMBINE_SOC_PLATFORM_ID(soc_id, platform_id);
-
+	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(PLATFORM_ID), platform_id);
+	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(SOC_ID), soc_id);
 	fw_config_value_set_field(fw_config, FW_CONFIG_FIELD(STORAGE_TYPE), storage_type);
 
 	printk(BIOS_INFO, "CDT: soc_id=0x%04x platform_id=0x%04x storage_type=%u\n",

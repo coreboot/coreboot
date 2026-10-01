@@ -1,9 +1,9 @@
-Upcoming release - coreboot 26.09
+coreboot 26.09
 ========================================================================
 
 The coreboot project is pleased to announce the release of coreboot
-26.09. In the three months since the 26.06 release, 112 authors
-(including 28 contributors landing their first patches) merged 1251
+26.09. In the three months since the 26.06 release, 120 authors
+(including 29 contributors landing their first patches) merged over 1300
 commits across the tree. We thank everyone who wrote code, reviewed
 patches, tested on hardware, or reported bugs during this cycle.
 
@@ -13,9 +13,8 @@ notable feature work such as shared CFR setup menus, Intel MIPI camera
 ACPI generation for non-ChromeOS OS stacks, and continued AMD Turin
 bring-up. A significant amount of work went into teaching the compiler
 to validate LPC decode windows, replacing opaque audio verb tables with
-structured alternatives, moving the coreboot firmware build to the
-C23 standard, and extensively auditing parsers for
-external data formats.
+structured alternatives, moving coreboot firmware builds to the C23
+standard, and extensively auditing parsers for external data formats.
 
 These foundational improvements do not always show up in a boot log, but
 they are exactly what keeps a long-standing project healthy and
@@ -28,25 +27,25 @@ Significant or interesting changes
 
 ### treewide: Input validation and general hardening
 
-Several externally supplied formats that coreboot parses received an audit
-pass this cycle. The EDID parser was updated to reject short EDID buffers
-(0c2df4db29) and prevent reading extension blocks past the buffer end
-(e2f1db04e9). It also now checks the extension block length inside parse_cea
-(d5644158dc) and ignores failed extension blocks (b1bc8c6e71). In the
-commonlib device tree parsing, we validate FDT header self-consistency
-(190e6467c8) and header block alignments (61d99ab994). The parser will now
-reject FDT versions 16 and below (44138ac188) as well as unflattened trees
-with no root (8eedb4334e).
+Several externally supplied formats that coreboot parses received an
+audit pass this cycle. The EDID parser was updated to reject short EDID
+buffers (0c2df4db29) and prevent reading extension blocks past the
+buffer end (e2f1db04e9). It also now checks the extension block length
+inside parse_cea (d5644158dc) and ignores failed extension blocks
+(b1bc8c6e71). In the commonlib device tree parsing, we validate FDT
+header self-consistency (190e6467c8) and header block alignments
+(61d99ab994). The parser will now reject FDT versions 16 and below
+(44138ac188) as well as unflattened trees with no root (8eedb4334e).
 
 Image rendering and storage also saw improvements. The BMP renderer now
 validates BMP dimensions and ImageOffset bounds (8589952afa), and
 validates framebuffer geometry bounds before rendering (6ef8ad909f). For
-storage, the CBFS walker rejects file headers with a too-small data offset
-(e95bdb7eee), and the FMAP code validates area offset and size in
+storage, the CBFS walker rejects file headers with a too-small data
+offset (e95bdb7eee), and the FMAP code validates area offset and size in
 fmap_locate_area() (00d88bed4e). On the SMM side, the bus walk recursion
 was modified to prevent cyclic recursion (034f4edca5), and the MP init
-code will halt the boot on SMM initialization failure (297a51a071). Other
-hardening includes validating the payload size in TPM2 responses
+code will halt the boot on SMM initialization failure (297a51a071).
+Other hardening includes validating the payload size in TPM2 responses
 (d7a3dfc1f1) and checking for ramstage heap overflow in crashlog
 (899a40fc9b).
 
@@ -58,44 +57,45 @@ geometry can be reused across boots without re-reading SMBus
 (0fb58baf02). Separately, `SPD_CACHE_TPM_HASH` stores a SHA-256 of the
 SPD cache in TPM NVRAM and invalidates the cache on mismatch, forcing a
 clean MRC retrain if RW flash was tampered with (03903a857f). Google
-Ocelot variants began opting into the TPM-hash path (19c96135c1,
-5384dc480a).
+Ocelot variants began opting into the TPM-hash path (5384dc480a).
 
 ### build: Firmware build moves to C23
 
 The coreboot firmware build has officially moved to the -std=gnu23
-standard (e9f2a15a05). Mainboard code was subsequently updated to replace
-_Static_assert with the standard C23 static_assert keyword (88c1fac546).
-Host tooling was briefly moved to -std=gnu23 as well (456d48e69e), but
-this was reverted (f7249a1e4d) because it broke builds on Ubuntu 24.04
-LTS, which is still supported. Host tools, libpayload and the unit tests
-continue to build with their previous language standard settings.
+standard (e9f2a15a05). Mainboard code was subsequently updated to
+replace _Static_assert with the standard C23 static_assert keyword
+(88c1fac546). Host tooling was briefly moved to -std=gnu23 as well
+(456d48e69e), but this was reverted (f7249a1e4d) because it broke builds
+on Ubuntu 24.04 LTS, which is still supported. Host tools, libpayload
+and the unit tests continue to build with their previous language
+standard settings.
 
 ### sb,soc/intel: LPC generic decode ranges are now compiler-checked
 
-LPC generic decode ranges are now properly validated. We added an LPC_IO()
-helper for GENx_DEC values to the common southbridge (7e16e70c55) and SoC
-(819cd9bec3) LPC code. Invalid LPC_IO() values are now rejected at compile
-time (4ef247411a), and a new lint check requires using the LPC_IO() macro
-for gen*_dec fields in device trees (99a6a8518f).
+LPC generic decode ranges are now properly validated. We added an
+LPC_IO() helper for GENx_DEC values to the common southbridge
+(7e16e70c55) and SoC (819cd9bec3) LPC code. Invalid LPC_IO() values are
+now rejected at compile time (4ef247411a), and a new lint check requires
+using the LPC_IO() macro for gen*_dec fields in device trees
+(99a6a8518f).
 
 ### arch/x86: i8259 and virtual-wire ExtINT setup rework
 
 The virtual wire EXTINT setup was improved to enable it only after the
 i8259 initialisation (afa234c6c8), and ExtINT is now kept masked while
 initializing the i8259 (64bbfac246). We initialized the i8259 on the
-remaining PC/AT paths (27aae20c29). Additionally, we added a NO_PCAT_8259
-policy to gate PC/AT 8259 setup (bce0c6ad5a) for platforms that lack a
-PC/AT PIC pair.
+remaining PC/AT paths (27aae20c29). Additionally, we added a
+NO_PCAT_8259 policy to gate PC/AT 8259 setup (bce0c6ad5a) for platforms
+that lack a PC/AT PIC pair.
 
 ### device,mb: Azalia verb tables become readable
 
-Audio verb tables received a major cleanup to make them readable. We added
-support for 4-bit verbs (942000193a) and switched to using weak functions
-to get azalia codecs (c583b0c4f8). Proper enums were added for the Realtek
-ALC1150 (11ef0fac53) and ALC662/892/1200 (85707dc6a0) codecs. Many ASRock
-Z87 and Z97 boards were updated to use these human-readable verb
-descriptions (1f6fa17e4a).
+Audio verb tables received a major cleanup to make them readable. We
+added support for 4-bit verbs (942000193a) and switched to using weak
+functions to get azalia codecs (c583b0c4f8). Proper enums were added for
+the Realtek ALC1150 (11ef0fac53) and ALC662/892/1200 (85707dc6a0)
+codecs. Many ASRock Z87 and Z97 boards were updated to use these
+human-readable verb descriptions (1f6fa17e4a).
 
 ### drivers,ec,console: Shared CFR menus and runtime serial console
 
@@ -109,36 +109,38 @@ Arrandale-era parts (ce0b89b178) and shared Hyper-Threading controls
 (b363cc3237, 4a930e7cf3).
 
 The console subsystem can now enable the serial console at runtime
-(605cba2fd1) and auto-publishes a shared CFR Console form
-(5d76acd9aa), dropping per-board debug-level wiring (8da7079e50).
-Asset-tag CFR support was added as a generic driver (ac094eb2b7), and
-CFR was wired up or enabled by default across LattePanda Mu, Framework,
-cyan, x201/x230, and several edk2-default configs.
+(605cba2fd1) and auto-publishes a shared CFR Console form (5d76acd9aa),
+dropping per-board debug-level wiring (8da7079e50). Asset-tag CFR
+support was added as a generic driver (ac094eb2b7), and CFR was wired up
+or enabled by default across LattePanda Mu (c6d3e4ba14), Framework
+(469001e130), cyan (291951d21c), x201/x230 (f34347d790, dfa075e298), and
+several edk2-default configs (be50f6d4ca).
 
 ### drivers/intel/mipi_camera: ACPI generation for IPU3 camera stacks
 
-The MIPI camera driver grew a PMIC SSDT generator and richer ACPI binding
-support aimed at the Windows/Linux driver stack for IPU3 cameras: `_DEP`
-(c45d969667), external `_STA` objects (be4ad536b2), reset-once PMIC
-PowerResources (9160dfa147), graph `_DSD` and GPIO `_DSM` (c74e3c9718),
-SSDB lane derivation (3598a525ec), and local PRIC alongside INT3472
-(cc36de97cc). CIO2 port/`_DSD` emission was scoped into the existing
-device (3321f6013c), with Skylake CIO2 naming and static-child scanning
-(2f8349943b, d019cf7fcd).
+The MIPI camera driver grew a PMIC SSDT generator (9e108b97b0) and
+richer ACPI binding support aimed at the Windows/Linux driver stack for
+IPU3 cameras: `_DEP` (c45d969667), external `_STA` objects (be4ad536b2),
+reset-once PMIC PowerResources (9160dfa147), graph `_DSD` and GPIO
+`_DSM` (c74e3c9718), SSDB lane derivation (3598a525ec), and local PRIC
+alongside INT3472 (cc36de97cc). CIO2 port/`_DSD` emission was scoped
+into the existing device (3321f6013c), with Skylake CIO2 naming and
+static-child scanning (2f8349943b, d019cf7fcd). Variants that do not set
+VARIANT_HAS_CAMERA_ACPI now skip these operations entirely (bca239e90a).
 
 Google Poppy variants (atlas, nautilus, soraka) moved from static ASL to
-the MIPI devicetree path (603c189906, b993b3026f, a3a4d23b2c), and an
-ACPI programming guide was added under Documentation/drivers
-(e3ec4f1fc0).
+the MIPI devicetree path (603c189906, b993b3026f, a3a4d23b2c), Volteer
+restored VCM `PWREN`-only power (2abba28dab), and an ACPI programming
+guide was added under Documentation/drivers (e3ec4f1fc0).
 
 ### drivers/efi: Capsule-on-disk support and an SMMSTORE cleanup
 
 The EFI payload infrastructure gained support for capsule-on-disk
 (56535e2783), and edk2 payloads are now configured to support it
-(dc67faf538). The capsule driver rejects invalid memory ranges (bd50f39597)
-and allows the driver to be called multiple times (db6aeea755). SMMSTORE
-dropped its v1 protocol support (52fd778a78) and made its block size
-configurable (01a26951a6).
+(dc67faf538). The capsule driver rejects invalid memory ranges
+(bd50f39597) and allows the driver to be called multiple times
+(db6aeea755). SMMSTORE dropped its v1 protocol support (52fd778a78) and
+made its block size configurable (01a26951a6).
 
 ### soc/amd/turin: Turin PoC matures; first EPYC board lands
 
@@ -153,7 +155,7 @@ f0194c62ba, c14cf399e3).
 The first board on this path is the GIGABYTE MZ33-AR1, added with PCIe
 slot/MCIO topology, on-board device config, and BMC BIOS-update packing
 (0754b3ea38, 32b4cddd27, 737480a0da, a53c63b814). Common AMD FCH paths
-(AOAC, UART, SMI sleep) were unified alongside this work (80fade0ec4,
+(AOAC, SMI sleep) were unified alongside this work (80fade0ec4,
 c8d0d2591a, fb11c51fb7).
 
 ### Documentation: AI review policy and AGENTS.md
@@ -169,12 +171,13 @@ flags or drive Gerrit actions, and must follow the project coding style.
 Additional coreboot changes
 ---------------------------
 
-* util/cbfstool: FMD gained an `EXT` flag so CBFS regions can be extended
-  onto alternate storage as `ECBFS_<name>` siblings (a80a718fd9), and
-  fmaptool enumerates those extended regions for cbfstool (db23ba0439).
-* soc/qualcomm/calypso: Add Calypso RPMh RSC driver (f9617dba37), display
-  subsystem initialization (74410e2a00), and TSENS controllers and thermal
-  zones (e00170ceca).
+* util/cbfstool: FMD gained an `EXT` flag so CBFS regions can be
+  extended onto alternate storage as `ECBFS_<name>` siblings
+  (a80a718fd9), and fmaptool enumerates those extended regions for
+  cbfstool (db23ba0439).
+* soc/qualcomm/calypso: Add Calypso RPMh RSC driver (f9617dba37),
+  display subsystem initialization (74410e2a00), and TSENS controllers
+  and thermal zones (e00170ceca).
 * soc/mediatek/mt8196: Enable EOSC hardware calibration for RTC accuracy
   (beb40bd594) and break unclocked CBUSY deadlock during MT6685 RTC init
   (f7c6229c61).
@@ -189,10 +192,10 @@ Additional coreboot changes
   and add TDC, power limits, and power state thresholds (538e724405).
 * mb/starlabs: Share identical mainboard sources (8dcd09d131) and move
   shared settings to common files (c2d000ba36).
-* ec/starlabs/merlin: Generate battery ACPI with acpigen (9810f4a5ef) and
-  generate sleep hooks with acpigen (3c77e34b52).
-* ec/lenovo/h8: Add keyboard backlight hardware detection (30b8105b0b) and
-  ACPI method _BIX (493593a1b8).
+* ec/starlabs/merlin: Generate battery ACPI with acpigen (9810f4a5ef)
+  and generate sleep hooks with acpigen (3c77e34b52).
+* ec/lenovo/h8: Add keyboard backlight hardware detection (30b8105b0b)
+  and ACPI method _BIX (493593a1b8).
 * nb/intel/pineview: Add DDR2 UDIMM Vref margining (c96952c3e4) and add
   libgfxinit support (9c6cb93982).
 * drivers/wifi: Support Selectively Wi-Fi Bands (3e81074243) and add DSM
@@ -203,6 +206,25 @@ Additional coreboot changes
   (6bb3ad5902).
 * mb/sapphire/rave2: Add Rave2 mainboard (41f44c3a35) and add PCIe/DDI
   topology and enable NVMe/WiFi/OcuLink (8e3ba74abe).
+* drivers/efi,drivers/smmstore: Reject overflowing variable entries
+  (fae8549751) and validate raw block ranges (4c665df7c3).
+* util/attribution: Add a build-time third-party attribution file
+  (86263d604c). The list is derived from the enabled Kconfig options and
+  stored in CBFS, so it reflects what is actually in a given image.
+  CrabEFI was added to the list (ebf341c51e).
+* ec/google/chromeec: Power off on a lid-closed boot (7d288631f6) and
+  expose the behaviour through CFR (04a4067e76).
+* nb/intel,soc/intel: Replace _Static_assert with the C23 static_assert
+  keyword (841b696b45, a88e41343b).
+* mb/starlabs: Use firmware CM on Alder Lake and Raptor Lake (fd414c8765)
+  and on Tiger Lake StarBooks (6b3f19169b), with
+  soc/intel/common/block/usb4 allowing boards to override the CM default
+  (8a001a0b5a).
+* commonlib/cfr: Add a LOCK_AT_BOOT option flag for setup-only writes
+  (af717b4e43).
+* lib/bootmode,libpayload: Add a boot_reason API and coreboot table
+  record (6975e77994), and google/chromeos: Set the boot reason on a
+  watchdog reset (65630f7f9b).
 
 
 Changes to external resources
@@ -232,9 +254,11 @@ Changes to external resources
   CrabEFI is a UEFI implementation written in Rust.
 * payload/grub2: Update GRUB2 to 2.14 (bcb8f01241).
 * payloads/edk2: Configure capsule-on-disk support (dc67faf538) and bump
-  MrChromebox default revision to 26.09.1 (db23298e06).
-* libpayload: Parse soc_id from coreboot tables (6b028355f7) and recreate
-  MSC disk if geometry changes (0e4ed28002).
+  the MrChromebox default revision to 26.09.1 (cd03ec93ad).
+* payloads/SeaBIOS: Select CONFIG_QEMU_HARDWARE for emulated boards
+  (27595ffcaf).
+* libpayload: Parse soc_id from coreboot tables (6b028355f7) and
+  recreate MSC disk if geometry changes (0e4ed28002).
 
 
 Platform Updates
@@ -273,17 +297,17 @@ Platform Updates
 Statistics from the 26.06 to the 26.09 release
 --------------------------------------------
 
-* Total Commits: 1310
-* Average Commits per day: 13.38
-* Total lines added: 112657
-* Average lines added per commit: 86.00
-* Number of patches adding more than 100 lines: 145
-* Average lines added per small commit: 40.55
-* Total lines removed: 27467
-* Average lines removed per commit: 20.97
-* Total difference between added and removed: 85190
-* Total authors: 112
-* New authors: 28
+* Total Commits: 1324
+* Average Commits per day: 13.87
+* Total lines added: 114775
+* Average lines added per commit: 86.69
+* Number of patches adding more than 100 lines: 148
+* Average lines added per small commit: 40.48
+* Total lines removed: 27811
+* Average lines removed per commit: 21.01
+* Total difference between added and removed: 86964
+* Total authors: 120
+* New authors: 29
 
 
 coreboot Links and Contact Information

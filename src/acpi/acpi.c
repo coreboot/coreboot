@@ -971,10 +971,11 @@ static void acpi_write_rsdt(acpi_rsdt_t *rsdt, char *oem_id, char *oem_table_id)
 {
 	acpi_header_t *header = &(rsdt->header);
 
+	/* Clear the entire structure to ensure no garbage values are present. */
+	memset(rsdt, 0, sizeof(acpi_rsdt_t));
+
 	if (acpi_fill_header(header, "RSDT", RSDT, sizeof(acpi_rsdt_t)) != CB_SUCCESS)
 		return;
-
-	/* Entries are filled in later, we come with an empty set. */
 
 	/* Fix checksum. */
 	header->checksum = acpi_checksum((void *)rsdt, sizeof(acpi_rsdt_t));
@@ -984,10 +985,11 @@ static void acpi_write_xsdt(acpi_xsdt_t *xsdt, char *oem_id, char *oem_table_id)
 {
 	acpi_header_t *header = &(xsdt->header);
 
+	/* Clear the entire structure to ensure no garbage values are present. */
+	memset(xsdt, 0, sizeof(acpi_xsdt_t));
+
 	if (acpi_fill_header(header, "XSDT", XSDT, sizeof(acpi_xsdt_t)) != CB_SUCCESS)
 		return;
-
-	/* Entries are filled in later, we come with an empty set. */
 
 	/* Fix checksum. */
 	header->checksum = acpi_checksum((void *)xsdt, sizeof(acpi_xsdt_t));

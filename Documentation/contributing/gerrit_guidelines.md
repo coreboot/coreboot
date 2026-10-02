@@ -217,7 +217,10 @@ earlier patches in the train can hide comments, and make people review the
 code multiple times to see if anything has changed between revisions. When
 pushing long patch trains, it is recommended to only push the full patch
 train once - the initial time, and only to rebase three or four patches at
-a time.
+a time. Note that this recommendation only covers managing a train; whether
+a tree-wide cleanup or conversion is wanted at all must be agreed on before
+pushing it, as described in the [Refactoring](coding_style.md#refactoring)
+section of the coding style.
 
 * Run 'make what-jenkins-does' locally on patch trains before submitting.
 This helps verify that the patch train won’t tie up the jenkins builders

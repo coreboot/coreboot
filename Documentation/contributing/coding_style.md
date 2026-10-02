@@ -3,7 +3,7 @@
 This document describes the preferred C coding style for the
 coreboot project. It is in many ways exactly the same as the Linux
 kernel coding style. In fact, most of this document has been copied from
-the [Linux kernel coding style](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/Documentation/process/4.Coding.rst)
+the [Linux kernel coding style](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/Documentation/process/coding-style.rst)
 
 The guidelines in this file should be seen as a strong suggestion, and
 should overrule personal preference. They may be ignored in individual
@@ -25,7 +25,9 @@ and neither is `clang-format`. These tools can be useful to find
 potential issues or simplify formatting in new submissions, but they
 were not designed to directly match this guide and may have false
 positives. They should not be bulk-applied to change existing code
-except in cases where they directly match the style guide.)
+except in cases where they directly match the style guide.) Tree-wide
+cleanup series need consensus before they are pushed; see
+[Refactoring](#refactoring).
 
 ## Indentation
 
@@ -1006,6 +1008,29 @@ This rule only applies to explicit GCC extensions listed in the
 should never rely on incidental GCC translation behavior that is not
 explicitly documented as a feature and could change at any moment.
 
+C language standard
+-------------------
+
+The firmware is compiled with `-std=gnu23`. Code that is also compiled
+by the host compiler (`src/commonlib`, the unit tests in `tests/`,
+`payloads/libpayload` and the utilities in `util/`) is compiled with an
+older standard (`-std=gnu11` or the host compiler's default) and must
+build with the host compilers shipped by the oldest supported LTS
+releases of major Linux distributions (see
+[Tutorial, part 1](../tutorial/part1.md)).
+
+Compiling with a newer standard does not mean that every feature it adds
+is welcome in the tree. Newer language features may only be used where
+every build that compiles the code supports them, and only where they
+offer a real advantage over the existing way of doing things. Being able
+to express something in a newer syntax is not a reason to convert
+existing code: replacing working constructs with a newer equivalent
+spelling is a style change and falls under [Refactoring](#refactoring).
+
+Use `NULL` for null pointer constants. Do not use `nullptr`, and do not
+convert existing uses of `NULL` to it. In C23 builds `<stddef.h>`
+defines `NULL` as `nullptr`, so there is no functional difference.
+
 Refactoring
 -----------
 Because refactoring existing code can add bugs to tested code, any
@@ -1023,10 +1048,16 @@ improvement, not simply stylistic changes.
 
 Basically, when refactoring code, there should be a clear benefit to
 the project and codebase. The reviewers and submitters get to make the
-call on how to interpret this. When planning a large, sweeping
-refactoring that touches hundreds of files across many different
-platforms/subsystems in the codebase, the author should seek feedback on this
-in the biweekly meeting or on the mailing list before uploading patches.
+call on how to interpret this.
+
+Tree-wide or other large-scale mechanical changes (e.g. replacing one
+construct with an equivalent one across many files) must be proposed on
+the mailing list or in the coreboot leadership meeting before they are
+pushed to Gerrit, and should only be pushed once there is consensus that
+they are wanted. When planning a large, sweeping refactoring that touches
+hundreds of files across many different platforms/subsystems in the
+codebase, the author should seek feedback on this in the biweekly
+meeting or on the mailing list before uploading patches.
 
 When refactoring, adding unit tests to verify that the post-change
 functionality matches or improves upon pre-change functionality is

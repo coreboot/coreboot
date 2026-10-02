@@ -22,6 +22,7 @@ static size_t get_spd_index(void)
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	const struct mb_cfg *mem_config = variant_memory_params();
+	FSP_M_CONFIG *mem_cfg = &memupd->FspmConfig;
 
 	const struct mem_spd memory_down_spd_info = {
 		.topo = MEM_TOPO_MEMORY_DOWN,
@@ -36,4 +37,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	 * the upper 64 bit of DRAM at all on Amston Lake (which is based on Alder Lake N).
 	 */
 	memcfg_init(memupd, mem_config, &memory_down_spd_info, true);
+
+	/* Enable DRAM double refresh */
+	mem_cfg->Refresh2X = 1;
 }

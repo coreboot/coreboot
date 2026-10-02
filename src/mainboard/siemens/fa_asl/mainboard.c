@@ -1,27 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <baseboard/gpio.h>
 #include <baseboard/variants.h>
-#include <cpu/cpu.h>
-#include <cpu/intel/cpu_ids.h>
-#include <device/device.h>
-#include <fw_config.h>
-#include <smbios.h>
-#include <soc/gpio.h>
-#include <stdint.h>
-#include <stdio.h>
 
 static void mainboard_init(void *chip_info)
 {
 	variant_configure_gpio_pads();
 }
 
-static void mainboard_enable(struct device *dev)
-{
-
-}
-
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
-	.enable_dev = mainboard_enable,
 };

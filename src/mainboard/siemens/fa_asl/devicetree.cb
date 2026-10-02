@@ -35,10 +35,6 @@ chip soc/intel/alderlake
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
-	# TCSS USB3
-	register "tcss_ports[1]" = "TCSS_PORT_CC1(OC_SKIP)"
-	register "typec_aux_bias_pads[1]" = "{.pad_auxp_dc = GPP_E20, .pad_auxn_dc = GPP_E21}"
-
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,
@@ -81,7 +77,6 @@ chip soc/intel/alderlake
 	device domain 0 on
 		device ref igpu on end
 		device ref crashlog off end
-		device ref tcss_xhci on end
 		device ref xhci on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""

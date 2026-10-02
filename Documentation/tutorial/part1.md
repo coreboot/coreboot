@@ -39,6 +39,10 @@ Redhat based distros:
 `sudo dnf install git make gcc-gnat flex bison xz bzip2 gcc g++
 ncurses-devel wget zlib-devel patch`
 
+The host tools and unit tests are built with your system compiler. coreboot
+aims to support the compilers shipped by the oldest supported LTS releases
+of major distributions, currently Ubuntu 24.04 LTS (GCC 13).
+
 
 ### Step 2 - Download coreboot source tree
 

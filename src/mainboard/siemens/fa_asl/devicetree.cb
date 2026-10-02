@@ -10,8 +10,10 @@ chip soc/intel/alderlake
 
 	# FSP configuration
 
-	# Sagv Configuration
-	register "sagv" = "SaGv_Enabled"
+	# Disable EIST, S0ix and SaGV to ensure real-time performance
+	register "eist_enable" = "false"
+	register "s0ix_enable" = "false"
+	register "sagv" = "SaGv_Disabled"
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC3)"		# Type-C Port1
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"		# Type-C Port2

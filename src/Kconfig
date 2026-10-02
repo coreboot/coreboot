@@ -1162,7 +1162,7 @@ config GDB_WAIT
 
 config FATAL_ASSERTS
 	bool "Halt when hitting a BUG() or assertion error"
-	default n
+	default y if SECURITY_FAIL_CLOSED
 	help
 	  If enabled, coreboot will call hlt() on a BUG() or failed ASSERT().
 

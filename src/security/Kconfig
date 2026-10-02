@@ -1,5 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+config SECURITY_FAIL_CLOSED
+	bool "Stop boot when security protection fails"
+	help
+	  Stop boot if GPIO locking or early DMA protection reports a failure.
+	  Otherwise report the failure and continue without claiming that the
+	  failed protection is active. Checks and error reporting are enabled
+	  regardless of this setting.
+
 # These features are implemented in src/lib/cbfs.c, but they are security
 # features so sort them in here for menuconfig.
 source "src/lib/Kconfig.cbfs_verification"

@@ -70,19 +70,7 @@ chip soc/intel/alderlake
 	device domain 0 on
 		device ref igpu off end
 		device ref crashlog off end
-		device ref xhci on
-			chip drivers/usb/acpi
-				register "desc" = ""Root Hub""
-				register "type" = "UPC_TYPE_HUB"
-				device ref xhci_root_hub on
-					chip drivers/usb/acpi
-						register "desc" = ""Bluetooth""
-						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port10 on end
-					end
-				end
-			end
-		end
+		device ref xhci on end
 		device ref i2c0 on end
 		device ref heci1 on end
 		device ref pcie_rp1 on

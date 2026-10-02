@@ -13,8 +13,8 @@ notable feature work such as shared CFR setup menus, Intel MIPI camera
 ACPI generation for non-ChromeOS OS stacks, and continued AMD Turin
 bring-up. A significant amount of work went into teaching the compiler
 to validate LPC decode windows, replacing opaque audio verb tables with
-structured alternatives, moving coreboot firmware and most host-side
-builds to the C23 standard, and extensively auditing parsers for
+structured alternatives, moving the coreboot firmware build to the
+C23 standard, and extensively auditing parsers for
 external data formats.
 
 These foundational improvements do not always show up in a boot log, but
@@ -61,14 +61,15 @@ clean MRC retrain if RW flash was tampered with (03903a857f). Google
 Ocelot variants began opting into the TPM-hash path (19c96135c1,
 5384dc480a).
 
-### build: Firmware and host builds move to C23
+### build: Firmware build moves to C23
 
 The coreboot firmware build has officially moved to the -std=gnu23
 standard (e9f2a15a05). Mainboard code was subsequently updated to replace
 _Static_assert with the standard C23 static_assert keyword (88c1fac546).
-Host tooling followed suit, with tools like ifdtool and cbmem also building
-with -std=gnu23 (456d48e69e). Note that host builds now require GCC 14 or
-newer, or Clang 18 or newer.
+Host tooling was briefly moved to -std=gnu23 as well (456d48e69e), but
+this was reverted (f7249a1e4d) because it broke builds on Ubuntu 24.04
+LTS, which is still supported. Host tools, libpayload and the unit tests
+continue to build with their previous language standard settings.
 
 ### sb,soc/intel: LPC generic decode ranges are now compiler-checked
 

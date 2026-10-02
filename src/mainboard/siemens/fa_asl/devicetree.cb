@@ -76,6 +76,16 @@ chip soc/intel/alderlake
 		.vnn_icc_max_ma = 500,
 	}"
 
+	# Configure power limits
+	register "power_limits_config[ASL_041_9W_CORE]" = "{
+		.tdp_pl1_override = 12,
+		.tdp_pl2_override = 18,
+		.tdp_pl4 = 25,
+	}"
+
+	# Disable CState demotion in favour of realtime behaviour
+	register "disable_package_c_state_demotion" = "true"
+
 	# Configure PCIe clocks as free running
 	register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"
 	register "pcie_clk_config_flag[1]" = "PCIE_CLK_FREE_RUNNING"

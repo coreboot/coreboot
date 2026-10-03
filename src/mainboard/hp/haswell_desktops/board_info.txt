@@ -1,0 +1,6 @@
+Category: desktop
+ROM protocol: SPI
+Flashrom support: y
+ROM package: SOIC-8
+ROM socketed: no
+Release year: 2013

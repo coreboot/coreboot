@@ -1,9 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-if BOARD_HP_PRODESK_600_G1_SFF
-
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_HP_HASWELL_DESKTOPS_COMMON
+	def_bool n
 	select AZALIA_USE_LEGACY_VERB_TABLE
 	select BOARD_ROMSIZE_KB_16384
 	select CPU_INTEL_HASWELL
@@ -21,13 +19,23 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOUTHBRIDGE_INTEL_LYNXPOINT
 	select SUPERIO_NUVOTON_NPCD378
 
+config BOARD_HP_PRODESK_600_G1_SFF
+	select BOARD_HP_HASWELL_DESKTOPS_COMMON
+
+if BOARD_HP_HASWELL_DESKTOPS_COMMON
+
 config MAINBOARD_DIR
-	default "hp/prodesk_600_g1_sff"
+	default "hp/haswell_desktops"
+
+config VARIANT_DIR
+	default "prodesk_600_g1_sff" if BOARD_HP_PRODESK_600_G1_SFF
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAINBOARD_PART_NUMBER
-	default "ProDesk 600 G1 SFF"
+	default "ProDesk 600 G1 SFF" if BOARD_HP_PRODESK_600_G1_SFF
 
 config USBDEBUG_HCD_INDEX # FIXME: check this
 	default 2
-
 endif

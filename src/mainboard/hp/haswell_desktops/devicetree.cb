@@ -6,7 +6,6 @@ chip northbridge/intel/haswell
 	end
 	device domain 0 on
 		ops haswell_pci_domain_ops
-		subsystemid 0x103c 0x18e7 inherit
 		device pci 00.0 on end # Host bridge
 		device pci 01.0 on end # X16PCIEXP1
 		device pci 02.0 on end # Internal graphics VGA controller

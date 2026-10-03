@@ -1,0 +1,5 @@
+chip northbridge/intel/haswell
+	device domain 0 on
+		subsystemid 0x103c 0x1998 inherit
+	end
+end

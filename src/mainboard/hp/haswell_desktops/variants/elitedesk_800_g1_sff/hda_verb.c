@@ -1,0 +1,72 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <device/azalia_device.h>
+
+static const u32 realtek_alc221_verbs[] = {
+	AZALIA_SUBVENDOR(0, 0x103c1998),
+	AZALIA_PIN_CFG(0, 0x12, 0x403c0000), // does not describe a jack or internal device
+	AZALIA_PIN_CFG(0, 0x14, AZALIA_PIN_DESC(
+		AZALIA_JACK,
+		AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_REAR,
+		AZALIA_LINE_OUT,
+		AZALIA_STEREO_MONO_1_8,
+		AZALIA_GREEN,
+		AZALIA_JACK_PRESENCE_DETECT,
+		2, 0
+	)),
+	AZALIA_PIN_CFG(0, 0x17, AZALIA_PIN_DESC(
+		AZALIA_INTEGRATED,
+		AZALIA_INTERNAL,
+		AZALIA_SPEAKER,
+		AZALIA_OTHER_ANALOG,
+		AZALIA_COLOR_UNKNOWN,
+		AZALIA_NO_JACK_PRESENCE_DETECT,
+		1, 0
+	)),
+	AZALIA_PIN_CFG(0, 0x18, AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, 0x19, AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, 0x1a, AZALIA_PIN_DESC(
+		AZALIA_JACK,
+		AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_FRONT,
+		AZALIA_MIC_IN,
+		AZALIA_STEREO_MONO_1_8,
+		AZALIA_BLACK,
+		AZALIA_JACK_PRESENCE_DETECT,
+		3, 15
+	)),
+	AZALIA_PIN_CFG(0, 0x1b, AZALIA_PIN_DESC(
+		AZALIA_JACK,
+		AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_REAR,
+		AZALIA_LINE_IN,
+		AZALIA_STEREO_MONO_1_8,
+		AZALIA_BLUE,
+		AZALIA_JACK_PRESENCE_DETECT,
+		3, 0
+	)),
+	AZALIA_PIN_CFG(0, 0x1d, 0x40400001), // does not describe a jack or internal device
+	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, 0x21, AZALIA_PIN_DESC(
+		AZALIA_JACK,
+		AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_FRONT,
+		AZALIA_HP_OUT,
+		AZALIA_STEREO_MONO_1_8,
+		AZALIA_BLACK,
+		AZALIA_JACK_PRESENCE_DETECT,
+		2, 15
+	)),
+};
+
+const u32 pc_beep_verbs[0] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC221",
+		.vendor_id    = 0x10ec0221,
+		.subsystem_id = 0x103c1998,
+		.address      = 0,
+		.verbs        = realtek_alc221_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc221_verbs),
+	},
+};
+
+AZALIA_ARRAY_SIZES;

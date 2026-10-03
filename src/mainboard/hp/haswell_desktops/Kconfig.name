@@ -2,3 +2,6 @@
 
 config BOARD_HP_PRODESK_600_G1_SFF
 	bool "ProDesk 600 G1 SFF"
+
+config BOARD_HP_ELITEDESK_800_G1_SFF
+	bool "EliteDesk 800 G1 SFF"

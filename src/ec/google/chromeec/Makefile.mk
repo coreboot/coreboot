@@ -55,7 +55,11 @@ verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_MEC) += mec.c
 verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_RTK) += rtk.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ec_acpi.c
 
+# Framework boards provide their own EC CFR options.
+# Don't register the shared ChromeEC form there
+ifneq ($(CONFIG_VENDOR_FRAMEWORK),y)
 ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
+endif
 
 ramstage-$(CONFIG_VBOOT) += vboot_storage.c
 smm-$(CONFIG_VBOOT) += vboot_storage.c

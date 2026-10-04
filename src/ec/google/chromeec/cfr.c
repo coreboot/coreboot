@@ -89,12 +89,8 @@ static const struct sm_object lid_shutdown = SM_DECLARE_BOOL({
  * Shared ChromeEC CFR menu. Options that do not apply to a given board are
  * hidden by the callbacks above (fan, keyboard backlight, RGB keyboard,
  * lid shutdown).
- *
- * Framework boards provide their own EC CFR options, so suppress this form
- * there to avoid a duplicate/conflicting ChromeEC menu.
  */
 static const __cfr_form struct sm_obj_form chromeec = {
-	.flags		= CONFIG(VENDOR_FRAMEWORK) ? CFR_OPTFLAG_SUPPRESS : 0,
 	.ui_name	= "ChromeEC Embedded Controller",
 	.obj_list	= (const struct sm_object *[]) {
 		&auto_fan_control,

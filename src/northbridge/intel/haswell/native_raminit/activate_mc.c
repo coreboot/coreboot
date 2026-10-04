@@ -260,16 +260,15 @@ enum raminit_status activate_mc(struct sysinfo *ctrl)
 			tc_bank_rank_a.cmd_3st_dis = 0;
 			mchbar_write32(TC_BANK_RANK_A_ch(channel), tc_bank_rank_a.raw);
 		}
-		/* Set MC to normal mode and clean the ODT and CKE */
-		mchbar_write32(REUT_ch_SEQ_CFG(channel), REUT_MODE_NOP << 12);
+		reut_set_normal_mode(channel);
 		/* Set again the rank occupancy */
 		mchbar_write8(MC_INIT_STATE_ch(channel), ctrl->rankmap[channel]);
 		if (ctrl->is_ecc) {
-			/* Enable ECC I/O and logic */
 			union mad_dimm_reg mad_dimm = {
 				.raw = mchbar_read32(MAD_DIMM(channel)),
 			};
-			mad_dimm.ecc_mode = 3;
+			mad_dimm.ecc_io_on = 1;
+			mad_dimm.ecc_logic_on = 1;
 			mchbar_write32(MAD_DIMM(channel), mad_dimm.raw);
 		}
 	}
@@ -343,8 +342,7 @@ enum raminit_status normal_state(struct sysinfo *ctrl)
 		if (!does_ch_exist(ctrl, channel))
 			continue;
 
-		/* Set MC to normal mode and clean the ODT and CKE */
-		mchbar_write32(REUT_ch_SEQ_CFG(channel), REUT_MODE_NOP << 12);
+		reut_set_normal_mode(channel);
 	}
 	power_down_config(ctrl);
 	return RAMINIT_STATUS_SUCCESS;

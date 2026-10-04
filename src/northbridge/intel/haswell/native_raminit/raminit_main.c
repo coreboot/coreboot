@@ -37,8 +37,7 @@ static enum raminit_status pre_training(struct sysinfo *ctrl)
 			union mad_dimm_reg mad_dimm = {
 				.raw = mchbar_read32(MAD_DIMM(channel)),
 			};
-			/* Enable ECC I/O */
-			mad_dimm.ecc_mode = 1;
+			mad_dimm.ecc_io_on = 1;
 			mchbar_write32(MAD_DIMM(channel), mad_dimm.raw);
 			/* Wait 4 usec after enabling the ECC I/O, needed by HW */
 			udelay(4);
@@ -137,6 +136,8 @@ static const struct task_entry cold_boot[] = {
 	{ activate_mc,                                            true, "ACTIVATE",   },
 	{ save_training_values,                                   true, "SAVE_TRAIN", },
 	{ save_non_training,                                      true, "SAVE_NONT",  },
+	{ alias_check,                                            true, "ALIASCHK",   },
+	{ ecc_scrub,                                              true, "ECCSCRUB",   },
 	{ raminit_done,                                           true, "RAMINITEND", },
 };
 
@@ -205,6 +206,8 @@ static enum raminit_status try_raminit(
 	long spent_time[ARRAY_SIZE(cold_boot)] = { 0 };
 	long total = 0;
 
+	ctrl->wait_time_us = 0;
+
 	size_t i;
 	for (i = 0; i < length; i++) {
 		const struct task_entry *const entry = &schedule[i];
@@ -240,8 +243,10 @@ static enum raminit_status try_raminit(
 			printk(RAM_DEBUG, "| %s | % 10ld |\n", buf, spent_time[j] / T_SCALE);
 			total += spent_time[j];
 		}
+		const long wait_time = ctrl->wait_time_us;
 		printk(RAM_DEBUG, "+------------------+------------+\n");
 		printk(RAM_DEBUG, "| Total            | % 10ld |\n", total / T_SCALE);
+		printk(RAM_DEBUG, "| Spent waiting    | % 10ld |\n", wait_time / T_SCALE);
 		printk(RAM_DEBUG, "+------------------+------------+\n");
 	}
 

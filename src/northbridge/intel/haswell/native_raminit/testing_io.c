@@ -172,16 +172,6 @@ void program_loop_count(const struct sysinfo *ctrl, const uint8_t channel, const
 	}
 }
 
-/* REUT subsequence types (B = Base, O = Offset) */
-enum {
-	SUBSEQ_B_RD	= 0,
-	SUBSEQ_B_WR	= 1,
-	SUBSEQ_B_RD_WR	= 2,
-	SUBSEQ_B_WR_RD	= 3,
-	SUBSEQ_O_RD	= 4,
-	SUBSEQ_O_WR	= 5,
-};
-
 static void write_subseq(uint8_t ch, uint8_t idx, union reut_subseq_ctl_reg ssq, uint8_t type)
 {
 	ssq.subseq_type = type;
@@ -584,6 +574,20 @@ static uint8_t get_num_tests(const uint8_t dq_pat)
 	}
 }
 
+uint8_t wait_for_reut(struct sysinfo *ctrl, const uint8_t chanmask)
+{
+	struct mono_time prev, curr;
+	timer_monotonic_get(&prev);
+	union reut_global_err_reg global_err;
+	do {
+		global_err.raw = mchbar_read32(REUT_GLOBAL_ERR);
+	} while ((global_err.ch_test_done & chanmask) != chanmask);
+	timer_monotonic_get(&curr);
+	const long diff = mono_time_diff_microseconds(&prev, &curr);
+	ctrl->wait_time_us += diff;
+	return global_err.ch_error;
+}
+
 uint8_t run_io_test(
 	struct sysinfo *const ctrl,
 	const uint8_t chanmask,
@@ -708,23 +712,8 @@ uint8_t run_io_test(
 			.start_test   = 1,
 			.clear_errors = clear_errors && t == 0,
 		}.raw);
-		struct mono_time prev, curr;
-		timer_monotonic_get(&prev);
-		union reut_global_err_reg global_err;
-		do {
-			global_err.raw = mchbar_read32(REUT_GLOBAL_ERR);
-			/** TODO: Clean up this mess **/
-			timer_monotonic_get(&curr);
-			if (mono_time_diff_microseconds(&prev, &curr) > 1000 * 1000) {
-				mchbar_write32(REUT_GLOBAL_CTL, (union reut_seq_ctl_reg) {
-					.stop_test = 1,
-				}.raw);
-				printk(BIOS_ERR, "REUT timed out, ch_done: %x\n",
-					global_err.ch_test_done);
-				break;
-			}
-		} while ((global_err.ch_test_done & chanmask) != chanmask);
-		if (test_soe && global_err.ch_error & chanmask)
+		const uint8_t ch_error = wait_for_reut(ctrl, chanmask);
+		if (test_soe && ch_error & chanmask)
 			break;
 	}
 	if (is_turnaround) {

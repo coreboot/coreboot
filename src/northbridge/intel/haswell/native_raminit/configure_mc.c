@@ -803,7 +803,8 @@ static void dram_dimm_mapping(struct sysinfo *ctrl)
 			.dimm_b_width    = dimm_b->width == 16,
 			.rank_interleave = 1,
 			.enh_interleave  = 1,
-			.ecc_mode        = 0,	/* Do not enable ECC yet */
+			.ecc_io_on       = 0, /* Do not enable ECC yet */
+			.ecc_logic_on    = 0,
 		};
 		if (is_hsw_ult())
 			mad_dimm.dimm_b_width = mad_dimm.dimm_a_width;

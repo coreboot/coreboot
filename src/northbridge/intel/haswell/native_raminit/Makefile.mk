@@ -9,6 +9,7 @@ romstage-y += lookup_timings.c
 romstage-y += init_mpll.c
 romstage-y += io_comp_control.c
 romstage-y += memory_map.c
+romstage-y += memory_scrub.c
 romstage-y += raminit_main.c
 romstage-y += raminit_native.c
 romstage-y += ranges.c

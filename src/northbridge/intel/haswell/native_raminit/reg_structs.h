@@ -983,7 +983,8 @@ union mad_dimm_reg {
 		uint32_t rank_interleave :  1;  // Bits 21:21
 		uint32_t enh_interleave  :  1;  // Bits 22:22
 		uint32_t                 :  1;  // Bits 23:23
-		uint32_t ecc_mode        :  2;  // Bits 25:24
+		uint32_t ecc_io_on       :  1;  // Bits 24:24
+		uint32_t ecc_logic_on    :  1;  // Bits 25:24
 		uint32_t hori_mode       :  1;  // Bits 26:26
 		uint32_t hori_address    :  3;  // Bits 29:27
 		uint32_t                 :  2;  // Bits 31:30

@@ -172,6 +172,16 @@ enum {
 	REUT_MUX_LFSR     = 2,
 };
 
+/* REUT subsequence types (B = Base, O = Offset) */
+enum {
+	SUBSEQ_B_RD	= 0,
+	SUBSEQ_B_WR	= 1,
+	SUBSEQ_B_RD_WR	= 2,
+	SUBSEQ_B_WR_RD	= 3,
+	SUBSEQ_O_RD	= 4,
+	SUBSEQ_O_WR	= 5,
+};
+
 /* Increment scale */
 enum {
 	SCALE_LOGARITHM	= 0,
@@ -320,6 +330,7 @@ enum raminit_status {
 	RAMINIT_STATUS_1D_MARGINING_FAILURE,
 	RAMINIT_STATUS_INVALID_CACHE,
 	RAMINIT_STATUS_LCT_FAILURE,
+	RAMINIT_STATUS_SCRUB_ERROR,
 	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
 
@@ -374,6 +385,8 @@ struct sysinfo {
 
 	bool dq_pins_interleaved;
 	bool restore_mrs;
+
+	long wait_time_us;
 
 	/** TODO: ECC support untested **/
 	bool is_ecc;
@@ -590,6 +603,13 @@ static inline void mchbar_write64(const uintptr_t x, const uint64_t v)
 		  "m"(mmxsave));
 }
 
+static inline void reut_set_normal_mode(const uint8_t channel)
+{
+	mchbar_write64(REUT_ch_SEQ_CFG(channel), (union reut_seq_cfg_reg) {
+		.initialization_mode       = REUT_MODE_NOP,
+	}.raw);
+}
+
 void raminit_main(enum raminit_boot_mode bootmode);
 
 enum raminit_status collect_spd_info(struct sysinfo *ctrl);
@@ -614,6 +634,8 @@ enum raminit_status restore_non_training(struct sysinfo *ctrl);
 enum raminit_status exit_selfrefresh(struct sysinfo *ctrl);
 enum raminit_status normal_state(struct sysinfo *ctrl);
 enum raminit_status activate_mc(struct sysinfo *ctrl);
+enum raminit_status ecc_scrub(struct sysinfo *ctrl);
+enum raminit_status alias_check(struct sysinfo *ctrl);
 enum raminit_status raminit_done(struct sysinfo *ctrl);
 
 void configure_timings(struct sysinfo *ctrl);
@@ -699,6 +721,7 @@ void setup_io_test_mpr(struct sysinfo *ctrl, uint8_t chanmask, uint8_t lc, enum 
 uint8_t select_reut_ranks(struct sysinfo *ctrl, uint8_t channel, uint8_t rankmask);
 
 void run_mpr_io_test(bool clear_errors);
+uint8_t wait_for_reut(struct sysinfo *ctrl, uint8_t chanmask);
 uint8_t run_io_test(struct sysinfo *ctrl, uint8_t chanmask, uint8_t dq_pat, bool clear_errors);
 
 void update_rxt(

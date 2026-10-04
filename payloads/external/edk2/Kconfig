@@ -304,16 +304,21 @@ config EDK2_USE_LVGL_RENDERER
 config EDK2_GOP_DRIVER
 	bool "Add a GOP driver to the Tianocore build"
 	depends on INTEL_GMA_ADD_VBT && NO_GFX_INIT && !EDK2_REPO_OFFICIAL
+	depends on !VBT_CBFS_COMPRESSION_LZ4
 	default y if INTEL_GMA_ADD_VBT && NO_GFX_INIT && EDK2_REPO_MRCHROMEBOX
 	help
 	  Select this option to have edk2 use an external GOP driver for display init.
+
+	  The GOP driver is added to CBFS as 'IntelGopDriver.efi', and edk2 loads
+	  it and 'vbt.bin' from CBFS at runtime. edk2 can only decompress LZMA,
+	  so the VBT must not be LZ4-compressed.
 
 config EDK2_GOP_FILE
 	string "GOP driver file"
 	depends on EDK2_GOP_DRIVER
 	default "IntelGopDriver.efi"
 	help
-	  The name of the GOP driver file passed to edk2.
+	  The GOP driver file to add to CBFS.
 
 config EDK2_DISABLE_TPM
 	bool "Disable TPM support in edk2"

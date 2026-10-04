@@ -307,13 +307,6 @@ logo: $(EDK2_PATH)
 			BMP3:$(EDK2_PATH)/MdeModulePkg/Logo/Logo.bmp;; \
 	esac \
 
-gop_driver: $(EDK2_PATH)
-	if [ -n "$(CONFIG_EDK2_GOP_DRIVER)" ]; then \
-		echo "Using GOP driver $(CONFIG_EDK2_GOP_FILE)"; \
-		cp $(top)/$(CONFIG_EDK2_GOP_FILE) $(EDK2_PATH)/UefiPayloadPkg/IntelGopDriver.efi; \
-		cp $(top)/$(CONFIG_INTEL_GMA_VBT_FILE) $(EDK2_PATH)/UefiPayloadPkg/vbt.bin; \
-	fi; \
-
 ipxe_rom: $(EDK2_PATH)
 	if [ "$(CONFIG_EDK2_IPXE)" == "y" ]; then \
 		echo "    Including externally built iPXE"; \
@@ -379,7 +372,7 @@ print:
 		-e 's/s /Build:          Silent/' \
 		-e 's/t /Toolchain:      /'
 
-prep: $(EDK2_PATH) $(EDK2_PLATFORMS_PATH) clean checktools logo gop_driver ipxe_rom
+prep: $(EDK2_PATH) $(EDK2_PLATFORMS_PATH) clean checktools logo ipxe_rom
 	cd $(WORKSPACE); \
 		source $(EDK2_PATH)/edksetup.sh; \
 		unset CC; $(MAKE) -C $(EDK2_PATH)/BaseTools 2>&1; \

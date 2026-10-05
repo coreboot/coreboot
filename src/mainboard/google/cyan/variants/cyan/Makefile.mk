@@ -3,6 +3,7 @@
 romstage-y += spd_util.c
 
 ramstage-y += gpio.c
+ramstage-y += ramstage.c
 
 SPD_SOURCES =  samsung_2GiB_dimm_K4B4G1646Q-HYK0
 SPD_SOURCES += hynix_2GiB_dimm_HMT425S6CFR6A_H5TC4G63CFR

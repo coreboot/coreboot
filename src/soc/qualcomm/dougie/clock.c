@@ -89,6 +89,24 @@ static struct clock_freq_config qupv3_wrap_cfg[] = {
 	},
 };
 
+static struct clock_freq_config sdcc1_core_cfg[] = {
+	{
+		.hz = 100 * MHz,
+		.src = SRC_GPLL0_EVEN_300MHZ,
+		.div = QCOM_CLOCK_DIV(3),
+	},
+	{
+		.hz = 192 * MHz,
+		.src = SRC_GPLL10_MAIN_384MHZ,
+		.div = QCOM_CLOCK_DIV(2),
+	},
+	{
+		.hz = 384 * MHz,
+		.src = SRC_GPLL10_MAIN_384MHZ,
+		.div = QCOM_CLOCK_DIV(1),
+	},
+};
+
 static struct pcie pcie_cfg[] = {
 	[PCIE_1_GDSC] = {
 		.gdscr = &gcc->pcie_1.gdscr,
@@ -249,6 +267,27 @@ void clock_enable_qup(int qup)
 		clock_enable_vote(&qup_clk->cbcr, &gcc->apcs_clk_br_en,
 								clk_en_off);
 	}
+}
+
+void clock_configure_sdcc1(uint32_t hz)
+{
+	if (hz > CLK_100MHZ) {
+		struct alpha_pll_reg_val_config gpll10_cfg = {0};
+
+		gpll10_cfg.reg_mode = &gcc->gpll10.mode;
+		gpll10_cfg.reg_opmode = &gcc->gpll10.opmode;
+		gpll10_cfg.reg_l = &gcc->gpll10.l;
+		gpll10_cfg.l_val = 0x14;
+		gpll10_cfg.reg_cal_l = &gcc->gpll10.cal_l;
+		gpll10_cfg.cal_l_val = 0x44;
+		gpll10_cfg.fsm_enable = true;
+		gpll10_cfg.reg_apcs_pll_br_en = &gcc->apcs_pll_br_en;
+		clock_configure_enable_gpll(&gpll10_cfg, true, GPLL10_OUT_MAIN_SHFT);
+	}
+	clock_configure((struct clock_rcg *)&gcc->sdcc1, sdcc1_core_cfg,
+			hz, ARRAY_SIZE(sdcc1_core_cfg));
+	clock_enable(&gcc->sdcc1_ahb_cbcr);
+	clock_enable(&gcc->sdcc1_apps_cbcr);
 }
 
 void clock_configure_dfsr(int qup)

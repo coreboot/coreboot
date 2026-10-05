@@ -5,13 +5,16 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <edid.h>
+#include <soc/clock.h>
 #include <soc/display/edp_ctrl.h>
 #include <soc/display/mdssreg.h>
 #include <soc/pcie.h>
 #include <soc/qcom_qup_se.h>
 #include <soc/qup_se_handlers_common.h>
 #include <soc/qupv3_config_common.h>
+#include <soc/sdhci.h>
 #include <soc/usb/snps_usb_phy.h>
 #include <soc/usb/usb_common.h>
 
@@ -25,6 +28,12 @@ static struct usb_board_data usb0_board_data = {
 static void setup_usb(void)
 {
 	setup_usb_host0(&usb0_board_data);
+}
+
+static void configure_sdhci(void)
+{
+	/* Program eMMC drive strength to 16/10/10 mA */
+	write32p(SDC1_TLMM_CFG_ADDR, 0x9FE4);
 }
 
 static void edp_configure_gpios(void)
@@ -58,11 +67,18 @@ static void display_startup(void)
 
 bool mainboard_needs_pcie_init(void)
 {
-	return true;
+	return CONFIG(MAINBOARD_HAS_NVME);
 }
 
 static void mainboard_init(struct device *dev)
 {
+	if (CONFIG(MAINBOARD_HAS_EMMC)) {
+		/* Configure clock and early CMD1 for eMMC */
+		clock_configure_sdcc1(384 * MHz);
+		qc_emmc_early_init();
+		configure_sdhci();
+	}
+
 	gpi_firmware_load(QUP_0_GSI_BASE);
 	gpi_firmware_load(QUP_1_GSI_BASE);
 

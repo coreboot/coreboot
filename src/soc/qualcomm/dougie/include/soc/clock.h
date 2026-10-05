@@ -11,6 +11,7 @@
 #define GPLL0_EVEN_HZ		(300 * MHz)
 #define GPLL0_MAIN_HZ		(600 * MHz)
 #define CLK_100MHZ		(100 * MHz)
+#define GPLL10_OUT_MAIN_SHFT	9
 
 /* CPU PLL */
 #define L_VAL_1516P8MHz		0x4F
@@ -24,6 +25,7 @@ enum clk_pll_src {
 	SRC_XO_19_2MHZ = 0,
 	SRC_GPLL0_MAIN_600MHZ = 1,
 	SRC_GCC_DISP_GPLL0_CLK = 4,
+	SRC_GPLL10_MAIN_384MHZ = 5,
 	SRC_GPLL0_EVEN_300MHZ = 6,
 };
 
@@ -159,7 +161,9 @@ struct dougie_gcc {
 	u32 qup_wrap1_m_ahb_cbcr;
 	u32 qup_wrap1_s_ahb_cbcr;
 	struct qupv3_clock qup_wrap1_s[8];
-	u8 _res6[0x23000 - 0x1898c];
+	u8 _res6[0x1e000 - 0x1898c];
+	struct dougie_gpll gpll10;
+	u8 _res8[0x23000 - 0x1e044];
 	u32 qup_wrap0_core_cbcr;
 	u32 qup_wrap0_core_cdivr;
 	u32 qup_wrap0_core_2x_cbcr;
@@ -192,7 +196,11 @@ struct dougie_gcc {
 	u32 apcs_pll_br_en;
 	u8 _res18[0x6a000 - 0x52014];
 	u32 usb_phy_cfg_ahb2phy_bcr;
-	u8 _res19[0x8c004 - 0x6a004];
+	u8 _res19[0x75004 - 0x6a004];
+	u32 sdcc1_ahb_cbcr;
+	u32 sdcc1_apps_cbcr;
+	struct clock_rcg_mnd sdcc1;
+	u8 _res20[0x8c004 - 0x75020];
 	u32 pcie_clkref_en;
 	u32 edp_clkref_en;
 	u8 _res21[0x8d000 - 0x8c00c];
@@ -205,12 +213,14 @@ struct dougie_gcc {
 check_member(dougie_gcc, qusb2phy_prim_bcr, 0x12000);
 check_member(dougie_gcc, qup_wrap0_bcr, 0x17000);
 check_member(dougie_gcc, qup_wrap1_bcr, 0x18000);
+check_member(dougie_gcc, gpll10, 0x1e000);
 check_member(dougie_gcc, qup_wrap1_core_cbcr, 0x23138);
 check_member(dougie_gcc, qspi_bcr, 0x4b000);
 check_member(dougie_gcc, usb3_phy_prim_bcr, 0x50000);
 check_member(dougie_gcc, apcs_clk_br_en1, 0x52008);
 check_member(dougie_gcc, apcs_pll_br_en, 0x52010);
 check_member(dougie_gcc, usb_phy_cfg_ahb2phy_bcr, 0x6a000);
+check_member(dougie_gcc, sdcc1_ahb_cbcr, 0x75004);
 check_member(dougie_gcc, pcie_clkref_en, 0x8c004);
 check_member(dougie_gcc, edp_clkref_en, 0x8c008);
 check_member(dougie_gcc, aggre_noc_pcie_tbu_cbcr, 0x90010);
@@ -349,6 +359,7 @@ static struct dougie_disp_cc *const mdss = (void *)DISP_CC_BASE;
 void clock_init(void);
 void clock_configure_qspi(uint32_t hz);
 void clock_enable_qup(int qup);
+void clock_configure_sdcc1(uint32_t hz);
 void clock_configure_dfsr(int qup);
 enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type);
 

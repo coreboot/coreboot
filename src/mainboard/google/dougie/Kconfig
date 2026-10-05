@@ -51,4 +51,27 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0xA
 
+config MAINBOARD_HAS_UFS
+	bool "Enable UFS storage"
+	default y
+	help
+	  Enable this option if your mainboard is equipped with UFS
+	  storage.
+
+config MAINBOARD_HAS_EMMC
+	bool "Enable eMMC (SDC1) storage"
+	default n
+	help
+	  Enable this option if your mainboard is equipped with eMMC
+	  storage on SDC1 and you want coreboot to initialize SDCC1
+	  clocks, TLMM pads, and early CMD1 during ramstage.
+
+config MAINBOARD_HAS_NVME
+	bool "Enable NVMe (PCIe1) storage"
+	default n
+	help
+	  Enable this option if your mainboard is equipped with NVMe
+	  storage on PCIe1 and you want coreboot to initialize the PCIe
+	  root complex during ramstage.
+
 endif # BOARD_GOOGLE_DOUGIE_COMMON

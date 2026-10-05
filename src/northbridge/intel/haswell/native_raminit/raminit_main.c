@@ -232,22 +232,27 @@ static enum raminit_status try_raminit(
 	}
 
 	if (CONFIG(DEBUG_RAM_SETUP)) {
+		/*
+		 * We intentionally use BIOS_NOTICE here in order to see
+		 * how long each task takes to run, without the overhead
+		 * of printing all the debug info.
+		 */
 		const char unit_multiplier = T_SCALE == 1 ? 'u' : 'm';
-		printk(RAM_DEBUG, "+------------------+------------+\n");
-		printk(RAM_DEBUG, "| Task             |      %csecs |\n", unit_multiplier);
-		printk(RAM_DEBUG, "+------------------+------------+\n");
+		printk(BIOS_NOTICE, "+------------------+------------+\n");
+		printk(BIOS_NOTICE, "| Task             |      %csecs |\n", unit_multiplier);
+		printk(BIOS_NOTICE, "+------------------+------------+\n");
 		assert(i <= length);
 		for (size_t j = 0; j < i; j++) {
 			char buf[] = "                ";
 			strncpy(buf, schedule[j].name, strlen(schedule[j].name));
-			printk(RAM_DEBUG, "| %s | % 10ld |\n", buf, spent_time[j] / T_SCALE);
+			printk(BIOS_NOTICE, "| %s | % 10ld |\n", buf, spent_time[j] / T_SCALE);
 			total += spent_time[j];
 		}
 		const long wait_time = ctrl->wait_time_us;
-		printk(RAM_DEBUG, "+------------------+------------+\n");
-		printk(RAM_DEBUG, "| Total            | % 10ld |\n", total / T_SCALE);
-		printk(RAM_DEBUG, "| Spent waiting    | % 10ld |\n", wait_time / T_SCALE);
-		printk(RAM_DEBUG, "+------------------+------------+\n");
+		printk(BIOS_NOTICE, "+------------------+------------+\n");
+		printk(BIOS_NOTICE, "| Total            | % 10ld |\n", total / T_SCALE);
+		printk(BIOS_NOTICE, "| Spent waiting    | % 10ld |\n", wait_time / T_SCALE);
+		printk(BIOS_NOTICE, "+------------------+------------+\n");
 	}
 
 	return status;

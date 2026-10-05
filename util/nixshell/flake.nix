@@ -43,6 +43,7 @@ let
         imagemagick
         lcov
         libtool
+        libuuid
         meson
         ncurses
         ninja

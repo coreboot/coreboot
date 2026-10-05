@@ -35,16 +35,15 @@ is
    function Default_Framebuffer_Pipe return Pipe_Index
    is
    begin
-      -- On i945, LVDS has to use Pipe B.  Display probing swaps it from
-      -- Primary to Secondary when LVDS is the only active display; that
-      -- swap is the only way Primary can be disabled with Secondary active.
-      if configs (Primary).Port = Disabled and then
-         configs (Secondary).Port /= Disabled
-      then
-         return Secondary;
-      else
-         return Primary;
-      end if;
+      -- Display probing may leave pipes disabled in front of active ones,
+      -- e.g. on i945 LVDS has to use pipe B, and on Braswell port D can
+      -- only be driven by pipe C.
+      for i in Pipe_Index loop
+         if configs (i).Port /= Disabled then
+            return i;
+         end if;
+      end loop;
+      return Primary;
    end Default_Framebuffer_Pipe;
 
    procedure gfxinit (lightup_ok : out Interfaces.C.int)
@@ -81,17 +80,12 @@ is
 
          fb_pipe := Default_Framebuffer_Pipe;
          if configs (fb_pipe).Port /= Disabled then
-            if fb_pipe = Secondary then
-               min_h := pos32'min (min_h, configs (Secondary).Mode.H_Visible);
-               min_v := pos32'min (min_v, configs (Secondary).Mode.V_Visible);
-            else
-               for i in Pipe_Index loop
-                  exit when configs (i).Port = Disabled;
-
+            for i in Pipe_Index loop
+               if configs (i).Port /= Disabled then
                   min_h := pos32'min (min_h, configs (i).Mode.H_Visible);
                   min_v := pos32'min (min_v, configs (i).Mode.V_Visible);
-               end loop;
-            end if;
+               end if;
+            end loop;
 
             fb := configs (fb_pipe).Framebuffer;
             Screen_Rotation (fb.Rotation);
@@ -110,15 +104,11 @@ is
                fb.V_Stride := fb.Height;
             end if;
 
-            if fb_pipe = Secondary then
-               configs (Secondary).Framebuffer := fb;
-            else
-               for i in Pipe_Index loop
-                  exit when configs (i).Port = Disabled;
-
+            for i in Pipe_Index loop
+               if configs (i).Port /= Disabled then
                   configs (i).Framebuffer := fb;
-               end loop;
-            end if;
+               end if;
+            end loop;
 
             pragma Debug (HW.GFX.GMA.Dump_Configs (configs));
 

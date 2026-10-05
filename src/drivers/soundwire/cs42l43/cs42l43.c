@@ -15,7 +15,6 @@
 static struct soundwire_address cs42l43_address = {
 	.version = SOUNDWIRE_VERSION_1_2,
 	.manufacturer_id = MIPI_MFG_ID_CIRRUS,
-	.part_id = MIPI_DEV_ID_CIRRUS_CS42L43,
 	.class = MIPI_CLASS_SDCA
 };
 
@@ -124,6 +123,7 @@ static void soundwire_cs42l43_fill_ssdt(const struct device *dev)
 	/* Set codec address IDs. */
 	cs42l43_address.link_id = dev->path.generic.id;
 	cs42l43_address.unique_id = dev->path.generic.subid;
+	cs42l43_address.part_id = config->part_id ? : CS42L43_PART_ID_CS42L43;
 
 	acpigen_write_ADR_soundwire_device(&cs42l43_address);
 	acpigen_write_name_string("_DDN", config->desc ? : dev->chip_ops->name);
@@ -222,6 +222,6 @@ static void soundwire_cs42l43_enable(struct device *dev)
 }
 
 struct chip_operations drivers_soundwire_cs42l43_ops = {
-	.name = "Cirrus CS42L43 SoundWire Codec",
+	.name = "Cirrus CS42L43/CS42L43B SoundWire Codec",
 	.enable_dev = soundwire_cs42l43_enable
 };

@@ -5,4 +5,4 @@ config DRIVERS_SOUNDWIRE_CS42L43
 	depends on HAVE_ACPI_TABLES
 	default n
 	help
-	  SoundWire CS42L43 CODEC SSDT generator.
+	  SoundWire CS42L43 and CS42L43B CODEC SSDT generator.

@@ -49,9 +49,16 @@ enum cs42l43_bias_sense {
 	BIAS_SENSE_99_UA = 99,
 };
 
+enum cs42l43_part_ids {
+	CS42L43_PART_ID_CS42L43 = MIPI_DEV_ID_CIRRUS_CS42L43,
+	CS42L43_PART_ID_CS42L43B = MIPI_DEV_ID_CIRRUS_CS42L43B,
+};
+
 struct drivers_soundwire_cs42l43_config {
 	char acpi_name[ACPI_NAME_BUFFER_SIZE]; /* Set by the acpi_name ops */
 	const char *desc;
+	/* SoundWire part ID, defaults to CS42L43 if unset */
+	enum cs42l43_part_ids part_id;
 
 	const char *sub; /* SUB ID to uniquely identify system */
 

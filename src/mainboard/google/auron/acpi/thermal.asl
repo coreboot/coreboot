@@ -106,6 +106,7 @@ Scope (\_TZ)
 			Return (Local0)
 		}
 
+#ifdef CTL_TDP_POWER_LIMIT
 		/* CTDP Down */
 		Method (_AC0) {
 			If (\FLVL <= 0) {
@@ -186,5 +187,6 @@ Scope (\_TZ)
 			Name (_UID, 1)
 			Name (_PR0, Package () { TNP1 })
 		}
+#endif
 	}
 }

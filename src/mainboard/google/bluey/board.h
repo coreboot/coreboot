@@ -16,7 +16,8 @@
 
 /* Fingerprint-specific GPIOs. Only for fingerprint-enabled devices. */
 #if CONFIG(MAINBOARD_HAS_FINGERPRINT)
-#define GPIO_FP_RST_L		GPIO(25)
+#define FP_RST_GPIO(x)		GPIO(x)
+#define GPIO_FP_RST_L		FP_RST_GPIO(CONFIG_MAINBOARD_GPIO_PIN_FOR_FP_RESET)
 #define GPIO_EN_FP_RAILS	GPIO(22)
 #if CONFIG(MAINBOARD_HAS_FINGERPRINT_VIA_SPI)
 #define GPIO_FPMCU_BOOT0	GPIO(24)

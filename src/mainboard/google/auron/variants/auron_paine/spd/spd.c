@@ -20,7 +20,7 @@ unsigned int variant_get_spd_index(void)
 
 bool variant_is_dual_channel(const unsigned int spd_index)
 {
-	/* Index 0-2 are 4GB config with both CH0 and CH1.
-	 * Index 4-6 are 2GB config with CH0 only. */
+	/* Index 0-3 are 4GB config with both CH0 and CH1.
+	 * Index 4-7 are 2GB config with CH0 only. */
 	return !(spd_index > 3);
 }

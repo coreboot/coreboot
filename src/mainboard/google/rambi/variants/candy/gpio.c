@@ -41,7 +41,7 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_FUNC2,	/* S0_SC001 - SATA_DEVSLP_C */
 	GPIO_NC,	/* S0-SC002 - SATA_LED_R_N (NC/PU) */
 	GPIO_FUNC1,	/* S0-SC003 - PCIE_CLKREQ_IMAGE# */
-	GPIO_FUNC1,	/* S0-SC004 - PCIE_CLKREQ_WLAN# */
+	GPIO_OUT_LOW,	/* S0-SC004 - PCIE_CLKREQ_WLAN# */
 	GPIO_NC,	/* S0-SC005 - PCIE_CLKREQ_LAN# (NC) */
 	GPIO_NC,	/* S0-SC006 - PCIE_CLKREQ3# (NC) */
 	GPIO_FUNC(2, PULL_DISABLE, 10K), /* S0-SC007 - SD3_WP external pull */

@@ -40,6 +40,7 @@ chip northbridge/intel/broadwell
 			register "icc_clock_disable" = "0x013b0000"
 
 			device pci 13.0 on  end # Smart Sound Audio DSP
+			device pci 15.2 on  end # I2C1
 			device pci 15.3 on  end # GSPI0
 			device pci 1b.0 off end # High Definition Audio
 			device pci 1c.0 off end # PCIe Port #1

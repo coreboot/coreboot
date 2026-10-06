@@ -11,10 +11,13 @@
  * 0b001 - 2GiB total - 1 x 2GiB Hynix  H5TC4G63AFR-PBA 1600MHz
  * 0b010 - 4GiB total - 2 x 2GiB Samsung K4B4G1646Q-HYK0 1600MHz
  * 0b011 - 4GiB total - 2 x 2GiB Hynix  H5TC4G63AFR-PBA 1600MHz
+ * 0b100 - 2GiB total - 1 x 2GiB Samsung K4B4G1646E-BYK0 1600MHz
+ * 0b101 - empty
+ * 0b110 - 4GiB total - 2 x 2GiB Samsung K4B4G1646E-BYK0 1600MHz
  */
 
 static const uint32_t dual_channel_config =
-	(1 << 2) | (1 << 3);
+	(1 << 2) | (1 << 3) | (1 << 6);
 
 #define GPIO_SSUS_37_PAD 57
 #define GPIO_SSUS_38_PAD 50

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#define DPTF_CPU_PASSIVE	80
+#define DPTF_CPU_PASSIVE	75
 #define DPTF_CPU_CRITICAL	90
 
 #define DPTF_TSR0_SENSOR_ID	1

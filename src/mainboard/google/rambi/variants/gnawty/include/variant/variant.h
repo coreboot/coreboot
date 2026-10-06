@@ -6,19 +6,21 @@
 #include <stdint.h>
 
 /*
- * RAM_ID[2:0] are on GPIO_SSUS[39:37]
- * 0b000 - 4GiB total - 2 x 2GiB Samsung K4B4G1646Q-HYK0 1600MHz
- * 0b001 - 4GiB total - 2 x 2GiB Hynix  H5TC4G63AFR-PBA 1600MHz
- * 0b010 - 2GiB total - 2 x 1GiB Micron MT41K128M16JT-125:K 1600MHz
- * 0b011 - 2GiB total - 1 x 2GiB Hynix  H5TC4G63MFR-PBA 1600MHz
- * 0b100 - 2GiB total - 1 x 2GiB Hynix  H5TC4G63CFR-PBA 1600MHz
- * 0b101 - 2GiB total - 1 x 2GiB Hynix  H5TC4G63AFR-PBA 1600MHz
- * 0b110 - 4GiB total - 2 x 2GiB Hynix  H5TC4G63CFR-PBA 1600MHz
- * 0b111 - 4GiB total - 2 x 2GiB Hynix  H5TC4G63MFR-PBA 1600MHz
+ * RAM_ID[3:0] are on GPIO_SSUS[40:37]
+ * 0b0000 - 4GiB total - 2 x 2GiB Samsung K4B4G1646Q-HYK0 1600MHz
+ * 0b0001 - 4GiB total - 2 x 2GiB Hynix  H5TC4G63AFR-PBA 1600MHz
+ * 0b0010 - 2GiB total - 2 x 1GiB Micron MT41K128M16JT-125:K 1600MHz
+ * 0b0011 - 2GiB total - 1 x 2GiB Hynix  H5TC4G63MFR-PBA 1600MHz
+ * 0b0100 - 2GiB total - 1 x 2GiB Hynix  H5TC4G63CFR-PBA 1600MHz
+ * 0b0101 - 2GiB total - 1 x 2GiB Hynix  H5TC4G63AFR-PBA 1600MHz
+ * 0b0110 - 4GiB total - 2 x 2GiB Hynix  H5TC4G63CFR-PBA 1600MHz
+ * 0b0111 - 4GiB total - 2 x 2GiB Hynix  H5TC4G63MFR-PBA 1600MHz
+ * 0b1000 - 2GiB total - 1 x 2GiB Micron MT41K256M16TW-107 1600MHz
+ * 0b1001 - 4GiB total - 2 x 2GiB Micron MT41K256M16TW-107 1600MHz
 */
 
 static const uint32_t dual_channel_config =
-	(1 << 0) | (1 << 1) | (1 << 2) | (1 << 6) | (1 << 7);
+	(1 << 0) | (1 << 1) | (1 << 2) | (1 << 6) | (1 << 7) | (1 << 9);
 
 #define GPIO_SSUS_37_PAD 57
 #define GPIO_SSUS_38_PAD 50

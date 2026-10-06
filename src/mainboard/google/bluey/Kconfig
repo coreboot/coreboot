@@ -380,6 +380,14 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	default 0xd if BOARD_GOOGLE_MODEL_ANETO
 	default 0xb
 
+config MAINBOARD_GPIO_PIN_FOR_CAM_RESET
+	int
+	default 7 if BOARD_GOOGLE_MODEL_ANETO
+	default 10
+	help
+	  This option specifies the GPIO pin number on the mainboard that is
+	  used for camera reset pin.
+
 config MAINBOARD_GPIO_PIN_FOR_TOUCHPAD_POWER
 	int
 	default 36 if BOARD_GOOGLE_MODEL_QUARTZ

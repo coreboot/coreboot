@@ -54,7 +54,8 @@
 #endif
 
 /* USB Camera specific GPIOs */
-#define GPIO_USB_CAM_RESET_L	GPIO(10)
+#define USB_CAM_RESET_GPIO(x)	GPIO(x)
+#define GPIO_USB_CAM_RESET_L	USB_CAM_RESET_GPIO(CONFIG_MAINBOARD_GPIO_PIN_FOR_CAM_RESET)
 #define GPIO_USB_CAM_ENABLE	GPIO(206)
 
 /* USB-C1 port specific GPIOs */

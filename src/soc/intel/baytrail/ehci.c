@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -106,6 +107,57 @@ static void usb2_phy_init(struct device *dev)
 		REG_SCRIPT_END
 	};
 	reg_script_run(usb2_phy_script);
+}
+
+#define USB2_PHY_WA_REG(port, reg)	(0x4100 + (port) * 0x100 + (reg))
+
+#define USB2_PHY_WA_SCRIPT(port)						\
+	{									\
+		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USB2_PHY_WA_REG(port, 0x13), 0x8),	\
+		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USB2_PHY_WA_REG(port, 0x23), 0x7f13),	\
+		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USB2_PHY_WA_REG(port, 0x23), 0x13),	\
+		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USB2_PHY_WA_REG(port, 0x23), 0x4011),	\
+		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USB2_PHY_WA_REG(port, 0x13), 0x108),	\
+		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USB2_PHY_WA_REG(port, 0x13), 0x8),	\
+		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USB2_PHY_WA_REG(port, 0x13), 0x0),	\
+		REG_SCRIPT_END							\
+	}
+
+#define BYTM_USB2_PORT_COUNT	4
+
+/*
+ * Intel Technical Advisory 556192: USB device may not be detected at
+ * system power-on. Only needed on cold boot.
+ */
+void baytrail_usb2_phy_wa(void)
+{
+	static const struct reg_script wa_script[BYTM_USB2_PORT_COUNT][8] = {
+		USB2_PHY_WA_SCRIPT(0),
+		USB2_PHY_WA_SCRIPT(1),
+		USB2_PHY_WA_SCRIPT(2),
+		USB2_PHY_WA_SCRIPT(3),
+	};
+	int port;
+
+	if (acpi_is_wakeup_s3() || (iosf_dunit_read(PMSTS) & PMSTS_WRO))
+		return;
+
+	printk(BIOS_DEBUG, "Applying USB2 PHY workaround (TA 556192)\n");
+
+	for (port = 0; port < BYTM_USB2_PORT_COUNT; port++) {
+		const int reg = USB2_PHY_WA_REG(port, 0x26);
+		u32 orig;
+
+		/* Steps 1-7 */
+		reg_script_run(wa_script[port]);
+
+		/* Steps 8-12 */
+		orig = iosf_usbphy_read(reg);
+		iosf_usbphy_write(reg, 0x1c);
+		iosf_usbphy_write(reg, 0x0);
+		iosf_usbphy_write(reg, 0x11c);
+		iosf_usbphy_write(reg, orig);
+	}
 }
 
 static void ehci_init(struct device *dev)

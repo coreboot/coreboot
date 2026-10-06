@@ -14,6 +14,7 @@ void southcluster_enable_dev(struct device *dev);
  * native refcode or the ChromeBook refcode wrapper */
 void baytrail_run_reference_code(void);
 void baytrail_init_scc(void);
+void baytrail_usb2_phy_wa(void);
 void scc_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index);
 
 extern struct pci_operations soc_pci_ops;

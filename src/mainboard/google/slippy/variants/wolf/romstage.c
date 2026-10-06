@@ -36,7 +36,7 @@ const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS] = {
 	  USB_PORT_MINI_PCIE },
 	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P4: LTE */
 	  USB_PORT_INTERNAL },
-	{ 0x0000, 1, USB_OC_PIN_SKIP, /* P5: EMPTY */
+	{ 0x0000, 0, USB_OC_PIN_SKIP, /* P5: EMPTY */
 	  USB_PORT_SKIP },
 	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P6: SD Card */
 	  USB_PORT_INTERNAL },

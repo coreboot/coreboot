@@ -38,6 +38,35 @@ void mainboard_config_rcba(void)
 	RCBA16(D23IR) = DIR_ROUTE(PIRQH, PIRQH, PIRQH, PIRQH); /* SDIO */
 }
 
+#if CONFIG(BOARD_GOOGLE_MONROE)
+const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS] = {
+	/* Length, Enable, OCn#, Location */
+	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P0: NGFF */
+	  USB_PORT_MINI_PCIE },
+	{ 0x0040, 1, 0,               /* P1: Port A, CN10 */
+	  USB_PORT_BACK_PANEL },
+	{ 0x0040, 1, 1,               /* P2: Port B, CN12 */
+	  USB_PORT_BACK_PANEL },
+	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P3: WLAN */
+	  USB_PORT_INTERNAL },
+	{ 0x0040, 1, 2,               /* P4: Port C, CN13 */
+	  USB_PORT_BACK_PANEL },
+	{ 0x0040, 1, 2,               /* P5: Port D, CN2 */
+	  USB_PORT_BACK_PANEL },
+	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P6: CCD */
+	  USB_PORT_INTERNAL },
+	{ 0x0000, 0, 0,               /* P7: N/C */
+	  USB_PORT_SKIP },
+};
+
+const struct usb3_port_config mainboard_usb3_ports[MAX_USB3_PORTS] = {
+	/* Enable, OCn# */
+	{ 1, 2 },               /* P1; CN2 */
+	{ 0, USB_OC_PIN_SKIP }, /* P2; N/C */
+	{ 0, USB_OC_PIN_SKIP }, /* P3; N/C */
+	{ 0, USB_OC_PIN_SKIP }, /* P4; N/C */
+};
+#else
 const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS] = {
 	/* Length, Enable, OCn#, Location */
 	{ 0x0064, 1, 0,               /* P0: VP8 */
@@ -65,3 +94,4 @@ const struct usb3_port_config mainboard_usb3_ports[MAX_USB3_PORTS] = {
 	{ 1, 2 }, /* P3; CN25 */
 	{ 1, 2 }, /* P4; CN25 */
 };
+#endif

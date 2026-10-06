@@ -9,6 +9,8 @@ chip soc/intel/skylake
 
 	device domain 0 on
 		device ref south_xhci on
+			register "usb2_ports[8]" = "USB2_PORT_LONG(OC_SKIP)"	# PL-2303 (Jax)
+
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi

@@ -4,12 +4,12 @@ chip soc/intel/skylake
 		device ref south_xhci on
 			register "usb2_ports" = "{
 				[0] = USB2_PORT_TYPE_C(OC0),	// Type-C Port 1
-				[1] = USB2_PORT_MID(OC2),	// Card Reader
-				[2] = USB2_PORT_MID(OC_SKIP),	// Bluetooth
+				[1] = USB2_PORT_SHORT(OC2),	// Card Reader
+				[2] = USB2_PORT_SHORT(OC_SKIP),	// Bluetooth
 				[4] = USB2_PORT_MID(OC2),	// Type-A Port (board)
 				[6] = USB2_PORT_FLEX(OC_SKIP),	// Camera
 				[7] = USB2_PORT_MID(OC_SKIP),	// PIC MCU
-				[8] = USB2_PORT_LONG(OC3),	// Type-A Port (board)
+				[8] = USB2_PORT_MID(OC3),	// Type-A Port (board)
 			}"
 
 			register "usb3_ports" = "{

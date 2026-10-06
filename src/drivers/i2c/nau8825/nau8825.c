@@ -54,9 +54,13 @@ static void nau8825_fill_ssdt(const struct device *dev)
 
 	/* Device Properties */
 	dp = acpi_dp_new_table("_DSD");
-	NAU8825_DP_INT("jkdet-enable", config->jkdet_enable);
-	NAU8825_DP_INT("jkdet-pull-enable", config->jkdet_pull_enable);
-	NAU8825_DP_INT("jkdet-pull-up", config->jkdet_pull_up);
+	/* Boolean properties are treated as true by the OS if present */
+	if (config->jkdet_enable)
+		NAU8825_DP_INT("jkdet-enable", 1);
+	if (config->jkdet_pull_enable)
+		NAU8825_DP_INT("jkdet-pull-enable", 1);
+	if (config->jkdet_pull_up)
+		NAU8825_DP_INT("jkdet-pull-up", 1);
 	NAU8825_DP_INT("jkdet-polarity", config->jkdet_polarity);
 	NAU8825_DP_INT("vref-impedance", config->vref_impedance);
 	NAU8825_DP_INT("micbias-voltage", config->micbias_voltage);
@@ -68,7 +72,8 @@ static void nau8825_fill_ssdt(const struct device *dev)
 	NAU8825_DP_INT("jack-insert-debounce", config->jack_insert_debounce);
 	NAU8825_DP_INT("jack-eject-debounce", config->jack_eject_debounce);
 	NAU8825_DP_INT("sar-threshold-num", config->sar_threshold_num);
-	NAU8825_DP_INT("adcout-drive-strong", config->adcout_ds ? 1 : 0);
+	if (config->adcout_ds)
+		NAU8825_DP_INT("adcout-drive-strong", 1);
 	acpi_dp_add_integer_array(dp, "nuvoton,sar-threshold",
 			  config->sar_threshold, config->sar_threshold_num);
 	acpi_dp_write(dp);

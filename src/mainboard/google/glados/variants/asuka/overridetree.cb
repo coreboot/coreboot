@@ -40,7 +40,8 @@ chip soc/intel/skylake
 			chip drivers/i2c/nau8825
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F10_IRQ)"
 				register "jkdet_enable" = "1"
-				register "jkdet_pull_enable" = "0"	# R389
+				register "jkdet_pull_enable" = "1"
+				register "jkdet_pull_up" = "1"
 				register "jkdet_polarity" = "1"		# ActiveLow
 				register "vref_impedance" = "2"		# 125kOhm
 				register "micbias_voltage" = "6"	# 2.754

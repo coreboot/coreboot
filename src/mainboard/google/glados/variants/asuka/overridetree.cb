@@ -1,5 +1,36 @@
 chip soc/intel/skylake
 
+	# Touchscreen and touchpad need SDA hold time > 300ns
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_hcnt = 152,
+				.scl_lcnt = 128,
+				.sda_hold = 50,
+			},
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_hcnt = 152,
+				.scl_lcnt = 128,
+				.sda_hold = 50,
+			},
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_hcnt = 152,
+				.scl_lcnt = 128,
+				.sda_hold = 30,
+			},
+		},
+	}"
+
 	device domain 0 on
 		device ref south_xhci on
 			register "usb2_ports" = "{

@@ -14,6 +14,36 @@ chip soc/intel/skylake
 	# TCC of 90C
 	register "tcc_offset" = "10"
 
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_hcnt = 72,
+				.scl_lcnt = 160,
+				.sda_hold = 30,
+			},
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_hcnt = 72,
+				.scl_lcnt = 160,
+				.sda_hold = 30,
+			},
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_hcnt = 72,
+				.scl_lcnt = 160,
+				.sda_hold = 30,
+			},
+		},
+	}"
+
 	device domain 0 on
 		device ref south_xhci on
 			register "usb2_ports" = "{

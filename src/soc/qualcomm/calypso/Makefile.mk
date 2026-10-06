@@ -413,7 +413,7 @@ SOCCP_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/soccp_meta
 SOCCP_META_CBFS := $(CONFIG_CBFS_PREFIX)/soccp_meta
 $(SOCCP_META_CBFS)-file := $(SOCCP_META_FILE)
 $(SOCCP_META_CBFS)-type := raw
-$(SOCCP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+$(SOCCP_META_CBFS)-compression := none
 cbfs-files-y += $(SOCCP_META_CBFS)
 
 ################################################################################
@@ -421,7 +421,7 @@ SOCCP_DTB_FILE := $(CALYPSO_BLOB)/$(BLOB_VARIANT)/soccp/soccp_dtb.mbn
 SOCCP_DTB_CBFS := $(CONFIG_CBFS_PREFIX)/soccp_dtb
 $(SOCCP_DTB_CBFS)-file := $(SOCCP_DTB_FILE)
 $(SOCCP_DTB_CBFS)-type := payload
-$(SOCCP_DTB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+$(SOCCP_DTB_CBFS)-compression := none
 cbfs-files-y += $(SOCCP_DTB_CBFS)
 
 ################################################################################
@@ -435,7 +435,7 @@ SOCCP_DTB_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/soccp_dtb_meta
 SOCCP_DTB_META_CBFS := $(CONFIG_CBFS_PREFIX)/soccp_dtb_meta
 $(SOCCP_DTB_META_CBFS)-file := $(SOCCP_DTB_META_FILE)
 $(SOCCP_DTB_META_CBFS)-type := raw
-$(SOCCP_DTB_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+$(SOCCP_DTB_META_CBFS)-compression := none
 cbfs-files-y += $(SOCCP_DTB_META_CBFS)
 
 ################################################################################

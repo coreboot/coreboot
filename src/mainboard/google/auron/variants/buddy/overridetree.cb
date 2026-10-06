@@ -49,6 +49,7 @@ chip northbridge/intel/broadwell
 				end
 			end
 			device pci 1c.3 on  end # PCIe Port #4 - WLAN (becomes RP2)
+			device pci 1c.4 on  end # PCIe Port #5 - VP8 encoder (becomes RP3)
 			device pci 1f.2 on  end # SATA Controller
 			device pci 1f.3 on  end # SMBus
 		end

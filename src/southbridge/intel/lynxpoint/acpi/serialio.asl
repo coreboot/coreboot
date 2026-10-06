@@ -141,7 +141,7 @@ Device (SDMA)
 	Name (RBUF, ResourceTemplate ()
 	{
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00000000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {7}
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {6}
 	})
 
 	Method (_CRS, 0, NotSerialized)

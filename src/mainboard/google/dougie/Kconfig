@@ -17,7 +17,7 @@ config BOARD_GOOGLE_DOUGIE_COMMON
 	select SPI_FLASH_INCLUDE_ALL_DRIVERS
 	select TPM_GOOGLE_TI50
 
-config BOARD_GOOGLE_DOUGIE
+config BOARD_GOOGLE_BANDIT
 	select BOARD_GOOGLE_DOUGIE_COMMON
 
 if BOARD_GOOGLE_DOUGIE_COMMON
@@ -35,7 +35,7 @@ config MAINBOARD_DIR
 ##########################################################
 
 config MAINBOARD_PART_NUMBER
-	default "Dougie" if BOARD_GOOGLE_DOUGIE
+	default "Bandit" if BOARD_GOOGLE_BANDIT
 
 config DRIVER_TPM_I2C_BUS
 	depends on I2C_TPM

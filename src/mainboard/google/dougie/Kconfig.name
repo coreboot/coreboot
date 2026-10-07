@@ -2,5 +2,5 @@
 
 comment "Dougie"
 
-config BOARD_GOOGLE_DOUGIE
-	bool "->  Dougie"
+config BOARD_GOOGLE_BANDIT
+	bool "->  Bandit"

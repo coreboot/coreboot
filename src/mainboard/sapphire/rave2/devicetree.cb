@@ -209,6 +209,36 @@ chip soc/amd/glinda
 						# Pins 39/40 as TSIC/TSID for SB-TSI
 						register "tsi_pins" = "true"
 						register "tsi_agent0_enable" = "true"
+						# Pins 46/48 as GP63/GP64, GP64 is SYSFAN_SEL of the NCT3947S
+						register "pins_46_48" = "NCT5525D_PINS_46_48_GPIO"
+						register "gpio[0]" = "{ .pin = NCT5525D_GP64, .mode = NCT5525D_GPIO_OUTPUT_HIGH,
+									.push_pull = true }"	# SYSFAN_SEL high: PWM mode
+						register "gpio[1]" = "{ .pin = NCT5525D_GP63, .mode = NCT5525D_GPIO_INPUT }"
+						# System fan follows SYSTIN
+						register "sysfan" = "{
+							.mode = NCT5525D_FAN_SMART_FAN_IV,
+							.output = NCT5525D_FAN_OUT_PWM_OPEN_DRAIN,
+							.source = NCT5525D_TEMP_SYSTIN,
+							.temp = { 35, 45, 55, 65 },
+							.curve_duty = { 0x4d, 0x80, 0xb3, 0xff },	/* 30%, 50%, 70%, 100% */
+							.stop_duty_en = true,
+							.stop_duty = 0x4d,
+							.step_up_time = 5,		/* 0.5 s */
+							.step_down_time = 10,		/* 1 s */
+							.crit_temp = 75,
+						}"
+						# CPU fan follows CPUTIN
+						register "cpufan" = "{
+							.mode = NCT5525D_FAN_SMART_FAN_IV,
+							.source = NCT5525D_TEMP_CPUTIN,
+							.temp = { 55, 60, 65, 70 },
+							.curve_duty = { 0x4d, 0x80, 0xb3, 0xff },	/* 30%, 50%, 70%, 100% */
+							.stop_duty_en = true,
+							.stop_duty = 0x4d,
+							.step_up_time = 1,		/* 0.1 s */
+							.step_down_time = 3,		/* 0.3 s */
+							.crit_temp = 80,
+						}"
 						device pnp 2e.2 off end		# UART A, active at 0x3f8 by default
 						device pnp 2e.b on		# HW monitor, Front Panel LED
 							io 0x60 = 0x0290

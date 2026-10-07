@@ -9,6 +9,7 @@ struct part_num_spd_index {
 
 static const struct part_num_spd_index part_number_map[] = {
 	{ "H58G56BK8BX068", 0 },
+	{ "H58G56CK8BX146", 0 },
 	{ "H58G66BK7BX067", 1 },
 	{ "H58G66BK8BX067", 2 },
 	{ "H58GE6AK8BX104", 3 },

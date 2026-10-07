@@ -46,6 +46,7 @@ void variant_devtree_update(void);
 enum variant_board_id {
 	BOARD_ID_DDR5 = 0x20,
 	BOARD_ID_LP5X = 0x21,
+	BOARD_ID_LP5X2 = 0x23,
 };
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

@@ -12,6 +12,10 @@ chip soc/amd/glinda
 			.base = 0x290,
 			.size = 8,
 		},
+		.generic_io_range[2] = {
+			.base = 0x2a0,
+			.size = 0x20,
+		},
 		.io_mode = ESPI_IO_MODE_QUAD,
 		.op_freq_mhz = ESPI_OP_FREQ_33_MHZ,
 		.crc_check_enable = 1,
@@ -199,9 +203,16 @@ chip soc/amd/glinda
 			chip superio/common
 				device pnp 2e.0 on		# SIO config base -> ACPI SSDT
 					chip superio/nuvoton/nct5525d
+						register "systin_type" = "NCT5525D_SENSOR_DIODE_CURRENT"	# 2N3904
+						register "cputin_type" = "NCT5525D_SENSOR_DIODE_CURRENT"	# CPU thermal diode
+						register "auxtin_type" = "NCT5525D_SENSOR_DIODE_CURRENT"	# 2N3904
+						# Pins 39/40 as TSIC/TSID for SB-TSI
+						register "tsi_pins" = "true"
+						register "tsi_agent0_enable" = "true"
 						device pnp 2e.2 off end		# UART A, active at 0x3f8 by default
 						device pnp 2e.b on		# HW monitor, Front Panel LED
 							io 0x60 = 0x0290
+							io 0x62 = 0x02a0	# SMBus master for SB-TSI
 						end
 					end
 				end

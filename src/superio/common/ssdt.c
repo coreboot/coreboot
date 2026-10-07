@@ -60,6 +60,12 @@ static const struct superio_dev *superio_guess_function(const struct device *dev
 	return NULL;
 }
 
+/* IRQ resources without an `irq` entry in the devicetree are not assigned */
+static bool irq_assigned(const struct resource *res)
+{
+	return res && res->size && (res->flags & IORESOURCE_ASSIGNED) && res->base < 16;
+}
+
 /* Return true if there are resources to report */
 static bool has_resources(const struct device *dev)
 {
@@ -71,7 +77,7 @@ static bool has_resources(const struct device *dev)
 	}
 	for (size_t i = 0; i < ARRAY_SIZE(irq_idx); i++) {
 		struct resource *res = probe_resource(dev, irq_idx[i]);
-		if (!res || !res->size || res->base > 16)
+		if (!irq_assigned(res))
 			continue;
 		return 1;
 	}
@@ -98,7 +104,7 @@ static void ldn_gen_resources(const struct device *dev)
 	}
 	for (size_t i = 0; i < ARRAY_SIZE(irq_idx); i++) {
 		struct resource *res = probe_resource(dev, irq_idx[i]);
-		if (!res || !res->size || res->base >= 16)
+		if (!irq_assigned(res))
 			continue;
 		irq |= 1 << res->base;
 	}

@@ -7,6 +7,34 @@
 #include <stdint.h>
 
 #define NCT5525D_FAN_CURVE_POINTS	4
+/* Only GPIO6 is supported: GP60-GP64 and GP66 */
+#define NCT5525D_GP6_PINS		6
+
+/* GPIO pins, named like the GPxy pins of the datasheet: group x, bit y */
+#define NCT5525D_GP(group, bit)		((group) << 4 | (bit))
+
+enum nct5525d_gpio_pin {
+	NCT5525D_GP60	= NCT5525D_GP(0x6, 0),
+	NCT5525D_GP61	= NCT5525D_GP(0x6, 1),
+	NCT5525D_GP62	= NCT5525D_GP(0x6, 2),
+	NCT5525D_GP63	= NCT5525D_GP(0x6, 3),
+	NCT5525D_GP64	= NCT5525D_GP(0x6, 4),
+	NCT5525D_GP66	= NCT5525D_GP(0x6, 6),
+};
+
+enum nct5525d_gpio_mode {
+	NCT5525D_GPIO_KEEP = 0,
+	NCT5525D_GPIO_INPUT,
+	NCT5525D_GPIO_OUTPUT_LOW,
+	NCT5525D_GPIO_OUTPUT_HIGH,
+};
+
+/* A pin used as GPIO instead of its alternate function */
+struct nct5525d_gpio {
+	enum nct5525d_gpio_pin pin;
+	enum nct5525d_gpio_mode mode;
+	bool push_pull;			/* Outputs are open drain otherwise */
+};
 
 /* Function of pins 46/48 (CR1B[1:0], CR2A[1]) */
 enum nct5525d_pins_46_48 {
@@ -85,6 +113,9 @@ struct superio_nuvoton_nct5525d_config {
 
 	/* Route pins 39/40 to TSIC/TSID for AMD SB-TSI */
 	bool tsi_pins;
+
+	/* GPIO6 pins used as GPIO, one entry per pin */
+	struct nct5525d_gpio gpio[NCT5525D_GP6_PINS];
 
 	/* Hardware monitor, programmed through LDN B */
 	enum nct5525d_sensor_type systin_type;

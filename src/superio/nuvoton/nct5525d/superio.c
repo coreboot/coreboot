@@ -55,9 +55,110 @@ static void set_fan_output_type(struct device *dev, u8 reg, u8 bit,
 		pnp_unset_and_set_config(dev, reg, bit, 0);
 }
 
+struct gpio_group {
+	u8 group;
+	u8 ldn;		/* LDN with the activate bit and the I/O registers */
+	u8 enable_bit;	/* CR30 bit of that LDN */
+	u8 io_reg;	/* I/O select (1 = input), data at +1, inversion at +2 */
+	u8 mfs_reg;	/* LDN 8 multi-function select (1 = alternate function) */
+	u8 od_reg;	/* LDN F output type (1 = open drain) */
+};
+
+static const struct gpio_group gpio_groups[] = {
+	{
+		.group = 0x6,
+		.ldn = NCT5525D_GPIO056,
+		.enable_bit = 6,
+		.io_reg = 0xf8,
+		.mfs_reg = 0xe6,
+		.od_reg = 0xe6,
+	},
+};
+
+/* Pin mux: register writes that switch a pin from its default function to GPIO */
+struct gpio_pin_mux {
+	u8 pin;
+	u8 ldn;		/* 0 for a global register */
+	u8 reg;
+	u8 mask;
+	u8 value;
+};
+
+static const struct gpio_pin_mux gpio_pin_mux[] = {
+	/* Pins 33, 34, 36: PSON#, SLP_S3#, RSMRST# */
+	{ NCT5525D_GP60, 0, NCT5525D_CR_MFS_1B, 1 << 5, 1 << 5 },
+	{ NCT5525D_GP61, 0, NCT5525D_CR_MFS_1B, 1 << 4, 1 << 4 },
+	{ NCT5525D_GP62, 0, NCT5525D_CR_MFS_1B, 1 << 3, 1 << 3 },
+	/* Pins 46, 48: SDA, SCL */
+	{ NCT5525D_GP63, 0, NCT5525D_CR_MFS_1B, MFS_1B_PIN46_48_MASK, 0 },
+	{ NCT5525D_GP63, 0, NCT5525D_CR_GLOBAL_2A, GLOBAL_2A_AUXFAN2, 0 },
+	{ NCT5525D_GP64, 0, NCT5525D_CR_MFS_1B, MFS_1B_PIN46_48_MASK, 0 },
+	{ NCT5525D_GP64, 0, NCT5525D_CR_GLOBAL_2A, GLOBAL_2A_AUXFAN2, 0 },
+	/* Pin 56: THERMTRIP# */
+	{ NCT5525D_GP66, NCT5525D_GPIO89AB, 0xe1, 1 << 4, 0 },
+	{ NCT5525D_GP66, 0, NCT5525D_CR_MFS_1C, 1 << 5, 1 << 5 },
+};
+
+/* Returns false when the pin has no GPIO function */
+static bool set_gpio_pin_mux(struct device *dev, u8 pin)
+{
+	bool found = false;
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(gpio_pin_mux); i++) {
+		const struct gpio_pin_mux *m = &gpio_pin_mux[i];
+
+		if (m->pin != pin)
+			continue;
+		if (m->ldn)
+			pnp_write_config(dev, 0x07, m->ldn);
+		pnp_unset_and_set_config(dev, m->reg, m->mask, m->value);
+		found = true;
+	}
+
+	return found;
+}
+
+static void configure_gpio(struct device *dev, const struct nct5525d_gpio *gpio)
+{
+	const struct gpio_group *g = NULL;
+	const u8 bit = 1 << (gpio->pin & 0x7);
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(gpio_groups); i++)
+		if (gpio_groups[i].group == gpio->pin >> 4)
+			g = &gpio_groups[i];
+
+	if (!g || !set_gpio_pin_mux(dev, gpio->pin)) {
+		printk(BIOS_ERR, "NCT5525D: invalid GPIO 0x%02x\n", gpio->pin);
+		return;
+	}
+
+	/* Pin mux: no LED, beep, SMI or WDTO# output on the GPIO */
+	pnp_write_config(dev, 0x07, NCT5525D_WDT1_GPIO);
+	pnp_unset_and_set_config(dev, g->mfs_reg, bit, 0);
+
+	pnp_write_config(dev, 0x07, NCT5525D_GPIO_PP_OD);
+	pnp_unset_and_set_config(dev, g->od_reg, bit, gpio->push_pull ? 0 : bit);
+
+	/* The I/O registers of a GPIO group can only be written while it is active */
+	pnp_write_config(dev, 0x07, g->ldn);
+	pnp_unset_and_set_config(dev, 0x30, 0, 1 << g->enable_bit);
+	pnp_unset_and_set_config(dev, g->io_reg + 2, bit, 0);
+	if (gpio->mode == NCT5525D_GPIO_INPUT) {
+		pnp_unset_and_set_config(dev, g->io_reg, 0, bit);
+	} else {
+		/* Set the level before the pin becomes an output */
+		pnp_unset_and_set_config(dev, g->io_reg + 1, bit,
+					 gpio->mode == NCT5525D_GPIO_OUTPUT_HIGH ? bit : 0);
+		pnp_unset_and_set_config(dev, g->io_reg, bit, 0);
+	}
+}
+
 static void configure_global(struct device *dev)
 {
 	const struct superio_nuvoton_nct5525d_config *conf = dev->chip_info;
+	size_t i;
 
 	pnp_enter_conf_mode(dev);
 
@@ -83,6 +184,10 @@ static void configure_global(struct device *dev)
 			    conf->sysfan.output);
 	set_fan_output_type(dev, NCT5525D_CR_GLOBAL_24, GLOBAL_24_CPUFANOUT_PP,
 			    conf->cpufan.output);
+
+	for (i = 0; i < ARRAY_SIZE(conf->gpio); i++)
+		if (conf->gpio[i].mode != NCT5525D_GPIO_KEEP)
+			configure_gpio(dev, &conf->gpio[i]);
 
 out:
 	pnp_exit_conf_mode(dev);

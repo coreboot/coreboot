@@ -12,6 +12,7 @@
 
 #include "chip.h"
 #include "nct5525d.h"
+#include "nct5525d_hwm.h"
 
 /* CR1A: pin 39 function */
 #define MFS_1A_PIN39_CIRRX	(1 << 7)
@@ -47,6 +48,13 @@ static bool check_chip_id(struct device *dev)
 	return true;
 }
 
+static void set_fan_output_type(struct device *dev, u8 reg, u8 bit,
+				enum nct5525d_fan_output output)
+{
+	if (output == NCT5525D_FAN_OUT_PWM_OPEN_DRAIN)
+		pnp_unset_and_set_config(dev, reg, bit, 0);
+}
+
 static void configure_global(struct device *dev)
 {
 	const struct superio_nuvoton_nct5525d_config *conf = dev->chip_info;
@@ -69,6 +77,12 @@ static void configure_global(struct device *dev)
 		pnp_unset_and_set_config(dev, NCT5525D_CR_MFS_1C, MFS_1C_PIN39_IRRX, 0);
 		pnp_unset_and_set_config(dev, NCT5525D_CR_MFS_1B, 0, MFS_1B_PIN39_40_TSI);
 	}
+
+	/* SYSFANOUT/CPUFANOUT output type */
+	set_fan_output_type(dev, NCT5525D_CR_GLOBAL_24, GLOBAL_24_SYSFANOUT_PP,
+			    conf->sysfan.output);
+	set_fan_output_type(dev, NCT5525D_CR_GLOBAL_24, GLOBAL_24_CPUFANOUT_PP,
+			    conf->cpufan.output);
 
 out:
 	pnp_exit_conf_mode(dev);
@@ -102,6 +116,31 @@ static void nct5525d_enable_resources(struct device *dev)
 		pnp_enable_resources(dev);
 }
 
+static void nct5525d_init(struct device *dev)
+{
+	const struct superio_nuvoton_nct5525d_config *conf = dev->chip_info;
+	const struct resource *res;
+
+	if (!dev->enabled || !in_devicetree(dev) || !conf)
+		return;
+
+	if (dev->path.pnp.device != NCT5525D_HWM_FPLED)
+		return;
+
+	res = probe_resource(dev, PNP_IDX_IO0);
+	if (res && (res->flags & IORESOURCE_ASSIGNED))
+		nct5525d_hwm_init(res->base, conf);
+
+	if (!conf->tsi_agent0_enable)
+		return;
+
+	res = probe_resource(dev, PNP_IDX_IO1);
+	if (res && (res->flags & IORESOURCE_ASSIGNED))
+		nct5525d_tsi_init(res->base, conf);
+	else
+		printk(BIOS_ERR, "NCT5525D: SB-TSI needs the SMBus master base (io 0x62)\n");
+}
+
 #if CONFIG(HAVE_ACPI_TABLES)
 static const char *nct5525d_acpi_hid(const struct device *dev)
 {
@@ -126,6 +165,7 @@ static struct device_operations ops = {
 	.set_resources    = nct5525d_set_resources,
 	.enable_resources = nct5525d_enable_resources,
 	.enable           = nct5525d_enable,
+	.init             = nct5525d_init,
 	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt   = nct5525d_fill_ssdt,

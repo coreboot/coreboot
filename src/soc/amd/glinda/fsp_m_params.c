@@ -22,6 +22,31 @@
 #include <vendorcode/amd/fsp/glinda/FspUsb.h>
 #include "chip.h"
 
+/**
+ * FCH RT device enable map offsets.
+ * Some match AOAC device offsets, but not all.
+ */
+#define FCH_RT_DEVICE_ENABLE_MAP_I2C0		5
+#define FCH_RT_DEVICE_ENABLE_MAP_I2C1		6
+#define FCH_RT_DEVICE_ENABLE_MAP_I2C2		7
+#define FCH_RT_DEVICE_ENABLE_MAP_I2C3		8
+#define FCH_RT_DEVICE_ENABLE_MAP_I2C4		9
+#define FCH_RT_DEVICE_ENABLE_MAP_UART0		11
+#define FCH_RT_DEVICE_ENABLE_MAP_UART1		12
+#define FCH_RT_DEVICE_ENABLE_MAP_UART2		16
+#define FCH_RT_DEVICE_ENABLE_MAP_UART3		26
+#define FCH_RT_DEVICE_ENABLE_MAP_UART4		20
+#define FCH_RT_DEVICE_ENABLE_MAP_I3C0		21
+#define FCH_RT_DEVICE_ENABLE_MAP_I3C1		13
+#define FCH_RT_DEVICE_ENABLE_MAP_I3C2		14
+#define FCH_RT_DEVICE_ENABLE_MAP_I3C3		15
+#define FCH_RT_DEVICE_ENABLE_MAP_AMBA		17
+#define FCH_RT_DEVICE_ENABLE_MAP_ESPI		27
+#define FCH_RT_DEVICE_ENABLE_MAP_EMMC		28
+#define FCH_RT_DEVICE_ENABLE_MAP_HID2		31
+
+#define FCH_RT_DEVICE_BIT(name)	(1UL << FCH_RT_DEVICE_ENABLE_MAP_##name)
+
 __weak void mb_pre_fspm(FSP_M_CONFIG *mcfg)
 {
 }
@@ -214,27 +239,30 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		mcfg->usb_phy_ptr = 0;
 	}
 
-	/* Sync AOAC devices */
-	int fch_aoac_devs[] = {
-		FCH_AOAC_DEV_I2C0,
-		FCH_AOAC_DEV_I2C1,
-		FCH_AOAC_DEV_I2C2,
-		FCH_AOAC_DEV_I2C3,
-		FCH_AOAC_DEV_UART0,
-		FCH_AOAC_DEV_UART1,
-		FCH_AOAC_DEV_UART2,
-		FCH_AOAC_DEV_UART3,
-		FCH_AOAC_DEV_UART4,
-		FCH_AOAC_DEV_I3C0,
-		FCH_AOAC_DEV_I3C1,
-		FCH_AOAC_DEV_I3C2,
-		FCH_AOAC_DEV_I3C3,
-		FCH_AOAC_DEV_HID2,
+	/* Sync FCH devices */
+	struct {
+		const struct device *dev;
+		uint32_t mask;
+	} fch_aoac_devs[] = {
+		{DEV_PTR(i2c_0), FCH_RT_DEVICE_BIT(I2C0)},
+		{DEV_PTR(i2c_1), FCH_RT_DEVICE_BIT(I2C1)},
+		{DEV_PTR(i2c_2), FCH_RT_DEVICE_BIT(I2C2)},
+		{DEV_PTR(i2c_3), FCH_RT_DEVICE_BIT(I2C3)},
+		{DEV_PTR(i3c_0), FCH_RT_DEVICE_BIT(I3C0)},
+		{DEV_PTR(i3c_1), FCH_RT_DEVICE_BIT(I3C1)},
+		{DEV_PTR(i3c_2), FCH_RT_DEVICE_BIT(I3C2)},
+		{DEV_PTR(i3c_3), FCH_RT_DEVICE_BIT(I3C3)},
+		{DEV_PTR(uart_0), FCH_RT_DEVICE_BIT(UART0)},
+		{DEV_PTR(uart_1), FCH_RT_DEVICE_BIT(UART1)},
+		{DEV_PTR(uart_2), FCH_RT_DEVICE_BIT(UART2)},
+		{DEV_PTR(uart_3), FCH_RT_DEVICE_BIT(UART3)},
+		{DEV_PTR(uart_4), FCH_RT_DEVICE_BIT(UART4)},
+		{DEV_PTR(hid2), FCH_RT_DEVICE_BIT(HID2)},
 	};
 
 	for (int i = 0; i < ARRAY_SIZE(fch_aoac_devs); i++) {
-		const int mask = BIT(fch_aoac_devs[i]);
-		if (is_aoac_device_enabled(fch_aoac_devs[i]))
+		const int mask = fch_aoac_devs[i].mask;
+		if (is_dev_enabled(fch_aoac_devs[i].dev))
 			mcfg->fch_rt_device_enable_map |= mask;
 		else
 			mcfg->fch_rt_device_enable_map &= ~mask;

@@ -10,7 +10,27 @@
 #include <acpi/acpi.h>
 #endif
 
+#include "chip.h"
 #include "nct5525d.h"
+
+/* CR1A: pin 39 function */
+#define MFS_1A_PIN39_CIRRX	(1 << 7)
+/* CR1B: pin 39/40 and 46/48 function */
+#define MFS_1B_PIN39_40_TSI	(1 << 2)
+#define MFS_1B_PIN46_48_MASK	(0x3 << 0)
+/* CR1C: pin 39 and pins 57-64 function */
+#define MFS_1C_PIN39_IRRX	(1 << 7)
+#define MFS_1C_UARTC_SHIFT	2
+/* CR22 */
+#define PWR_DOWN_AUXFANOUT2_PP	(1 << 2)
+/* CR24 */
+#define GLOBAL_24_SYSFANOUT_PP	(1 << 6)
+#define GLOBAL_24_CPUFANOUT_PP	(1 << 5)
+#define GLOBAL_24_BEEP_EN	(1 << 1)
+/* CR2A */
+#define GLOBAL_2A_AUXFAN2	(1 << 1)
+/* CR2C: pins 14-22 function */
+#define UART_OPT_UARTA_SHIFT	0
 
 static bool check_chip_id(struct device *dev)
 {
@@ -29,8 +49,28 @@ static bool check_chip_id(struct device *dev)
 
 static void configure_global(struct device *dev)
 {
+	const struct superio_nuvoton_nct5525d_config *conf = dev->chip_info;
+
 	pnp_enter_conf_mode(dev);
-	check_chip_id(dev);
+
+	if (!check_chip_id(dev) || !conf)
+		goto out;
+
+	/* Pin mux: route pins 46/48 to GP63/GP64 */
+	if (conf->pins_46_48 == NCT5525D_PINS_46_48_GPIO) {
+		pnp_unset_and_set_config(dev, NCT5525D_CR_GLOBAL_2A, GLOBAL_2A_AUXFAN2, 0);
+		pnp_unset_and_set_config(dev, NCT5525D_CR_MFS_1B, MFS_1B_PIN46_48_MASK, 0);
+	}
+
+	/* Pin mux: route pins 39/40 to TSIC/TSID */
+	if (conf->tsi_pins) {
+		/* IRRX and CIRRX take precedence over TSIC on pin 39 */
+		pnp_unset_and_set_config(dev, NCT5525D_CR_MFS_1A, MFS_1A_PIN39_CIRRX, 0);
+		pnp_unset_and_set_config(dev, NCT5525D_CR_MFS_1C, MFS_1C_PIN39_IRRX, 0);
+		pnp_unset_and_set_config(dev, NCT5525D_CR_MFS_1B, 0, MFS_1B_PIN39_40_TSI);
+	}
+
+out:
 	pnp_exit_conf_mode(dev);
 }
 

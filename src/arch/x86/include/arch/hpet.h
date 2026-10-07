@@ -13,6 +13,9 @@
 #define  HPET_NUM_TIM_CAP_MASK	0x1f
 #define  HPET_NUM_TIM_CAP_SHIFT	8
 
+#define HPET_CONFIG		0x10
+#define  HPET_LEGACY_EN	(1 << 1)
+
 #define HPET_TMR0_CNF_CAP	0x100
 #define  HPET_TIMER_FSB_EN_CNF_MASK	(1 << 15)
 

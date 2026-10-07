@@ -114,7 +114,7 @@ Device(LPCB) {
 	Device (HPET) {
 		Name (_HID,EISAID("PNP0103"))	/* HPET System Timer */
 
-		OperationRegion (HPMM, SystemMemory, 0xFED80C10, 0x4)
+		OperationRegion (HPMM, SystemMemory, 0xFED00010, 0x4)
 		Field (HPMM, AnyAcc, NoLock, Preserve)
 		{
 			, 1,

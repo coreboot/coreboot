@@ -5,6 +5,7 @@
 #include <amdblocks/acpimmio.h>
 
 #if ENV_X86
+#include <arch/hpet.h>
 #include <amdblocks/acpimmio_map.h>
 #endif
 
@@ -62,6 +63,7 @@ void fch_enable_ioapic_decode(void)
 	pm_write32(PM_DECODE_EN, pm_read32(PM_DECODE_EN) | FCH_IOAPIC_EN);
 }
 
+#if ENV_X86
 void fch_configure_hpet(void)
 {
 	uint32_t reg = pm_read32(PM_DECODE_EN);
@@ -69,10 +71,12 @@ void fch_configure_hpet(void)
 	reg &= ~HPET_WIDTH_SEL; /* 32 bit HPET */
 	pm_write32(PM_DECODE_EN, reg);
 
-	reg = hpet_read32(HPET_CONFIG);
+	reg = read32p(HPET_BASE_ADDRESS + HPET_CONFIG);
 	reg &= ~HPET_LEGACY_EN; /* Disable legacy IRQs */
-	hpet_write32(HPET_CONFIG, reg);
+	write32p(HPET_BASE_ADDRESS + HPET_CONFIG, reg);
 }
+
+#endif
 
 void fch_disable_kb_rst(void)
 {

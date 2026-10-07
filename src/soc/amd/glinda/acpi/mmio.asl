@@ -715,6 +715,4 @@ Device (HID2)
 	{
 		Return (STAT)
 	}
-
-	AOAC_DEVICE(FCH_AOAC_DEV_HID2, 0)
 }

@@ -1,21 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpigen.h>
-#include <amdblocks/aoac.h>
 #include <device/device.h>
 #include <device/mmio.h>
-#include <soc/aoac_defs.h>
 #include <types.h>
-
-static void hid2_enable(struct device *dev)
-{
-	if (dev->enabled) {
-		power_on_aoac_device(FCH_AOAC_DEV_HID2);
-		wait_for_aoac_enabled(FCH_AOAC_DEV_HID2);
-	} else {
-		power_off_aoac_device(FCH_AOAC_DEV_HID2);
-	}
-}
 
 static void hid2_read_resources(struct device *dev)
 {
@@ -37,7 +25,6 @@ static void hid2_acpi_fill_ssdt(const struct device *dev)
 #endif
 
 struct device_operations soc_amd_hid2_ops = {
-	.enable = hid2_enable,
 	.read_resources = hid2_read_resources,
 	.set_resources = noop_set_resources,
 #if CONFIG(HAVE_ACPI_TABLES)

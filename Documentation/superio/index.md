@@ -8,6 +8,7 @@ This section contains documentation about coreboot on specific SuperIOs.
 :maxdepth: 1
 
 NPCD378 <nuvoton/npcd378.md>
+NCT5525D <nuvoton/nct5525d.md>
 NCT5539D <nuvoton/nct5539d.md>
 ```
 

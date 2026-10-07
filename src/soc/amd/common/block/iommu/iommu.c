@@ -13,6 +13,15 @@ static void iommu_read_resources(struct device *dev)
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);
 
+	/* An already enabled IOMMU MMIO base (e.g. set up by FSP) can't be moved */
+	const uint32_t base_lo = pci_read_config32(dev, IOMMU_CAP_BASE_LO);
+	if (base_lo & IOMMU_ENABLE) {
+		const uint64_t base = (uint64_t)pci_read_config32(dev, IOMMU_CAP_BASE_HI) << 32 |
+				      (base_lo & 0xfff80000);
+		mmio_range(dev, IOMMU_CAP_BASE_LO, base, 512 * KiB);
+		return;
+	}
+
 	/* IOMMU MMIO registers */
 	res = new_resource(dev, IOMMU_CAP_BASE_LO);
 	res->size = 512 * KiB;

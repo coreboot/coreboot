@@ -56,12 +56,22 @@ struct qcom_spmi qcom_spmi = {
 
 static struct qcom_spmi_regs *find_apid(uint32_t addr)
 {
-	size_t i;
+	static uint16_t ppid_cache[SPMI_PMIC_ARB_APID_COUNT];
+	static bool cache_initialized;
 	uint32_t target_ppid = SPMI_PPID_FROM_ADDR(addr);
 
-	for (i = 0U; i < qcom_spmi.num_apid; i++) {
-		uint32_t reg = read32(&qcom_spmi.apid_map[i]);
-		if ((reg != 0U) && (target_ppid == SPMI_PPID_FROM_REG(reg)))
+	if (!cache_initialized) {
+		for (size_t i = 0U; i < qcom_spmi.num_apid; i++) {
+			uint32_t reg = read32(&qcom_spmi.apid_map[i]);
+			ppid_cache[i] = (reg != 0U) ?
+				(SPMI_PPID_FROM_REG(reg) | BIT(15)) : 0U;
+		}
+		cache_initialized = true;
+	}
+
+	uint16_t match = target_ppid | BIT(15);
+	for (size_t i = 0U; i < qcom_spmi.num_apid; i++) {
+		if (ppid_cache[i] == match)
 			return &qcom_spmi.regs_per_apid[i];
 	}
 

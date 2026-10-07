@@ -977,11 +977,8 @@ enum cb_err qmp_usb4_dp_phy_ss_init(int phy_instance, bool polarity_inverse)
 			(struct usb43dp_aon_reg_layout *)
 			((uintptr_t)ss_phy_reg->com_base + USB43DP_AON_OFFSET_FROM_COM);
 		write32(&aon_reg->usb3_aon_toggle_enable, USB3_AON_TOGGLE_DISABLE);
-		printk(BIOS_INFO,
-		       "QMP PHY %s config: polarity=%s TYPEC_CTRL=0x%08x AON_TOGGLE=0x%08x\n",
-		       ss_phy_reg->name, polarity_inverse ? "inverted" : "normal",
-		       read32(&current_com_reg->typec_ctrl),
-		       read32(&aon_reg->usb3_aon_toggle_enable));
+		printk(BIOS_SPEW, "QMP PHY %s config: polarity=%s\n",
+		       ss_phy_reg->name, polarity_inverse ? "inverted" : "normal");
 	}
 
 	/* Step 2: power up USB3 PHY */
@@ -1043,7 +1040,7 @@ enum cb_err qmp_usb4_dp_phy_ss_init(int phy_instance, bool polarity_inverse)
 		return CB_ERR;
 	}
 
-	printk(BIOS_INFO,
+	printk(BIOS_SPEW,
 	       "QMP PHY %s locked in %ldus: CMN_STATUS=0x%08x PCS_STATUS1=0x%08x\n",
 	       ss_phy_reg->name, lock_us, cmn_status, phy_status);
 

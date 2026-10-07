@@ -493,28 +493,6 @@ static void usb_repeater_spmi_init(const struct dwc3_controller_config *config)
 	spmi_write8(SPMI_ADDR(slave, EUSB2_EN_CTL1), EUSB2_EN_CTL1_ENABLE);
 
 	usb_repeater_spmi_tune(config);
-
-	u8 rptr_status = spmi_read8(SPMI_ADDR(slave, EUSB2_RPTR_STATUS));
-	u8 rptr_infra_status = spmi_read8(SPMI_ADDR(slave, EUSB2_RPTR_INFRA_STATUS));
-	printk(BIOS_INFO, "%s EUSB2 repeater: RPTR_STATUS=0x%02x INFRA_STATUS=0x%02x\n",
-	       config->name, rptr_status, rptr_infra_status);
-}
-
-/*
- * usb_typec_status_check - Log the Type-C connection status reported by the PMIC
- * @config: Controller configuration containing SMB slave address
- */
-static void usb_typec_status_check(const struct dwc3_controller_config *config)
-{
-	u8 slave = config->smb_slave_addr;
-	u8 misc_status = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_MISC_STATUS));
-	u8 src_status = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_SRC_STATUS));
-	u8 state = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_STATE_MACHINE_STATUS));
-	u8 mode = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_MODE_CFG));
-
-	printk(BIOS_INFO, "%s Type-C: MISC_STATUS=0x%02x SRC_STATUS=0x%02x "
-	       "STATE_MACHINE_STATUS=0x%02x MODE_CFG=0x%02x\n",
-	       config->name, misc_status, src_status, state, mode);
 }
 
 /*
@@ -527,10 +505,11 @@ static void usb_typec_status_check(const struct dwc3_controller_config *config)
 static bool get_usb_typec_polarity(const struct dwc3_controller_config *config)
 {
 	u8 slave = config->smb_slave_addr;
-	u8 misc_status = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_MISC_STATUS));
-	bool inverse = (misc_status & CCOUT_INVERT_POLARITY) == CCOUT_INVERT_POLARITY;
+	int misc_status = spmi_read8(SPMI_ADDR(slave, SCHG_TYPE_C_TYPE_C_MISC_STATUS));
+	if (misc_status < 0)
+		return false;
 
-	return inverse;
+	return (misc_status & CCOUT_INVERT_POLARITY) == CCOUT_INVERT_POLARITY;
 }
 
 /*
@@ -640,8 +619,6 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 		high_speed_only_primary = true;
 	}
 
-	usb_typec_status_check(&prim_config);
-
 	/*
 	 * C1 (SEC) - sequence:
 	 *   eUSB2 repeater init -> HS BCR reset -> HS PHY init -> SS+USB4 BCR reset -> SS PHY init
@@ -682,8 +659,6 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 		high_speed_only_secondary = true;
 	}
 
-	usb_typec_status_check(&sec_config);
-
 	/*
 	 * C2 (TERT) - sequence:
 	 *   eUSB2 repeater init -> HS BCR reset -> HS PHY init -> SS+USB4 BCR reset -> SS PHY init
@@ -723,8 +698,6 @@ static void setup_usb_host(struct usb_dwc3_cfg *dwc3)
 		printk(BIOS_WARNING, "SS2 unavailable; using HS-only mode\n");
 		high_speed_only_tertiary = true;
 	}
-
-	usb_typec_status_check(&tert_config);
 
 	/* Initialize USB Controller for Type A (MP) */
 	setup_dwc3(dwc3->usb_host_dwc3);

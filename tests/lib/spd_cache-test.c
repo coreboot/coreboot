@@ -87,6 +87,11 @@ int fmap_locate_area_as_rdev(const char *name, struct region_device *area)
 	return rdev_chain(area, &flash_rdev_rw, 0, flash_buffer_size);
 }
 
+int fmap_locate_area_as_rdev_rw(const char *name, struct region_device *area)
+{
+	return rdev_chain(area, &flash_rdev_rw, 0, flash_buffer_size);
+}
+
 /* This test verifies if load_spd_cache() correctly loads spd_cache pointer and size
    from provided region_device. Memory region device is returned by our
    fmap_locate_area_as_rdev() override. */
@@ -103,6 +108,30 @@ static void test_load_spd_cache(void **state)
 static void calc_spd_cache_crc(uint8_t *spd_cache)
 {
 	*(uint16_t *)(spd_cache + SC_CRC_OFFSET) = CRC(spd_cache, SC_SPD_TOTAL_LEN, crc16_byte);
+}
+
+/* This test verifies that update_spd_cache() writes a cache that passes validation. */
+static void test_update_spd_cache(void **state)
+{
+	struct spd_block blk = {.len = SC_SPD_LEN};
+
+	memset(flash_buffer, 0, flash_buffer_size);
+	assert_int_equal(CB_SUCCESS, update_spd_cache(&blk));
+	assert_true(spd_cache_is_valid((uint8_t *)flash_buffer, flash_buffer_size));
+}
+
+/* This test verifies that update_spd_cache() leaves a region that cannot hold the SPD data
+   and CRC untouched instead of erasing it. */
+static void test_update_spd_cache_region_too_small(void **state)
+{
+	struct spd_block blk = {.len = SC_SPD_LEN};
+	const size_t full_size = flash_buffer_size;
+
+	memset(flash_buffer, 0, flash_buffer_size);
+	flash_buffer_size = SC_SPD_TOTAL_LEN;
+	assert_int_equal(CB_ERR, update_spd_cache(&blk));
+	flash_buffer_size = full_size;
+	assert_int_equal(0, flash_buffer[0]);
 }
 
 __attribute__((unused)) static void fill_spd_cache_ddr3(uint8_t *spd_cache, size_t spd_cache_sz)
@@ -364,6 +393,9 @@ int main(void)
 		cmocka_unit_test_setup(test_spd_fill_from_cache_unsupported_dram_type,
 				       setup_spd_cache_test),
 		cmocka_unit_test_setup(test_spd_cache_is_valid, setup_spd_cache_test),
+		cmocka_unit_test_setup(test_update_spd_cache, setup_spd_cache_test),
+		cmocka_unit_test_setup(test_update_spd_cache_region_too_small,
+				       setup_spd_cache_test),
 #if __TEST_SPD_CACHE_DDR == 4 || __TEST_SPD_CACHE_DDR == 5
 		cmocka_unit_test_setup(test_check_if_dimm_changed_not_changed,
 				       setup_spd_cache_test),

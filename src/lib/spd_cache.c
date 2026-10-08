@@ -68,6 +68,11 @@ enum cb_err update_spd_cache(struct spd_block *blk)
 		return CB_ERR;
 	}
 
+	if (region_device_sz(&rdev) < SC_MIN_REGION_SIZE) {
+		printk(BIOS_ERR, "SPD_CACHE: %s region is too small\n", SPD_CACHE_FMAP_NAME);
+		return CB_ERR;
+	}
+
 	/* Phase 1: Build a contiguous, normalized byte stream buffer */
 	for (i = 0; i < SC_SPD_NUMS; i++) {
 		uint8_t *slot_ptr = &full_spd_buf[SC_SPD_OFFSET(i)];

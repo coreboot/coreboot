@@ -170,6 +170,7 @@ spd_cache-ddr3-test-srcs += src/lib/spd_cache.c
 spd_cache-ddr3-test-srcs += src/lib/crc_byte.c
 spd_cache-ddr3-test-srcs += src/commonlib/region.c
 spd_cache-ddr3-test-mocks += fmap_locate_area_as_rdev
+spd_cache-ddr3-test-mocks += fmap_locate_area_as_rdev_rw
 spd_cache-ddr3-test-config += CONFIG_DIMM_MAX=4 CONFIG_DIMM_SPD_SIZE=256 \
 				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
 spd_cache-ddr3-test-cflags += -D__TEST_SPD_CACHE_DDR=3
@@ -183,6 +184,7 @@ spd_cache-ddr4-test-srcs += src/lib/spd_cache.c
 spd_cache-ddr4-test-srcs += src/lib/crc_byte.c
 spd_cache-ddr4-test-srcs += src/commonlib/region.c
 spd_cache-ddr4-test-mocks += fmap_locate_area_as_rdev
+spd_cache-ddr4-test-mocks += fmap_locate_area_as_rdev_rw
 spd_cache-ddr4-test-config += CONFIG_DIMM_MAX=4 CONFIG_DIMM_SPD_SIZE=512 \
 				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
 spd_cache-ddr4-test-cflags += -D__TEST_SPD_CACHE_DDR=4
@@ -196,6 +198,7 @@ spd_cache-ddr5-test-srcs += src/lib/spd_cache.c
 spd_cache-ddr5-test-srcs += src/lib/crc_byte.c
 spd_cache-ddr5-test-srcs += src/commonlib/region.c
 spd_cache-ddr5-test-mocks += fmap_locate_area_as_rdev
+spd_cache-ddr5-test-mocks += fmap_locate_area_as_rdev_rw
 spd_cache-ddr5-test-config += CONFIG_DIMM_MAX=4 CONFIG_DIMM_SPD_SIZE=1024 \
 				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
 spd_cache-ddr5-test-cflags += -D__TEST_SPD_CACHE_DDR=5

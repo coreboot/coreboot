@@ -55,6 +55,7 @@ struct mtcmos_cb {
 
 int mtcmos_cb_register(enum mtcmos_id id, const struct mtcmos_cb *cb);
 void mtcmos_ctrl(enum mtcmos_id id, enum mtcmos_state state);
+void mtcmos_dsi_phy_switch_to_sw(void);
 void mtcmos_init(void);
 void mtcmos_post_init(void);
 

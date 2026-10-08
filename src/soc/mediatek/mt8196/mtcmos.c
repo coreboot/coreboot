@@ -22,6 +22,7 @@
 #define RELEASE_BUS_PROTECT	0
 
 #define WAIT_VOTE_TIMEOUT	20000
+#define WAIT_VOTE_OFF_TIMEOUT	300000
 
 #define SPM_PBUS_BUS_PROTECT_EN_SET		((void *)(SPM_PBUS_BASE + 0x00DC))
 #define SPM_PBUS_BUS_PROTECT_EN_CLR		((void *)(SPM_PBUS_BASE + 0x00E0))
@@ -44,6 +45,7 @@
 #define MMVOTE_MTCMOS_1_SET		((void *)(MMVOTE_BASE + 0x0220))
 #define MMVOTE_MTCMOS_1_CLR		((void *)(MMVOTE_BASE + 0x0224))
 #define MMVOTE_MTCMOS_1_DONE		((void *)(MMVOTE_BASE + 0x142C))
+#define MMVOTE_MTCMOS_1_CLR_STA		((void *)(MMVOTE_BASE + 0x1478))
 #define MMVOTE_MTCMOS_1_PM_ACK		((void *)(MMVOTE_BASE + 0x5518))
 #define MMINFRA_MTCMOS_1_SET		((void *)(MMVOTE_BASE + 0x20220))
 #define MMINFRA_MTCMOS_1_CLR		((void *)(MMVOTE_BASE + 0x20224))
@@ -71,6 +73,9 @@
 #define OVL1_VOTE_BIT		28
 #define DISP_EDPTX_VOTE_BIT	29
 #define DISP_DPTX_VOTE_BIT	30
+
+#define DSI_PHY1_SEL_BIT	11
+#define DSI_PHY2_SEL_BIT	12
 
 #define MTK_SCPD_SRAM_ISO	BIT(0)
 #define MTK_SCPD_SRAM_SLP	BIT(2)
@@ -137,6 +142,7 @@ struct mtcmos_vote_data {
 	u32 *done_addr;
 	u32 *ack_addr;
 	u8 vote_bit;
+	u32 *clr_sta_addr;
 	const struct mtcmos_cb *cb;
 };
 
@@ -346,6 +352,17 @@ static struct mtcmos_vote_data vote_mds[MTCMOS_ID_NUM] = {
 	[MTCMOS_ID_DSI_PHY0] = {
 		MMVOTE_MTCMOS_1_SET, MMVOTE_MTCMOS_1_CLR, MMVOTE_MTCMOS_1_DONE,
 		MMVOTE_MTCMOS_1_PM_ACK, DSI_PHY0_VOTE_BIT
+	},
+	/* Only used to release HW votes set by legacy RO bootblock */
+	[MTCMOS_ID_DSI_PHY1] = {
+		MMVOTE_MTCMOS_1_SET, MMVOTE_MTCMOS_1_CLR, MMVOTE_MTCMOS_1_DONE,
+		MMVOTE_MTCMOS_1_PM_ACK, DSI_PHY1_VOTE_BIT,
+		MMVOTE_MTCMOS_1_CLR_STA
+	},
+	[MTCMOS_ID_DSI_PHY2] = {
+		MMVOTE_MTCMOS_1_SET, MMVOTE_MTCMOS_1_CLR, MMVOTE_MTCMOS_1_DONE,
+		MMVOTE_MTCMOS_1_PM_ACK, DSI_PHY2_VOTE_BIT,
+		MMVOTE_MTCMOS_1_CLR_STA
 	},
 };
 
@@ -706,6 +723,61 @@ void mtcmos_ctrl(enum mtcmos_id id, enum mtcmos_state state)
 
 	if (ret)
 		printk(BIOS_ERR, "%s(%u, %u) fail, ret=%d\n", __func__, id, state, ret);
+}
+
+/* Same as kernel scpsys_hwv_power_off() */
+static int mtcmos_hwv_release(enum mtcmos_id id)
+{
+	const struct mtcmos_vote_data *md = &vote_mds[id];
+	u32 vote_bit = BIT(md->vote_bit);
+
+	if (!wait_us(WAIT_VOTE_TIMEOUT, read32(md->done_addr) & vote_bit)) {
+		printk(BIOS_ERR, "%s: %d wait done timeout\n", __func__, id);
+		return -1;
+	}
+
+	write32(md->clr_addr, vote_bit);
+	if (!wait_us(WAIT_VOTE_TIMEOUT, !(read32(md->clr_addr) & vote_bit))) {
+		printk(BIOS_ERR, "%s: %d wait clr timeout\n", __func__, id);
+		return -1;
+	}
+
+	udelay(100);
+
+	if (!wait_us(WAIT_VOTE_OFF_TIMEOUT, (read32(md->done_addr) & vote_bit) &&
+					    !(read32(md->clr_sta_addr) & vote_bit))) {
+		printk(BIOS_ERR, "%s: %d wait disable done timeout\n", __func__, id);
+		return -1;
+	}
+
+	return 0;
+}
+
+/*
+ * RO bootblock without commit 19e1b5c44bda ("soc/mediatek/mt8196: Change
+ * dsi-phy1 & dsi-phy2 control method") powers on dsi-phy1 & dsi-phy2 by HW
+ * voting. Release the HW votes while the domains are still under HW voting
+ * control, otherwise they stay set and break suspend/resume. Then switch to
+ * SW control and power on.
+ */
+void mtcmos_dsi_phy_switch_to_sw(void)
+{
+	const u32 sel_bits = BIT(DSI_PHY1_SEL_BIT) | BIT(DSI_PHY2_SEL_BIT);
+
+	/* Already under SW control */
+	if (!(read32(MMPC_MTCMOS_SEL_GP0) & sel_bits))
+		return;
+
+	/* Kernel follows SEL_GP0, so staying on HW voting is still consistent */
+	if (mtcmos_hwv_release(MTCMOS_ID_DSI_PHY1) || mtcmos_hwv_release(MTCMOS_ID_DSI_PHY2)) {
+		printk(BIOS_ERR, "%s: release vote failed, keep HW voting\n", __func__);
+		return;
+	}
+
+	clrbits32(MMPC_MTCMOS_SEL_GP0, sel_bits);
+
+	mtcmos_ctrl(MTCMOS_ID_DSI_PHY1, MTCMOS_POWER_ON);
+	mtcmos_ctrl(MTCMOS_ID_DSI_PHY2, MTCMOS_POWER_ON);
 }
 
 void mtcmos_init(void)

@@ -126,30 +126,25 @@ static struct param {
 	.u64val = -1,
 };
 
-/* Indicates which CBFS is described by an mh_cache. Multiple firmware slots imply multiple
-   hash anchors, necessitating differentiating between them when caching. */
-enum mhc_kind {
-	MHC_NONE,    /* The cache is uninitialized. */
-	MHC_PRIMARY, /* Normal and always-present "COREBOOT" CBFS (separate or embedded
+/* Indicates which CBFS is described by an mh_anchor. Multiple firmware slots imply multiple
+   hash anchors, necessitating differentiating between them. */
+enum mha_kind {
+	MHA_NONE,    /* No metadata hash anchor is active. */
+	MHA_PRIMARY, /* Normal and always-present "COREBOOT" CBFS (separate or embedded
 			bootblock). */
-	MHC_SECONDARY /* Top Swap CBFS called "COREBOOT_B" with bootblock in "BOOTBLOCK_B". */
+	MHA_SECONDARY /* Top Swap CBFS called "COREBOOT_B" with bootblock in "BOOTBLOCK_B". */
 };
 
 /*
- * This "metadata_hash cache" caches the value and location of the CBFS metadata
- * hash embedded in the bootblock when CBFS verification is enabled. The first
- * call to get_mh_cache() searches for the cache by scanning the whole bootblock
- * for its 8-byte signature, later calls will just return the previously found
- * information again. If the cbfs_hash.algo member in the result is
- * VB2_HASH_INVALID, that means no metadata hash was found and this image does
- * not use CBFS verification.
+ * This structure holds the value and location of the CBFS metadata hash anchor
+ * embedded in the bootblock when CBFS verification is enabled.
  */
-struct mh_cache {
+struct mh_anchor {
 	const char *region;
 	size_t offset;
 	struct vb2_hash cbfs_hash;
 	platform_fixup_func fixup;
-	enum mhc_kind kind;
+	enum mha_kind kind;
 };
 
 static bool is_main_cbfs_region(const char *region_name)
@@ -163,181 +158,27 @@ static bool is_ecbfs_region(const char *region_name)
 	return strncmp(region_name, "ECBFS_", 6) == 0;
 }
 
-static enum mhc_kind derive_mhc_kind(const char *region_name)
+/* Returns the parent FMAP region name for an "ECBFS_"-prefixed region. */
+static const char *ecbfs_parent_region(const char *ecbfs_region_name)
 {
-	/* Only these two regions are specific to Top Swap. */
-	if (strcmp(region_name, SECTION_NAME_SECONDARY_CBFS) == 0 ||
-	    strcmp(region_name, SECTION_NAME_BOOTBLOCK_B) == 0)
-		return MHC_SECONDARY;
-
-	return MHC_PRIMARY;
+	assert(is_ecbfs_region(ecbfs_region_name));
+	return &ecbfs_region_name[sizeof("ECBFS_") - 1];
 }
 
-static struct mh_cache *get_mh_cache(void)
+static enum mha_kind derive_mha_kind(const char *region_name)
 {
-	static struct mh_cache mhc;
+	if (is_ecbfs_region(region_name))
+		region_name = ecbfs_parent_region(region_name);
 
-	/*
-	 * A single invocation of cbfstool can process regions that use different CBFS metadata.
-	 * Right now, the only such case is when Top Swap redundancy is in use. Check for Top
-	 * Swap region to decide if the cache can be reused.
-	 *
-	 * This implicitly checks whether the cache is initialized.
-	 */
-	const enum mhc_kind kind = derive_mhc_kind(param.region_name);
-	if (mhc.kind == kind)
-		return &mhc;
+	if (!strcmp(region_name, SECTION_NAME_SECONDARY_CBFS) ||
+	    !strcmp(region_name, SECTION_NAME_BOOTBLOCK_B))
+		return MHA_SECONDARY;
 
-	mhc.kind = kind;
+	if (!strcmp(region_name, SECTION_NAME_PRIMARY_CBFS) ||
+	    !strcmp(region_name, SECTION_NAME_BOOTBLOCK))
+		return MHA_PRIMARY;
 
-	const struct fmap *fmap = partitioned_file_get_fmap(param.image_file);
-	if (!fmap)
-		goto no_metadata_hash;
-
-	const char *bootblock_region = SECTION_NAME_BOOTBLOCK;
-	if (kind == MHC_SECONDARY)
-		bootblock_region = SECTION_NAME_BOOTBLOCK_B;
-
-	/* Find the metadata_hash container. If there is a "BOOTBLOCK" FMAP section, it's
-	   there. If not, it's a normal file in the primary CBFS section. */
-	size_t offset, size;
-	struct buffer buffer;
-	if (fmap_find_area(fmap, bootblock_region)) {
-		if (!partitioned_file_read_region(&buffer, param.image_file, bootblock_region))
-			goto no_metadata_hash;
-		mhc.region = bootblock_region;
-		offset = 0;
-		size = buffer.size;
-	} else {
-		if (kind != MHC_PRIMARY) {
-			/* Top Swap requires BOOTBLOCK_B region. */
-			ERROR("Malformed image: '%s' region is missing\n", bootblock_region);
-			goto no_metadata_hash;
-		}
-
-		struct cbfs_image cbfs;
-		struct cbfs_file *mh_container;
-		if (!partitioned_file_read_region(&buffer, param.image_file, SECTION_NAME_PRIMARY_CBFS))
-			goto no_metadata_hash;
-		mhc.region = SECTION_NAME_PRIMARY_CBFS;
-		if (cbfs_image_from_buffer(&cbfs, &buffer, param.headeroffset))
-			goto no_metadata_hash;
-		mh_container = cbfs_get_entry(&cbfs, "bootblock");
-		if (!mh_container || be32toh(mh_container->type) != CBFS_TYPE_BOOTBLOCK) {
-			/* Check for apu/amdfw file */
-			mh_container = cbfs_get_entry(&cbfs, "apu/amdfw");
-			if (!mh_container || be32toh(mh_container->type) != CBFS_TYPE_AMDFW)
-				goto no_metadata_hash;
-		}
-
-		offset = (void *)mh_container + be32toh(mh_container->offset) -
-			 buffer_get(&cbfs.buffer);
-		size = be32toh(mh_container->len);
-	}
-
-	/* Find and validate the metadata hash anchor inside the containing file and
-	   record its exact byte offset from the start of the FMAP region. */
-	struct metadata_hash_anchor *anchor = memmem(buffer_get(&buffer) + offset,
-			size, METADATA_HASH_ANCHOR_MAGIC, sizeof(anchor->magic));
-	if (anchor) {
-		if (!vb2_digest_size(anchor->cbfs_hash.algo)) {
-			ERROR("Unknown CBFS metadata hash type: %d\n",
-			      anchor->cbfs_hash.algo);
-			goto no_metadata_hash;
-		}
-		mhc.cbfs_hash = anchor->cbfs_hash;
-		mhc.offset = (void *)anchor - buffer_get(&buffer);
-		mhc.fixup = platform_fixups_probe(&buffer, mhc.offset,
-						  mhc.region);
-		return &mhc;
-	}
-
-no_metadata_hash:
-	mhc.cbfs_hash.algo = VB2_HASH_INVALID;
-	return &mhc;
-}
-
-static void update_and_info(const char *name, void *dst, void *src, size_t size)
-{
-	if (!memcmp(dst, src, size))
-		return;
-	char *src_str = bintohex(src, size);
-	char *dst_str = bintohex(dst, size);
-	INFO("Updating %s from %s to %s\n", name, dst_str, src_str);
-	memcpy(dst, src, size);
-	free(src_str);
-	free(dst_str);
-}
-
-static int update_anchor(struct mh_cache *mhc, uint8_t *fmap_hash)
-{
-	struct buffer buffer;
-	if (!partitioned_file_read_region(&buffer, param.image_file,
-					  mhc->region))
-		return -1;
-	struct metadata_hash_anchor *anchor = buffer_get(&buffer) + mhc->offset;
-	/* The metadata hash anchor should always still be where we left it. */
-	assert(!memcmp(anchor->magic, METADATA_HASH_ANCHOR_MAGIC,
-		      sizeof(anchor->magic)) &&
-	       anchor->cbfs_hash.algo == mhc->cbfs_hash.algo);
-	update_and_info("CBFS metadata hash", anchor->cbfs_hash.raw,
-		mhc->cbfs_hash.raw, vb2_digest_size(anchor->cbfs_hash.algo));
-	if (fmap_hash) {
-		update_and_info("FMAP hash",
-				metadata_hash_anchor_fmap_hash(anchor), fmap_hash,
-				vb2_digest_size(anchor->cbfs_hash.algo));
-	}
-	if (mhc->fixup && mhc->fixup(&buffer, mhc->offset) != 0)
-		return -1;
-	if (!partitioned_file_write_region(param.image_file, &buffer))
-		return -1;
-	return 0;
-
-}
-
-/* This should be called after every time CBFS metadata might have changed. It
-   will recalculate and update the metadata hash in the bootblock if needed. */
-static int maybe_update_metadata_hash(struct cbfs_image *cbfs)
-{
-	if (!is_main_cbfs_region(param.region_name))
-		return 0;  /* Metadata hash only embedded in primary CBFS. */
-
-	struct mh_cache *mhc = get_mh_cache();
-	if (mhc->cbfs_hash.algo == VB2_HASH_INVALID)
-		return 0;
-
-	enum cb_err err = cbfs_walk(cbfs, NULL, NULL, &mhc->cbfs_hash,
-				    CBFS_WALK_WRITEBACK_HASH);
-	if (err != CB_CBFS_NOT_FOUND) {
-		ERROR("Unexpected cbfs_walk() error %d\n", err);
-		return -1;
-	}
-
-	return update_anchor(mhc, NULL);
-}
-
-/* This should be called after every time the FMAP or the bootblock itself might
-   have changed, and will write the new FMAP hash into the metadata hash anchor
-   in the bootblock if required (usually when the bootblock is first added). */
-static int maybe_update_fmap_hash(void)
-{
-	if (strcmp(param.region_name, SECTION_NAME_BOOTBLOCK) &&
-	    strcmp(param.region_name, SECTION_NAME_BOOTBLOCK_B) &&
-	    strcmp(param.region_name, SECTION_NAME_FMAP) &&
-	    param.type != CBFS_TYPE_BOOTBLOCK &&
-	    param.type != CBFS_TYPE_AMDFW)
-		return 0;	/* FMAP and bootblock didn't change. */
-
-	struct mh_cache *mhc = get_mh_cache();
-	if (mhc->cbfs_hash.algo == VB2_HASH_INVALID)
-		return 0;
-
-	struct vb2_hash fmap_hash;
-	const struct fmap *fmap = partitioned_file_get_fmap(param.image_file);
-	if (!fmap || vb2_hash_calculate(false, fmap, fmap_size(fmap),
-					mhc->cbfs_hash.algo, &fmap_hash))
-		return -1;
-	return update_anchor(mhc, fmap_hash.raw);
+	return MHA_NONE;
 }
 
 static bool verification_exclude(enum cbfs_type type)
@@ -353,12 +194,190 @@ static bool verification_exclude(enum cbfs_type type)
 	}
 }
 
+static int setup_mh_anchor(struct mh_anchor *mha, bool need_hash_algo)
+{
+	memset(mha, 0, sizeof(*mha));
+	mha->kind = MHA_NONE;
+	mha->cbfs_hash.algo = VB2_HASH_INVALID;
+
+	if (verification_exclude(param.type)) {
+		if (param.hash != VB2_HASH_INVALID) {
+			ERROR("Cannot specify hash for excluded file type\n");
+			return -1;
+		}
+		need_hash_algo = false;
+	}
+
+	const struct fmap *fmap = partitioned_file_get_fmap(param.image_file);
+	if (!fmap)
+		return 0;
+
+	const enum mha_kind kind = derive_mha_kind(param.region_name);
+	if (kind == MHA_NONE && !need_hash_algo)
+		return 0;
+
+	const char *bootblock_region = SECTION_NAME_BOOTBLOCK;
+	if (kind == MHA_SECONDARY)
+		bootblock_region = SECTION_NAME_BOOTBLOCK_B;
+
+	/* Find the metadata_hash container. If there is a "BOOTBLOCK" FMAP section, it's
+	   there. If not, it's a normal file in the primary CBFS section. */
+	size_t offset, size;
+	struct buffer buffer;
+	if (fmap_find_area(fmap, bootblock_region)) {
+		if (!partitioned_file_read_region(&buffer, param.image_file, bootblock_region))
+			return 0;
+		mha->region = bootblock_region;
+		offset = 0;
+		size = buffer.size;
+	} else {
+		if (kind == MHA_SECONDARY) {
+			/* Top Swap requires BOOTBLOCK_B region. */
+			ERROR("Malformed image: '%s' region is missing\n", bootblock_region);
+			return -1;
+		}
+
+		struct cbfs_image cbfs;
+		struct cbfs_file *mh_container;
+		if (!partitioned_file_read_region(&buffer, param.image_file,
+						  SECTION_NAME_PRIMARY_CBFS))
+			return 0;
+		mha->region = SECTION_NAME_PRIMARY_CBFS;
+		if (cbfs_image_from_buffer(&cbfs, &buffer, param.headeroffset))
+			return 0;
+		mh_container = cbfs_get_entry(&cbfs, "bootblock");
+		if (!mh_container || be32toh(mh_container->type) != CBFS_TYPE_BOOTBLOCK) {
+			/* Check for apu/amdfw file */
+			mh_container = cbfs_get_entry(&cbfs, "apu/amdfw");
+			if (!mh_container || be32toh(mh_container->type) != CBFS_TYPE_AMDFW)
+				return 0;
+		}
+
+		offset = (void *)mh_container + be32toh(mh_container->offset) -
+			 buffer_get(&cbfs.buffer);
+		size = be32toh(mh_container->len);
+	}
+
+	/* Find and validate the metadata hash anchor inside the containing file and
+	   record its exact byte offset from the start of the FMAP region. */
+	struct metadata_hash_anchor *anchor = memmem(buffer_get(&buffer) + offset,
+			size, METADATA_HASH_ANCHOR_MAGIC, sizeof(anchor->magic));
+	if (!anchor)
+		return 0;
+
+	if (!vb2_digest_size(anchor->cbfs_hash.algo)) {
+		ERROR("Unknown CBFS metadata hash type: %d\n",
+		      anchor->cbfs_hash.algo);
+		return -1;
+	}
+
+	mha->kind = kind;
+	mha->cbfs_hash = anchor->cbfs_hash;
+	if (kind != MHA_NONE) {
+		mha->offset = (void *)anchor - buffer_get(&buffer);
+		mha->fixup = platform_fixups_probe(&buffer, mha->offset, mha->region);
+	}
+
+	if (!verification_exclude(param.type)) {
+		if (param.hash == VB2_HASH_INVALID) {
+			param.hash = mha->cbfs_hash.algo;
+		} else if (param.hash != mha->cbfs_hash.algo) {
+			ERROR("Cannot specify hash %s that's different from metadata hash algorithm %s\n",
+			      vb2_get_hash_algorithm_name(param.hash),
+			      vb2_get_hash_algorithm_name(mha->cbfs_hash.algo));
+			return -1;
+		}
+	}
+
+	return 0;
+}
+
+static void update_and_info(const char *name, void *dst, void *src, size_t size)
+{
+	if (!memcmp(dst, src, size))
+		return;
+	char *src_str = bintohex(src, size);
+	char *dst_str = bintohex(dst, size);
+	INFO("Updating %s from %s to %s\n", name, dst_str, src_str);
+	memcpy(dst, src, size);
+	free(src_str);
+	free(dst_str);
+}
+
+/* Recalculates and updates the CBFS metadata hash and/or FMAP hash in the
+   metadata hash anchor if the current operation may have affected them. */
+static int update_mh_anchor(struct mh_anchor *mha)
+{
+	const char *cbfs_region = param.ecbfs_image_file
+		? ecbfs_parent_region(param.region_name)
+		: param.region_name;
+	bool update_cbfs = is_main_cbfs_region(cbfs_region);
+	bool update_fmap = !strcmp(param.region_name, SECTION_NAME_BOOTBLOCK) ||
+			   !strcmp(param.region_name, SECTION_NAME_BOOTBLOCK_B) ||
+			   param.type == CBFS_TYPE_BOOTBLOCK ||
+			   param.type == CBFS_TYPE_AMDFW;
+
+	if (!update_cbfs && !update_fmap)
+		return 0;
+
+	if (update_cbfs) {
+		struct buffer cbfs_buf;
+		if (!partitioned_file_read_region(&cbfs_buf, param.image_file,
+						  cbfs_region))
+			return -1;
+		struct cbfs_image cbfs;
+		if (cbfs_image_from_buffer(&cbfs, &cbfs_buf,
+					   HEADER_OFFSET_UNKNOWN))
+			return -1;
+		enum cb_err err = cbfs_walk(&cbfs, NULL, NULL, &mha->cbfs_hash,
+					    CBFS_WALK_WRITEBACK_HASH);
+		if (err != CB_CBFS_NOT_FOUND) {
+			ERROR("Unexpected cbfs_walk() error %d\n", err);
+			return -1;
+		}
+	}
+
+	struct buffer buffer;
+
+	if (!partitioned_file_read_region(&buffer, param.image_file, mha->region))
+		return -1;
+	struct metadata_hash_anchor *anchor = buffer_get(&buffer) + mha->offset;
+	/* The metadata hash anchor should always still be where we left it. */
+	assert(!memcmp(anchor->magic, METADATA_HASH_ANCHOR_MAGIC,
+		       sizeof(anchor->magic)) &&
+	       anchor->cbfs_hash.algo == mha->cbfs_hash.algo);
+
+	if (update_cbfs)
+		update_and_info("CBFS metadata hash", anchor->cbfs_hash.raw,
+				mha->cbfs_hash.raw,
+				vb2_digest_size(anchor->cbfs_hash.algo));
+
+	if (update_fmap) {
+		struct vb2_hash fmap_hash;
+		const struct fmap *fmap = partitioned_file_get_fmap(param.image_file);
+		if (!fmap || vb2_hash_calculate(false, fmap, fmap_size(fmap),
+						mha->cbfs_hash.algo, &fmap_hash))
+			return -1;
+		update_and_info("FMAP hash",
+				metadata_hash_anchor_fmap_hash(anchor),
+				fmap_hash.raw,
+				vb2_digest_size(anchor->cbfs_hash.algo));
+	}
+
+	if (mha->fixup && mha->fixup(&buffer, mha->offset) != 0)
+		return -1;
+	if (!partitioned_file_write_region(param.image_file, &buffer))
+		return -1;
+	return 0;
+}
+
 static bool region_is_flashmap(const char *region)
 {
 	if (param.ecbfs_image_file)
 		return false;
 
-	return partitioned_file_region_check_magic(param.image_file, region,
+	return !strcmp(region, SECTION_NAME_FMAP) ||
+	       partitioned_file_region_check_magic(param.image_file, region,
 					FMAP_SIGNATURE, strlen(FMAP_SIGNATURE));
 }
 
@@ -725,9 +744,8 @@ static int cbfs_add_integer_component(const char *name,
 	if (!header)
 		goto done;
 
-	enum vb2_hash_algorithm algo = get_mh_cache()->cbfs_hash.algo;
-	if (algo != VB2_HASH_INVALID)
-		if (cbfs_add_file_hash(header, &buffer, algo)) {
+	if (param.hash != VB2_HASH_INVALID)
+		if (cbfs_add_file_hash(header, &buffer, param.hash)) {
 			ERROR("couldn't add hash for '%s'\n", name);
 			goto done;
 		}
@@ -738,7 +756,7 @@ static int cbfs_add_integer_component(const char *name,
 		goto done;
 	}
 
-	ret = maybe_update_metadata_hash(&image);
+	ret = 0;
 
 done:
 	free(header);
@@ -878,7 +896,7 @@ static int cbfs_add_master_header(void)
 			goto done;
 	}
 
-	ret = maybe_update_metadata_hash(&image);
+	ret = 0;
 
 done:
 	free(header);
@@ -994,23 +1012,6 @@ static int cbfs_add_component(const char *filename,
 	if (!header)
 		goto error;
 
-	/* Bootblock and CBFS header should never have file hashes. When adding
-	   the bootblock it is important that we *don't* look up the metadata
-	   hash yet (before it is added) or we'll cache an outdated result. */
-	if (!verification_exclude(param.type)) {
-		enum vb2_hash_algorithm mh_algo = get_mh_cache()->cbfs_hash.algo;
-		if (mh_algo != VB2_HASH_INVALID && param.hash != mh_algo) {
-			if (param.hash == VB2_HASH_INVALID) {
-				param.hash = mh_algo;
-			} else {
-				ERROR("Cannot specify hash %s that's different from metadata hash algorithm %s\n",
-				      vb2_get_hash_algorithm_name(param.hash),
-				      vb2_get_hash_algorithm_name(mh_algo));
-				goto error;
-			}
-		}
-	}
-
 	/*
 	 * Check if Intel CPU topswap is specified this will require a
 	 * second bootblock to be added.
@@ -1096,8 +1097,7 @@ static int cbfs_add_component(const char *filename,
 
 	free(header);
 	buffer_delete(&buffer);
-
-	return maybe_update_metadata_hash(&image) || maybe_update_fmap_hash();
+	return 0;
 
 error:
 	free(header);
@@ -1459,7 +1459,7 @@ static int cbfs_remove(void)
 		return 1;
 	}
 
-	return maybe_update_metadata_hash(&image);
+	return 0;
 }
 
 static int cbfs_create(void)
@@ -1649,11 +1649,13 @@ static int cbfs_print(void)
 
 	if (verbose) {
 		const char *verification_state = "fully valid";
-		struct mh_cache *mhc = get_mh_cache();
-		if (mhc->cbfs_hash.algo == VB2_HASH_INVALID)
+		struct mh_anchor mha = { .kind = MHA_NONE };
+		if (setup_mh_anchor(&mha, true))
+			return 1;
+		if (mha.cbfs_hash.algo == VB2_HASH_INVALID)
 			return 0;
 
-		struct vb2_hash real_hash = { .algo = mhc->cbfs_hash.algo };
+		struct vb2_hash real_hash = { .algo = mha.cbfs_hash.algo };
 		enum cb_err err = cbfs_walk(&image, verify_walker, buffer_get(&image.buffer),
 					    &real_hash, CBFS_WALK_WRITEBACK_HASH);
 		if (err == CB_CBFS_HASH_MISMATCH)
@@ -1665,7 +1667,7 @@ static int cbfs_print(void)
 		printf("[METADATA HASH]\t%s:%s",
 		       vb2_get_hash_algorithm_name(real_hash.algo), hash_str);
 		if (is_main_cbfs_region(param.region_name)) {
-			if (!memcmp(mhc->cbfs_hash.raw, real_hash.raw,
+			if (!memcmp(mha.cbfs_hash.raw, real_hash.raw,
 				    vb2_digest_size(real_hash.algo))) {
 				printf(":valid");
 			} else {
@@ -1776,8 +1778,7 @@ static int cbfs_write(void)
 	memcpy(param.image_region->data + offset, new_content.data,
 							new_content.size);
 	buffer_delete(&new_content);
-
-	return maybe_update_fmap_hash();
+	return 0;
 }
 
 static int cbfs_read(void)
@@ -2178,6 +2179,11 @@ static int calculate_region_offsets(void)
 
 static int dispatch_command(struct command command)
 {
+	struct mh_anchor mha = { .kind = MHA_NONE };
+	bool may_add_new_mh_anchor = command.function == cbfs_write ||
+				     param.type == CBFS_TYPE_BOOTBLOCK ||
+				     param.type == CBFS_TYPE_AMDFW;
+
 	if (command.accesses_region) {
 		assert(param.image_file);
 
@@ -2220,6 +2226,11 @@ static int dispatch_command(struct command command)
 				ERROR("The image will be left unmodified.\n");
 				return 1;
 			}
+
+			if (command.function != cbfs_create &&
+			    !may_add_new_mh_anchor &&
+			    setup_mh_anchor(&mha, command_adds_entry(&command)))
+				return 1;
 		}
 
 		/*
@@ -2237,6 +2248,13 @@ static int dispatch_command(struct command command)
 			ERROR("The image will be left unmodified.\n");
 		}
 		return 1;
+	}
+
+	if (command.modifies_region && command.function != cbfs_create) {
+		if (may_add_new_mh_anchor && setup_mh_anchor(&mha, false))
+			return 1;
+		if (mha.kind != MHA_NONE && update_mh_anchor(&mha))
+			return 1;
 	}
 
 	return 0;
@@ -2689,7 +2707,7 @@ int main(int argc, char **argv)
 				}
 
 				const char *parent_region =
-					param.region_name + strlen("ECBFS_");
+					ecbfs_parent_region(param.region_name);
 				if (!region_is_modern_cbfs(parent_region)) {
 					ERROR("Parent region '%s' is not a valid CBFS\n",
 					      parent_region);

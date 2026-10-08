@@ -532,6 +532,28 @@
             "speedMbps": 9600,
             "lp5x": true
         }
+    },
+    {
+        "name":  "FX5P2004G-65",
+        "attribs": {
+            "densityPerDieGb": 16,
+            "diesPerPackage": 2,
+            "bitWidthPerChannel": 16,
+            "ranksPerChannel": 1,
+            "speedMbps": 8533,
+            "lp5x": true
+        }
+    },
+    {
+        "name":  "FX5P4008G-65",
+        "attribs": {
+            "densityPerDieGb": 16,
+            "diesPerPackage": 4,
+            "bitWidthPerChannel": 16,
+            "ranksPerChannel": 2,
+            "speedMbps": 8533,
+            "lp5x": true
+        }
     }
     ]
 }

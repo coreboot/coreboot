@@ -174,6 +174,8 @@ spd_cache-ddr3-test-config += CONFIG_DIMM_MAX=4 CONFIG_DIMM_SPD_SIZE=256 \
 				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
 spd_cache-ddr3-test-cflags += -D__TEST_SPD_CACHE_DDR=3
 spd_cache-ddr3-test-cflags += -I tests/include/tests/lib/fmap
+spd_cache-ddr3-test-cflags += -DFMAP_SECTION_RW_SPD_CACHE_START=0x430000
+spd_cache-ddr3-test-cflags += -DFMAP_SECTION_RW_SPD_CACHE_SIZE=0x2000
 
 spd_cache-ddr4-test-srcs += tests/lib/spd_cache-test.c
 spd_cache-ddr4-test-srcs += tests/stubs/console.c
@@ -185,6 +187,8 @@ spd_cache-ddr4-test-config += CONFIG_DIMM_MAX=4 CONFIG_DIMM_SPD_SIZE=512 \
 				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
 spd_cache-ddr4-test-cflags += -D__TEST_SPD_CACHE_DDR=4
 spd_cache-ddr4-test-cflags += -I tests/include/tests/lib/fmap
+spd_cache-ddr4-test-cflags += -DFMAP_SECTION_RW_SPD_CACHE_START=0x430000
+spd_cache-ddr4-test-cflags += -DFMAP_SECTION_RW_SPD_CACHE_SIZE=0x2000
 
 spd_cache-ddr5-test-srcs += tests/lib/spd_cache-test.c
 spd_cache-ddr5-test-srcs += tests/stubs/console.c
@@ -196,6 +200,8 @@ spd_cache-ddr5-test-config += CONFIG_DIMM_MAX=4 CONFIG_DIMM_SPD_SIZE=1024 \
 				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
 spd_cache-ddr5-test-cflags += -D__TEST_SPD_CACHE_DDR=5
 spd_cache-ddr5-test-cflags += -I tests/include/tests/lib/fmap
+spd_cache-ddr5-test-cflags += -DFMAP_SECTION_RW_SPD_CACHE_START=0x430000
+spd_cache-ddr5-test-cflags += -DFMAP_SECTION_RW_SPD_CACHE_SIZE=0x2000
 
 cbmem_stage_cache-test-srcs += tests/lib/cbmem_stage_cache-test.c
 cbmem_stage_cache-test-srcs += tests/stubs/console.c

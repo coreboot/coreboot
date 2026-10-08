@@ -1,12 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <crc_byte.h>
 #include <device/dram/ddr3.h>
 #include <device/dram/ddr4.h>
 #include <device/dram/ddr5.h>
 #include <fmap.h>
+#include <fmap_config.h>
 #include <security/vboot/antirollback.h>
 #include <security/vboot/mrc_cache_hash_tpm.h>
 #include <spd_cache.h>
@@ -28,8 +30,23 @@
  *    |  CRC 16  |   Use to verify the data correctness.
  *    +==========+
  *
- *  The size of the RW_SPD_CACHE needs to be aligned with 4KiB.
+ *  The CRC is omitted when SPD_CACHE_TPM_HASH is enabled.
+ *  RW_SPD_CACHE must be 4 KiB aligned because it is erased as a whole.
  */
+
+#define SC_MIN_REGION_SIZE \
+	(SC_SPD_TOTAL_LEN + (CONFIG(SPD_CACHE_TPM_HASH) ? 0 : SC_CRC_LEN))
+
+#ifndef FMAP_SECTION_RW_SPD_CACHE_SIZE
+#error "SPD_CACHE_IN_FMAP requires an RW_SPD_CACHE region in the FMAP"
+#endif
+
+_Static_assert(IS_ALIGNED(FMAP_SECTION_RW_SPD_CACHE_START, 4 * KiB) &&
+	       IS_ALIGNED(FMAP_SECTION_RW_SPD_CACHE_SIZE, 4 * KiB),
+	       "RW_SPD_CACHE FMAP region must be 4 KiB aligned");
+
+_Static_assert(FMAP_SECTION_RW_SPD_CACHE_SIZE >= SC_MIN_REGION_SIZE,
+	       "RW_SPD_CACHE FMAP region is too small for CONFIG_DIMM_MAX SPDs");
 
 /*
  * Use to update SPD cache.

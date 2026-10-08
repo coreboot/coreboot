@@ -54,8 +54,8 @@ static enum cb_err build_walker(cbfs_dev_t dev, size_t offset, const union cbfs_
 	if (cbfs_copy_fill_metadata(args->mcache, mdata, already_read, dev, offset))
 		return CB_CBFS_IO;
 
-	entry->magic = MCACHE_MAGIC_FILE;
-	entry->offset = offset;
+	entry->magic = htole32(MCACHE_MAGIC_FILE);
+	entry->offset = htole32(offset);
 
 	args->mcache += ALIGN_UP(data_offset, CBFS_MCACHE_ALIGNMENT);
 	args->count++;
@@ -78,10 +78,10 @@ enum cb_err cbfs_mcache_build(cbfs_dev_t dev, void *mcache, size_t size,
 	union mcache_entry *entry = args.mcache;
 	if (ret == CB_CBFS_NOT_FOUND) {
 		ret = CB_SUCCESS;
-		entry->magic = MCACHE_MAGIC_END;
+		entry->magic = htole32(MCACHE_MAGIC_END);
 	} else if (ret == CB_CBFS_CACHE_FULL) {
 		ERROR("mcache overflow, should increase CBFS_MCACHE size!\n");
-		entry->magic = MCACHE_MAGIC_FULL;
+		entry->magic = htole32(MCACHE_MAGIC_FULL);
 	}
 
 	LOG("mcache @%p built for %d files, used %#zx of %#zx bytes\n", mcache,
@@ -98,20 +98,22 @@ enum cb_err cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const cha
 
 	while (current + sizeof(uint32_t) <= end) {
 		const union mcache_entry *entry = current;
+		const uint32_t magic = le32toh(entry->magic);
 
-		if (entry->magic == MCACHE_MAGIC_END)
+		if (magic == MCACHE_MAGIC_END)
 			return CB_CBFS_NOT_FOUND;
-		if (entry->magic == MCACHE_MAGIC_FULL)
+		if (magic == MCACHE_MAGIC_FULL)
 			return CB_CBFS_CACHE_FULL;
 
-		assert(entry->magic == MCACHE_MAGIC_FILE);
+		assert(magic == MCACHE_MAGIC_FILE);
 		const uint32_t data_offset = be32toh(entry->file.h.offset);
 		const uint32_t data_length = be32toh(entry->file.h.len);
 		if (namesize <= data_offset - offsetof(union cbfs_mdata, h.filename) &&
 		    memcmp(name, entry->file.h.filename, namesize) == 0) {
+			const uint32_t file_offset = le32toh(entry->offset);
 			LOG("Found '%s' @%#x size %#x in mcache @%p\n",
-			    name, entry->offset, data_length, current);
-			*data_offset_out = entry->offset + data_offset;
+			    name, file_offset, data_length, current);
+			*data_offset_out = file_offset + data_offset;
 			memcpy(mdata_out, &entry->file, data_offset);
 			return CB_SUCCESS;
 		}
@@ -130,13 +132,14 @@ size_t cbfs_mcache_real_size(const void *mcache, size_t mcache_size)
 
 	while (current + sizeof(uint32_t) <= end) {
 		const union mcache_entry *entry = current;
+		const uint32_t magic = le32toh(entry->magic);
 
-		if (entry->magic == MCACHE_MAGIC_FULL || entry->magic == MCACHE_MAGIC_END) {
+		if (magic == MCACHE_MAGIC_FULL || magic == MCACHE_MAGIC_END) {
 			current += sizeof(entry->magic);
 			break;
 		}
 
-		assert(entry->magic == MCACHE_MAGIC_FILE);
+		assert(magic == MCACHE_MAGIC_FILE);
 		current += ALIGN_UP(be32toh(entry->file.h.offset), CBFS_MCACHE_ALIGNMENT);
 	}
 

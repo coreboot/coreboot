@@ -9,5 +9,5 @@ SPD_SOURCES += spd/lp5/set-0/spd-1.hex      # ID = 1(0b0001)  Parts = MT62F512M3
 SPD_SOURCES += spd/lp5/set-0/spd-5.hex      # ID = 2(0b0010)  Parts = K3LKLKL0EM-MGCN
 SPD_SOURCES += spd/lp5/set-0/spd-3.hex      # ID = 3(0b0011)  Parts = K3LKBKB0BM-MGCP
 SPD_SOURCES += spd/lp5/set-0/spd-7.hex      # ID = 4(0b0100)  Parts = K3KL8L80CM-MGCT
-SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 5(0b0101)  Parts = H58G56BK8BX068, H58G56CK8BX146
-SPD_SOURCES += spd/lp5/set-0/spd-10.hex      # ID = 6(0b0110)  Parts = H58G66CK8BX147
+SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 5(0b0101)  Parts = H58G56BK8BX068, H58G56CK8BX146, FX5P2004G-65
+SPD_SOURCES += spd/lp5/set-0/spd-10.hex      # ID = 6(0b0110)  Parts = H58G66CK8BX147, FX5P4008G-65

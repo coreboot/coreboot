@@ -1139,7 +1139,9 @@ endif
 
 ifeq ($(CONFIG_SPD_CACHE_IN_FMAP),y)
 FMAP_SPD_CACHE_BASE := $(call int-align, $(FMAP_CURRENT_BASE), 0x4000)
+# SPD data for every DIMM followed by a 16-bit CRC
 FMAP_SPD_CACHE_SIZE := $(call int-multiply, $(CONFIG_DIMM_MAX) $(CONFIG_DIMM_SPD_SIZE))
+FMAP_SPD_CACHE_SIZE := $(call int-add, $(FMAP_SPD_CACHE_SIZE) 2)
 FMAP_SPD_CACHE_SIZE := $(call int-align, $(FMAP_SPD_CACHE_SIZE), 0x1000)
 FMAP_SPD_CACHE_ENTRY := $(call strip_quotes,$(CONFIG_SPD_CACHE_FMAP_NAME))@$(call _tohex,$(FMAP_SPD_CACHE_BASE)) $(call _tohex,$(FMAP_SPD_CACHE_SIZE))
 FMAP_CURRENT_BASE := $(call int-add, $(FMAP_SPD_CACHE_BASE) $(FMAP_SPD_CACHE_SIZE))

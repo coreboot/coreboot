@@ -117,7 +117,8 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 				     &config->cnvi_bt_en_gpio,
 				     &config->cnvi_bt_if_select_gpio,
 				     config->cnvi_bt_audio_offload,
-				     config->is_cnvi_bluetooth);
+				     config->use_cnvi_pldr_reset &&
+				     !config->reset_gpio.pin_count);
 
 	acpigen_pop_len();
 

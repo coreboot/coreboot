@@ -50,9 +50,8 @@ struct drivers_usb_acpi_config {
 	/* Intel Bluetooth */
 	bool is_intel_bluetooth;
 	bool cnvi_bt_audio_offload;
-	/* CNVi BT over USB: no PCI function or reset GPIO, so _RST uses the CNVi
-	   PLDR. Not for a discrete Intel USB BT on a CNVi-capable platform. */
-	bool is_cnvi_bluetooth;
+	/* Use the CNVi PLDR in _RST when there is no reset GPIO. */
+	bool use_cnvi_pldr_reset;
 
 	/* GPIO used to take device out of reset or to put it into reset. */
 	struct acpi_gpio reset_gpio;

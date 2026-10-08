@@ -1561,6 +1561,20 @@ u8 acpi_checksum(u8 *table, u32 length);
 void acpi_add_table(acpi_rsdp_t *rsdp, void *table);
 
 /**
+ * Fill an ACPI table header with the provided information and
+ * hardcode the OEM ID, OEM table ID, and ASL compiler ID.
+ *
+ * @param header Pointer to the ACPI table header to fill.
+ * @param name   4-character ACPI table signature.
+ * @param table  ACPI table type.
+ * @param size   Size of the ACPI table.
+ *
+ * @return CB_SUCCESS on success, CB_ERR on failure.
+ */
+enum cb_err acpi_fill_header(acpi_header_t *header, const char name[4],
+			     enum acpi_tables table, uint32_t size);
+
+/**
  * @brief Check if writing to ACPI table exceeds the allocated buffer limit.
  *
  * This function checks if writing 'size' bytes at 'current' address would

@@ -109,8 +109,8 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 		i + 1, entries_num, xsdt->header.length);
 }
 
-static enum cb_err acpi_fill_header(acpi_header_t *header, const char name[4],
-				    enum acpi_tables table, uint32_t size)
+enum cb_err acpi_fill_header(acpi_header_t *header, const char name[4],
+			     enum acpi_tables table, uint32_t size)
 {
 	if (!header)
 		return CB_ERR;

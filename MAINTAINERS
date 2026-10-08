@@ -374,6 +374,7 @@ GOOGLE OCELOT MAINBOARDS
 M:	Nick Vaccaro <nvaccaro@chromium.org>
 M:	Pranava Y N <pranavayn@google.com>
 M:	Avi Uday <aviuday@google.com>
+M:	Caveh Jalali <caveh@chromium.org>
 F:	src/mainboard/google/ocelot/
 
 GOOGLE VOLTEER MAINBOARDS

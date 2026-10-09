@@ -275,6 +275,17 @@ usb_hub_destroy(usbdev_t *const dev)
 	generic_hub_destroy(dev);
 }
 
+/* This is returning "tier" numbers like in the USB 2.0 spec 4.1.1: RH is 1,
+   first attached hub is 2, max possible hub is 6, max possible device is 7. */
+static int
+usb_hub_get_tier(usbdev_t *dev)
+{
+	int i;
+	for (i = 2; dev->hub > 0 && dev->hub < 128; i++)
+		dev = dev->controller->devices[dev->hub];
+	return i;
+}
+
 void
 usb_hub_init(usbdev_t *const dev)
 {
@@ -290,6 +301,13 @@ usb_hub_init(usbdev_t *const dev)
 	if (get_descriptor(dev, gen_bmRequestType(device_to_host, class_type,
 		dev_recp), type, 0, &desc, sizeof(desc)) != sizeof(desc)) {
 		usb_debug("get_descriptor(HUB) failed\n");
+		usb_detach_device(dev->controller, dev->address);
+		return;
+	}
+
+	/* Enforce USB spec limit; also good to sanity check our stack depth */
+	if (usb_hub_get_tier(dev) > 6) {
+		usb_debug("USB topology depth limit exceeded\n");
 		usb_detach_device(dev->controller, dev->address);
 		return;
 	}

@@ -34,10 +34,10 @@
 #define  PCIEXBAR_PCIEXBAREN	(1 << 0)
 
 /* MCHBAR */
-#define MCHBAR8(x)	(*(volatile u8 *)(uintptr_t)(MCH_BASE_ADDRESS + x))
-#define MCHBAR16(x)	(*(volatile u16 *)(uintptr_t)(MCH_BASE_ADDRESS + x))
-#define MCHBAR32(x)	(*(volatile u32 *)(uintptr_t)(MCH_BASE_ADDRESS + x))
-#define MCHBAR64(x)	(*(volatile u64 *)(uintptr_t)(MCH_BASE_ADDRESS + x))
+#define MCHBAR8(x)	(*(volatile u8 *)(uintptr_t)(MCH_BASE_ADDRESS + (x)))
+#define MCHBAR16(x)	(*(volatile u16 *)(uintptr_t)(MCH_BASE_ADDRESS + (x)))
+#define MCHBAR32(x)	(*(volatile u32 *)(uintptr_t)(MCH_BASE_ADDRESS + (x)))
+#define MCHBAR64(x)	(*(volatile u64 *)(uintptr_t)(MCH_BASE_ADDRESS + (x)))
 
 /* REGBAR */
 #define REGBAR_OFFSET(pid, x)	(REG_BASE_ADDRESS + ((pid) << 16) + (x))

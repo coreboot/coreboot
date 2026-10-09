@@ -15,6 +15,7 @@ ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB) += hda_verb.c
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
 ramstage-y += ramstage.c
 
 subdirs-y += variants/baseboard

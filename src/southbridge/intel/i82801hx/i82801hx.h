@@ -34,23 +34,8 @@
 
 #define D31F0_PMBASE         0x40
 #define D31F0_ACPI_CNTL      0x44
-#define D31F0_GPIO_BASE      0x48
 #define D31F0_GPIO_CNTL      0x4c
-#define D31F0_PIRQA_ROUT     0x60
-#define D31F0_PIRQB_ROUT     0x61
-#define D31F0_PIRQC_ROUT     0x62
-#define D31F0_PIRQD_ROUT     0x63
 #define D31F0_SERIRQ_CNTL    0x64
-#define D31F0_PIRQE_ROUT     0x68
-#define D31F0_PIRQF_ROUT     0x69
-#define D31F0_PIRQG_ROUT     0x6a
-#define D31F0_PIRQH_ROUT     0x6b
-#define D31F0_LPC_IODEC      0x80
-#define D31F0_LPC_EN         0x82
-#define D31F0_GEN1_DEC       0x84
-#define D31F0_GEN2_DEC       0x88
-#define D31F0_GEN3_DEC       0x8c
-#define D31F0_GEN4_DEC       0x90
 #define D31F0_GEN_PMCON_1    0xa0
 #define D31F0_GEN_PMCON_2    0xa2
 #define D31F0_GEN_PMCON_3    0xa4

@@ -15,6 +15,7 @@
 #include <delay.h>
 #include <southbridge/intel/i82801hx/i82801hx.h>
 #include <southbridge/intel/common/gpio.h>
+#include <southbridge/intel/common/lpc_def.h>
 #include <southbridge/intel/common/pmutil.h>
 #include <southbridge/intel/common/pmbase.h>
 #include "chip.h"
@@ -25,7 +26,7 @@ void i82801hx_lpc_setup(void)
 	pci_write_config8(D31F0, D31F0_SERIRQ_CNTL, 0xd0);
 
 	/* LPC I/O decode ranges */
-	pci_write_config16(D31F0, D31F0_LPC_IODEC, 0x0010);
+	pci_write_config16(D31F0, LPC_IO_DEC, 0x0010);
 
 	/*
 	 * Enable LPC I/O decode for:
@@ -36,9 +37,9 @@ void i82801hx_lpc_setup(void)
 	 *   COMB (0x2F8)      - Serial port
 	 *   COMA (0x3F8)      - Serial port
 	 */
-	pci_write_config16(D31F0, D31F0_LPC_EN,
-			   LPC_EN_CNF2 | LPC_EN_CNF1 | LPC_EN_MC | LPC_EN_KBC | LPC_EN_COMB |
-				   LPC_EN_COMA);
+	pci_write_config16(D31F0, LPC_EN,
+			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN | COMB_LPC_EN |
+				   COMA_LPC_EN);
 
 	/* Generic decode ranges from chip config (devicetree). */
 	const struct device *dev = pcidev_on_root(0x1f, 0);
@@ -46,10 +47,10 @@ void i82801hx_lpc_setup(void)
 
 	if (dev && dev->chip_info) {
 		config = dev->chip_info;
-		pci_write_config32(D31F0, D31F0_GEN1_DEC, config->gen1_dec);
-		pci_write_config32(D31F0, D31F0_GEN2_DEC, config->gen2_dec);
-		pci_write_config32(D31F0, D31F0_GEN3_DEC, config->gen3_dec);
-		pci_write_config32(D31F0, D31F0_GEN4_DEC, config->gen4_dec);
+		pci_write_config32(D31F0, LPC_GEN1_DEC, config->gen1_dec);
+		pci_write_config32(D31F0, LPC_GEN2_DEC, config->gen2_dec);
+		pci_write_config32(D31F0, LPC_GEN3_DEC, config->gen3_dec);
+		pci_write_config32(D31F0, LPC_GEN4_DEC, config->gen4_dec);
 	}
 }
 
@@ -87,7 +88,7 @@ void i82801hx_early_init(void)
 	pci_write_config8(D31F0, D31F0_ACPI_CNTL, 0x80);
 
 	/* Set up GPIOBASE (D31:F0 offset 0x48) */
-	pci_write_config32(D31F0, D31F0_GPIO_BASE, DEFAULT_GPIOBASE);
+	pci_write_config32(D31F0, GPIOBASE, DEFAULT_GPIOBASE);
 	/* Enable GPIO I/O decode (D31:F0 offset 0x4C bit 4) */
 	pci_or_config8(D31F0, D31F0_GPIO_CNTL, 0x10);
 

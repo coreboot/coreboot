@@ -26,6 +26,7 @@
 #include <cpu/intel/speedstep.h>
 #include <option.h>
 #include <southbridge/intel/common/hpet.h>
+#include <southbridge/intel/common/lpc_def.h>
 #include <southbridge/intel/common/pciehp.h>
 #include <southbridge/intel/common/pmutil.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
@@ -195,14 +196,14 @@ static void lpc_pirq_init(struct device *dev)
 	struct device *irq_dev;
 	struct southbridge_intel_i82801hx_config *config = dev->chip_info;
 
-	pci_write_config8(dev, D31F0_PIRQA_ROUT, config->pirqa_routing);
-	pci_write_config8(dev, D31F0_PIRQB_ROUT, config->pirqb_routing);
-	pci_write_config8(dev, D31F0_PIRQC_ROUT, config->pirqc_routing);
-	pci_write_config8(dev, D31F0_PIRQD_ROUT, config->pirqd_routing);
-	pci_write_config8(dev, D31F0_PIRQE_ROUT, config->pirqe_routing);
-	pci_write_config8(dev, D31F0_PIRQF_ROUT, config->pirqf_routing);
-	pci_write_config8(dev, D31F0_PIRQG_ROUT, config->pirqg_routing);
-	pci_write_config8(dev, D31F0_PIRQH_ROUT, config->pirqh_routing);
+	pci_write_config8(dev, PIRQA_ROUT, config->pirqa_routing);
+	pci_write_config8(dev, PIRQB_ROUT, config->pirqb_routing);
+	pci_write_config8(dev, PIRQC_ROUT, config->pirqc_routing);
+	pci_write_config8(dev, PIRQD_ROUT, config->pirqd_routing);
+	pci_write_config8(dev, PIRQE_ROUT, config->pirqe_routing);
+	pci_write_config8(dev, PIRQF_ROUT, config->pirqf_routing);
+	pci_write_config8(dev, PIRQG_ROUT, config->pirqg_routing);
+	pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
 
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
 		u8 int_pin = 0, int_line = 0;

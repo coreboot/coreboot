@@ -86,6 +86,9 @@ config MAINBOARD_PART_NUMBER
 	default "Arcada" if BOARD_GOOGLE_ARCADA
 	default "Sarien" if BOARD_GOOGLE_SARIEN
 
+config SYSTEM_SMBIOS_MANUFACTURER
+	default "GOOGLE"
+
 config MAX_CPUS
 	int
 	default 8

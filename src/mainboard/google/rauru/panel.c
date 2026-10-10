@@ -2,24 +2,39 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/panel.h>
-#include <device/mmio.h>
 #include <fw_config.h>
 #include <gpio.h>
-#include <soc/addressmap.h>
 #include <soc/ddp.h>
 #include <soc/dsi.h>
+#include <soc/pwm.h>
 #include <variants.h>
 
 void configure_backlight(struct panel_description *panel, bool enable)
 {
-	/*
-	 * Enable PWM for seamless display support. We only need to set
-	 * the enable bit so the kernel can detect the PWM is active.
-	 */
-	clrsetbits32p(DISP_PWM_BASE, BIT(0), enable ? BIT(0) : 0);
+	if (!enable) {
+		gpio_output(GPIO_AP_EDP_BKLTEN, 0);
+		gpio_output(GPIO_BL_PWM_1V8, 0);
+		mtk_disp_pwm_set_en(false);
+		return;
+	}
 
-	gpio_output(GPIO_AP_EDP_BKLTEN, enable);
-	gpio_output(GPIO_BL_PWM_1V8, enable);
+	/*
+	 * Switch BL_PWM_1V8 to DISP_PWM before asserting BKLTEN; it defaults
+	 * to GPIO-high (100%) and would drop to the PWM duty at kernel
+	 * pinmux time, causing a visible flash.
+	 *
+	 * Panels without kernel backlight data keep BL_PWM_1V8 as a plain GPIO;
+	 * DISP_PWM is only flagged active so the kernel can detect it.
+	 */
+	if (panel->backlight.max &&
+	    !mtk_disp_pwm_config(panel->backlight.period_ns, panel->backlight.level,
+				 panel->backlight.max))
+		gpio_set_mode(GPIO_BL_PWM_1V8, GPIO_FUNC(DISP_PWM, DISP_PWM));
+	else
+		gpio_output(GPIO_BL_PWM_1V8, 1);
+
+	mtk_disp_pwm_set_en(true);
+	gpio_output(GPIO_AP_EDP_BKLTEN, 1);
 }
 
 static void power_on_panel(void)

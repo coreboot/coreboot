@@ -36,6 +36,12 @@ static struct panel_description sapphire_panels[] = {
 		.name = "BOE_NS130069_M00",
 		.disp_path = DISP_PATH_DUAL_MIPI,
 		.orientation = LB_FB_ORIENTATION_NORMAL,
+		/*
+		 * Match the kernel pwm-backlight: pwms period 500000 ns
+		 * (mt8196-rauru.dtsi), default-brightness-level = 768 ->
+		 * brightness-levels[768] = 769, scale 1023.
+		 */
+		.backlight = { .period_ns = 500000, .level = 769, .max = 1023 },
 	},
 };
 

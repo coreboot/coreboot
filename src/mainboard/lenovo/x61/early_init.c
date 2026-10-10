@@ -6,6 +6,7 @@
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/gm965/gm965.h>
+#include <southbridge/intel/common/lpc_def.h>
 #include <southbridge/intel/i82801hx/i82801hx.h>
 #include "dock.h"
 
@@ -13,7 +14,7 @@
 void mainboard_lpc_decode(void)
 {
 	/* decode range */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), D31F0_LPC_IODEC, 0x0210);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0210);
 }
 
 static void early_superio_config(void)

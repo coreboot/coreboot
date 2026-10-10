@@ -10,6 +10,7 @@
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
 #include <intelblocks/cpulib.h>
+#include <option.h>
 #include <pc80/keyboard.h>
 #include <stdint.h>
 
@@ -122,6 +123,85 @@ static int wilco_set_cpu_id(void)
 	return wilco_ec_set_cpuid(cpu_get_cpuid(), cpu_phy_cores, 0);
 }
 
+static int wilco_ec_set_charge_limits(uint8_t start, uint8_t stop, uint8_t cur_stop)
+{
+	/* Order the writes so the lower limit stays below the upper limit */
+	if (start >= cur_stop) {
+		if (wilco_ec_set_byte_property(PID_CHARGE_UPPER_LIMIT, stop))
+			return -1;
+		return wilco_ec_set_byte_property(PID_CHARGE_LOWER_LIMIT, start);
+	}
+
+	if (wilco_ec_set_byte_property(PID_CHARGE_LOWER_LIMIT, start))
+		return -1;
+	return wilco_ec_set_byte_property(PID_CHARGE_UPPER_LIMIT, stop);
+}
+
+/*
+ * The charge mode and limits live in EC NVRAM and the OS may change them,
+ * so only write them when they differ from the selected option values.
+ */
+static void wilco_ec_init_charge_mode(void)
+{
+	const unsigned int mode = get_uint_option_checked("ec_charge_mode",
+		CHARGE_MODE_EC_DEFAULT,
+		OPTION_ENUM(CHARGE_MODE_STANDARD, CHARGE_MODE_CUSTOM));
+	const unsigned int start = get_uint_option_checked("ec_charge_start", 60,
+		OPTION_RANGE(CHARGE_LOWER_LIMIT_MIN, CHARGE_LOWER_LIMIT_MAX));
+	const unsigned int stop = get_uint_option_checked("ec_charge_stop", 90,
+		OPTION_RANGE(CHARGE_UPPER_LIMIT_MIN, CHARGE_UPPER_LIMIT_MAX));
+	uint8_t cur_mode, cur_start, cur_stop;
+	bool changed = false;
+
+	if (wilco_ec_get_byte_property(PID_CHARGE_MODE, &cur_mode) ||
+	    wilco_ec_get_byte_property(PID_CHARGE_LOWER_LIMIT, &cur_start) ||
+	    wilco_ec_get_byte_property(PID_CHARGE_UPPER_LIMIT, &cur_stop)) {
+		printk(BIOS_ERR, "EC: failed to read battery charge settings\n");
+		return;
+	}
+
+	printk(BIOS_INFO, "EC: battery charge mode %u, start %u%%, stop %u%%\n",
+	       cur_mode, cur_start, cur_stop);
+
+	if (mode == CHARGE_MODE_EC_DEFAULT) {
+		printk(BIOS_INFO, "EC: battery charge mode override disabled\n");
+		return;
+	}
+
+	if (cur_mode == CHARGE_MODE_LONG_LIFE) {
+		printk(BIOS_WARNING, "EC: Long Life charge mode is locked\n");
+		return;
+	}
+
+	if (mode == CHARGE_MODE_CUSTOM) {
+		if (start + CHARGE_LIMIT_MIN_GAP > stop) {
+			printk(BIOS_WARNING,
+			       "EC: ignoring invalid charge limits start=%u stop=%u\n",
+			       start, stop);
+			return;
+		}
+		if (cur_start != start || cur_stop != stop) {
+			if (wilco_ec_set_charge_limits(start, stop, cur_stop)) {
+				printk(BIOS_ERR, "EC: failed to set battery charge limits\n");
+				return;
+			}
+			changed = true;
+		}
+	}
+
+	if (cur_mode != mode) {
+		if (wilco_ec_set_byte_property(PID_CHARGE_MODE, mode)) {
+			printk(BIOS_ERR, "EC: failed to set battery charge mode\n");
+			return;
+		}
+		changed = true;
+	}
+
+	if (changed)
+		printk(BIOS_INFO, "EC: battery charge mode set to %u, start %u%%, stop %u%%\n",
+		       mode, start, stop);
+}
+
 static void wilco_ec_init(struct device *dev)
 {
 	if (!dev->enabled)
@@ -155,6 +235,8 @@ static void wilco_ec_init(struct device *dev)
 	/* Set cpu id and phy cores */
 	if (wilco_set_cpu_id())
 		printk(BIOS_ERR, "EC: use default cpu power table\n");
+
+	wilco_ec_init_charge_mode();
 }
 
 static void wilco_ec_resource(struct device *dev, int index,

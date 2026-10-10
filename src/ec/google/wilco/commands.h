@@ -339,4 +339,56 @@ void wilco_ec_save_post_code(uint8_t post_code);
  */
 int wilco_ec_set_cpuid(uint32_t cpuid, uint8_t cpu_cores, uint8_t gpu_cores);
 
+/*
+ * EC NVRAM Properties
+ */
+
+enum ec_property_id {
+	PID_CHARGE_MODE = 0x0710,
+	PID_CHARGE_LOWER_LIMIT = 0x0711,
+	PID_CHARGE_UPPER_LIMIT = 0x0712,
+};
+
+enum ec_charge_mode {
+	CHARGE_MODE_EC_DEFAULT = 0,	/* CFR only: leave the EC setting alone */
+	CHARGE_MODE_STANDARD = 1,
+	CHARGE_MODE_EXPRESS = 2,
+	CHARGE_MODE_PRIMARILY_AC = 3,
+	CHARGE_MODE_ADAPTIVE = 4,
+	CHARGE_MODE_CUSTOM = 5,
+	CHARGE_MODE_LONG_LIFE = 6,	/* Factory setting, EC rejects changes */
+};
+
+#define CHARGE_LOWER_LIMIT_MIN	50
+#define CHARGE_LOWER_LIMIT_MAX	95
+#define CHARGE_UPPER_LIMIT_MIN	55
+#define CHARGE_UPPER_LIMIT_MAX	100
+#define CHARGE_LIMIT_MIN_GAP	5
+
+/**
+ * wilco_ec_get_byte_property
+ *
+ * Read a one byte property from EC NVRAM.
+ *
+ * @pid:	Property ID
+ * @val:	Pointer to store the property value
+ *
+ * Returns 0 if EC command was successful
+ * Returns -1 if EC command failed
+ */
+int wilco_ec_get_byte_property(enum ec_property_id pid, uint8_t *val);
+
+/**
+ * wilco_ec_set_byte_property
+ *
+ * Write a one byte property to EC NVRAM.
+ *
+ * @pid:	Property ID
+ * @val:	Property value
+ *
+ * Returns 0 if EC command was successful
+ * Returns -1 if EC command failed
+ */
+int wilco_ec_set_byte_property(enum ec_property_id pid, uint8_t val);
+
 #endif /* EC_GOOGLE_WILCO_COMMANDS_H */

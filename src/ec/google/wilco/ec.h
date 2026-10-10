@@ -11,6 +11,7 @@ enum wilco_ec_msg_type {
 	WILCO_EC_MSG_RAW,		/* Raw message, do not skip any data */
 	WILCO_EC_MSG_DEFAULT,		/* Skip 1 byte of response data */
 	WILCO_EC_MSG_NO_RESPONSE,	/* EC does not respond to command */
+	WILCO_EC_MSG_PROPERTY,		/* NVRAM property, command is unused */
 };
 
 /**

@@ -4,14 +4,16 @@
 #include <console/console.h>
 #include <delay.h>
 #include <ec/google/common/mec.h>
+#include <stddef.h>
 #include <string.h>
 #include <timer.h>
 #include <types.h>
 
 #include "ec.h"
 
-/* Mailbox ID */
+/* Mailbox IDs */
 #define EC_MAILBOX_ID			0x00f0
+#define EC_MAILBOX_ID_PROPERTY		0x00f2
 
 /* Version of mailbox interface */
 #define EC_MAILBOX_VERSION		0
@@ -102,6 +104,15 @@ static uint8_t wilco_ec_checksum(void *data, size_t size)
 	return checksum;
 }
 
+/* Property messages do not carry the command and reserved2 header bytes */
+static size_t wilco_ec_header_size(const struct wilco_ec_message *msg)
+{
+	if (msg->type == WILCO_EC_MSG_PROPERTY)
+		return offsetof(struct wilco_ec_request, command);
+
+	return sizeof(struct wilco_ec_request);
+}
+
 static void wilco_ec_prepare(struct wilco_ec_message *msg,
 			     struct wilco_ec_request *rq)
 {
@@ -109,10 +120,15 @@ static void wilco_ec_prepare(struct wilco_ec_message *msg,
 
 	/* Fill in request packet */
 	rq->struct_version = EC_MAILBOX_PROTO_VERSION;
-	rq->mailbox_id = EC_MAILBOX_ID;
 	rq->mailbox_version = EC_MAILBOX_VERSION;
-	rq->data_size = msg->request_size + EC_MAILBOX_DATA_EXTRA;
-	rq->command = msg->command;
+	if (msg->type == WILCO_EC_MSG_PROPERTY) {
+		rq->mailbox_id = EC_MAILBOX_ID_PROPERTY;
+		rq->data_size = msg->request_size;
+	} else {
+		rq->mailbox_id = EC_MAILBOX_ID;
+		rq->data_size = msg->request_size + EC_MAILBOX_DATA_EXTRA;
+		rq->command = msg->command;
+	}
 
 	/* Checksum header and data */
 	rq->checksum = wilco_ec_checksum(rq, sizeof(*rq));
@@ -124,6 +140,7 @@ static int wilco_ec_transfer(struct wilco_ec_message *msg)
 {
 	struct wilco_ec_request rq;
 	struct wilco_ec_response rs;
+	size_t header_size = wilco_ec_header_size(msg);
 	uint8_t checksum;
 	size_t skip_size;
 
@@ -131,10 +148,10 @@ static int wilco_ec_transfer(struct wilco_ec_message *msg)
 	wilco_ec_prepare(msg, &rq);
 
 	/* Write request header */
-	mec_io_bytes(MEC_IO_WRITE, CONFIG_EC_BASE_PACKET, 0, &rq, sizeof(rq));
+	mec_io_bytes(MEC_IO_WRITE, CONFIG_EC_BASE_PACKET, 0, &rq, header_size);
 
 	/* Write request data */
-	mec_io_bytes(MEC_IO_WRITE, CONFIG_EC_BASE_PACKET, sizeof(rq),
+	mec_io_bytes(MEC_IO_WRITE, CONFIG_EC_BASE_PACKET, header_size,
 		     msg->data, msg->request_size);
 
 	/* Start the command */

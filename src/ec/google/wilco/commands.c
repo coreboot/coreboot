@@ -237,3 +237,72 @@ int wilco_ec_set_cpuid(uint32_t cpuid, uint8_t cpu_cores, uint8_t gpu_cores)
 	return wilco_ec_mailbox(WILCO_EC_MSG_DEFAULT, KB_CPU_ID, cpu_id,
 				ARRAY_SIZE(cpu_id), NULL, 0);
 }
+
+#define EC_PROPERTY_MAX_SIZE	4
+
+enum ec_property_op {
+	EC_PROPERTY_GET = 0,
+	EC_PROPERTY_SET = 1,
+};
+
+struct ec_request_property {
+	uint8_t op;
+	uint32_t pid;
+	uint8_t length;
+	uint8_t data[EC_PROPERTY_MAX_SIZE];
+} __packed;
+
+/* The first response byte overlaps the mailbox response header */
+struct ec_response_property {
+	uint8_t reserved;
+	uint8_t op;
+	uint32_t pid;
+	uint8_t length;
+	uint8_t data[EC_PROPERTY_MAX_SIZE];
+} __packed;
+
+static int wilco_ec_property(struct ec_request_property *rq,
+			     struct ec_response_property *rs)
+{
+	if (wilco_ec_mailbox(WILCO_EC_MSG_PROPERTY, 0, rq, sizeof(*rq),
+			     rs, sizeof(*rs)) < 0)
+		return -1;
+	if (rs->op != rq->op || rs->pid != rq->pid) {
+		printk(BIOS_ERR, "%s: bad response for PID 0x%04x\n",
+		       __func__, rq->pid);
+		return -1;
+	}
+
+	return 0;
+}
+
+int wilco_ec_get_byte_property(enum ec_property_id pid, uint8_t *val)
+{
+	struct ec_request_property rq = {
+		.op = EC_PROPERTY_GET,
+		.pid = pid,
+	};
+	struct ec_response_property rs;
+
+	if (!val || wilco_ec_property(&rq, &rs) < 0 || rs.length != 1)
+		return -1;
+
+	*val = rs.data[0];
+	return 0;
+}
+
+int wilco_ec_set_byte_property(enum ec_property_id pid, uint8_t val)
+{
+	struct ec_request_property rq = {
+		.op = EC_PROPERTY_SET,
+		.pid = pid,
+		.length = 1,
+		.data = { val },
+	};
+	struct ec_response_property rs;
+
+	if (wilco_ec_property(&rq, &rs) < 0 || rs.length != 1)
+		return -1;
+
+	return 0;
+}

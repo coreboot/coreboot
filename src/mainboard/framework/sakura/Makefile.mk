@@ -17,3 +17,8 @@ ifneq ($(CONFIG_FRAMEWORK_EC_FW_FILE),"")
 $(call add_intermediate, add_ec_fw)
 	$(CBFSTOOL) $< write -r SI_EC -f $(CONFIG_FRAMEWORK_EC_FW_FILE) --fill-upward
 endif
+
+ifneq ($(CONFIG_FRAMEWORK_IE_FW_FILE),"")
+$(call add_intermediate, add_ie_fw)
+	$(CBFSTOOL) $< write -r SI_IE -f $(CONFIG_FRAMEWORK_IE_FW_FILE) --fill-upward
+endif

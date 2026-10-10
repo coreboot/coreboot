@@ -112,4 +112,14 @@ config FRAMEWORK_EC_FW_FILE
 	  Path to the Embedded Controller firmware. Must fit the SI_EC FMAP
 	  region (512K). Leave empty to not touch the EC region.
 
+# The IE region (SI_IE, see board.fmd) is populated in the vendor image. Like
+# the EC region it lives outside the BIOS region; left empty, the region stays
+# empty (0xff).
+config FRAMEWORK_IE_FW_FILE
+	string "IE firmware blob"
+	default ""
+	help
+	  Path to the IE region firmware. Must fit the SI_IE FMAP region
+	  (1948K). Leave empty to not touch the IE region.
+
 endif

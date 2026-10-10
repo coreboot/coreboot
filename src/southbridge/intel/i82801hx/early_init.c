@@ -80,7 +80,7 @@ int i82801hx_detect_s3_resume(void)
 void i82801hx_early_init(void)
 {
 	/* Set up RCBA (Root Complex Base Address, D31:F0 offset 0xF0) */
-	pci_write_config32(D31F0, D31F0_RCBA, RCBA_BASE | 1);
+	pci_write_config32(D31F0, D31F0_RCBA, CONFIG_FIXED_RCBA_MMIO_BASE | 1);
 
 	/* Set up PMBASE (Power Management Base, D31:F0 offset 0x40) */
 	pci_write_config32(D31F0, D31F0_PMBASE, DEFAULT_PMBASE);

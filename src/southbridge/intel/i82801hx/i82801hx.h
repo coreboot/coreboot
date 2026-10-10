@@ -421,17 +421,6 @@ static inline int lpc_is_mobile(const uint16_t devid)
 #define LPC_IS_MOBILE(dev) lpc_is_mobile(pci_read_config16(dev, PCI_DEVICE_ID))
 
 /* ================================================================== */
-/* RCBA MMIO access helpers                                           */
-/* ================================================================== */
-
-#define rcba_read8(reg)        read8p(RCBA_BASE + (reg))
-#define rcba_read16(reg)       read16p(RCBA_BASE + (reg))
-#define rcba_read32(reg)       read32p(RCBA_BASE + (reg))
-#define rcba_write8(reg, val)  write8p(RCBA_BASE + (reg), (val))
-#define rcba_write16(reg, val) write16p(RCBA_BASE + (reg), (val))
-#define rcba_write32(reg, val) write32p(RCBA_BASE + (reg), (val))
-
-/* ================================================================== */
 /* Function Prototypes                                                */
 /* ==================================================================*/
 

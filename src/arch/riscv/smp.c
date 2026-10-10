@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <mcall.h>
+#include <smp/node.h>
 
 /*
  *                                                               BSP
@@ -26,6 +27,13 @@
 // made up value to sync hart state
 #define HART_SLEEPING 0x1
 #define HART_AWAKE    0x2
+
+#if CONFIG(SMP)
+int boot_cpu(void)
+{
+	return read_csr(mhartid) == CONFIG_RISCV_WORKING_HARTID;
+}
+#endif
 
 void smp_pause(int working_hartid)
 {

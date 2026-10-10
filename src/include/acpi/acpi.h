@@ -1541,6 +1541,9 @@ unsigned long fw_cfg_acpi_tables(unsigned long start);
 void acpi_allocate_write_tables(void);
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_arch_fill_madt(acpi_madt_t *madt, unsigned long current);
+unsigned long acpi_fill_mcfg(acpi_mcfg_t *mcfg, unsigned long current);
+int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u64 base,
+			      u16 seg_nr, u8 start, u8 end);
 
 void acpi_fill_fadt(acpi_fadt_t *fadt);
 void arch_fill_fadt(acpi_fadt_t *fadt);

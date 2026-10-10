@@ -129,8 +129,8 @@ enum cb_err acpi_fill_header(acpi_header_t *header, const char name[4],
 	return CB_SUCCESS;
 }
 
-static int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u64 base,
-				u16 seg_nr, u8 start, u8 end)
+int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u64 base,
+			      u16 seg_nr, u8 start, u8 end)
 {
 	memset(mmconfig, 0, sizeof(*mmconfig));
 	mmconfig->base_address = base;
@@ -160,7 +160,7 @@ static void acpi_create_madt(acpi_header_t *header, void *unused)
 	header->length = current - (unsigned long)madt;
 }
 
-static unsigned long acpi_fill_mcfg(unsigned long current)
+static unsigned long acpi_fill_mcfg_ecam(unsigned long current)
 {
 	for (int i = 0; i < PCI_SEGMENT_GROUP_COUNT; i++) {
 		current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
@@ -184,7 +184,9 @@ static void acpi_create_mcfg(acpi_header_t *header, void *unused)
 		return;
 
 	if (CONFIG(ECAM_MMCONF_SUPPORT))
-		current = acpi_fill_mcfg(current);
+		current = acpi_fill_mcfg_ecam(current);
+	else if (CONFIG(ACPI_CUSTOM_MCFG))
+		current = acpi_fill_mcfg(mcfg, current);
 
 	/* (Re)calculate length */
 	header->length = current - (unsigned long)mcfg;

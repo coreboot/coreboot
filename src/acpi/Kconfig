@@ -73,6 +73,15 @@ config ACPI_COMMON_MADT_GICC_V3
 	bool
 	depends on ARCH_ARM64
 
+config ACPI_CUSTOM_MCFG
+	bool
+	depends on !ECAM_MMCONF_SUPPORT
+	help
+	  Selected by platforms that don't have a single ECAM window (see
+	  ECAM_MMCONF_SUPPORT), e.g. one ECAM window per PCIe root complex.
+	  They have to describe their ECAM windows in the MCFG by implementing
+	  acpi_fill_mcfg().
+
 config ACPI_EINJ
 	def_bool n
 	depends on HAVE_ACPI_TABLES

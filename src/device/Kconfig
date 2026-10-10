@@ -585,6 +585,14 @@ config ECAM_MMCONF_SUPPORT
 	  of the Enhanced Configuration Access Mechanism (ECAM) at
 	  ECAM_MMCONF_BASE_ADDRESS, covering ECAM_MMCONF_BUS_NUMBER buses.
 
+config PCI_CONFIG_32BIT_READS_ONLY
+	bool
+	default n
+	help
+	  Select this if the memory mapped PCI config space only supports
+	  32-bit reads (e.g. Ampere Altra). 8- and 16-bit reads are then
+	  done as 32-bit reads of the containing dword.
+
 config PCIX_PLUGIN_SUPPORT
 	bool
 	default y

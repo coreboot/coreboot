@@ -64,14 +64,23 @@ volatile union pci_bank *pci_map_bus(pci_devfn_t dev);
  */
 
 static __always_inline
+uint32_t pci_s_read_config32(pci_devfn_t dev, uint16_t reg);
+
+static __always_inline
 uint8_t pci_s_read_config8(pci_devfn_t dev, uint16_t reg)
 {
+	if (CONFIG(PCI_CONFIG_32BIT_READS_ONLY))
+		return pci_s_read_config32(dev, reg) >> (8 * (reg & 3));
+
 	return pci_map_bus(dev)->reg8[reg];
 }
 
 static __always_inline
 uint16_t pci_s_read_config16(pci_devfn_t dev, uint16_t reg)
 {
+	if (CONFIG(PCI_CONFIG_32BIT_READS_ONLY))
+		return pci_s_read_config32(dev, reg) >> (8 * (reg & 2));
+
 	return pci_map_bus(dev)->reg16[reg / sizeof(uint16_t)];
 }
 

@@ -18,6 +18,20 @@ enum disp_path_sel {
 
 #define PANEL_QUIRK_FORCE_MAX_SWING	BIT(0)
 
+/*
+ * Boot backlight driven by the SoC DISP_PWM, pre-set in configure_backlight()
+ * so the kernel's first pwm_bl brightness write is a no-op. Values must match
+ * the kernel (pwm-backlight DTS pwms period / default-brightness-level /
+ * brightness-levels / scale). Leave max == 0 if the panel has no such data:
+ * configure_backlight() then keeps driving the backlight through the board's
+ * legacy GPIO path.
+ */
+struct panel_backlight {
+	u32 period_ns;	/* DTS pwms period */
+	u32 level;	/* brightness-levels[default-brightness-level] */
+	u32 max;	/* brightness scale (last brightness-levels entry) */
+};
+
 struct panel_description {
 	const char *name;
 	void (*configure_backlight)(bool enable);
@@ -27,6 +41,7 @@ struct panel_description {
 	int (*post_power_on)(const struct edid *edid);
 	enum lb_fb_orientation orientation;
 	enum disp_path_sel disp_path;
+	struct panel_backlight backlight;
 	bool pwm_ctrl_gpio;
 	uint32_t quirks;
 };

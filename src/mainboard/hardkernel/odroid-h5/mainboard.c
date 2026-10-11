@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <soc/ramstage.h>
 
 /*
@@ -11,19 +10,19 @@
 static const struct pad_config gpio_table[] = {
 
 	/* ------- GPIO Group GPP_A ------- */
-	PAD_CFG_NF(GPP_A0, NONE, DEEP, NF1),	/* ESPI_IO0 */
-	PAD_CFG_NF(GPP_A1, NONE, DEEP, NF1),	/* ESPI_IO1 */
-	PAD_CFG_NF(GPP_A2, NONE, DEEP, NF1),	/* ESPI_IO2 */
-	PAD_CFG_NF(GPP_A3, NONE, DEEP, NF1),	/* ESPI_IO3 */
-	PAD_CFG_NF(GPP_A4, NONE, DEEP, NF1),	/* ESPI_CS# */
-	PAD_CFG_NF(GPP_A5, NONE, DEEP, NF1),	/* ESPI_ALERT# */
+	PAD_CFG_NF(GPP_A0, UP_20K, DEEP, NF1),	/* ESPI_IO0 */
+	PAD_CFG_NF(GPP_A1, UP_20K, DEEP, NF1),	/* ESPI_IO1 */
+	PAD_CFG_NF(GPP_A2, UP_20K, DEEP, NF1),	/* ESPI_IO2 */
+	PAD_CFG_NF(GPP_A3, UP_20K, DEEP, NF1),	/* ESPI_IO3 */
+	PAD_CFG_NF(GPP_A4, UP_20K, DEEP, NF1),	/* ESPI_CS# */
+	PAD_CFG_NF(GPP_A5, UP_20K, DEEP, NF1),	/* ESPI_ALERT# */
 	PAD_NC(GPP_A6, NONE),
 	PAD_NC(GPP_A7, NONE),
 	PAD_NC(GPP_A8, NONE),
-	PAD_CFG_NF(GPP_A9, NONE, DEEP, NF1),	/* ESPI_CLK */
+	PAD_CFG_NF(GPP_A9, DN_20K, DEEP, NF1),	/* ESPI_CLK */
 	PAD_CFG_NF(GPP_A10, NONE, DEEP, NF1),	/* ESPI_RESET# */
 	PAD_NC(GPP_A11, NONE),
-	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),	/* M.2_SSD_PEDET_R */
+	PAD_CFG_NF(GPP_A12, UP_20K, DEEP, NF1),	/* M.2_SSD_PEDET_R */
 	PAD_NC(GPP_A13, NONE),
 	PAD_NC(GPP_A14, NONE),
 	PAD_NC(GPP_A15, NONE),

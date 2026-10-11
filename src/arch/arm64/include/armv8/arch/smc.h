@@ -37,6 +37,8 @@ enum smccc_return_values {
 	SMC_NOT_SUPPORTED = -1,
 	SMC_NOT_REQUIRED = -2,
 	SMC_INVALID_PARAMETER = -3,
+	SMC_RATE_LIMITED = -4,
+	SMC_BUSY = -5,
 };
 
 /* SMCCC functions */

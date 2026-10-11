@@ -7,6 +7,7 @@ all-y += media.c
 all-y += uart.c
 
 bootblock-y += bootblock_custom.S
+bootblock-y += bootblock.c
 bootblock-y += cbmem.c
 
 ramstage-y += soc.c

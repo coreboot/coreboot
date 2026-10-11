@@ -1408,8 +1408,12 @@ static void acpi_create_spcr(acpi_header_t *header, void *unused)
 		printk(BIOS_ERR, "%s, Invalid serial regwidth\n", __func__);
 	}
 
-	spcr->base_address.addrl = serial.baseaddr;
-	spcr->base_address.addrh = 0;
+	/* Prefer the 64-bit base address, fall back to the deprecated 32-bit
+	   one, e.g. when a fill_lb_serial() implementation only sets the latter. */
+	const uint64_t baseaddr = serial.baseaddr ? serial.baseaddr
+						  : serial.baseaddr_deprecated;
+	spcr->base_address.addrl = baseaddr;
+	spcr->base_address.addrh = baseaddr >> 32;
 	spcr->interrupt_type = 0;
 	spcr->irq = 0;
 	spcr->configured_baudrate = 0; /* Have the OS use whatever is currently set */

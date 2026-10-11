@@ -11,6 +11,7 @@ bootblock-y += bootblock.c
 bootblock-y += cbmem.c
 
 ramstage-y += hob.c
+ramstage-y += nvparam.c
 ramstage-y += smpro.c
 ramstage-y += soc.c
 ramstage-y += watchdog.c

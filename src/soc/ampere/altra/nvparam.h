@@ -1,0 +1,30 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef SOC_AMPERE_ALTRA_NVPARAM_H
+#define SOC_AMPERE_ALTRA_NVPARAM_H
+
+#include <stdint.h>
+
+/* NVPARAM IDs, see edk2-platforms AmpereAltraPkg Include/NVParamDef.h */
+#define NV_BOARD_PARAM_START			0xC000
+#define NV_PARAM_ENTRYSIZE			8
+
+#define NV_SI_RO_BOARD_S0_RCA0_CFG		((17 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_S0_RCB0_LO_CFG		((21 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_S0_RCA4_CFG		((106 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_S0_RCA0_TXRX_G3PRESET	((110 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_S0_RCB0A_TXRX_G3PRESET	((114 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_S0_RCA4_TXRX_G3PRESET	((122 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_S0_RCA0_TXRX_G4PRESET	((126 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_S0_RCB0A_TXRX_G4PRESET	((130 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_S0_RCA4_TXRX_G4PRESET	((138 * 8) + NV_BOARD_PARAM_START)
+/* Ampere Altra Max */
+#define NV_SI_RO_BOARD_MQ_S0_RCA0_TXRX_G3PRESET	((212 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_MQ_S0_RCA4_TXRX_G3PRESET	((216 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_MQ_S0_RCA0_TXRX_G4PRESET	((226 * 8) + NV_BOARD_PARAM_START)
+#define NV_SI_RO_BOARD_MQ_S0_RCA4_TXRX_G4PRESET	((230 * 8) + NV_BOARD_PARAM_START)
+
+/* Returns 0 and the value of the parameter, or -1 if it is not set or can't be read. */
+int nvparam_get(uint32_t param, uint32_t *val);
+
+#endif

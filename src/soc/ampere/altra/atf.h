@@ -53,4 +53,11 @@ struct __packed mm_communicate {
 uint32_t atf_mm_version(void);
 uint32_t atf_mm_communicate(void);
 
+/*
+ * Send the request words dw[0..4] to the MM service identified by guid and
+ * return its response words in dw. Returns 0 if the MM_COMMUNICATE call
+ * succeeded; the service status is in dw[0].
+ */
+int atf_mm_request(const guid_t *guid, uint64_t dw[5]);
+
 #endif

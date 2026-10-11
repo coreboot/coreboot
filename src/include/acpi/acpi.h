@@ -95,6 +95,7 @@ enum acpi_tables {
 	LPIT,   /* Low Power Idle Table */
 	MADT,   /* Multiple APIC Description Table */
 	MCFG,   /* PCI Express Memory Mapped Configuration */
+	PCCT,   /* Platform Communication Channel Table */
 	PPTT,	/* Processor Properties Topology Table */
 	RSDP,   /* Root System Description Pointer */
 	RSDT,   /* Root System Description Table */

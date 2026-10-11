@@ -146,6 +146,13 @@ config ACPI_HEST
 	help
 	  Selected by platforms that support and fill ACPI Hardware Error Source Table (HEST)
 
+config ACPI_PCCT
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  Selected by platforms that support and fill ACPI Platform Communication
+	  Channel Table (PCCT).
+
 config ACPI_HEST_ERROR_LOG_BUFFER_SIZE
 	hex
 	default 0x4000

@@ -18,6 +18,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpi_iort.h>
 #include <acpi/acpi_ivrs.h>
+#include <acpi/acpi_pcct.h>
 #include <acpi/acpi_vfct.h>
 #include <acpi/acpigen.h>
 #include <cbfs.h>
@@ -1087,6 +1088,29 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
 	return len;
 }
 
+/* ACPI 6.2 */
+static void acpi_create_pcct(acpi_header_t *header, void *unused)
+{
+	if (!CONFIG(ACPI_PCCT))
+		return;
+
+	struct acpi_pcct *pcct = (struct acpi_pcct *)header;
+	uintptr_t current = (uintptr_t)(pcct + 1);
+
+	memset(pcct, 0, sizeof(*pcct));
+
+	if (acpi_fill_header(header, "PCCT", PCCT, sizeof(*pcct)) != CB_SUCCESS)
+		return;
+
+	current = acpi_soc_fill_pcct(pcct, current);
+	if (!current) {
+		header->length = 0;
+		return;
+	}
+
+	header->length = current - (uintptr_t)pcct;
+}
+
 /* ACPI 4.0 */
 static void acpi_create_hest(acpi_header_t *header, void *unused)
 {
@@ -1517,6 +1541,7 @@ static unsigned long write_acpi_tables(const unsigned long start)
 		{ acpi_create_bdat, NULL, sizeof(acpi_bdat_t) },
 		{ acpi_create_spcr, NULL, sizeof(acpi_spcr_t) },
 		{ acpi_create_gtdt, NULL, sizeof(acpi_gtdt_t) },
+		{ acpi_create_pcct, NULL, sizeof(struct acpi_pcct) },
 		{ acpi_create_pptt, NULL, sizeof(acpi_pptt_t) },
 		{ acpi_create_iort, NULL, sizeof(acpi_iort_t) },
 		{ acpi_create_wdat, NULL, sizeof(acpi_wdat_t) },
@@ -1932,6 +1957,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 4;
 	case GTDT:
 		return 3;
+	case PCCT: /* ACPI 6.2 */
+		return 2;
 	case PPTT: /* ACPI 6.4 */
 		return 3;
 	case IORT: /* IO Remapping Table E.e */

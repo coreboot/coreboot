@@ -10,6 +10,7 @@ bootblock-y += bootblock_custom.S
 bootblock-y += bootblock.c
 bootblock-y += cbmem.c
 
+ramstage-y += hob.c
 ramstage-y += soc.c
 
 AMPERE_TFA_FILE := $(call strip_quotes,$(CONFIG_AMPERE_ALTRA_TFA_FILE))

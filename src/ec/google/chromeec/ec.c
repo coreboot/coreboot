@@ -353,10 +353,17 @@ bool google_chromeec_is_uhepi_supported(void)
 #define UHEPI_NOT_SUPPORTED 2
 
 	static int uhepi_support;
+	uint32_t mask;
 
 	if (!uhepi_support) {
+		/*
+		 * Some EC branches (e.g. coral) set the feature flag but
+		 * predate EC_CMD_HOST_EVENT, so check for the command too.
+		 */
 		uhepi_support = google_chromeec_check_feature
-			(EC_FEATURE_UNIFIED_WAKE_MASKS) > 0 ? UHEPI_SUPPORTED :
+			(EC_FEATURE_UNIFIED_WAKE_MASKS) > 0 &&
+			!google_chromeec_get_cmd_versions(EC_CMD_HOST_EVENT, &mask) &&
+			(mask & EC_VER_MASK(0)) ? UHEPI_SUPPORTED :
 			UHEPI_NOT_SUPPORTED;
 		printk(BIOS_DEBUG, "Chrome EC: UHEPI %s\n",
 			uhepi_support == UHEPI_SUPPORTED ?

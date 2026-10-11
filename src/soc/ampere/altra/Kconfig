@@ -1,0 +1,43 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_AMPERE_ALTRA
+	bool
+	default n
+	select ARCH_BOOTBLOCK_ARMV8_64
+	select ARCH_VERSTAGE_ARMV8_64
+	select ARCH_ROMSTAGE_ARMV8_64
+	select ARCH_RAMSTAGE_ARMV8_64
+	select ARM64_USE_ARCH_TIMER
+	select BOOTBLOCK_CUSTOM
+	select FLATTENED_DEVICE_TREE
+	select DRIVERS_UART_PL011
+	help
+	  Ampere Altra (AC01) and Altra Max (AC02) server processors with Arm
+	  Neoverse N1 cores.
+
+# TF-A has already initialized the DRAM, so there is no romstage
+config SEPARATE_ROMSTAGE
+	default n if SOC_AMPERE_ALTRA
+
+if SOC_AMPERE_ALTRA
+
+config ARM64_CURRENT_EL
+	int
+	default 2
+
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/ampere/altra/memlayout.ld"
+
+# Ampere Altra Max has up to 128 cores
+config MAX_CPUS
+	int
+	default 128
+
+# Size of the DRAM at _dram (0x80000000), which is always fully populated.
+# CBMEM is placed at its top; the actual DRAM layout comes from the TF-A HOB.
+config DRAM_SIZE_MB
+	int
+	default 2048
+
+endif # SOC_AMPERE_ALTRA

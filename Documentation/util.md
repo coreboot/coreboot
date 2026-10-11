@@ -24,6 +24,8 @@ the k8-interpret-extended-memory-settings script. `Bash`
 	* _parse-bkdg.pl_ - Make bkdg.data file used by above scripts.
 `Perl`
 	* _example_input_ - Sample input for the above scripts. `Text`
+* __ampere__ - Generate the board settings (NVPARAM) image of Ampere
+Altra platforms `Python3`
 * __apcb__ - AMD PSP Control Block tools
 	* _apcb_edit.py_ - This tool allows patching an existing APCB
 binary with specific SPDs and GPIO selection pins. `Python3`

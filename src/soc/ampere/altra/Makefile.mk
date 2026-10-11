@@ -12,6 +12,7 @@ bootblock-y += cbmem.c
 
 ramstage-y += hob.c
 ramstage-y += soc.c
+ramstage-y += watchdog.c
 
 AMPERE_TFA_FILE := $(call strip_quotes,$(CONFIG_AMPERE_ALTRA_TFA_FILE))
 AMPERE_BL33_KEY := $(call strip_quotes,$(CONFIG_AMPERE_ALTRA_BL33_KEY))

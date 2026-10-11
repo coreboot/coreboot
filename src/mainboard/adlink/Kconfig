@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_ADLINK
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/adlink/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/adlink/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "ADLINK"
+
+endif # VENDOR_ADLINK

@@ -1,0 +1,22 @@
+#FLASH@0x8000000 CONFIG_ROM_SIZE { #TODO check address
+FLASH CONFIG_ROM_SIZE {
+	PLACEHOLDER 4M # not sure what is supposed to be here
+
+	TFA 2M {
+		TFA_BIN
+		BOARD_SETTINGS@1984K
+	}
+
+	# Loaded by TF-A, but not readable via the SPI-NOR MM read interface
+	BL33 15M {
+		BOOTBLOCK 128K
+	}
+
+	ATF_CUSTOM 2M
+
+	# Readable via SPI-NOR MM at boot time, see media.c
+	UEFI_EXTRA 9M {
+		FMAP 512
+		COREBOOT(CBFS)
+	}
+}

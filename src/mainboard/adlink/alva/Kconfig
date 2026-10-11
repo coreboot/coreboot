@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+if BOARD_ADLINK_ALVA
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	#select BOARD_ROMSIZE_KB_16384
+	select BOARD_ROMSIZE_KB_32768
+	select MISSING_BOARD_RESET
+	select SOC_AMPERE_ALTRA
+
+config FMDFILE
+	default "src/mainboard/adlink/alva/flash.fmd"
+
+config MAINBOARD_DIR
+	default "adlink/alva"
+
+config MAINBOARD_PART_NUMBER
+	default "Ampere Altra Developer Platform"
+
+endif #  BOARD_ADLINK_ALVA

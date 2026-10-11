@@ -40,4 +40,28 @@ config DRAM_SIZE_MB
 	int
 	default 2048
 
+config AMPERE_ALTRA_TFA_FILE
+	string "Path to the TF-A image"
+	default ""
+	help
+	  The TF-A image of Ampere, which is written to the TFA_BIN region of
+	  the flash.
+
+config AMPERE_ALTRA_BL33_KEY
+	string "Path to the BL33 signing key"
+	default ""
+	help
+	  The RSA private key the content certificate of the non-trusted
+	  firmware (BL33, the coreboot bootblock) is signed with. TF-A only
+	  runs BL33 if the certificate is signed with a key it trusts.
+
+config AMPERE_ALTRA_BOARD_SETTINGS_FILE
+	string "Path to the board settings"
+	default ""
+	help
+	  The board settings (NVPARAM) that TF-A and the SMpro read from the
+	  BOARD_SETTINGS region of the flash. Either a text file in the format
+	  of the Ampere reference board settings, which is converted with
+	  util/ampere/nvparam.py, or an already converted .bin file.
+
 endif # SOC_AMPERE_ALTRA

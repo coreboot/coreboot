@@ -161,7 +161,7 @@ void uart_tx_flush(unsigned int idx)
 enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
 	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial->baseaddr = UART0_BASE;
+	lb_serial_set_baseaddr(serial, UART0_BASE);
 	serial->baud = get_uart_baudrate();
 	serial->regwidth = 4;
 	serial->input_hertz = UART_HZ;

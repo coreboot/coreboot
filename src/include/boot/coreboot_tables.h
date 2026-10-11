@@ -22,6 +22,14 @@ void lb_add_gpios(struct lb_gpios *gpios, const struct lb_gpio *gpio_table,
 enum cb_err fill_lb_serial(struct lb_serial *serial);
 void lb_add_console(uint16_t consoletype, void *data);
 
+/* Fill both lb_serial base address fields. The legacy 32-bit address is
+   only written when the 64-bit one fits into it (Zero otherwise). */
+static inline void lb_serial_set_baseaddr(struct lb_serial *serial, uint64_t base)
+{
+	serial->baseaddr_deprecated = base <= UINT32_MAX ? base : 0;
+	serial->baseaddr = base;
+}
+
 enum cb_err fill_lb_pcie(struct lb_pcie *pcie);
 
 void lb_string_platform_blob_version(struct lb_header *header);

@@ -204,7 +204,9 @@ struct lb_serial {
 #define LB_SERIAL_TYPE_IO_MAPPED     1
 #define LB_SERIAL_TYPE_MEMORY_MAPPED 2
 	uint32_t type;
-	uint32_t baseaddr;
+	uint32_t baseaddr_deprecated;	/* 32-bit base address.
+					   Prefer 'baseaddr' for new software.
+					   Zero when the address won't fit into 32-bits. */
 	uint32_t baud;
 	uint32_t regwidth;
 
@@ -214,7 +216,14 @@ struct lb_serial {
 	 * decisions as to which dividers to select and their values
 	 * to eventually arrive at the desired console baud-rate. */
 	uint32_t input_hertz;
+
+	lb_uint64_t baseaddr;		/* 64-bit base address.
+					   Introduced after the initial implementation. Users of
+					   this table must check the 'size' field to detect if its
+					   written out by coreboot. */
 };
+_Static_assert(_Alignof(struct lb_serial) == 4,
+	       "lb_uint64_t alignment doesn't work as expected for struct lb_serial!");
 
 struct lb_console {
 	uint32_t tag;

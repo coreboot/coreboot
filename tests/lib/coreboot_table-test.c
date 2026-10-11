@@ -228,7 +228,7 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
 	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial->baseaddr = 0xFEDC6000;
+	lb_serial_set_baseaddr(serial, 0xfedc6000);
 	serial->baud = 115200;
 	serial->regwidth = 1;
 	serial->input_hertz = 115200 * 16;
@@ -415,10 +415,11 @@ static void test_write_tables(void **state)
 		case LB_TAG_SERIAL:
 			assert_int_equal(sizeof(struct lb_serial), record->size);
 
-			/* This struct have the same values as created in uart_fill_lb() */
+			/* This struct have the same values as created in fill_lb_serial() */
 			const struct lb_serial *serial = (struct lb_serial *)record;
 			assert_int_equal(LB_SERIAL_TYPE_MEMORY_MAPPED, serial->type);
-			assert_int_equal(0xFEDC6000, serial->baseaddr);
+			assert_int_equal(0xfedc6000, serial->baseaddr_deprecated);
+			assert_int_equal(0xfedc6000, serial->baseaddr);
 			assert_int_equal(115200, serial->baud);
 			assert_int_equal(1, serial->regwidth);
 			assert_int_equal(115200 * 16, serial->input_hertz);

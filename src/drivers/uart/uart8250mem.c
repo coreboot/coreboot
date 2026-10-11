@@ -133,10 +133,12 @@ void uart_tx_flush(unsigned int idx)
 
 enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
-	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial->baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
-	if (!serial->baseaddr)
+	const uint64_t base = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
+	if (!base)
 		return CB_ERR;
+
+	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	lb_serial_set_baseaddr(serial, base);
 	serial->baud = get_uart_baudrate();
 	if (CONFIG(DRIVERS_UART_8250MEM_32))
 		serial->regwidth = sizeof(uint32_t);

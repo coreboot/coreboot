@@ -104,7 +104,7 @@ unsigned char uart_rx_byte(unsigned int idx)
 enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
 	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial->baseaddr = CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ADDRESS;
+	lb_serial_set_baseaddr(serial, CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ADDRESS);
 	serial->baud = get_uart_baudrate();
 	serial->regwidth = 4;
 	serial->input_hertz = uart_platform_refclk();

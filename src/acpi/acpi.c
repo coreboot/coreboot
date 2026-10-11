@@ -32,6 +32,8 @@
 #include <device/pci.h>
 #if CONFIG(AMD_CRB_FTPM)
 #include <drivers/amd/ftpm/tpm.h>
+#elif CONFIG(AMPERE_CRB_FTPM)
+#include <drivers/ampere/ftpm/tpm.h>
 #else
 #include <drivers/crb/tpm.h>
 #endif
@@ -266,17 +268,22 @@ static void *get_tpm2_log(u32 *size)
 
 static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 {
+	acpi_tpm2_t *tpm2 = (acpi_tpm2_t *)header;
 	u64 control_area;
 	u32 start_method;
+	uint8_t method_params[sizeof(tpm2->msp)] = { 0 };
 
 	if (tlcl_get_family() != TPM_2)
 		return;
 
-	if ((CONFIG(CRB_TPM) || CONFIG(AMD_CRB_FTPM)) && !(CONFIG(SPI_TPM) || CONFIG(I2C_TPM) || CONFIG(MEMORY_MAPPED_TPM)))
+	const bool have_crb_tpm = CONFIG(CRB_TPM) || CONFIG(AMD_CRB_FTPM) ||
+				  CONFIG(AMPERE_CRB_FTPM);
+	const bool have_non_crb_tpm = CONFIG(SPI_TPM) || CONFIG(I2C_TPM) ||
+				      CONFIG(MEMORY_MAPPED_TPM);
+	if (have_crb_tpm && !have_non_crb_tpm)
 		if (!crb_tpm_is_active())
 			return;
 
-	acpi_tpm2_t *tpm2 = (acpi_tpm2_t *)header;
 	u32 tpm2_log_len;
 
 	/*
@@ -293,15 +300,20 @@ static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 	} else if (CONFIG(CRB_TPM) && crb_tpm_is_active()) {
 		control_area = crb_tpm_base_address() + 0x40;
 		start_method = ACPI_TPM2_SM_CRB;
+	} else if (CONFIG(AMPERE_CRB_FTPM) && crb_tpm_is_active()) {
+		control_area = crb_tpm_base_address();
+		start_method = ACPI_TPM2_SM_CRB_AND_ARM_SECURE_MONITOR;
+		acpi_tpm2_fill_start_method_params(method_params, sizeof(method_params));
 	} else {
 		control_area = 0;
 		start_method = ACPI_TPM2_SM_MMIO_TIS;
 	}
-	acpi_write_tpm2(tpm2, lasa, tpm2_log_len, control_area, start_method);
+	acpi_write_tpm2(tpm2, lasa, tpm2_log_len, control_area, start_method, method_params);
 }
 
 void acpi_write_tpm2(acpi_tpm2_t *tpm2, const void *lasa, const u32 tpm2_log_len,
-		     const u64 control_area, const u32 start_method)
+		     const u64 control_area, const u32 start_method,
+		     const uint8_t *method_params)
 {
 	acpi_header_t *header = &tpm2->header;
 	memset(tpm2, 0, sizeof(acpi_tpm2_t));
@@ -311,6 +323,8 @@ void acpi_write_tpm2(acpi_tpm2_t *tpm2, const void *lasa, const u32 tpm2_log_len
 
 	tpm2->control_area = control_area;
 	tpm2->start_method = start_method;
+	if (method_params)
+		memcpy(tpm2->msp, method_params, sizeof(tpm2->msp));
 	tpm2->laml = tpm2_log_len;
 	tpm2->lasa = (uintptr_t)lasa;
 

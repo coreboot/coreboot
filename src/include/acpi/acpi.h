@@ -1662,7 +1662,14 @@ unsigned long acpi_write_hpet(const struct device *device, unsigned long start,
 			      acpi_rsdp_t *rsdp);
 
 void acpi_write_tpm2(acpi_tpm2_t *tpm2, const void *lasa, const u32 tpm2_log_len,
-		     const u64 control_area, const u32 start_method);
+		     const u64 control_area, const u32 start_method,
+		     const uint8_t *method_params);
+
+/*
+ * Fill in the start method specific parameters of the TPM2 table. Implemented
+ * by TPM drivers whose start method has parameters.
+ */
+void acpi_tpm2_fill_start_method_params(uint8_t *params, size_t size);
 
 /* cpu/intel/speedstep/acpi.c */
 void generate_cpu_entries(const struct device *device);

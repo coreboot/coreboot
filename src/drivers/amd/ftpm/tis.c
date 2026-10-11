@@ -204,7 +204,7 @@ static unsigned long acpi_create_tpm2(const struct device *device,
 		return current;
 
 	acpi_tpm2_t *tpm2 = (acpi_tpm2_t *)(uintptr_t)current;
-	acpi_write_tpm2(tpm2, NULL, 0, crb_tpm_base_address() + 0x40, ACPI_TPM2_SM_ACPI_START);
+	acpi_write_tpm2(tpm2, NULL, 0, crb_tpm_base_address() + 0x40, ACPI_TPM2_SM_ACPI_START, NULL);
 
 	current += tpm2->header.length;
 	current = acpi_align_current(current);

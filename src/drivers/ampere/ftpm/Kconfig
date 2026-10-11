@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config AMPERE_CRB_FTPM
+	bool
+	default n
+	depends on !CRB_TPM && !AMD_CRB_FTPM
+	select TPM_STARTUP_IGNORE_POSTINIT
+	help
+	  Ampere firmware TPM (fTPM) with Command Response Buffer support.
+	  The fTPM runs in the secure world (TF-A, EL3) and is reached by
+	  submitting the command to the CRB control area and then making an
+	  SMC call to invoke the TPM service handler. The SoC provides the
+	  address of the control area and the SMC function ID with
+	  ampere_ftpm_get_params().
+
+	  TF-A already sends TPM2_Startup to the fTPM, so the TPM2_Startup
+	  coreboot issues returns TPM_RC_INITIALIZE and is ignored.

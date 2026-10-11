@@ -49,6 +49,14 @@ Device (EC)
 		If (Local0 & (1 << 2)) {
 			Notify(LID, 0x80)
 		}
+		If (Local0 & (1 << 6)) {
+			Notify(SLPB, 0x80)
+		}
+	}
+
+	Device (SLPB)
+	{
+		Name (_HID, EisaId("PNP0C0E"))
 	}
 
 	#include "lid.asl"

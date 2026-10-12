@@ -157,7 +157,6 @@ int mtk_display_init(struct thread_mutex *ready_mutex)
 
 		dsc_config_var = &mipi_data->dsc_config;
 		u32 mipi_dsi_flags = (MIPI_DSI_MODE_VIDEO |
-				      MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
 				      MIPI_DSI_MODE_LPM |
 				      MIPI_DSI_MODE_EOT_PACKET);
 
@@ -178,6 +177,12 @@ int mtk_display_init(struct thread_mutex *ready_mutex)
 		} else {
 			lanes = 4;
 		}
+
+		if (!(mipi_data->flags & PANEL_FLAG_DSI_SYNC_EVENT))
+			mipi_dsi_flags |= MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
+
+		if (mipi_data->flags & PANEL_FLAG_DSI_NON_CONTINUOUS_CLK)
+			mipi_dsi_flags |= MIPI_DSI_CLOCK_NON_CONTINUOUS;
 
 		dsi_mode_flags = mipi_dsi_flags;
 

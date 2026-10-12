@@ -292,13 +292,12 @@ static void mtk_dsi_set_mode(struct dsi_regs *dsi_reg, u32 mode_flags)
 	u32 tmp_reg1 = 0;
 
 	if (mode_flags & MIPI_DSI_MODE_VIDEO) {
-		tmp_reg1 = SYNC_PULSE_MODE;
-
 		if (mode_flags & MIPI_DSI_MODE_VIDEO_BURST)
 			tmp_reg1 = BURST_MODE;
-
-		if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
+		else if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
 			tmp_reg1 = SYNC_PULSE_MODE;
+		else
+			tmp_reg1 = SYNC_EVENT_MODE;
 	}
 
 	write32(&dsi_reg->dsi_mode_ctrl, tmp_reg1);

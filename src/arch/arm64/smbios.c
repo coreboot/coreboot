@@ -22,7 +22,7 @@ static void smbios_processor_id(u32 *processor_id)
 	}
 }
 
-static int smbios_processor_manufacturer(u8 *start)
+__weak int smbios_processor_manufacturer(u8 *start)
 {
 	char midr_el1_implementer;
 	char buf[32];
@@ -34,7 +34,7 @@ static int smbios_processor_manufacturer(u8 *start)
 	return smbios_add_string(start, buf);
 }
 
-static int smbios_processor_name(u8 *start)
+__weak int smbios_processor_version(u8 *start)
 {
 	uint16_t midr_el1_partnumber;
 	char buf[32];
@@ -44,6 +44,11 @@ static int smbios_processor_name(u8 *start)
 
 	snprintf(buf, sizeof(buf), "ARMv8 Processor rev %d", midr_el1_partnumber);
 	return smbios_add_string(start, buf);
+}
+
+__weak int smbios_processor_part_number(u8 *start)
+{
+	return 0;
 }
 
 #define MAX_CPUS_ENABLED(cpus) (cpus > 0xff ? 0xff : cpus)
@@ -64,21 +69,20 @@ int smbios_write_type4(unsigned long *current, int handle)
 
 	smbios_processor_id(t->processor_id);
 	t->processor_manufacturer = smbios_processor_manufacturer(t->eos);
-	t->processor_version = smbios_processor_name(t->eos);
+	t->processor_version = smbios_processor_version(t->eos);
 	t->processor_family = SMBIOS_PROCESSOR_FAMILY_FROM_FAMILY2;
 	t->processor_family2 = SMBIOS_PROCESSOR_FAMILY2_ARMV8;
 	t->processor_type = SMBIOS_PROCESSOR_TYPE_CENTRAL;
 
-	smbios_cpu_get_core_counts(&t->core_count2, &t->thread_count2);
+	smbios_cpu_get_core_counts(&t->core_count2, &t->thread_count2, &t->core_enabled2);
 	t->core_count = MAX_CPUS_ENABLED(t->core_count2);
 	t->thread_count = MAX_CPUS_ENABLED(t->thread_count2);
-	/* Assume we always enable all cores */
-	t->core_enabled = t->core_count;
-	t->core_enabled2 = t->core_count2;
+	t->core_enabled = MAX_CPUS_ENABLED(t->core_enabled2);
 	t->l1_cache_handle = 0xffff;
 	t->l2_cache_handle = 0xffff;
 	t->l3_cache_handle = 0xffff;
 	t->serial_number = smbios_add_string(t->eos, smbios_processor_serial_number());
+	t->part_number = smbios_processor_part_number(t->eos);
 	t->status = SMBIOS_PROCESSOR_STATUS_CPU_ENABLED | SMBIOS_PROCESSOR_STATUS_POPULATED;
 	t->processor_upgrade = PROCESSOR_UPGRADE_UNKNOWN;
 

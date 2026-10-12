@@ -29,7 +29,7 @@ static void mainboard_init(void *chip_info)
 
 DECLARE_REGION(fdt_pointer)
 
-void smbios_cpu_get_core_counts(u16 *core_count, u16 *thread_count)
+void smbios_cpu_get_core_counts(u16 *core_count, u16 *thread_count, u16 *enabled_cores)
 {
 	*core_count = 0;
 	struct device *dev = NULL;
@@ -37,6 +37,7 @@ void smbios_cpu_get_core_counts(u16 *core_count, u16 *thread_count)
 		*core_count += 1;
 
 	*thread_count = 1;
+	*enabled_cores = *core_count;
 }
 
 

@@ -74,7 +74,7 @@ const char *smbios_system_version(void);
 void smbios_system_set_uuid(u8 *uuid);
 const char *smbios_system_sku(void);
 
-void smbios_cpu_get_core_counts(u16 *core_count, u16 *thread_count);
+void smbios_cpu_get_core_counts(u16 *core_count, u16 *thread_count, u16 *enabled_cores);
 unsigned int smbios_cpu_get_max_speed_mhz(void);
 unsigned int smbios_cpu_get_current_speed_mhz(void);
 unsigned int smbios_cpu_get_voltage(void);
@@ -109,6 +109,10 @@ unsigned int smbios_cache_error_correction_type(u8 level);
 unsigned int smbios_cache_sram_type(void);
 unsigned int smbios_cache_conf_operation_mode(u8 level);
 u8 smbios_cache_speed(u8 level);
+
+int smbios_processor_manufacturer(u8 *start);
+int smbios_processor_version(u8 *start);
+int smbios_processor_part_number(u8 *start);
 
 /* Used by mainboard to add port information of type 8 */
 struct port_information;

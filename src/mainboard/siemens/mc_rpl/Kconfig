@@ -57,4 +57,7 @@ config DIMM_SPD_SIZE
 
 config USE_PM_ACPI_TIMER
 	default n if BOARD_SIEMENS_MC_RPL1
+
+config VALIDATE_INTEL_DESCRIPTOR
+	default n if BOARD_SIEMENS_MC_RPL1
 endif

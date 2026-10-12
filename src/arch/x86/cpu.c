@@ -8,6 +8,7 @@
 #include <string.h>
 #include <cpu/x86/gdt.h>
 #include <cpu/x86/mp.h>
+#include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/tsc.h>
 #include <device/device.h>
@@ -291,6 +292,9 @@ void lb_arch_add_records(struct lb_header *header)
 
 void arch_bootstate_coreboot_exit(void)
 {
+	/* Keep temporary ranges (e.g. cached boot media) for as long as possible. */
+	mtrr_remove_temp_ranges();
+
 	/* APs are already parked by existing infrastructure. */
 	if (!CONFIG(PARALLEL_MP_AP_WORK))
 		return;

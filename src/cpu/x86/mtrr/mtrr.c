@@ -9,7 +9,6 @@
  */
 
 #include <assert.h>
-#include <bootstate.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/amd/mtrr.h>
@@ -1001,11 +1000,8 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	       (long long)begin, (long long)begin + size - 1, (long long)size, type);
 }
 
-static void remove_temp_solution(void *unused)
+void mtrr_remove_temp_ranges(void)
 {
 	if (put_back_original_solution)
 		commit_var_mtrrs(&mtrr_global_solution);
 }
-
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, remove_temp_solution, NULL);
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, remove_temp_solution, NULL);

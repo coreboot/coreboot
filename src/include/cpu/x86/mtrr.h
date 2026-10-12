@@ -118,6 +118,8 @@ void x86_mtrr_check(void);
 /* Insert a temporary MTRR range for the duration of coreboot's runtime.
  * This function needs to be called after the first MTRR solution is derived. */
 void mtrr_use_temp_range(uintptr_t begin, size_t size, int type);
+/* Restore the original MTRR solution before leaving coreboot. */
+void mtrr_remove_temp_ranges(void);
 
 static inline int get_var_mtrr_count(void)
 {

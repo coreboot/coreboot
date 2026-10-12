@@ -92,16 +92,19 @@ static unsigned long get_freq_from_cpuid16h(void)
 
 unsigned long tsc_freq_mhz(void)
 {
-	unsigned long tsc_freq;
-
-	tsc_freq = calculate_tsc_freq_from_core_crystal();
+	static unsigned long tsc_freq;
 
 	if (tsc_freq)
 		return tsc_freq;
+
+	tsc_freq = calculate_tsc_freq_from_core_crystal();
 
 	/*
 	 * Some Intel SoCs like Skylake, Kabylake and Cometlake don't report
 	 * the crystal clock, in that case return bus frequency using CPUID.16h
 	 */
-	return get_freq_from_cpuid16h();
+	if (!tsc_freq)
+		tsc_freq = get_freq_from_cpuid16h();
+
+	return tsc_freq;
 }

@@ -73,7 +73,33 @@ chip soc/intel/pantherlake
 
 		device ref npu on end
 		device ref iaa off end
-		device ref dtt on end
+		device ref dtt on
+			chip drivers/intel/dptf
+				# TSRn is EC temperature sensor n
+				register "options.tsr[1].desc" = ""VCCGT""
+
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 80, 3000),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 5000,
+						.max_power = 25000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 500,
+					},
+					.pl2 = {
+						.min_power = 65000,
+						.max_power = 65000,
+						.granularity = 500,
+					}
+				}"
+
+				device generic 0 on end
+			end
+		end
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp1 on end
 		device ref tbt_pcie_rp2 on end

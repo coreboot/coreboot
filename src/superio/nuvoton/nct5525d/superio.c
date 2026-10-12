@@ -271,7 +271,7 @@ static struct device_operations ops = {
 	.enable_resources = nct5525d_enable_resources,
 	.enable           = nct5525d_enable,
 	.init             = nct5525d_init,
-	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
+	.ops_pnp_mode     = &pnp_conf_mode_8787_aa_espi,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt   = nct5525d_fill_ssdt,
 	.acpi_name        = superio_common_ldn_acpi_name,

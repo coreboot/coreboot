@@ -174,7 +174,7 @@ static int wait_for_valid(u8 *base)
 	 * verb table, thus the impact on booting time is relatively small. So,
 	 * use a reasonably long enough timeout to cover all possible cases.
 	 */
-	stopwatch_init_msecs_expire(&sw, 1);
+	stopwatch_init_msecs_expire(&sw, 10);
 	while (!stopwatch_expired(&sw)) {
 		reg32 = read32(base + HDA_ICII_REG);
 		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) == HDA_ICII_VALID)

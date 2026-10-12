@@ -89,7 +89,10 @@ int smbios_write_type4(unsigned long *current, int handle)
 	t->serial_number = smbios_add_string(t->eos, smbios_processor_serial_number());
 	t->part_number = smbios_processor_part_number(t->eos);
 	t->status = SMBIOS_PROCESSOR_STATUS_CPU_ENABLED | SMBIOS_PROCESSOR_STATUS_POPULATED;
-	t->processor_upgrade = PROCESSOR_UPGRADE_UNKNOWN;
+	if (CONFIG(SMBIOS_TYPE4_SOCKETED_CPU))
+		t->processor_upgrade = PROCESSOR_UPGRADE_OTHER;
+	else
+		t->processor_upgrade = PROCESSOR_UPGRADE_UNKNOWN;
 
 	t->external_clock = smbios_processor_external_clock();
 	if (t->external_clock == 0)

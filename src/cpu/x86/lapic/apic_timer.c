@@ -79,7 +79,7 @@ void timer_monotonic_get(struct mono_time *mt)
 	/* Update current time and tick values only if a full tick occurred. */
 	if (usecs_elapsed) {
 		mono_time_add_usecs(&mono_counter.time, usecs_elapsed);
-		mono_counter.last_value = current_tick;
+		mono_counter.last_value -= usecs_elapsed * timer_fsb;
 	}
 
 	/* Save result. */

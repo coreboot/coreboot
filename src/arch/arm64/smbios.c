@@ -109,7 +109,7 @@ int smbios_write_type4(unsigned long *current, int handle)
 
 	if (t->core_count > 1)
 		characteristics |= PROCESSOR_MULTI_CORE;
-	if (t->thread_count > 1)
+	if (t->thread_count2 > t->core_count2)
 		characteristics |= BIT(4); /* BIT4: Hardware Thread */
 	if (smccc_supports_arch_soc_id())
 		characteristics |= BIT(9); /* Arm64 SoC ID */

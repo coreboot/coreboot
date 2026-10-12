@@ -5,9 +5,6 @@ chip soc/intel/pantherlake
 	# Enable Enhanced Intel SpeedStep
 	register "eist_enable" = "true"
 
-	# Thermal
-	register "tcc_offset" = "8"
-
 	# GPE configuration
 	register "pmc_gpe0_dw0" = "GPP_A"
 	register "pmc_gpe0_dw1" = "GPP_D"

@@ -51,6 +51,11 @@ __weak int smbios_processor_part_number(u8 *start)
 	return 0;
 }
 
+__weak unsigned int smbios_cache_instances(u8 level)
+{
+	return 1;
+}
+
 #define MAX_CPUS_ENABLED(cpus) (cpus > 0xff ? 0xff : cpus)
 
 /* NOTE: Not handling big.LITTLE clusters. Consider using MP services (not yet) or the DSU. */
@@ -129,6 +134,7 @@ int smbios_write_type7_cache_parameters(unsigned long *current,
 	while (1) {
 		enum smbios_cache_type type;
 		struct cache_info info;
+		size_t size;
 
 		const u8 cache_type = cpu_get_cache_type(level);
 		/* No more caches in the system */
@@ -147,10 +153,11 @@ int smbios_write_type7_cache_parameters(unsigned long *current,
 		case CACHE_SEPARATE:
 			type = SMBIOS_CACHE_TYPE_DATA;
 			cpu_get_cache_info(level, CACHE_DATA, &info);
+			size = info.size * smbios_cache_instances(level);
 			h = (*handle)++;
 			update_max(len, *max_struct_size, smbios_write_type7(current, h,
 				   level, smbios_cache_sram_type(), smbios_cache_associativity(info.associativity),
-				   type, info.size, info.size));
+				   type, size, size));
 
 			type = SMBIOS_CACHE_TYPE_INSTRUCTION;
 			cpu_get_cache_info(level, CACHE_INSTRUCTION, &info);
@@ -165,10 +172,11 @@ int smbios_write_type7_cache_parameters(unsigned long *current,
 			break;
 		}
 
+		size = info.size * smbios_cache_instances(level);
 		h = (*handle)++;
 		update_max(len, *max_struct_size, smbios_write_type7(current, h,
 			   level, smbios_cache_sram_type(), smbios_cache_associativity(info.associativity),
-			   type, info.size, info.size));
+			   type, size, size));
 
 		if (type4) {
 			switch (level) {

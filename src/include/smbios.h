@@ -113,6 +113,7 @@ u8 smbios_cache_speed(u8 level);
 int smbios_processor_manufacturer(u8 *start);
 int smbios_processor_version(u8 *start);
 int smbios_processor_part_number(u8 *start);
+unsigned int smbios_cache_instances(u8 level);
 
 /* Used by mainboard to add port information of type 8 */
 struct port_information;

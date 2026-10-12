@@ -281,7 +281,7 @@ static void do_send_end_of_post(bool wait_for_completion)
  * 3. "The board is in recovery mode"
  *
  * Other CSE Type:
- * 1. "The board is in recovery mode"
+ * 1. "The CSE is in SOFT TEMP DISABLE state"
  *
  * The above conditions summarize that the CSE is in "SOFT TEMP DISABLE" state,
  * hence, don't send the EOP command to CSE.
@@ -297,8 +297,7 @@ static bool is_cse_eop_supported(void)
 	}
 	/* Other CSE Type */
 	if (cse_is_hfs1_com_soft_temp_disable()) {
-		printk(BIOS_INFO, "HECI: coreboot in recovery mode; found CSE in expected "
-		       "SOFT TEMP DISABLE state, skipping EOP\n");
+		printk(BIOS_INFO, "HECI: found CSE in SOFT TEMP DISABLE state, skipping EOP\n");
 		return false;
 	}
 

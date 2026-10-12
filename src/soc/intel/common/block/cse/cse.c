@@ -1450,7 +1450,7 @@ static void cse_set_state(struct device *dev)
 	printk(BIOS_DEBUG, "HECI: ME state change send %s!\n",
 							!send ? "success" : "failure");
 	printk(BIOS_DEBUG, "HECI: ME state change result %s!\n",
-							result ? "success" : "failure");
+							!result ? "success" : "failure");
 
 	/*
 	 * Reset if the result was successful, or if the send failed as some older

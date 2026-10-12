@@ -120,6 +120,18 @@ static inline void fast_spi_write(enum fast_spi_dma_register reg, uint32_t value
 	pci_write_config32(FAST_SPI_DEV, reg, value);
 }
 
+/* The lock bit can only be cleared by a platform reset. */
+static bool fast_spi_dma_is_locked(void)
+{
+	static bool locked;
+
+	if (!locked) {
+		union fast_spi_dma_control control = {fast_spi_read(FAST_SPI_DMA_CONTROL)};
+		locked = control.fields.lock;
+	}
+	return locked;
+}
+
 /*
  * Perform a DMA transfer using the Fast SPI interface.
  *
@@ -432,7 +444,8 @@ static ssize_t fast_spi_dma_readat(const struct region_device *rd, void *b,
 	/* Check if the size is greater than or equal to the DMA block alignment and if
 	   the destination buffer is aligned accordingly. */
 	if (size >= FAST_SPI_DMA_BLOCK_ALIGN &&
-	    IS_ALIGNED((uintptr_t)b, FAST_SPI_DMA_BLOCK_ALIGN)) {
+	    IS_ALIGNED((uintptr_t)b, FAST_SPI_DMA_BLOCK_ALIGN) &&
+	    !fast_spi_dma_is_locked()) {
 		ssize_t ret = fast_spi_dma_transfer(rd, b, offset, size);
 		if (ret != -1)
 			return ret;

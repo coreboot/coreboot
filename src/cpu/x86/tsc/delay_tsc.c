@@ -61,7 +61,7 @@ void timer_monotonic_get(struct mono_time *mt)
 
 		usecs_elapsed = ticks_elapsed / ticks_per_usec;
 		mono_time_add_usecs(&mono_counter.time, (long)usecs_elapsed);
-		mono_counter.last_value = current_tick;
+		mono_counter.last_value += usecs_elapsed * ticks_per_usec;
 	}
 
 	/* Save result. */

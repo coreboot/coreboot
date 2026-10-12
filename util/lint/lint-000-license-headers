@@ -54,6 +54,7 @@ Dockerfile|\
 \.spec$|\
 \.txt$|\
 \.jpg$|\
+\.png$|\
 \.cksum$|\
 \.bin$|\
 \.vbt$|\

@@ -1,7 +1,8 @@
 FLASH 32M {
+	# Non-BIOS regions match the vendor flash descriptor
 	SI_DESC 4K
 	SI_ME 4824K
-	SI_DEVICEEXP2 11556K
+	SI_DEVICEEXT2 11556K
 	SI_BIOS@16M 16M {
 		# PD Firmware for use in updates
 		PD1(PRESERVE) 256K

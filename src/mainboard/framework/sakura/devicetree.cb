@@ -287,8 +287,17 @@ chip soc/intel/pantherlake
 				register "generic.hid" = ""CSW1322""
 				register "generic.desc" = ""Touchscreen""
 				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E18)"
+				register "generic.detect" = "true"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 41 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""CSW1322""
+				register "generic.desc" = ""Touchscreen""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E18)"
+				register "generic.detect" = "true"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 4f on end
 			end
 		end
 

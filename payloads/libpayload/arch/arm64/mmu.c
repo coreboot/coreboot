@@ -35,6 +35,8 @@
 #include <arch/lib_helpers.h>
 #include <arch/cache.h>
 
+extern char _guard[], _eguard[];
+
 /* Maximum number of XLAT Tables available based on ttb buffer size */
 static unsigned int max_tables;
 /* Address of ttb buffer */
@@ -54,6 +56,7 @@ static const char * const tag_to_string[] = {
 	[TYPE_NORMAL_MEM] = "normal",
 	[TYPE_DEV_MEM] = "device",
 	[TYPE_DMA_MEM] = "uncached",
+	[TYPE_READONLY_MEM] = "read-only",
 };
 
 /*
@@ -85,12 +88,15 @@ static uint64_t get_block_attr(unsigned long tag)
 	attr = BLOCK_NS;
 
 	/* Assuming whole memory is read-write */
-	attr |= BLOCK_AP_RW;
+	if (tag == TYPE_READONLY_MEM)
+		attr |= BLOCK_AP_RO;
+	else
+		attr |= BLOCK_AP_RW;
 
 	attr |= BLOCK_ACCESS;
 
 	switch (tag) {
-
+	case TYPE_READONLY_MEM:
 	case TYPE_NORMAL_MEM:
 		attr |= BLOCK_SH_INNER_SHAREABLE;
 		attr |= (BLOCK_INDEX_MEM_NORMAL << BLOCK_INDEX_SHIFT);
@@ -295,6 +301,8 @@ uint64_t mmu_init(struct mmu_ranges *mmu_ranges)
 		mmu_config_range((void *)mmu_ranges->entries[i].base,
 				 mmu_ranges->entries[i].size,
 				 mmu_ranges->entries[i].type);
+
+	mmu_config_range(_guard, _eguard - _guard, TYPE_READONLY_MEM);
 
 	printf("Libpayload ARM64: MMU init done\n");
 	return 0;

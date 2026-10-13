@@ -55,6 +55,7 @@ extern char _start[], _end[];
 #define TYPE_NORMAL_MEM            1
 #define TYPE_DEV_MEM               2
 #define TYPE_DMA_MEM               3
+#define TYPE_READONLY_MEM          4
 
 /* Descriptor attributes */
 

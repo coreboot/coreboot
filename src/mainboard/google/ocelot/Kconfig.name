@@ -8,6 +8,9 @@ config BOARD_GOOGLE_BIANCO
 config BOARD_GOOGLE_BLANC
 	bool "->  Blanc"
 
+config BOARD_GOOGLE_COOLUM
+	bool "->  Coolum"
+
 config BOARD_GOOGLE_HEKLA
 	bool "->  Hekla"
 

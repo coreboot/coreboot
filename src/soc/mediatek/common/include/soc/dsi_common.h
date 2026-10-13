@@ -70,6 +70,15 @@ enum {
 	DSI_SIZE_CON_WIDTH_SHIFT = 0,
 };
 
+/* DSI_HFP_WC */
+#define HFP_HS_VB_PS_WC_SHIFT	16
+#define HFP_HS_VB_PS_WC_MASK	GENMASK(30, 16)
+#define HFP_HS_EN		BIT(31)
+
+/* DSI_HSTX_CKL_WC */
+#define HSTX_CKL_WC_SHIFT	2
+#define HSTX_CKL_WC_MASK	GENMASK(15, 2)
+
 /* DSI_CMDQ_SIZE */
 enum {
 	CMDQ_SIZE = 0x3f,

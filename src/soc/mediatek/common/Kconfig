@@ -82,6 +82,20 @@ config MEDIATEK_DSI_DUAL_CHANNEL
 	help
 	  The configuration to support DSI dual channel.
 
+config MEDIATEK_DSI_PER_FRAME_LP
+	bool
+	default n
+	help
+	  Program DSI video mode for per-frame LP (D-PHY only): the link stays
+	  in HS mode through horizontal blanking instead of returning to LP mode
+	  on every line. Each line is padded to a multiple of the lane count, the
+	  HS data rate is raised to compensate, and the HSA/HBP/HFP and HS clock
+	  lane word counts are programmed for this mode.
+
+	  Select this when the OS display driver also uses per-frame LP (e.g.
+	  the Linux MediaTek DSI driver on MT8188/MT8196), so that the link it
+	  takes over on a seamless boot already matches its own timing.
+
 config MEMORY_TEST
 	bool
 	default y

@@ -45,13 +45,13 @@
 .global pml4e
 .align 4096
 pml4e:
-.skip 8
+.skip 4096
 
 .section .bss.main_page_table
 .global main_page_table
 .align 4096
 main_page_table:
-.skip 8192
+.skip 16384
 
 .section .bss.extra_page_table
 .global extra_page_table

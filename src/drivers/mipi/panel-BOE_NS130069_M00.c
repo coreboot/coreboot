@@ -9,10 +9,10 @@ struct panel_serializable_data BOE_NS130069_M00 = {
 		.panel_bits_per_color = 10,
 		.panel_bits_per_pixel = 24,
 		.mode = {
-			.pixel_clock = 1096243,
+			.pixel_clock = 1111468,
 			.lvds_dual_channel = 0,
 			.refresh = 120,
-			.ha = 3504, .hbl = 240, .hso = 104, .hspw = 8,
+			.ha = 3504, .hbl = 292, .hso = 144, .hspw = 8,
 			.va = 2190, .vbl = 250, .vso = 60, .vspw = 4,
 			.phsync = '-', .pvsync = '-',
 			.x_mm = 127, .y_mm = 203,

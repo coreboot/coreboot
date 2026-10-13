@@ -633,4 +633,5 @@ struct panel_serializable_data BOE_NS130069_M00 = {
 				 .range_bpg_offset = -12 },
 		}
 	},
+	.flags = PANEL_FLAG_DSI_SYNC_EVENT | PANEL_FLAG_DSI_NON_CONTINUOUS_CLK,
 };

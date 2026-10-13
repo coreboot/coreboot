@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cpu/intel/haswell/haswell.h>
+#include <cpu/x86/smm.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -14,12 +15,19 @@
 static u8 *usb_xhci_mem_base(pci_devfn_t dev)
 {
 	u32 mem_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+	u8 *ptr;
 
 	/* Check if the controller is disabled or not present */
 	if (mem_base == 0 || mem_base == 0xffffffff)
 		return 0;
 
-	return (u8 *)(mem_base & ~0xf);
+	ptr = (u8 *)(uintptr_t)(mem_base & ~0xf);
+
+	/* ptr + XHCI_MAX_MMIO_OFFSET is the highest address that might get writen to */
+	if (ENV_SMM && smm_points_to_smram(ptr, XHCI_MAX_MMIO_OFFSET + sizeof(u32)))
+		return 0;
+
+	return ptr;
 }
 
 static int usb_xhci_port_count_usb3(pci_devfn_t dev)

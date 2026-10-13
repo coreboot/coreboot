@@ -79,8 +79,12 @@ SECTIONS
 		. = ALIGN(16);
 		_heap = .;
 		. += CONFIG_LP_HEAP_SIZE;
-		. = ALIGN(16);
+		. = ALIGN(4K);
 		_eheap = .;
+
+		_guard = .;
+		. += 4K;
+		_eguard = .;
 
 		_stack = .;
 		. += CONFIG_LP_STACK_SIZE;
@@ -94,4 +98,7 @@ SECTIONS
 		*(.comment)
 		*(.note*)
 	}
+
+	_ = ASSERT(_guard == (_guard & 0xFFFFF000) && _guard < 0xFFFFFFFF,
+		   "Page table code depends on guard page being 4K-aligned and below 4GB.");
 }

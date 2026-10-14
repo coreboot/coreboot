@@ -310,6 +310,14 @@ static int google_chromeec_command_v3(struct chromeec_command *cec_command)
 		return -1;
 	}
 
+	cec_command->cmd_code = rs.result;
+	cec_command->cmd_size_out = rs.data_len;
+	if (rs.result) {
+		printk(BIOS_SPEW, "EC returned error result code %d\n",
+		       rs.result);
+		return -1;
+	}
+
 	return 0;
 }
 

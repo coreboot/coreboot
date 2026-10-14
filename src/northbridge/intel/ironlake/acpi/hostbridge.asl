@@ -299,7 +299,8 @@ Method (_CRS, 0, Serialized)
 	// Set highest PCI bus and length
 	CreateWordField(MCRS, ^PB00._MAX, BMAX)
 	CreateWordField(MCRS, ^PB00._LEN, BLEN)
-	BLEN = CONFIG_ECAM_MMCONF_BUS_NUMBER
+	// Subtract one for the QuickPath bus
+	BLEN = CONFIG_ECAM_MMCONF_BUS_NUMBER - 1
 	BMAX = BLEN - 1
 
 	// Find PCI resource area in MCRS

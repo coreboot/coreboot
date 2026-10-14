@@ -7,6 +7,7 @@
 #define AUX_CMD_I2C_R		0x5
 #define AUX_CMD_NATIVE_R	0x9
 #define AUX_WAITREPLY_LPNUM	20000
+#define AUX_REPLY_TIMEOUT_US	5000
 
 #define DP_AUX_I2C_WRITE		0x0
 #define DP_AUX_I2C_READ			0x1

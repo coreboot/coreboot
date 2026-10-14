@@ -63,9 +63,7 @@
 	.function_number = PCI_FUNC(SD_DEVFN),   \
 	.link_speed_capability = GEN3,           \
 	.turn_off_unused_lanes = true,           \
-	.link_aspm = ASPM_L1,                    \
-	.link_aspm_L1_1 = true,                  \
-	.link_aspm_L1_2 = true,                  \
+	.link_aspm = ASPM_DISABLED,              \
 	.gpio_group_id = GPIO_6,                 \
 	.clk_req = CLK_REQ1,                     \
 }

@@ -27,23 +27,40 @@ static int chromeec_process_one_event(void)
 	return !!event;
 }
 
+#define MAX_PENDING_EVENTS 64
+
 void chromeec_smi_process_events(void)
 {
+	int i;
+
 	/* Process all pending events */
-	while (chromeec_process_one_event())
-		;
+	for (i = 0; i < MAX_PENDING_EVENTS; i++) {
+		if (!chromeec_process_one_event())
+			break;
+	}
+	if (i == MAX_PENDING_EVENTS)
+		printk(BIOS_ERR, "Exceeded max iterations processing EC SMI events\n");
 }
 
 static void clear_pending_events(void)
 {
 	struct ec_response_get_next_event mkbp_event;
+	int i;
 
-	while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
-		;
+	for (i = 0; i < MAX_PENDING_EVENTS; i++) {
+		if (google_chromeec_get_event() == EC_HOST_EVENT_NONE)
+			break;
+	}
+	if (i == MAX_PENDING_EVENTS)
+		printk(BIOS_ERR, "Exceeded max iterations clearing EC host events\n");
 
 	printk(BIOS_DEBUG, "Clearing pending EC events. Error code EC_RES_UNAVAILABLE(9) is expected.\n");
-	while (google_chromeec_get_mkbp_event(&mkbp_event) == 0)
-		;
+	for (i = 0; i < MAX_PENDING_EVENTS; i++) {
+		if (google_chromeec_get_mkbp_event(&mkbp_event) != 0)
+			break;
+	}
+	if (i == MAX_PENDING_EVENTS)
+		printk(BIOS_ERR, "Exceeded max iterations clearing EC MKBP events\n");
 }
 
 void chromeec_set_usb_charge_mode(int slp_type)

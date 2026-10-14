@@ -371,7 +371,6 @@ bool dptx_hal_auxread_bytes(const struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr, 
 			    MCU_ACK_TRANSACTION_COMPLETE_AUX_TX_P0_FLDMASK);
 		DP_WRITE1BYTE(mtk_dp, REG_3640_AUX_TX_P0, 0x7f);
 
-		mdelay(1);
 		return false;
 	}
 
@@ -476,7 +475,6 @@ bool dptx_hal_auxwrite_bytes(const struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 		DP_WRITE1BYTE(mtk_dp, REG_3650_AUX_TX_P0 + 1, 0x1);
 		DP_WRITE1BYTE(mtk_dp, REG_3640_AUX_TX_P0, 0x7f);
 
-		mdelay(1);
 		return false;
 	}
 

@@ -13,11 +13,14 @@
 #include <string.h>
 #include <timer.h>
 
+/* Same retry interval as the Linux DRM DP helpers (AUX_RETRY_INTERVAL). */
+#define AUX_RETRY_INTERVAL_US 500
+
 static bool dptx_auxwrite_bytes(const struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 				size_t length, const u8 *data)
 {
 	if (retry(7, dptx_hal_auxwrite_bytes(mtk_dp, cmd, dpcd_addr, length, data),
-		  mdelay(1)))
+		  udelay(AUX_RETRY_INTERVAL_US)))
 		return true;
 
 	printk(BIOS_ERR, "aux write fail: cmd = %d, addr = %#x, len = %ld\n",
@@ -46,7 +49,7 @@ static bool dptx_auxread_bytes(const struct mtk_dp *mtk_dp, u8 cmd,
 			       u32 dpcd_addr, size_t length, u8 *data)
 {
 	if (retry(7, dptx_hal_auxread_bytes(mtk_dp, cmd, dpcd_addr, length, data),
-		  mdelay(1)))
+		  udelay(AUX_RETRY_INTERVAL_US)))
 		return true;
 
 	printk(BIOS_ERR, "aux read fail: cmd = %d, addr = %#x, len = %ld\n",

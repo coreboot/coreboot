@@ -10,24 +10,10 @@
 #include <soc/pcie.h>
 #include <soc/clock.h>
 #include <soc/cpucp.h>
-#include <soc/qspi_common.h>
 #include <soc/variant.h>
 #include <program_loading.h>
 
 #define ACDB_CARVEOUT_OFFSET 0x40000000
-
-#define SPI_BUS_CLOCK_FREQ (50 * MHz)
-
-/*
- * FIXME: Reduce SPI Frequency to 50-MHz to improve
- * the platform stability during payload stage.
- */
-void soc_prepare_bl31_handoff(void)
-{
-	printk(BIOS_WARNING, "%s: Reduce SPI frequency to 50MHz to better stability\n",
-		 __func__);
-	qspi_set_bus_clock(SPI_BUS_CLOCK_FREQ);
-}
 
 static void preload_bl31(void)
 {

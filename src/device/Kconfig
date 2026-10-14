@@ -571,17 +571,19 @@ config NO_ECAM_MMCONF_SUPPORT
 	bool
 	default n
 	help
-	  Disable the use of the Enhanced Configuration
-	  Access mechanism (ECAM) method for accessing PCI config
-	  address space.
+	  Select this if the PCI config space is not accessed through a
+	  single ECAM window (see ECAM_MMCONF_SUPPORT). On x86, the legacy
+	  I/O config access mechanism is used then. Other architectures
+	  have to implement pci_map_bus(), e.g. to use one ECAM window per
+	  PCIe root complex.
 
 config ECAM_MMCONF_SUPPORT
 	bool
 	default !NO_ECAM_MMCONF_SUPPORT
 	help
-	  Enable the use of the Enhanced Configuration
-	  Access mechanism (ECAM) method for accessing PCI config
-	  address space.
+	  Access the PCI config space through a single, contiguous window
+	  of the Enhanced Configuration Access Mechanism (ECAM) at
+	  ECAM_MMCONF_BASE_ADDRESS, covering ECAM_MMCONF_BUS_NUMBER buses.
 
 config PCIX_PLUGIN_SUPPORT
 	bool

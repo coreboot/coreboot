@@ -12,6 +12,7 @@ DefinitionBlock(
 {
 	#include <acpi/dsdt_top.asl>
 	#include <southbridge/intel/common/acpi/platform.asl>
+	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
 
 	#include "acpi/platform.asl"
 
@@ -24,9 +25,6 @@ DefinitionBlock(
 		Device (PCI0)
 		{
 			#include <northbridge/intel/ironlake/acpi/ironlake.asl>
-
-			/* TBD: Remove. */
-			Name(\XHCI, 0)
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
 
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>

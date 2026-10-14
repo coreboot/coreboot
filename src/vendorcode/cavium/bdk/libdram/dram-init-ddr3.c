@@ -2187,7 +2187,7 @@ void change_dll_offset_enable(bdk_node_t node, int ddr_interface_num, int change
 }
 
 static void process_custom_dll_offsets(bdk_node_t node, int ddr_interface_num, const char *enable_str,
-                                       const int8_t *offsets, const char *byte_str, int mode)
+                                       const int8_t *offsets, const char *dir, int mode)
 {
     const char *s;
     int enabled;
@@ -2224,7 +2224,7 @@ static void process_custom_dll_offsets(bdk_node_t node, int ddr_interface_num, c
 
         // then, if enabled, use any overrides present
         if (enabled > 0) {
-            if ((s = lookup_env_parameter(byte_str, ddr_interface_num, byte)) != NULL) {
+            if ((s = lookup_env_parameter("ddr%d_dll_%s_offset_byte%d", ddr_interface_num, dir, byte)) != NULL) {
                 byte_offset = strtol(s, NULL, 0);
             }
         }
@@ -8319,9 +8319,9 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
     // FIXME: no need to do these if we are going to auto-tune... ???
 
     process_custom_dll_offsets(node, ddr_interface_num, "ddr_dll_write_offset",
-                               custom_lmc_config->dll_write_offset, "ddr%d_dll_write_offset_byte%d", 1);
+                               custom_lmc_config->dll_write_offset, "write", 1);
     process_custom_dll_offsets(node, ddr_interface_num, "ddr_dll_read_offset",
-                               custom_lmc_config->dll_read_offset,  "ddr%d_dll_read_offset_byte%d",  2);
+                               custom_lmc_config->dll_read_offset,  "read",  2);
 
     // we want to train write bit-deskew here...
     if (! disable_deskew_training) {

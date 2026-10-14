@@ -37,6 +37,9 @@
 *
 ****************************************************************************/
 
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 #include "x86emui.h"
 
 /*----------------------------- Implementation ----------------------------*/
@@ -167,10 +170,14 @@ void x86emu_decode_printf (const char *x)
     M.x86.enc_str_pos += strlen(x);
 }
 
-void x86emu_decode_printf2 (const char *x, int y)
+void x86emu_decode_printf2 (const char *x, ...)
 {
     char temp[100];
-    snprintf(temp, sizeof(temp), x,y);
+    va_list args;
+
+    va_start(args, x);
+    vsnprintf(temp, sizeof(temp), x, args);
+    va_end(args);
     strcpy(M.x86.decoded_buf+M.x86.enc_str_pos,temp);
     M.x86.enc_str_pos += strlen(temp);
 }

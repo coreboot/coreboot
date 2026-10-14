@@ -87,7 +87,7 @@ static const char *xhci_acpi_name(const struct device *dev)
 {
 	char *name;
 	unsigned int port_id;
-	const char *pattern;
+	const char *prefix;
 	const struct device *xhci_dev;
 
 	/* Generate ACPI names for the usb_acpi driver */
@@ -99,10 +99,10 @@ static const char *xhci_acpi_name(const struct device *dev)
 		case 0:
 			return "RHUB";
 		case 2:
-			pattern = "HS%02d";
+			prefix = "HS";
 			break;
 		case 3:
-			pattern = "SS%02d";
+			prefix = "SS";
 			break;
 		default:
 			printk(BIOS_INFO, "%s: Unknown USB Version: %#x\n", __func__,
@@ -131,7 +131,7 @@ static const char *xhci_acpi_name(const struct device *dev)
 		}
 
 		name = malloc(ACPI_NAME_BUFFER_SIZE);
-		snprintf(name, ACPI_NAME_BUFFER_SIZE, pattern, port_id);
+		snprintf(name, ACPI_NAME_BUFFER_SIZE, "%s%02u", prefix, port_id);
 		name[4] = '\0';
 
 		return name;
@@ -146,7 +146,7 @@ static const char *xhci_acpi_name(const struct device *dev)
 
 static void xhci_generate_port_acpi(void *context, const struct xhci_supported_protocol *data)
 {
-	const char *format;
+	const char *prefix;
 	char buf[16];
 	struct port_counts *counts = context;
 	unsigned int *dev_num;
@@ -154,10 +154,10 @@ static void xhci_generate_port_acpi(void *context, const struct xhci_supported_p
 	xhci_print_supported_protocol(data);
 
 	if (data->major_rev == 3) {
-		format = "SS%02d";
+		prefix = "SS";
 		dev_num = &counts->super_speed;
 	} else if (data->major_rev == 2) {
-		format = "HS%02d";
+		prefix = "HS";
 		dev_num = &counts->high_speed;
 	} else {
 		printk(BIOS_INFO, "%s: Unknown USB Version: %#x\n", __func__, data->major_rev);
@@ -165,7 +165,7 @@ static void xhci_generate_port_acpi(void *context, const struct xhci_supported_p
 	}
 
 	for (unsigned int i = 0; i < data->port_count; ++i) {
-		snprintf(buf, sizeof(buf), format, ++(*dev_num));
+		snprintf(buf, sizeof(buf), "%s%02u", prefix, ++(*dev_num));
 		acpigen_write_device(buf);
 		acpigen_write_name_byte("_ADR", data->port_offset + i);
 		acpigen_pop_len();

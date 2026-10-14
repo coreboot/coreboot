@@ -211,7 +211,7 @@ extern "C" {            			/* Use "C" linkage when in C++ mode */
 
 void x86emu_inc_decoded_inst_len (int x);
 void x86emu_decode_printf (const char *x);
-void x86emu_decode_printf2 (const char *x, int y);
+void __printf(1, 2) x86emu_decode_printf2 (const char *x, ...);
 void x86emu_just_disassemble (void);
 void x86emu_single_step (void);
 void x86emu_end_instr (void);

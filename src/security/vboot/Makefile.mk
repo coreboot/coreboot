@@ -21,7 +21,7 @@ VBOOT_LIB_$(1) = $(obj)/external/vboot_reference-$(1)/vboot_fw.a
 VBOOT_CFLAGS_$(1) += $$(call vboot-fixup-includes,$$(CPPFLAGS_$(1)))
 VBOOT_CFLAGS_$(1) += $$(CFLAGS_$(1))
 VBOOT_CFLAGS_$(1) += $$(call vboot-fixup-includes,$$($(1)-c-ccopts))
-VBOOT_CFLAGS_$(1) += -I$(abspath $(obj)) -Wno-missing-prototypes
+VBOOT_CFLAGS_$(1) += -I$(abspath $(obj)) -Wno-missing-prototypes -Wno-format-nonliteral
 VBOOT_CFLAGS_$(1) += -DVBOOT_DEBUG
 
 $$(VBOOT_LIB_$(1)): $(obj)/config.h

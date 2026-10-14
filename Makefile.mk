@@ -556,6 +556,7 @@ CFLAGS_common += -ffunction-sections
 CFLAGS_common += -fdata-sections
 CFLAGS_common += -fno-pie
 CFLAGS_common += -Wstring-compare
+CFLAGS_common += -Wformat-nonliteral
 CFLAGS_common += -Werror
 ifeq ($(CONFIG_COMPILER_GCC),y)
 CFLAGS_common += -Wold-style-declaration

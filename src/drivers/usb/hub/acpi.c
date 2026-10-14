@@ -8,7 +8,7 @@
 
 static const char *usb_hub_acpi_name(const struct device *dev)
 {
-	const char *pattern;
+	const char *prefix;
 	struct drivers_usb_hub_config *config = dev->chip_info;
 
 	if (config->acpi_name[0] != 0)
@@ -20,16 +20,16 @@ static const char *usb_hub_acpi_name(const struct device *dev)
 	case 0:
 		return "EHUB";
 	case 2:
-		pattern = "HS%02d";
+		prefix = "HS";
 		break;
 	case 3:
-		pattern = "SS%02d";
+		prefix = "SS";
 		break;
 	default:
 		return NULL;
 	}
 
-	snprintf(config->acpi_name, sizeof(config->acpi_name), pattern,
+	snprintf(config->acpi_name, sizeof(config->acpi_name), "%s%02u", prefix,
 		 dev->path.usb.port_id + 1);
 
 	return config->acpi_name;

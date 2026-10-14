@@ -285,10 +285,10 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 			}
 
 			if (qlm_mode == BDK_QLM_MODE_DISABLED)
-				snprintf(path, sizeof(path), "0x0%x%x,disabled",
+				snprintf(path, sizeof(path), "0x0%zx%zx,disabled",
 					 bgx_iface, bgx_index);
 			else
-				snprintf(path, sizeof(path), "0x0%x%x,%s",
+				snprintf(path, sizeof(path), "0x0%zx%zx,%s",
 					 bgx_iface, bgx_index,
 					 QLM_BGX_MODE_MAP[qlm_mode]);
 

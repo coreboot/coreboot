@@ -184,7 +184,7 @@ static void update_pll_ssc_values(struct sm_object *new)
 {
 	for (size_t i = 0; i < NUM_PCIE_SSC_SETTINGS; i++) {
 		char buffer[16];
-		snprintf(buffer, sizeof(buffer), "%u.%u%%", i / 10, i % 10);
+		snprintf(buffer, sizeof(buffer), "%zu.%zu%%", i / 10, i % 10);
 		pch_pm_pcie_pll_ssc_values[i].ui_name = strdup(buffer);
 		pch_pm_pcie_pll_ssc_values[i].value = i;
 	}

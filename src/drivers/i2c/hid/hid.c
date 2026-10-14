@@ -38,7 +38,7 @@ static const char *i2c_hid_acpi_name(const struct device *dev)
 	if (config->generic.name)
 		return config->generic.name;
 
-	snprintf(name, sizeof(name), "H%03.3X", dev->path.i2c.device);
+	snprintf(name, sizeof(name), "H%03X", dev->path.i2c.device);
 	name[4] = '\0';
 	return name;
 }

@@ -12,7 +12,7 @@ static const char *i2c_gpiomux_bus_acpi_name(const struct device *dev)
 {
 	static char name[ACPI_NAME_BUFFER_SIZE];
 
-	snprintf(name, ACPI_NAME_BUFFER_SIZE, "MXA%01.1X", dev->path.generic.id);
+	snprintf(name, ACPI_NAME_BUFFER_SIZE, "MXA%01X", dev->path.generic.id);
 	return name;
 }
 

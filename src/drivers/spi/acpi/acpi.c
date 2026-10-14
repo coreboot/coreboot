@@ -200,7 +200,7 @@ static const char *spi_acpi_name(const struct device *dev)
 	if (config->name)
 		return config->name;
 
-	snprintf(name, sizeof(name), "S%03.3X", spi_acpi_get_bus(dev));
+	snprintf(name, sizeof(name), "S%03X", spi_acpi_get_bus(dev));
 	name[4] = '\0';
 	return name;
 }

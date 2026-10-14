@@ -145,7 +145,7 @@ static const char *uart_acpi_name(const struct device *dev)
 	if (config->name)
 		return config->name;
 
-	snprintf(name, sizeof(name), "D%03.3X", dev->path.generic.id);
+	snprintf(name, sizeof(name), "D%03X", dev->path.generic.id);
 	return name;
 }
 

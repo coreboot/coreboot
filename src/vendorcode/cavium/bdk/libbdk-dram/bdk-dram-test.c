@@ -601,7 +601,7 @@ static void __bdk_dram_report_address_decode(uint64_t address, char *buffer, int
 
     bdk_dram_address_extract_info(address, &node, &lmc, &dimm, &prank, &lrank, &bank, &row, &col);
 
-    snprintf(buffer, len, "[0x%011lx] (N%d,LMC%d,DIMM%d,Rank%d/%d,Bank%02d,Row 0x%05x,Col 0x%04x)",
+    snprintf(buffer, len, "[0x%011llx] (N%d,LMC%d,DIMM%d,Rank%d/%d,Bank%02d,Row 0x%05x,Col 0x%04x)",
              address, node, lmc, dimm, prank, lrank, bank, row, col);
 }
 
@@ -638,7 +638,7 @@ static void __bdk_dram_report_address_decode_new(uint64_t address, uint64_t orig
 
     bdk_dram_address_extract_info(address, &node, &lmc, &dimm, &prank, &lrank, &bank, &row, &col);
 
-    snprintf(buffer, len, "N%d.LMC%d: CMP byte %d xor 0x%02lx (DIMM%d,Rank%d/%d,Bank%02d,Row 0x%05x,Col 0x%04x)[0x%011lx]",
+    snprintf(buffer, len, "N%d.LMC%d: CMP byte %d xor 0x%02llx (DIMM%d,Rank%d/%d,Bank%02d,Row 0x%05x,Col 0x%04x)[0x%011llx]",
              node, lmc, byte, print_bits, dimm, prank, lrank, bank, row, col, address);
 }
 

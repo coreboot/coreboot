@@ -104,7 +104,7 @@ static const char *i2c_sx9310_acpi_name(const struct device *dev)
 {
 	static char name[5];
 
-	snprintf(name, sizeof(name), "D%03.3X", dev->path.i2c.device);
+	snprintf(name, sizeof(name), "D%03X", dev->path.i2c.device);
 	return name;
 }
 

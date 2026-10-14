@@ -74,7 +74,7 @@ static const char *max98396_acpi_name(const struct device *dev)
 	if (config->name && strlen(config->name) == 4)
 		return config->name;
 
-	snprintf(name, sizeof(name), "D%03.3X", dev->path.i2c.device);
+	snprintf(name, sizeof(name), "D%03X", dev->path.i2c.device);
 	return name;
 }
 

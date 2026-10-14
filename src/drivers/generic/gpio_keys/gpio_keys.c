@@ -100,7 +100,7 @@ static const char *gpio_keys_acpi_name(const struct device *dev)
 	if (config->name)
 		return config->name;
 
-	snprintf(name, sizeof(name), "K%03.3X", config->gpio.pins[0]);
+	snprintf(name, sizeof(name), "K%03X", config->gpio.pins[0]);
 	name[4] = '\0';
 
 	return name;

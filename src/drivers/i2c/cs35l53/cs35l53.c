@@ -128,7 +128,7 @@ static const char *cs35l53_acpi_name(const struct device *dev)
 	if (config->name)
 		return config->name;
 
-	snprintf(name, sizeof(name), "D%03.3X", dev->path.i2c.device);
+	snprintf(name, sizeof(name), "D%03X", dev->path.i2c.device);
 	return name;
 }
 

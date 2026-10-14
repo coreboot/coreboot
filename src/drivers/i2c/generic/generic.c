@@ -200,7 +200,7 @@ static const char *i2c_generic_acpi_name(const struct device *dev)
 	if (config->name)
 		return config->name;
 
-	snprintf(name, sizeof(name), "D%03.3X", dev->path.i2c.device);
+	snprintf(name, sizeof(name), "D%03X", dev->path.i2c.device);
 	name[4] = '\0';
 	return name;
 }

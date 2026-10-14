@@ -1894,7 +1894,7 @@ static void do_display_RL(bdk_node_t node, int ddr_interface_num,
     } else if (flags & WITH_COMPUTE) {
         msg_buf = "  COMPUTED DELAYS ";
     } else {
-        snprintf(hex_buf, sizeof(hex_buf), "0x%016lX", lmc_rlevel_rank.u);
+        snprintf(hex_buf, sizeof(hex_buf), "0x%016llX", lmc_rlevel_rank.u);
         msg_buf = hex_buf;
     }
 
@@ -2004,7 +2004,7 @@ do_display_WL(bdk_node_t node, int ddr_interface_num, bdk_lmcx_wlevel_rankx_t lm
         msg_buf = "  FINAL SETTINGS  ";
         vbl = VBL_NORM;
     } else {
-        snprintf(hex_buf, sizeof(hex_buf), "0x%016lX", lmc_wlevel_rank.u);
+        snprintf(hex_buf, sizeof(hex_buf), "0x%016llX", lmc_wlevel_rank.u);
         msg_buf = hex_buf;
         vbl = VBL_FAE;
     }

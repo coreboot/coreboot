@@ -465,6 +465,9 @@ config BATTERY_TRICKLE_VOLTAGE_MV
 	default 4200 if BOARD_GOOGLE_MODEL_QUENBI
 	default 6400 if BOARD_GOOGLE_MODEL_QUARTZ
 	default 9600 if BOARD_GOOGLE_MODEL_MICA
+	default 6400 if BOARD_GOOGLE_MODEL_PIC
+	default 9600 if BOARD_GOOGLE_MODEL_ANETO
+	default 6400 if BOARD_GOOGLE_MODEL_MERU
 	default 6300
 	help
 	  Battery voltage threshold in millivolts (mV) below which firmware

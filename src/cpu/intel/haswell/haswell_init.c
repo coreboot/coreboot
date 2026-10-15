@@ -230,11 +230,7 @@ static void configure_pch_power_sharing(void)
 
 int cpu_config_tdp_levels(void)
 {
-	msr_t platform_info;
-
-	/* Bits 34:33 indicate how many levels supported */
-	platform_info = rdmsr(MSR_PLATFORM_INFO);
-	return (platform_info.hi >> 1) & 3;
+	return rdmsr_platform_info().configurable_tdp_levels;
 }
 
 /*
@@ -243,8 +239,7 @@ int cpu_config_tdp_levels(void)
  */
 void set_power_limits(u8 power_limit_1_time)
 {
-	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
-	msr_t limit;
+	msr_t msr, limit;
 	unsigned int power_unit;
 	unsigned int tdp, min_power, max_power, max_time;
 	unsigned int pl1, pl2;
@@ -253,7 +248,7 @@ void set_power_limits(u8 power_limit_1_time)
 	if (power_limit_1_time >= ARRAY_SIZE(power_limit_time_sec_to_msr))
 		power_limit_1_time = ARRAY_SIZE(power_limit_time_sec_to_msr) - 1;
 
-	if (!(msr.lo & PLATFORM_INFO_SET_TDP))
+	if (!rdmsr_platform_info().prog_tdp_for_turbo)
 		return;
 
 	/* Get units */
@@ -328,11 +323,9 @@ void set_power_limits(u8 power_limit_1_time)
 
 static void configure_c_states(void)
 {
-	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
+	const bool timed_mwait_capable = rdmsr_platform_info().timed_mwait_supported;
 
-	const bool timed_mwait_capable = !!(msr.hi & TIMED_MWAIT_SUPPORTED);
-
-	msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
+	msr_t msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
 	msr.lo |= (1 << 30);	// Package c-state Undemotion Enable
 	msr.lo |= (1 << 29);	// Package c-state Demotion Enable
 	msr.lo |= (1 << 28);	// C1 Auto Undemotion Enable
@@ -397,12 +390,10 @@ static void configure_thermal_target(struct device *dev)
 {
 	/* Make sure your devicetree has the cpu_cluster below chip cpu/intel/haswell! */
 	struct cpu_intel_haswell_config *conf = dev->upstream->dev->chip_info;
-	msr_t msr;
 
 	/* Set TCC activation offset if supported */
-	msr = rdmsr(MSR_PLATFORM_INFO);
-	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
-		msr = rdmsr(MSR_TEMPERATURE_TARGET);
+	if (rdmsr_platform_info().prog_tcc_activation_offset && conf->tcc_offset) {
+		msr_t msr = rdmsr(MSR_TEMPERATURE_TARGET);
 		msr.lo &= ~(0xf << 24); /* Bits 27:24 */
 		msr.lo |= (conf->tcc_offset & 0xf) << 24;
 		wrmsr(MSR_TEMPERATURE_TARGET, msr);
@@ -445,9 +436,7 @@ static void set_max_ratio(void)
 		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
 		perf_ctl.lo = (msr.lo & 0xff) << 8;
 	} else {
-		/* Platform Info bits 15:8 give max ratio */
-		msr = rdmsr(MSR_PLATFORM_INFO);
-		perf_ctl.lo = msr.lo & 0xff00;
+		perf_ctl.lo = rdmsr_platform_info().max_non_turbo_ratio << 8;
 	}
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 

@@ -1644,7 +1644,7 @@ int google_chromeec_get_usbc_mux_info(int port, struct usbc_mux_info *mux_info)
  */
 static int google_chromeec_pd_get_amode(uint16_t svid)
 {
-	struct ec_response_usb_pd_ports resp;
+	struct ec_response_usb_pd_ports resp = { };
 	int i;
 	int ret = 0;
 
@@ -1654,10 +1654,11 @@ static int google_chromeec_pd_get_amode(uint16_t svid)
 	for (i = 0; i < resp.num_ports; i++) {
 		struct chromeec_command cmd = { };
 		struct ec_params_usb_pd_get_mode_request params;
-		struct ec_params_usb_pd_get_mode_response resp2;
-		int svid_idx = 0;
+		int svid_idx;
 
-		do {
+		for (svid_idx = 0; svid_idx < 32; svid_idx++) {
+			struct ec_params_usb_pd_get_mode_response resp2 = { };
+
 			/* Reset cmd in each iteration in case
 			   google_chromeec_command changes it. */
 			params.port = i;
@@ -1672,10 +1673,11 @@ static int google_chromeec_pd_get_amode(uint16_t svid)
 
 			if (google_chromeec_command(&cmd) < 0)
 				return -1;
+			if (!resp2.svid)
+				break;
 			if (resp2.svid == svid)
 				ret |= BIT(i);
-			svid_idx++;
-		} while (resp2.svid);
+		}
 	}
 
 	return ret;

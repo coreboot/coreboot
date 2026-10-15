@@ -179,6 +179,23 @@ union msr_vr_current_config {
 	msr_t msr;
 };
 
+union msr_vr_misc_config {
+	struct __packed {
+		uint32_t dynamic_load_line_r  :  8; /* Bits  7:0  */
+		uint32_t idle_load_line_r     :  8; /* Bits 15:8  */
+		uint32_t leakage_load_line_r  :  8; /* Bits 23:16 */
+		uint32_t min_vid              :  8; /* Bits 31:24 */
+		int32_t  iout_offset          :  8; /* Bits 39:32 */
+		uint32_t iout_slope           : 10; /* Bits 49:40 */
+		uint32_t fast_idle_exit_ramp  :  1; /* Bits 50:50 */
+		uint32_t fast_idle_entry_ramp :  1; /* Bits 51:51 */
+		uint32_t idle_entry_decay_en  :  1; /* Bits 52:52 */
+		uint32_t prog_slow_ramp_rate  :  2; /* Bits 54:53 */
+		uint32_t                      :  9; /* Bits 63:55 */
+	};
+	msr_t msr;
+};
+
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);

@@ -19,7 +19,7 @@ chip northbridge/intel/broadwell
 		register "s0ix_enable" = "false"
 
 		register "vr_config" = "{
-			.slow_ramp_rate_set    = 3,
+			.slow_ramp_rate_set    = FAST_RATE_DIV_16,
 			.slow_ramp_rate_enable = true,
 		}"
 

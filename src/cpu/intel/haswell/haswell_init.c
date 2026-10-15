@@ -145,37 +145,24 @@ static void initialize_vr_config(void)
 
 	wrmsr(MSR_VR_CURRENT_CONFIG, vr_current_config.msr);
 
-	/*  Configure VR_MISC_CONFIG MSR. */
-	msr = rdmsr(MSR_VR_MISC_CONFIG);
-	/* Set the IOUT_SLOPE scalar applied to dIout in U10.1.9 format. */
-	msr.hi &= ~(0x3ff << (40 - 32));
-	msr.hi |= (0x200 << (40 - 32)); /* 1.0 */
-	/* Set IOUT_OFFSET to 0. */
-	msr.hi &= ~0xff;
-	/* Set exit ramp rate to fast. */
-	msr.hi |= (1 << (50 - 32));
-	/* Set entry ramp rate to slow. */
-	msr.hi &= ~(1 << (51 - 32));
-	/* Enable decay mode on C-state entry. */
-	msr.hi |= (1 << (52 - 32));
-	/* Set the slow ramp rate */
+	union msr_vr_misc_config vr_misc_config = {
+		.msr = rdmsr(MSR_VR_MISC_CONFIG),
+	};
+	vr_misc_config.iout_slope = 1 << 9; /* 1.0 in U10.1.9 format */
+	vr_misc_config.iout_offset = 0;
+	vr_misc_config.fast_idle_exit_ramp = 1;
+	vr_misc_config.fast_idle_entry_ramp = 0;
+	vr_misc_config.idle_entry_decay_en = 1;
 	if (haswell_is_ult()) {
-		msr.hi &= ~(0x3 << (53 - 32));
-		/* Configure the C-state exit ramp rate. */
 		if (vr_config.slow_ramp_rate_enable) {
-			/* Configured slow ramp rate. */
-			msr.hi |= ((vr_config.slow_ramp_rate_set & 0x3) << (53 - 32));
-			/* Set exit ramp rate to slow. */
-			msr.hi &= ~(1 << (50 - 32));
+			vr_misc_config.prog_slow_ramp_rate = vr_config.slow_ramp_rate_set;
+			vr_misc_config.fast_idle_exit_ramp = 0;
 		} else {
-			/* Fast ramp rate / 4. */
-			msr.hi |= (1 << (53 - 32));
+			vr_misc_config.prog_slow_ramp_rate = FAST_RATE_DIV_4;
 		}
 	}
-	/* Set MIN_VID (31:24) to allow CPU to have full control. */
-	msr.lo &= ~0xff000000;
-	msr.lo |= (vr_config.cpu_min_vid & 0xff) << 24;
-	wrmsr(MSR_VR_MISC_CONFIG, msr);
+	vr_misc_config.min_vid = vr_config.cpu_min_vid;
+	wrmsr(MSR_VR_MISC_CONFIG, vr_misc_config.msr);
 
 	/*  Configure VR_MISC_CONFIG2 MSR. */
 	if (!haswell_is_ult())

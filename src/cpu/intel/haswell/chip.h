@@ -6,6 +6,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+enum slow_ramp_rate {
+	FAST_RATE_DIV_2  = 0,
+	FAST_RATE_DIV_4  = 1,
+	FAST_RATE_DIV_8  = 2,
+	FAST_RATE_DIV_16 = 3,
+};
+
 struct cpu_vr_config {
 	/*
 	 * Minimum voltage for C6/C7 state:
@@ -24,7 +31,7 @@ struct cpu_vr_config {
 	 * 2 = Fast VR ramp rate / 8
 	 * 3 = Fast VR ramp rate / 16
 	 */
-	uint8_t slow_ramp_rate_set;
+	enum slow_ramp_rate slow_ramp_rate_set;
 
 	/* Enable slow VR ramp rate */
 	bool slow_ramp_rate_enable;

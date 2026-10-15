@@ -10,14 +10,7 @@ chip soc/intel/alderlake
 
 	# FSP configuration
 
-	# Sagv Configuration
-	register "sagv" = "SaGv_Disabled"
-
-	register "eist_enable" = "false"
-
 	register "dptf_enable" = "false"
-
-	register "s0ix_enable" = "false"
 
 	device domain 0 on
 		device ref igpu on end

@@ -287,13 +287,21 @@ struct calypso_lpass_aon_cc {
 	u32 lpass_audio_hm_gdscr;
 	u8 _res2[0xC000 - 0x9094];
 	u32 lpass_hm_collapse_vote_for_q6;
-	u8 _res3[0x13014 - 0xC004];
-	u32 tx_mclk_cbcr;
 	};
 
 check_member(calypso_lpass_aon_cc, lpass_audio_hm_gdscr, 0x9090);
 check_member(calypso_lpass_aon_cc, lpass_hm_collapse_vote_for_q6, 0xc000);
-check_member(calypso_lpass_aon_cc, tx_mclk_cbcr, 0x13014);
+
+/* LPASS AON MX CC register structure */
+struct calypso_lpass_aon_mx_cc {
+	u8 _res1[0x8028];
+	u32 va_mem0_cbcr;
+	u8 _res2[0xA014 - 0x802C];
+	u32 tx_mclk_cbcr;
+};
+
+check_member(calypso_lpass_aon_mx_cc, va_mem0_cbcr, 0x8028);
+check_member(calypso_lpass_aon_mx_cc, tx_mclk_cbcr, 0xA014);
 
 /*
  * PCIE NOC register block
@@ -849,7 +857,8 @@ enum clk_lpass {
 	LPASS_CODEC_MEM3_CBCR,
 	LPASS_EXT_MCLK0_CBCR,
 	LPASS_EXT_MCLK1_CBCR,
-	LPASS_TX_MCLK_CBCR,
+	LPASS_AON_MX_CC_TX_MCLK_CBCR,
+	LPASS_AON_MX_CC_VA_MEM0_CBCR,
 	LPASS_TX_MCLK_2X_WSA_CBCR,
 	LPASS_TX_MCLK_WSA_CBCR,
 	LPASS_WSA_MCLK_2X_CBCR,
@@ -995,6 +1004,8 @@ static struct calypso_qupv3_wrap *const qup_oob_clk = (void *)GCC_QUPV3_OOB_BASE
 
 static struct calypso_lpass_audio_cc *const lpass_audio_cc = (void *)LPASS_AUDIO_CC_PLL_BASE;
 static struct calypso_lpass_aon_cc *const lpass_aon_cc = (void *)LPASS_AON_CC_BASE;
+static struct calypso_lpass_aon_mx_cc *const lpass_aon_mx_cc = (void *)LPASS_AON_MX_CC_BASE;
+
 static struct calypso_lpass_core_gdsc *const lpass_core_gdsc = (void *)LPASS_CORE_GDSC_REG_BASE;
 static struct calypso_disp_pll_clock *const apss_disp_pll0 = (void *)DISP_PLL0_BASE;
 static struct calypso_disp_pll_clock *const apss_disp_pll1 = (void *)DISP_PLL1_BASE;

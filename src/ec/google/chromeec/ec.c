@@ -903,7 +903,7 @@ static int cbi_read(void *buf, size_t bufsize, uint32_t tag, bool check_size)
 	if (rv)
 		return -1;
 
-	if (check_size && cmd.cmd_size_out != bufsize) {
+	if (!cmd.cmd_size_out || (check_size && cmd.cmd_size_out != bufsize)) {
 		printk(BIOS_ERR, "Wrong out size for CBI tag %d: expected %zu, got %u\n",
 		       tag, bufsize, cmd.cmd_size_out);
 		return -1;
@@ -915,7 +915,7 @@ static int cbi_read(void *buf, size_t bufsize, uint32_t tag, bool check_size)
 static int cbi_get_uint32(uint32_t *id, uint32_t tag)
 {
 	uint32_t r = 0;
-	int rv = cbi_read(&r, sizeof(r), tag, true);
+	int rv = cbi_read(&r, sizeof(r), tag, false);
 	if (rv)
 		return rv;
 	*id = r;

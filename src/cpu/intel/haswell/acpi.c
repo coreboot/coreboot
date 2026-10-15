@@ -235,17 +235,15 @@ static void generate_P_state_entries(int core, int cores_per_package)
 		coord_type = HW_ALL;
 
 	/* Get bus ratio limits and calculate clock speeds */
-	msr = rdmsr(MSR_PLATFORM_INFO);
-	ratio_min = (msr.hi >> (40-32)) & 0xff; /* Max Efficiency Ratio */
+	const union msr_platform_info platform_info = rdmsr_platform_info();
+	ratio_min = platform_info.max_efficiency_ratio;
 
 	/* Determine if this CPU has configurable TDP */
 	if (cpu_config_tdp_levels()) {
 		/* Set max ratio to nominal TDP ratio */
-		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
-		ratio_max = msr.lo & 0xff;
+		ratio_max = rdmsr(MSR_CONFIG_TDP_NOMINAL).lo & 0xff;
 	} else {
-		/* Max Non-Turbo Ratio */
-		ratio_max = (msr.lo >> 8) & 0xff;
+		ratio_max = platform_info.max_non_turbo_ratio;
 	}
 	clock_max = ratio_max * CPU_BCLK;
 

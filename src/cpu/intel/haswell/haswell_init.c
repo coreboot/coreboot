@@ -323,8 +323,6 @@ void set_power_limits(u8 power_limit_1_time)
 
 static void configure_c_states(void)
 {
-	const bool timed_mwait_capable = rdmsr_platform_info().timed_mwait_supported;
-
 	msr_t msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
 	msr.lo |= (1 << 30);	// Package c-state Undemotion Enable
 	msr.lo |= (1 << 29);	// Package c-state Demotion Enable
@@ -335,7 +333,7 @@ static void configure_c_states(void)
 	msr.lo |= (1 << 15);	// Lock bits 15:0
 	msr.lo &= ~(1 << 10);	// Disable IO MWAIT redirection
 
-	if (timed_mwait_capable)
+	if (rdmsr_platform_info().timed_mwait_supported)
 		msr.lo |= (1 << 31);	// Timed MWAIT Enable
 
 	/* The deepest package c-state defaults to factory-configured value. */

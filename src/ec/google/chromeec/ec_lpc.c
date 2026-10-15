@@ -273,7 +273,7 @@ static int google_chromeec_command_v3(struct chromeec_command *cec_command)
 	if (cec_command->cmd_code) {
 		printk(BIOS_SPEW, "EC returned error result code %d\n",
 			cec_command->cmd_code);
-		return -i;
+		return -1;
 	}
 
 	/* Read back response header and start checksum */

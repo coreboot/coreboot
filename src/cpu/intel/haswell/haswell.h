@@ -4,6 +4,7 @@
 #define _CPU_INTEL_HASWELL_H
 
 #include <cpu/cpu.h>
+#include <cpu/x86/msr.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -162,6 +163,20 @@ enum {
 	C_STATE_C9		= 11,
 	C_STATE_C10		= 12,
 	NUM_C_STATES,
+};
+
+union msr_vr_current_config {
+	struct __packed {
+		uint32_t current_limit      : 13; /* Bits 12:0  */
+		uint32_t                    : 18; /* Bits 30:13 */
+		uint32_t current_limit_lock :  1; /* Bits 31:31 */
+		uint32_t psi1_threshold     : 10; /* Bits 41:32 */
+		uint32_t psi2_threshold     : 10; /* Bits 51:42 */
+		uint32_t psi3_threshold     : 10; /* Bits 61:52 */
+		uint32_t psi4_enable        :  1; /* Bits 62:62 */
+		uint32_t                    :  1; /* Bits 63:63 */
+	};
+	msr_t msr;
 };
 
 /* Configure power limits for turbo mode */

@@ -133,19 +133,17 @@ static void initialize_vr_config(void)
 
 	printk(BIOS_DEBUG, "Initializing VR config.\n");
 
-	/*  Configure VR_CURRENT_CONFIG. */
-	msr = rdmsr(MSR_VR_CURRENT_CONFIG);
-	/* Preserve bits 63 and 62. Bit 62 is PSI4 enable, but it is only valid
-	 * on ULT systems. */
-	msr.hi &= 0xc0000000;
-	msr.hi |= (0x01 << (52 - 32)); /* PSI3 threshold -  1A. */
-	msr.hi |= (0x05 << (42 - 32)); /* PSI2 threshold -  5A. */
-	msr.hi |= (0x14 << (32 - 32)); /* PSI1 threshold - 20A. */
-
+	union msr_vr_current_config vr_current_config = {
+		.msr = rdmsr(MSR_VR_CURRENT_CONFIG),
+	};
+	/* PSIx thresholds in amps */
+	vr_current_config.psi3_threshold = 1;
+	vr_current_config.psi2_threshold = 5;
+	vr_current_config.psi1_threshold = 20;
 	if (haswell_is_ult())
-		msr.hi |= (1 <<  (62 - 32)); /* Enable PSI4 */
-	/* Leave the max instantaneous current limit (12:0) to default. */
-	wrmsr(MSR_VR_CURRENT_CONFIG, msr);
+		vr_current_config.psi4_enable = 1;
+
+	wrmsr(MSR_VR_CURRENT_CONFIG, vr_current_config.msr);
 
 	/*  Configure VR_MISC_CONFIG MSR. */
 	msr = rdmsr(MSR_VR_MISC_CONFIG);

@@ -4097,11 +4097,23 @@ typedef struct {
 **/
   UINT8                       CmosTxtOffset;
 
-/** Offset 0x0A1E - SiPreMemRsvd
+/** Offset 0x0A1E - TXT Clear Secrets Delay Enable
+  Enable an optional delay before the TXT Clear Secrets ACM launch. 0(Default): Disable, 1: Enable
+  $EN_DIS
+**/
+  UINT8                       ClearSecretsDelayEnable;
+
+/** Offset 0x0A1F - TXT Clear Secrets Delay Seconds
+  Delay in seconds (0-5) applied before the TXT Clear Secrets ACM launch when ClearSecretsDelayEnable
+  is set. Default 0
+**/
+  UINT8                       ClearSecretsDelaySeconds;
+
+/** Offset 0x0A20 - SiPreMemRsvd
   Reserved for SI Pre-Mem
   $EN_DIS
 **/
-  UINT8                       SiPreMemRsvd[13];
+  UINT8                       SiPreMemRsvd[11];
 
 /** Offset 0x0A2B - Program GPIOs for LFP on DDI port-A device
   0=Disabled,1(Default)=eDP, 2=MIPI DSI

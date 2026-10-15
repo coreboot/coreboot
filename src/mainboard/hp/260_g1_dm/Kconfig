@@ -26,5 +26,6 @@ config MAINBOARD_PART_NUMBER
 	default "260 G1 DM"
 
 config USBDEBUG_HCD_INDEX
+	# front-panel USB port near microphone input jack
 	default 1
 endif

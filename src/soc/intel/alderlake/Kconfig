@@ -594,4 +594,20 @@ config SOC_INTEL_SPI_PSF_DESTINATION_ID
 	hex
 	default 0x23a8
 
+config SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE
+	bool "Enable realtime/low-latency tuning"
+	default n
+	help
+	  Tune SoC power management, ACPI tables, and FSP settings for
+	  deterministic low-latency workloads (e.g. Linux PREEMPT_RT).
+	  Disables power-saving states that cause latency spikes:
+	  CPU C-states, dynamic P-states/HWP, S0ix, PCIe ASPM, DMI ASPM,
+	  SAGV, and Hyper-Threading.
+	  When built with an IoT FSP (CONFIG_FSP_TYPE_IOT), this also
+	  enables Intel Time Coordinated Computing (TCC) hardware
+	  features such as PSF QoS arbitration and GT CLOS.
+
+config D3COLD_SUPPORT
+	default n if SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE
+
 endif

@@ -67,7 +67,7 @@ static void configure_misc(void)
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Set EIST status */
-	cpu_set_eist(conf->eist_enable);
+	cpu_set_eist(!CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE) && conf->eist_enable);
 
 	/* Disable Thermal interrupts */
 	msr.lo = 0;

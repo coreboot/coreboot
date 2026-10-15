@@ -189,15 +189,25 @@ static void fill_fspm_igd_params(FSP_M_CONFIG *m_cfg,
 			*ddi_port_upds[i].hpd = 0;
 		}
 	}
+#if CONFIG(FSP_TYPE_IOT)
+	if (CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE))
+		m_cfg->GtClosEnable = 1;
+#endif
 }
 static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
-	m_cfg->SaGv = config->sagv;
+	m_cfg->SaGv = CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE) ? 0 : config->sagv;
 	m_cfg->RMT = config->RMT;
 	if (config->max_dram_speed_mts) {
 		m_cfg->DdrFreqLimit = config->max_dram_speed_mts;
 		m_cfg->DdrSpeedControl = 1;
+	}
+	if (CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE)) {
+		m_cfg->DisPgCloseIdleTimeout = 1;
+		m_cfg->PowerDownMode = 0;
+		m_cfg->EnablePwrDn = 0;
+		m_cfg->EnablePwrDnLpddr = 0;
 	}
 #if CONFIG(SOC_INTEL_RAPTORLAKE) && !CONFIG(FSP_USE_REPO)
 	m_cfg->LowerBasicMemTestSize = config->lower_basic_mem_test_size;
@@ -218,7 +228,12 @@ static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,
 
 	m_cfg->PrmrrSize = get_valid_prmrr_size();
 	m_cfg->EnableC6Dram = config->enable_c6dram;
-	m_cfg->HyperThreading = get_uint_option("hyper_threading", CONFIG(FSP_HYPERTHREADING));
+
+	if (CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE))
+		m_cfg->HyperThreading = 0;
+	else
+		m_cfg->HyperThreading = get_uint_option("hyper_threading",
+				CONFIG(FSP_HYPERTHREADING));
 }
 
 static void fill_fspm_security_params(FSP_M_CONFIG *m_cfg,

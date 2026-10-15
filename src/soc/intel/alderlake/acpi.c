@@ -143,7 +143,7 @@ void soc_power_states_generation(int core_id, int cores_per_package)
 {
 	config_t *config = config_of_soc();
 
-	if (config->eist_enable)
+	if (!CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE) && config->eist_enable)
 		/* Generate P-state tables */
 		generate_p_state_entries(core_id, cores_per_package);
 }

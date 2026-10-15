@@ -616,6 +616,8 @@ static void fill_fsps_igd_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 	s_cfg->LidStatus = CONFIG(VBOOT_LID_SWITCH) ? get_lid_switch() : CONFIG(RUN_FSP_GOP);
 	s_cfg->PavpEnable = CONFIG(PAVP);
+	if (CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE))
+		s_cfg->RenderStandby = false;
 }
 
 WEAK_DEV_PTR(tcss_usb3_port1);
@@ -979,8 +981,16 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 			s_cfg->PcieRpSlotImplemented[i] = false;
 		s_cfg->PcieRpDetectTimeoutMs[i] = rp_cfg->pcie_rp_detect_timeout_ms;
 		configure_pch_rp_power_management(s_cfg, rp_cfg, i);
+		if (CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE)) {
+			s_cfg->PcieRpAspm[i] = 0;
+			s_cfg->PcieRpEnableCpm[i] = false;
+			s_cfg->PciePtm[i] = true;
+		}
 	}
 	s_cfg->PcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
+
+	if (CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE))
+		s_cfg->PchDmiAspmCtrl = 0;
 
 #if CONFIG(FSP_TYPE_IOT)
 	/*
@@ -1015,6 +1025,10 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 			break;
 		}
 	}
+	if (CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE)) {
+		s_cfg->PsfTccEnable = true;
+		s_cfg->PchLegacyIoLowLatency = true;
+	}
 #endif
 }
 
@@ -1040,6 +1054,11 @@ static void fill_fsps_cpu_pcie_params(FSP_S_CONFIG *s_cfg,
 		if (!!(rp_cfg->flags & PCIE_RP_BUILT_IN))
 			s_cfg->CpuPcieRpSlotImplemented[i] = 0;
 		configure_cpu_rp_power_management(s_cfg, rp_cfg, i);
+		if (CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE)) {
+			s_cfg->CpuPcieRpAspm[i] = 0;
+			s_cfg->CpuPcieRpEnableCpm[i] = false;
+			s_cfg->CpuPcieRpPtmEnabled[i] = true;
+		}
 	}
 	s_cfg->CpuPcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 }
@@ -1131,6 +1150,25 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 #if CONFIG(SOC_INTEL_RAPTORLAKE) && !CONFIG(FSP_USE_REPO)
 	s_cfg->EnableHwpScalabilityTracking = config->enable_hwp_scalability_tracking;
 #endif
+	if (CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE)) {
+		s_cfg->Hwp = false;
+		s_cfg->Cx = false;
+		s_cfg->C1e = false;
+		s_cfg->C1StateAutoDemotion = false;
+		s_cfg->C1StateUnDemotion = false;
+		s_cfg->PkgCStateDemotion = false;
+		s_cfg->PkgCStateUnDemotion = false;
+		s_cfg->PkgCStateLimit = 0;
+		s_cfg->EnableItbm = false;
+		s_cfg->PmcOsIdleEnable = false;
+		s_cfg->EnergyEfficientPState = false;
+		s_cfg->EnergyEfficientTurbo = false;
+		s_cfg->PchS0ixAutoDemotion = false;
+		/* Disable PMC low power modes */
+		s_cfg->PmcLpmS0ixSubStateEnableMask = 0;
+		s_cfg->PmcV1p05PhyExtFetControlEn = false;
+		s_cfg->PmcV1p05IsExtFetControlEn = false;
+	}
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,
@@ -1299,7 +1337,8 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 	mainboard_update_soc_chip_config(config);
 
 	/* Runtime configuration of S0ix */
-	config->s0ix_enable = cse_get_s0ix_enable_state(config->s0ix_enable);
+	config->s0ix_enable = !CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE) &&
+		cse_get_s0ix_enable_state(config->s0ix_enable);
 
 	void (*const fill_fsps_params[])(FSP_S_CONFIG *s_cfg,
 			const struct soc_intel_alderlake_config *config) = {

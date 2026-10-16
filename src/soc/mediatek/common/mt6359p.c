@@ -45,18 +45,31 @@ static const struct pmic_efuse efuse_setting[] = {
 };
 
 static struct pmif *pmif_arb = NULL;
-static void mt6359p_write(u32 reg, u16 data)
+
+u16 mt6359p_read(u32 reg)
 {
+	u16 data = 0;
+
+	mt6359p_init_pmif_arb();
+	pmif_arb->read16(pmif_arb, 0, reg, &data);
+	return data;
+}
+
+void mt6359p_write(u32 reg, u16 data)
+{
+	mt6359p_init_pmif_arb();
 	pmif_arb->write16(pmif_arb, 0, reg, data);
 }
 
 u32 mt6359p_read_field(u32 reg, u32 mask, u32 shift)
 {
+	mt6359p_init_pmif_arb();
 	return pmif_arb->read_field(pmif_arb, 0, reg, mask, shift);
 }
 
 void mt6359p_write_field(u32 reg, u32 val, u32 mask, u32 shift)
 {
+	mt6359p_init_pmif_arb();
 	pmif_arb->write_field(pmif_arb, 0, reg, val, mask, shift);
 }
 
@@ -161,9 +174,6 @@ void mt6359p_buck_set_voltage(u32 buck_id, u32 buck_uv)
 {
 	u32 vol_offset, vol_reg, vol, vol_step;
 
-	if (!pmif_arb)
-		die("ERROR: pmif_arb not initialized");
-
 	switch (buck_id) {
 	case MT6359P_GPU11:
 		vol_offset = 400000;
@@ -212,9 +222,6 @@ void mt6359p_buck_set_voltage(u32 buck_id, u32 buck_uv)
 u32 mt6359p_buck_get_voltage(u32 buck_id)
 {
 	u32 vol_shift, vol_offset, vol_reg, vol, vol_step;
-
-	if (!pmif_arb)
-		die("ERROR: pmif_arb not initialized");
 
 	switch (buck_id) {
 	case MT6359P_GPU11:
@@ -272,9 +279,6 @@ void mt6359p_set_vm18_voltage(u32 vm18_uv)
 {
 	u32 reg_vol, reg_cali;
 
-	if (!pmif_arb)
-		die("ERROR: pmif_arb not initialized");
-
 	assert(vm18_uv >= 1700000);
 	assert(vm18_uv < 2000000);
 
@@ -287,9 +291,6 @@ u32 mt6359p_get_vm18_voltage(void)
 {
 	u32 reg_vol, reg_cali;
 
-	if (!pmif_arb)
-		die("ERROR: pmif_arb not initialized");
-
 	reg_vol = 100 * mt6359p_read_field(PMIC_VM18_ANA_CON0, 0xF, VM18_VOL_REG_SHIFT);
 	reg_cali = 10 * mt6359p_read_field(PMIC_VM18_ANA_CON0, 0xF, 0);
 	return 1000 * (VM18_VOL_OFFSET + reg_vol + reg_cali);
@@ -298,9 +299,6 @@ u32 mt6359p_get_vm18_voltage(void)
 void mt6359p_set_vsim1_voltage(u32 vsim1_uv)
 {
 	u32 reg_vol, reg_cali;
-
-	if (!pmif_arb)
-		die("ERROR: pmif_arb not initialized");
 
 	if ((vsim1_uv >= 1700000) && (vsim1_uv <= 1900000))
 		reg_vol = (vsim1_uv / 1000 - VSIM1_VOL_OFFSET_1) / 100;
@@ -319,9 +317,6 @@ u32 mt6359p_get_vsim1_voltage(void)
 {
 	u32 reg_vol, reg_cali, reg_offset;
 
-	if (!pmif_arb)
-		die("ERROR: pmif_arb not initialized");
-
 	reg_vol = 100 * mt6359p_read_field(PMIC_VSIM1_ANA_CON0, 0xF,
 					   VSIM1_VOL_REG_SHIFT);
 	reg_cali = 10 * mt6359p_read_field(PMIC_VSIM1_ANA_CON0, 0xF, 0);
@@ -339,8 +334,6 @@ u32 mt6359p_get_vsim1_voltage(void)
 u32 mt6359p_get_vcn18_voltage(void)
 {
 	u32 reg_vol, reg_cali;
-	if (!pmif_arb)
-		die("[%s] ERROR: pmif_arb not initialized", __func__);
 
 	reg_vol = 100 * mt6359p_read_field(PMIC_VCN18_ANA_CON0, 0xF, VCN18_VOL_SHIFT);
 	reg_cali = 10 * mt6359p_read_field(PMIC_VCN18_ANA_CON0, 0xF, 0);
@@ -350,8 +343,6 @@ u32 mt6359p_get_vcn18_voltage(void)
 void mt6359p_set_vcn18_voltage(u32 vcn18_uv)
 {
 	u32 reg_vol, reg_cali;
-	if (!pmif_arb)
-		die("[%s] ERROR: pmif_arb not initialized", __func__);
 
 	if (vcn18_uv < VCN18_VOL_UV_MIN || vcn18_uv > VCN18_VOL_UV_MAX) {
 		printk(BIOS_ERR,

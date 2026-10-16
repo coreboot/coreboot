@@ -105,6 +105,8 @@ void mt6359p_enable_vsim1(bool enable);
 void mt6359p_enable_vm18(bool enable);
 void mt6359p_enable_vcn18(bool enable);
 void mt6359p_init_pmif_arb(void);
+u16 mt6359p_read(u32 reg);
+void mt6359p_write(u32 reg, u16 data);
 u32 mt6359p_read_field(u32 reg, u32 mask, u32 shift);
 void mt6359p_write_field(u32 reg, u32 val, u32 mask, u32 shift);
 void mt6359p_init_setting(void);

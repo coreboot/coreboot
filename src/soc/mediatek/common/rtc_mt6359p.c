@@ -4,25 +4,18 @@
 #include <halt.h>
 #include <soc/clkbuf.h>
 #include <soc/mt6359p.h>
-#include <soc/pmif.h>
 #include <soc/rtc.h>
 #include <soc/rtc_common.h>
 #include <timer.h>
 
-static struct pmif *pmif_arb = NULL;
-
 void rtc_read(u16 addr, u16 *rdata)
 {
-	if (!pmif_arb)
-		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
-	pmif_arb->read16(pmif_arb, 0, (u32)addr, rdata);
+	*rdata = mt6359p_read(addr);
 }
 
 void rtc_write(u16 addr, u16 wdata)
 {
-	if (!pmif_arb)
-		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
-	pmif_arb->write16(pmif_arb, 0, (u32)addr, wdata);
+	mt6359p_write(addr, wdata);
 }
 
 static void rtc_write_field(u16 reg, u16 val, u16 mask, u16 shift)

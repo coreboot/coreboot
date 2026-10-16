@@ -61,6 +61,7 @@ ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mcupm.c
 ramstage-y += ../common/mmu_operations.c
 ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += ../common/msdc.c msdc.c
+ramstage-y += ../common/mt6359p.c mt6359p.c
 ramstage-y += mt6360.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-$(CONFIG_PCI) += ../common/pcie.c pcie.c

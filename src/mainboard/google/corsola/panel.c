@@ -27,7 +27,7 @@ bool is_pmic_aw37503(unsigned int bus)
 				0x04, &vendor_id, 0x0F, 0) && vendor_id == 0x01);
 }
 
-void backlight_control(bool enable)
+void backlight_control(struct panel_description *panel, bool enable)
 {
 	gpio_output(GPIO_AP_EDP_BKLTEN, enable);
 	gpio_output(GPIO_BL_PWM_1V8, enable);

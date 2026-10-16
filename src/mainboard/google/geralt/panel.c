@@ -26,7 +26,7 @@ struct panel_description *get_active_panel(void)
 	return get_panel_description(active_panel_id);
 }
 
-void configure_mipi_pwm_backlight(bool enable)
+void configure_mipi_pwm_backlight(struct panel_description *panel, bool enable)
 {
 	gpio_output(GPIO_AP_DISP_BKLTEN, enable);
 	gpio_output(GPIO_MIPI_BL_PWM_1V8, enable);

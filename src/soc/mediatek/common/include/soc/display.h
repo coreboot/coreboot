@@ -34,7 +34,7 @@ struct panel_backlight {
 
 struct panel_description {
 	const char *name;
-	void (*configure_backlight)(bool enable);
+	void (*configure_backlight)(struct panel_description *panel, bool enable);
 	void (*power_on)(void);
 	void (*reset)(void);
 	int (*get_edid)(struct edid *edid);

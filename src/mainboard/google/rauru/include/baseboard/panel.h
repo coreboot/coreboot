@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 uint32_t panel_id(void);
-void configure_backlight(bool enable);
+void configure_backlight(struct panel_description *panel, bool enable);
 
 /* Return the MIPI panel description */
 struct panel_description *get_panel_description(void);

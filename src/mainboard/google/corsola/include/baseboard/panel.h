@@ -16,7 +16,7 @@
 void aw37503_init(unsigned int bus);
 bool is_pmic_aw37503(unsigned int bus);
 uint32_t panel_id(void);
-void backlight_control(bool enable);
+void backlight_control(struct panel_description *panel, bool enable);
 void tps65132s_power_on(struct tps65132s_cfg *config);
 
 /* Return the mipi panel description from given panel id */

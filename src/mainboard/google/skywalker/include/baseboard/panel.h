@@ -19,7 +19,7 @@ struct aw37503_config {
 
 uint8_t panel_id(void);
 
-void panel_configure_backlight(bool enable);
+void panel_configure_backlight(struct panel_description *panel, bool enable);
 void mipi_panel_power_on(void);
 
 /* Return the mipi panel description */

@@ -81,7 +81,7 @@ static void panel_configure_backlight(struct panel_description *panel,
 
 	if (!panel->configure_backlight)
 		return;
-	panel->configure_backlight(enable);
+	panel->configure_backlight(panel, enable);
 }
 
 static void display_logo(struct panel_description *panel,

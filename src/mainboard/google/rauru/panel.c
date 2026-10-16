@@ -10,7 +10,7 @@
 #include <soc/dsi.h>
 #include <variants.h>
 
-void configure_backlight(bool enable)
+void configure_backlight(struct panel_description *panel, bool enable)
 {
 	/*
 	 * Enable PWM for seamless display support. We only need to set

@@ -52,7 +52,7 @@ bool mainboard_needs_pcie_init(void)
 	return false;
 }
 
-static void configure_backlight(bool enable)
+static void configure_backlight(struct panel_description *panel, bool enable)
 {
 	gpio_output(GPIO_AP_EDP_BKLTEN, enable);
 	gpio_output(GPIO_BL_PWM_1V8, enable);

@@ -1322,31 +1322,56 @@ void cse_enable_ptt(bool state)
  * 5       1       Disable
  */
 
-static void me_reset_with_count(void)
+/*
+ * CSE accepts a state-change command before it finishes programming the ME
+ * region. A global reset or a host SPI transaction during that commit corrupts
+ * the region.
+ *
+ * HFSTS1 bit 11 (update in progress) does not assert on Jasper Lake, so wait
+ * a fixed 500 ms after MKHI accepts the command, then reset.
+ */
+#define CSE_ME_STATE_COMMIT_DELAY_MS	500
+
+/*
+ * Record a state-change attempt before talking to CSE.
+ *
+ * The attempt counter is stored with the other firmware options, so updating
+ * it is a host SPI write when the option store is on flash. That write has
+ * to happen before the HECI command. Afterwards CSE is programming the ME
+ * region on the same flash.
+ *
+ * Every attempt counts, including a failed send, an incomplete reply, or a
+ * rejected command. Returns false when ME_DISABLE_ATTEMPTS has already been
+ * reached, or the updated counter could not be stored.
+ */
+static bool me_state_change_prepare(void)
 {
 	unsigned int cmos_me_state_counter = get_uint_option("me_state_counter", UINT_MAX);
 
-	if (cmos_me_state_counter != UINT_MAX) {
-		printk(BIOS_DEBUG, "CMOS: me_state_counter = %u\n", cmos_me_state_counter);
-		/* Avoid boot loops by only trying a state change 3 times */
-		if (cmos_me_state_counter < ME_DISABLE_ATTEMPTS) {
-			cmos_me_state_counter++;
-			set_uint_option("me_state_counter", cmos_me_state_counter);
-			printk(BIOS_DEBUG, "ME: Reset attempt %u/%u.\n", cmos_me_state_counter,
-									 ME_DISABLE_ATTEMPTS);
-			do_global_reset();
-		} else {
-			/*
-			 * If the (CS)ME fails to change states after 3 attempts, it will
-			 * likely need a cold boot, or recovering.
-			 */
-			printk(BIOS_ERR, "Failed to change ME state in %u attempts!\n",
-									 ME_DISABLE_ATTEMPTS);
-		}
-	} else {
-		printk(BIOS_DEBUG, "ME: Resetting");
-		do_global_reset();
+	if (cmos_me_state_counter == UINT_MAX)
+		return true;
+
+	printk(BIOS_DEBUG, "CMOS: me_state_counter = %u\n", cmos_me_state_counter);
+
+	/* Avoid boot loops by only trying a state change 3 times */
+	if (cmos_me_state_counter >= ME_DISABLE_ATTEMPTS) {
+		/*
+		 * If the (CS)ME fails to change states after 3 attempts, it will
+		 * likely need a cold boot, or recovering.
+		 */
+		printk(BIOS_ERR, "Failed to change ME state in %u attempts!\n",
+								 ME_DISABLE_ATTEMPTS);
+		return false;
 	}
+
+	if (set_uint_option("me_state_counter", cmos_me_state_counter + 1) != CB_SUCCESS) {
+		printk(BIOS_ERR, "HECI: failed to record me_state_counter\n");
+		return false;
+	}
+
+	printk(BIOS_DEBUG, "ME: Reset attempt %u/%u.\n", cmos_me_state_counter + 1,
+							 ME_DISABLE_ATTEMPTS);
+	return true;
 }
 
 static void cse_set_state(struct device *dev)
@@ -1375,9 +1400,8 @@ static void cse_set_state(struct device *dev)
 		uint32_t rule_id;
 	} __packed;
 
-	struct me_disable_reply disable_reply;
-
-	size_t disable_reply_size;
+	struct me_disable_reply disable_reply = { 0 };
+	size_t disable_reply_size = sizeof(disable_reply);
 
 	/* (CS)ME Enable Command */
 	struct me_enable_command {
@@ -1393,14 +1417,17 @@ static void cse_set_state(struct device *dev)
 		struct mkhi_hdr hdr;
 	} __packed;
 
-	struct me_enable_reply enable_reply;
-
-	size_t enable_reply_size;
+	struct me_enable_reply enable_reply = { 0 };
+	size_t enable_reply_size = sizeof(enable_reply);
 
 	/* Function Start */
 
-	int send;
-	int result;
+	bool disable_me;
+	enum cse_tx_rx_status tx_status;
+	enum cse_tx_rx_status rx_status;
+	struct mkhi_hdr *reply_hdr;
+	size_t reply_size;
+	void *reply;
 
 	if (fast_spi_flash_descriptor_override()) {
 		printk(BIOS_WARNING, "HECI: not setting ME state because "
@@ -1428,15 +1455,11 @@ static void cse_set_state(struct device *dev)
 	if (cmos_me_state && !soft_temp_disable) {
 		/* me_state should be disabled, but it's enabled */
 		printk(BIOS_DEBUG, "ME needs to be disabled.\n");
-		send = heci_send_receive(&me_disable, sizeof(me_disable),
-			&disable_reply, &disable_reply_size, HECI_MKHI_ADDR);
-		result = disable_reply.hdr.result;
+		disable_me = true;
 	} else if (!cmos_me_state && soft_temp_disable) {
 		/* me_state should be enabled, but it's disabled */
 		printk(BIOS_DEBUG, "ME needs to be enabled.\n");
-		send = heci_send_receive(&me_enable, sizeof(me_enable),
-			&enable_reply, &enable_reply_size, HECI_MKHI_ADDR);
-		result = enable_reply.hdr.result;
+		disable_me = false;
 	} else {
 		printk(BIOS_DEBUG, "ME is %s.\n", cmos_me_state ? "disabled" : "enabled");
 		unsigned int cmos_me_state_counter = get_uint_option("me_state_counter",
@@ -1447,18 +1470,63 @@ static void cse_set_state(struct device *dev)
 		return;
 	}
 
+	/*
+	 * Persist the attempt counter before the HECI command. When the option
+	 * store is on SPI, that write shares the flash CSE is about to program.
+	 */
+	if (!me_state_change_prepare())
+		return;
+
+	if (disable_me) {
+		tx_status = heci_send(&me_disable, sizeof(me_disable),
+				      BIOS_HOST_ADDR, HECI_MKHI_ADDR);
+		reply = &disable_reply;
+		reply_size = disable_reply_size;
+		reply_hdr = &disable_reply.hdr;
+	} else {
+		tx_status = heci_send(&me_enable, sizeof(me_enable),
+				      BIOS_HOST_ADDR, HECI_MKHI_ADDR);
+		reply = &enable_reply;
+		reply_size = enable_reply_size;
+		reply_hdr = &enable_reply.hdr;
+	}
+
 	printk(BIOS_DEBUG, "HECI: ME state change send %s!\n",
-							!send ? "success" : "failure");
+							!tx_status ? "success" : "failure");
+	if (tx_status != CSE_TX_RX_SUCCESS) {
+		printk(BIOS_ERR,
+		       "HECI: ME state command was not sent, skipping global reset\n");
+		return;
+	}
+
+	rx_status = heci_receive(reply, &reply_size);
+	/*
+	 * Require a response header before trusting result. A zero-filled
+	 * buffer would otherwise look like MKHI success. The attempt still
+	 * counts, but an incomplete reply skips the reset.
+	 */
+	if (rx_status != CSE_TX_RX_SUCCESS || reply_size < sizeof(*reply_hdr) ||
+	    !reply_hdr->is_resp) {
+		printk(BIOS_ERR, "HECI: ME state reply incomplete, skipping global reset\n");
+		return;
+	}
+
 	printk(BIOS_DEBUG, "HECI: ME state change result %s!\n",
-							!result ? "success" : "failure");
+	       !reply_hdr->result ? "success" : "failure");
+	if (reply_hdr->result) {
+		printk(BIOS_ERR, "HECI: ME state change rejected, skipping global reset\n");
+		return;
+	}
 
 	/*
-	 * Reset if the result was successful, or if the send failed as some older
-	 * version of the Intel (CS)ME won't successfully receive the message unless reset
-	 * twice.
+	 * MKHI accepted the command. Pause so CSE can finish programming the
+	 * ME region before the global reset.
 	 */
-	if (send || !result)
-		me_reset_with_count();
+	printk(BIOS_DEBUG, "HECI: waiting %u ms for ME state commit\n",
+	       CSE_ME_STATE_COMMIT_DELAY_MS);
+	mdelay(CSE_ME_STATE_COMMIT_DELAY_MS);
+
+	do_global_reset();
 }
 
 /*

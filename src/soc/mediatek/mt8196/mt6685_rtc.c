@@ -177,8 +177,8 @@ static bool rtc_frequency_meter_check(void)
 bool rtc_gpio_init(void)
 {
 	/* GPI mode and pull enable + pull down */
-	u16 mask = (RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_XOSC32_LPEN |
-		    RTC_EOSC32_LPEN);
+	u16 mask = (RTC_CON_LPSTA_RAW | RTC_CON_LPRST | RTC_CON_XOSC32_LPEN |
+		    RTC_CON_EOSC32_LPEN);
 	return rtc_clrset_trigger(RTC_CON,
 				  (u16)(~mask) | RTC_CON_GPU | RTC_CON_F32KOB,
 				  RTC_CON_GPEN | RTC_CON_GOE);
@@ -271,7 +271,7 @@ static bool rtc_lpd_init(void)
 	if (!rtc_clrset_trigger(RTC_AL_SEC, RTC_LPD_OPT_MASK, RTC_LPD_OPT_EOSC_LPD))
 		return false;
 
-	if (!rtc_clrset_trigger(RTC_CON, RTC_CON_LPRST, RTC_XOSC32_LPEN))
+	if (!rtc_clrset_trigger(RTC_CON, RTC_CON_LPRST, RTC_CON_XOSC32_LPEN))
 		return false;
 
 	if (!rtc_clrset_trigger(RTC_CON, 0, RTC_CON_LPRST))
@@ -280,7 +280,7 @@ static bool rtc_lpd_init(void)
 	if (!rtc_clrset_trigger(RTC_CON, RTC_CON_LPRST, 0))
 		return false;
 
-	if (!rtc_clrset_trigger(RTC_CON, RTC_CON_LPRST, RTC_EOSC32_LPEN))
+	if (!rtc_clrset_trigger(RTC_CON, RTC_CON_LPRST, RTC_CON_EOSC32_LPEN))
 		return false;
 
 	if (!rtc_clrset_trigger(RTC_CON, 0, RTC_CON_LPRST))
@@ -565,9 +565,9 @@ void rtc_boot(void)
 
 	/* Defensive patch: Check and enable EOSC HW calibration if disabled */
 	rtc_read(RTC_OSC32CON, &rdata);
-	if (!(rdata & RTC_EMBCK_SEL_K_EOSC)) {
+	if (!(rdata & RTC_EMB_K_EOSC32_MODE)) {
 		printk(BIOS_WARNING, "EOSC HW calibration was disabled, re-enabling\n");
-		rdata |= RTC_EMBCK_SEL_K_EOSC;
+		rdata |= RTC_EMB_K_EOSC32_MODE;
 		rtc_xosc_write(rdata);
 	}
 

@@ -73,22 +73,9 @@
 #define FQMTR_DCXO_F32K_CK		1
 #define FQMTR_FIX_CLK_EOSC_32K		2
 
-#define OSC32CON_ANALOG_SETTING		(RTC_GP_OSC32_CON | RTC_EOSC32_CHOP_EN | \
-					 RTC_EOSC32_VCT_EN | RTC_GPS_CKOUT_EN | \
-					 RTC_EMBCK_SEL_OPTION | RTC_EMBCK_SEL_K_EOSC)
-#define RTC_GP_OSC32_CON		(2U << (5 + 8))
-#define RTC_EOSC32_CHOP_EN		(1 << (4 + 8))
-#define RTC_EOSC32_VCT_EN		(1 << (3 + 8))
-#define RTC_EMBCK_SEL_K_EOSC		(1U << 6)
-
-#define RTC_XOSC32_LPEN			(1 << 2)
-#define RTC_EOSC32_LPEN			(1 << 1)
-
 #define RTC_BBPU_RESET_ALARM		(1 << 3)
 #define RTC_BBPU_RESET_SPAR		(1 << 2)
 #define RTC_BBPU_SPAR_SW		(1 << 1)
-
-#define RTC_XOSC32_LPEN			(1 << 2)
 
 #define RTC_PDN1_PWRON_TIME		(1 << 7)
 
@@ -111,16 +98,7 @@
 #define RTC_TC_MIN_SEC			0x60a
 #define RTC_TC_SEC_SEC			0x608
 
-#define RTC_K_EOSC32_VTCXO_ON_SEL	(1 << (7 + 8))
-#define RTC_AL_YEA_MASK			(0x7F << 0)
-#define RTC_K_EOSC_RSV_7		(1 << 15)
-#define RTC_K_EOSC_RSV_6		(1 << 14)
-
 #define RTC_POWER_DETECTED		(1 << (4 + 8))
-
-#define RTC_K_EOSC_RSV_0		(1 << 8)
-#define RTC_K_EOSC_RSV_1		(1 << 9)
-#define RTC_K_EOSC_RSV_2		(1 << 10)
 
 #define RTC_EOSC_CALI_TD_8SEC		(6 << 8)
 
@@ -146,8 +124,6 @@
 #define SCK_TOP_CKPDN_CON0_L_SET	0x515
 #define RG_RTC_EOSC32_CK_PDN_MASK	0x1
 #define RG_RTC_EOSC32_CK_PDN_SHIFT	2
-
-#define RTC_TC_MTH_MASK			0xF
 
 #define SCK_TOP_CKPDN_CON0_L_CLR	0x516
 #define SCK_TOP_CKPDN_CON0_L_CLR_SHIFT	0

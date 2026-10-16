@@ -42,6 +42,9 @@ enum {
 };
 
 enum {
+	RTC_BBPU_CLRPKY	= 1U << 4,
+	RTC_BBPU_RELOAD	= 1U << 5,
+	RTC_BBPU_CBUSY	= 1U << 6,
 	RTC_BBPU_KEY	= 0x43 << 8
 };
 

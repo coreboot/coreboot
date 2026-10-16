@@ -140,6 +140,11 @@ static void bios_mmap_init(void)
 	init_done = true;
 }
 
+void boot_device_init(void)
+{
+	bios_mmap_init();
+}
+
 const struct region_device *boot_device_ro(void)
 {
 	bios_mmap_init();

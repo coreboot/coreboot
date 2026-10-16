@@ -2,6 +2,7 @@
 
 #include <arch/hlt.h>
 #include <arch/io.h>
+#include <boot_device.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
@@ -402,6 +403,8 @@ static void finalize(void)
 	if (CONFIG(SPI_FLASH_SMM))
 		/* Re-init SPI driver to handle locked BAR */
 		fast_spi_init();
+
+	boot_device_init();
 
 	if (enable_smm_bios_protection()) {
 		fast_spi_enable_wp();

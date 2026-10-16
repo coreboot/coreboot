@@ -111,7 +111,7 @@ struct vr_lookup {
 };
 
 static uint32_t load_table(const struct vr_lookup *tbl, const int tbl_entries, const int domain,
-					const uint16_t mch_id, uint8_t tdp)
+				const uint16_t mch_id, const uint8_t tdp, const char *tbl_name)
 {
 	for (size_t i = 0; i < tbl_entries; i++) {
 		if (tbl[i].mchid != mch_id || tbl[i].tdp != tdp)
@@ -119,7 +119,8 @@ static uint32_t load_table(const struct vr_lookup *tbl, const int tbl_entries, c
 		return tbl[i].conf[domain];
 	}
 
-	printk(BIOS_ERR, "Unknown MCH (0x%x) in %s\n", mch_id, __func__);
+	printk(BIOS_ERR, "Unknown combination of MCH (0x%x) and TDP (%uW) in %s(%s, ...)\n",
+		mch_id, tdp, __func__, tbl_name);
 	return 0;
 }
 
@@ -472,17 +473,17 @@ void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
 		uint16_t gt_id = gt ? pci_read_config16(gt, PCI_DEVICE_ID) : 0xffff;
 
 		s_cfg->AcLoadline[domain] = load_table(vr_config_ll, ARRAY_SIZE(vr_config_ll),
-							domain, mch_id, tdp);
+							domain, mch_id, tdp, "vr_config_ll");
 		s_cfg->DcLoadline[domain] = load_table(vr_config_ll, ARRAY_SIZE(vr_config_ll),
-							domain, mch_id, tdp);
+							domain, mch_id, tdp, "vr_config_ll");
 		s_cfg->IccMax[domain] = load_table(vr_config_icc, ARRAY_SIZE(vr_config_icc),
-							domain, mch_id, tdp);
+							domain, mch_id, tdp, "vr_config_icc");
 		s_cfg->TdcTimeWindow[domain] = load_table(vr_config_tdc_timewindow,
 							ARRAY_SIZE(vr_config_tdc_timewindow),
-							domain, mch_id, tdp);
+							domain, mch_id, tdp, "vr_config_tdc_timewindow");
 		s_cfg->TdcCurrentLimit[domain] = load_table(vr_config_tdc_currentlimit,
 							ARRAY_SIZE(vr_config_tdc_currentlimit),
-							domain, mch_id, tdp);
+							domain, mch_id, tdp, "vr_config_tdc_currentlimit");
 
 		/* Exception: following ADL-N SKUs may have different GT TDC based on GT ID */
 		if (mch_id == PCI_DID_INTEL_ADL_N_ID_2 || mch_id == PCI_DID_INTEL_ADL_N_ID_3) {

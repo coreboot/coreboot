@@ -78,3 +78,22 @@ enum cb_err fmap_locate_area(const char *name, size_t *offset, size_t *size)
 
 	return fmap_find_area(_fmap_cache, name, offset, size);
 }
+
+enum cb_err fmap_locate_area_by_offset(size_t offset, size_t size, const char **name)
+{
+	size_t i;
+
+	if (!_fmap_cache && !fmap_setup_cache())
+		return CB_ERR;
+
+	for (i = 0; i < le32toh(_fmap_cache->nareas); ++i) {
+		if (le32toh(_fmap_cache->areas[i].offset) != offset ||
+		    le32toh(_fmap_cache->areas[i].size) != size)
+			continue;
+		if (name)
+			*name = (const char *)_fmap_cache->areas[i].name;
+		return CB_SUCCESS;
+	}
+
+	return CB_ERR;
+}

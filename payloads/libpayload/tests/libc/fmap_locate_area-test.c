@@ -46,6 +46,7 @@ static void test_fmap_locate_area_success(void **state)
 {
 	size_t offset = 0;
 	size_t size = 0;
+	const char *name = NULL;
 	struct fmap mock_fmap = {
 		.signature = FMAP_SIGNATURE,
 		.ver_major = 1,
@@ -94,6 +95,17 @@ static void test_fmap_locate_area_success(void **state)
 	assert_int_equal(0, fmap_locate_area("SECOND_AREA", &offset, &size));
 	assert_int_equal(area_2.offset, offset);
 	assert_int_equal(area_2.size, size);
+
+	assert_int_equal(0, fmap_locate_area_by_offset(area_1.offset, area_1.size, &name));
+	assert_string_equal("FIRST_AREA", name);
+
+	assert_int_equal(0, fmap_locate_area_by_offset(area_2.offset, area_2.size, &name));
+	assert_string_equal("SECOND_AREA", name);
+
+	assert_int_equal(0, fmap_locate_area_by_offset(area_3.offset, area_3.size, &name));
+	assert_string_equal("THIRD_AREA", name);
+
+	assert_int_equal(-1, fmap_locate_area_by_offset(area_1.offset, area_2.size, &name));
 
 	reset_fmap_cache();
 }

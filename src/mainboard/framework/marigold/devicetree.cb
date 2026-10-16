@@ -37,7 +37,7 @@ chip soc/intel/meteorlake
 	register "pch_slp_a_min_assertion_width" = "SLP_A_ASSERTION_98_MS"
 
 	device domain 0 on
-		subsystemid 0xf111 0x0003 inherit
+		subsystemid 0xf111 0x0009 inherit
 
 		device ref igpu on
 			# DDIA is eDP

@@ -3,6 +3,9 @@
 #ifndef SOC_MEDIATEK_RTC_MT6359P_H
 #define SOC_MEDIATEK_RTC_MT6359P_H
 
+#include <soc/rtc_common.h>
+#include <soc/rtc_reg_common.h>
+
 /* RTC registers */
 enum {
 	RTC_BBPU_ENABLE_ALARM	= 1U << 0,

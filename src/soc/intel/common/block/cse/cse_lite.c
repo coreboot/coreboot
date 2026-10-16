@@ -7,16 +7,19 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <crc_byte.h>
+#include <delay.h>
 #include <elog.h>
 #include <fmap.h>
 #include <intelbasecode/debug_feature.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/cse_layout.h>
 #include <intelblocks/cse_lite.h>
+#include <intelblocks/me.h>
 #include <intelblocks/spi.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/intel/common/reset.h>
+#include <timer.h>
 #include <timestamp.h>
 
 #include "cse_lite_cmos.h"
@@ -267,7 +270,10 @@ static void cse_print_boot_partition_info(void)
  * Checks prerequisites for MKHI_BUP_COMMON_GET_BOOT_PARTITION_INFO and
  * MKHI_BUP_COMMON_SET_BOOT_PARTITION_INFO HECI commands.
  * It allows execution of the Boot Partition commands in below scenarios:
- *	- When CSE boots from RW partition (COM: Normal and CWS: Normal)
+ *	- When CSE boots from RW partition (COM: Normal, CWS: Normal, operation
+ *	  state M0 with UMA, M0 without UMA, or M3 without UMA). Normal preboot
+ *	  (HFSTS1 0x80000005) is queried immediately unless the SoC selects
+ *	  SOC_INTEL_CSE_LITE_PREBOOT_WAIT. Any other not-ready value is polled.
  *	- When CSE boots from RO partition (COM: Soft Temp Disable and CWS: Normal)
  *	- After HMRFPO_ENABLE command is issued to CSE (COM: SECOVER_MEI_MSG and CWS: Normal)
  *	- When CSE boots from RW partition (COM: Soft Temp Disable and CWS: M3 w/o UMA)
@@ -275,18 +281,81 @@ static void cse_print_boot_partition_info(void)
  * cse_set_next_boot_partition() since the CSE's current operation mode is changed between these
  * cmd handler calls.
  */
-static bool cse_is_bp_cmd_info_possible(void)
+/* Evaluate CWS, COM, and operation state from one HFSTS1 sample. */
+static bool cse_bp_cmd_ready(uint32_t hfsts1)
 {
-	if (cse_is_hfs1_cws_normal()) {
-		if (cse_is_hfs1_com_normal())
+	union me_hfsts1 hfs1;
+
+	hfs1.data = hfsts1;
+
+	if (hfs1.fields.working_state == ME_HFS1_CWS_NORMAL) {
+		if (hfs1.fields.operation_mode == ME_HFS1_COM_NORMAL) {
+			switch (hfs1.fields.operation_state) {
+			case ME_HFS1_COS_M0_UMA:
+			case ME_HFS1_COS_M0_NO_UMA:
+			case ME_HFS1_COS_M3_NO_UMA:
+				return true;
+			case ME_HFS1_COS_DEFAULT:
+				return !CONFIG(SOC_INTEL_CSE_LITE_PREBOOT_WAIT);
+			default:
+				return false;
+			}
+		}
+		if (hfs1.fields.operation_mode == ME_HFS1_COM_SECOVER_MEI_MSG)
 			return true;
-		if (cse_is_hfs1_com_secover_mei_msg())
+		if (hfs1.fields.operation_mode == ME_HFS1_COM_SOFT_TEMP_DISABLE)
 			return true;
-		if (cse_is_hfs1_com_soft_temp_disable())
-			return true;
-	} else if (cse_is_hfs1_cws_m3_no_uma() && cse_is_hfs1_com_soft_temp_disable()) {
+	} else if (hfs1.fields.working_state == ME_HFS1_CWS_M3_NO_UMA &&
+		   hfs1.fields.operation_mode == ME_HFS1_COM_SOFT_TEMP_DISABLE) {
 		return true;
 	}
+	return false;
+}
+
+/* CWS normal, COM normal, operation state preboot (HFSTS1 0x80000005). */
+static bool cse_hfs1_normal_preboot(uint32_t hfsts1)
+{
+	union me_hfsts1 hfs1;
+
+	hfs1.data = hfsts1;
+	return hfs1.fields.working_state == ME_HFS1_CWS_NORMAL &&
+	       hfs1.fields.operation_mode == ME_HFS1_COM_NORMAL &&
+	       hfs1.fields.operation_state == ME_HFS1_COS_DEFAULT;
+}
+
+/* HFSTS1 reaches the boot-partition command state after a global reset. */
+#define CSE_BP_CMD_READY_TIMEOUT_MS	5000
+#define CSE_BP_CMD_READY_POLL_MS	100
+
+static bool cse_wait_bp_cmd_ready(void)
+{
+	struct stopwatch sw;
+	uint32_t hfs1;
+
+	hfs1 = me_read_config32(PCI_ME_HFSTS1);
+	if (cse_bp_cmd_ready(hfs1)) {
+		if (cse_hfs1_normal_preboot(hfs1)) {
+			printk(BIOS_DEBUG,
+			       "cse_lite: HFSTS1 0x%x is normal preboot, querying\n", hfs1);
+		}
+		return true;
+	}
+
+	printk(BIOS_DEBUG, "cse_lite: HFSTS1 0x%x, waiting to query boot partition\n", hfs1);
+
+	stopwatch_init_msecs_expire(&sw, CSE_BP_CMD_READY_TIMEOUT_MS);
+	do {
+		mdelay(CSE_BP_CMD_READY_POLL_MS);
+		hfs1 = me_read_config32(PCI_ME_HFSTS1);
+		if (cse_bp_cmd_ready(hfs1)) {
+			printk(BIOS_DEBUG,
+			       "cse_lite: boot partition ready after %lld ms, HFSTS1 0x%x\n",
+			       stopwatch_duration_msecs(&sw), hfs1);
+			return true;
+		}
+	} while (!stopwatch_expired(&sw));
+
+	printk(BIOS_ERR, "cse_lite: CSE does not meet prerequisites, HFSTS1 0x%x\n", hfs1);
 	return false;
 }
 
@@ -362,10 +431,8 @@ static enum cb_err cse_get_bp_info(void)
 			return CB_SUCCESS;
 	}
 
-	if (!cse_is_bp_cmd_info_possible()) {
-		printk(BIOS_ERR, "cse_lite: CSE does not meet prerequisites\n");
+	if (!cse_wait_bp_cmd_ready())
 		return CB_ERR;
-	}
 
 	size_t resp_size = sizeof(struct get_bp_info_rsp);
 
@@ -440,10 +507,8 @@ static enum cb_err cse_set_next_boot_partition(enum boot_partition_id bp)
 
 	printk(BIOS_INFO, "cse_lite: Set Boot Partition Info Command (%s)\n", GET_BP_STR(bp));
 
-	if (!cse_is_bp_cmd_info_possible()) {
-		printk(BIOS_ERR, "cse_lite: CSE does not meet prerequisites\n");
+	if (!cse_wait_bp_cmd_ready())
 		return CB_ERR;
-	}
 
 	struct mkhi_hdr switch_resp;
 	size_t sw_resp_sz = sizeof(struct mkhi_hdr);

@@ -162,6 +162,15 @@ config SOC_INTEL_CSE_LITE_SKU
 	help
 	 Enables CSE Lite SKU
 
+config SOC_INTEL_CSE_LITE_PREBOOT_WAIT
+	bool
+	depends on SOC_INTEL_CSE_LITE_SKU
+	help
+	  HFSTS1 0x80000005 (CWS normal, COM normal, operation state preboot)
+	  is not a valid state for the boot-partition commands. Poll until
+	  HFSTS1 leaves preboot. SoCs that accept the command in that state
+	  leave this unselected.
+
 config SOC_INTEL_CSE_LITE_PSR
 	bool
 	default n

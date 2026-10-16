@@ -165,7 +165,7 @@ static void load_qc_se_firmware_late(void)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE6, SE_PROTOCOL_UART, FIFO); /* BT UART */
 	qupv3_se_fw_load_and_init(QUPV3_0_SE0, SE_PROTOCOL_I2C, MIXED); /* Trackpad I2C */
 
-	qupv3_se_fw_load_and_init(QUPV3_0_SE5, SE_PROTOCOL_I2C, MIXED); /* eUSB repeater */
+	qupv3_se_fw_load_and_init(QUPV3_0_SE5, SE_PROTOCOL_I2C, GSI); /* eUSB repeater */
 }
 
 static void mainboard_late_init(struct device *dev)

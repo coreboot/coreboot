@@ -994,6 +994,10 @@ static void acpi_write_rsdt(acpi_rsdt_t *rsdt, char *oem_id, char *oem_table_id)
 	if (acpi_fill_header(header, "RSDT", RSDT, sizeof(acpi_rsdt_t)) != CB_SUCCESS)
 		return;
 
+	/* OEM IDs of RSDT and XSDT must match the ones of the SLIC/MSDM table. */
+	memcpy(header->oem_id, oem_id, 6);
+	memcpy(header->oem_table_id, oem_table_id, 8);
+
 	/* Fix checksum. */
 	header->checksum = acpi_checksum((void *)rsdt, sizeof(acpi_rsdt_t));
 }
@@ -1007,6 +1011,10 @@ static void acpi_write_xsdt(acpi_xsdt_t *xsdt, char *oem_id, char *oem_table_id)
 
 	if (acpi_fill_header(header, "XSDT", XSDT, sizeof(acpi_xsdt_t)) != CB_SUCCESS)
 		return;
+
+	/* OEM IDs of RSDT and XSDT must match the ones of the SLIC/MSDM table. */
+	memcpy(header->oem_id, oem_id, 6);
+	memcpy(header->oem_table_id, oem_table_id, 8);
 
 	/* Fix checksum. */
 	header->checksum = acpi_checksum((void *)xsdt, sizeof(acpi_xsdt_t));
@@ -1568,6 +1576,9 @@ static unsigned long write_acpi_tables(const unsigned long start)
 
 	current = start;
 
+	memcpy(oem_id, OEM_ID, 6);
+	memcpy(oem_table_id, ACPI_TABLE_CREATOR, 8);
+
 	/* Align ACPI tables to 16byte */
 	current = acpi_align_current(current);
 
@@ -1676,9 +1687,6 @@ static unsigned long write_acpi_tables(const unsigned long start)
 	if (slic_file) {
 		memcpy(oem_id, slic_file->oem_id, 6);
 		memcpy(oem_table_id, slic_file->oem_table_id, 8);
-	} else {
-		memcpy(oem_id, OEM_ID, 6);
-		memcpy(oem_table_id, ACPI_TABLE_CREATOR, 8);
 	}
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx.\n", start);

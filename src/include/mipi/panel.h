@@ -10,6 +10,10 @@
 /* Definitions for flags in panel_serializable_data */
 enum panel_flag {
 	PANEL_FLAG_CPHY = BIT(0),
+	/* DSI video mode uses sync events instead of sync pulses. */
+	PANEL_FLAG_DSI_SYNC_EVENT = BIT(1),
+	/* DSI clock lane enters LP between bursts (non-continuous clock). */
+	PANEL_FLAG_DSI_NON_CONTINUOUS_CLK = BIT(2),
 };
 
 /* VESA Display Stream Compression DSC 1.2 constants */

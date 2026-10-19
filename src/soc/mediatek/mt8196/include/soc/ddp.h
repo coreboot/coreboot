@@ -217,7 +217,8 @@ struct exdma {
 	u32 reserved_0x20c[57];
 	u32 pitch_msb;
 	u32 pitch;
-	u32 reserved_0x2f8[2];
+	u32 reserved_0x2f8;
+	u32 l_guser_ext;
 	u32 ovl_con;
 	u32 reserved_0x304[783];
 	u32 ovl_addr;
@@ -237,6 +238,7 @@ check_member(exdma, dummy, 0x200);
 check_member(exdma, gdrdy_period, 0x208);
 check_member(exdma, pitch_msb, 0x2F0);
 check_member(exdma, pitch, 0x2F4);
+check_member(exdma, l_guser_ext, 0x2FC);
 check_member(exdma, ovl_addr, 0xF40);
 check_member(exdma, ovl_mout, 0xFF0);
 

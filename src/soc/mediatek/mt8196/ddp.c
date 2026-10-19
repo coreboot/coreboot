@@ -654,25 +654,27 @@ static void disp_clock_on(void)
 }
 
 static void ovlsys_layer_config_pipe(struct exdma *exdma, struct blender *blender,
-				     u32 fmt, u16 width, u16 height, u16 pitch)
+				     u32 fmt, u16 width, u16 height, u32 pitch)
 {
 	/* exdma config */
-	write32(&exdma->roi_size, VH_SIZE(width, height));
-	write32(&exdma->ovl_l_size, VH_SIZE(width, height));
-	write32(&exdma->pitch, pitch & 0xFFFF);
-	write32(&exdma->ovl_l_clrfmt, fmt);
-
-	/* exdma start */
 	clrsetbits32(&exdma->rdma_burst_ctl, BIT(28) | BIT(30) | BIT(31),
 		     BIT(28) | BIT(31));
 	setbits32(&exdma->dummy, BIT(2) | BIT(3));
-	setbits32(&exdma->datapath_con, BIT(0) | BIT(24) | BIT(25));
 	clrsetbits32(&exdma->ovl_mout, BIT(0) | BIT(1), BIT(1));
 	write32(&exdma->gdrdy_period, 0xFFFFFFFF);
+	write32(&exdma->l_guser_ext, BIT(5));
 
-	/* Enable layer */
-	setbits32(&exdma->rdma0_ctl, BIT(0));
-	setbits32(&blender->bld_l_fmt, fmt);
+	/* exdma start */
+	setbits32(&exdma->datapath_con, BIT(0) | BIT(24) | BIT(25));
+	setbits32(&exdma->ovl_en, BIT(0));
+
+	/* exdma layer config */
+	write32(&exdma->roi_size, VH_SIZE(width, height));
+	write32(&exdma->ovl_l_size, VH_SIZE(width, height));
+	write32(&exdma->pitch, pitch & 0xFFFF);
+	write32(&exdma->pitch_msb, (pitch >> 16) & 0xF);
+	write32(&exdma->ovl_l_clrfmt, fmt);
+	write32(&blender->bld_l_fmt, fmt);
 }
 
 static void ovlsys_layer_config(u32 fmt, u32 bpp, u16 width, u16 height,
@@ -715,7 +717,7 @@ void mtk_ddp_ovlsys_start(uintptr_t fb_addr, const struct edid *edid,
 	uint32_t offset;
 
 	write32(&ovl_exdma2_reg->ovl_addr, fb_addr);
-	setbits32(&ovl_exdma2_reg->ovl_en, BIT(0));
+	setbits32(&ovl_exdma2_reg->rdma0_ctl, BIT(0));
 	setbits32(&ovl_exdma2_reg->ovl_l_en, BIT(0));
 	setbits32(&ovl_blenders[0]->bld_l_en, BIT(0));
 
@@ -724,7 +726,7 @@ void mtk_ddp_ovlsys_start(uintptr_t fb_addr, const struct edid *edid,
 
 	offset = edid->x_resolution * edid->framebuffer_bits_per_pixel / 8 / 2;
 	write32(&ovl1_exdma2_reg->ovl_addr, fb_addr + offset);
-	setbits32(&ovl1_exdma2_reg->ovl_en, BIT(0));
+	setbits32(&ovl1_exdma2_reg->rdma0_ctl, BIT(0));
 	setbits32(&ovl1_exdma2_reg->ovl_l_en, BIT(0));
 	setbits32(&ovl1_blenders[0]->bld_l_en, BIT(0));
 }

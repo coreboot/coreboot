@@ -29,6 +29,7 @@ chip northbridge/intel/sandybridge
 
 			device ref sata1 on
 				register "sata_port_map" = "0x3b"
+				register "sata_hotplug_map"  = "0x30"
 			end
 		end
 	end

@@ -8,7 +8,10 @@
 #include <soc/ddp.h>
 #include <soc/display.h>
 
-#define SIZE(w, h) ((u32)(h) << 16 | (w))
+/* Size registers with the height in the upper half */
+#define VH_SIZE(w, h) ((u32)(h) << 16 | (w))
+/* Size registers with the width in the upper half */
+#define HV_SIZE(w, h) ((u32)(w) << 16 | (h))
 #define DUAL_PIPE(path) ((path) == DISP_PATH_DUAL_MIPI)
 
 #define DSC_EN					BIT(0)
@@ -333,8 +336,8 @@ static void blender_config(struct blender *reg, u16 width, u16 height,
 		break;
 	}
 
-	write32(&reg->roi_size, SIZE(width, height));
-	write32(&reg->bld_l_size, SIZE(width, height));
+	write32(&reg->roi_size, VH_SIZE(width, height));
+	write32(&reg->bld_l_size, VH_SIZE(width, height));
 	write32(&reg->bg_clr, 0xFF000000);
 }
 
@@ -347,7 +350,7 @@ static void outproc_config(struct outproc *reg, u16 width, u16 height)
 {
 	setbits32(&reg->shadow_ctl, BIT(2));
 	setbits32(&reg->datapath_con, BIT(26));
-	write32(&reg->roi_size, SIZE(width, height));
+	write32(&reg->roi_size, VH_SIZE(width, height));
 }
 
 static void outproc_start(struct outproc *reg)
@@ -355,10 +358,11 @@ static void outproc_start(struct outproc *reg)
 	setbits32(&reg->outproc_en, BIT(0));
 }
 
-static void mdp_rsz_config(struct disp_mdp_rsz_regs *reg, u16 width, u16 height)
+static void mdp_rsz_config(struct disp_mdp_rsz_regs *reg)
 {
-	write32(&reg->input_size, SIZE(width, height));
-	write32(&reg->output_size, SIZE(width, height));
+	/* Relay mode: the kernel leaves both sizes at 0. */
+	write32(&reg->input_size, 0);
+	write32(&reg->output_size, 0);
 }
 
 static void mdp_rsz_start(struct disp_mdp_rsz_regs *reg)
@@ -368,7 +372,7 @@ static void mdp_rsz_start(struct disp_mdp_rsz_regs *reg)
 
 static void postmask_config(struct disp_postmask_regs *reg, u16 width, u16 height)
 {
-	write32(&reg->size, SIZE(width, height));
+	write32(&reg->size, HV_SIZE(width, height));
 	setbits32(&reg->cfg, BIT(0));
 }
 
@@ -379,10 +383,10 @@ static void postmask_start(struct disp_postmask_regs *reg)
 
 static void tdshp_config(struct disp_tdshp_regs *reg, u16 width, u16 height)
 {
-	write32(&reg->input_size, SIZE(width, height));
-	write32(&reg->output_size, SIZE(width, height));
+	write32(&reg->input_size, HV_SIZE(width, height));
+	write32(&reg->output_size, HV_SIZE(width, height));
 	write32(&reg->output_offset, 0x0);
-	write32(&reg->cfg, 0x1);
+	write32(&reg->cfg, BIT(0));
 	setbits32(&reg->tdshp_00, BIT(31));
 }
 
@@ -393,8 +397,8 @@ static void tdshp_start(struct disp_tdshp_regs *reg)
 
 static void ccorr_config(struct disp_ccorr_regs *reg, u16 width, u16 height)
 {
-	write32(&reg->size, SIZE(width, height));
-	setbits32(&reg->cfg, BIT(1));
+	write32(&reg->size, HV_SIZE(width, height));
+	write32(&reg->cfg, BIT(0) | BIT(1) | BIT(2));
 }
 
 static void ccorr_start(struct disp_ccorr_regs *reg)
@@ -404,7 +408,9 @@ static void ccorr_start(struct disp_ccorr_regs *reg)
 
 static void gamma_config(struct disp_gamma_regs *reg, u16 width, u16 height)
 {
-	write32(&reg->size, SIZE(width, height));
+	write32(&reg->size, HV_SIZE(width, height));
+	write32(&reg->cfg, BIT(0));
+	write32(&reg->relay_lsb, BIT(0));
 }
 
 static void gamma_start(struct disp_gamma_regs *reg)
@@ -414,7 +420,7 @@ static void gamma_start(struct disp_gamma_regs *reg)
 
 static void dither_config(struct disp_dither_regs *reg, u16 width, u16 height)
 {
-	write32(&reg->size, SIZE(width, height));
+	write32(&reg->size, HV_SIZE(width, height));
 	setbits32(&reg->cfg, BIT(0));
 }
 
@@ -497,15 +503,15 @@ static void disp_config_main_path_connection(enum disp_path_sel path)
 
 static void async_config(u16 width, u16 height, enum disp_path_sel path)
 {
-	u32 relay = BIT(30) | SIZE(width, height);
+	u32 relay = BIT(30) | VH_SIZE(width, height);
 
-	write32(&ovlsys_cfg->relay5_size, SIZE(width, height));
+	write32(&ovlsys_cfg->relay5_size, VH_SIZE(width, height));
 	write32(&mmsys_cfg->dl_in_relay[0], relay);
 	write32(&mmsys_cfg->dl_out_relay[1], relay);
 	write32(&mmsys1_cfg->dl_in_relay21, relay);
 
 	if (DUAL_PIPE(path)) {
-		write32(&ovlsys1_cfg->relay5_size, SIZE(width, height));
+		write32(&ovlsys1_cfg->relay5_size, VH_SIZE(width, height));
 		write32(&mmsys_cfg->dl_in_relay[8], relay);
 		write32(&mmsys_cfg->dl_out_relay[2], relay);
 		write32(&mmsys1_cfg->dl_in_relay22, relay);
@@ -606,7 +612,7 @@ static void main_disp_path_setup(u16 width, u16 height, u32 vrefresh, enum disp_
 
 	/* disp config */
 	for (int i = 0; i < num_pipe; i++) {
-		mdp_rsz_config(pipes[i].mdp_rsz, w, height);
+		mdp_rsz_config(pipes[i].mdp_rsz);
 		mdp_rsz_start(pipes[i].mdp_rsz);
 		tdshp_config(pipes[i].tdshp, w, height);
 		tdshp_start(pipes[i].tdshp);
@@ -651,8 +657,8 @@ static void ovlsys_layer_config_pipe(struct exdma *exdma, struct blender *blende
 				     u32 fmt, u16 width, u16 height, u16 pitch)
 {
 	/* exdma config */
-	write32(&exdma->roi_size, SIZE(width, height));
-	write32(&exdma->ovl_l_size, SIZE(width, height));
+	write32(&exdma->roi_size, VH_SIZE(width, height));
+	write32(&exdma->ovl_l_size, VH_SIZE(width, height));
 	write32(&exdma->pitch, pitch & 0xFFFF);
 	write32(&exdma->ovl_l_clrfmt, fmt);
 

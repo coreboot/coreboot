@@ -470,6 +470,10 @@ struct disp_tdshp_regs {
 	u32 output_size;
 };
 
+check_member(disp_tdshp_regs, ctrl, 0x100);
+check_member(disp_tdshp_regs, cfg, 0x110);
+check_member(disp_tdshp_regs, input_size, 0x120);
+check_member(disp_tdshp_regs, output_offset, 0x124);
 check_member(disp_tdshp_regs, output_size, 0x128);
 
 struct disp_ccorr_regs {
@@ -486,6 +490,8 @@ struct disp_ccorr_regs {
 	u32 shadow;
 };
 
+check_member(disp_ccorr_regs, cfg, 0x20);
+check_member(disp_ccorr_regs, size, 0x30);
 check_member(disp_ccorr_regs, shadow, 0xA0);
 
 struct disp_gamma_regs {
@@ -498,9 +504,13 @@ struct disp_gamma_regs {
 	u32 cfg;
 	u32 reserved1[3];
 	u32 size;
+	u32 reserved2;
+	u32 relay_lsb;
 };
 
+check_member(disp_gamma_regs, cfg, 0x20);
 check_member(disp_gamma_regs, size, 0x30);
+check_member(disp_gamma_regs, relay_lsb, 0x38);
 
 struct disp_dither_regs {
 	u32 en;
@@ -516,6 +526,8 @@ struct disp_dither_regs {
 	u32 shadow;
 };
 
+check_member(disp_dither_regs, cfg, 0x20);
+check_member(disp_dither_regs, size, 0x30);
 check_member(disp_dither_regs, shadow, 0x100);
 
 struct disp_mdp_rsz_regs {
@@ -525,6 +537,7 @@ struct disp_mdp_rsz_regs {
 	u32 output_size;
 };
 
+check_member(disp_mdp_rsz_regs, input_size, 0x10);
 check_member(disp_mdp_rsz_regs, output_size, 0x14);
 
 struct disp_postmask_regs {
@@ -535,6 +548,7 @@ struct disp_postmask_regs {
 	u32 size;
 };
 
+check_member(disp_postmask_regs, cfg, 0x20);
 check_member(disp_postmask_regs, size, 0x30);
 
 struct disp_dsc_regs {

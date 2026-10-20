@@ -111,8 +111,8 @@ chip soc/intel/pantherlake
 			register "usb2_ports" = "{
 				[0] = USB2_PORT_TYPE_C(OC_SKIP),	/* JUSB1 */
 				[1] = USB2_PORT_TYPE_C(OC_SKIP),	/* JUSB4 */
-				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* JUSB3 */
-				[3] = USB2_PORT_TYPE_C(OC_SKIP),	/* JUSB2 */
+				[2] = USB2_PORT_MID(OC_SKIP),		/* JUSB3 */
+				[3] = USB2_PORT_MID(OC_SKIP),		/* JUSB2 */
 				[4] = USB2_PORT_MID(OC_SKIP),		/* Camera */
 				/* [5] unused */
 				[6] = USB2_PORT_MID(OC_SKIP),		/* Fingerprint */

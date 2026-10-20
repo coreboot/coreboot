@@ -144,7 +144,7 @@ static int mtk_edp_train_cr(const struct mtk_dp *mtk_dp, u8 lane_count)
 		train_retries++;
 		if (!dptx_hal_hpd_high(mtk_dp)) {
 			mtk_edp_pattern(mtk_dp, lane_count, DPTX_PATTERN_UNKNOWN);
-			return DPTX_TRANING_FAIL;
+			return DPTX_PLUG_OUT;
 		}
 
 		dptx_auxread_dpcd(mtk_dp, DP_AUX_NATIVE_READ, DPCD_00206, sizeof(lane_adjust),
@@ -218,7 +218,7 @@ static int mtk_edp_train_eq(const struct mtk_dp *mtk_dp, u8 lane_count)
 		train_retries++;
 		if (!dptx_hal_hpd_high(mtk_dp)) {
 			mtk_edp_pattern(mtk_dp, lane_count, DPTX_PATTERN_UNKNOWN);
-			return DPTX_TRANING_FAIL;
+			return DPTX_PLUG_OUT;
 		}
 
 		dptx_auxread_dpcd(mtk_dp, DP_AUX_NATIVE_READ, DPCD_00206, sizeof(lane_adjust),
@@ -248,7 +248,7 @@ static int mtk_edp_train_eq(const struct mtk_dp *mtk_dp, u8 lane_count)
 	dptx_auxwrite_dpcd(mtk_dp, DP_AUX_NATIVE_WRITE, DPCD_00102, 0x1, &buff);
 	mtk_edp_pattern(mtk_dp, lane_count, DPTX_PATTERN_UNKNOWN);
 
-	return DPTX_TIMEOUT;
+	return DPTX_TRANING_FAIL;
 }
 
 int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
@@ -296,9 +296,12 @@ int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 	for (train_limit = 6; train_limit > 0; train_limit--) {
 		dptx_training_changemode(mtk_dp);
 
+		/* dptx_hal_phy_setting() programs the PHY from train_info. */
+		mtk_dp->train_info.linkrate = linkrate;
+		mtk_dp->train_info.linklane_count = lanecount;
 		mtk_edp_train_setting(mtk_dp, linkrate, lanecount);
 		ret = mtk_edp_train_cr(mtk_dp, lanecount);
-		if (ret == DPTX_TRANING_FAIL) {
+		if (ret == DPTX_PLUG_OUT) {
 			return ret;
 		} else if (ret) {
 			/* Reduce link rate */
@@ -326,8 +329,8 @@ int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 		}
 
 		ret = mtk_edp_train_eq(mtk_dp, lanecount);
-		if (ret == DPTX_TIMEOUT) {
-			return DPTX_TIMEOUT;
+		if (ret == DPTX_PLUG_OUT) {
+			return ret;
 		} else if (ret) {
 			/* Reduce lane count */
 			if (lanecount == DP_LANECOUNT_4)

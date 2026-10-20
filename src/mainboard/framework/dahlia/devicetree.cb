@@ -54,14 +54,14 @@ chip soc/intel/pantherlake
 				# [DDIA] eDP
 				register "device[0].name" = ""LCD0""
 				register "device[0].type" = "panel"
-				# [TCP0] JUSB1 DP-alt
+				# [TCP0] JUSB1 DP-alt - right side, back
 				register "device[1].name" = ""DD01""
 				register "device[1].use_pld" = "true"
-				register "device[1].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(1, 0))"
-				# [TCP1] JUSB4 DP-alt
+				register "device[1].pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+				# [TCP1] JUSB4 DP-alt - left side, back
 				register "device[2].name" = ""DD02""
 				register "device[2].use_pld" = "true"
-				register "device[2].pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 0))"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
 				device generic 0 on end
 			end
 		end
@@ -72,6 +72,7 @@ chip soc/intel/pantherlake
 		device ref tbt_pcie_rp1 on end
 
 		device ref tcss_xhci on
+			# TCP0 = right side, back; TCP1 = left side, back
 			register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 			register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 			chip drivers/usb/acpi
@@ -80,14 +81,14 @@ chip soc/intel/pantherlake
 						register "desc" = ""USB Type-C (JUSB1)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(1, 0))"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
 						device ref tcss_usb3_port0 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB Type-C (JUSB4)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 0))"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
 						device ref tcss_usb3_port1 on end
 					end
 				end
@@ -119,32 +120,54 @@ chip soc/intel/pantherlake
 				/* [7] WLAN/BT combo: BT is on CNVi (cnvi_bluetooth);
 				   the discrete module's USB BT is left off. */
 			}"
-			# The two USB3-only Type-C ports
+			# The two USB3-only Type-C ports: [0] right side, front; [1] left side, front
 			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"
 			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					# USB2 lines of the Type-C connectors
-					# TODO: Add _PLD to match TCSS/USB3 SS descriptors
 					chip drivers/usb/acpi
 						register "desc" = ""USB Type-C (JUSB1)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB Type-C (JUSB4)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB Type-C (JUSB3)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(1, 0))"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB Type-C (JUSB2)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 0))"
 						device ref usb2_port4 on end
+					end
+					# USB3 lines of the front Type-C connectors
+					chip drivers/usb/acpi
+						register "desc" = ""USB Type-C (JUSB2)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 0))"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB Type-C (JUSB3)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(1, 0))"
+						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Camera""

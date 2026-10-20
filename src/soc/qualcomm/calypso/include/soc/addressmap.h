@@ -121,6 +121,7 @@
 #define SPMI_PPID_FROM_ADDR(a) (((a) >> 8) & 0x1fffU)
 /* REG.PPID is 13 bits: SID (12:8) + Periph (7:0) */
 #define SPMI_PPID_FROM_REG(r)  ((r) & 0x1fffU)
+#define SPMI_APID_CACHE_SHIFT		0
 
 /* HS USB MP PHY base addresses */
 #define HS_USB_SS0_PHY_BASE		0x00FD3000

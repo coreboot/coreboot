@@ -247,6 +247,7 @@ enum dload_mode_cookies {
 #define SPMI_PPID_FROM_ADDR(a) ((a) & (0xfffU << 8))
 /* REG.PPID is 12 bits: SID (19:16) + Periph (15:8) */
 #define SPMI_PPID_FROM_REG(r)  ((r) & (0xfffU << 8))
+#define SPMI_APID_CACHE_SHIFT		8
 
 /* MDSS, MDP, EDP & EDP-phy Register bases */
 enum {

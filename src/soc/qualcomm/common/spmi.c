@@ -26,6 +26,8 @@
 #define MAX_SPMI_RETRIES    6
 #define SPMI_RETRY_DELAY_MS 50
 
+#define SPMI_APID_CACHE_VALID	BIT(15)
+
 // Individual register block per APID
 struct qcom_spmi_regs {
 	uint32_t cmd;
@@ -64,12 +66,12 @@ static struct qcom_spmi_regs *find_apid(uint32_t addr)
 		for (size_t i = 0U; i < qcom_spmi.num_apid; i++) {
 			uint32_t reg = read32(&qcom_spmi.apid_map[i]);
 			ppid_cache[i] = (reg != 0U) ?
-				(SPMI_PPID_FROM_REG(reg) | BIT(15)) : 0U;
+				((SPMI_PPID_FROM_REG(reg) >> SPMI_APID_CACHE_SHIFT) | SPMI_APID_CACHE_VALID) : 0U;
 		}
 		cache_initialized = true;
 	}
 
-	uint16_t match = target_ppid | BIT(15);
+	uint16_t match = (target_ppid >> SPMI_APID_CACHE_SHIFT) | SPMI_APID_CACHE_VALID;
 	for (size_t i = 0U; i < qcom_spmi.num_apid; i++) {
 		if (ppid_cache[i] == match)
 			return &qcom_spmi.regs_per_apid[i];

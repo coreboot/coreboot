@@ -171,6 +171,9 @@ static int dptx_train_tps1(struct mtk_dp *mtk_dp, u8 target_lanecount,
 		*dpcd206 = tmp_val[4];
 	}
 
+	dptx_training_checkswingpre(mtk_dp, target_lanecount,
+				    tmp_val, dpcp_buffer);
+
 	return TRAIN_STEP_FAIL_NOT_BREAK;
 }
 
@@ -248,6 +251,9 @@ static int dptx_train_tps2_3(struct mtk_dp *mtk_dp, u8 target_lanecount,
 	else
 		*dpcd206 = tmp_val[4];
 
+	dptx_training_checkswingpre(mtk_dp, target_lanecount,
+				    tmp_val, dpcp_buffer);
+
 	return TRAIN_STEP_FAIL_NOT_BREAK;
 }
 
@@ -317,10 +323,6 @@ static int dptx_trainingflow(struct mtk_dp *mtk_dp,
 				break;
 			}
 		}
-
-		dptx_training_checkswingpre(mtk_dp, target_lanecount,
-					    tmp_val, dpcp_buffer);
-
 	} while (train_retry < DPTX_TRAIN_RETRY_LIMIT &&
 		 iteration < DPTX_TRAIN_MAX_ITERATION);
 

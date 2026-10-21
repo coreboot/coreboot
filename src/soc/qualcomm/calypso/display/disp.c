@@ -52,7 +52,7 @@ void enable_mdss_clk(void)
 	disp_pll_init_and_set(apss_disp_pll0, L_VAL_1800MHz, DISP_PLL0_ALPHA_VAL);
 	disp_pll_init_and_set(apss_disp_pll1, L_VAL_600MHz, DISP_PLL1_ALPHA_VAL);
 	clock_configure(&disp_cc->mdss_ahb_rcg,
-		disp_cc_mdss_ahb_cfg, CLK_75MHZ, ARRAY_SIZE(disp_cc_mdss_ahb_cfg));
+		disp_cc_mdss_ahb_cfg, SRC_XO_HZ, ARRAY_SIZE(disp_cc_mdss_ahb_cfg));
 	mdss_clock_enable(DISP_CC_MDSS_AHB_CBCR);
 	clock_configure(&disp_cc->mdss_mdp_rcg,
 		disp_cc_mdss_mdp_cfg, CLK_600MHZ, ARRAY_SIZE(disp_cc_mdss_mdp_cfg));

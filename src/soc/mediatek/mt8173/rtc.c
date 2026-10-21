@@ -29,7 +29,7 @@ void rtc_osc_init(void)
 	rtc_gpio_init();
 
 	rtc_write(PMIC_RG_TOP_CKTST2, 0x0);
-	rtc_read(RTC_OSC32CON, &con);
+	con = rtc_read(RTC_OSC32CON);
 	if ((con & 0x1f) != 0x0)	/* check XOSCCALI */
 		rtc_xosc_write(0x3);
 }
@@ -134,7 +134,7 @@ static void rtc_bbpu_power_on(void)
 	pwrap_write_field(PMIC_RG_DCXO_CON2,
 		     BIT(1) | BIT(3) | BIT(5) | BIT(6), 0, 0);
 
-	rtc_read(RTC_BBPU, &bbpu);
+	bbpu = rtc_read(RTC_BBPU);
 	rtc_info("done BBPU=%#x\n", bbpu);
 
 	/* detect hw clock done,close RG_RTC_75K_PDN for low power setting. */

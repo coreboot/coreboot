@@ -23,9 +23,9 @@ static void config_interface(u16 addr, u16 val, u16 mask, u16 shift)
 	mt6685_write_field(addr, val, mask, shift);
 }
 
-void rtc_read(u16 addr, u16 *rdata)
+u16 rtc_read(u16 addr)
 {
-	*rdata = mt6685_read16(addr);
+	return mt6685_read16(addr);
 }
 
 void rtc_write(u16 addr, u16 wdata)
@@ -40,7 +40,7 @@ static u16 rtc_get_prot_stat(void)
 
 	udelay(100);
 
-	rtc_read(RTC_SPAR_MACRO, &val);
+	val = rtc_read(RTC_SPAR_MACRO);
 
 	state = (val >> RTC_SPAR_PROT_STAT_SHIFT) & RTC_SPAR_PROT_STAT_MASK;
 
@@ -73,7 +73,6 @@ static bool rtc_eosc_check_clock(const struct rtc_clk_freq *result)
 
 u16 rtc_measure_frequency_meter(u16 measure_src, u16 window_size)
 {
-	u16 rdata;
 	u16 fqmtr_data;
 
 	/* RG_BANK_FQMTR_RST = 1 reset FQMTR */
@@ -113,13 +112,13 @@ u16 rtc_measure_frequency_meter(u16 measure_src, u16 window_size)
 
 	/* FQMTR read until ready */
 	if (!wait_us(FQMTR_TIMEOUT_US,
-		     !((rtc_read(RG_FQMTR_BUSY, &rdata), rdata) & FQMTR_BUSY))) {
+		     !(rtc_read(RG_FQMTR_BUSY) & FQMTR_BUSY))) {
 		printk(BIOS_ERR, "%s: FQMTR read time out\n", __func__);
 		return false;
 	}
 
 	/* Read data should be closed to 26MHz / 23K = (26 * 10^6) / (23 * 1024) ~= 794 */
-	rtc_read(RG_FQMTR_DATA, &fqmtr_data);
+	fqmtr_data = rtc_read(RG_FQMTR_DATA);
 
 	config_interface(RG_FQMTR_DCXO26M_EN, 0,
 			 RG_FQMTR_DCXO26M_MASK, RG_FQMTR_DCXO26M_SHIFT);
@@ -216,7 +215,7 @@ static bool rtc_eosc_cali_and_write(void)
 	 * Without active 32K clock edges, FQMTR calibration fails (returns 0)
 	 * and subsequent register writes time out on CBUSY.
 	 */
-	rtc_read(RTC_OSC32CON, &osc32con);
+	osc32con = rtc_read(RTC_OSC32CON);
 	if (!(osc32con & RTC_REG_XOSC32_ENB)) {
 		osc32con = OSC32CON_ANALOG_SETTING | RTC_REG_XOSC32_ENB |
 			   (osc32con & RTC_XOSCCALI_MASK);
@@ -250,7 +249,7 @@ static bool rtc_hw_init(void)
 	do {
 		rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
-		rtc_read(RTC_BBPU, &rdata);
+		rdata = rtc_read(RTC_BBPU);
 		if (!(rdata & (RTC_BBPU_RESET_ALARM | RTC_BBPU_RESET_SPAR)))
 			return true;
 
@@ -289,7 +288,7 @@ static bool rtc_lpd_init(void)
 	if (!rtc_clrset_trigger(RTC_CON, RTC_CON_LPRST, 0))
 		return false;
 
-	rtc_read(RTC_CON, &rdata);
+	rdata = rtc_read(RTC_CON);
 	printk(BIOS_INFO, "%s: RTC_CON=%#x\n", __func__, rdata);
 
 	/* bit 7 for low power detected in preloader */
@@ -324,13 +323,13 @@ static void secure_rtc_set_ck(void)
 	secure_write_trigger();
 
 	val = rtc_read_byte(SCK_TOP_CKPDN_CON0_L);
-	rtc_read(RTC_SEC_DSN_ID, &rtc_sec_dsn);
-	rtc_read(RTC_SEC_DSN_REV0, &rtc_sec_dsn_rev0);
+	rtc_sec_dsn = rtc_read(RTC_SEC_DSN_ID);
+	rtc_sec_dsn_rev0 = rtc_read(RTC_SEC_DSN_REV0);
 
 	printk(BIOS_INFO, "RTC_SEC_DSN_ID[%#x]=%#x, RTC_SEC_DSN_REV0[%#x]=%#x\n",
 	       RTC_SEC_DSN_ID, rtc_sec_dsn, RTC_SEC_DSN_REV0, rtc_sec_dsn_rev0);
 
-	rtc_read(RTC_SEC_CK_PDN, &rtc_sec_ck_pdn);
+	rtc_sec_ck_pdn = rtc_read(RTC_SEC_CK_PDN);
 	printk(BIOS_INFO, "SCK_TOP_CKPDN_CON0[%#x]=0x%x, RTC_SEC_CK_PDN[%#x]=%#x\n",
 	       SCK_TOP_CKPDN_CON0_L, val, RTC_SEC_CK_PDN, rtc_sec_ck_pdn);
 }
@@ -463,15 +462,15 @@ static void rtc_enable_dcxo(void)
 
 	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
-	rtc_read(RTC_OSC32CON, &rdata);
+	rdata = rtc_read(RTC_OSC32CON);
 	/* 0: f32k_ck src = dcxo_ck */
 	rtc_xosc_write(rdata & ~RTC_EMBCK_SRC_SEL);
 
 	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
-	rtc_read(RTC_CON, &con);
-	rtc_read(RTC_OSC32CON, &osc32con);
-	rtc_read(RTC_AL_SEC, &sec);
+	con = rtc_read(RTC_CON);
+	osc32con = rtc_read(RTC_OSC32CON);
+	sec = rtc_read(RTC_AL_SEC);
 
 	printk(BIOS_INFO, "%s con = %#x, osc32con = %#x, sec = %#x\n", __func__,
 	       con, osc32con, sec);
@@ -492,10 +491,10 @@ void rtc_boot(void)
 
 	/* If EOSC cali is enabled in last power off. Needing to switch to DCXO clock source, */
 	/* Or the FQMTR can't measure DCXO clock source. */
-	rtc_read(RTC_DIFF, &rtc_diff);
-	rtc_read(RTC_CON, &rtc_con);
-	rtc_read(RTC_POWERKEY1, &rtc_pwrkey1);
-	rtc_read(RTC_POWERKEY2, &rtc_pwrkey2);
+	rtc_diff = rtc_read(RTC_DIFF);
+	rtc_con = rtc_read(RTC_CON);
+	rtc_pwrkey1 = rtc_read(RTC_POWERKEY1);
+	rtc_pwrkey2 = rtc_read(RTC_POWERKEY2);
 
 	if ((rtc_diff & RTC_POWER_DETECTED) &&
 	   !(rtc_con & RTC_CON_LPSTA_RAW) &&
@@ -503,18 +502,18 @@ void rtc_boot(void)
 	   rtc_pwrkey2 == RTC_POWERKEY2_KEY))
 		rtc_enable_dcxo();
 
-	rtc_read(RTC_POWERKEY1, &rtc_pwrkey1);
-	rtc_read(RTC_POWERKEY2, &rtc_pwrkey2);
-	rtc_read(RTC_CON, &rtc_con);
+	rtc_pwrkey1 = rtc_read(RTC_POWERKEY1);
+	rtc_pwrkey2 = rtc_read(RTC_POWERKEY2);
+	rtc_con = rtc_read(RTC_CON);
 	printk(BIOS_INFO, "%s: powerkey1 = %#x, powerkey2 = %#x, %s LPD\n", __func__,
 	       rtc_pwrkey1, rtc_pwrkey2,
 	       (rtc_con & RTC_CON_LPSTA_RAW) ? "with" : "without");
 
-	rtc_read(RTC_BBPU, &rtc_bbpu);
-	rtc_read(RTC_CON, &rtc_con);
-	rtc_read(RTC_OSC32CON, &rtc_osc32con);
-	rtc_read(RTC_AL_SEC, &rtc_al_sec);
-	rtc_read(RTC_AL_YEA, &rtc_al_yea);
+	rtc_bbpu = rtc_read(RTC_BBPU);
+	rtc_con = rtc_read(RTC_CON);
+	rtc_osc32con = rtc_read(RTC_OSC32CON);
+	rtc_al_sec = rtc_read(RTC_AL_SEC);
+	rtc_al_yea = rtc_read(RTC_AL_YEA);
 
 	printk(BIOS_INFO, "bbpu = %#x, con = %#x, osc32con = %#x, sec = %#x, yea = %#x\n",
 	       rtc_bbpu, rtc_con, rtc_osc32con,
@@ -527,15 +526,15 @@ void rtc_boot(void)
 		u16 rtc_spar;
 		bool spare_pwkey_lpd;
 
-		rtc_read(RTC_POWERKEY1, &rtc_pwrkey1);
-		rtc_read(RTC_POWERKEY2, &rtc_pwrkey2);
+		rtc_pwrkey1 = rtc_read(RTC_POWERKEY1);
+		rtc_pwrkey2 = rtc_read(RTC_POWERKEY2);
 		/*
 		 * SPAR_PWRKEY_MATCH_LPD is the powerkey that carries a reset
 		 * signal: it is cleared by VRTC28 LPD when VRTC loses power.
 		 * So a warm boot (RTC kept power) requires the main powerkeys
 		 * to match AND this LPD powerkey to still be matched.
 		 */
-		rtc_read(RTC_SPAR_MACRO, &rtc_spar);
+		rtc_spar = rtc_read(RTC_SPAR_MACRO);
 		spare_pwkey_lpd = !!(rtc_spar & BIT(RTC_SPAR_PWRKEY_MATCH_LPD_SHIFT));
 
 		if (rtc_pwrkey1 != RTC_POWERKEY1_KEY ||
@@ -564,7 +563,7 @@ void rtc_boot(void)
 			   RTC_K_EOSC_RSV_0);
 
 	/* Defensive patch: Check and enable EOSC HW calibration if disabled */
-	rtc_read(RTC_OSC32CON, &rdata);
+	rdata = rtc_read(RTC_OSC32CON);
 	if (!(rdata & RTC_EMB_K_EOSC32_MODE)) {
 		printk(BIOS_WARNING, "EOSC HW calibration was disabled, re-enabling\n");
 		rdata |= RTC_EMB_K_EOSC32_MODE;
@@ -589,7 +588,7 @@ void rtc_boot(void)
 
 	/* Select RTC_32K1V8_0_CK clock */
 	config_interface(SCK_TOP_CKSEL_CON, 1, R_SCK32K_CK_MASK, R_SCK32K_CK_SHIFT);
-	rtc_read(SCK_TOP_CKSEL_CON, &rdata);
+	rdata = rtc_read(SCK_TOP_CKSEL_CON);
 	printk(BIOS_INFO, "SCK_TOP_CKSEL_CON = %#x\n", rdata);
 
 	/* Turn off eosc cali mode clock */
@@ -605,7 +604,7 @@ void rtc_boot(void)
 	/* Clear ONESHOT bit to solve alarm issue */
 	rtc_clrset_trigger(RTC_IRQ_EN, RTC_IRQ_EN_ONESHOT, 0);
 
-	rtc_read(RTC_IRQ_EN, &rdata);
+	rdata = rtc_read(RTC_IRQ_EN);
 
 	printk(BIOS_INFO, "check RTC_IRQ_EN = %#x\n", rdata);
 
@@ -615,39 +614,23 @@ void rtc_boot(void)
 
 static void rtc_get_tick(struct rtc_time *tm)
 {
-	u16 rdata;
 	rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
-	rtc_read(RTC_TC_SEC, &rdata);
-	tm->sec = rdata;
-
-	rtc_read(RTC_TC_MIN, &rdata);
-	tm->min = rdata;
-
-	rtc_read(RTC_TC_HOU, &rdata);
-	tm->hour = rdata;
-
-	rtc_read(RTC_TC_DOM, &rdata);
-	tm->mday = rdata;
-
-	rtc_read(RTC_TC_DOW, &rdata);
-	tm->wday = rdata;
-
-	rtc_read(RTC_TC_MTH, &rdata);
-	tm->mon = rdata & RTC_TC_MTH_MASK;
-
-	rtc_read(RTC_TC_YEA, &rdata);
-	tm->year = rdata;
+	tm->sec = rtc_read(RTC_TC_SEC);
+	tm->min = rtc_read(RTC_TC_MIN);
+	tm->hour = rtc_read(RTC_TC_HOU);
+	tm->mday = rtc_read(RTC_TC_DOM);
+	tm->wday = rtc_read(RTC_TC_DOW);
+	tm->mon = rtc_read(RTC_TC_MTH) & RTC_TC_MTH_MASK;
+	tm->year = rtc_read(RTC_TC_YEA);
 }
 
 void rtc_get_time(struct rtc_time *tm)
 {
-	u16 rdata;
 	rtc_get_tick(tm);
-	rtc_read(RTC_TC_SEC, &rdata);
 
 	/* SEC has carried */
-	if (rdata < tm->sec)
+	if (rtc_read(RTC_TC_SEC) < tm->sec)
 		rtc_get_tick(tm);
 
 	tm->year += RTC_MIN_YEAR;

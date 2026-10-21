@@ -132,7 +132,7 @@ u16 rtc_measure_frequency_meter(u16 measure_src, u16 window_size);
 u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size);
 
 bool rtc_gpio_init(void);
-void rtc_read(u16 addr, u16 *rdata);
+u16 rtc_read(u16 addr);
 void rtc_write(u16 addr, u16 wdata);
 
 #endif /* SOC_MEDIATEK_RTC_COMMON_H */

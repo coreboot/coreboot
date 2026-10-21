@@ -30,7 +30,7 @@ static bool rtc_enable_dcxo(void)
 		return false;
 	}
 
-	rtc_read(RTC_OSC32CON, &osc32con);
+	osc32con = rtc_read(RTC_OSC32CON);
 	osc32con &= ~(RTC_EMBCK_SRC_SEL | RTC_EMBCK_SEL_MODE_MASK
 		      | RTC_GPS_CKOUT_EN);
 	osc32con |= RTC_XOSC32_ENB | RTC_REG_XOSC32_ENB
@@ -40,9 +40,9 @@ static bool rtc_enable_dcxo(void)
 		return false;
 	}
 
-	rtc_read(RTC_CON, &con);
-	rtc_read(RTC_OSC32CON, &osc32con);
-	rtc_read(RTC_AL_SEC, &sec);
+	con = rtc_read(RTC_CON);
+	osc32con = rtc_read(RTC_OSC32CON);
+	sec = rtc_read(RTC_AL_SEC);
 	rtc_info("con = %#x, osc32con = %#x, sec = %#x\n", con, osc32con, sec);
 
 	return true;
@@ -78,8 +78,8 @@ u16 rtc_measure_frequency_meter(u16 measure_src, u16 window_size)
 	/* FQMTR reset */
 	pwrap_write_field(PMIC_RG_FQMTR_RST, 1, 1, PMIC_FQMTR_RST_SHIFT);
 	do {
-		rtc_read(PMIC_RG_FQMTR_DATA, &fqmtr_data);
-		rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_busy);
+		fqmtr_data = rtc_read(PMIC_RG_FQMTR_DATA);
+		fqmtr_busy = rtc_read(PMIC_RG_FQMTR_CON0);
 	} while (fqmtr_data && (fqmtr_busy & PMIC_FQMTR_CON0_BUSY));
 	/* FQMTR normal */
 	pwrap_write_field(PMIC_RG_FQMTR_RST, 0, 1, PMIC_FQMTR_RST_SHIFT);
@@ -90,29 +90,29 @@ u16 rtc_measure_frequency_meter(u16 measure_src, u16 window_size)
 	rtc_write(PMIC_RG_FQMTR_CON0, PMIC_FQMTR_CON0_DCXO26M_EN | measure_src);
 	/* Enable 26M -> delay 100us -> enable FQMTR */
 	udelay(100);
-	rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_tcksel);
+	fqmtr_tcksel = rtc_read(PMIC_RG_FQMTR_CON0);
 	/* Enable FQMTR */
 	rtc_write(PMIC_RG_FQMTR_CON0, fqmtr_tcksel | PMIC_FQMTR_CON0_FQMTR_EN);
 	udelay(100);
 
 	/* FQMTR read until ready */
 	if (!wait_us(FQMTR_TIMEOUT_US,
-		     !((rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_busy),
-			fqmtr_busy) & PMIC_FQMTR_CON0_BUSY))) {
+		     !((fqmtr_busy = rtc_read(PMIC_RG_FQMTR_CON0)) &
+		       PMIC_FQMTR_CON0_BUSY))) {
 		rtc_info("get frequency time out: %#x\n", fqmtr_busy);
 		return false;
 	}
 
 	/* Read data should be closed to 26M/32k = 794 */
-	rtc_read(PMIC_RG_FQMTR_DATA, &fqmtr_data);
+	fqmtr_data = rtc_read(PMIC_RG_FQMTR_DATA);
 
-	rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_tcksel);
+	fqmtr_tcksel = rtc_read(PMIC_RG_FQMTR_CON0);
 	/* Disable FQMTR */
 	rtc_write(PMIC_RG_FQMTR_CON0, fqmtr_tcksel & ~PMIC_FQMTR_CON0_FQMTR_EN);
 	/* Disable FQMTR -> delay 100us -> disable 26M */
 	udelay(100);
 	/* Disable 26M */
-	rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_tcksel);
+	fqmtr_tcksel = rtc_read(PMIC_RG_FQMTR_CON0);
 	rtc_write(PMIC_RG_FQMTR_CON0,
 		  fqmtr_tcksel & ~PMIC_FQMTR_CON0_DCXO26M_EN);
 
@@ -137,18 +137,18 @@ static bool rtc_lpd_init(void)
 	}
 
 	/* Initialize XOSC32 to detect 32k clock stop */
-	rtc_read(RTC_CON, &con);
+	con = rtc_read(RTC_CON);
 	con |= RTC_CON_XOSC32_LPEN;
 	if (!rtc_lpen(con))
 		return false;
 
 	/* Initialize EOSC32 to detect RTC low power */
-	rtc_read(RTC_CON, &con);
+	con = rtc_read(RTC_CON);
 	con |= RTC_CON_EOSC32_LPEN;
 	if (!rtc_lpen(con))
 		return false;
 
-	rtc_read(RTC_CON, &con);
+	con = rtc_read(RTC_CON);
 	con &= ~RTC_CON_XOSC32_LPEN;
 	rtc_write(RTC_CON, con);
 
@@ -177,7 +177,7 @@ static bool rtc_hw_init(void)
 		return false;
 	}
 
-	rtc_read(RTC_BBPU, &bbpu);
+	bbpu = rtc_read(RTC_BBPU);
 	if (bbpu & RTC_BBPU_INIT) {
 		rtc_info("timeout\n");
 		return false;
@@ -200,7 +200,7 @@ static void rtc_set_capid(u16 capid)
 
 	rtc_write(PMIC_RG_DCXO_CW03, 0xFF00 | capid);
 
-	rtc_read(PMIC_RG_DCXO_CW03, &read_capid);
+	read_capid = rtc_read(PMIC_RG_DCXO_CW03);
 	rtc_info("read back capid: %#x\n", read_capid & 0xFF);
 }
 
@@ -279,7 +279,7 @@ static void rtc_bbpu_power_on(void)
 	ret = rtc_write_trigger();
 	rtc_info("rtc_write_trigger = %d\n", ret);
 
-	rtc_read(RTC_BBPU, &bbpu);
+	bbpu = rtc_read(RTC_BBPU);
 	rtc_info("done BBPU = %#x\n", bbpu);
 }
 

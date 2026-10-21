@@ -11,7 +11,7 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 	if (!rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD))
 		return 0;
 
-	rtc_read(RTC_OSC32CON, &osc32con);
+	osc32con = rtc_read(RTC_OSC32CON);
 	if (!rtc_xosc_write((osc32con & ~RTC_XOSCCALI_MASK) |
 			    (val & RTC_XOSCCALI_MASK)))
 		return 0;
@@ -48,11 +48,11 @@ u16 rtc_eosc_cali(void)
 	u16 right = RTC_XOSCCALI_END;
 	u16 last_cali = 0;
 
-	rtc_read(PMIC_RG_FQMTR_CKSEL, &cksel);
+	cksel = rtc_read(PMIC_RG_FQMTR_CKSEL);
 	cksel &= ~PMIC_FQMTR_CKSEL_MASK;
 	/* select EOSC_32 as fixed clock */
 	rtc_write(PMIC_RG_FQMTR_CKSEL, cksel | PMIC_FQMTR_FIX_CLK_EOSC_32K);
-	rtc_read(PMIC_RG_FQMTR_CKSEL, &cksel);
+	cksel = rtc_read(PMIC_RG_FQMTR_CKSEL);
 	rtc_info("PMIC_RG_FQMTR_CKSEL=%#x\n", cksel);
 
 	/*
@@ -60,7 +60,7 @@ u16 rtc_eosc_cali(void)
 	 * If ambient temperature/aging has not shifted EOSC32 outside target bounds,
 	 * return immediately after a single frequency check (~1.5 ms).
 	 */
-	rtc_read(RTC_OSC32CON, &last_cali);
+	last_cali = rtc_read(RTC_OSC32CON);
 	last_cali &= RTC_XOSCCALI_MASK;
 	val = get_freq_meter(last_cali);
 	rtc_info("Last cali XOSC=%d, val=%d (target window [%d, %d])\n",
@@ -138,7 +138,7 @@ void rtc_osc_init(void)
 	/* enable 32K export */
 	rtc_gpio_init();
 	/* calibrate eosc32 for powerdown clock */
-	rtc_read(RTC_OSC32CON, &osc32con);
+	osc32con = rtc_read(RTC_OSC32CON);
 	rtc_info("osc32con val = %#x\n", osc32con);
 	osc32con &= ~RTC_XOSCCALI_MASK;
 	osc32con |= rtc_eosc_cali() & RTC_XOSCCALI_MASK;

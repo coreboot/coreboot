@@ -13,7 +13,7 @@ static bool rtc_busy_wait(void)
 	stopwatch_init_usecs_expire(&sw, RTC_CBUSY_TIMEOUT_US);
 
 	do {
-		rtc_read(RTC_BBPU, &bbpu);
+		bbpu = rtc_read(RTC_BBPU);
 		/* Time > 1sec, time out and set recovery mode enable.*/
 		if (stopwatch_expired(&sw)) {
 			rtc_info("BBPU CBUSY time out !!\n");
@@ -47,7 +47,7 @@ bool rtc_clrset_trigger(u16 addr, u16 clr_bits, u16 set_bits)
 {
 	u16 rdata;
 
-	rtc_read(addr, &rdata);
+	rdata = rtc_read(addr);
 
 	rdata &= ~clr_bits;
 	rdata |= set_bits;
@@ -66,20 +66,12 @@ int rtc_set(const struct rtc_time *time)
 /* get rtc time */
 int rtc_get(struct rtc_time *time)
 {
-	u16 value;
-
-	rtc_read(RTC_TC_SEC, &value);
-	time->sec = value;
-	rtc_read(RTC_TC_MIN, &value);
-	time->min = value;
-	rtc_read(RTC_TC_HOU, &value);
-	time->hour = value;
-	rtc_read(RTC_TC_DOM, &value);
-	time->mday = value;
-	rtc_read(RTC_TC_MTH, &value);
-	time->mon = value;
-	rtc_read(RTC_TC_YEA, &value);
-	time->year = (value + RTC_MIN_YEAR_OFFSET) % 100;
+	time->sec = rtc_read(RTC_TC_SEC);
+	time->min = rtc_read(RTC_TC_MIN);
+	time->hour = rtc_read(RTC_TC_HOU);
+	time->mday = rtc_read(RTC_TC_DOM);
+	time->mon = rtc_read(RTC_TC_MTH);
+	time->year = (rtc_read(RTC_TC_YEA) + RTC_MIN_YEAR_OFFSET) % 100;
 
 	return 0;
 }
@@ -87,8 +79,6 @@ int rtc_get(struct rtc_time *time)
 /* set rtc xosc setting */
 bool rtc_xosc_write(u16 val)
 {
-	u16 bbpu;
-
 	rtc_write(RTC_OSC32CON, RTC_OSC32CON_UNLOCK1);
 	if (!rtc_busy_wait())
 		return false;
@@ -100,11 +90,7 @@ bool rtc_xosc_write(u16 val)
 	if (!rtc_busy_wait())
 		return false;
 
-	rtc_read(RTC_BBPU, &bbpu);
-	bbpu |= RTC_BBPU_KEY | RTC_BBPU_RELOAD;
-	rtc_write(RTC_BBPU, bbpu);
-
-	return rtc_write_trigger();
+	return rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 }
 
 /* enable lpd subroutine */
@@ -134,8 +120,6 @@ bool rtc_lpen(u16 con)
 /* initialize rtc related registers */
 bool rtc_reg_init(void)
 {
-	u16 irqsta;
-
 	rtc_write(RTC_IRQ_EN, 0);
 	rtc_write(RTC_CII_EN, 0);
 	rtc_write(RTC_AL_MASK, 0);
@@ -152,7 +136,7 @@ bool rtc_reg_init(void)
 	if (!rtc_write_trigger())
 		return false;
 
-	rtc_read(RTC_IRQ_STA, &irqsta);  /* read clear */
+	rtc_read(RTC_IRQ_STA);  /* read clear */
 
 	/* init time counters after resetting RTC_DIFF and RTC_CALI */
 	rtc_write(RTC_TC_YEA, RTC_DEFAULT_YEA - RTC_MIN_YEAR);
@@ -180,9 +164,9 @@ static u8 rtc_check_state(void)
 	u16 pwrky1;
 	u16 pwrky2;
 
-	rtc_read(RTC_CON, &con);
-	rtc_read(RTC_POWERKEY1, &pwrky1);
-	rtc_read(RTC_POWERKEY2, &pwrky2);
+	con = rtc_read(RTC_CON);
+	pwrky1 = rtc_read(RTC_POWERKEY1);
+	pwrky2 = rtc_read(RTC_POWERKEY2);
 
 	rtc_info("con=%x, pwrkey1=%x, pwrkey2=%x\n", con, pwrky1, pwrky2);
 
@@ -225,9 +209,9 @@ void rtc_boot_common(void)
 		break;
 	}
 
-	rtc_read(RTC_IRQ_STA, &irqsta);  /* Read clear */
-	rtc_read(RTC_BBPU, &bbpu);
-	rtc_read(RTC_CON, &con);
+	irqsta = rtc_read(RTC_IRQ_STA);  /* Read clear */
+	bbpu = rtc_read(RTC_BBPU);
+	con = rtc_read(RTC_CON);
 
 	rtc_info("irqsta=%x, bbpu=%x, con=%x\n", irqsta, bbpu, con);
 }

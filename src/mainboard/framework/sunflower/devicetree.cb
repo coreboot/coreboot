@@ -3,6 +3,9 @@
 chip soc/intel/alderlake
 	register "s0ix_enable" = "true"
 
+	# Workaround for Raptorlake Q0
+	register "disable_package_c_state_demotion" = "true"
+
 	# Enable Enhanced Intel SpeedStep
 	register "eist_enable" = "true"
 

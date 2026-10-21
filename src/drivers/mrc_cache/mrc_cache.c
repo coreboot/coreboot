@@ -585,7 +585,7 @@ static int protect_mrc_cache(const char *name)
 		return 0;
 
 	if (lookup_region_by_name(name, &region) < 0) {
-		printk(BIOS_INFO, "MRC: Could not find region '%s'\n", name);
+		printk(BIOS_DEBUG, "MRC: Could not find region '%s'\n", name);
 		return -1;
 	}
 

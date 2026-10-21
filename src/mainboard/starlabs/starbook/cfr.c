@@ -108,18 +108,15 @@ static struct sm_obj_form battery_group = {
 	},
 };
 
+#if !CONFIG(BOARD_STARLABS_STARBOOK_RPL_U)
 static struct sm_obj_form io_expansion_group = {
 	.ui_name = "I/O / Expansion",
 	.obj_list = (const struct sm_object *[]) {
-#if !CONFIG(BOARD_STARLABS_STARBOOK_RPL_U)
 		&card_reader,
-#endif
-		#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
-		&thunderbolt,
-		#endif
 		NULL
 	},
 };
+#endif
 
 static struct sm_obj_form keyboard_group = {
 	.ui_name = "Keyboard",
@@ -256,7 +253,9 @@ static struct sm_obj_form wireless_group = {
 static struct sm_obj_form *sm_root[] = {
 	&audio_video_group,
 	&battery_group,
+#if !CONFIG(BOARD_STARLABS_STARBOOK_RPL_U)
 	&io_expansion_group,
+#endif
 	&keyboard_group,
 #if CONFIG(STARLABS_TOUCHPAD)
 	&trackpad_group,

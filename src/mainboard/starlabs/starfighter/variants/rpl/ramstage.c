@@ -10,6 +10,4 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *supd)
 	configure_pin_mux(supd);
 	starlabs_update_fsp_s_policy(supd);
 
-	if (get_uint_option("thunderbolt", 1) == 0)
-		supd->UsbTcPortEn = 0;
 }

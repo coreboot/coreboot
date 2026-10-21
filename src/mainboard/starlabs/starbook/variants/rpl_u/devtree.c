@@ -10,15 +10,6 @@
 #include <variants.h>
 #include <common/powercap.h>
 
-WEAK_DEV_PTR(tbt_pcie_rp0);
-WEAK_DEV_PTR(tbt_pcie_rp1);
-WEAK_DEV_PTR(tcss_dma0);
-
-static void disable_dev_if_present(struct device *dev)
-{
-	if (dev)
-		dev->enabled = 0;
-}
 
 void mb_devtree_update(void)
 {
@@ -36,13 +27,6 @@ void mb_devtree_update(void)
 	/* Enable/Disable Webcam based on CMOS settings */
 	if (get_uint_option("webcam", 1) == 0)
 		cfg->usb2_ports[CONFIG_CCD_PORT].enable = 0;
-
-	/* Enable/Disable Thunderbolt based on CMOS settings */
-	if (get_uint_option("thunderbolt", 1) == 0) {
-		disable_dev_if_present(DEV_PTR(tbt_pcie_rp0));
-		disable_dev_if_present(DEV_PTR(tbt_pcie_rp1));
-		disable_dev_if_present(DEV_PTR(tcss_dma0));
-	}
 
 	/* Enable/Disable GNA based on CMOS settings */
 	if (get_uint_option("gna", 0) == 0)

@@ -37,14 +37,5 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	if (get_uint_option("wifi", 1) == 0)
 		mupd->FspmConfig.PcieRpEnableMask &= ~(1 << 4);
 
-	/* Enable/Disable Thunderbolt based on CMOS settings */
-	if (get_uint_option("thunderbolt", 1) == 0) {
-		mupd->FspmConfig.VtdItbtEnable = 0;
-		mupd->FspmConfig.VtdBaseAddress[3] = 0;
-		mupd->FspmConfig.TcssDma0En = 0;
-		mupd->FspmConfig.TcssItbtPcie0En = 0;
-		mupd->FspmConfig.TcssXhciEn = 0;
-	}
-
 	mupd->FspmConfig.DmiMaxLinkSpeed = 4;
 };

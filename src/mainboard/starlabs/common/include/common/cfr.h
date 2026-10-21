@@ -309,13 +309,6 @@ static const struct sm_object vpu = SM_DECLARE_BOOL({
 	.default_value	= false,
 });
 
-static const struct sm_object vtd = SM_DECLARE_BOOL({
-	.opt_name	= "vtd",
-	.ui_name	= "VT-d",
-	.ui_helptext	= "Enable or disable Intel VT-d (virtualization)",
-	.default_value	= true,
-});
-
 static const struct sm_object webcam = SM_DECLARE_BOOL({
 	.opt_name	= "webcam",
 	.ui_name	= "Webcam",

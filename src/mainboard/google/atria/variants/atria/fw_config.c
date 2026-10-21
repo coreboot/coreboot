@@ -192,9 +192,9 @@ static const struct pad_config sndw_alc721_enable_pads[] = {
 	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF5),
 	/* DMIC_DATA_0 */
 	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF5),
-	/* SNDW1_CLK   */
+	/* DMIC1_CLK   */
 	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF5),
-	/* SNDW1_DATA  */
+	/* DMIC1_DATA  */
 	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF5),
 	/* DMIC_CLK (native PCH DMIC1) - unused, keep disabled */
 	PAD_NC(GPP_D16, NONE),

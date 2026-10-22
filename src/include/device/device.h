@@ -369,6 +369,14 @@ const struct resource *mmio_from_to(struct device *dev, unsigned long index, uin
 	return mmio_range(dev, index, base, end - base);
 }
 
+static inline
+const struct resource *subtractive_mmio_range(struct device *dev, unsigned long index,
+					      uint64_t base, uint64_t size)
+{
+	return fixed_mem_range_flags(dev, IOINDEX_SUBTRACTIVE(index, 0), base, size,
+				     IORESOURCE_SUBTRACTIVE | IORESOURCE_STORED);
+}
+
 const struct resource *lower_ram_end(struct device *dev, unsigned long index, uint64_t end);
 const struct resource *upper_ram_end(struct device *dev, unsigned long index, uint64_t end);
 
@@ -400,6 +408,14 @@ const struct resource *fixed_io_range_reserved(struct device *dev, unsigned long
 				      uint16_t base, uint16_t size)
 {
 	return fixed_io_range_flags(dev, index, base, size, IORESOURCE_RESERVE | IORESOURCE_STORED);
+}
+
+static inline
+const struct resource *subtractive_io_range(struct device *dev, unsigned long index,
+					    uint16_t base, uint16_t size)
+{
+	return fixed_io_range_flags(dev, IOINDEX_SUBTRACTIVE(index, 0), base, size,
+				    IORESOURCE_SUBTRACTIVE | IORESOURCE_STORED);
 }
 
 static inline

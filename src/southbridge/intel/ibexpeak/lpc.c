@@ -439,7 +439,6 @@ static void lpc_init(struct device *dev)
 
 static void pch_lpc_read_resources(struct device *dev)
 {
-	struct resource *res;
 	const struct southbridge_intel_ibexpeak_config *config = dev->chip_info;
 	u8 io_index = 0;
 
@@ -447,54 +446,30 @@ static void pch_lpc_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/* Add an extra subtractive resource for both memory and I/O. */
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-	res->base = 0;
-	res->size = 0x1000;
-	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	subtractive_io_range(dev, io_index++, 0, 4*KiB);
+	subtractive_mmio_range(dev, io_index++, 0xff800000, 8*MiB); /* 8 MB for flash */
 
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-	res->base = 0xff800000;
-	res->size = 0x00800000; /* 8 MB for flash */
-	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-
-	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = IO_APIC_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	preset_mmio_range(dev, 3, IO_APIC_ADDR, 4*KiB); /* IOAPIC */
 
 	/* Set PCH IO decode ranges if required.*/
-	if ((config->gen1_dec & 0xFFFC) > 0x1000) {
-		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-		res->base = config->gen1_dec & 0xFFFC;
-		res->size = (config->gen1_dec >> 16) & 0xFC;
-		res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	if ((config->gen1_dec & 0xfffc) > 0x1000) {
+		subtractive_io_range(dev, io_index++,
+				config->gen1_dec & 0xfffc, (config->gen1_dec >> 16) & 0xfc);
 	}
 
-	if ((config->gen2_dec & 0xFFFC) > 0x1000) {
-		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-		res->base = config->gen2_dec & 0xFFFC;
-		res->size = (config->gen2_dec >> 16) & 0xFC;
-		res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	if ((config->gen2_dec & 0xfffc) > 0x1000) {
+		subtractive_io_range(dev, io_index++,
+				config->gen2_dec & 0xfffc, (config->gen2_dec >> 16) & 0xfc);
 	}
 
-	if ((config->gen3_dec & 0xFFFC) > 0x1000) {
-		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-		res->base = config->gen3_dec & 0xFFFC;
-		res->size = (config->gen3_dec >> 16) & 0xFC;
-		res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	if ((config->gen3_dec & 0xfffc) > 0x1000) {
+		subtractive_io_range(dev, io_index++,
+				config->gen3_dec & 0xfffc, (config->gen3_dec >> 16) & 0xfc);
 	}
 
-	if ((config->gen4_dec & 0xFFFC) > 0x1000) {
-		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-		res->base = config->gen4_dec & 0xFFFC;
-		res->size = (config->gen4_dec >> 16) & 0xFC;
-		res->flags = IORESOURCE_IO| IORESOURCE_SUBTRACTIVE |
-				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	if ((config->gen4_dec & 0xfffc) > 0x1000) {
+		subtractive_io_range(dev, io_index++,
+				config->gen4_dec & 0xfffc, (config->gen4_dec >> 16) & 0xfc);
 	}
 }
 

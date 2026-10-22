@@ -623,7 +623,6 @@ static void lpc_init(struct device *dev)
 static void pch_lpc_add_mmio_resources(struct device *dev)
 {
 	u32 reg;
-	struct resource *res;
 	const u32 default_decode_base = IO_APIC_ADDR;
 
 	/*
@@ -631,31 +630,17 @@ static void pch_lpc_add_mmio_resources(struct device *dev)
 	 * them reserved as that may upset the OS if this range is marked
 	 * as reserved in the e820.
 	 */
-	res = new_resource(dev, OIC);
-	res->base = default_decode_base;
-	res->size = 4ull * GiB - default_decode_base;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	preset_mmio_range(dev, OIC, default_decode_base, 4ull * GiB - default_decode_base);
 
 	/* RCBA */
-	if (CONFIG_FIXED_RCBA_MMIO_BASE < default_decode_base) {
-		res = new_resource(dev, RCBA);
-		res->base = (resource_t)CONFIG_FIXED_RCBA_MMIO_BASE;
-		res->size = CONFIG_RCBA_LENGTH;
-		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
-			     IORESOURCE_FIXED | IORESOURCE_RESERVE;
-	}
+	if (CONFIG_FIXED_RCBA_MMIO_BASE < default_decode_base)
+		mmio_range(dev, RCBA, CONFIG_FIXED_RCBA_MMIO_BASE, CONFIG_RCBA_LENGTH);
 
 	/* Check LPC Memory Decode register. */
 	reg = pci_read_config32(dev, LGMR);
 	if (reg & 1) {
-		reg &= ~0xffff;
-		if (reg < default_decode_base) {
-			res = new_resource(dev, LGMR);
-			res->base = reg;
-			res->size = 16 * 1024;
-			res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
-				     IORESOURCE_FIXED | IORESOURCE_RESERVE;
-		}
+		if (reg < default_decode_base)
+			mmio_range(dev, LGMR, reg & 0xffff0000, 16*KiB);
 	}
 }
 
@@ -685,15 +670,10 @@ static inline int pch_io_range_in_default(int base, int size)
 static void pch_lpc_add_io_resource(struct device *dev, u16 base, u16 size,
 				    int index)
 {
-	struct resource *res;
-
 	if (pch_io_range_in_default(base, size))
 		return;
 
-	res = new_resource(dev, index);
-	res->base = base;
-	res->size = size;
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	preset_io_range(dev, index, base, size);
 }
 
 static void pch_lpc_add_gen_io_resources(struct device *dev, int reg_value,
@@ -712,13 +692,9 @@ static void pch_lpc_add_gen_io_resources(struct device *dev, int reg_value,
 
 static void pch_lpc_add_io_resources(struct device *dev)
 {
-	struct resource *res;
-
 	/* Add the default claimed IO range for the LPC device. */
-	res = new_resource(dev, 0);
-	res->base = LPC_DEFAULT_IO_RANGE_LOWER;
-	res->size = LPC_DEFAULT_IO_RANGE_UPPER - LPC_DEFAULT_IO_RANGE_LOWER;
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	preset_io_range(dev, 0, LPC_DEFAULT_IO_RANGE_LOWER,
+			LPC_DEFAULT_IO_RANGE_UPPER - LPC_DEFAULT_IO_RANGE_LOWER);
 
 	/* GPIOBASE */
 	pch_lpc_add_io_resource(dev, get_gpiobase(), DEFAULT_GPIOSIZE, GPIOBASE);

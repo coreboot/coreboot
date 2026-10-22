@@ -20,6 +20,7 @@ enum {
 	RTC_BBPU_PWREN		= BIT(0),
 
 	RTC_CBUSY_TIMEOUT_US	= USECS_PER_SEC,
+	RTC_CBUSY_STUCK_TIMEOUT_US = USECS_PER_MSEC,
 };
 
 /* PMIC Frequency Meter Definition */

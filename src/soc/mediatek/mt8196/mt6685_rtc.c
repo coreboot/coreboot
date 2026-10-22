@@ -206,6 +206,23 @@ static bool mt6685_xosc_force_enable(u16 val)
 	return rtc_clrset_trigger(RTC_BBPU, 0, RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 }
 
+/*
+ * RTC_OSC32CON is read back from a copy that is only refreshed by RELOAD,
+ * and RELOAD needs the 32K clock. If the clock stopped before the last
+ * RELOAD completed (e.g. a write to RTC_OSC32CON that disabled the clock),
+ * the readback still shows RTC_REG_XOSC32_ENB = 1. A normal register write
+ * commits within ~120 us, so CBUSY still being set after
+ * RTC_CBUSY_STUCK_TIMEOUT_US also means the 32K clock is not running.
+ */
+static bool rtc_32k_unclocked(u16 osc32con)
+{
+	if (!(osc32con & RTC_REG_XOSC32_ENB))
+		return true;
+
+	return !wait_us(RTC_CBUSY_STUCK_TIMEOUT_US,
+			!(rtc_read(RTC_BBPU) & RTC_BBPU_CBUSY));
+}
+
 static bool rtc_eosc_cali_and_write(void)
 {
 	u16 osc32con, val;
@@ -216,7 +233,9 @@ static bool rtc_eosc_cali_and_write(void)
 	 * and subsequent register writes time out on CBUSY.
 	 */
 	osc32con = rtc_read(RTC_OSC32CON);
-	if (!(osc32con & RTC_REG_XOSC32_ENB)) {
+	if (rtc_32k_unclocked(osc32con)) {
+		printk(BIOS_INFO, "%s: 32K clock is off (osc32con=%#x), force enable\n",
+		       __func__, osc32con);
 		osc32con = OSC32CON_ANALOG_SETTING | RTC_REG_XOSC32_ENB |
 			   (osc32con & RTC_XOSCCALI_MASK);
 		if (!mt6685_xosc_force_enable(osc32con))

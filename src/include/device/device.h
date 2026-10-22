@@ -399,7 +399,7 @@ static inline
 const struct resource *fixed_io_range_reserved(struct device *dev, unsigned long index,
 				      uint16_t base, uint16_t size)
 {
-	return fixed_io_range_flags(dev, index, base, size, IORESOURCE_RESERVE);
+	return fixed_io_range_flags(dev, index, base, size, IORESOURCE_RESERVE | IORESOURCE_STORED);
 }
 
 static inline

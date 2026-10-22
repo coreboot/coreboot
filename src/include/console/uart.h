@@ -72,16 +72,25 @@ void oxford_remap(unsigned int new_base);
 #define __CONSOLE_SERIAL_SUPPORT__ \
 	(CONFIG(CONSOLE_SERIAL) || CONFIG(CONSOLE_SERIAL_RUNTIME))
 
+/*
+ * __uart_* only in stages whose console is linked. Bootblock and postcar can
+ * have serial support without that stage's console; console_serial_enabled()
+ * is still a real function there so early UART bring-up can call it.
+ */
 #define __CONSOLE_SERIAL_ENABLE__	(__CONSOLE_SERIAL_SUPPORT__ && \
-	(ENV_BOOTBLOCK || ENV_SEPARATE_ROMSTAGE || ENV_RAMSTAGE || ENV_SEPARATE_VERSTAGE \
-	 || ENV_POSTCAR || (ENV_SMM && CONFIG(DEBUG_SMI))))
+	((ENV_BOOTBLOCK && CONFIG(BOOTBLOCK_CONSOLE)) || \
+	 ENV_SEPARATE_ROMSTAGE || ENV_RAMSTAGE || ENV_SEPARATE_VERSTAGE || \
+	 (ENV_POSTCAR && CONFIG(POSTCAR_CONSOLE)) || \
+	 (ENV_SMM && CONFIG(DEBUG_SMI))))
 
 /*
- * Whether the serial console should be used this stage.
+ * Whether serial console output is enabled for this boot. This is not
+ * tied to BOOTBLOCK_CONSOLE or POSTCAR_CONSOLE: early UART setup runs
+ * once, in the bootblock, and later stages do not repeat it.
  * With CONSOLE_SERIAL_RUNTIME, reads option "serial_console" (fallback:
- * CONSOLE_SERIAL). Result is cached for the life of the stage.
- * USE_UEFI_VARIABLE_STORE stubs option reads in separate verstage/postcar,
- * so those stages use the CONSOLE_SERIAL fallback only.
+ * CONSOLE_SERIAL). The result is cached for the life of the stage.
+ * USE_UEFI_VARIABLE_STORE stubs option reads in separate verstage and
+ * postcar, so those stages use the CONSOLE_SERIAL fallback only.
  */
 #if __CONSOLE_SERIAL_SUPPORT__
 bool console_serial_enabled(void);

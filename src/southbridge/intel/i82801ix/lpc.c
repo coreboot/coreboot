@@ -424,28 +424,14 @@ static void i82801ix_lpc_read_resources(struct device *dev)
 	 * 0x0cf9.............Reset Control
 	 */
 
-	struct resource *res;
-
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
 	/* Add an extra subtractive resource for both memory and I/O. */
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	res->base = 0;
-	res->size = 0x1000;
-	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	subtractive_io_range(dev, 0, 0, 4*KiB);
+	subtractive_mmio_range(dev, 1, 0xff800000, 8*MiB); /* 8 MB for flash */
 
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	res->base = 0xff800000;
-	res->size = 0x00800000; /* 8 MB for flash */
-	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-
-	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = IO_APIC_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	preset_mmio_range(dev, 3, IO_APIC_ADDR, 4*KiB); /* IOAPIC */
 }
 
 static const char *lpc_acpi_name(const struct device *dev)

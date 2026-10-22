@@ -413,40 +413,23 @@ static void i82801jx_lpc_read_resources(struct device *dev)
 	 * 0x0cf9.............Reset Control
 	 */
 
-	struct resource *res;
-
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
 	/* Add an extra subtractive resource for both memory and I/O. */
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-	res->base = 0;
-	res->size = 0x1000;
-	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	subtractive_io_range(dev, io_index++, 0, 4*KiB);
+	subtractive_mmio_range(dev, io_index++, 0xff000000, 16*MiB); /* 16 MB for flash */
 
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-	res->base = 0xff000000;
-	res->size = 0x01000000; /* 16 MB for flash */
-	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-
-	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = IO_APIC_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	preset_mmio_range(dev, 3, IO_APIC_ADDR, 4*KiB); /* IOAPIC */
 
 	/* Set IO decode ranges if required.*/
 	for (i = 0; i < 4; i++) {
 		u32 gen_dec;
 		gen_dec = pci_read_config32(dev, 0x84 + 4 * i);
 
-		if ((gen_dec & 0xFFFC) > 0x1000) {
-			res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-			res->base = gen_dec & 0xFFFC;
-			res->size = (gen_dec >> 16) & 0xFC;
-			res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-				IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+		if ((gen_dec & 0xfffc) > 0x1000) {
+			subtractive_io_range(dev, io_index++,
+					gen_dec & 0xfffc, (gen_dec >> 16) & 0xfc);
 		}
 	}
 }

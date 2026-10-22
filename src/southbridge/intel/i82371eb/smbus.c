@@ -73,23 +73,10 @@ static void pwrmgt_enable(struct device *dev)
 
 static void pwrmgt_read_resources(struct device *dev)
 {
-	struct resource *res;
-
 	pci_dev_read_resources(dev);
 
-	res = new_resource(dev, 1);
-	res->base = DEFAULT_PMBASE;
-	res->size = 0x0040;
-	res->limit = 0xffff;
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
-	             IORESOURCE_RESERVE;
-
-	res = new_resource(dev, 2);
-	res->base = SMBUS_IO_BASE;
-	res->size = 0x0010;
-	res->limit = 0xffff;
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
-	             IORESOURCE_RESERVE;
+	fixed_io_range_reserved(dev, 1, DEFAULT_PMBASE, 64);
+	fixed_io_range_reserved(dev, 2, SMBUS_IO_BASE, 16);
 }
 
 static const struct smbus_bus_operations lops_smbus_bus = {

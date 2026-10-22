@@ -82,27 +82,13 @@ void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags)
 
 static void sb_read_resources(struct device *dev)
 {
-	struct resource *res;
-
 	pci_dev_read_resources(dev);
 
-	res = new_resource(dev, 1);
-	res->base = 0x0UL;
-	res->size = 0x1000UL;
-	res->limit = 0xffffUL;
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	preset_io_range(dev, 1, 0, 4*KiB);
 
-	res = new_resource(dev, 2);
-	res->base = 0xff800000UL;
-	res->size = 0x00800000UL; /* 8 MB for flash */
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
-		IORESOURCE_RESERVE;
+	mmio_range(dev, 2, 0xff800000, 8*MiB); /* 8 MB for flash */
 
-	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = IO_APIC_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
-		IORESOURCE_RESERVE;
+	mmio_range(dev, 3, IO_APIC_ADDR, 4*KiB); /* IOAPIC */
 }
 
 static const struct device_operations isa_ops = {

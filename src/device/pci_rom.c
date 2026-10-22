@@ -282,6 +282,7 @@ void pci_rom_run(struct device *dev)
 void pci_rom_ssdt(const struct device *device)
 {
 	const struct rom_header *rom;
+	size_t cbrom_length;
 	static size_t ngfx;
 
 	/* Only handle display devices */
@@ -310,7 +311,7 @@ void pci_rom_ssdt(const struct device *device)
 		}
 
 		/* Prepare memory */
-		const size_t cbrom_length = rom->size * 512;
+		cbrom_length = rom->size * 512;
 		if (!cbrom_length) {
 			printk(BIOS_ERR, "%s: ROM has zero length!\n",
 			dev_path(device));
@@ -329,6 +330,8 @@ void pci_rom_ssdt(const struct device *device)
 		memcpy(cbrom, rom, cbrom_length);
 
 		rom = cbrom;
+	} else {
+		cbrom_length = rom->size * 512;
 	}
 
 	const char *scope = acpi_device_path(device);
@@ -339,7 +342,7 @@ void pci_rom_ssdt(const struct device *device)
 
 	/* write _ROM method */
 	acpigen_write_scope(scope);
-	acpigen_write_rom((void *)rom, rom->size * 512);
+	acpigen_write_rom((void *)rom, cbrom_length);
 	acpigen_pop_len(); /* pop scope */
 }
 #endif

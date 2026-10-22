@@ -354,6 +354,13 @@ const struct resource *reserved_ram_from_to(struct device *dev, unsigned long in
 }
 
 static inline
+const struct resource *preset_mmio_range(struct device *dev, unsigned long index,
+					 uint64_t base, uint64_t size)
+{
+	return fixed_mem_range_flags(dev, index, base, size, IORESOURCE_STORED);
+}
+
+static inline
 const struct resource *mmio_range(struct device *dev, unsigned long index, uint64_t base,
 				       uint64_t size)
 {
@@ -401,6 +408,13 @@ const struct resource *fixed_io_from_to_flags(struct device *dev, unsigned long 
 	if (end > UINT16_MAX + 1)
 		return NULL;
 	return fixed_io_range_flags(dev, index, base, end - base, flags);
+}
+
+static inline
+const struct resource *preset_io_range(struct device *dev, unsigned long index,
+				       uint16_t base, uint16_t size)
+{
+	return fixed_io_range_flags(dev, index, base, size, IORESOURCE_STORED);
 }
 
 static inline

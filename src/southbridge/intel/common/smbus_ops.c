@@ -80,10 +80,5 @@ void smbus_read_resources(struct device *dev)
 {
 	pci_dev_read_resources(dev);
 
-	struct resource *res = new_resource(dev, PCI_BASE_ADDRESS_4);
-	res->base = CONFIG_FIXED_SMBUS_IO_BASE;
-	res->size = 32;
-	res->limit = res->base + res->size - 1;
-	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_RESERVE |
-		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	fixed_io_range_reserved(dev, PCI_BASE_ADDRESS_4, CONFIG_FIXED_SMBUS_IO_BASE, 32);
 }

@@ -35,7 +35,7 @@ static uint64_t cadb_prog_rank_mirror(const uint64_t cadb_prog)
 	return cadb_prog ^ (tmp64 | tmp64 << 1);
 }
 
-static enum raminit_status reut_write_cadb_cmd(
+static enum nri_status reut_write_cadb_cmd(
 	struct sysinfo *ctrl,
 	const uint8_t channel,
 	const uint8_t rankmask,
@@ -73,7 +73,7 @@ static enum raminit_status reut_write_cadb_cmd(
 	}
 	if (!count) {
 		printk(BIOS_ERR, "%s: rankmask is invalid\n", __func__);
-		return RAMINIT_STATUS_UNSPECIFIED_ERROR;	/** FIXME: Is this needed? **/
+		return NRI_STATUS_UNSPECIFIED_ERROR;	/** FIXME: Is this needed? **/
 	}
 	const union reut_pat_cadb_mrs_reg reut_cadb_mrs = {
 		.delay_gap = delay ? delay : 3,
@@ -92,7 +92,7 @@ static enum raminit_status reut_write_cadb_cmd(
 		.start_test   = 1,
 		.clear_errors = 1,
 	}.raw);
-	enum raminit_status status = RAMINIT_STATUS_SUCCESS;
+	enum nri_status status = NRI_STATUS_SUCCESS;
 	union reut_global_err_reg reut_global_err;
 	struct stopwatch timer;
 	stopwatch_init_msecs_expire(&timer, 100);
@@ -100,12 +100,12 @@ static enum raminit_status reut_write_cadb_cmd(
 		reut_global_err.raw = mchbar_read32(REUT_GLOBAL_ERR);
 		if (reut_global_err.ch_error & BIT(channel)) {
 			printk(BIOS_ERR, "Unexpected REUT error for channel %u\n", channel);
-			status = RAMINIT_STATUS_REUT_ERROR;
+			status = NRI_STATUS_REUT_ERROR;
 			break;
 		}
 		if (stopwatch_expired(&timer)) {
 			printk(BIOS_ERR, "%s: REUT timed out!\n", __func__);
-			status = RAMINIT_STATUS_POLL_TIMEOUT;
+			status = NRI_STATUS_POLL_TIMEOUT;
 			break;
 		}
 	} while (!(reut_global_err.ch_test_done & BIT(channel)));
@@ -116,7 +116,7 @@ static enum raminit_status reut_write_cadb_cmd(
 	return status;
 }
 
-static enum raminit_status reut_write_cadb_cmd_all(
+static enum nri_status reut_write_cadb_cmd_all(
 	struct sysinfo *ctrl,
 	const uint8_t channel,
 	const uint8_t rankmask,
@@ -149,7 +149,7 @@ void reut_issue_mrs_all(
 	reut_write_cadb_cmd(ctrl, channel, 0xf, CADB_CMD_MRS, mr, valarr, 0);
 }
 
-enum raminit_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_t zq_type)
+enum nri_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_t zq_type)
 {
 	/** TODO: Issuing ZQ commands differs for LPDDR **/
 	if (ctrl->lpddr)
@@ -178,7 +178,7 @@ enum raminit_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_
 
 	/* ZQCS on single-channel needs a longer delay */
 	const uint8_t delay = zq_type == ZQ_SHORT && (!ctrl->dpc[0] || !ctrl->dpc[1]) ? 7 : 1;
-	enum raminit_status status = RAMINIT_STATUS_SUCCESS;
+	enum nri_status status = NRI_STATUS_SUCCESS;
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		if (!(BIT(channel) & chanmask) || !does_ch_exist(ctrl, channel))
 			continue;

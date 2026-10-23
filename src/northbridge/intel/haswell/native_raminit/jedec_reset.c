@@ -78,13 +78,13 @@ static void jedec_reset(struct sysinfo *ctrl)
 	tick_delay(1);
 }
 
-enum raminit_status do_jedec_init(struct sysinfo *ctrl)
+enum nri_status do_jedec_init(struct sysinfo *ctrl)
 {
 	/* Never do a JEDEC reset in S3 resume */
 	if (ctrl->bootmode == BOOTMODE_S3)
-		return RAMINIT_STATUS_SUCCESS;
+		return NRI_STATUS_SUCCESS;
 
-	enum raminit_status status = io_reset();
+	enum nri_status status = io_reset();
 	if (status)
 		return status;
 

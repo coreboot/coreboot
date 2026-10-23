@@ -8,7 +8,7 @@
 
 #include "raminit_native.h"
 
-static enum raminit_status run_memory_scrub(struct sysinfo *ctrl, const uint8_t chanmask)
+static enum nri_status run_memory_scrub(struct sysinfo *ctrl, const uint8_t chanmask)
 {
 	mchbar_write32(REUT_GLOBAL_CTL, (union reut_seq_ctl_reg) {
 		.start_test    = 1,
@@ -18,9 +18,9 @@ static enum raminit_status run_memory_scrub(struct sysinfo *ctrl, const uint8_t 
 	const uint8_t ch_error = wait_for_reut(ctrl, chanmask);
 	if (ch_error & chanmask) {
 		printk(BIOS_ERR, "REUT found channel errors during scrub: 0x%x\n", ch_error);
-		return RAMINIT_STATUS_SCRUB_ERROR;
+		return NRI_STATUS_SCRUB_ERROR;
 	}
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
 static bool should_scrub_memory(const struct sysinfo *ctrl)
@@ -33,10 +33,10 @@ static bool should_scrub_memory(const struct sysinfo *ctrl)
 	return ctrl->is_ecc;
 }
 
-enum raminit_status ecc_scrub(struct sysinfo *ctrl)
+enum nri_status ecc_scrub(struct sysinfo *ctrl)
 {
 	if (!should_scrub_memory(ctrl))
-		return RAMINIT_STATUS_SUCCESS;
+		return NRI_STATUS_SUCCESS;
 
 	printk(BIOS_DEBUG, "Performing ECC scrub\n");
 
@@ -81,7 +81,7 @@ enum raminit_status ecc_scrub(struct sysinfo *ctrl)
 			.inc_val = 1,
 		},
 	};
-	enum raminit_status status = 0;
+	enum nri_status status = 0;
 	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
 		uint8_t chanmask = 0;
 		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++)
@@ -126,11 +126,11 @@ enum raminit_status ecc_scrub(struct sysinfo *ctrl)
 	return status;
 }
 
-enum raminit_status alias_check(struct sysinfo *ctrl)
+enum nri_status alias_check(struct sysinfo *ctrl)
 {
 	/* MRC skips Alias Check for HSW A0, probably because subseq bitfields differ */
 	if (ctrl->stepping == STEPPING_A0)
-		return RAMINIT_STATUS_SUCCESS;
+		return NRI_STATUS_SUCCESS;
 
 	/*
 	 * Check if the SDRAM Addressing * Primary Bus Width == SDRAM capacity.
@@ -188,7 +188,7 @@ enum raminit_status alias_check(struct sysinfo *ctrl)
 			.inc_val = 32,
 		},
 	};
-	enum raminit_status status = 0;
+	enum nri_status status = 0;
 	const uint16_t col_inc_val_unaligned = 1024 / 4;
 	for (uint8_t slot = 0; slot < NUM_SLOTS; slot++) {
 		const uint8_t rank = slot + slot;

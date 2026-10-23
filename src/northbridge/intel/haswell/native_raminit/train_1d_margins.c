@@ -28,12 +28,12 @@ static void print_bitlane(
 	}
 }
 
-static enum raminit_status apply_dq_offsets(
+static enum nri_status apply_dq_offsets(
 	struct sysinfo *ctrl,
 	const uint8_t channel,
 	const uint8_t rank,
 	const enum margin_parameter param,
-	enum raminit_status status,
+	enum nri_status status,
 	const struct linear_train_data chan_data[])
 {
 	printk(BIOS_DEBUG, "\nC%u.R%u:  Left\tRight\tWidth\tCenter\n", channel, rank);
@@ -52,7 +52,7 @@ static enum raminit_status apply_dq_offsets(
 			printk(BIOS_ERR,
 				"\t1D eye too small! channel: %u byte: %u width: %d\n",
 				channel, byte, lwidth);
-			status = RAMINIT_STATUS_1D_MARGINING_FAILURE;
+			status = NRI_STATUS_1D_MARGINING_FAILURE;
 		} else {
 			printk(BIOS_DEBUG, "\n");
 		}
@@ -105,7 +105,7 @@ static enum margin_parameter get_per_bit_margin_param(const enum margin_paramete
 	}
 }
 
-static enum raminit_status train_1d_margin(
+static enum nri_status train_1d_margin(
 	struct sysinfo *ctrl,
 	const uint8_t chanmask_in,
 	const enum margin_parameter param,
@@ -115,20 +115,20 @@ static enum raminit_status train_1d_margin(
 	const char *const delay_string = get_delay_string(param);
 	if (!delay_string) {
 		printk(BIOS_ERR, "%s: Invalid margin parameter %u\n", __func__, param);
-		return RAMINIT_STATUS_INVALID_PARAMETER;
+		return NRI_STATUS_INVALID_PARAMETER;
 	}
 	setup_io_test_basic_va(ctrl, chanmask_in, loopcount, NSOE);
 
 	const enum margin_parameter param_bit = get_per_bit_margin_param(param);
 	if (reset_per_bit && param_bit == INVALID_MARGIN) {
 		printk(BIOS_ERR, "%s: Invalid per-bit margin for param %u\n", __func__, param);
-		return RAMINIT_STATUS_INVALID_PARAMETER;
+		return NRI_STATUS_INVALID_PARAMETER;
 	}
 
 	const int32_t m_stop = get_max_margin_for_param(param);
 	const int32_t m_start = -m_stop;
 	const int32_t m_step = 1;
-	enum raminit_status status = 0;
+	enum nri_status status = 0;
 	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
 		if (!does_rank_exist(ctrl, rank))
 			continue;
@@ -283,17 +283,17 @@ static enum raminit_status train_1d_margin(
 
 #define DATA_TRAIN_LOOP_COUNT	15
 
-enum raminit_status train_read_timing_centering(struct sysinfo *ctrl)
+enum nri_status train_read_timing_centering(struct sysinfo *ctrl)
 {
 	return train_1d_margin(ctrl, ctrl->chanmap, RdT, true, DATA_TRAIN_LOOP_COUNT);
 }
 
-enum raminit_status train_write_timing_centering(struct sysinfo *ctrl)
+enum nri_status train_write_timing_centering(struct sysinfo *ctrl)
 {
 	return train_1d_margin(ctrl, ctrl->chanmap, WrT, true, DATA_TRAIN_LOOP_COUNT);
 }
 
-enum raminit_status train_read_voltage_centering(struct sysinfo *ctrl)
+enum nri_status train_read_voltage_centering(struct sysinfo *ctrl)
 {
 	/*
 	 * We do not reset per-bit RdV. Haswell only has one RX_OFFSET_VDQ register

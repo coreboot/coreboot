@@ -15,11 +15,11 @@
 
 #include "raminit_native.h"
 
-static enum raminit_status pre_training(struct sysinfo *ctrl)
+static enum nri_status pre_training(struct sysinfo *ctrl)
 {
 	/* Skip on S3 resume */
 	if (ctrl->bootmode == BOOTMODE_S3)
-		return RAMINIT_STATUS_SUCCESS;
+		return NRI_STATUS_SUCCESS;
 
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		for (uint8_t slot = 0; slot < NUM_SLOTS; slot++) {
@@ -44,7 +44,7 @@ static enum raminit_status pre_training(struct sysinfo *ctrl)
 		}
 	}
 	setup_wdb(ctrl);
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
 
@@ -94,11 +94,11 @@ static void update_command_rate(struct sysinfo *const ctrl, const uint8_t channe
 	mchbar_write32(SC_ROUNDT_LAT_ch(channel), ctrl->rt_latency[channel].raw);
 }
 
-static enum raminit_status post_training(struct sysinfo *const ctrl)
+static enum nri_status post_training(struct sysinfo *const ctrl)
 {
 	/* Command rate is always 1N for LPDDR3 */
 	if (ctrl->lpddr) {
-		return RAMINIT_STATUS_SUCCESS;
+		return NRI_STATUS_SUCCESS;
 	}
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		if (!does_ch_exist(ctrl, channel))
@@ -106,11 +106,11 @@ static enum raminit_status post_training(struct sysinfo *const ctrl)
 
 		update_command_rate(ctrl, channel);
 	}
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
 struct task_entry {
-	enum raminit_status (*task)(struct sysinfo *);
+	enum nri_status (*task)(struct sysinfo *);
 	bool is_enabled;
 	const char *name;
 };
@@ -196,12 +196,12 @@ static void initialize_ctrl(struct sysinfo *ctrl)
 /** TODO: Adjust unit scale dynamically? **/
 #define T_SCALE 1000 /* 1 = usecs, 1000 = msecs */
 
-static enum raminit_status try_raminit(
+static enum nri_status try_raminit(
 	struct sysinfo *ctrl,
 	const struct task_entry *const schedule,
 	const size_t length)
 {
-	enum raminit_status status = RAMINIT_STATUS_UNSPECIFIED_ERROR;
+	enum nri_status status = NRI_STATUS_UNSPECIFIED_ERROR;
 
 	long spent_time[ARRAY_SIZE(cold_boot)] = { 0 };
 	long total = 0;
@@ -269,17 +269,17 @@ void raminit_main(const enum raminit_boot_mode bootmode)
 	mighty_ctrl.bootmode = bootmode;
 	initialize_ctrl(&mighty_ctrl);
 
-	enum raminit_status status = RAMINIT_STATUS_UNSPECIFIED_ERROR;
+	enum nri_status status = NRI_STATUS_UNSPECIFIED_ERROR;
 
 	if (bootmode != BOOTMODE_COLD) {
 		status = try_raminit(&mighty_ctrl, fast_boot, ARRAY_SIZE(fast_boot));
-		if (status == RAMINIT_STATUS_SUCCESS)
+		if (status == NRI_STATUS_SUCCESS)
 			return;
 	}
 
 	/** TODO: Try more than once **/
 	status = try_raminit(&mighty_ctrl, cold_boot, ARRAY_SIZE(cold_boot));
 
-	if (status != RAMINIT_STATUS_SUCCESS)
+	if (status != NRI_STATUS_SUCCESS)
 		die("Memory initialization was met with utmost failure and misery\n");
 }

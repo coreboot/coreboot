@@ -208,7 +208,7 @@ static void ddr3_program_mr3(struct sysinfo *ctrl, const uint8_t mpr_mode)
 	}
 }
 
-enum raminit_status ddr3_jedec_init(struct sysinfo *ctrl)
+enum nri_status ddr3_jedec_init(struct sysinfo *ctrl)
 {
 	ddr3_program_mr2(ctrl);
 	ddr3_program_mr3(ctrl, 0);
@@ -217,7 +217,7 @@ enum raminit_status ddr3_jedec_init(struct sysinfo *ctrl)
 	return reut_issue_zq(ctrl, ctrl->chanmap, ZQ_INIT);
 }
 
-enum raminit_status exit_selfrefresh(struct sysinfo *ctrl)
+enum nri_status exit_selfrefresh(struct sysinfo *ctrl)
 {
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		if (!does_ch_exist(ctrl, channel))
@@ -249,10 +249,10 @@ enum raminit_status exit_selfrefresh(struct sysinfo *ctrl)
 	}
 	mchbar_write32(REUT_MISC_ODT_CTRL, 0);
 
-	const enum raminit_status status = reut_issue_zq(ctrl, ctrl->chanmap, ZQ_LONG);
+	const enum nri_status status = reut_issue_zq(ctrl, ctrl->chanmap, ZQ_LONG);
 	if (status) {
 		/* ZQCL errors don't seem to be a fatal problem here */
 		printk(BIOS_ERR, "ZQ Long failed during S3 resume or warm reset flow\n");
 	}
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }

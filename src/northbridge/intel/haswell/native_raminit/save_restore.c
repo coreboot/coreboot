@@ -262,19 +262,19 @@ static void save_restore_all(struct register_save_frame *reg_frame, reg_func_t h
 		handle_reg);
 }
 
-enum raminit_status save_training_values(struct sysinfo *ctrl)
+enum nri_status save_training_values(struct sysinfo *ctrl)
 {
 	save_restore_all(reg_frame_ptr(), save_value);
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
-enum raminit_status restore_training_values(struct sysinfo *ctrl)
+enum nri_status restore_training_values(struct sysinfo *ctrl)
 {
 	save_restore_all(reg_frame_ptr(), restore_value);
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
-enum raminit_status save_non_training(struct sysinfo *ctrl)
+enum nri_status save_non_training(struct sysinfo *ctrl)
 {
 	struct register_save_frame *reg_frame = reg_frame_ptr();
 	struct save_params *params = &reg_frame->params;
@@ -324,30 +324,30 @@ enum raminit_status save_non_training(struct sysinfo *ctrl)
 	params->lpddr = ctrl->lpddr;
 	params->lanes = ctrl->lanes;
 	params->is_ecc = ctrl->is_ecc;
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
 #define RAMINIT_COMPARE(_s1, _s2) \
 	((sizeof(_s1) == sizeof(_s2)) && !memcmp(_s1, _s2, sizeof(_s1)))
 
-enum raminit_status restore_non_training(struct sysinfo *ctrl)
+enum nri_status restore_non_training(struct sysinfo *ctrl)
 {
 	struct register_save_frame *reg_frame = reg_frame_ptr();
 	struct save_params *params = &reg_frame->params;
 
 	if (!params->is_initialised) {
 		printk(BIOS_WARNING, "Cannot fast boot: saved data is invalid\n");
-		return RAMINIT_STATUS_INVALID_CACHE;
+		return NRI_STATUS_INVALID_CACHE;
 	}
 
 	if (!RAMINIT_COMPARE(ctrl->dimms, params->dimms)) {
 		printk(BIOS_WARNING, "Cannot fast boot: DIMMs have changed\n");
-		return RAMINIT_STATUS_INVALID_CACHE;
+		return NRI_STATUS_INVALID_CACHE;
 	}
 
 	if (ctrl->cpu != params->cpu) {
 		printk(BIOS_WARNING, "Cannot fast boot: CPU has changed\n");
-		return RAMINIT_STATUS_INVALID_CACHE;
+		return NRI_STATUS_INVALID_CACHE;
 	}
 
 	ctrl->base_freq     = params->base_freq;
@@ -393,5 +393,5 @@ enum raminit_status restore_non_training(struct sysinfo *ctrl)
 	ctrl->lpddr = params->lpddr;
 	ctrl->lanes = params->lanes;
 	ctrl->is_ecc = params->is_ecc;
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }

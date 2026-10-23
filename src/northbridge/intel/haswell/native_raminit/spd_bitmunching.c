@@ -74,7 +74,7 @@ static void decode_spd(struct raminit_dimm_info *const dimm)
 		dram_print_spd_ddr3(&dimm->data);
 }
 
-static enum raminit_status find_common_spd_parameters(struct sysinfo *ctrl)
+static enum nri_status find_common_spd_parameters(struct sysinfo *ctrl)
 {
 	const union pci_capid0_a_reg capid0_a = {
 		.raw = pci_read_config32(HOST_BRIDGE, CAPID0_A)
@@ -152,11 +152,11 @@ static enum raminit_status find_common_spd_parameters(struct sysinfo *ctrl)
 
 	if (!ctrl->chanmap) {
 		printk(BIOS_ERR, "No DIMMs were found\n");
-		return RAMINIT_STATUS_NO_MEMORY_INSTALLED;
+		return NRI_STATUS_NO_MEMORY_INSTALLED;
 	}
 	if (!ctrl->cas_supported) {
 		printk(BIOS_ERR, "Could not resolve common CAS latency\n");
-		return RAMINIT_STATUS_UNSUPPORTED_MEMORY;
+		return NRI_STATUS_UNSUPPORTED_MEMORY;
 	}
 
 	/* At least one DIMM exists */
@@ -171,7 +171,7 @@ static enum raminit_status find_common_spd_parameters(struct sysinfo *ctrl)
 
 	if (ecc_force && not_ecc) {
 		printk(BIOS_ERR, "ECC forced by CAPID, but non-ECC DIMMs present\n");
-		return RAMINIT_STATUS_UNSUPPORTED_MEMORY;
+		return NRI_STATUS_UNSUPPORTED_MEMORY;
 	}
 
 	if (yes_ecc && not_ecc) {
@@ -193,10 +193,10 @@ static enum raminit_status find_common_spd_parameters(struct sysinfo *ctrl)
 	/** TODO: Complete LPDDR support **/
 	ctrl->lpddr = false;
 
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
-enum raminit_status collect_spd_info(struct sysinfo *ctrl)
+enum nri_status collect_spd_info(struct sysinfo *ctrl)
 {
 	get_spd_data(ctrl);
 	return find_common_spd_parameters(ctrl);
@@ -206,7 +206,7 @@ enum raminit_status collect_spd_info(struct sysinfo *ctrl)
 #define MAX_CWL		12
 
 /* Except for tCK, hardware expects all timing values in DCLKs, not nanoseconds */
-enum raminit_status convert_timings(struct sysinfo *ctrl)
+enum nri_status convert_timings(struct sysinfo *ctrl)
 {
 	/*
 	 * Obtain all required timing values, in DCLKs.
@@ -304,5 +304,5 @@ enum raminit_status convert_timings(struct sysinfo *ctrl)
 	printk(BIOS_DEBUG, "Selected tREFI        : %uT\n", ctrl->tREFI);
 	printk(BIOS_DEBUG, "Selected tXP          : %uT\n", ctrl->tXP);
 
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }

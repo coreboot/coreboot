@@ -9,7 +9,7 @@
 
 #define RCVEN_PLOT	RAM_DEBUG
 
-static enum raminit_status change_rcven_timing(struct sysinfo *ctrl, const uint8_t channel)
+static enum nri_status change_rcven_timing(struct sysinfo *ctrl, const uint8_t channel)
 {
 	int16_t max_rcven = -4096;
 	int16_t min_rcven = 4096;
@@ -91,13 +91,13 @@ static enum raminit_status change_rcven_timing(struct sysinfo *ctrl, const uint8
 		printk(BIOS_ERR, "%s: IO COMP underflow\n", __func__);
 		printk(BIOS_ERR, "io_g_offset: %d\n", io_g_offset);
 		printk(BIOS_ERR, "rt_iocomp: %u\n", sc_io_lat.rt_iocomp);
-		return RAMINIT_STATUS_RCVEN_FAILURE;
+		return NRI_STATUS_RCVEN_FAILURE;
 	}
 	if (io_g_offset > 0 && io_g_offset > 0x3f - sc_io_lat.rt_iocomp) {
 		printk(BIOS_ERR, "%s: IO COMP overflow\n", __func__);
 		printk(BIOS_ERR, "io_g_offset: %d\n", io_g_offset);
 		printk(BIOS_ERR, "rt_iocomp: %u\n", sc_io_lat.rt_iocomp);
-		return RAMINIT_STATUS_RCVEN_FAILURE;
+		return NRI_STATUS_RCVEN_FAILURE;
 	}
 	sc_io_lat.rt_iocomp += io_g_offset;
 	ctrl->rt_io_comp[channel] = sc_io_lat.rt_iocomp;
@@ -110,7 +110,7 @@ static enum raminit_status change_rcven_timing(struct sysinfo *ctrl, const uint8
 		sc_io_lat.raw |= ctrl->io_latency[channel][rank] << shift;
 	}
 	mchbar_write32(SC_IO_LATENCY_ch(channel), sc_io_lat.raw);
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
 #define RL_START (256 + 24)
@@ -119,24 +119,24 @@ static enum raminit_status change_rcven_timing(struct sysinfo *ctrl, const uint8
 
 #define RE_NUM_SAMPLES	6
 
-static enum raminit_status verify_high_region(const int32_t center, const int32_t lwidth)
+static enum nri_status verify_high_region(const int32_t center, const int32_t lwidth)
 {
 	if (center > RL_STOP) {
 		/* Check if center of high was found where it should be */
 		printk(BIOS_ERR, "RcvEn: Center of high (%d) higher than expected\n", center);
-		return RAMINIT_STATUS_RCVEN_FAILURE;
+		return NRI_STATUS_RCVEN_FAILURE;
 	}
 	if (lwidth <= 32) {
 		/* Check if width is large enough */
 		printk(BIOS_ERR, "RcvEn: Width of high region (%d) too small\n", lwidth);
-		return RAMINIT_STATUS_RCVEN_FAILURE;
+		return NRI_STATUS_RCVEN_FAILURE;
 	}
 	if (lwidth >= 96) {
 		/* Since we're calibrating a phase, a too large region is a problem */
 		printk(BIOS_ERR, "RcvEn: Width of high region (%d) too large\n", lwidth);
-		return RAMINIT_STATUS_RCVEN_FAILURE;
+		return NRI_STATUS_RCVEN_FAILURE;
 	}
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
 static void program_io_latency(struct sysinfo *ctrl, const uint8_t channel, const uint8_t rank)
@@ -162,7 +162,7 @@ static bool sample_dqs(const uint8_t channel, const uint8_t byte)
 	return (get_data_train_feedback(channel, byte) & 0x1ff) >= BIT(RE_NUM_SAMPLES - 1);
 }
 
-enum raminit_status train_receive_enable(struct sysinfo *ctrl)
+enum nri_status train_receive_enable(struct sysinfo *ctrl)
 {
 	const struct reut_box reut_addr = {
 		.col = {
@@ -228,7 +228,7 @@ enum raminit_status train_receive_enable(struct sysinfo *ctrl)
 			.rt_iocomp = rt_io_comp,
 		}.raw);
 	}
-	enum raminit_status status = RAMINIT_STATUS_SUCCESS;
+	enum nri_status status = NRI_STATUS_SUCCESS;
 	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
 		if (!does_rank_exist(ctrl, rank))
 			continue;
@@ -377,7 +377,7 @@ enum raminit_status train_receive_enable(struct sysinfo *ctrl)
 						printk(BIOS_ERR,
 							"For channel %u, rank %u, byte %u\n",
 							channel, rank, byte);
-						status = RAMINIT_STATUS_RCVEN_FAILURE;
+						status = NRI_STATUS_RCVEN_FAILURE;
 						goto clean_up;
 					}
 					ctrl->rcven[channel][rank][byte] -= 128;
@@ -473,7 +473,7 @@ enum raminit_status train_receive_enable(struct sysinfo *ctrl)
 							: " *** Check this byte! ***");
 				}
 			}
-			status = RAMINIT_STATUS_RCVEN_FAILURE;
+			status = NRI_STATUS_RCVEN_FAILURE;
 			goto clean_up;
 		}
 

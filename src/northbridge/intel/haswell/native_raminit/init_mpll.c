@@ -117,7 +117,7 @@ static uint8_t find_compatible_cas(struct sysinfo *ctrl)
 	return 0;
 }
 
-static enum raminit_status find_cas_tck(struct sysinfo *ctrl)
+static enum nri_status find_cas_tck(struct sysinfo *ctrl)
 {
 	/** TODO: Honor all possible PLL_REF100_CFG values **/
 	uint8_t pll_ref100 = (pci_read_config32(HOST_BRIDGE, CAPID0_B) >> 21) & 0x7;
@@ -130,7 +130,7 @@ static enum raminit_status find_cas_tck(struct sysinfo *ctrl)
 		normalize_tck(ctrl, pll_ref100);
 		if (!ctrl->tCK) {
 			printk(BIOS_ERR, "Couldn't find compatible clock / CAS settings\n");
-			return RAMINIT_STATUS_MPLL_INIT_FAILURE;
+			return NRI_STATUS_MPLL_INIT_FAILURE;
 		}
 		selected_cas = find_compatible_cas(ctrl);
 		if (selected_cas)
@@ -142,10 +142,10 @@ static enum raminit_status find_cas_tck(struct sysinfo *ctrl)
 	printk(BIOS_DEBUG, "Selected DRAM frequency: %u MHz\n", NS2MHZ_DIV256 / ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected CAS latency   : %uT\n", selected_cas);
 	ctrl->multiplier = get_mem_multiplier(ctrl);
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
-enum raminit_status initialise_mpll(struct sysinfo *ctrl)
+enum nri_status initialise_mpll(struct sysinfo *ctrl)
 {
 	if (ctrl->tCK > TCK_400MHZ) {
 		printk(BIOS_ERR, "tCK is too slow. Increasing to 400 MHz as last resort\n");
@@ -162,7 +162,7 @@ enum raminit_status initialise_mpll(struct sysinfo *ctrl)
 		 */
 		/** FIXME: This terribleness ignores failure modes in fast / S3 flows **/
 		if (!ctrl->qclkps) {
-			const enum raminit_status status = find_cas_tck(ctrl);
+			const enum nri_status status = find_cas_tck(ctrl);
 			if (status)
 				return status;
 		}
@@ -208,7 +208,7 @@ enum raminit_status initialise_mpll(struct sysinfo *ctrl)
 	}
 	if (!ctrl->mem_clock_mhz) {
 		printk(BIOS_ERR, "Could not program MPLL frequency\n");
-		return RAMINIT_STATUS_MPLL_INIT_FAILURE;
+		return NRI_STATUS_MPLL_INIT_FAILURE;
 	}
 	printk(BIOS_DEBUG, "MPLL frequency is set to: %u MHz ", ctrl->mem_clock_mhz);
 	ctrl->mem_clock_fs = 1000000000 / ctrl->mem_clock_mhz;

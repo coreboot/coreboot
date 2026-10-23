@@ -315,23 +315,23 @@ enum raminit_boot_mode {
 	BOOTMODE_FAST,
 };
 
-enum raminit_status {
-	RAMINIT_STATUS_SUCCESS = 0,
-	RAMINIT_STATUS_NO_MEMORY_INSTALLED,
-	RAMINIT_STATUS_UNSUPPORTED_MEMORY,
-	RAMINIT_STATUS_INVALID_PARAMETER,
-	RAMINIT_STATUS_MPLL_INIT_FAILURE,
-	RAMINIT_STATUS_POLL_TIMEOUT,
-	RAMINIT_STATUS_REUT_ERROR,
-	RAMINIT_STATUS_SAMP_OFFSET_FAILURE,
-	RAMINIT_STATUS_RCVEN_FAILURE,
-	RAMINIT_STATUS_RMPR_FAILURE,
-	RAMINIT_STATUS_JWRL_FAILURE,
-	RAMINIT_STATUS_1D_MARGINING_FAILURE,
-	RAMINIT_STATUS_INVALID_CACHE,
-	RAMINIT_STATUS_LCT_FAILURE,
-	RAMINIT_STATUS_SCRUB_ERROR,
-	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
+enum nri_status {
+	NRI_STATUS_SUCCESS = 0,
+	NRI_STATUS_NO_MEMORY_INSTALLED,
+	NRI_STATUS_UNSUPPORTED_MEMORY,
+	NRI_STATUS_INVALID_PARAMETER,
+	NRI_STATUS_MPLL_INIT_FAILURE,
+	NRI_STATUS_POLL_TIMEOUT,
+	NRI_STATUS_REUT_ERROR,
+	NRI_STATUS_SAMP_OFFSET_FAILURE,
+	NRI_STATUS_RCVEN_FAILURE,
+	NRI_STATUS_RMPR_FAILURE,
+	NRI_STATUS_JWRL_FAILURE,
+	NRI_STATUS_1D_MARGINING_FAILURE,
+	NRI_STATUS_INVALID_CACHE,
+	NRI_STATUS_LCT_FAILURE,
+	NRI_STATUS_SCRUB_ERROR,
+	NRI_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
 
 enum generic_stepping {
@@ -612,31 +612,31 @@ static inline void reut_set_normal_mode(const uint8_t channel)
 
 void raminit_main(enum raminit_boot_mode bootmode);
 
-enum raminit_status collect_spd_info(struct sysinfo *ctrl);
-enum raminit_status initialise_mpll(struct sysinfo *ctrl);
-enum raminit_status convert_timings(struct sysinfo *ctrl);
-enum raminit_status configure_mc(struct sysinfo *ctrl);
-enum raminit_status configure_memory_map(struct sysinfo *ctrl);
-enum raminit_status do_jedec_init(struct sysinfo *ctrl);
-enum raminit_status train_sense_amp_offset(struct sysinfo *ctrl);
-enum raminit_status train_receive_enable(struct sysinfo *ctrl);
-enum raminit_status train_read_mpr(struct sysinfo *ctrl);
-enum raminit_status train_jedec_write_leveling(struct sysinfo *ctrl);
-enum raminit_status train_read_timing_centering(struct sysinfo *ctrl);
-enum raminit_status train_write_timing_centering(struct sysinfo *ctrl);
-enum raminit_status train_read_voltage_centering(struct sysinfo *ctrl);
-enum raminit_status optimise_comp(struct sysinfo *ctrl);
-enum raminit_status train_late_command(struct sysinfo *ctrl);
-enum raminit_status save_training_values(struct sysinfo *ctrl);
-enum raminit_status restore_training_values(struct sysinfo *ctrl);
-enum raminit_status save_non_training(struct sysinfo *ctrl);
-enum raminit_status restore_non_training(struct sysinfo *ctrl);
-enum raminit_status exit_selfrefresh(struct sysinfo *ctrl);
-enum raminit_status normal_state(struct sysinfo *ctrl);
-enum raminit_status activate_mc(struct sysinfo *ctrl);
-enum raminit_status ecc_scrub(struct sysinfo *ctrl);
-enum raminit_status alias_check(struct sysinfo *ctrl);
-enum raminit_status raminit_done(struct sysinfo *ctrl);
+enum nri_status collect_spd_info(struct sysinfo *ctrl);
+enum nri_status initialise_mpll(struct sysinfo *ctrl);
+enum nri_status convert_timings(struct sysinfo *ctrl);
+enum nri_status configure_mc(struct sysinfo *ctrl);
+enum nri_status configure_memory_map(struct sysinfo *ctrl);
+enum nri_status do_jedec_init(struct sysinfo *ctrl);
+enum nri_status train_sense_amp_offset(struct sysinfo *ctrl);
+enum nri_status train_receive_enable(struct sysinfo *ctrl);
+enum nri_status train_read_mpr(struct sysinfo *ctrl);
+enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl);
+enum nri_status train_read_timing_centering(struct sysinfo *ctrl);
+enum nri_status train_write_timing_centering(struct sysinfo *ctrl);
+enum nri_status train_read_voltage_centering(struct sysinfo *ctrl);
+enum nri_status optimise_comp(struct sysinfo *ctrl);
+enum nri_status train_late_command(struct sysinfo *ctrl);
+enum nri_status save_training_values(struct sysinfo *ctrl);
+enum nri_status restore_training_values(struct sysinfo *ctrl);
+enum nri_status save_non_training(struct sysinfo *ctrl);
+enum nri_status restore_non_training(struct sysinfo *ctrl);
+enum nri_status exit_selfrefresh(struct sysinfo *ctrl);
+enum nri_status normal_state(struct sysinfo *ctrl);
+enum nri_status activate_mc(struct sysinfo *ctrl);
+enum nri_status ecc_scrub(struct sysinfo *ctrl);
+enum nri_status alias_check(struct sysinfo *ctrl);
+enum nri_status raminit_done(struct sysinfo *ctrl);
 
 void configure_timings(struct sysinfo *ctrl);
 void configure_refresh(struct sysinfo *ctrl);
@@ -658,13 +658,13 @@ uint32_t get_tXS_offset(uint32_t mem_clock_mhz);
 uint32_t get_tZQOPER(uint32_t mem_clock_mhz, bool lpddr);
 uint32_t get_tZQCS(uint32_t mem_clock_mhz, bool lpddr);
 
-enum raminit_status io_reset(void);
-enum raminit_status wait_for_first_rcomp(void);
+enum nri_status io_reset(void);
+enum nri_status wait_for_first_rcomp(void);
 void force_rcomp_and_wait_us(unsigned int usecs);
 
 uint16_t encode_ddr3_rttnom(uint32_t rttnom);
 void ddr3_program_mr1(struct sysinfo *ctrl, uint8_t wl_mode, uint8_t q_off);
-enum raminit_status ddr3_jedec_init(struct sysinfo *ctrl);
+enum nri_status ddr3_jedec_init(struct sysinfo *ctrl);
 
 void reut_issue_mrs(
 	struct sysinfo *ctrl,
@@ -679,7 +679,7 @@ void reut_issue_mrs_all(
 	uint8_t mr,
 	const uint16_t val[NUM_SLOTS]);
 
-enum raminit_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_t zq_type);
+enum nri_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_t zq_type);
 union raw_bitlane_errors get_bitlane_errors(const uint8_t channel);
 
 void write_wdb_fixed_pat(
@@ -804,7 +804,7 @@ void shift_pi_for_cmd_training(
 	const int32_t new_val_or_off,
 	const bool update_ctrl);
 
-enum raminit_status cmd_find_edges_linear(
+enum nri_status cmd_find_edges_linear(
 	struct sysinfo *ctrl,
 	const enum lct_iteration iteration,
 	const uint8_t chanmask,

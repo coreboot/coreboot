@@ -361,7 +361,7 @@ static uint8_t run_io_test_lct(struct sysinfo *ctrl, uint8_t chanmask, bool skip
 	return ch_error;
 }
 
-enum raminit_status cmd_find_edges_linear(
+enum nri_status cmd_find_edges_linear(
 	struct sysinfo *ctrl,
 	const enum lct_iteration iteration,
 	const uint8_t chanmask,
@@ -425,7 +425,7 @@ enum raminit_status cmd_find_edges_linear(
 	if (!skip_print)
 		printk(BIOS_DEBUG, "\n\nCh\tLeft\tRight\tWidth\tCenter\n");
 
-	enum raminit_status status = 0;
+	enum nri_status status = 0;
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		if (!(BIT(channel) & chanmask))
 			continue;
@@ -440,7 +440,7 @@ enum raminit_status cmd_find_edges_linear(
 		if (bad_eye) {
 			/* TODO: Have a default center parameter instead? */
 			center = (lct_start + lct_stop) / 2;
-			status = RAMINIT_STATUS_LCT_FAILURE;
+			status = NRI_STATUS_LCT_FAILURE;
 		}
 
 		/*
@@ -487,7 +487,7 @@ enum raminit_status cmd_find_edges_linear(
 	if (!skip_vref)
 		update_vref_and_wait(ctrl, VREF_CA, false, 0, false);
 
-	const enum raminit_status last_status = do_jedec_init(ctrl);
+	const enum nri_status last_status = do_jedec_init(ctrl);
 	return status ? status : last_status;
 }
 
@@ -575,7 +575,7 @@ static struct lct_timing cmd_find_edge_binary(
 }
 
 /* Note: midpoint is only used for non-CLK iterations */
-static enum raminit_status center_ca_timing(
+static enum nri_status center_ca_timing(
 	struct sysinfo *ctrl,
 	const enum lct_iteration iteration,
 	const uint8_t rankmask,
@@ -593,7 +593,7 @@ static enum raminit_status center_ca_timing(
 		chanmask |= select_reut_ranks(ctrl, channel, rankmask);
 
 	if (!chanmask)
-		return RAMINIT_STATUS_SUCCESS;
+		return NRI_STATUS_SUCCESS;
 
 	if (iteration == CT_ITERATION_CLOCK) {
 		/* Use a linear search to center clock timings */
@@ -656,7 +656,7 @@ static enum raminit_status center_ca_timing(
 		true);
 
 	printk(BIOS_DEBUG, "Ch\tLeft\tRight\tWidth\tCenter\n");
-	enum raminit_status status = 0;
+	enum nri_status status = 0;
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		if (!(BIT(channel) & chanmask))
 			continue;
@@ -673,7 +673,7 @@ static enum raminit_status center_ca_timing(
 		} else {
 			center = DIV_ROUND_CLOSEST(l_edge + r_edge, 2);
 			if (lwidth < LCT_MIN_WIDTH) {
-				status = RAMINIT_STATUS_LCT_FAILURE;
+				status = NRI_STATUS_LCT_FAILURE;
 				msg = "\t[FAIL]";
 			}
 		}
@@ -741,7 +741,7 @@ static void set_channel_timing(
 }
 
 /* This algorithm is backported from SKL */
-static enum raminit_status center_ctl_clk_2d(
+static enum nri_status center_ctl_clk_2d(
 	struct sysinfo *ctrl,
 	const uint8_t rankmask,
 	const uint8_t groupmask,
@@ -752,7 +752,7 @@ static enum raminit_status center_ctl_clk_2d(
 		chanmask |= select_reut_ranks(ctrl, channel, rankmask);
 
 	if (!chanmask)
-		return RAMINIT_STATUS_SUCCESS;
+		return NRI_STATUS_SUCCESS;
 
 	uint8_t first_rank[NUM_CHANNELS] = {};
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
@@ -800,7 +800,7 @@ static enum raminit_status center_ctl_clk_2d(
 		const bool skip_vref = true;
 		const bool skip_print = true;
 		const bool update_ctrl = false;
-		const enum raminit_status status = cmd_find_edges_linear(
+		const enum nri_status status = cmd_find_edges_linear(
 			ctrl,
 			CT_ITERATION_CLOCK,
 			chanmask,
@@ -853,9 +853,9 @@ static enum raminit_status center_ctl_clk_2d(
 	printk(BIOS_DEBUG, "\n");
 	if (!any_pass) {
 		printk(BIOS_ERR, "No good eye found in 2D clock/control sweep\n");
-		return RAMINIT_STATUS_LCT_FAILURE;
+		return NRI_STATUS_LCT_FAILURE;
 	}
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
 /* Caller must ensure the offset does not saturate any of the PIs */
@@ -998,7 +998,7 @@ static uint8_t get_min_ca_pi_code(struct sysinfo *ctrl, const uint8_t channel)
 	return min_code;
 }
 
-enum raminit_status train_late_command(struct sysinfo *ctrl)
+enum nri_status train_late_command(struct sysinfo *ctrl)
 {
 	if (ctrl->lpddr)
 		die("%s: LPDDR is not yet supported\n", __func__);
@@ -1042,7 +1042,7 @@ enum raminit_status train_late_command(struct sysinfo *ctrl)
 
 	/* Do a 2D search to find best command/control PI, to maximise clock margin */
 	struct lct_timing best_pi = {};
-	enum raminit_status status = center_ctl_clk_2d(ctrl, rankmask, 1, &best_pi);
+	enum nri_status status = center_ctl_clk_2d(ctrl, rankmask, 1, &best_pi);
 	if (status)
 		return status;
 

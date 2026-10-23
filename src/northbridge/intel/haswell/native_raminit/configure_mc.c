@@ -815,7 +815,7 @@ static void dram_dimm_mapping(struct sysinfo *ctrl)
 	}
 }
 
-enum raminit_status configure_mc(struct sysinfo *ctrl)
+enum nri_status configure_mc(struct sysinfo *ctrl)
 {
 	const uint16_t vccio_mv = 1000;
 	const uint16_t vsshi_mv = ctrl->vdd_mv - 950;
@@ -842,5 +842,5 @@ enum raminit_status configure_mc(struct sysinfo *ctrl)
 	dram_zones(ctrl);
 	dram_dimm_mapping(ctrl);
 
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }

@@ -94,12 +94,12 @@ static void leave_mpr_train_ddr_mode(struct sysinfo *ctrl, const uint8_t rank)
 	}
 }
 
-enum raminit_status train_read_mpr(struct sysinfo *ctrl)
+enum nri_status train_read_mpr(struct sysinfo *ctrl)
 {
 	set_rxdqs_edges_to_midpoint(ctrl);
 	clear_data_offset_train_all(ctrl);
 	setup_io_test_mpr(ctrl, ctrl->chanmap, LOOPCOUNT_INFINITE, NSOE);
-	enum raminit_status status = RAMINIT_STATUS_SUCCESS;
+	enum nri_status status = NRI_STATUS_SUCCESS;
 	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
 		if (!does_rank_exist(ctrl, rank))
 			continue;
@@ -200,7 +200,7 @@ enum raminit_status train_read_mpr(struct sysinfo *ctrl)
 					printk(BIOS_ERR,
 						"Bad eye (lwidth %d <= min %d) for byte %u\n",
 						lwidth, RMPR_MIN_WIDTH, byte);
-					status = RAMINIT_STATUS_RMPR_FAILURE;
+					status = NRI_STATUS_RMPR_FAILURE;
 				}
 				/*
 				 * The MPR center may not be ideal on certain platforms for

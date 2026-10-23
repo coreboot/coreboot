@@ -218,7 +218,7 @@ static inline uint32_t max(const uint32_t a, const uint32_t b)
 	return MAX(a, b);
 }
 
-enum raminit_status activate_mc(struct sysinfo *ctrl)
+enum nri_status activate_mc(struct sysinfo *ctrl)
 {
 	const bool enable_scrambling = true;
 	const bool enable_cmd_tristate = true;
@@ -329,10 +329,10 @@ enum raminit_status activate_mc(struct sysinfo *ctrl)
 		mchbar_write32(PM_THRT_CKE_MIN_ch(channel), 0x30);
 	}
 	mchbar_write32(PCU_DDR_PTM_CTL, 0x40);
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
-enum raminit_status normal_state(struct sysinfo *ctrl)
+enum nri_status normal_state(struct sysinfo *ctrl)
 {
 	/* Enable periodic COMP */
 	mchbar_write32(M_COMP, (union pcu_comp_reg) {
@@ -345,7 +345,7 @@ enum raminit_status normal_state(struct sysinfo *ctrl)
 		reut_set_normal_mode(channel);
 	}
 	power_down_config(ctrl);
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
 static void mc_lockdown(void)
@@ -368,7 +368,7 @@ static void mc_lockdown(void)
 	pci_or_config32(HOST_BRIDGE, TOLUD,       1 <<  0);
 }
 
-enum raminit_status raminit_done(struct sysinfo *ctrl)
+enum nri_status raminit_done(struct sysinfo *ctrl)
 {
 	union mc_init_state_g_reg mc_init_state_g = {
 		.raw = mchbar_read32(MC_INIT_STATE_G),
@@ -399,5 +399,5 @@ enum raminit_status raminit_done(struct sysinfo *ctrl)
 	/* Provide some data for the graphics driver. Yes, it's hardcoded. */
 	mchbar_write32(SSKPD + 0, 0x05a2404f);
 	mchbar_write32(SSKPD + 4, 0x140000a0);
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }

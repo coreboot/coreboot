@@ -161,7 +161,7 @@ static void program_memory_map(const struct memory_map_data *map)
 	gdxcbar_setbits32(MPCOHTRK_GDXC_OCLA_ADDRESS_HI, MPCOHTRK_GDXC_OCLA_ADDRESS_HI_LOCK);
 }
 
-enum raminit_status configure_memory_map(struct sysinfo *ctrl)
+enum nri_status configure_memory_map(struct sysinfo *ctrl)
 {
 	struct memory_map_data memory_map = {
 		.tom            = ctrl->channel_size_mb[0] + ctrl->channel_size_mb[1],

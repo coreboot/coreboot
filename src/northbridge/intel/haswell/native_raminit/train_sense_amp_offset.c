@@ -37,7 +37,7 @@ static void propagate_delay_values(struct sysinfo *ctrl, uint8_t channel)
 	mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
 }
 
-static enum raminit_status train_vref_offset(struct sysinfo *ctrl)
+static enum nri_status train_vref_offset(struct sysinfo *ctrl)
 {
 	const int8_t vref_start = -15;
 	const int8_t vref_stop  = 15;
@@ -127,7 +127,7 @@ static enum raminit_status train_vref_offset(struct sysinfo *ctrl)
 		}
 	}
 	printk(BIOS_DEBUG, "\n\nHi-Lo (XOR):");
-	enum raminit_status status = RAMINIT_STATUS_SUCCESS;
+	enum nri_status status = NRI_STATUS_SUCCESS;
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		if (!does_ch_exist(ctrl, channel))
 			continue;
@@ -141,7 +141,7 @@ static enum raminit_status train_vref_offset(struct sysinfo *ctrl)
 				continue;
 
 			/* Report an error if any bit did not change */
-			status = RAMINIT_STATUS_SAMP_OFFSET_FAILURE;
+			status = NRI_STATUS_SAMP_OFFSET_FAILURE;
 		}
 	}
 	if (status)
@@ -311,10 +311,10 @@ static void train_samp_offset(struct sysinfo *ctrl)
 	printk(BIOS_DEBUG, "\n");
 }
 
-enum raminit_status train_sense_amp_offset(struct sysinfo *ctrl)
+enum nri_status train_sense_amp_offset(struct sysinfo *ctrl)
 {
 	printk(BIOS_DEBUG, "Stage 1: Vref offset training\n");
-	const enum raminit_status status = train_vref_offset(ctrl);
+	const enum nri_status status = train_vref_offset(ctrl);
 
 	printk(BIOS_DEBUG, "Stage 2: Samp offset training\n");
 	train_samp_offset(ctrl);

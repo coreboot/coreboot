@@ -61,14 +61,14 @@ static int16_t get_pi_offset(const int8_t b_off, const int8_t tgt_off, const int
 	return (b_off - tgt_off) * 128 + g_off;
 }
 
-static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t rank)
+static enum nri_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t rank)
 {
 	uint8_t chanmask = 0;
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++)
 		chanmask |= select_reut_ranks(ctrl, channel, BIT(rank));
 
 	if (!chanmask)
-		return RAMINIT_STATUS_SUCCESS;
+		return NRI_STATUS_SUCCESS;
 
 	printk(BIOS_DEBUG, "Rank %u\n", rank);
 	printk(JWLC_PLOT, "Channel");
@@ -181,7 +181,7 @@ static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t 
 			}
 			printk(BIOS_ERR, "\n");
 		}
-		return RAMINIT_STATUS_JWRL_FAILURE;
+		return NRI_STATUS_JWRL_FAILURE;
 	}
 
 	/* Avoid the edges of the PI range so that it doesn't saturate when margining */
@@ -231,7 +231,7 @@ static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t 
 
 		if (!all_good) {
 			printk(BIOS_ERR, "JWLC: Target offset refining failed\n");
-			return RAMINIT_STATUS_JWRL_FAILURE;
+			return NRI_STATUS_JWRL_FAILURE;
 		}
 		printk(BIOS_DEBUG, "C%u.R%u:  Offset\tFinalEdge\n", channel, rank);
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
@@ -252,10 +252,10 @@ static enum raminit_status wl_clean_up_rank(struct sysinfo *ctrl, const uint8_t 
 	}
 	printk(BIOS_DEBUG, "\n");
 
-	return RAMINIT_STATUS_SUCCESS;
+	return NRI_STATUS_SUCCESS;
 }
 
-static enum raminit_status train_jedec_write_leveling_cleanup(struct sysinfo *ctrl)
+static enum nri_status train_jedec_write_leveling_cleanup(struct sysinfo *ctrl)
 {
 	const struct reut_box reut_addr = {
 		.col = {
@@ -297,7 +297,7 @@ static enum raminit_status train_jedec_write_leveling_cleanup(struct sysinfo *ct
 
 		mchbar_write32(REUT_ch_PAT_WDB_CL_MUX_CFG(channel), reut_wdb_cl_mux_cfg.raw);
 	}
-	enum raminit_status status = RAMINIT_STATUS_SUCCESS;
+	enum nri_status status = NRI_STATUS_SUCCESS;
 	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
 		status = wl_clean_up_rank(ctrl, rank);
 		if (status)
@@ -314,22 +314,22 @@ static enum raminit_status train_jedec_write_leveling_cleanup(struct sysinfo *ct
 	return status;
 }
 
-static enum raminit_status verify_wl_width(const int32_t lwidth)
+static enum nri_status verify_wl_width(const int32_t lwidth)
 {
 	if (lwidth <= 32) {
 		/* Check if width is valid */
 		printk(BIOS_ERR, "WrLevel: Width region (%d) too small\n", lwidth);
-		return RAMINIT_STATUS_JWRL_FAILURE;
+		return NRI_STATUS_JWRL_FAILURE;
 	}
 	if (lwidth >= 96) {
 		/* Since we're calibrating a phase, a too large region is a problem */
 		printk(BIOS_ERR, "WrLevel: Width region (%d) too large\n", lwidth);
-		return RAMINIT_STATUS_JWRL_FAILURE;
+		return NRI_STATUS_JWRL_FAILURE;
 	}
 	return 0;
 }
 
-enum raminit_status train_jedec_write_leveling(struct sysinfo *ctrl)
+enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 {
 	/*
 	 * Enabling WL mode causes DQS to toggle for 1024 QCLK.
@@ -377,7 +377,7 @@ enum raminit_status train_jedec_write_leveling(struct sysinfo *ctrl)
 	if (!ctrl->lpddr)
 		ddr3_program_mr1(ctrl, 0, 1);
 
-	enum raminit_status status = RAMINIT_STATUS_SUCCESS;
+	enum nri_status status = NRI_STATUS_SUCCESS;
 	struct phase_train_data region_data[NUM_CHANNELS][NUM_LANES] = { 0 };
 	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
 		if (!does_rank_exist(ctrl, rank))

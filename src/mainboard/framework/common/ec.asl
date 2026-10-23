@@ -7,6 +7,7 @@ Scope (\_SB.PCI0.LPCB)
 	#include <ec/google/chromeec/acpi/ec.asl>
 }
 
+#ifdef EC_FRAMEWORK_ACPI_SHARED_MEM_IO
 /*
  * Clear ACPI driver ready before entering suspend, same as the vendor
  * firmware, so the EC returns to preOS mode across the power transition.
@@ -28,3 +29,4 @@ Method (\_SB.MWAK, 1, Serialized)
 		\_SB.PCI0.LPCB.EC0.ADRD = 1
 	}
 }
+#endif

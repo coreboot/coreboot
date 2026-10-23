@@ -69,7 +69,9 @@ static void update_sdll_length(struct sysinfo *ctrl)
 
 static void set_rx_clk_stg_num(struct sysinfo *ctrl, const uint8_t channel)
 {
-	const uint8_t rcven_drift = ctrl->lpddr ? DIV_ROUND_UP(tDQSCK_DRIFT, ctrl->qclkps) : 1;
+	const union ddr_data_control_0_reg ddr_data_control_0 = {
+		.raw = ctrl->dq_control_0[channel],
+	};
 	uint8_t max_rcven = 0;
 	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
 		if (!rank_in_ch(ctrl, rank, channel))
@@ -78,15 +80,17 @@ static void set_rx_clk_stg_num(struct sysinfo *ctrl, const uint8_t channel)
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
 			max_rcven = MAX(max_rcven, ctrl->rcven[channel][rank][byte] / 64);
 	}
-	const union ddr_data_control_1_reg ddr_data_control_1 = {
-		.raw = ctrl->dq_control_1[channel][0],
-	};
-	const bool lpddr_long_odt = ddr_data_control_1.lpddr_long_odt_en;
-	const uint8_t rcven_turnoff = max_rcven + 18 + 2 * rcven_drift + lpddr_long_odt;
-	const union ddr_data_control_0_reg ddr_data_control_0 = {
-		.raw = ctrl->dq_control_0[channel],
-	};
+	const uint8_t rcven_drift = ctrl->lpddr ? DIV_ROUND_UP(tDQSCK_DRIFT, ctrl->qclkps) : 1;
+	const uint8_t tmp = (5 - 6) + 1 + 7 + 3 + 3 + 2;
+	uint8_t rcven_turnoff = max_rcven + tmp + 2 * rcven_drift;
 	for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
+		const union ddr_data_control_1_reg ddr_data_control_1 = {
+			.raw = ctrl->dq_control_1[channel][byte],
+		};
+		if (ddr_data_control_1.lpddr_long_odt_en) {
+			/* Stagger byte turn-off */
+			rcven_turnoff++;
+		}
 		union ddr_data_control_2_reg ddr_data_control_2 = {
 			.raw = ctrl->dq_control_2[channel][byte],
 		};

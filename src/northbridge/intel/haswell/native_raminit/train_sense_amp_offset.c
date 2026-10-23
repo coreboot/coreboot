@@ -20,7 +20,7 @@ struct vref_train_data {
 	uint8_t low_mask;
 };
 
-static void propagate_delay_values(struct sysinfo *ctrl, uint8_t channel)
+static void run_sense_amp_test(struct sysinfo *ctrl, uint8_t channel)
 {
 	/* Propagate delay values (without a read command) */
 	union ddr_data_control_0_reg data_control_0 = {
@@ -93,7 +93,7 @@ static enum nri_status train_vref_offset(struct sysinfo *ctrl)
 			if (!does_ch_exist(ctrl, channel))
 				continue;
 
-			propagate_delay_values(ctrl, channel);
+			run_sense_amp_test(ctrl, channel);
 			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 				const uint8_t feedback = get_data_train_feedback(channel, byte);
 				struct vref_train_data *curr_data = &vref_data[channel][byte];
@@ -108,7 +108,7 @@ static enum nri_status train_vref_offset(struct sysinfo *ctrl)
 			if (!does_ch_exist(ctrl, channel))
 				continue;
 
-			propagate_delay_values(ctrl, channel);
+			run_sense_amp_test(ctrl, channel);
 			printk(VREF_OFFSET_PLOT, "\t");
 			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 				const uint8_t feedback = get_data_train_feedback(channel, byte);
@@ -256,17 +256,7 @@ static void train_samp_offset(struct sysinfo *ctrl)
 							data_control_2.raw);
 				}
 			}
-			/* Propagate delay values (without a read command) */
-			union ddr_data_control_0_reg data_control_0 = {
-				.raw = ctrl->dq_control_0[channel],
-			};
-			data_control_0.read_rf_rd      = 1;
-			data_control_0.read_rf_wr      = 0;
-			data_control_0.read_rf_rank    = 0;
-			data_control_0.force_odt_on    = 1;
-			data_control_0.samp_train_mode = 1;
-			mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
-			udelay(1);
+			run_sense_amp_test(ctrl, channel);
 			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 				const uint32_t feedback =
 					get_data_train_feedback(channel, byte);
@@ -285,8 +275,6 @@ static void train_samp_offset(struct sysinfo *ctrl)
 				printk(SAMP_OFFSET_PLOT, " ");
 			}
 			printk(SAMP_OFFSET_PLOT, PLOT_CH_SPACE);
-			data_control_0.samp_train_mode = 0;
-			mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
 		}
 		printk(SAMP_OFFSET_PLOT, "\n");
 	}

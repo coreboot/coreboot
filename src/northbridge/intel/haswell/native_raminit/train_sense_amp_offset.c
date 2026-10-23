@@ -185,8 +185,7 @@ static enum nri_status train_vref_offset(struct sysinfo *ctrl)
 
 /**
  * LPDDR has an additional bit for DQS per each byte.
- *
- * TODO: The DQS value must be written into Data Control 2.
+ * The DQS value must be written into Data Control 2.
  */
 #define NUM_OFFSET_TRAIN_BITS	(NUM_BITS + 1)
 
@@ -199,7 +198,8 @@ struct samp_train_data {
 
 static void train_samp_offset(struct sysinfo *ctrl)
 {
-	const uint8_t max_train_bits = ctrl->lpddr ? NUM_OFFSET_TRAIN_BITS : NUM_BITS;
+	const bool train_dqs = ctrl->lpddr;
+	const uint8_t max_train_bits = train_dqs ? NUM_OFFSET_TRAIN_BITS : NUM_BITS;
 
 	struct samp_train_data samp_data[NUM_CHANNELS][NUM_LANES][NUM_OFFSET_TRAIN_BITS] = {0};
 
@@ -210,7 +210,7 @@ static void train_samp_offset(struct sysinfo *ctrl)
 
 		printk(BIOS_DEBUG, "%u ", channel); /* Same length as PLOT_CH_SPACE */
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
-			printk(BIOS_DEBUG, "        %s ", ctrl->lpddr ? " " : "");
+			printk(BIOS_DEBUG, "        %s ", train_dqs ? " " : "");
 	}
 	printk(BIOS_DEBUG, "\nByte    ");
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
@@ -218,14 +218,14 @@ static void train_samp_offset(struct sysinfo *ctrl)
 			continue;
 
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
-			printk(BIOS_DEBUG, "%u       %s ", byte, ctrl->lpddr ? " " : "");
+			printk(BIOS_DEBUG, "%u       %s ", byte, train_dqs ? " " : "");
 
 		printk(BIOS_DEBUG, PLOT_CH_SPACE);
 	}
 	printk(SAMP_OFFSET_PLOT, "\nBits    ");
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
-			printk(SAMP_OFFSET_PLOT, "01234567%s ", ctrl->lpddr ? "S" : "");
+			printk(SAMP_OFFSET_PLOT, "01234567%s ", train_dqs ? "S" : "");
 
 		printk(SAMP_OFFSET_PLOT, PLOT_CH_SPACE);
 	}
@@ -242,6 +242,20 @@ static void train_samp_offset(struct sysinfo *ctrl)
 			if (!does_ch_exist(ctrl, channel))
 				continue;
 
+			/* Program DQS offset into Data Control 2 */
+			if (train_dqs) {
+				for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
+					union ddr_data_control_2_reg data_control_2 = {
+						.raw = ctrl->dq_control_2[channel][byte],
+					};
+					data_control_2.rx_dqs_amp_offset = samp_offset;
+					data_control_2.force_bias_on     = 1;
+					data_control_2.force_rx_on       = 1;
+					data_control_2.leaker_comp       = 0;
+					mchbar_write32(DQ_CONTROL_2(channel, byte),
+							data_control_2.raw);
+				}
+			}
 			/* Propagate delay values (without a read command) */
 			union ddr_data_control_0_reg data_control_0 = {
 				.raw = ctrl->dq_control_0[channel],
@@ -298,9 +312,25 @@ static void train_samp_offset(struct sysinfo *ctrl)
 				if (curr_data->last_one == 0)
 					vref = 0;
 
+				printk(BIOS_DEBUG, "%x", vref);
+				if (bit == 8) {
+					/* DQS sense amp offset goes elsewhere */
+					union ddr_data_control_2_reg data_control_2 = {
+						.raw = ctrl->dq_control_2[channel][byte],
+					};
+					/*
+					 * To better suppress DQS reflections before the
+					 * read preamble on LPDDR3, add 8 to centre value.
+					 */
+					if (ctrl->lpddr)
+						vref = MIN(vref + 8, 0xf);
+
+					data_control_2.rx_dqs_amp_offset = vref;
+					ctrl->dq_control_2[channel][byte] = data_control_2.raw;
+					continue;
+				}
 				ctrl->rxdqvrefpb[channel][0][byte][bit].center = vref;
 				rx_offset_vdq += vref & 0xf << (4 * bit);
-				printk(BIOS_DEBUG, "%x", vref);
 			}
 			mchbar_write32(RX_OFFSET_VDQ(channel, byte), rx_offset_vdq);
 			printk(BIOS_DEBUG, " ");

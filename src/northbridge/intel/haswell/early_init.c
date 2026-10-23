@@ -40,6 +40,10 @@ static void haswell_setup_igd(void)
 	bool igd_enabled;
 	u16 ggc;
 
+	/* TODO: Update for BDW? Does this even work? MRC/NRI overwrites the value */
+	if (cpu_is_broadwell())
+		return;
+
 	printk(BIOS_DEBUG, "Initializing IGD...\n");
 
 	igd_enabled = !!(pci_read_config32(HOST_BRIDGE, DEVEN) & DEVEN_D2EN);
@@ -72,9 +76,11 @@ static void haswell_setup_misc(void)
 	reg32 |= (1 << 9) | (1 << 10);
 	mchbar_write32(SAPMCTL, reg32);
 
-	reg32 = mchbar_read32(INTRDIRCTL);
-	reg32 |= (1 << 4) | (1 << 5);
-	mchbar_write32(INTRDIRCTL, reg32);
+	if (cpu_is_haswell()) {
+		reg32 = mchbar_read32(INTRDIRCTL);
+		reg32 |= (1 << 4) | (1 << 5);
+		mchbar_write32(INTRDIRCTL, reg32);
+	}
 }
 
 static void northbridge_setup_iommu(void)

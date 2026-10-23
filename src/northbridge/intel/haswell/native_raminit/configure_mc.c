@@ -143,12 +143,13 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 			.rcven = 64,
 			.dqs_p = 32,
 			.dqs_n = 32,
+			.rx_eq = ctrl->bdw ? 7 : 1,
 		};
 		mchbar_write32(DDR_DATA_RX_TRAIN_RANK(rank), rx_train.raw);
 		mchbar_write32(DDR_DATA_RX_PER_BIT_RANK(rank), 0);
 
 		const union ddr_data_tx_train_rank_reg tx_train = {
-			.tx_eq     = TXEQFULLDRV | 11,
+			.tx_eq     = ctrl->bdw ? 0x2c : TXEQFULLDRV | 11,
 			.dq_delay  = 96,
 			.dqs_delay = 64,
 		};
@@ -185,7 +186,7 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 
 	const union ddr_data_control_1_reg data_control_1 = {
 		.dll_mask             = 1,
-		.rx_bias_ctl          = get_rx_bias(ctrl),
+		.rx_bias_ctl          = ctrl->bdw ? 4 : get_rx_bias(ctrl), /// TODO: Why?
 		.odt_delay            = -2,
 		.odt_duration         = 7,
 		.sense_amp_delay      = -2,
@@ -206,10 +207,17 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 		union ddr_data_control_2_reg data_control_2 = {
 			.raw = 0,
 		};
-		if (is_ult) {
+		if (ctrl->bdw || is_ult) {
 			data_control_2.rx_dqs_amp_offset = 8;
 			data_control_2.rx_clk_stg_num    = 0x1f;
 			data_control_2.leaker_comp       = ctrl->lpddr ? 3 : 0;
+		}
+		if (ctrl->bdw) {
+			data_control_2.en_vtt_odt        = !1; /* FIXME: What does it do? */
+			data_control_2.tx_eq_dis         = !1;
+			data_control_2.cben              = 3;
+			data_control_2.tx_deskew_disable = 1;
+			data_control_2.rx_deskew_disable = 1;
 		}
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 			const uint8_t stg = latency * byte_stagger[byte] / ctrl->lanes;
@@ -225,17 +233,21 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 
 static void program_vsshi_control(struct sysinfo *ctrl, const uint16_t vsshi_mv)
 {
-	const uint32_t vsshi_control_reg = is_hsw_ult() ? 0x366c : 0x306c;
+	/* TODO: sample_divider Stepping check for BDW (ULT > 2, Trad > 0) */
+	/* TODO: Double check bitfield definitions because they do not seem right */
 	const union ddr_comp_vsshi_control_reg ddr_vsshi_control = {
 		.vsshi_target    = (vsshi_mv * 192) / ctrl->vdd_mv - 20,
 		.hi_bw_divider   = 1,
 		.lo_bw_divider   = 1,
-		.bw_error        = 2,
+		.sample_divider  = ctrl->bdw ? 4 : 0, /// TODO: Stepping check
+		.bw_error        = ctrl->bdw ? 1 : 2,
 		.panic_driver_en = 1,
 		.panic_voltage   = 24 / 8, /* Voltage in 8mV steps */
 		.gain_boost      = 1,
 	};
-	mchbar_write32(vsshi_control_reg, ddr_vsshi_control.raw);
+
+	const uint16_t vsshi_ctl = ctrl->bdw ? 0x3678 : (is_hsw_ult() ? 0x366c : 0x306c);
+	mchbar_write32(vsshi_ctl, ddr_vsshi_control.raw);
 	mchbar_write32(DDR_COMP_VSSHI_CONTROL, ddr_vsshi_control.raw);
 }
 
@@ -267,7 +279,7 @@ static void program_dimm_vref(struct sysinfo *ctrl, const uint16_t vccio_mv, con
 	/* Static values for ULT */
 	uint8_t vt_slope_a = 4;
 	uint8_t vt_slope_b = 0;
-	if (!is_ult) {
+	if (!is_ult || ctrl->bdw) {
 		/* On non-ULT, compute best slope code */
 		const uint16_t vt_slope = 1500 * vccio_mv / ctrl->vdd_mv - 1000;
 		calc_vt_slope_code(vt_slope, &vt_slope_a, &vt_slope_b);
@@ -282,7 +294,12 @@ static void program_dimm_vref(struct sysinfo *ctrl, const uint16_t vccio_mv, con
 		.vt_slope_a     = vt_slope_a,
 		.vt_offset      = 0,
 	};
-	mchbar_write32(is_ult ? 0xf68 : 0xf6c, ddr_vref_control.raw); /* Use CH1 byte 7 */
+	const uint16_t vref_ctrl_offset = ctrl->bdw ? 0xf74 : (is_ult ? 0xf68 : 0xf6c);
+	mchbar_write32(vref_ctrl_offset, ddr_vref_control.raw); /* Use CH1 byte 7 */
+
+	/** TODO: Figure out why this is hardcoded **/
+	if (ctrl->bdw)
+		mchbar_write32(vref_ctrl_offset, 0x5f05351c);
 
 	const union ddr_data_vref_adjust_reg ddr_vref_adjust = {
 		.en_dimm_vref_ca  = 1,
@@ -336,7 +353,7 @@ static void program_ddr_ca(struct sysinfo *ctrl, const bool vddhi)
 			.lpddr_mode     = ctrl->lpddr,
 			.ctl_tx_eq      = 1,
 			.ctl_sr_drv     = 2,
-			.la_drv_en_ovrd = 1,	/* Must be set on ULT */
+			.la_drv_en_ovrd = !ctrl->bdw,	/* Must be set on HSW ULT */
 		};
 		mchbar_write32(DDR_CTL_ch_CTL_CONTROLS(channel), ddr_ctl_controls.raw);
 
@@ -396,7 +413,13 @@ static void program_ddr_ca(struct sysinfo *ctrl, const bool vddhi)
 		mchbar_write32(DDR_CMD_ch_COMP_OFFSET(channel), 0);
 		mchbar_write32(DDR_CLK_ch_COMP_OFFSET(channel), 0);
 		mchbar_write32(DDR_CKE_CTL_ch_CTL_COMP_OFFSET(channel), 0);
+		if (ctrl->bdw)
+			mchbar_write32(DDR_CKE_ch_CMD_COMP_OFFSET(channel), 0);
 	}
+
+	/** TODO: Figure me out (DDRDATA - DLL PI Test And ADC) **/
+	if (ctrl->bdw)
+		mchbar_write32(0x3664, 0xc0000000);
 }
 
 enum {
@@ -526,6 +549,7 @@ static void program_slew_rates(struct sysinfo *ctrl, const bool vddhi)
 		.ctl_scomp      = comp_slew_rate_codes[SCOMP_CTL],
 		.clk_scomp      = comp_slew_rate_codes[SCOMP_CLK],
 		.vccddq_hi      = vddhi,
+		.dis_quick_comp = ctrl->bdw,
 	};
 	ctrl->comp_ctl_1 = ddr_comp_ctl_1;
 	mchbar_write32(DDR_COMP_CTL_1, ctrl->comp_ctl_1.raw);
@@ -556,9 +580,33 @@ static uint32_t compute_vsshi_vref(struct sysinfo *ctrl, const uint32_t vsshi_tg
 
 static void program_vsshi(struct sysinfo *ctrl, const uint16_t vccio_mv, const uint16_t vsshi)
 {
+	if (ctrl->bdw) {
+		const uint32_t c_die_vsshi_times_delta = 45000;
+		/* Target current: pF * mV / ps -> mA */
+		const uint32_t i_target = c_die_vsshi_times_delta / ctrl->qclkps;
+
+		/* Compensated to this current */
+		const uint32_t rcmdref_vsshi = 100;
+		uint32_t i_comp_up = vsshi / rcmdref_vsshi;
+		uint32_t i_comp_dn = (vccio_mv - vsshi) / rcmdref_vsshi;
+		if (ctrl->vdd_mv > 1350)
+			i_comp_up /= 2;
+
+		const union ddr_comp_vsshi_reg_bdw ddr_comp_vsshi = {
+			.panic_drv_up_vref  = (vsshi * 192) / ctrl->vdd_mv - 20,
+			.vt_offset          = 0x1f,
+			.vt_slope_a         = 4,
+			.vt_slope_b         = 2,
+			.panic_comp_up_mult = i_target / i_comp_up,
+			.panic_comp_dn_mult = i_target / i_comp_dn,
+		};
+		mchbar_write32(DDR_COMP_VSSHI, ddr_comp_vsshi.raw);
+		return;
+	}
+
 	const uint16_t vsshi_down = vsshi + 24; /* Panic threshold of 24 mV */
 	const uint16_t vsshi_up = vccio_mv - vsshi_down;
-	const union ddr_comp_vsshi_reg ddr_comp_vsshi = {
+	const union ddr_comp_vsshi_reg_hsw ddr_comp_vsshi = {
 		.panic_drv_down_vref = compute_vsshi_vref(ctrl, vsshi_down, false),
 		.panic_drv_up_vref   = compute_vsshi_vref(ctrl, vsshi_up, true),
 		.vt_offset           = 128 * 450 / vccio_mv / 2,
@@ -596,14 +644,16 @@ static void program_ls_comp(struct sysinfo *ctrl)
 
 	/* Override level shifter compensation */
 	const uint32_t ls_comp = 2;
-	override_comp(ls_comp, 3, 28, DDR_DATA_RCOMP_DATA_1);
-	override_comp(ls_comp, 3, 24, DDR_CMD_COMP);
-	override_comp(ls_comp, 3, 24, DDR_CKE_CTL_COMP);
-	override_comp(ls_comp, 3, 23, DDR_CLK_COMP);
-	override_comp(ls_comp, 3, 28, DDR_DATA_COMP_1);
-	override_comp(ls_comp, 3, 24, DDR_COMP_CMD_COMP);
-	override_comp(ls_comp, 4, 24, DDR_COMP_CTL_COMP);
-	override_comp(ls_comp, 4, 23, DDR_COMP_CLK_COMP);
+	if (!ctrl->bdw) {
+		override_comp(ls_comp, 3, 28, DDR_DATA_RCOMP_DATA_1);
+		override_comp(ls_comp, 3, 24, DDR_CMD_COMP);
+		override_comp(ls_comp, 3, 24, DDR_CKE_CTL_COMP);
+		override_comp(ls_comp, 3, 23, DDR_CLK_COMP);
+		override_comp(ls_comp, 3, 28, DDR_DATA_COMP_1);
+		override_comp(ls_comp, 3, 24, DDR_COMP_CMD_COMP);
+		override_comp(ls_comp, 4, 24, DDR_COMP_CTL_COMP);
+		override_comp(ls_comp, 4, 23, DDR_COMP_CLK_COMP);
+	}
 	override_comp(ls_comp, 3, 24, DDR_COMP_OVERRIDE);
 
 	/* Manually update the COMP values */
@@ -619,6 +669,84 @@ static void program_ls_comp(struct sysinfo *ctrl)
 	ctrl->comp_ctl_0.odt_up_down_off  = odt_offset;
 	ctrl->comp_ctl_0.fixed_odt_offset = 1;
 	mchbar_write32(DDR_COMP_CTL_0, ctrl->comp_ctl_0.raw);
+
+	/** TODO: Check if we need to save/restore these **/
+	if (ctrl->bdw) {
+		mchbar_write32(0x3664, 1 << 31);
+		mchbar_write32(0x3824, 1 << 25);
+		mchbar_write32(0x3914, 1 << 25);
+		mchbar_write32(0x3724, 1 << 25);
+		mchbar_write32(0x3688, 0);
+	}
+	if (ctrl->bdw) {
+		/** FIXME: This checks for BDW ULT **/
+		bool no_interleave = is_hsw_ult() && !ctrl->dq_pins_interleaved;
+
+#define REG_UPDATE(reg, mask, data, shift)	\
+	((reg) = ((reg) & ~((mask) << (shift))) | (((data) & (mask)) << (shift)))
+
+		/* VTT Top */
+		uint32_t vtt_gen_control = 0xc0;
+		uint32_t view_ofst_sel = 0;
+		do {
+			REG_UPDATE(vtt_gen_control, 0x7, view_ofst_sel, 13);
+			mchbar_write32(0xd8c, vtt_gen_control);
+			if (no_interleave) {
+				mchbar_write32(0xc8c, vtt_gen_control);
+			} else {
+				mchbar_write32(0x58c, vtt_gen_control);
+			}
+			view_ofst_sel++;
+		} while (view_ofst_sel != 6);
+
+		/* VTT Bottom */
+		vtt_gen_control = 0x80;
+		view_ofst_sel = 0;
+		do {
+			REG_UPDATE(vtt_gen_control, 0x7, view_ofst_sel, 13);
+			if (no_interleave) {
+				mchbar_write32(0x58c, vtt_gen_control);
+				mchbar_write32(0x48c, vtt_gen_control);
+			} else {
+				mchbar_write32(0x98c, vtt_gen_control);
+				mchbar_write32(0x18c, vtt_gen_control);
+			}
+			view_ofst_sel++;
+		} while (view_ofst_sel != 6);
+
+		/* VTT Middle */
+		vtt_gen_control = 0x40;
+		view_ofst_sel = 0;
+		do {
+			REG_UPDATE(vtt_gen_control, 0x7, view_ofst_sel, 13);
+			if (no_interleave) {
+				mchbar_write32(0x78c, vtt_gen_control);
+				mchbar_write32(0x68c, vtt_gen_control);
+			} else {
+				mchbar_write32(0xb8c, vtt_gen_control);
+				mchbar_write32(0x38c, vtt_gen_control);
+			}
+			view_ofst_sel++;
+		} while (view_ofst_sel != 6);
+
+		/* VSSHI programming */
+		vtt_gen_control = 0;
+
+		/* VttCompForVsshi */
+		if (0)
+			vtt_gen_control |= 1 << 16;
+
+		if (no_interleave) {
+			mchbar_write32(0x38c, vtt_gen_control);
+			mchbar_write32(0x88c, vtt_gen_control);
+		} else {
+			mchbar_write32(0xa8c, vtt_gen_control);
+			mchbar_write32(0x48c, vtt_gen_control);
+		}
+
+		/* VssHi COMP CTL */
+		mchbar_write32(0x3920, vtt_gen_control);
+	}
 }
 
 static void enable_2x_refresh(struct sysinfo *ctrl)
@@ -724,6 +852,7 @@ static void program_scheduler(struct sysinfo *ctrl)
 			mchbar_write32(COMMAND_RATE_LIMIT_ch(channel), cmd_rate_limit.raw);
 		}
 	}
+	/** TODO: Broadwell writes a 64-bit register at 0x5028 here **/
 }
 
 static uint8_t biggest_channel(const struct sysinfo *const ctrl)
@@ -740,11 +869,16 @@ static void dram_zones(struct sysinfo *ctrl)
 	 * configured. It is likely MRC assumes channel hash is always
 	 * enabled. Then again, Memory Trace is disabled by default.
 	 */
-	const union channel_hash_reg ch_hash = {
+	union channel_hash_reg ch_hash = {
 		.addr_mask    = 0x30ce,
-		.lsb_mask_bit = 1, /* Pos of least significant bit set in addr_mask */
 		.enable       = 1,
 	};
+	/* Pos of least significant bit set in addr_mask */
+	if (ctrl->bdw)
+		ch_hash.lsb_mask_bit_bdw = 1;
+	else
+		ch_hash.lsb_mask_bit_hsw = 1;
+
 	mchbar_write32(CHANNEL_HASH, ch_hash.raw);
 
 	const uint8_t biggest = biggest_channel(ctrl);
@@ -760,10 +894,13 @@ static void dram_zones(struct sysinfo *ctrl)
 	mchbar_write32(MAD_CHNL, mad_channel.raw);
 
 	const uint8_t channel_b_zone_size = ctrl->channel_size_mb[smaller] / 256;
-	const union mad_zr_reg mad_zr = {
-		.ch_b_double = channel_b_zone_size * 2,
-		.ch_b_single = channel_b_zone_size,
-	};
+	union mad_zr_reg mad_zr = {};
+	if (ctrl->bdw) {
+		mad_zr.ch_b_single_bdw = channel_b_zone_size;
+	} else {
+		mad_zr.ch_b_double_hsw = channel_b_zone_size * 2;
+		mad_zr.ch_b_single_hsw = channel_b_zone_size;
+	}
 	mchbar_write32(MAD_ZR, mad_zr.raw);
 }
 

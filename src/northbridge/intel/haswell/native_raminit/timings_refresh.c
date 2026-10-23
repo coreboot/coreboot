@@ -157,9 +157,10 @@ static union tc_bank_rank_d_reg make_tc_bankrank_d(struct sysinfo *ctrl, uint8_t
 
 static uint32_t make_tc_zqcal(const struct sysinfo *const ctrl)
 {
+	const uint8_t shift = (is_hsw_ult() || ctrl->bdw) ? 10 : 8;
 	const uint32_t zqcs_period = ctrl->lpddr ? ZQCS_PERIOD_LPDDR3 : ZQCS_PERIOD_DDR3;
 	const uint32_t tZQCS = get_tZQCS(ctrl->mem_clock_mhz, ctrl->lpddr);
-	return tZQCS << (is_hsw_ult() ? 10 : 8) | zqcs_period;
+	return tZQCS << shift | zqcs_period;
 }
 
 static union tc_rftp_reg make_tc_rftp(const struct sysinfo *const ctrl)
@@ -177,12 +178,19 @@ static union tc_rftp_reg make_tc_rftp(const struct sysinfo *const ctrl)
 
 static union tc_srftp_reg make_tc_srftp(const struct sysinfo *const ctrl)
 {
-	return (union tc_srftp_reg) {
+	union tc_srftp_reg tc_srftp = {
 		.tXSDLL     = tDLLK,
 		.tXS_offset = get_tXS_offset(ctrl->mem_clock_mhz),
 		.tZQOPER    = get_tZQOPER(ctrl->mem_clock_mhz, ctrl->lpddr),
-		.tMOD       = get_tMOD(ctrl->mem_clock_mhz) - 8,
 	};
+
+	const uint32_t tMOD = get_tMOD(ctrl->mem_clock_mhz) - 8;
+	if (ctrl->bdw)
+		tc_srftp.tMOD_bdw = MIN(tMOD, 31);
+	else
+		tc_srftp.tMOD_hsw = MIN(tMOD, 15);
+
+	return tc_srftp;
 }
 
 void configure_timings(struct sysinfo *ctrl)

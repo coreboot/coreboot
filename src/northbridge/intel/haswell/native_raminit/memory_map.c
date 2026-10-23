@@ -56,6 +56,7 @@ struct memory_map_data {
 	uint32_t gtt_base;
 	uint32_t tseg_base;
 	bool reclaim_possible;
+	bool is_broadwell;
 };
 
 static void compute_memory_map(struct memory_map_data *map)
@@ -146,8 +147,13 @@ static void program_memory_map(const struct memory_map_data *map)
 	pci_write_config32(HOST_BRIDGE, DPR, dpr_reg);
 
 	const uint16_t gfx_stolen_size = GGC_IGD_MEM_IN_32MB_UNITS(map->gms_size / 32);
-	const uint16_t ggc = map->gtt_size << 8 | gfx_stolen_size;
-	pci_write_config16(HOST_BRIDGE, GGC, ggc);
+	if (map->is_broadwell) {
+		const uint16_t ggc = (map->gtt_size / 2) << 6 | gfx_stolen_size << 5;
+		pci_write_config16(HOST_BRIDGE, GGC, ggc);
+	} else {
+		const uint16_t ggc = map->gtt_size << 8 | gfx_stolen_size;
+		pci_write_config16(HOST_BRIDGE, GGC, ggc);
+	}
 
 	/** TODO: Do not hardcode these? GDXC has weird alignment requirements, though. **/
 	gdxcbar_write32(MPCOHTRK_GDXC_MOT_ADDRESS_LO, 0);
@@ -168,6 +174,7 @@ enum nri_status configure_memory_map(struct sysinfo *ctrl)
 		.dpr_size       = CONFIG_INTEL_TXT_DPR_SIZE,
 		.tseg_size      = CONFIG_SMM_TSEG_SIZE >> 20,
 		.me_stolen_size = intel_early_me_uma_size(),
+		.is_broadwell   = ctrl->bdw,
 	};
 	/** FIXME: MRC hardcodes iGPU parameters, but we should not **/
 	const bool igpu_on = pci_read_config32(HOST_BRIDGE, DEVEN) & DEVEN_D2EN;

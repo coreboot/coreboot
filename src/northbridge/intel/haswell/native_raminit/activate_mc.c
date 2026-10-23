@@ -222,6 +222,9 @@ enum nri_status activate_mc(struct sysinfo *ctrl)
 			const union ddr_scramble_reg ddr_scramble = {
 				.scram_key = get_random_number(channel),
 				.scram_en  = 1,
+				.clk_gate_ab = ctrl->bdw ? 3 : 0,
+				.clk_gate_c  = ctrl->bdw ? 3 : 0,
+				.en_dbi_ab   = ctrl->bdw,
 			};
 			mchbar_write32(DDR_SCRAMBLE_ch(channel), ddr_scramble.raw);
 		}
@@ -260,9 +263,10 @@ enum nri_status activate_mc(struct sysinfo *ctrl)
 
 	update_sdll_length(ctrl);
 
-	program_burst_end_odt_delay(ctrl);
+	if (!ctrl->bdw)
+		program_burst_end_odt_delay(ctrl);
 
-	if (is_hsw_ult()) {
+	if (is_hsw_ult() || ctrl->bdw) {
 		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 			if (!does_ch_exist(ctrl, channel))
 				continue;
@@ -379,7 +383,7 @@ enum nri_status raminit_done(struct sysinfo *ctrl)
 	printk(BIOS_DEBUG, "DONE!\n");
 
 	/* Provide some data for the graphics driver. Yes, it's hardcoded. */
-	mchbar_write32(SSKPD + 0, 0x05a2404f);
+	mchbar_write32(SSKPD + 0, ctrl->bdw ? 0x0825a32f : 0x05a2404f);
 	mchbar_write32(SSKPD + 4, 0x140000a0);
 	return NRI_STATUS_SUCCESS;
 }

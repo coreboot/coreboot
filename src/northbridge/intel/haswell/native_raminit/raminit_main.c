@@ -172,9 +172,15 @@ static enum generic_stepping get_stepping(void)
 	case CPUID_HASWELL_C0:
 	case CPUID_HASWELL_ULT_C0:
 	case CPUID_CRYSTALWELL_C0:
+	case CPUID_BROADWELL_ULT_C0:
 		return STEPPING_C0;
+	case CPUID_BROADWELL_ULT_D0:
+		return STEPPING_D0;
+	case CPUID_BROADWELL_ULT_E0:
+		return STEPPING_E0;
+	case CPUID_BROADWELL_G0:
+		return STEPPING_E0; /// TODO: Add actual stepping?
 	default:
-		/** TODO: Add Broadwell support someday **/
 		die("Unknown CPUID 0x%x\n", cpuid);
 	}
 }

@@ -330,6 +330,8 @@ enum generic_stepping {
 	STEPPING_A0 = 1,
 	STEPPING_B0 = 2,
 	STEPPING_C0 = 3,
+	STEPPING_D0 = 4,
+	STEPPING_E0 = 5,
 };
 
 struct mrc_data {

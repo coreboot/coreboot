@@ -161,7 +161,10 @@ void program_loop_count(const struct sysinfo *ctrl, const uint8_t channel, const
 {
 	if (ctrl->stepping >= STEPPING_C0) {
 		const uint32_t loopcount = lc_exp >= 32 ? 0 : BIT(lc_exp);
-		mchbar_write32(HSW_REUT_ch_SEQ_LOOP_COUNT(channel), loopcount);
+		if (ctrl->bdw)
+			mchbar_write32(REUT_ch_SEQ_LOOP_COUNT_BDW(channel), loopcount);
+		else
+			mchbar_write32(REUT_ch_SEQ_LOOP_COUNT_HSW(channel), loopcount);
 	} else {
 		const uint8_t loopcount = lc_exp >= 32 ? 0 : lc_exp + 1;
 		union reut_seq_cfg_reg reut_seq_cfg = {

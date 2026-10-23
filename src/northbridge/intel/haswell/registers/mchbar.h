@@ -202,7 +202,8 @@
 
 #define REUT_ch_RANK_LOG_TO_PHYS(ch)		(0x4930 + 4 * (ch)) /* 4 bits per rank */
 
-#define HSW_REUT_ch_SEQ_LOOP_COUNT(ch)		(0x4980 + 4 * (ch)) /* *** only on C0 *** */
+#define REUT_ch_SEQ_LOOP_COUNT_HSW(ch)		(0x4980 + 4 * (ch)) /* *** only on C0 *** */
+#define REUT_ch_SEQ_LOOP_COUNT_BDW(ch)		(0x49a0 + 4 * (ch))
 
 /* MCMAIN broadcast */
 #define MCSCHEDS_CBIT		0x4c20

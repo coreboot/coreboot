@@ -379,7 +379,7 @@ union ddr_data_vref_control_reg {
 	uint32_t raw;
 };
 
-union ddr_comp_vsshi_reg {
+union ddr_comp_vsshi_reg_hsw {
 	struct __packed {
 		uint32_t panic_drv_down_vref : 6; // Bits  5:0
 		uint32_t panic_drv_up_vref   : 6; // Bits 11:6
@@ -387,6 +387,19 @@ union ddr_comp_vsshi_reg {
 		uint32_t vt_slope_a          : 3; // Bits 19:17
 		uint32_t vt_slope_b          : 3; // Bits 22:20
 		uint32_t                     : 9; // Bits 31:23
+	};
+	uint32_t raw;
+};
+
+union ddr_comp_vsshi_reg_bdw {
+	struct __packed {
+		uint32_t panic_drv_up_vref   : 6; // Bits  5:0
+		uint32_t vt_offset           : 5; // Bits 10:6
+		uint32_t vt_slope_a          : 3; // Bits 13:11
+		uint32_t vt_slope_b          : 3; // Bits 16:14
+		uint32_t panic_comp_up_mult  : 7; // Bits 23:17
+		uint32_t panic_comp_dn_mult  : 7; // Bits 30:24
+		uint32_t                     : 1; // Bits 31:31
 	};
 	uint32_t raw;
 };
@@ -991,7 +1004,11 @@ union tc_srftp_reg {
 		uint32_t tXS_offset :  4; // Bits 15:12
 		uint32_t tZQOPER    : 10; // Bits 25:16
 		uint32_t            :  2; // Bits 27:26
-		uint32_t tMOD       :  4; // Bits 31:28
+		uint32_t tMOD_hsw   :  4; // Bits 31:28
+	};
+	struct __packed {
+		uint32_t            : 27; // Bits 26:0
+		uint32_t tMOD_bdw   :  5; // Bits 31:27
 	};
 	uint32_t raw;
 };
@@ -1057,20 +1074,26 @@ union mad_dimm_reg {
 
 union mad_zr_reg {
 	struct __packed {
-		uint32_t             : 16; // Bits 15:0
-		uint32_t ch_b_double :  8; // Bits 23:16
-		uint32_t ch_b_single :  8; // Bits 31:24
+		uint32_t ch_b_single_bdw : 8; // Bits  7:0
+		uint32_t                 : 8; // Bits 15:8
+		uint32_t ch_b_double_hsw : 8; // Bits 23:16
+		uint32_t ch_b_single_hsw : 8; // Bits 31:24
 	};
 	uint32_t raw;
 };
 
 union channel_hash_reg {
 	struct __packed {
-		uint32_t addr_mask    : 14; // Bits 13:0
-		uint32_t              :  7; // Bits 20:14
-		uint32_t lsb_mask_bit :  2; // Bits 22:21
-		uint32_t enable       :  1; // Bits 23:23
-		uint32_t              :  8; // Bits 31:24
+		uint32_t addr_mask        : 14; // Bits 13:0
+		uint32_t                  :  7; // Bits 20:14
+		uint32_t lsb_mask_bit_hsw :  2; // Bits 22:21
+		uint32_t enable           :  1; // Bits 23:23
+		uint32_t                  :  8; // Bits 31:24
+	};
+	struct __packed {
+		uint32_t                  : 20; // Bits 19:0
+		uint32_t lsb_mask_bit_bdw :  3; // Bits 22:20
+		uint32_t                  :  9; // Bits 31:24
 	};
 	uint32_t raw;
 };

@@ -143,10 +143,9 @@ void reut_issue_mrs_all(
 	struct sysinfo *ctrl,
 	const uint8_t channel,
 	const uint8_t mr,
-	const uint16_t val[NUM_SLOTS])
+	const uint16_t val[NUM_SLOTRANKS])
 {
-	const uint16_t valarr[NUM_SLOTRANKS] = { val[0], val[0], val[1], val[1] };
-	reut_write_cadb_cmd(ctrl, channel, 0xf, CADB_CMD_MRS, mr, valarr, 0);
+	reut_write_cadb_cmd(ctrl, channel, 0xf, CADB_CMD_MRS, mr, val, 0);
 }
 
 enum nri_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_t zq_type)

@@ -15,8 +15,11 @@
 
 static void reset_dram_dll(struct sysinfo *ctrl, const uint8_t channel, const uint8_t rank)
 {
-	const uint16_t mr0reg = ctrl->mr0[channel][rank / 2];
-	reut_issue_mrs(ctrl, channel, BIT(rank), 0, mr0reg | MR0_DLL_RESET);
+	union ddr3_mr_0 mr0reg = {
+		.raw = ctrl->mr0[channel][rank],
+	};
+	mr0reg.dll_reset = 1;
+	reut_issue_mrs(ctrl, channel, BIT(rank), 0, mr0reg.raw);
 }
 
 static void program_wdb_pattern(struct sysinfo *ctrl, const bool invert)
@@ -329,6 +332,28 @@ static enum nri_status verify_wl_width(const int32_t lwidth)
 	return 0;
 }
 
+static void ddr3_set_q_off(struct sysinfo *ctrl, bool q_off_enable)
+{
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		if (!does_ch_exist(ctrl, channel))
+			continue;
+
+
+		uint16_t mr1arr[NUM_SLOTRANKS] = {};
+		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
+			if (!rank_in_ch(ctrl, rank, channel))
+				continue;
+
+			union ddr3_mr_1 mr1reg = {
+				.raw = ctrl->mr1[channel][rank],
+			};
+			mr1reg.q_off_enable = q_off_enable;
+			mr1arr[rank] = mr1reg.raw;
+		}
+		reut_issue_mrs_all(ctrl, channel, 1, mr1arr);
+	}
+}
+
 enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 {
 	/*
@@ -345,7 +370,7 @@ enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 
 	/* Do not use cached MR values */
 	const bool save_restore_mrs = ctrl->restore_mrs;
-	ctrl->restore_mrs = 0;
+	ctrl->restore_mrs = false;
 
 	/* Propagate delay values (without a write command) */
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
@@ -372,7 +397,7 @@ enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 		die("%s: Missing LPDDR support\n", __func__);
 
 	if (!ctrl->lpddr)
-		ddr3_program_mr1(ctrl, 0, 1);
+		ddr3_set_q_off(ctrl, true);
 
 	enum nri_status status = NRI_STATUS_SUCCESS;
 	struct phase_train_data region_data[NUM_CHANNELS][NUM_LANES] = { 0 };
@@ -385,23 +410,25 @@ enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 				continue;
 
 			/** TODO: Differs for LPDDR **/
-			uint16_t mr1reg = ctrl->mr1[channel][rank / 2];
-			mr1reg &= ~MR1_QOFF_ENABLE;
-			mr1reg |= MR1_WL_ENABLE;
+			union ddr3_mr_1 mr1reg = {
+				.raw = ctrl->mr1[channel][rank],
+			};
+			mr1reg.q_off_enable     = 0;
+			mr1reg.wr_leveling_mode = 1;
 			if (is_hsw_ult()) {
-				mr1reg &= ~RTTNOM_MASK;
-				mr1reg |= encode_ddr3_rttnom(120);
+				ddr3_update_rtt_nom(&mr1reg.raw, 120);
 			} else if (ctrl->dpc[channel] == 2) {
-				mr1reg &= ~RTTNOM_MASK;
-				mr1reg |= encode_ddr3_rttnom(60);
+				/* RttNom = RttWr for write leveling */
+				ddr3_update_rtt_nom(&mr1reg.raw, 60);
 			}
-			reut_issue_mrs(ctrl, channel, BIT(rank), 1, mr1reg);
+			reut_issue_mrs(ctrl, channel, BIT(rank), 1, mr1reg.raw);
 
 			/* Assert ODT for myself */
 			uint8_t odt_matrix = BIT(rank);
 			if (ctrl->dpc[channel] == 2) {
 				/* Assert ODT for non-target DIMM */
-				const uint8_t other_dimm = ((rank + 2) / 2) & 1;
+				const uint8_t this_dimm = rank / 2;
+				const uint8_t other_dimm = !this_dimm;
 				odt_matrix |= BIT(2 * other_dimm);
 			}
 
@@ -526,8 +553,11 @@ enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 			mchbar_write32(REUT_ch_MISC_ODT_CTRL(channel), 0);
 
 			/** TODO: Differs for LPDDR **/
-			const uint16_t mr1reg = ctrl->mr1[channel][rank / 2] | MR1_QOFF_ENABLE;
-			reut_issue_mrs(ctrl, channel, BIT(rank), 1, mr1reg);
+			union ddr3_mr_1 mr1reg = {
+				.raw = ctrl->mr1[channel][rank],
+			};
+			mr1reg.q_off_enable = 1;
+			reut_issue_mrs(ctrl, channel, BIT(rank), 1, mr1reg.raw);
 
 			printk(BIOS_DEBUG, "\nC%u.R%u:  LftEdge Width\n", channel, rank);
 			const bool rank_x16 = ctrl->dimms[channel][rank / 2].data.width == 16;
@@ -581,7 +611,7 @@ clean_up:
 		}
 	}
 	if (!ctrl->lpddr)
-		ddr3_program_mr1(ctrl, 0, 0);
+		ddr3_set_q_off(ctrl, false);
 
 	ctrl->restore_mrs = save_restore_mrs;
 

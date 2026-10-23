@@ -62,6 +62,69 @@ union pci_capid0_b_reg {
 	uint32_t raw;
 };
 
+union ddr3_mr_0 {
+	struct __packed {
+		uint16_t burst_length     : 2; // Bits  1:0
+		uint16_t cas_latency_msb  : 1; // Bits  2:2
+		uint16_t read_burst_type  : 1; // Bits  3:3
+		uint16_t cas_latency_low  : 3; // Bits  6:4
+		uint16_t test_mode        : 1; // Bits  7:7
+		uint16_t dll_reset        : 1; // Bits  8:8
+		uint16_t write_recovery   : 3; // Bits 11:9
+		uint16_t precharge_pd_dll : 1; // Bits 12:12
+		uint16_t                  : 3; // Bits 15:13
+	};
+	uint16_t raw;
+};
+
+/*
+ * JESD79-3F (JEDEC DDR3 spec) refers to bit 0 of MR1 as 'DLL Enable'.
+ * However, its encoding is weird, and 'DLL Disable' makes more sense.
+ *
+ * Moreover, bit 5 is part of ODIC (Output Driver Impedance Control),
+ * but all encodings where MR1 bit 5 is 1 are reserved. Thus, omit it.
+ */
+union ddr3_mr_1 {
+	struct __packed {
+		uint16_t dll_disable      : 1; // Bits  0:0
+		uint16_t od_impedance_ctl : 1; // Bits  1:1
+		uint16_t odt_rtt_nom_low  : 1; // Bits  2:2
+		uint16_t additive_latency : 2; // Bits  4:3
+		uint16_t                  : 1; // Bits  5:5
+		uint16_t odt_rtt_nom_mid  : 1; // Bits  6:6
+		uint16_t wr_leveling_mode : 1; // Bits  7:7
+		uint16_t                  : 1; // Bits  8:8
+		uint16_t odt_rtt_nom_high : 1; // Bits  9:9
+		uint16_t                  : 1; // Bits 10:10
+		uint16_t t_dqs            : 1; // Bits 11:11
+		uint16_t q_off_enable     : 1; // Bits 12:12
+		uint16_t                  : 3; // Bits 15:13
+	};
+	uint16_t raw;
+};
+
+union ddr3_mr_2 {
+	struct __packed {
+		uint16_t partial_array_sr  : 3; // Bits  0:2
+		uint16_t cas_write_latency : 3; // Bits  5:3
+		uint16_t auto_self_refresh : 1; // Bits  6:6
+		uint16_t self_refresh_temp : 1; // Bits  7:7
+		uint16_t                   : 1; // Bits  8:8
+		uint16_t odt_rtt_wr        : 2; // Bits 10:9
+		uint16_t                   : 5; // Bits 15:11
+	};
+	uint16_t raw;
+};
+
+union ddr3_mr_3 {
+	struct __packed {
+		uint16_t mpr_loc  :  2; // Bits  1:0
+		uint16_t mpr_mode :  1; // Bits  2:2
+		uint16_t          : 13; // Bits 15:3
+	};
+	uint16_t raw;
+};
+
 union ddr_data_rx_train_rank_reg {
 	struct __packed {
 		uint32_t rcven : 9; // Bits  8:0

@@ -29,14 +29,6 @@
 
 #define LOOPCOUNT_INFINITE	0xff
 
-/* DDR3 mode register bits */
-#define MR0_DLL_RESET		BIT(8)
-
-#define MR1_WL_ENABLE		BIT(7)
-#define MR1_QOFF_ENABLE		BIT(12) /* If set, output buffers disabled */
-
-#define RTTNOM_MASK		(BIT(9) | BIT(6) | BIT(2))
-
 /* Margin parameter limits */
 #define MAX_POSSIBLE_TIME	31
 #define MAX_POSSIBLE_VREF	54
@@ -467,14 +459,6 @@ struct sysinfo {
 	uint32_t rt_io_comp[NUM_CHANNELS];
 
 	struct channel_data ch[NUM_CHANNELS];
-	/*
-	uint32_t data_offset_train[NUM_CHANNELS][NUM_LANES];
-	union ddr_data_offset_comp_reg data_offset_comp[NUM_CHANNELS][NUM_LANES];
-
-	uint32_t dq_control_0[NUM_CHANNELS];
-	uint32_t dq_control_1[NUM_CHANNELS][NUM_LANES];
-	uint32_t dq_control_2[NUM_CHANNELS][NUM_LANES];
-	*/
 
 	uint16_t tx_dq[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 	uint16_t txdqs[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
@@ -504,10 +488,10 @@ struct sysinfo {
 	union tc_bank_rank_c_reg tc_bankrank_c[NUM_CHANNELS];
 	union tc_bank_rank_d_reg tc_bankrank_d[NUM_CHANNELS];
 
-	uint16_t mr0[NUM_CHANNELS][NUM_SLOTS];
-	uint16_t mr1[NUM_CHANNELS][NUM_SLOTS];
-	uint16_t mr2[NUM_CHANNELS][NUM_SLOTS];
-	uint16_t mr3[NUM_CHANNELS][NUM_SLOTS];
+	uint16_t mr0[NUM_CHANNELS][NUM_SLOTRANKS];
+	uint16_t mr1[NUM_CHANNELS][NUM_SLOTRANKS];
+	uint16_t mr2[NUM_CHANNELS][NUM_SLOTRANKS];
+	uint16_t mr3[NUM_CHANNELS][NUM_SLOTRANKS];
 
 	uint8_t dq_pat;
 
@@ -677,8 +661,8 @@ enum nri_status io_reset(void);
 enum nri_status wait_for_first_rcomp(void);
 void force_rcomp_and_wait_us(unsigned int usecs);
 
-uint16_t encode_ddr3_rttnom(uint32_t rttnom);
-void ddr3_program_mr1(struct sysinfo *ctrl, uint8_t wl_mode, uint8_t q_off);
+void ddr3_update_rtt_nom(uint16_t *mr1reg, unsigned int rtt_nom);
+void ddr3_update_rtt_wr(uint16_t *mr1reg, unsigned int rtt_wr);
 enum nri_status ddr3_jedec_init(struct sysinfo *ctrl);
 
 void reut_issue_mrs(
@@ -692,7 +676,7 @@ void reut_issue_mrs_all(
 	struct sysinfo *ctrl,
 	uint8_t channel,
 	uint8_t mr,
-	const uint16_t val[NUM_SLOTS]);
+	const uint16_t val[NUM_SLOTRANKS]);
 
 enum nri_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_t zq_type);
 union raw_bitlane_errors get_bitlane_errors(const uint8_t channel);

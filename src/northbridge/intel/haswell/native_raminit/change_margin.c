@@ -609,8 +609,6 @@ static bool is_cpu_comp(const enum opt_param optparam)
 	}
 }
 
-static const uint8_t odt_map[6] = {0, 120, 60, 40, 30, 20};
-
 void update_opt_param_offset(
 	struct sysinfo *ctrl,
 	const uint8_t channel,
@@ -714,59 +712,76 @@ void update_opt_param_offset(
 		}
 	}
 	if (optparam == OptDimmRon) {
-		if (ctrl->lpddr) {
+		if (ctrl->lpddr)
 			die("%s: LPDDR3 support missing\n", __func__);
-		}
+
 		/* DIMM Ron: 240/6, 240/7 Ohms */
-		const uint16_t ron = !!off_in << 1;
+		uint8_t index_ron = off_in;
+		if (index_ron > 1) {
+			printk(BIOS_ERR, "C%u Ron idx %u is too big\n", channel, index_ron);
+			index_ron = 1;
+		}
 		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
-			if (!rank_in_mask(rank, rankmask)) {
+			if (!rank_in_mask(rank, rankmask))
 				continue;
-			}
-			const uint16_t mr1reg = (ctrl->mr1[channel][rank] & ~BIT(1)) | ron;
-			reut_issue_mrs(ctrl, channel, BIT(rank), 1, mr1reg);
-			if (update_ctrl) {
-				ctrl->mr1[channel][rank] = mr1reg;
-			}
+
+			union ddr3_mr_1 mr1reg = {
+				.raw = ctrl->mr1[channel][rank],
+			};
+			mr1reg.od_impedance_ctl = index_ron; /* 1:1 index-to-value mapping */
+			reut_issue_mrs(ctrl, channel, BIT(rank), 1, mr1reg.raw);
+			if (update_ctrl)
+				ctrl->mr1[channel][rank] = mr1reg.raw;
 		}
 	}
 	if (optparam == OptDimmOdt || optparam == OptDimmOdtWr) {
-		if (ctrl->lpddr) {
+		if (ctrl->lpddr)
 			die("%s: LPDDR3 support missing\n", __func__);
+
+		/* Rtt values sorted by power usage, ascending */
+		const uint16_t rtt_wr_map[] = {0, 120, 60};
+		const uint8_t rtt_nom_map[] = {0, 120, 60, 40, 30, 20};
+
+		/* RttWr */
+		uint8_t index_wr = off_in;
+		if (optparam == OptDimmOdt)
+			index_wr >>= 4;
+
+		if (index_wr >= ARRAY_SIZE(rtt_wr_map)) {
+			printk(BIOS_ERR, "C%u RttWr idx %u is too big\n", channel, index_wr);
+			index_wr = ARRAY_SIZE(rtt_wr_map) - 1;
 		}
-		const uint16_t rtt_wr_mrs_encoding[] = { 0, 2, 1 };
-		const uint16_t rtt_wr_mask = BIT(10) | BIT(9);
+
+		/* RttNom */
+		uint8_t index_nom = off_in & 0xf;
+		if (index_nom >= ARRAY_SIZE(rtt_nom_map)) {
+			printk(BIOS_ERR, "C%u RttNom idx %u is too big\n", channel, index_nom);
+			index_nom = ARRAY_SIZE(rtt_nom_map) - 1;
+		}
 		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
-			if (!rank_in_mask(rank, rankmask)) {
+			if (!rank_in_mask(rank, rankmask))
 				continue;
-			}
-			uint8_t index = off_in;
-			if (optparam == OptDimmOdt) {
-				index >>= 4;
-			}
-			index = MIN(index, 2);
-			const uint16_t rtt_wr = rtt_wr_mrs_encoding[index] << 9;
-			uint16_t mr2reg = (ctrl->mr2[channel][rank] & ~rtt_wr_mask) | rtt_wr;
-			reut_issue_mrs(ctrl, channel, BIT(rank), 2, mr2reg);
-			if (update_ctrl) {
-				ctrl->mr2[channel][rank] = mr2reg;
-			}
-			if (optparam == OptDimmOdtWr) {
+
+			/* RttWr */
+			union ddr3_mr_2 mr2reg = {
+				.raw = ctrl->mr2[channel][rank],
+			};
+			ddr3_update_rtt_wr(&mr2reg.raw, rtt_wr_map[index_wr]);
+			reut_issue_mrs(ctrl, channel, BIT(rank), 2, mr2reg.raw);
+			if (update_ctrl)
+				ctrl->mr2[channel][rank] = mr2reg.raw;
+
+			if (optparam == OptDimmOdtWr)
 				continue;
-			}
-			index = off_in;
-			index &= 0xf;
-			if (index >= ARRAY_SIZE(odt_map)) {
-				printk(BIOS_ERR, "C%uR%u RTT NOM idx %u is too large\n",
-					channel, rank, index);
-				index = ARRAY_SIZE(odt_map) - 1;
-			}
-			const uint16_t rtt_nom = encode_ddr3_rttnom(odt_map[index]);
-			uint16_t mr1reg = (ctrl->mr1[channel][rank] & ~RTTNOM_MASK) | rtt_nom;
-			reut_issue_mrs(ctrl, channel, BIT(rank), 1, mr1reg);
-			if (update_ctrl) {
-				ctrl->mr1[channel][rank] = mr1reg;
-			}
+
+			/* RttNom */
+			union ddr3_mr_1 mr1reg = {
+				.raw = ctrl->mr1[channel][rank],
+			};
+			ddr3_update_rtt_nom(&mr1reg.raw, rtt_nom_map[index_nom]);
+			reut_issue_mrs(ctrl, channel, BIT(rank), 1, mr1reg.raw);
+			if (update_ctrl)
+				ctrl->mr1[channel][rank] = mr1reg.raw;
 		}
 	}
 }

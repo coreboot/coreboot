@@ -22,15 +22,15 @@ static enum nri_status pre_training(struct sysinfo *ctrl)
 		return NRI_STATUS_SUCCESS;
 
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-		for (uint8_t slot = 0; slot < NUM_SLOTS; slot++) {
-			if (!rank_in_ch(ctrl, slot + slot, channel))
+		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
+			if (!rank_in_ch(ctrl, rank, channel))
 				continue;
 
-			printk(RAM_DEBUG, "C%uS%u:\n", channel, slot);
-			printk(RAM_DEBUG, "\tMR0: 0x%04x\n", ctrl->mr0[channel][slot]);
-			printk(RAM_DEBUG, "\tMR1: 0x%04x\n", ctrl->mr1[channel][slot]);
-			printk(RAM_DEBUG, "\tMR2: 0x%04x\n", ctrl->mr2[channel][slot]);
-			printk(RAM_DEBUG, "\tMR3: 0x%04x\n", ctrl->mr3[channel][slot]);
+			printk(RAM_DEBUG, "C%uR%u:\n", channel, rank);
+			printk(RAM_DEBUG, "\tMR0: 0x%04x\n", ctrl->mr0[channel][rank]);
+			printk(RAM_DEBUG, "\tMR1: 0x%04x\n", ctrl->mr1[channel][rank]);
+			printk(RAM_DEBUG, "\tMR2: 0x%04x\n", ctrl->mr2[channel][rank]);
+			printk(RAM_DEBUG, "\tMR3: 0x%04x\n", ctrl->mr3[channel][rank]);
 			printk(RAM_DEBUG, "\n");
 		}
 		if (ctrl->is_ecc) {

@@ -52,10 +52,10 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_B5, NONE, LOCK_CONFIG),
 	/* B6  : ISH_I2C0_SCL ==> NC */
 	PAD_NC_LOCK(GPP_B6, NONE, LOCK_CONFIG),
-	/* B7  : ISH_12C1_SDA ==> NC */
-	PAD_NC_LOCK(GPP_B7, NONE, LOCK_CONFIG),
-	/* B8  : ISH_I2C1_SCL ==> NC */
-	PAD_NC_LOCK(GPP_B8, NONE, LOCK_CONFIG),
+	/* B7  : I2C3_SDA ==> PCH_I2C_TCHSCR_SDA */
+	PAD_CFG_NF_LOCK(GPP_B7, NONE, NF2, LOCK_CONFIG),
+	/* B8  : I2C3_SCL ==> PCH_I2C_TCHSCR_SCL */
+	PAD_CFG_NF_LOCK(GPP_B8, NONE, NF2, LOCK_CONFIG),
 	/* B9  : NC */
 	/* B10 : NC */
 	/* B11 : PMCALERT# ==> EN_PP3300_WLAN */
@@ -83,10 +83,10 @@ static const struct pad_config override_gpio_table[] = {
 	/* C4 : SML0DATA ==> NC */
 	PAD_NC(GPP_C4, NONE),
 	/* C5  : SML0ALERT# ==> GPP_C5_BOOT_STRAP0 */
-	/* C6  : SML1CLK ==> NC */
-	PAD_NC(GPP_C6, NONE),
-	/* C7  : SML1DATA ==> NC */
-	PAD_NC(GPP_C7, NONE),
+	/* C6  : SML1CLK ==> USI_REPORT_EN (TS_EN) */
+	PAD_CFG_GPO(GPP_C6, 1, DEEP),
+	/* C7  : SML1DATA ==> USI_INT */
+	PAD_CFG_GPI_APIC(GPP_C7, NONE, PLTRST, LEVEL, NONE),
 
 	/* D0  : ISH_GP0 ==> NC */
 	PAD_NC_LOCK(GPP_D0, NONE, LOCK_CONFIG),
@@ -121,7 +121,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* D17 : UART1_RXD ==> NC */
 	PAD_NC_LOCK(GPP_D17, NONE, LOCK_CONFIG),
 	/* D18 : UART1_TXD ==> USI_RST_L */
-	PAD_CFG_GPO_LOCK(GPP_D18, 0, LOCK_CONFIG),
+	PAD_CFG_GPO(GPP_D18, 1, DEEP),
 	/* D19 : I2S_MCLK1_OUT ==> I2S_MCLK_R */
 
 	/* E0  : SATAXPCIE0 ==> NC */
@@ -216,8 +216,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
 	/* H12 : I2C7_SDA ==> NC */
 	PAD_NC_LOCK(GPP_H12, NONE, LOCK_CONFIG),
-	/* H13 : I2C7_SCL ==> NC */
-	PAD_NC_LOCK(GPP_H13, NONE, LOCK_CONFIG),
+	/* H13 : UART0_CTS# ==> EN_PP3300_TCHSCR */
+	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 	/* H14 : NC */
 	/* H15 : DDPB_CTRLCLK ==> NC */
 	PAD_NC(GPP_H15, NONE),

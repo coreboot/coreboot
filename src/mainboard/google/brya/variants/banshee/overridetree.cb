@@ -9,6 +9,7 @@ chip soc/intel/alderlake
 	#| I2C1              | cr50 TPM. Early init is   |
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
+	#| I2C3              | Touchscreen (eDP conn.)   |
 	#| I2C5              | Trackpad                  |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -17,6 +18,9 @@ chip soc/intel/alderlake
 		},
 		.i2c[1] = {
 			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
 			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[5] = {
@@ -75,7 +79,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3] = PchSerialIoPci,
 		[PchSerialIoIndexI2C4] = PchSerialIoPci,
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
@@ -289,6 +293,17 @@ chip soc/intel/alderlake
 				register "hid" = ""GOOG0005""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
 				device i2c 50 on end
+			end
+		end
+		device ref i2c3 on
+			# Optional touchscreen on the eDP connector, only exposed if present
+			chip drivers/i2c/hid
+				register "generic.hid" = ""CSW1322""
+				register "generic.desc" = ""Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 41 on end
 			end
 		end
 		device ref i2c5 on

@@ -378,6 +378,15 @@ union raw_bitlane_errors {
 	uint8_t per_byte[NUM_LANES];
 };
 
+struct channel_data {
+	union ddr_data_offset_train_reg offset_train[NUM_LANES];
+	union ddr_data_offset_comp_reg offset_comp[NUM_LANES];
+
+	union ddr_data_control_0_reg dq_ctrl_0;
+	union ddr_data_control_1_reg dq_ctrl_1[NUM_LANES];
+	union ddr_data_control_2_reg dq_ctrl_2[NUM_LANES];
+};
+
 struct sysinfo {
 	enum raminit_boot_mode bootmode;
 	enum generic_stepping stepping;
@@ -457,12 +466,15 @@ struct sysinfo {
 	uint8_t io_latency[NUM_CHANNELS][NUM_SLOTRANKS];
 	uint32_t rt_io_comp[NUM_CHANNELS];
 
+	struct channel_data ch[NUM_CHANNELS];
+	/*
 	uint32_t data_offset_train[NUM_CHANNELS][NUM_LANES];
 	union ddr_data_offset_comp_reg data_offset_comp[NUM_CHANNELS][NUM_LANES];
 
 	uint32_t dq_control_0[NUM_CHANNELS];
 	uint32_t dq_control_1[NUM_CHANNELS][NUM_LANES];
 	uint32_t dq_control_2[NUM_CHANNELS][NUM_LANES];
+	*/
 
 	uint16_t tx_dq[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 	uint16_t txdqs[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
@@ -537,7 +549,10 @@ static inline bool rank_in_ch(const struct sysinfo *ctrl, uint8_t rank, uint8_t 
 /** TODO: Handling of data_offset_train could be improved, also coupled with reg updates **/
 static inline void clear_data_offset_train_all(struct sysinfo *ctrl)
 {
-	memset(ctrl->data_offset_train, 0, sizeof(ctrl->data_offset_train));
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		struct channel_data *ch = &ctrl->ch[channel];
+		memset(ch->offset_train, 0, sizeof(ch->offset_train));
+	}
 }
 
 static inline void reut_disable_cadb_deselects(void)

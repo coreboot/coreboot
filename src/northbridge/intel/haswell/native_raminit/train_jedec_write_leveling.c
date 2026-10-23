@@ -353,17 +353,14 @@ enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 			continue;
 
 		/* Propagate delay values from rank 0 to prevent assertion failures in RTL */
-		union ddr_data_control_0_reg data_control_0 = {
-			.raw = ctrl->dq_control_0[channel],
-		};
+		const struct channel_data *ch = &ctrl->ch[channel];
+		union ddr_data_control_0_reg data_control_0 = ch->dq_ctrl_0;
 		data_control_0.read_rf_rd   = 0;
 		data_control_0.read_rf_wr   = 1;
 		data_control_0.read_rf_rank = 0;
 		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-			union ddr_data_control_2_reg data_control_2 = {
-				.raw = ctrl->dq_control_2[channel][byte],
-			};
+			union ddr_data_control_2_reg data_control_2 = ch->dq_ctrl_2[byte];
 			data_control_2.force_bias_on = 1;
 			data_control_2.force_rx_on   = 0;
 			data_control_2.wl_long_delay = wl_long_delay;
@@ -429,9 +426,8 @@ enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 			 * Enable write leveling mode in DDR and propagate delay
 			 * values (without a write command). Stay in WL mode.
 			 */
-			union ddr_data_control_0_reg data_control_0 = {
-				.raw = ctrl->dq_control_0[channel],
-			};
+			const struct channel_data *ch = &ctrl->ch[channel];
+			union ddr_data_control_0_reg data_control_0 = ch->dq_ctrl_0;
 			data_control_0.wl_training_mode = 1;
 			data_control_0.tx_pi_on         = 1;
 			data_control_0.read_rf_rd       = 0;
@@ -578,10 +574,10 @@ clean_up:
 		if (!does_ch_exist(ctrl, channel))
 			continue;
 
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ctrl->dq_control_0[channel]);
+		const struct channel_data *ch = &ctrl->ch[channel];
+		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ch->dq_ctrl_0.raw);
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-			mchbar_write32(DQ_CONTROL_2(channel, byte),
-				ctrl->dq_control_2[channel][byte]);
+			mchbar_write32(DQ_CONTROL_2(channel, byte), ch->dq_ctrl_2[byte].raw);
 		}
 	}
 	if (!ctrl->lpddr)

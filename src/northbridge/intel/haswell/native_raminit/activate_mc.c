@@ -15,26 +15,20 @@ static void update_internal_clocks_on(struct sysinfo *ctrl)
 		if (!does_ch_exist(ctrl, channel))
 			continue;
 
+		struct channel_data *ch = &ctrl->ch[channel];
 		bool clocks_on = false;
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-			const union ddr_data_control_1_reg data_control_1 = {
-				.raw = ctrl->dq_control_1[channel][byte],
-			};
-			const int8_t o_on = data_control_1.odt_delay;
-			const int8_t s_on = data_control_1.sense_amp_delay;
-			const int8_t o_off = data_control_1.odt_duration;
-			const int8_t s_off = data_control_1.sense_amp_duration;
+			const int8_t o_on = ch->dq_ctrl_1[byte].odt_delay;
+			const int8_t s_on = ch->dq_ctrl_1[byte].sense_amp_delay;
+			const int8_t o_off = ch->dq_ctrl_1[byte].odt_duration;
+			const int8_t s_off = ch->dq_ctrl_1[byte].sense_amp_duration;
 			if (o_on + o_off >= 7 || s_on + s_off >= 7) {
 				clocks_on = true;
 				break;
 			}
 		}
-		union ddr_data_control_0_reg data_control_0 = {
-			.raw = ctrl->dq_control_0[channel],
-		};
-		data_control_0.internal_clocks_on = clocks_on;
-		ctrl->dq_control_0[channel] = data_control_0.raw;
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+		ch->dq_ctrl_0.internal_clocks_on = clocks_on;
+		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ch->dq_ctrl_0.raw);
 	}
 }
 
@@ -45,6 +39,7 @@ static void update_sdll_length(struct sysinfo *ctrl)
 		if (!does_ch_exist(ctrl, channel))
 			continue;
 
+		struct channel_data *ch = &ctrl->ch[channel];
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 			uint8_t max_pi = 0;
 			for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
@@ -55,23 +50,16 @@ static void update_sdll_length(struct sysinfo *ctrl)
 				const uint8_t rx_dqs_n = ctrl->rxdqsn[channel][rank][byte];
 				max_pi = MAX(max_pi, MAX(rx_dqs_p, rx_dqs_n));
 			}
-			/* Update SDLL length for power savings */
-			union ddr_data_control_1_reg data_control_1 = {
-				.raw = ctrl->dq_control_1[channel][byte],
-			};
 			/* Calculate which segments to turn off */
-			data_control_1.sdll_segment_disable = (7 - (max_pi >> 3)) & ~1;
-			ctrl->dq_control_1[channel][byte] = data_control_1.raw;
-			mchbar_write32(DQ_CONTROL_1(channel, byte), data_control_1.raw);
+			ch->dq_ctrl_1[byte].sdll_segment_disable = (7 - (max_pi >> 3)) & ~1;
+			mchbar_write32(DQ_CONTROL_1(channel, byte), ch->dq_ctrl_1[byte].raw);
 		}
 	}
 }
 
 static void set_rx_clk_stg_num(struct sysinfo *ctrl, const uint8_t channel)
 {
-	const union ddr_data_control_0_reg ddr_data_control_0 = {
-		.raw = ctrl->dq_control_0[channel],
-	};
+	struct channel_data *ch = &ctrl->ch[channel];
 	uint8_t max_rcven = 0;
 	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
 		if (!rank_in_ch(ctrl, rank, channel))
@@ -84,26 +72,19 @@ static void set_rx_clk_stg_num(struct sysinfo *ctrl, const uint8_t channel)
 	const uint8_t tmp = (5 - 6) + 1 + 7 + 3 + 3 + 2;
 	uint8_t rcven_turnoff = max_rcven + tmp + 2 * rcven_drift;
 	for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-		const union ddr_data_control_1_reg ddr_data_control_1 = {
-			.raw = ctrl->dq_control_1[channel][byte],
-		};
-		if (ddr_data_control_1.lpddr_long_odt_en) {
+		if (ch->dq_ctrl_1[byte].lpddr_long_odt_en) {
 			/* Stagger byte turn-off */
 			rcven_turnoff++;
 		}
-		union ddr_data_control_2_reg ddr_data_control_2 = {
-			.raw = ctrl->dq_control_2[channel][byte],
-		};
-		if (ddr_data_control_0.odt_samp_extend_en) {
-			if (ddr_data_control_2.rx_clk_stg_num < rcven_turnoff)
-				ddr_data_control_2.rx_clk_stg_num = rcven_turnoff;
+		if (ch->dq_ctrl_0.odt_samp_extend_en) {
+			if (ch->dq_ctrl_2[byte].rx_clk_stg_num < rcven_turnoff)
+				ch->dq_ctrl_2[byte].rx_clk_stg_num = rcven_turnoff;
 		} else {
-			const int8_t o_on = ddr_data_control_1.odt_delay;
-			const int8_t o_off = ddr_data_control_1.odt_duration;
-			ddr_data_control_2.rx_clk_stg_num = MAX(17, o_on + o_off + 14);
+			const int8_t o_on = ch->dq_ctrl_1[byte].odt_delay;
+			const int8_t o_off = ch->dq_ctrl_1[byte].odt_duration;
+			ch->dq_ctrl_2[byte].rx_clk_stg_num = MAX(17, o_on + o_off + 14);
 		}
-		ctrl->dq_control_2[channel][byte] = ddr_data_control_2.raw;
-		mchbar_write32(DQ_CONTROL_2(channel, byte), ddr_data_control_2.raw);
+		mchbar_write32(DQ_CONTROL_2(channel, byte), ch->dq_ctrl_2[byte].raw);
 	}
 }
 
@@ -171,13 +152,10 @@ static void program_burst_end_odt_delay(struct sysinfo *ctrl)
 		if (!does_ch_exist(ctrl, channel))
 			continue;
 
+		struct channel_data *ch = &ctrl->ch[channel];
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-			union ddr_data_control_1_reg ddr_data_control_1 = {
-				.raw = ctrl->dq_control_1[channel][byte],
-			};
-			ddr_data_control_1.burst_end_odt_delay = beod;
-			ctrl->dq_control_1[channel][byte] = ddr_data_control_1.raw;
-			mchbar_write32(DQ_CONTROL_1(channel, byte), ddr_data_control_1.raw);
+			ch->dq_ctrl_1[byte].burst_end_odt_delay = beod;
+			mchbar_write32(DQ_CONTROL_1(channel, byte), ch->dq_ctrl_1[byte].raw);
 		}
 	}
 }

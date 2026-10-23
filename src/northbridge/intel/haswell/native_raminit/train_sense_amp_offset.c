@@ -23,9 +23,7 @@ struct vref_train_data {
 static void run_sense_amp_test(struct sysinfo *ctrl, uint8_t channel)
 {
 	/* Propagate delay values (without a read command) */
-	union ddr_data_control_0_reg data_control_0 = {
-		.raw = ctrl->dq_control_0[channel],
-	};
+	union ddr_data_control_0_reg data_control_0 = ctrl->ch[channel].dq_ctrl_0;
 	data_control_0.read_rf_rd      = 1;
 	data_control_0.read_rf_wr      = 0;
 	data_control_0.read_rf_rank    = 0;
@@ -63,12 +61,11 @@ static enum nri_status train_vref_offset(struct sysinfo *ctrl)
 			continue;
 
 		printk(VREF_OFFSET_PLOT, "\t");
+		const struct channel_data *ch = &ctrl->ch[channel];
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 			printk(VREF_OFFSET_PLOT, "%u ", byte);
 			vref_data[channel][byte] = initial_vref_values;
-			union ddr_data_control_2_reg data_control_2 = {
-				.raw = ctrl->dq_control_2[channel][byte],
-			};
+			union ddr_data_control_2_reg data_control_2 = ch->dq_ctrl_2[byte];
 			data_control_2.force_bias_on = 1;
 			data_control_2.force_rx_on   = 1;
 			mchbar_write32(DQ_CONTROL_2(channel, byte), data_control_2.raw);
@@ -244,10 +241,10 @@ static void train_samp_offset(struct sysinfo *ctrl)
 
 			/* Program DQS offset into Data Control 2 */
 			if (train_dqs) {
+				const struct channel_data *ch = &ctrl->ch[channel];
 				for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-					union ddr_data_control_2_reg data_control_2 = {
-						.raw = ctrl->dq_control_2[channel][byte],
-					};
+					union ddr_data_control_2_reg data_control_2;
+					data_control_2 = ch->dq_ctrl_2[byte];
 					data_control_2.rx_dqs_amp_offset = samp_offset;
 					data_control_2.force_bias_on     = 1;
 					data_control_2.force_rx_on       = 1;
@@ -283,6 +280,7 @@ static void train_samp_offset(struct sysinfo *ctrl)
 		if (!does_ch_exist(ctrl, channel))
 			continue;
 
+		struct channel_data *ch = &ctrl->ch[channel];
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 			uint32_t rx_offset_vdq = 0;
 			for (uint8_t bit = 0; bit < max_train_bits; bit++) {
@@ -302,10 +300,6 @@ static void train_samp_offset(struct sysinfo *ctrl)
 
 				printk(BIOS_DEBUG, "%x", vref);
 				if (bit == 8) {
-					/* DQS sense amp offset goes elsewhere */
-					union ddr_data_control_2_reg data_control_2 = {
-						.raw = ctrl->dq_control_2[channel][byte],
-					};
 					/*
 					 * To better suppress DQS reflections before the
 					 * read preamble on LPDDR3, add 8 to centre value.
@@ -313,8 +307,8 @@ static void train_samp_offset(struct sysinfo *ctrl)
 					if (ctrl->lpddr)
 						vref = MIN(vref + 8, 0xf);
 
-					data_control_2.rx_dqs_amp_offset = vref;
-					ctrl->dq_control_2[channel][byte] = data_control_2.raw;
+					/* DQS sense amp offset goes elsewhere */
+					ch->dq_ctrl_2[byte].rx_dqs_amp_offset = vref;
 					continue;
 				}
 				ctrl->rxdqvrefpb[channel][0][byte][bit].center = vref;
@@ -342,10 +336,11 @@ enum nri_status train_sense_amp_offset(struct sysinfo *ctrl)
 		if (!does_ch_exist(ctrl, channel))
 			continue;
 
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ctrl->dq_control_0[channel]);
-		for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
-			mchbar_write32(DQ_CONTROL_2(channel, byte),
-				ctrl->dq_control_2[channel][byte]);
+		const struct channel_data *ch = &ctrl->ch[channel];
+		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ch->dq_ctrl_0.raw);
+		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
+			mchbar_write32(DQ_CONTROL_2(channel, byte), ch->dq_ctrl_2[byte].raw);
+		}
 	}
 	io_reset();
 	return status;

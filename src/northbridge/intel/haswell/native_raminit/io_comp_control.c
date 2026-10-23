@@ -123,8 +123,9 @@ static void optimise_comp_offset(struct sysinfo *ctrl, const enum opt_param optp
 		}
 
 		num_ch++;
+		const struct channel_data *ch = &ctrl->ch[channel];
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-			int8_t off = get_comp(ctrl->data_offset_comp[channel][byte], optparam);
+			int8_t off = get_comp(ch->offset_comp[byte], optparam);
 			avg_offset += off;
 			comp_codes[channel][byte] = current_comp + off;
 		}

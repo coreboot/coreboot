@@ -205,6 +205,7 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 		if (!does_ch_exist(ctrl, channel))
 			continue;
 
+		struct channel_data *ch = &ctrl->ch[channel];
 		union ddr_data_control_2_reg data_control_2 = {
 			.raw = 0,
 		};
@@ -217,11 +218,11 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 			const uint8_t stg = latency * byte_stagger[byte] / ctrl->lanes;
 			data_control_2.rx_stagger_ctl = stg & 0x1f;
 			mchbar_write32(DQ_CONTROL_2(channel, byte), data_control_2.raw);
-			ctrl->data_offset_comp[channel][byte].raw = 0;
-			ctrl->dq_control_1[channel][byte] = data_control_1.raw;
-			ctrl->dq_control_2[channel][byte] = data_control_2.raw;
+			ch->offset_comp[byte].raw = 0;
+			ch->dq_ctrl_1[byte] = data_control_1;
+			ch->dq_ctrl_2[byte] = data_control_2;
 		}
-		ctrl->dq_control_0[channel] = data_control_0.raw;
+		ch->dq_ctrl_0 = data_control_0;
 	}
 }
 

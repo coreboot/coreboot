@@ -201,16 +201,13 @@ enum nri_status train_receive_enable(struct sysinfo *ctrl)
 		if (!does_ch_exist(ctrl, channel))
 			continue;
 
+		const struct channel_data *ch = &ctrl->ch[channel];
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-			union ddr_data_control_2_reg data_control_2 = {
-				.raw = ctrl->dq_control_2[channel][byte],
-			};
+			union ddr_data_control_2_reg data_control_2 = ch->dq_ctrl_2[byte];
 			data_control_2.force_rx_on = 1;
 			mchbar_write32(DQ_CONTROL_2(channel, byte), data_control_2.raw);
 		}
-		union ddr_data_control_0_reg data_control_0 = {
-			.raw = ctrl->dq_control_0[channel],
-		};
+		union ddr_data_control_0_reg data_control_0 = ch->dq_ctrl_0;
 		if (ctrl->lpddr) {
 			/**
 			 * W/A for b4618574 - @todo: remove for HSW ULT C0
@@ -504,6 +501,7 @@ clean_up:
 		if (!does_ch_exist(ctrl, channel))
 			continue;
 
+		const struct channel_data *ch = &ctrl->ch[channel];
 		if (ctrl->lpddr) {
 			/**
 			 * W/A for b4618574 - @todo: remove for HSW ULT C0
@@ -511,16 +509,13 @@ clean_up:
 			 * this training step. This write will disable force_odt_on while still
 			 * keeping LPDDR mode disabled. Second write will restore LPDDR mode.
 			 */
-			union ddr_data_control_0_reg data_control_0 = {
-				.raw = ctrl->dq_control_0[channel],
-			};
+			union ddr_data_control_0_reg data_control_0 = ch->dq_ctrl_0;
 			data_control_0.lpddr_mode = 0;
 			mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
 		}
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ctrl->dq_control_0[channel]);
+		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ch->dq_ctrl_0.raw);
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-			mchbar_write32(DQ_CONTROL_2(channel, byte),
-					ctrl->dq_control_2[channel][byte]);
+			mchbar_write32(DQ_CONTROL_2(channel, byte), ch->dq_ctrl_2[byte].raw);
 		}
 	}
 	io_reset();

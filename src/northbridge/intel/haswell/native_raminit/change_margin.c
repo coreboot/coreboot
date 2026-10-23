@@ -468,6 +468,23 @@ void change_1d_margin_multicast(
 	change_margin(ctrl, param, value0, true, 0, rank, 0, update_ctrl, regfile);
 }
 
+static void update_data_static_legs(struct sysinfo *ctrl, bool dis_odt_static, bool update_ctrl)
+{
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		if (!does_ch_exist(ctrl, channel)) {
+			continue;
+		}
+		union ddr_data_control_0_reg data_control_0 = {
+			.raw = ctrl->dq_control_0[channel],
+		};
+		data_control_0.disable_odt_static = dis_odt_static;
+		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+		if (update_ctrl) {
+			ctrl->dq_control_0[channel] = data_control_0.raw;
+		}
+	}
+}
+
 uint32_t update_comp_global_offset(
 	struct sysinfo *ctrl,
 	const enum global_comp_offset param,
@@ -507,17 +524,8 @@ uint32_t update_comp_global_offset(
 		ddr_comp_ctl_1.clk_scomp = offset;
 		break;
 	case DisOdtStatic:
-		ctrl->comp_ctl_0.disable_odt_static = !!offset;
-		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-			union ddr_data_control_0_reg data_control_0 = {
-				.raw = ctrl->dq_control_0[channel],
-			};
-			data_control_0.disable_odt_static = !!offset;
-			mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
-			if (update_ctrl) {
-				ctrl->dq_control_0[channel] = data_control_0.raw;
-			}
-		}
+		ddr_comp_ctl_0.disable_odt_static = !!offset;
+		update_data_static_legs(ctrl, !!offset, update_ctrl);
 		break;
 	default:
 		die("%s: Invalid global comp offset %d\n", __func__, param);
@@ -535,24 +543,12 @@ uint32_t update_comp_global_offset(
 	const uint8_t rcomp_odt_up = ddr_data_comp_1.rcomp_odt_up;
 	/* Check if we are close to saturation and try changing the static legs */
 	if (param == RdOdt && (rcomp_odt_up < 16 || rcomp_odt_up > 48)) {
-		const bool dis_odt_static = rcomp_odt_up < 16;
+		ddr_comp_ctl_0.disable_odt_static = rcomp_odt_up < 16;
 
 		/* Host always needs to be up-to-date with the static leg state */
-		ddr_comp_ctl_0.disable_odt_static = dis_odt_static;
-		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-			if (!does_ch_exist(ctrl, channel))
-				continue;
-
-			union ddr_data_control_0_reg data_control_0 = {
-				.raw = ctrl->dq_control_0[channel],
-			};
-			data_control_0.disable_odt_static = dis_odt_static;
-			mchbar_write32(DDR_DATA_ch_CONTROL_0(channel),
-					data_control_0.raw);
-			ctrl->dq_control_0[channel] = data_control_0.raw;
-		}
+		update_data_static_legs(ctrl, ddr_comp_ctl_0.disable_odt_static, true);
+		ctrl->comp_ctl_0.disable_odt_static = ddr_comp_ctl_0.disable_odt_static;
 		mchbar_write32(DDR_COMP_CTL_0, ddr_comp_ctl_0.raw);
-		ctrl->comp_ctl_0.disable_odt_static = dis_odt_static;
 		force_rcomp_and_wait_us(8);
 	}
 	switch (param) {

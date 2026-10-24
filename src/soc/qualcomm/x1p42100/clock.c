@@ -317,6 +317,14 @@ static u32 *mdss_cbcr[MDSS_CLK_COUNT] = {
 	[DISP_CC_MDSS_DPTX3_LINK_CBCR] = &disp_cc->mdss_dptx3_link_cbcr,
 	[DISP_CC_MDSS_DPTX3_AUX_CBCR] = &disp_cc->mdss_dptx3_aux_cbcr,
 	[DISP_CC_MDSS_DPTX3_LINK_INTF_CBCR] = &disp_cc->mdss_dptx3_link_intf_cbcr,
+	[DISP_CC_MDSS_ESC0_CBCR]       = &disp_cc->mdss_esc0_cbcr,
+	[DISP_CC_MDSS_ESC1_CBCR]       = &disp_cc->mdss_esc1_cbcr,
+	[DISP_CC_MDSS_PCLK0_CBCR]      = &disp_cc->mdss_pclk0_cbcr,
+	[DISP_CC_MDSS_PCLK1_CBCR]      = &disp_cc->mdss_pclk1_cbcr,
+	[DISP_CC_MDSS_BYTE0_CBCR]      = &disp_cc->mdss_byte0_cbcr,
+	[DISP_CC_MDSS_BYTE0_INTF_CBCR] = &disp_cc->mdss_byte0_intf_cbcr,
+	[DISP_CC_MDSS_BYTE1_CBCR]      = &disp_cc->mdss_byte1_cbcr,
+	[DISP_CC_MDSS_BYTE1_INTF_CBCR] = &disp_cc->mdss_byte1_intf_cbcr,
 };
 
 static struct clock_freq_config pcie_core_cfg[] = {
@@ -533,6 +541,19 @@ enum cb_err clock_enable_disp_gdsc(enum clk_disp_gdsc gdsc_type)
 	return enable_and_poll_gdsc_status(disp_gdsc[gdsc_type]);
 }
 
+enum cb_err clock_disable_disp_gdsc(enum clk_disp_gdsc gdsc_type)
+{
+	uint32_t *gdscr;
+
+	if (gdsc_type >= MAX_DISP_GDSC)
+		return CB_ERR;
+
+	gdscr = disp_gdsc[gdsc_type];
+	/* Set SW_COLLAPSE=1 to power down GDSC */
+	setbits32(gdscr, BIT(0));
+	return CB_SUCCESS;
+}
+
 enum cb_err usb_clock_enable(enum clk_usb clk_type)
 {
 	if (clk_type >= USB_CLK_COUNT)
@@ -688,6 +709,14 @@ enum cb_err mdss_clock_enable(enum clk_mdss clk_type)
 
 	/* Enable clock */
 	return clock_enable(mdss_cbcr[clk_type]);
+}
+
+enum cb_err mdss_clock_disable(enum clk_mdss clk_type)
+{
+	if (clk_type >= MDSS_CLK_COUNT)
+		return CB_ERR;
+
+	return clock_disable(mdss_cbcr[clk_type]);
 }
 
 void enable_disp_clock_tcsr(void)

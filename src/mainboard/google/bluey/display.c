@@ -13,6 +13,7 @@
 #include <soc/display/edp_ctrl.h>
 #include <soc/display/edp_reg.h>
 #include <soc/display/mdssreg.h>
+#include <soc/display/mipi_dsi.h>
 #include <soc/pmic_gpio.h>
 #include <soc/symbols_common.h>
 #include <soc/rpmh_config.h>
@@ -59,14 +60,55 @@ bool platform_use_secondary_logo(void)
 }
 #endif
 
-static void edp_enable_backlight(void)
+static void handle_dsi_reset(bool power_on)
+{
+	if (!CONFIG(MAINBOARD_HAS_MIPI_DSI))
+		return;
+
+	mdelay(5);
+	if (power_on) {
+		/* Reset sequence - H 10ms -> L 10ms -> H 10ms */
+		gpio_output(GPIO_PANEL_RESET, 1);
+		mdelay(10);
+		gpio_output(GPIO_PANEL_RESET, 0);
+		mdelay(10);
+		gpio_output(GPIO_PANEL_RESET, 1);
+		mdelay(10);
+	} else {
+		gpio_output(GPIO_PANEL_RESET, 0);
+		mdelay(5);
+	}
+}
+
+static void panel_power_on(void)
 {
 	/* Enable backlight PWM */
 	if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
 		pmic_gpio_output(BACKLIGHT_PWM_PMIC_ID, BACKLIGHT_PWM_PMIC_GPIO, true);
 
-	/* Enable backlight */
+	/* Enable backlight / panel rail */
 	pmic_gpio_output(BACKLIGHT_CONTROL_PMIC_ID, BACKLIGHT_CONTROL_PMIC_GPIO, true);
+
+	handle_dsi_reset(true);
+}
+
+static void panel_power_off(void)
+{
+	/* Disable backlight */
+	pmic_gpio_output(BACKLIGHT_CONTROL_PMIC_ID, BACKLIGHT_CONTROL_PMIC_GPIO, false);
+
+	/* Disable backlight PWM */
+	if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
+		pmic_gpio_output(BACKLIGHT_PWM_PMIC_ID, BACKLIGHT_PWM_PMIC_GPIO, false);
+
+	handle_dsi_reset(false);
+
+	/* Panel power off */
+	gpio_output(GPIO_PANEL_POWER_ON, 0);
+
+	/* Disable power for Touchscreen if available */
+	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_POWER)
+		gpio_output(GPIO_TS_POWER_EN, 0);
 }
 
 static void qcom_mdss_edp_init(struct edid *edid, uintptr_t fb_addr)
@@ -116,7 +158,10 @@ static void qcom_mdp_start(uintptr_t fb_addr)
 {
 	stopwatch_init_msecs_expire(&splash_sw, BATTERY_CHARGING_SPLASH_TIMEOUT_MS);
 
-	write32(&mdp_edp_intf->timing_eng_enable, 1);
+	if (CONFIG(MAINBOARD_HAS_MIPI_DSI))
+		write32(&mdp_intf->timing_eng_enable, 1);
+	else
+		write32(&mdp_edp_intf->timing_eng_enable, 1);
 }
 
 void display_stop(void)
@@ -127,25 +172,19 @@ void display_stop(void)
 	while (!stopwatch_expired(&splash_sw))
 		mdelay(100);
 
-	write32(&mdp_edp_intf->timing_eng_enable, 0);
-	mdelay(20);
-	write32(&edp_ahbclk->sw_reset, 1);
-	mdelay(20);
-	write32(&edp_ahbclk->sw_reset, 0);
+	if (CONFIG(MAINBOARD_HAS_MIPI_DSI)) {
+		/* DSI path: stop timing engine and disable clocks */
+		mdss_dsi_display_stop();
+	} else {
+		/* eDP path */
+		write32(&mdp_edp_intf->timing_eng_enable, 0);
+		mdelay(20);
+		write32(&edp_ahbclk->sw_reset, 1);
+		mdelay(20);
+		write32(&edp_ahbclk->sw_reset, 0);
+	}
 
-	/* Disable backlight */
-	pmic_gpio_output(BACKLIGHT_CONTROL_PMIC_ID, BACKLIGHT_CONTROL_PMIC_GPIO, false);
-
-	/* Disable backlight PWM */
-	if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
-		pmic_gpio_output(BACKLIGHT_PWM_PMIC_ID, BACKLIGHT_PWM_PMIC_GPIO, false);
-
-	/* Panel power off */
-	gpio_output(GPIO_PANEL_POWER_ON, 0);
-
-	/* Disable power for Touchscreen if available */
-	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_POWER)
-		gpio_output(GPIO_TS_POWER_EN, 0);
+	panel_power_off();
 }
 
 static void display_logo(enum lb_fb_orientation orientation, uintptr_t fb_addr,
@@ -166,13 +205,38 @@ static void display_logo(enum lb_fb_orientation orientation, uintptr_t fb_addr,
 
 	qcom_mdp_start(fb_addr);
 
-	edp_enable_backlight();
+	if (!CONFIG(MAINBOARD_HAS_MIPI_DSI))
+		panel_power_on();
 
 	timestamp_add_now(TS_FIRMWARE_SPLASH_RENDERED);
 
 	printk(BIOS_DEBUG, "Firmware Splash Screen : Enabled\n");
 
 	elog_add_event_byte(ELOG_TYPE_FW_SPLASH_SCREEN, 1);
+}
+
+/*
+ * qcom_mdss_dsi_init() - initialize DSI display for MIPI panel.
+ * Called from display_startup() when MAINBOARD_HAS_MIPI_DSI is selected.
+ * Returns edid populated by DSI init for common framebuffer registration.
+ */
+static void qcom_mdss_dsi_init(struct edid *edid, uintptr_t fb_addr)
+{
+	if (mdss_dsi_display_init(edid, panel_power_on) != CB_SUCCESS) {
+		printk(BIOS_ERR, "DSI display init failed\n");
+		return;
+	}
+
+	/*
+	 * Send brightness command after video mode is running.
+	 * AMOLED panels (BacklightType=3 DSI) use DCS 0x51 for brightness.
+	 * Must be sent after timing engine is enabled.
+	 */
+	const u8 brightness_cmd[] = {
+		3, 3, 0x51, 0xFF, 0x0F,  /* PANEL_DCS(0x51, 0xFF, 0x0F) */
+		0                         /* PANEL_END */
+	};
+	mdss_dsi_panel_initialize(brightness_cmd);
 }
 
 void display_startup(void)
@@ -192,7 +256,13 @@ void display_startup(void)
 		return;
 
 	enable_mdss_clk();
-	qcom_mdss_edp_init(&edid, fb_addr);
+
+	if (CONFIG(MAINBOARD_HAS_MIPI_DSI))
+		qcom_mdss_dsi_init(&edid, fb_addr);
+	else
+		qcom_mdss_edp_init(&edid, fb_addr);
+
+	/* Common: register framebuffer and render logo */
 	if (edid.mode.ha == 0)
 		return;
 

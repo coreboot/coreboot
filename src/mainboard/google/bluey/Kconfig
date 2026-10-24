@@ -321,6 +321,13 @@ config MAINBOARD_HAS_BACKLIGHT_PWM
 	  Enable this option if your mainboard has PWM control for display
 	  backlight.
 
+config MAINBOARD_HAS_MIPI_DSI
+	bool
+	default n
+	help
+	  Enable this option if your mainboard display is connected via
+	  the MIPI DSI interface.
+
 config MAINBOARD_HAS_CAMERA_VIA_USB
 	bool
 	default n
@@ -431,6 +438,13 @@ config MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_POWER
 	  The GPIO pin number used to enable/disable power to the
 	  touchscreen controller. This varies by board revision.
 	  Set to 0x0 if power is hardwired.
+
+config MAINBOARD_GPIO_PIN_FOR_PANEL_RESET
+	int
+	default 114
+	help
+	  This option specifies the GPIO pin number on the mainboard that is
+	  used for the MIPI DSI panel reset pin.
 
 config MAINBOARD_RAMDUMP_LED_NOTIFICATION
 	bool

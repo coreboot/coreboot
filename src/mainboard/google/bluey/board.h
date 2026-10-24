@@ -38,6 +38,8 @@
 
 /* Display specific GPIOs */
 #define GPIO_PANEL_POWER_ON	GPIO(70)
+#define PANEL_RESET_GPIO(x)	GPIO(x)
+#define GPIO_PANEL_RESET	PANEL_RESET_GPIO(CONFIG_MAINBOARD_GPIO_PIN_FOR_PANEL_RESET)
 #define GPIO_PANEL_HPD		GPIO(119)
 
 /* Touchscreen specific GPIOs */

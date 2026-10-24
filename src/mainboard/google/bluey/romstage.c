@@ -168,7 +168,7 @@ static void platform_init_lightbar(void)
 	google_chromeec_lightbar_on();
 }
 
-static void edp_configure_gpios(void)
+static void display_configure_gpios(void)
 {
 	/* Ensure enabling power for Touchscreen if available */
 	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_POWER)
@@ -178,7 +178,8 @@ static void edp_configure_gpios(void)
 	gpio_output(GPIO_PANEL_POWER_ON, 1);
 
 	/* Panel HPD GPIO enable */
-	gpio_input(GPIO_PANEL_HPD);
+	if (!CONFIG(MAINBOARD_HAS_MIPI_DSI))
+		gpio_input(GPIO_PANEL_HPD);
 }
 
 /*
@@ -287,7 +288,7 @@ static void mainboard_setup_peripherals_early(void)
 	if (mainboard_needs_pcie_init())
 		gcom_pcie_power_on_ep();
 
-	edp_configure_gpios();
+	display_configure_gpios();
 
 	/* This GPIO has external pullup hence disable default PD */
 	gpio_input(GPIO_LID_OPEN_S3);

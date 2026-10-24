@@ -13,6 +13,7 @@
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <drivers/amd/opensil/opensil.h>
+#include <soc/fabric.h>
 #include <soc/iomap.h>
 #include <types.h>
 
@@ -53,6 +54,10 @@ void read_soc_memmap_resources(struct device *domain, unsigned long *idx)
 
 static void turin_domain_set_resources(struct device *domain)
 {
+	const struct domain_iohc_info *iohc = get_domain_iohc_info(domain);
+	if (!iohc)
+		return;
+
 	if (domain->downstream->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 		printk(BIOS_DEBUG, "Setting VGA decoding for domain 0x%x\n",
 		       dev_get_domain_id(domain));
@@ -68,17 +73,18 @@ static void turin_domain_set_resources(struct device *domain)
 	/* Enable IOAPIC memory decoding */
 	struct resource *res = probe_resource(domain, IOMMU_IOAPIC_IDX);
 	if (res) {
-		const uint32_t iohc_misc_base = get_iohc_misc_smn_base(domain);
-		uint32_t ioapic_base = smn_read32(iohc_misc_base | IOHC_IOAPIC_BASE_ADDR_LO);
+		uint32_t ioapic_base = smn_read32_at(iohc->smn_dev,
+						   iohc->misc_smn_base | IOHC_IOAPIC_BASE_ADDR_LO);
 		ioapic_base |= (1 << 0);
-		smn_write32(iohc_misc_base | IOHC_IOAPIC_BASE_ADDR_LO, ioapic_base);
+		smn_write32_at(iohc->smn_dev, iohc->misc_smn_base | IOHC_IOAPIC_BASE_ADDR_LO,
+			       ioapic_base);
 	}
 }
 
 static const char *turin_domain_acpi_name(const struct device *domain)
 {
 	const unsigned int domain_id = dev_get_domain_id(domain);
-	const char *domain_acpi_names[8] = {
+	static const char *const domain_acpi_names[] = {
 		"S0B0",
 		"S0B1",
 		"S0B2",
@@ -87,6 +93,14 @@ static const char *turin_domain_acpi_name(const struct device *domain)
 		"S0B5",
 		"S0B6",
 		"S0B7",
+		"S1B0",
+		"S1B1",
+		"S1B2",
+		"S1B3",
+		"S1B4",
+		"S1B5",
+		"S1B6",
+		"S1B7",
 	};
 
 	if (domain_id < ARRAY_SIZE(domain_acpi_names))
@@ -98,7 +112,7 @@ static const char *turin_domain_acpi_name(const struct device *domain)
 struct device_operations turin_pci_domain_ops = {
 	.read_resources	= amd_pci_domain_read_resources,
 	.set_resources	= turin_domain_set_resources,
-	.scan_bus	= amd_pci_domain_scan_bus,
+	.scan_bus	= turin_pci_domain_scan_bus,
 	.init		= amd_pci_domain_init,
 	.acpi_name	= turin_domain_acpi_name,
 	.acpi_fill_ssdt	= amd_pci_domain_fill_ssdt,

@@ -16,6 +16,7 @@ ramstage-y	+= acpi.c
 ramstage-y	+= chip.c
 ramstage-y	+= cpu.c
 ramstage-y	+= domain.c
+ramstage-y	+= fabric.c
 ramstage-y	+= fch.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= mca.c

@@ -15,6 +15,8 @@
 
 #define MPDMA_C2PMSG_0_OFFSET	0x10900
 
+#if ENV_SMM
+/* SMM accesses the primary-socket PSP without using ramstage's openSIL data. */
 /*
  * The order of IOHCs here is not random. They are sorted so that:
  * 1. The First IOHC is the one with primary FCH. We want the LPC/SMBUS
@@ -22,7 +24,7 @@
  * 2. The rest of IOHCs are listed in an order so that ECAM MMIO region is one
  *    continuous block for all domains.
  *
- * AGESA/OpenSIL sets up the PCI configuration decoding ranges in line with
+ * openSIL sets up the PCI configuration decoding ranges in line with
  * this.
  */
 static const struct domain_iohc_info iohc_info[] = {
@@ -65,6 +67,7 @@ const struct domain_iohc_info *get_iohc_info(size_t *count)
 	*count = ARRAY_SIZE(iohc_info);
 	return iohc_info;
 }
+#endif
 
 static const struct non_pci_mmio_reg non_pci_mmio[] = {
 	{ 0x2d8, 0xfffffff00000ull,   1 * MiB, NON_PCI_RES_IDX_AUTO },

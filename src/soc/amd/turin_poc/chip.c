@@ -6,6 +6,7 @@
 #include <device/device.h>
 #include <drivers/amd/opensil/opensil.h>
 #include <soc/southbridge.h>
+#include <soc/fabric.h>
 
 static void soc_init(void *chip_info)
 {
@@ -14,6 +15,8 @@ static void soc_init(void *chip_info)
 	display_mtrrs();
 
 	amd_opensil_silicon_init();
+	if (turin_fabric_init() != CB_SUCCESS)
+		printk(BIOS_EMERG, "Turin: PCI roots unavailable after fabric discovery\n");
 
 	data_fabric_print_mmio_conf();
 

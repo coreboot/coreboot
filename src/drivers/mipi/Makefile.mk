@@ -39,6 +39,7 @@ panel-params-$(CONFIG_MIPI_PANEL_TG_XTI05101) += panel-TG_XTI05101
 
 panel-params-$(CONFIG_MIPI_PANEL_TM_TL121BVMS07_00C) += panel-TM_TL121BVMS07_00C
 
+panel-params-$(CONFIG_MIPI_PANEL_VIS_R66451) += panel-VIS_R66451
 panel-params-$(CONFIG_MIPI_PANEL_VIS_RM69299) += panel-VIS_RM69299
 
 $(foreach params,$(panel-params-y), \

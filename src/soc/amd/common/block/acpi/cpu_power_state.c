@@ -7,6 +7,7 @@
 #include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/msr.h>
+#include <lib.h>
 #include <soc/msr.h>
 #include <types.h>
 
@@ -158,14 +159,36 @@ static size_t get_cstate_info(acpi_cstate_t *cstate_values)
 	return i;
 }
 
+struct acpi_cpu_power_domain {
+	uint32_t domain;
+	uint32_t num_processors;
+};
+
+static struct acpi_cpu_power_domain get_cpu_power_domain(const uint32_t *apic_ids,
+						       size_t count, size_t cpu,
+						       unsigned int thread_bits)
+{
+	struct acpi_cpu_power_domain domain = { .domain = apic_ids[cpu] };
+	const uint32_t core = apic_ids[cpu] >> thread_bits;
+
+	/* AMD encodes the thread within the core in the low APIC ID bits. */
+	for (size_t i = 0; i < count; i++) {
+		if (apic_ids[i] >> thread_bits != core)
+			continue;
+		domain.domain = MIN(domain.domain, apic_ids[i]);
+		domain.num_processors++;
+	}
+	return domain;
+}
+
 void generate_cpu_entries(const struct device *device)
 {
 	int logical_cores;
+	uint32_t apic_ids[CONFIG_MAX_CPUS];
 	size_t cstate_count, pstate_count, cpu;
 	acpi_cstate_t cstate_values[MAX_CSTATE_COUNT] = { {0} };
 	struct acpi_sw_pstate pstate_values[MAX_PSTATES] = { {0} };
 	struct acpi_xpss_sw_pstate pstate_xpss_values[MAX_PSTATES] = { {0} };
-	uint32_t threads_per_core;
 
 	const acpi_addr_t perf_ctrl = {
 		.space_id = ACPI_ADDRESS_SPACE_FIXED,
@@ -178,12 +201,28 @@ void generate_cpu_entries(const struct device *device)
 		.addrl = PS_STS_REG,
 	};
 
-	threads_per_core = get_threads_per_core();
 	cstate_count = get_cstate_info(cstate_values);
 	pstate_count = get_pstate_info(pstate_values, pstate_xpss_values);
 	logical_cores = get_cpu_count();
+	if (logical_cores <= 0) {
+		printk(BIOS_ERR, "ACPI: invalid CPU count %d\n", logical_cores);
+		return;
+	}
+
+	const size_t enabled_cpus = acpi_get_cpu_apic_ids(apic_ids, ARRAY_SIZE(apic_ids));
+	const unsigned int threads_per_core = get_threads_per_core();
+	const bool have_domains = threads_per_core && enabled_cpus == logical_cores;
+	const unsigned int thread_bits = have_domains ? log2_ceil(threads_per_core) : 0;
+
+	if (!have_domains)
+		printk(BIOS_WARNING, "ACPI: missing CPU power topology; skipping per-core _PSD/_CSD\n");
 
 	for (cpu = 0; cpu < logical_cores; cpu++) {
+		struct acpi_cpu_power_domain domain = {0};
+
+		if (have_domains)
+			domain = get_cpu_power_domain(apic_ids, enabled_cpus, cpu, thread_bits);
+
 		acpigen_write_processor_device(cpu);
 
 		acpigen_write_pct_package(&perf_ctrl, &perf_sts);
@@ -192,18 +231,20 @@ void generate_cpu_entries(const struct device *device)
 
 		acpigen_write_xpss_object(pstate_xpss_values, pstate_count);
 
-		if (CONFIG(ACPI_SSDT_PSD_INDEPENDENT))
-			acpigen_write_PSD_package(cpu / threads_per_core, threads_per_core,
-						  HW_ALL);
-		else
+		if (CONFIG(ACPI_SSDT_PSD_INDEPENDENT)) {
+			if (have_domains)
+				acpigen_write_PSD_package(domain.domain, domain.num_processors, HW_ALL);
+		} else {
 			acpigen_write_PSD_package(0, logical_cores, SW_ALL);
+		}
 
 		acpigen_write_PPC(0);
 
 		acpigen_write_CST_package(cstate_values, cstate_count);
 
-		acpigen_write_CSD_package(cpu / threads_per_core, threads_per_core,
-					  CSD_HW_ALL, 0);
+		if (have_domains)
+			acpigen_write_CSD_package(domain.domain, domain.num_processors,
+						  CSD_HW_ALL, 0);
 
 		if (CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_CPPC))
 			generate_cppc_entries(cpu);

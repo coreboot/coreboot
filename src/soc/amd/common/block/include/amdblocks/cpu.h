@@ -13,6 +13,7 @@ int get_cpu_count(void);
 int get_cpu_count_from_cpuid(void);
 int soc_get_cpu_count(void);
 unsigned int get_threads_per_core(void);
+
 int cpu_node_id(void);
 void set_cstate_io_addr(void);
 void write_resume_eip(void);

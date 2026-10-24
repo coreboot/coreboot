@@ -14,6 +14,20 @@ endif
 
 opensil_dir := $(call strip_quotes,$(CONFIG_AMD_OPENSIL_PATH))
 
+# check if $(obj) is an absolute or a relative path
+ifeq ($(shell printf %.1s "$(obj)"),/)
+OBJPATH = $(obj)
+else
+OBJPATH = $(top)/$(obj)
+endif
+
+PYTHON?=python
+
+OPENSIL_CONFIG=opensil_config
+
+# SoC Makefiles below append their configuration-template substitutions.
+opensil_config_sed :=
+
 subdirs-$(CONFIG_SOC_AMD_OPENSIL_GENOA_POC) += genoa_poc
 subdirs-$(CONFIG_SOC_AMD_OPENSIL_PHOENIX_POC) += phoenix_poc
 subdirs-$(CONFIG_SOC_AMD_OPENSIL_TURIN_POC) += turin_poc
@@ -44,25 +58,17 @@ else
 sil_debug_enable="false"
 endif
 
-# check if $(obj) is an absolute or a relative path
-ifeq ($(shell printf %.1s "$(obj)"),/)
-OBJPATH = $(obj)
-else
-OBJPATH = $(top)/$(obj)
-endif
-
-PYTHON?=python
-
-OPENSIL_CONFIG=opensil_config
-
 bios_base=$(shell printf "0x%x" $(call int-subtract, $(CONFIG_ROMSTAGE_ADDR) $(CONFIG_C_ENV_BOOTBLOCK_SIZE)))
 bios_size=$(CONFIG_C_ENV_BOOTBLOCK_SIZE)
 
-$(OBJPATH)/$(OPENSIL_CONFIG): $(opensil_dir)/../opensil_config.template
+# Depends on config.h as well as the template: every ##SUBSTITUTION## below is a
+# Kconfig value, so the generated config goes stale on a .config change - or on
+# a switch between boards sharing this template - if only the template is named.
+$(OBJPATH)/$(OPENSIL_CONFIG): $(opensil_dir)/../opensil_config.template $(obj)/config.h
 	sed -e "s,##APOB_BASE##,$(CONFIG_PSP_APOB_DRAM_ADDRESS)," \
 	    -e "s,##BIOS_ENTRY_BASE##,$(bios_base)," \
 	    -e "s,##BIOS_ENTRY_SIZE##,$(bios_size) ," \
-		$< > $@
+		$(opensil_config_sed) $< > $@
 
 $(OBJPATH)/$(OPENSIL_CONFIG).h: $(OBJPATH)/$(OPENSIL_CONFIG) $(obj)/config.h $(objutil)/kconfig/conf
 	cd $(opensil_dir); \
@@ -89,15 +95,21 @@ $(OBJPATH)/meson_crosscompile: $(opensil_dir)/../meson_cross.template  $(obj)/co
 		$< > $@
 
 # Don't set a meson buildtype as opensil is broken when compiler optimizations are enabled
-$(OBJPATH)/opensil:  $(OBJPATH)/meson_crosscompile $(obj)/config.h
-	cd $(opensil_dir); meson setup --cross-file $< $(OBJPATH)/opensil -Db_staticpic=false \
-		-DPlatKcfgDir=$(OBJPATH) -DPlatKcfg=$(OPENSIL_CONFIG)
+$(OBJPATH)/opensil: $(OBJPATH)/meson_crosscompile $(obj)/config.h $(top)/src/vendorcode/amd/opensil/configure.py
+	cd $(opensil_dir); $(PYTHON) $(top)/src/vendorcode/amd/opensil/configure.py \
+		--cross-file $< --build-dir $(OBJPATH)/opensil \
+		--config-dir $(OBJPATH) --config-name $(OPENSIL_CONFIG)
 
-$(OBJPATH)/opensil/lib$(opensil_target_name).a: $(OBJPATH)/opensil
-	meson compile -C $(OBJPATH)/opensil $(opensil_target_name)
+# Let Meson check openSIL source dependencies on every build.
+# The build directory's timestamp does not track edited C/header files.
+.PHONY: opensil-library-check
+opensil-library-check:
+
+$(OBJPATH)/opensil/lib$(opensil_target_name).a: $(OBJPATH)/opensil opensil-library-check
+	+meson compile -C $(OBJPATH)/opensil $(opensil_target_name)
 
 $(OBJPATH)/opensil.a: $(OBJPATH)/opensil/lib$(opensil_target_name).a
-	cp $(OBJPATH)/opensil/lib$(opensil_target_name).a $@
+	cmp -s $< $@ || cp $< $@
 
 romstage-libs += $(OBJPATH)/opensil.a
 ramstage-libs += $(OBJPATH)/opensil.a

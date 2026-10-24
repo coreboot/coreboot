@@ -4,17 +4,16 @@
 #include <opensil_config.h>
 #include <CCX/CcxClass-api.h>
 #include <CCX/Common/CcxApic.h>
-#include <DF/DfClass-api.h>
 #include <FCH/FchClass-api.h>
 #include <FCH/FchHwAcpi-api.h>
 #include <FCH/FchIsa-api.h>
 #include <FCH/Common/FchCore/FchSata/FchSataBlk.h>
 #include <Mpio/MpioClass-api.h>
-#include <RcMgr/DfX/RcManager4-api.h>
 #include <Sdxi/SdxiClass-api.h>
 #include <amdblocks/reset.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <halt.h>
 #include <cpu/amd/microcode.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
@@ -124,43 +123,6 @@ void SIL_STATUS_report(const char *function, const int status)
 	printk(log_level, "%s returned %d (%s)\n", function, status, error_string);
 }
 
-static void setup_rc_manager_default(void)
-{
-	DFX_RCMGR_INPUT_BLK *rc_mgr_input_block = SilFindStructure(SilId_RcManager, 0);
-
-	/* Let openSIL distribute the resources to the different PCI roots */
-	rc_mgr_input_block->SetRcBasedOnNv = false;
-
-	/* Currently 1P is the only supported configuration */
-	rc_mgr_input_block->SocketNumber = 1;
-	rc_mgr_input_block->RbsPerSocket = 8; /* PCI root bridges per socket */
-	rc_mgr_input_block->McptEnable = true;
-	rc_mgr_input_block->PciExpressBaseAddress = CONFIG_ECAM_MMCONF_BASE_ADDRESS;
-	rc_mgr_input_block->BottomMmioReservedForPrimaryRb = 4ull * GiB - 32 * MiB;
-	rc_mgr_input_block->MmioSizePerRbForNonPciDevice = 16 * MiB;
-	/*
-	 * Turin has 52 bits of available physical address space without SME
-	 * enabled. To avoid using 5-level paging (which we do not support yet
-	 * in coreboot and UEFI payload) required to cover MMIO above 48 bits
-	 * of address space (since 4-level paging can cover only 48 bits of
-	 * physical address space), limit the MMIO to maximum of 48 bits.
-	 * MmioAbove4GLimit will be adjusted down in openSIL if needed.
-	 */
-	rc_mgr_input_block->MmioAbove4GLimit = POWER_OF_2(MIN(48, cpu_phys_address_size()));
-	rc_mgr_input_block->Above4GMmioSizePerRbForNonPciDevice = 0;
-}
-
-static void setup_data_fabric_default(void)
-{
-	DFCLASS_INPUT_BLK *df_input_block = SilFindStructure(SilId_DfClass, 0);
-
-	if (!df_input_block) {
-		printk(BIOS_ERR, "OpenSIL: Data Fabric block not found\n");
-		return;
-	}
-
-	df_input_block->AmdPciExpressBaseAddress = CONFIG_ECAM_MMCONF_BASE_ADDRESS;
-}
 
 #define NUM_XHCI_CONTROLLERS 2
 static void configure_usb(void)
@@ -329,13 +291,14 @@ void setup_opensil(void)
 	SIL_STATUS_report("SilDebugSetup", debug_ret);
 	const size_t mem_req = xSimQueryMemoryRequirements();
 	void *buf = cbmem_add(CBMEM_ID_AMD_OPENSIL, mem_req);
-	assert(buf);
+	if (!buf)
+		die("openSIL: cannot reserve working memory\n");
 	/* We run all openSIL timepoints in the same stage so using TP1 as argument is fine. */
 	const SIL_STATUS assign_mem_ret = xSimAssignMemoryTp1(buf, mem_req);
 	SIL_STATUS_report("xSimAssignMemory", assign_mem_ret);
-
-	setup_rc_manager_default();
-	setup_data_fabric_default();
+	if (assign_mem_ret != SilPass)
+		die("openSIL: cannot assign working memory (%d)\n", assign_mem_ret);
+	opensil_setup_resources();
 	configure_ccx();
 	configure_fch_isa();
 	configure_fch_acpi();

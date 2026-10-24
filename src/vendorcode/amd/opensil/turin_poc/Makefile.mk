@@ -13,11 +13,12 @@ ramstage-y += acpi.c
 ramstage-y += memmap.c
 ramstage-y += opensil_console.c
 ramstage-y += ramstage.c
+ramstage-y += resources.c
 
 # These host-side objects include the generated openSIL configuration too.
 # Depending on opensil.a alone does not order their compilation on a clean build.
 $(addprefix $(obj)/ramstage/vendorcode/amd/opensil/turin_poc/, \
-	ramstage.o memmap.o mpio/chip.o): $(OBJPATH)/$(OPENSIL_CONFIG).h
+	ramstage.o resources.o memmap.o mpio/chip.o): $(OBJPATH)/$(OPENSIL_CONFIG).h
 
 $(obj)/romstage/vendorcode/amd/opensil/turin_poc/opensil_console.o: CFLAGS_romstage += $(CFLAGS_opensil)
 $(obj)/romstage/vendorcode/amd/opensil/turin_poc/romstage.o: CFLAGS_romstage += $(CFLAGS_opensil)

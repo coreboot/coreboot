@@ -130,7 +130,7 @@ static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
 	}
 
 	/* If the domain has secondary bus as zero then associate HPET & FCH IOAPIC */
-	if (dev->downstream->secondary == 0) {
+	if (dev->downstream->secondary == 0 && dev->downstream->segment_group == 0) {
 		/* Describe HPET */
 		current = ivhd_describe_hpet(current, 0x00, SMBUS_DEVFN);
 		/* Describe FCH IOAPICs */
@@ -177,7 +177,7 @@ static unsigned long acpi_fill_ivrs40(unsigned long current, acpi_ivrs_ivhd_t *i
 	current_backup = current;
 	current = acpi_ivhd_misc(current, nb_dev->upstream->dev);
 
-	if (nb_dev->upstream->secondary == 0) {
+	if (nb_dev->upstream->secondary == 0 && nb_dev->upstream->segment_group == 0) {
 		/* Describe EMMC */
 		if (CONFIG(SOC_AMD_COMMON_BLOCK_EMMC)) {
 			/* PCI_DEVFN(0x13, 1) doesn't exist in the hardware, but it's what the
@@ -293,6 +293,7 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 			continue;
 		}
 
+		memset(ivhd, 0, sizeof(*ivhd));
 		ivhd->type = IVHD_BLOCK_TYPE_LEGACY__FIXED;
 		ivhd->length = sizeof(struct acpi_ivrs_ivhd);
 

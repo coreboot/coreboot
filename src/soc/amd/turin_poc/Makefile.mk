@@ -138,8 +138,8 @@ OPT_BIOS_AMDCOMPRESS=$(if $(CONFIG_CBFS_VERIFICATION), --elfcopy, --compress)
 OPT_BIOS_FWCOMPRESS=$(if $(CONFIG_CBFS_VERIFICATION), --bios-bin-uncomp)
 
 # Place the ucode files in order, Turin Classic first, then Turin Dense
-microcode_bins=$(wildcard ${FIRMWARE_LOCATION}/*U?odePatch_BRH_*.bin)
-microcode_bins+=$(wildcard ${FIRMWARE_LOCATION}/*U?odePatch_BRHD_*.bin)
+microcode_bins=$(wildcard ${FIRMWARE_LOCATION}/Typex66_*_BRH_*.bin)
+microcode_bins+=$(wildcard ${FIRMWARE_LOCATION}/Typex66_*_BRHD_*.bin)
 
 OPT_UCODE_FILES=$(foreach i, $(shell seq $(words $(microcode_bins))), \
 	$(call add_opt_prefix, $(word $(i), $(microcode_bins)), \
@@ -205,6 +205,8 @@ $(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
 
 else
 # Set FIRMWARE_LOCATION to get the microcode files
-FIRMWARE_LOCATION=3rdparty/amd_firmwares/Firmwares/Turin
+ifeq ($(CONFIG_USE_AMD_BLOBS),y)
+FIRMWARE_LOCATION=3rdparty/amd_blobs/turin/PSP
+endif
 endif # ifneq ($(call strip_quotes, $(CONFIG_AMDFW_CONFIG_FILE)),)
 endif

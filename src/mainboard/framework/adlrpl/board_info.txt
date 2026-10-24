@@ -1,0 +1,8 @@
+Vendor name: Framework
+Board name: Laptop (12th Gen Intel Core)
+Board URL: https://frame.work/laptop13
+Category: laptop
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: n
+Release year: 2022

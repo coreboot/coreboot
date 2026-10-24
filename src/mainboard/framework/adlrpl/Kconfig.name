@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_FRAMEWORK_HX30
+	bool "Laptop 13 (12th Gen Intel Core)"

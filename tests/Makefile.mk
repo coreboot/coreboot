@@ -54,6 +54,9 @@ subdirs += tests/southbridge tests/superio tests/vendorcode tests/util
 
 define tests-handler
 alltests += $(1)$(2)
+# The APIC table helpers use the common sorting implementation.
+$(if $(filter src/acpi/acpi_apic.c,$($(2)-srcs)), \
+	$(eval $(2)-srcs += src/commonlib/sort.c))
 $(foreach attribute,$(attributes),
 	$(eval $(1)$(2)-$(attribute) += $($(2)-$(attribute))))
 $(foreach attribute,$(attributes),

@@ -60,24 +60,48 @@ unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 index, u32 l
  * second logical processors. This approach should be used for all successive
  * logical processors."
  */
-static unsigned long acpi_create_madt_lapics(unsigned long current)
+size_t acpi_get_cpu_apic_ids(uint32_t *apic_ids, size_t capacity)
 {
-	struct device *cpu;
-	int index, apic_ids[CONFIG_MAX_CPUS] = {0}, num_cpus = 0, sort_start = 0;
+	size_t used = 0;
+
 	for (unsigned int thread_id = 0; thread_id <= MAX_THREAD_ID; thread_id++) {
-		for (cpu = all_devices; cpu; cpu = cpu->next) {
+		const size_t sort_start = used;
+
+		for (const struct device *cpu = all_devices; cpu; cpu = cpu->next) {
 			if (!is_enabled_cpu(cpu))
 				continue;
-			if (num_cpus >= ARRAY_SIZE(apic_ids))
-				break;
 			if (cpu->path.apic.thread_id != thread_id)
 				continue;
-			apic_ids[num_cpus++] = cpu->path.apic.apic_id;
+			const uint32_t apic_id = cpu->path.apic.apic_id;
+			bool duplicate = false;
+			for (size_t i = 0; i < used; i++) {
+				if (apic_ids[i] == apic_id)
+					duplicate = true;
+			}
+			if (duplicate) {
+				printk(BIOS_WARNING, "ACPI: skipping duplicate APIC ID %#x\n", apic_id);
+				continue;
+			}
+			if (used == capacity) {
+				printk(BIOS_WARNING, "ACPI: CPU list exceeds capacity %zu\n", capacity);
+				break;
+			}
+
+			apic_ids[used++] = apic_id;
 		}
-		bubblesort(&apic_ids[sort_start], num_cpus - sort_start, NUM_ASCENDING);
-		sort_start = num_cpus;
+		bubblesort((int *)&apic_ids[sort_start], used - sort_start, NUM_ASCENDING);
+		if (used == capacity)
+			break;
 	}
-	for (index = 0; index < num_cpus; index++)
+	return used;
+}
+
+static unsigned long acpi_create_madt_lapics(unsigned long current)
+{
+	uint32_t apic_ids[CONFIG_MAX_CPUS];
+	const size_t num_cpus = acpi_get_cpu_apic_ids(apic_ids, ARRAY_SIZE(apic_ids));
+
+	for (size_t index = 0; index < num_cpus; index++)
 		current = acpi_create_madt_one_lapic(current, index, apic_ids[index]);
 
 	return current;

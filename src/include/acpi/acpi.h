@@ -1607,6 +1607,15 @@ int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr);
 
 unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 cpu, u32 apic);
 
+/*
+ * Enumerate enabled x86 CPUs in MADT UID order: thread ID, then ascending APIC ID.
+ * Include only thread IDs handled by the common MADT writer.
+ * Copy at most capacity IDs and return the number copied. Warn and truncate
+ * if the array is full; warn and skip duplicate IDs.
+ * apic_ids must point to a valid array with space for capacity entries.
+ */
+size_t acpi_get_cpu_apic_ids(uint32_t *apic_ids, size_t capacity);
+
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current);
 
 void platform_fill_gicc(acpi_madt_gicc_t *gicc);

@@ -10,9 +10,18 @@
 #include <cpu/x86/msr.h>
 #include <device/device.h>
 
-int get_cpu_count(void)
+int get_cpu_count_from_cpuid(void)
 {
 	return 1 + (cpuid_ecx(0x80000008) & 0xff);
+}
+
+/* SoCs with multiple packages may supply a discovered system-wide count. */
+int get_cpu_count(void)
+{
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_CPU_COUNT_FROM_TOPOLOGY))
+		return soc_get_cpu_count();
+
+	return get_cpu_count_from_cpuid();
 }
 
 int cpu_node_id(void)

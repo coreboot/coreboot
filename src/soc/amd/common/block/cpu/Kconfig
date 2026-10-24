@@ -184,3 +184,9 @@ config SOC_AMD_COMMON_BLOCK_ENABLE_CACHE_ON_RESUME
 	bool
 	help
 	  Enable the Cache on a S3 resume.
+
+config SOC_AMD_COMMON_BLOCK_CPU_COUNT_FROM_TOPOLOGY
+	bool
+	help
+	  Select when the SoC supplies a discovered system-wide CPU count.
+	  Otherwise use the existing CPUID count.

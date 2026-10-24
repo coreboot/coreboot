@@ -5,7 +5,7 @@
 #include <device/device.h>
 #include <types.h>
 
-static const struct domain_iohc_info *get_domain_iohc_info(struct device *domain)
+const struct domain_iohc_info *get_domain_iohc_info(const struct device *domain)
 {
 	const unsigned int domain_id = dev_get_domain_id(domain);
 	const struct domain_iohc_info *iohc;
@@ -13,7 +13,7 @@ static const struct domain_iohc_info *get_domain_iohc_info(struct device *domain
 
 	iohc = get_iohc_info(&iohc_count);
 
-	if (domain_id < iohc_count) {
+	if (domain_id < iohc_count && iohc[domain_id].misc_smn_base) {
 		return &iohc[domain_id];
 	} else {
 		printk(BIOS_ERR, "Invalid domain 0x%x with no corresponding IOHC device.\n",

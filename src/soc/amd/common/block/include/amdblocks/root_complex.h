@@ -4,6 +4,7 @@
 #define AMD_BLOCK_ROOT_COMPLEX_H
 
 #include <device/device.h>
+#include <device/pci_type.h>
 #include <types.h>
 
 #define SMN_IOHC_MISC_BASE_13B1	0x13b10000
@@ -22,7 +23,11 @@
 
 struct domain_iohc_info {
 	uint16_t fabric_id;
+	/* Zero for an absent/undecoded domain in a sparse table. */
 	uint32_t misc_smn_base;
+	/* Zero initialization preserves the existing socket 0, bus 0 SMN endpoint. */
+	pci_devfn_t smn_dev;
+	uint8_t socket;
 };
 
 struct non_pci_mmio_reg {
@@ -37,6 +42,10 @@ void read_non_pci_resources(struct device *domain, unsigned long *idx);
 void read_soc_memmap_resources(struct device *domain, unsigned long *idx);
 
 uint32_t get_iohc_misc_smn_base(struct device *domain);
+/* Look up the IOHC and SMN endpoint for this domain. */
+const struct domain_iohc_info *get_domain_iohc_info(const struct device *domain);
+
+/* Domain-indexed table: absent domains may have a zero misc_smn_base. */
 const struct domain_iohc_info *get_iohc_info(size_t *count);
 const struct non_pci_mmio_reg *get_iohc_non_pci_mmio_regs(size_t *count);
 

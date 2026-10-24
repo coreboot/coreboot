@@ -45,7 +45,11 @@ static uintptr_t get_psp_mmio_base(void)
 		return 0;
 
 	for (size_t i = 0; i < iohc_count; i++) {
-		uint64_t reg64 = smn_read64(iohc[i].misc_smn_base | IOHC_MISC_PSP_MMIO_REG);
+		/* Both ramstage and SMM use the PSP mailbox on the primary socket. */
+		if (!iohc[i].misc_smn_base || iohc[i].socket != 0)
+			continue;
+		uint64_t reg64 = smn_read64_at(iohc[i].smn_dev,
+					     iohc[i].misc_smn_base | IOHC_MISC_PSP_MMIO_REG);
 
 		if (!(reg64 & IOHC_MMIO_EN))
 			continue;
@@ -65,8 +69,9 @@ static uintptr_t get_psp_mmio_base(void)
 			reg64 |= PSP_MMIO_LOCK;
 			/* Since the lock bit lives in the lower one of the two 32 bit SMN
 			   registers, we only need to write that one to lock it */
-			smn_write32(iohc[i].misc_smn_base | IOHC_MISC_PSP_MMIO_REG,
-				    reg64 & 0xffffffff);
+			smn_write32_at(iohc[i].smn_dev,
+				       iohc[i].misc_smn_base | IOHC_MISC_PSP_MMIO_REG,
+				       reg64 & 0xffffffff);
 		}
 
 		psp_mmio_base = base;

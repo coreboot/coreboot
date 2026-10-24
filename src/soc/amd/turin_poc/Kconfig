@@ -222,8 +222,12 @@ config PSP_INIT_ESPI
 	  Loader.
 
 config PSP_UNLOCK_SECURE_DEBUG
-	bool
-	default y
+	bool "Unlock secure debug"
+	default n
+	help
+	  Request PSP secure debug unlock for development. This sets the debug
+	  soft-fuse bit and adds an unlock token. Leave disabled when debug
+	  access is not required.
 
 config HAVE_PSP_WHITELIST_FILE
 	bool "Include a debug whitelist file in PSP build"

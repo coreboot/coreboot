@@ -28,6 +28,23 @@ config SOC_AMD_COMMON_BLOCK_PSP_GEN2_EARLY_ACCESS
 	  Allow PSP mailbox access in bootblock and romstage using the SMN
 	  access method to the mailbox registers.
 
+config SOC_AMD_COMMON_BLOCK_PSP_SMM_LOCK
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_PSP_GEN2 && HAVE_SMI_HANDLER
+	help
+	  Notify the PSP after CPU SMM configuration is locked, before sending
+	  BOOT_DONE. Log a failed request and skip BOOT_DONE. Keep the request
+	  buffer in reserved ramstage memory if completion times out.
+
+config SOC_AMD_COMMON_BLOCK_PSP_DF_LOCK
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_PSP_GEN2
+	help
+	  Notify the PSP that Data Fabric configuration is complete before
+	  SMM_LOCK and BOOT_DONE. Log a failed request and skip later notifications.
+	  Keep the request buffer in reserved ramstage memory if completion
+	  times out.
+
 config PSP_AB_RECOVERY
 	bool "Use A/B Recovery scheme"
 	depends on !VBOOT && !CHROMEOS

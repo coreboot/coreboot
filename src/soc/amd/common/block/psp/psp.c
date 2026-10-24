@@ -4,7 +4,6 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <amdblocks/psp.h>
-#include <soc/iomap.h>
 #include "psp_def.h"
 
 static const char *psp_status_nobase = "error: PSP_ADDR_MSR and PSP BAR3 not assigned";
@@ -131,12 +130,52 @@ bool psp_get_hsti_state_rom_armor_enforced(void)
 }
 #endif
 
+static enum cb_err psp_notify_df_lock(void)
+{
+	struct mbox_default_buffer buffer = {
+		.header.size = sizeof(buffer.header),
+	};
+	int cmd_status;
+
+	printk(BIOS_DEBUG, "PSP: Notify Data Fabric lock before BOOT_DONE... ");
+	cmd_status = send_psp_command(MBOX_BIOS_CMD_LOCK_DF_REG, &buffer);
+	psp_print_cmd_status(cmd_status, &buffer.header);
+	/* Keep the stack frame live while a timed-out PSP may still use it. */
+	if (cmd_status == -PSPSTS_CMD_TIMEOUT)
+		die("PSP: Data Fabric lock command timed out\n");
+	if (cmd_status || rd_resp_sts(&buffer.header)) {
+		printk(BIOS_WARNING, "PSP: Skipping BOOT_DONE after Data Fabric lock failure\n");
+		return CB_ERR;
+	}
+	return CB_SUCCESS;
+}
+
+static enum cb_err psp_notify_smm_lock(void)
+{
+	struct mbox_default_buffer buffer = {
+		.header.size = sizeof(buffer.header),
+	};
+	int cmd_status;
+
+	printk(BIOS_DEBUG, "PSP: Notify SMM lock before BOOT_DONE... ");
+	cmd_status = send_psp_command(MBOX_BIOS_CMD_SMM_LOCK, &buffer);
+	psp_print_cmd_status(cmd_status, &buffer.header);
+	/* Keep the stack frame live while a timed-out PSP may still use it. */
+	if (cmd_status == -PSPSTS_CMD_TIMEOUT)
+		die("PSP: SMM lock command timed out\n");
+	if (cmd_status || rd_resp_sts(&buffer.header)) {
+		printk(BIOS_WARNING, "PSP: Skipping BOOT_DONE after SMM lock failure\n");
+		return CB_ERR;
+	}
+	return CB_SUCCESS;
+}
+
 /*
  * Notify the PSP that the system is completing the boot process.  Upon
  * receiving this command, the PSP will only honor commands where the buffer
  * is in SMM space.
  */
-static void psp_notify_boot_done(void *unused)
+static void psp_notify_boot_done(void)
 {
 	int cmd_status;
 	struct mbox_default_buffer buffer = {
@@ -153,4 +192,16 @@ static void psp_notify_boot_done(void *unused)
 	psp_print_cmd_status(cmd_status, &buffer.header);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, psp_notify_boot_done, NULL);
+static void psp_notify_boot_complete(void *unused)
+{
+	/* Resource assignment and CPU SMM lockdown precede payload boot. */
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_DF_LOCK) &&
+	    psp_notify_df_lock() != CB_SUCCESS)
+		return;
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_SMM_LOCK) &&
+	    psp_notify_smm_lock() != CB_SUCCESS)
+		return;
+	psp_notify_boot_done();
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, psp_notify_boot_complete, NULL);

@@ -22,6 +22,7 @@
 #include <soc/aoac_defs.h>
 #include <soc/iomap.h>
 #include <soc/soc_chip.h>
+#include <soc/usb.h>
 #include <static.h>
 #include <stdio.h>
 #include <xSIM-api.h>
@@ -32,11 +33,6 @@
 
 #define TURIN_USB_STRUCT_MAJOR_VERSION	0xd
 #define TURIN_USB_STRUCT_MINOR_VERSION	0x13
-
-#define TURIN_USB_PORT_PER_CONTROLLER		2
-#define TURIN_USB_CONTROLLERS_PER_SOCKET	2
-#define TURIN_NUM_USB_PORTS	\
-	(TURIN_USB_PORT_PER_CONTROLLER * TURIN_USB_CONTROLLERS_PER_SOCKET)
 
 /*
  * Structures copied from Genoa POC code, because Turin POC does not define these.
@@ -75,15 +71,22 @@ typedef struct {
 	uint8_t		TableLength;
 	uint8_t		Reserved0;
 	uint8_t		Usb20PhyEnable;
-	FCH_USB20_PHY	Usb20PhyPort[TURIN_NUM_USB_PORTS];
+	FCH_USB20_PHY	Usb20PhyPort[TURIN_USB_PORTS_PER_SOCKET];
 	uint8_t		Reserved1;
 	uint8_t		S1Usb20PhyEnable;
-	FCH_USB20_PHY	S1Usb20PhyPort[TURIN_NUM_USB_PORTS];
+	FCH_USB20_PHY	S1Usb20PhyPort[TURIN_USB_PORTS_PER_SOCKET];
 	uint8_t		Usb31PhyEnable;
-	FCH_USB31_PHY	Usb31PhyPort[TURIN_NUM_USB_PORTS];
+	FCH_USB31_PHY	Usb31PhyPort[TURIN_USB_PORTS_PER_SOCKET];
 	uint8_t		S1Usb31PhyEnable;
-	FCH_USB31_PHY	S1Usb31PhyPort[TURIN_NUM_USB_PORTS];
+	FCH_USB31_PHY	S1Usb31PhyPort[TURIN_USB_PORTS_PER_SOCKET];
 } __packed FCH_USB_OEM_PLATFORM_TABLE;
+
+_Static_assert(sizeof(((FCH_USB_OEM_PLATFORM_TABLE *)0)->Usb31PhyPort) ==
+	sizeof(((struct soc_usb_config *)0)->usb31_phy),
+	"USB3 PHY configuration must cover every port");
+_Static_assert(sizeof(((FCH_USB_OEM_PLATFORM_TABLE *)0)->S1Usb31PhyPort) ==
+	sizeof(((struct soc_usb_config *)0)->s1_usb31_phy),
+	"Socket-one USB3 PHY configuration must cover every port");
 
 static FCH_USB_OEM_PLATFORM_TABLE usb_config = { 0 };
 

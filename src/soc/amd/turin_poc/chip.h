@@ -7,6 +7,7 @@
 #include <amdblocks/i2c.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/iomap.h>
+#include <soc/usb.h>
 #include <types.h>
 
 #define MAX_DOMAINS	8
@@ -49,9 +50,9 @@ struct soc_usb_config {
 		uint8_t raw;
 	} usb3_force_gen1;
 	bool usb31_phy_enable;
-	struct usb31_phy_settings usb31_phy[2];
+	struct usb31_phy_settings usb31_phy[TURIN_USB_PORTS_PER_SOCKET];
 	bool s1_usb31_phy_enable;
-	struct usb31_phy_settings s1_usb31_phy[2];
+	struct usb31_phy_settings s1_usb31_phy[TURIN_USB_PORTS_PER_SOCKET];
 };
 
 struct soc_amd_turin_poc_config {

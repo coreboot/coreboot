@@ -236,7 +236,8 @@ static void configure_fch_isa(void)
 }
 
 #define FCH_DEV_ENABLE(dev, aoac_bit) \
-	fch_data->FchRunTime.FchDeviceEnableMap |= ((DEV_PTR(dev))->enabled ? aoac_bit : 0)
+	fch_data->FchRunTime.FchDeviceEnableMap |= \
+		((DEV_PTR(dev))->enabled ? (1u << (aoac_bit)) : 0)
 
 static void configure_fch_acpi(void)
 {

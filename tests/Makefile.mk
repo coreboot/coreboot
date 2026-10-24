@@ -50,7 +50,7 @@ alltests :=
 subdirs := tests/arch tests/acpi tests/commonlib tests/console tests/cpu
 subdirs += tests/device tests/drivers tests/ec tests/lib
 subdirs += tests/mainboard tests/northbridge tests/security tests/soc
-subdirs += tests/southbridge tests/superio tests/vendorcode
+subdirs += tests/southbridge tests/superio tests/vendorcode tests/util
 
 define tests-handler
 alltests += $(1)$(2)

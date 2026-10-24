@@ -299,11 +299,12 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		    cb_config->recovery_ab)
 			return 1;
 	} else if (fw_type == AMD_FW_PSP_SECURED_DEBUG) {
+		/* Some platforms need authentication files outside of secure debug unlock. */
 		if (strcmp(fw_name, "PSP_SEC_DBG_KEY_FILE") == 0 &&
-		    !cb_config->unlock_secure)
+		    !cb_config->unlock_secure_supported)
 			return 1;
 	} else if (fw_type == AMD_FW_PSP_DEBUG_UNLOCK) {
-		if (!cb_config->unlock_secure)
+		if (!cb_config->unlock_secure_supported)
 			return 1;
 	} else if (fw_type == AMD_FW_PSP_SECURED_OS) {
 		if (!cb_config->use_secureos)

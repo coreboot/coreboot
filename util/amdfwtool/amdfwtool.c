@@ -1713,6 +1713,7 @@ static int process_config_and_options(int argc, char *argv[], amd_cb_config *cb_
 
 	/* The PSP FW table must be selected before any FW file is registered */
 	amd_psp_fw_table = platform_get_psp_fw_table(cb_config->soc_id);
+	cb_config->unlock_secure_supported = platform_needs_auth_files(cb_config->soc_id);
 
 	/* Process the rest of options and register FW files from options */
 	retval = amdfwtool_getopt(argc, argv, cb_config);

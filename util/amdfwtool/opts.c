@@ -425,7 +425,7 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config)
 			break;
 		case AMDFW_OPT_UNLOCK:
 			register_fw_token_unlock();
-			cb_config->unlock_secure = true;
+			cb_config->unlock_secure_supported = true;
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_USE_PSPSECUREOS:

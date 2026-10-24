@@ -163,7 +163,7 @@ struct psp_fw_hash_table {
 
 typedef struct _amd_cb_config {
 	bool have_whitelist;
-	bool unlock_secure;
+	bool unlock_secure_supported;
 	bool use_secureos;
 	bool load_mp2_fw;
 	bool s0i3;
@@ -237,6 +237,7 @@ int amdfwtool_getconfig(int argc, char *argv[], amd_cb_config *cb_config);
 
 enum platform platform_identify(char *soc_name);
 bool platform_needs_ish(enum platform platform_type);
+bool platform_needs_auth_files(enum platform platform_type);
 bool platform_is_multi_level(enum platform platform_type);
 bool platform_is_second_gen(enum platform platform_type);
 bool platform_has_dir_header_v1(enum platform platform_type);

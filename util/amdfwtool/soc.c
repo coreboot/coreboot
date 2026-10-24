@@ -281,6 +281,7 @@ static amd_fw_entry server_psp_fw_table[] = {
 struct platform_info {
 	const char *name;
 	bool needs_ish;
+	bool auth_files_without_unlock;
 	bool is_multi_level;
 	bool has_apob_nv_quirk;
 	bool is_initial_alignment_required;
@@ -464,6 +465,7 @@ static const struct platform_info platform_table[] = {
 	},
 	[PLATFORM_TURIN] = {
 		.name = "Turin",
+		.auth_files_without_unlock = true,
 		.needs_ish = false,
 		.is_multi_level = true,
 		.has_apob_nv_quirk = false,
@@ -516,6 +518,12 @@ enum platform platform_identify(char *soc_name)
 bool platform_needs_ish(enum platform platform_type)
 {
 	return platform_table[platform_type].needs_ish;
+}
+
+/* Authentication firmware required even when secure debug stays locked. */
+bool platform_needs_auth_files(enum platform platform_type)
+{
+	return platform_table[platform_type].auth_files_without_unlock;
 }
 
 /**

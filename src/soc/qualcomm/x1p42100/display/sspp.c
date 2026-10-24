@@ -5,9 +5,8 @@
 #include <soc/display/mdssreg.h>
 #include <console/console.h>
 #include <soc/qcom_spmi.h>
-#include <gpio.h>
-
 #include <soc/symbols_common.h>
+#include <gpio.h>
 
 uint32_t calculate_mode_mdp_clk(const struct edid_mode *mode) {
 	/* pixel clock = total_h * total_v * refresh. Use it for mode_mdp_clock */
@@ -20,10 +19,10 @@ uint32_t calculate_mode_mdp_clk(const struct edid_mode *mode) {
 	return (uint32_t)mode_mdp_clk;
 }
 
-void mdss_source_pipe_config(struct edid *edid, uintptr_t dram_display)
+void mdss_source_pipe_config(struct edid *edid, uintptr_t dram_display,
+				     const struct mdss_panel_config *cfg)
 {
-	uint32_t pipe_count = ((edid->mode.ha > MDSS_MAX_SINGLE_PIPE_PIXEL_WIDTH) ||
-			(calculate_mode_mdp_clk(&edid->mode) > MDSS_MAX_MDP_CLK)) ? 2 : 1;
+	uint32_t pipe_count = cfg->pipe_count;
 
 	/* Source Dimensions: Per Pipe */
 	uint32_t src_h = edid->mode.va;
@@ -100,50 +99,71 @@ void mdss_source_pipe_config(struct edid *edid, uintptr_t dram_display)
 	}
 }
 
-void mdss_layer_mixer_setup(struct edid *edid)
+void mdss_layer_mixer_setup(struct edid *edid,
+				    const struct mdss_panel_config *cfg)
 {
 	uint32_t full_w = edid->mode.ha;
 	uint32_t full_h = edid->mode.va;
-	bool dual = ((full_w > MDSS_MAX_SINGLE_PIPE_PIXEL_WIDTH) ||
-		(calculate_mode_mdp_clk(&edid->mode) > MDSS_MAX_MDP_CLK));
-	uint32_t lm_w = dual ? (full_w / 2) : full_w;
+	uint32_t lm_w = (cfg->pipe_count > 1) ? (full_w / cfg->pipe_count) : full_w;
 	uint32_t lm_out_size = (full_h << 16) | (lm_w & 0xFFFF);
+	bool is_dsc = (cfg->dsc_ratio_x1000 > 0);
+	uint32_t layer0_cfg = is_dsc ?
+		(MDP_CTL_LAYER0_VIG0_STAGE3_CFG & ~MDP_CTL_LAYER_BORDER_OUT) :
+		MDP_CTL_LAYER0_VIG0_STAGE3_CFG;
+	uint32_t layer1_cfg = is_dsc ?
+		(MDP_CTL_LAYER1_VIG1_STAGE3_CFG & ~MDP_CTL_LAYER_BORDER_OUT) :
+		MDP_CTL_LAYER1_VIG1_STAGE3_CFG;
 
+	/* LM0: left half. For DSC dual-pipe, SPLIT_LEFT (0x2) is set. */
 	write32(&mdp_layer_mixer->layer_out_size, lm_out_size);
-	write32(&mdp_layer_mixer->layer_op_mode, 0x0);
-
-	write32(&mdp_ctl_0->ctl_intf_master, INTF_ACTIVE_5);
-	write32(&mdp_ctl_0->ctl_intf_active, INTF_ACTIVE_5);
+	write32(&mdp_layer_mixer->layer_op_mode,
+		(is_dsc && cfg->pipe_count > 1) ? 0x2 : 0x0);
 
 	for (int i = 0; i < 6; i++) {
 		write32(&mdp_layer_mixer->layer_blend[i].layer_blend_op, 0x100);
 		write32(&mdp_layer_mixer->layer_blend[i].layer_blend_const_alpha, 0x00ff0000);
 	}
 
-	write32(&mdp_ctl_0->ctl_layer0, MDP_CTL_LAYER0_VIG0_STAGE3_CFG);
-	write32(&mdp_ctl_0->ctl_fetch_pipe_active, FETCH_PIPE_VIG0_ACTIVE);
-
-	if (dual) {
+	if (cfg->pipe_count > 1) {
+		/* LM1: right half */
 		struct mdp_layer_mixer_regs *lm1 =
 			(struct mdp_layer_mixer_regs *)((uint8_t *)mdp_layer_mixer + 0x1000);
 
 		write32(&lm1->layer_out_size, lm_out_size);
-		write32(&lm1->layer_op_mode, LM_LAYER_OP_MODE_SPLIT_RIGHT);
+		write32(&lm1->layer_op_mode,
+			LM_LAYER_OP_MODE_SPLIT_RIGHT | (is_dsc ? 0x2 : 0x0));
 
 		for (int i = 0; i < 6; i++) {
 			write32(&lm1->layer_blend[i].layer_blend_op, 0x100);
 			write32(&lm1->layer_blend[i].layer_blend_const_alpha, 0x00ff0000);
 		}
 
-		write32(&mdp_ctl_0->ctl_layer1, MDP_CTL_LAYER1_VIG1_STAGE3_CFG);
-
+		write32(&mdp_ctl_0->ctl_layer0, layer0_cfg);
+		write32(&mdp_ctl_0->ctl_layer1, layer1_cfg);
 		write32(&mdp_ctl_0->ctl_fetch_pipe_active,
 			FETCH_PIPE_VIG0_ACTIVE | FETCH_PIPE_VIG1_ACTIVE);
 
-		write32(&mdp_ctl_0->ctl_merge_3d_active, 1);
-		write32(&mdp_merge_3d_0->mode, 3);
+		if (is_dsc) {
+			write32(&mdp_ctl_0->ctl_merge_3d_active, 0);
+			write32(&mdp_merge_3d_0->mode, 0);
+		} else {
+			write32(&mdp_ctl_0->ctl_merge_3d_active, 1);
+			write32(&mdp_merge_3d_0->mode, 3);
+		}
 	} else {
+		write32(&mdp_ctl_0->ctl_layer0, layer0_cfg);
+		write32(&mdp_ctl_0->ctl_fetch_pipe_active, FETCH_PIPE_VIG0_ACTIVE);
 		write32(&mdp_ctl_0->ctl_merge_3d_active, 0);
 		write32(&mdp_merge_3d_0->mode, 0);
 	}
+
+	/*
+	 * INTF_MASTER = primary INTF only (DSI0/INTF_1 for DSI, INTF_5 for eDP).
+	 * INTF_ACTIVE = all active interfaces:
+	 *   2-2-1/eDP: BIT(intf_num)
+	 *   2-2-2:     BIT(intf_num) | BIT(intf_num+1) = BIT(1)|BIT(2) = 0x6
+	 * Both handled by MDSS_INTF_MASTER/ACTIVE macros.
+	 */
+	write32(&mdp_ctl_0->ctl_intf_master, MDSS_INTF_MASTER(cfg));
+	write32(&mdp_ctl_0->ctl_intf_active, MDSS_INTF_ACTIVE(cfg));
 }

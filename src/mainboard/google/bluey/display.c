@@ -82,21 +82,41 @@ static void qcom_mdss_edp_init(struct edid *edid, uintptr_t fb_addr)
 		return;
 	}
 
+	bool dual = (edid->mode.ha > MDSS_MAX_SINGLE_PIPE_PIXEL_WIDTH) ||
+		    (calculate_mode_mdp_clk(&edid->mode) > MDSS_MAX_MDP_CLK);
+	struct mdss_panel_config edp_panel_config = {
+		.pipe_count = dual ? 2 : 1,
+		.dsc_ratio_x1000 = 0,
+		.intf_num   = 5,  /* eDP uses INTF_5 on x1p42100 */
+		.dsi_count  = 1,
+	};
+	const struct mdss_panel_config *cfg = &edp_panel_config;
 	configure_vbif_qos();
-	mdss_layer_mixer_setup(edid);
-	mdss_source_pipe_config(edid, fb_addr);
+	mdss_layer_mixer_setup(edid, cfg);
+	mdss_source_pipe_config(edid, fb_addr, cfg);
 
-	intf_tg_setup(edid);
-	intf_fetch_start_config(edid);
+	intf_tg_setup(edid, cfg);
+	intf_fetch_start_config(edid, cfg);
 
-	merge_3d_active(edid);
+	merge_3d_active(edid, cfg);
+
+	/*
+	 * eDP-specific: compression mode registers.
+	 * These were previously in merge_3d_active() eDP block but belong here
+	 * since they are eDP-only and should not affect DSI path.
+	 */
+	write32(&edp_lclk->vsc_db16_db17_db18_pb8, 0x10100);
+	write32(&edp_lclk->compression_mode_ctrl, 0x2800);
+	write32(&mdp_edp_intf->intf_config2, 0x111);
+	write32(&edp_lclk->db_ctrl, 0x01);
+	write32(&mdp_edp_intf->intf_config, 0x800000);
 }
 
 static void qcom_mdp_start(uintptr_t fb_addr)
 {
 	stopwatch_init_msecs_expire(&splash_sw, BATTERY_CHARGING_SPLASH_TIMEOUT_MS);
 
-	write32(&mdp_intf->timing_eng_enable, 1);
+	write32(&mdp_edp_intf->timing_eng_enable, 1);
 }
 
 void display_stop(void)
@@ -107,7 +127,7 @@ void display_stop(void)
 	while (!stopwatch_expired(&splash_sw))
 		mdelay(100);
 
-	write32(&mdp_intf->timing_eng_enable, 0);
+	write32(&mdp_edp_intf->timing_eng_enable, 0);
 	mdelay(20);
 	write32(&edp_ahbclk->sw_reset, 1);
 	mdelay(20);

@@ -13,6 +13,9 @@ unsigned long acpi_fill_madt(unsigned long current)
 {
 	struct device *dev = NULL;
 	while ((dev = dev_find_path(dev, DEVICE_PATH_DOMAIN)) != NULL) {
+		if (!is_dev_enabled(dev))
+			continue;
+
 		struct resource *res = probe_resource(dev, IOMMU_IOAPIC_IDX);
 		if (!res)
 			continue;

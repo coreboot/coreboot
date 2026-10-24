@@ -30,3 +30,9 @@ amd-ivrs-test-cflags += -Wno-address-of-packed-member
 amd-ivrs-test-config += CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_IVRS_MULTI_DOMAIN=1
 amd-ivrs-test-config += CONFIG_SOC_AMD_COMMON_BLOCK_EMMC=1
 amd-ivrs-test-config += CONFIG_ARCH_RAMSTAGE_X86_32=0 CONFIG_ARCH_RAMSTAGE_X86_64=1
+
+tests-y += amd-madt-test
+amd-madt-test-srcs += tests/soc/amd/common/amd-madt-test.c
+amd-madt-test-srcs += src/soc/amd/common/block/acpi/madt.c src/device/device_const.c
+amd-madt-test-srcs += tests/stubs/console.c
+amd-madt-test-cflags += -Isrc/soc/amd/common/block/include

@@ -94,6 +94,22 @@ config CHIPSET_DEVICETREE
 	string
 	default "soc/amd/turin_poc/chipset.cb"
 
+config OPENSIL_IOAPIC_ID_BASE
+	hex
+	default 0xf0
+	help
+	  First IOAPIC ID programmed by openSIL. coreboot reads the programmed
+	  IDs when generating the MADT. Boards may override this default to
+	  choose their IOAPIC ID range.
+
+config OPENSIL_MPIO_EARLY_BMC_LINK_LANE
+	int
+	default 134
+	help
+	  Default BMC link lane in the openSIL input block. A bmc chip in the
+	  devicetree overrides it with the chip's start_lane before the
+	  first silicon initialization phase.
+
 config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
 	default 150
@@ -119,6 +135,14 @@ config STACK_SIZE
 config MAX_CPUS
 	int
 	default 384
+
+config MAX_SOCKET
+	int
+	range 1 2
+	help
+	  Number of sockets described to the openSIL host adapter. The default
+	  remains one. Describing a second socket does not by itself provide
+	  the SoC device tree, resource access or ACPI support required for 2P.
 
 config PSP_APOB_DRAM_ADDRESS
 	hex

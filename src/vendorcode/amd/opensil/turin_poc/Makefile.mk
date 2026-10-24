@@ -14,7 +14,17 @@ ramstage-y += memmap.c
 ramstage-y += opensil_console.c
 ramstage-y += ramstage.c
 
+# These host-side objects include the generated openSIL configuration too.
+# Depending on opensil.a alone does not order their compilation on a clean build.
+$(addprefix $(obj)/ramstage/vendorcode/amd/opensil/turin_poc/, \
+	ramstage.o memmap.o mpio/chip.o): $(OBJPATH)/$(OPENSIL_CONFIG).h
+
 $(obj)/romstage/vendorcode/amd/opensil/turin_poc/opensil_console.o: CFLAGS_romstage += $(CFLAGS_opensil)
 $(obj)/romstage/vendorcode/amd/opensil/turin_poc/romstage.o: CFLAGS_romstage += $(CFLAGS_opensil)
 
 $(obj)/ramstage/vendorcode/amd/opensil/turin_poc/opensil_console.o: CFLAGS_ramstage += $(CFLAGS_opensil)
+
+# These substitutions are specific to Turin's openSIL configuration.
+opensil_config_sed += -e "s,\#\#PLAT_NUMBER_SOCKETS\#\#,$(CONFIG_MAX_SOCKET),"
+opensil_config_sed += -e "s,\#\#IOAPIC_ID_BASE\#\#,$(CONFIG_OPENSIL_IOAPIC_ID_BASE),"
+opensil_config_sed += -e "s,\#\#MPIO_EARLY_BMC_LINK_LANE\#\#,$(CONFIG_OPENSIL_MPIO_EARLY_BMC_LINK_LANE),"

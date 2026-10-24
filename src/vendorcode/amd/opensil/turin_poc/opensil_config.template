@@ -1,5 +1,12 @@
 CONFIG_PLAT_APOB_ADDRESS=##APOB_BASE##
 CONFIG_PSP_BIOS_BIN_BASE=##BIOS_ENTRY_BASE##
 CONFIG_PSP_BIOS_BIN_SIZE=##BIOS_ENTRY_SIZE##
-CONFIG_PLAT_NUMBER_SOCKETS=1
+CONFIG_PLAT_NUMBER_SOCKETS=##PLAT_NUMBER_SOCKETS##
 CONFIG_SOC_F1AM00=y
+
+# IOAPIC ID base programmed by openSIL and read by coreboot for the MADT.
+CONFIG_IOAPIC_ID_BASE=##IOAPIC_ID_BASE##
+
+# Default BMC link lane. A bmc chip in the devicetree overrides this input
+# through setup_bmc_lanes() before the first silicon initialization phase.
+CONFIG_MPIO_EARLY_BMC_LINK_LANE=##MPIO_EARLY_BMC_LINK_LANE##

@@ -3,6 +3,7 @@
 #ifndef OPENSIL_TURIN_POC_MPIO_CHIP_H
 #define OPENSIL_TURIN_POC_MPIO_CHIP_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /*
@@ -61,11 +62,22 @@ struct drivers_amd_opensil_mpio_config {
 	uint8_t gpio_group;
 	enum mpio_hotplug hotplug;
 	enum pcie_link_speed speed;
+	/* Initial target speed, independent of the capability cap; 0 keeps automatic policy. */
+	enum pcie_link_speed target_speed;
 	enum pcie_aspm aspm;
+	/*
+	 * Physical slot number advertised in PCIe Slot Capabilities, which is what
+	 * an OS reports as the slot a card sits in. Leave at 0 to fall back to a
+	 * running counter above the largest explicit slot number. Explicit numbers
+	 * must be unique. Set this for ports whose number should match the board
+	 * silkscreen; automatic numbers can change when the topology changes.
+	 */
+	uint8_t slot_num;
 	uint8_t aspm_l1_1 : 1;
 	uint8_t aspm_l1_2 : 1;
 	uint8_t clock_pm : 1;
 	uint8_t bmc : 1;
+
 };
 
 #endif /* OPENSIL_TURIN_POC_MPIO_CHIP_H */

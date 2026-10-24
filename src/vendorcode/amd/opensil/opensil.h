@@ -26,4 +26,6 @@ void opensil_xSIM_timepoint_3(void);
 void opensil_mpio_global_config(void);
 void opensil_mpio_per_device_config(struct device *dev);
 
+extern struct chip_operations drivers_amd_opensil_mpio_ops;
+
 #endif

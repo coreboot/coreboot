@@ -39,8 +39,6 @@ static struct device devices[DEVICE_COUNT];
 static struct drivers_amd_opensil_mpio_config configs[DEVICE_COUNT];
 static size_t device_count;
 
-extern struct chip_operations drivers_amd_opensil_mpio_ops;
-
 void *SilFindStructure(SIL_DATA_BLOCK_ID id, uint16_t instance)
 {
 	assert_int_equal(instance, 0);
@@ -129,6 +127,7 @@ static struct device *add_port(unsigned int domain, uint8_t lane, uint8_t slot, 
 		.gpio_group = 1,
 		.speed = Gen4,
 		.aspm = L1,
+		.slot_num = slot,
 		.bmc = bmc,
 	};
 	dev->path.type = DEVICE_PATH_PCI;
@@ -203,6 +202,9 @@ static void test_single_socket_ports(void **state)
 	check_complexes();
 	check_list(0, lanes, ARRAY_SIZE(lanes));
 	MPIO_PORT_DESCRIPTOR *ports = socket_list(0);
+	assert_int_equal(ports[0].Port.SlotNum, 7);
+	assert_int_equal(ports[1].Port.SlotNum, 10);
+	assert_int_equal(ports[2].Port.SlotNum, 9);
 	assert_int_equal(ports[0].Port.PortPresent, MpioPortEnabled);
 	assert_int_equal(ports[1].Port.PortPresent, MpioPortDisabled);
 	assert_int_equal(ports[2].EngineData.EngineType, MpioPcieEngine);
@@ -212,6 +214,26 @@ static void test_single_socket_ports(void **state)
 	assert_int_equal(errors, 0);
 }
 
+static void test_target_link_speed(void **state)
+{
+	unsigned int socket = CONFIG_MAX_SOCKET - 1;
+
+	/* In 2P, the later S0 insertion moves this S1 descriptor in PortList. */
+	add_port(socket * PROJ_MAX_RBS_PER_SOCKET + 5, 134, 8, false);
+	configs[0].speed = Gen4;
+	configs[0].target_speed = Gen3;
+	add_port(5, 128, 4, false);
+	configs[1].end_lane = 131;
+	configs[1].speed = Gen4;
+	configure_mpio();
+
+	assert_int_equal(socket_list(socket)[0].Port.LinkSpeedCapability, Gen4);
+	assert_int_equal(socket_list(socket)[0].Port.TargetLinkSpeed, Gen3);
+	unsigned int s0_index = CONFIG_MAX_SOCKET > 1 ? 0 : 1;
+	assert_int_equal(socket_list(0)[s0_index].Port.TargetLinkSpeed, MaxSupported);
+	check_complexes();
+	assert_int_equal(errors, 0);
+}
 
 #if CONFIG_MAX_SOCKET > 1
 static void test_interleaved_sockets(void **state)
@@ -241,6 +263,8 @@ static void test_interleaved_sockets(void **state)
 	check_list(1, s1_lanes, ARRAY_SIZE(s1_lanes));
 	assert_ptr_equal(socket_list(0), &mpio.input.PcieTopologyData.PortList[0]);
 	assert_ptr_equal(socket_list(1), &mpio.input.PcieTopologyData.PortList[2]);
+	assert_int_equal(socket_list(1)[0].Port.SlotNum, 51);
+	assert_int_equal(socket_list(0)[1].Port.SlotNum, 52);
 	/* Check shifted descriptor contents as well as their socket and termination. */
 	assert_int_equal(socket_list(1)[0].EngineData.EndLane, 7);
 	assert_int_equal(socket_list(1)[0].EngineData.GpioGroupId, 2);
@@ -267,6 +291,8 @@ static void test_sata_ignores_pcie_settings(void **state)
 	add_port(0, 48, 0, false);
 	add_port(5, 128, 0, false);
 	configs[1].type = IFTYPE_SATA;
+	configs[1].slot_num = 99;
+	configs[1].target_speed = Gen3;
 	configs[1].end_lane = 135;
 	configs[1].hotplug = Basic;
 	configs[1].aspm_l1_1 = true;
@@ -358,8 +384,20 @@ static void test_rejected_devices(void **state)
 	opensil_mpio_per_device_config(valid);
 	const uint8_t lanes[] = {128};
 	check_list(0, lanes, ARRAY_SIZE(lanes));
+	assert_int_equal(socket_list(0)[0].Port.SlotNum, 1);
 }
 
+static void test_duplicate_explicit_slots(void **state)
+{
+	add_port(0, 48, 6, false);
+	add_port((CONFIG_MAX_SOCKET - 1) * PROJ_MAX_RBS_PER_SOCKET, 0, 6, false);
+	configure_mpio();
+	assert_int_equal(warnings, 1);
+	assert_int_equal(errors, 0);
+	/* Preserve the existing policy: report the duplicate and retain explicit values. */
+	assert_int_equal(mpio.input.PcieTopologyData.PortList[0].Port.SlotNum, 6);
+	assert_int_equal(mpio.input.PcieTopologyData.PortList[1].Port.SlotNum, 6);
+}
 
 static void test_full_capacity_one_socket(void **state)
 {
@@ -423,6 +461,7 @@ static void test_repeated_walk_clears_topology(void **state)
 	configure_mpio();
 	const uint8_t lanes[] = {128};
 	check_list(0, lanes, ARRAY_SIZE(lanes));
+	assert_int_equal(socket_list(0)[0].Port.SlotNum, 1);
 	assert_int_equal(errors, 0);
 }
 
@@ -436,12 +475,14 @@ int main(void)
 		cmocka_unit_test_setup_teardown(test_sata_ignores_pcie_settings, setup, teardown),
 		cmocka_unit_test_setup_teardown(test_empty_socket_lists, setup, teardown),
 		cmocka_unit_test_setup_teardown(test_single_socket_ports, setup, teardown),
+		cmocka_unit_test_setup_teardown(test_target_link_speed, setup, teardown),
 #if CONFIG_MAX_SOCKET > 1
 		cmocka_unit_test_setup_teardown(test_interleaved_sockets, setup, teardown),
 #endif
 		cmocka_unit_test_setup_teardown(test_bmc_socket_and_duplicate, setup, teardown),
 		cmocka_unit_test_setup_teardown(test_bmc_missing_input_blocks, setup, teardown),
 		cmocka_unit_test_setup_teardown(test_rejected_devices, setup, teardown),
+		cmocka_unit_test_setup_teardown(test_duplicate_explicit_slots, setup, teardown),
 		cmocka_unit_test_setup_teardown(test_full_capacity_one_socket, setup, teardown),
 #if CONFIG_MAX_SOCKET > 1
 		cmocka_unit_test_setup_teardown(test_full_capacity_interleaved, setup, teardown),

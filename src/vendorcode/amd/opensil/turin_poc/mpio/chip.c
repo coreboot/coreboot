@@ -307,6 +307,7 @@ void opensil_mpio_per_device_config(struct device *dev)
 							config->aspm_l1_2,
 							config->clock_pm);
 		port.Port = port_data;
+		port.Port.TargetLinkSpeed = config->target_speed;
 	} else if (config->type == IFTYPE_SATA) {
 		const MPIO_ENGINE_DATA engine_data =
 			MPIO_ENGINE_DATA_INITIALIZER(MpioSATAEngine,
@@ -338,7 +339,16 @@ void opensil_mpio_per_device_config(struct device *dev)
 
 	if (config->type == IFTYPE_PCIE) {
 		port.Port.AlwaysExpose = 1;
-		port.Port.SlotNum = ++slot_num;
+		/*
+		 * Automatic numbering starts above all explicit slot numbers, including
+		 * those on ports visited later. Boards without explicit numbers retain
+		 * their traversal-based numbering.
+		 */
+		if (config->slot_num != 0) {
+			port.Port.SlotNum = config->slot_num;
+		} else {
+			port.Port.SlotNum = ++slot_num;
+		}
 	}
 
 	/*
@@ -368,12 +378,31 @@ void opensil_mpio_per_device_config(struct device *dev)
 
 void opensil_mpio_global_config(void)
 {
+	bool slots[UINT8_MAX + 1] = { false };
+
 	/* Rebuild the topology on every per-device walk. */
 	mpio_ports = 0;
 	memset(socket_ports, 0, sizeof(socket_ports));
 	slot_num = 0;
 	bmc_configured = false;
 	bmc_lane = 0;
+
+	/* Reserve explicit numbers before assigning any automatic ones. */
+	for (const struct device *dev = &dev_root; dev; dev = dev->next) {
+		if (dev->chip_ops != &drivers_amd_opensil_mpio_ops ||
+		    dev->chip_info == dev->upstream->dev->chip_info)
+			continue;
+		const struct drivers_amd_opensil_mpio_config *config = dev->chip_info;
+
+		if (config->type == IFTYPE_UNUSED || config->type == IFTYPE_SATA ||
+		    config->bmc || !config->slot_num)
+			continue;
+		if (slots[config->slot_num])
+			printk(BIOS_WARNING, "MPIO: duplicate physical slot number %u\n",
+			       config->slot_num);
+		slots[config->slot_num] = true;
+		slot_num = MAX(slot_num, config->slot_num);
+	}
 
 	mpio_params_config();
 	/* A new walk starts with the board's default BMC link, not a previous walk's override. */

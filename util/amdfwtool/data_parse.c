@@ -107,6 +107,7 @@ static const struct psp_fw_name_entry psp_fw_name_table[] = {
 	{ "PSP_KVM_ENGINE_DUMMY_FILE",		AMD_FW_PSP_KVM_IMAGE,		0, 0 },
 	{ "RPMC_FILE",				AMD_FW_PSP_RPMC_NVRAM,			0, 0 },
 	{ "PSPBTLDR_AB_FILE",			AMD_FW_PSP_BOOTLOADER_AB,	0, 0 },
+	{ "PSPBTLDR_AB_SUB1_FILE",		AMD_FW_PSP_BOOTLOADER_AB,	1, 0 },
 	{ "TA_IKEK_FILE",			AMD_FW_PSP_TA_IKEK,			0, 0 },
 	{ "SFDR_FILE",				AMD_FW_PSP_SFDR,			0, 0 },
 	{ "UMSMU_FILE",				AMD_FW_PSP_UMSMU,			0, 0 },

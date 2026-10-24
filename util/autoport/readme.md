@@ -295,7 +295,8 @@ cannot be detected by autoport. Common entries are:
 
 Which controller the most easily accessible USB debug port is. On Intel,
 1 is for `00:1d.0` and 2 is for `00:1a.0` (yes, it's reversed). Refer to
-<https://www.coreboot.org/EHCI_Debug_Port> for more info.
+the archived coreboot wiki page for more info:
+<https://web.archive.org/web/20210123214100/https://www.coreboot.org/EHCI_Debug_Port>
 
 If you are able to use EHCI debug without setting the HCD index manually,
 this is correct.

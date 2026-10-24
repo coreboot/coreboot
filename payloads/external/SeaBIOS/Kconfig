@@ -104,7 +104,7 @@ config SEABIOS_BOOTORDER_FILE
 	  will attempt to boot from each item in the file - first line of the file
 	  first."
 
-	  See: https://www.coreboot.org/SeaBIOS#Configuring_boot_order
+	  See: https://web.archive.org/web/20211213234334/https://www.coreboot.org/SeaBIOS#Configuring_boot_order
 
 	  If used, a typical value would be:
 	    $(top)/src/mainboard/$(MAINBOARDDIR)/bootorder

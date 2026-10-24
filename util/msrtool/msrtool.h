@@ -6,7 +6,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #if (defined(__MACH__) && defined(__APPLE__))
-/* DirectHW is available here: https://www.coreboot.org/DirectHW */
+/*
+ * DirectHW is available here:
+ * https://web.archive.org/web/20220121010417/https://www.coreboot.org/DirectHW
+ */
 #define __DARWIN__
 #include <DirectHW/DirectHW.h>
 #endif

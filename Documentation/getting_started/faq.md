@@ -252,7 +252,7 @@ A critical piece for anyone attempting to do a board port is to make
 sure that you have a method to recover your system from a failed flash.
 
 We need an updated motherboard porting guide, but currently the guide
-on the [wiki](https://www.coreboot.org/Motherboard_Porting_Guide) looks
+on the [old wiki](https://web.archive.org/web/20220104082542/https://www.coreboot.org/Motherboard_Porting_Guide) looks
 to be the best reference.
 
 At the moment, the best answer to this question is to ask for help on

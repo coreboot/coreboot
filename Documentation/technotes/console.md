@@ -1,7 +1,7 @@
 # coreboot Console
 
 coreboot supports multiple ways to access its console.
-<https://www.coreboot.org/Console_and_outputs>
+<https://web.archive.org/web/20211220074509/https://www.coreboot.org/Console_and_outputs>
 
 
 ## SMBus Console

@@ -59,6 +59,8 @@ struct soc_amd_turin_poc_config {
 	struct soc_amd_common_config common_config;
 
 	u8 i2c_scl_reset;
+	/* Firmware-owned controllers retain power even with OS device nodes disabled. */
+	u8 firmware_i2c_mask; /* Bit N selects I2C controller N. */
 	struct dw_i2c_bus_config i2c[I2C_CTRLR_COUNT];
 
 	struct soc_usb_config usb;

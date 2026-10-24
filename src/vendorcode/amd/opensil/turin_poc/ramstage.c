@@ -30,6 +30,8 @@
 #include "../opensil.h"
 
 
+#define TURIN_FIRMWARE_I2C_MASK	(BIT(I2C_CTRLR_COUNT) - 1)
+
 #define TURIN_USB_STRUCT_MAJOR_VERSION	0xd
 #define TURIN_USB_STRUCT_MINOR_VERSION	0x13
 
@@ -206,6 +208,7 @@ static void configure_fch_isa(void)
 
 static void configure_fch_acpi(void)
 {
+	const struct soc_amd_turin_poc_config *soc_config = config_of_soc();
 	FCHHWACPI_INPUT_BLK *fch_hwacpi_data = SilFindStructure(SilId_FchHwAcpiP, 0);
 	FCHCLASS_INPUT_BLK *fch_data = SilFindStructure(SilId_FchClass, 0);
 	struct device *smb = DEV_PTR(smbus);
@@ -246,6 +249,12 @@ static void configure_fch_acpi(void)
 	FCH_DEV_ENABLE(i3c_1, FCH_AOAC_DEV_I3C1);
 	FCH_DEV_ENABLE(i3c_2, FCH_AOAC_DEV_I3C2);
 	FCH_DEV_ENABLE(i3c_3, FCH_AOAC_DEV_I3C3);
+
+	/* I2C0-5 occupy consecutive AOAC bitmap bits. */
+	if (soc_config->firmware_i2c_mask & ~TURIN_FIRMWARE_I2C_MASK)
+		printk(BIOS_ERR, "Ignoring invalid firmware I2C mask bits\n");
+	fch_data->FchRunTime.FchDeviceEnableMap |=
+		(uint32_t)(soc_config->firmware_i2c_mask & TURIN_FIRMWARE_I2C_MASK) << FCH_AOAC_DEV_I2C0;
 }
 
 static void configure_sdxi(void)

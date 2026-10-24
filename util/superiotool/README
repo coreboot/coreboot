@@ -60,9 +60,9 @@ or type
  $ superiotool -l
 
 There's also a collection of sample register dumps from various Super I/O
-chips on that web page. Please send further register dumps (either from a
-proprietary BIOS and/or from coreboot) to the coreboot mailing list
-(https://www.coreboot.org/Mailinglist).
+chips on that archived web page. Please send further register dumps
+(either from a proprietary BIOS and/or from coreboot) to the coreboot
+mailing list (https://doc.coreboot.org/community/forums.html).
 
 
 Website and Mailing List
@@ -72,8 +72,8 @@ The old wiki page is archived at
 https://web.archive.org/web/20220119071957/https://coreboot.org/Superiotool
 
 For additional information, patches, and discussions, please join the
-coreboot mailing list at https://www.coreboot.org/Mailinglist, where most
-superiotool developers are subscribed.
+coreboot mailing list, where most superiotool developers are subscribed:
+https://doc.coreboot.org/community/forums.html
 
 
 Copyright and License

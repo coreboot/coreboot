@@ -33,7 +33,8 @@ trivial patch so apply some common sense.
 
 	PLEASE check your patch with the automated style checker
 	(util/lint/checkpatch.pl) to catch trival style violations.
-	See https://www.coreboot.org/Coding_Style for guidance here.
+	See https://doc.coreboot.org/contributing/coding_style.html
+	for guidance here.
 
 	PLEASE document known bugs. If it doesn't work for everything
 	or does something very odd once a month document it.
@@ -42,7 +43,7 @@ trivial patch so apply some common sense.
 	of the OSDL certificate of contribution and should include a
 	Signed-off-by: line.  The current version of this "Developer's
 	Certificate of Origin" (DCO) is listed at
-	https://www.coreboot.org/Development_Guidelines#Sign-off_Procedure.
+	https://doc.coreboot.org/contributing/gerrit_guidelines.html#sign-off-procedure.
 
 4.	Make sure you have the right to send any changes you make. If you
 	do changes at work you may find your employer owns the patch

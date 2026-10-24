@@ -32,7 +32,7 @@ static const struct domain_iohc_info iohc_info[] = {
 	},
 	[1] = {
 		.fabric_id = 0x25,
-		.misc_smn_base = SMN_IOHC_MISC_BASE_1D61,
+		.misc_smn_base = SMN_IOHC_MISC_BASE_1D71,
 	},
 	[2] = {
 		.fabric_id = 0x26,
@@ -40,7 +40,7 @@ static const struct domain_iohc_info iohc_info[] = {
 	},
 	[3] = {
 		.fabric_id = 0x27,
-		.misc_smn_base = SMN_IOHC_MISC_BASE_1D51,
+		.misc_smn_base = SMN_IOHC_MISC_BASE_1D61,
 	},
 	[4] = {
 		.fabric_id = 0x23,
@@ -52,7 +52,7 @@ static const struct domain_iohc_info iohc_info[] = {
 	},
 	[6] = {
 		.fabric_id = 0x21,
-		.misc_smn_base = SMN_IOHC_MISC_BASE_1D71,
+		.misc_smn_base = SMN_IOHC_MISC_BASE_1D51,
 	},
 	[7] = {
 		.fabric_id = 0x20,

@@ -114,7 +114,7 @@ int send_psp_command(uint32_t command, void *buffer)
 		return -PSPSTS_RECOVERY;
 
 	if (wait_command(base, true))
-		return -PSPSTS_CMD_TIMEOUT;
+		return -PSPSTS_INIT_TIMEOUT;
 
 	if (ENV_SMM)
 		psp_set_smm_flag();

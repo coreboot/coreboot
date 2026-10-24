@@ -144,7 +144,7 @@ mov %ax,  0x16(%edi)   /* -> lfb_depth       */
 mov $4, %esi           /* Copy 4 color components' pos and size, each 1 byte. */
 1:
 mov 0x1b(%ebx, %esi, 2), %ax
-rol %ax                /* Order is reversed for Linux, hence swap. */
+rol $8, %ax            /* Order is reversed for Linux, hence swap. */
 mov %ax, 0x24(%edi, %esi, 2)
 dec %esi
 jnz 1b

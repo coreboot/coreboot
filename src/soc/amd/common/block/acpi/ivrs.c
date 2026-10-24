@@ -101,7 +101,15 @@ static unsigned long ivhd_dev_range(unsigned long current, uint16_t start_devid,
 	return current;
 }
 
-static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
+static struct device *acpi_ivhd_domain(struct device *iommu_domain, unsigned int index)
+{
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_IVRS_MULTI_DOMAIN))
+		return soc_acpi_ivhd_domain(iommu_domain, index);
+
+	return index == 0 ? iommu_domain : NULL;
+}
+
+static unsigned long acpi_ivhd_domain_entries(unsigned long current, struct device *dev)
 {
 	u8 dte_setting = IVHD_DTE_LINT_1_PASS | IVHD_DTE_LINT_0_PASS |
 		       IVHD_DTE_SYS_MGT_NO_TRANS | IVHD_DTE_NMI_PASS |
@@ -138,6 +146,46 @@ static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
 				      SMBUS_DEVFN, dte_setting);
 	}
 
+	return current;
+}
+
+static bool ivhd_domain_valid(struct device *owner, struct device *domain,
+			      unsigned int index)
+{
+	if (!CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_IVRS_MULTI_DOMAIN))
+		return true;
+
+	if (!domain->enabled || !domain->downstream ||
+	    domain->downstream->segment_group != owner->downstream->segment_group ||
+	    domain->downstream->secondary > domain->downstream->max_subordinate)
+		return false;
+
+	/* Do not emit duplicate or overlapping requester ranges in one IVHD. */
+	for (unsigned int previous = 0; previous < index; previous++) {
+		struct device *other = acpi_ivhd_domain(owner, previous);
+		if (!other || !other->enabled || !other->downstream ||
+		    other->downstream->segment_group != domain->downstream->segment_group)
+			continue;
+		if (domain->downstream->secondary <= other->downstream->max_subordinate &&
+		    other->downstream->secondary <= domain->downstream->max_subordinate)
+			return false;
+	}
+	return true;
+}
+
+static unsigned long acpi_ivhd_misc(unsigned long current, struct device *iommu_domain)
+{
+	struct device *domain;
+
+	for (unsigned int index = 0;
+	     (domain = acpi_ivhd_domain(iommu_domain, index)); index++) {
+		if (!ivhd_domain_valid(iommu_domain, domain, index)) {
+			printk(BIOS_WARNING, "IVRS: invalid peer domain %u for domain %u\n",
+			       dev_get_domain_id(domain), dev_get_domain_id(iommu_domain));
+			continue;
+		}
+		current = acpi_ivhd_domain_entries(current, domain);
+	}
 	return current;
 }
 
@@ -265,6 +313,9 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 	ivhd = &ivrs->ivhd;
 
 	while ((dev = dev_find_path(dev, DEVICE_PATH_DOMAIN)) != NULL) {
+		if (!acpi_ivhd_domain(dev, 0))
+			continue;
+
 		nb_dev = pcidev_path_behind(dev->downstream, PCI_DEVFN(0, 0));
 		iommu_dev = pcidev_path_behind(dev->downstream, PCI_DEVFN(0, 2));
 		domain = dev_get_domain_id(dev);

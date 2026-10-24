@@ -66,6 +66,12 @@ void acpi_log_events(const struct chipset_power_state *ps);
 unsigned long acpi_add_crat_table(unsigned long current, acpi_rsdp_t *rsdp);
 unsigned long acpi_add_ivrs_table(unsigned long current, acpi_rsdp_t *rsdp);
 
+/* Enumerate same-segment PCI domains served by an IOMMU. Index zero is
+ * the owner; return NULL after the final domain, or at zero to omit a root.
+ * The default returns only the owner and does not filter any roots.
+ */
+struct device *soc_acpi_ivhd_domain(struct device *iommu_domain, unsigned int index);
+
 unsigned long mainboard_write_madt_irq_overrides(unsigned long current);
 
 #endif /* AMD_BLOCK_ACPI_H */

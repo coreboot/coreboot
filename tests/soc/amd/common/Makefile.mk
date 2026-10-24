@@ -18,3 +18,15 @@ amd-cpu-power-test-cflags += -include tests/soc/amd/common/include/mock-msr.h
 amd-cpu-power-test-config += CONFIG_MAX_CPUS=768 CONFIG_ACPI_CPU_STRING=\"C%03X\"
 amd-cpu-power-test-config += CONFIG_ACPI_SSDT_PSD_INDEPENDENT=1
 amd-cpu-power-test-config += CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_CPPC=1
+
+tests-y += amd-ivrs-test
+amd-ivrs-test-srcs += tests/soc/amd/common/amd-ivrs-test.c
+amd-ivrs-test-srcs += src/soc/amd/common/block/acpi/ivrs.c
+amd-ivrs-test-srcs += src/acpi/acpi.c src/acpi/acpi_apic.c
+amd-ivrs-test-mocks += check_acpi_tables_write_limit
+amd-ivrs-test-cflags += -Isrc/soc/amd/cezanne/include -Isrc/soc/amd/common/block/include
+amd-ivrs-test-cflags += -include tests/soc/amd/common/include/mock-amd-hardware.h
+amd-ivrs-test-cflags += -Wno-address-of-packed-member
+amd-ivrs-test-config += CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_IVRS_MULTI_DOMAIN=1
+amd-ivrs-test-config += CONFIG_SOC_AMD_COMMON_BLOCK_EMMC=1
+amd-ivrs-test-config += CONFIG_ARCH_RAMSTAGE_X86_32=0 CONFIG_ARCH_RAMSTAGE_X86_64=1

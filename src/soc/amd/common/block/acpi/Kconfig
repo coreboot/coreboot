@@ -59,3 +59,9 @@ config ACPI_SSDT_PSD_INDEPENDENT
 	  AMD recommends the ACPI _PSD object to be configured to cause
 	  cores to transition between p-states independently. A vendor may
 	  choose to generate _PSD object to allow cores to transition together.
+
+config SOC_AMD_COMMON_BLOCK_ACPI_IVRS_MULTI_DOMAIN
+	bool
+	help
+	  Select when the SoC enumerates peer PCI domains behind an IOMMU.
+	  Otherwise each IOMMU describes only its own domain.

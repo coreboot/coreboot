@@ -71,7 +71,7 @@ SPL_TABLE_FILE=$(CONFIG_SPL_TABLE_FILE)
 #
 
 # type = 0x60
-PSP_APCB_FILES=$(APCB_SOURCES) $(APCB1_SOURCES) $(APCB_SOURCES_RECOVERY) $(APCB_SOURCES_RECOVERY1) $(APCB_SOURCES_RECOVERY2)
+PSP_APCB_FILES=$(APCB_SOURCES) $(APCB_SOURCES1) $(APCB_SOURCES_RECOVERY) $(APCB_SOURCES_RECOVERY1) $(APCB_SOURCES_RECOVERY2) $(APCB_SOURCES_68)
 
 # type = 0x61
 PSP_APOB_BASE=$(CONFIG_PSP_APOB_DRAM_ADDRESS)
@@ -178,6 +178,8 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 			$(DEP_FILES) \
 			$(UCODE_FILES) \
 			$(AMDFWTOOL) \
+			$(call strip_quotes, $(CONFIG_AMDFW_CONFIG_FILE)) \
+			$(call strip_quotes, $(CONFIG_PSP_EARLY_VGA_IMAGE)) \
 			$(obj)/fmap_config.h \
 			$(objcbfs)/bootblock_fixed_data.elf # this target also creates the .map file
 	$(if $(PSP_APCB_FILES), ,$(error APCB_SOURCES is not set))

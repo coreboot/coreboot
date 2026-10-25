@@ -21,3 +21,27 @@ uint16_t ddrio_offset(
 
 	return offset;
 }
+
+void set_rx_offset_vdq_bcast(const struct sysinfo *ctrl, const uint32_t value)
+{
+	if (ctrl->bdw) {
+		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++)
+			mchbar_write32(DDR_DATA_RX_OFFSET_VDQ_BDW(rank), value);
+	} else {
+		mchbar_write32(DDR_DATA_RX_OFFSET_VDQ_HSW, value);
+	}
+}
+
+void set_rx_offset_vdq(
+	const struct sysinfo *ctrl,
+	const uint8_t channel,
+	const uint8_t byte,
+	const uint32_t value)
+{
+	if (ctrl->bdw) {
+		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++)
+			mchbar_write32(RX_OFFSET_VDQ_BDW(channel, rank, byte), value);
+	} else {
+		mchbar_write32(RX_OFFSET_VDQ_HSW(channel, byte), value);
+	}
+}

@@ -215,6 +215,7 @@ void download_regfile(
 }
 
 static uint16_t get_per_bit_reg(
+	const struct sysinfo *ctrl,
 	const enum margin_parameter param,
 	const bool multicast,
 	const uint8_t channel,
@@ -235,11 +236,17 @@ static uint16_t get_per_bit_reg(
 			return TX_PER_BIT_RANK(channel, rank, byte);
 		}
 	case RdVBit:
-		/** TODO: Broadwell has per-rank RX_OFFSET_VDQ registers **/
+		/** Broadwell has per-rank RX_OFFSET_VDQ registers **/
 		if (multicast) {
-			return DDR_DATA_RX_OFFSET_VDQ;
+			if (ctrl->bdw)
+				return DDR_DATA_RX_OFFSET_VDQ_BDW(rank);
+			else
+				return DDR_DATA_RX_OFFSET_VDQ_HSW;
 		} else {
-			return RX_OFFSET_VDQ(channel, byte);
+			if (ctrl->bdw)
+				return RX_OFFSET_VDQ_BDW(channel, rank, byte);
+			else
+				return RX_OFFSET_VDQ_HSW(channel, byte);
 		}
 	default:
 		die("%s: Invalid margin parameter %d\n", __func__, param);
@@ -285,7 +292,7 @@ static void change_per_bit_margin(
 {
 	const bool is_rd = param == RdTBit || param == RdVBit;
 	const bool is_wr = param == WrTBit;
-	const uint16_t reg = get_per_bit_reg(param, multicast, channel_in, rank, in_byte);
+	const uint16_t reg = get_per_bit_reg(ctrl, param, multicast, channel_in, rank, in_byte);
 	mchbar_write32(reg, value);
 	if (multicast) {
 		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {

@@ -85,7 +85,7 @@ static enum nri_status train_vref_offset(struct sysinfo *ctrl)
 		change_1d_margin_multicast(ctrl, RdV, vref, 0, false, REG_FILE_USE_RANK);
 
 		/* Program settings for Vref and SampOffset = 7 (8 + 7) */
-		mchbar_write32(DDR_DATA_RX_OFFSET_VDQ, 0xffffffff);
+		set_rx_offset_vdq_bcast(ctrl, 0xffffffff);
 		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 			if (!does_ch_exist(ctrl, channel))
 				continue;
@@ -100,7 +100,7 @@ static enum nri_status train_vref_offset(struct sysinfo *ctrl)
 		}
 
 		/* Program settings for Vref and SampOffset = -7 (8 - 7) */
-		mchbar_write32(DDR_DATA_RX_OFFSET_VDQ, 0x11111111);
+		set_rx_offset_vdq_bcast(ctrl, 0x11111111);
 		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 			if (!does_ch_exist(ctrl, channel))
 				continue;
@@ -234,7 +234,7 @@ static void train_samp_offset(struct sysinfo *ctrl)
 		for (uint8_t bit = 0; bit < NUM_BITS; bit++) {
 			rx_offset_vdq += samp_offset << (4 * bit);
 		}
-		mchbar_write32(DDR_DATA_RX_OFFSET_VDQ, rx_offset_vdq);
+		set_rx_offset_vdq_bcast(ctrl, rx_offset_vdq);
 		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 			if (!does_ch_exist(ctrl, channel))
 				continue;
@@ -313,7 +313,7 @@ static void train_samp_offset(struct sysinfo *ctrl)
 				ctrl->rxdqvrefpb[channel][0][byte][bit].center = vref;
 				rx_offset_vdq += vref & 0xf << (4 * bit);
 			}
-			mchbar_write32(RX_OFFSET_VDQ(channel, byte), rx_offset_vdq);
+			set_rx_offset_vdq(ctrl, channel, byte, rx_offset_vdq);
 			printk(BIOS_DEBUG, " ");
 			download_regfile(ctrl, channel, 1, 0, REG_FILE_USE_RANK, 0, 1, 0);
 		}

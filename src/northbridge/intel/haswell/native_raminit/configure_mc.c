@@ -169,7 +169,7 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 		}
 	}
 	mchbar_write32(DDR_DATA_TX_XTALK, 0);
-	mchbar_write32(DDR_DATA_RX_OFFSET_VDQ, 0x88888888);
+	set_rx_offset_vdq_bcast(ctrl, 0x88888888);
 	ddrio_write(ctrl, DDRIO_OFFSET_TRAIN, 0xff, 0xff, 0);
 	ddrio_write(ctrl, DDRIO_OFFSET_COMP, 0xff, 0xff, 0);
 

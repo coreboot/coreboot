@@ -535,6 +535,13 @@ static inline void ddrio_write(
 	return mchbar_write32(ddrio_offset(ctrl, reg, channel, byte), value);
 }
 
+void set_rx_offset_vdq_bcast(const struct sysinfo *ctrl, const uint32_t value);
+void set_rx_offset_vdq(
+	const struct sysinfo *ctrl,
+	const uint8_t channel,
+	const uint8_t byte,
+	const uint32_t value);
+
 static inline int8_t sign_of(const int32_t val)
 {
 	return val < 0 ? -1 : 1;

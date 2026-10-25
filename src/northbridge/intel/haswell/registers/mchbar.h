@@ -25,7 +25,8 @@
 
 #define RCOMP_DATA_1(ch, byte)			_DDRIO_C_R_B(0x0044, ch, 0, byte)
 #define DATA_TX_XTALK(ch, byte)			_DDRIO_C_R_B(0x0048, ch, 0, byte)
-#define RX_OFFSET_VDQ(ch, byte)			_DDRIO_C_R_B(0x004c, ch, 0, byte)
+#define RX_OFFSET_VDQ_HSW(ch, byte)		_DDRIO_C_R_B(0x004c, ch, 0, byte)
+#define RX_OFFSET_VDQ_BDW(ch, rank, byte)	_DDRIO_C_R_B(0x0050, ch, rank, byte)
 
 /* These offsets are for Haswell. On Broadwell, add 0xc to get the right values */
 #define _DATA_TRAIN_FEEDBACK_HSW		0x0054
@@ -95,7 +96,8 @@
 
 #define DDR_DATA_RCOMP_DATA_1			(_BROADCAST_BASE + RCOMP_DATA_1(0, 0))
 #define DDR_DATA_TX_XTALK			(_BROADCAST_BASE + DATA_TX_XTALK(0, 0))
-#define DDR_DATA_RX_OFFSET_VDQ			(_BROADCAST_BASE + RX_OFFSET_VDQ(0, 0))
+#define DDR_DATA_RX_OFFSET_VDQ_HSW		(_BROADCAST_BASE + RX_OFFSET_VDQ_HSW(0, 0))
+#define DDR_DATA_RX_OFFSET_VDQ_BDW(rank)	(_BROADCAST_BASE + RX_OFFSET_VDQ_BDW(0, rank, 0))
 
 /* DDR CMD broadcast */
 #define DDR_CMD_COMP				0x3700

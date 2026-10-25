@@ -348,11 +348,16 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	printk(BIOS_INFO, "IRQ: Using dynamically assigned PCI IO-APIC IRQs\n");
 
 	/*
-	 * Set FSPS UPD ITbtConnectTopologyTimeoutInMs with value 0. FSP will
-	 * evaluate this UPD value and skip sending command. There will be no
-	 * delay for command completion.
+	 * With Software Connection Manager set timeout to 0. FSP will evaluate
+	 * this UPD value and skip sending the Connect Topology command. There
+	 * will be no delay for command completion.
+	 *
+	 * For Firmware Connection Manager (ICM) Thunderbolt firmware keep the
+	 * FSP default delay so that the controller is up before the OS probes
+	 * it.
 	 */
-	params->ITbtConnectTopologyTimeoutInMs = 0;
+	if (CONFIG(SOFTWARE_CONNECTION_MANAGER))
+		params->ITbtConnectTopologyTimeoutInMs = 0;
 
 	/* Disable TcColdOnUsbConnect */
 	params->DisableTccoldOnUsbConnected = 1;

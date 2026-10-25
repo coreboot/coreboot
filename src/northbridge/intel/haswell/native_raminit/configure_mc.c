@@ -12,13 +12,10 @@
 
 #include "raminit_native.h"
 
-static void program_misc_control(struct sysinfo *ctrl)
+static void program_interleave_cke(struct sysinfo *ctrl)
 {
-	if (!is_hsw_ult())
-		return;
-
 	const union ddr_scram_misc_control_reg ddr_scram_misc_ctrl = {
-		.ddr_no_ch_interleave = !ctrl->dq_pins_interleaved,
+		.ddr_no_ch_interleave = is_hsw_ult() && !ctrl->dq_pins_interleaved,
 		.lpddr_mode           = ctrl->lpddr,
 		.cke_mapping_ch0      = ctrl->lpddr ? ctrl->lpddr_cke_rank_map[0] : 0,
 		.cke_mapping_ch1      = ctrl->lpddr ? ctrl->lpddr_cke_rank_map[1] : 0,
@@ -823,7 +820,7 @@ enum nri_status configure_mc(struct sysinfo *ctrl)
 	const bool dis_odt_static = is_hsw_ult(); /* Disable static ODT legs on ULT */
 	const bool vddhi = ctrl->vdd_mv > 1350;
 
-	program_misc_control(ctrl);
+	program_interleave_cke(ctrl);
 	program_mrc_revision();
 	program_ranks_used(ctrl);
 	program_ddr_data(ctrl, dis_odt_static, vddhi);

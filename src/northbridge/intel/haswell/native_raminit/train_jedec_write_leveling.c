@@ -310,7 +310,7 @@ static enum nri_status train_jedec_write_leveling_cleanup(struct sysinfo *ctrl)
 	/* Restore WDB after test */
 	write_wdb_va_pat(ctrl, 0, BASIC_VA_PAT_SPREAD_8, 8, 0);
 	program_wdb_lfsr(ctrl, false);
-	mchbar_write32(DDR_DATA_OFFSET_TRAIN, 0);
+	ddrio_write(ctrl, DDRIO_OFFSET_TRAIN, 0xff, 0xff, 0);
 
 	/** TODO: Do full JEDEC init instead? **/
 	io_reset();
@@ -354,6 +354,11 @@ static void ddr3_set_q_off(struct sysinfo *ctrl, bool q_off_enable)
 	}
 }
 
+static uint32_t sample_wl(struct sysinfo *ctrl, const uint8_t channel, const uint8_t byte)
+{
+	return get_data_train_fb(ctrl, channel, byte);
+}
+
 enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 {
 	/*
@@ -383,13 +388,13 @@ enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 		data_control_0.read_rf_rd   = 0;
 		data_control_0.read_rf_wr   = 1;
 		data_control_0.read_rf_rank = 0;
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+		ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 			union ddr_data_control_2_reg data_control_2 = ch->dq_ctrl_2[byte];
 			data_control_2.force_bias_on = 1;
 			data_control_2.force_rx_on   = 0;
 			data_control_2.wl_long_delay = wl_long_delay;
-			mchbar_write32(DQ_CONTROL_2(channel, byte), data_control_2.raw);
+			ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte, data_control_2.raw);
 		}
 	}
 
@@ -460,7 +465,7 @@ enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 			data_control_0.read_rf_rd       = 0;
 			data_control_0.read_rf_wr       = 1;
 			data_control_0.read_rf_rank     = rank;
-			mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+			ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 		}
 		printk(BIOS_DEBUG, "\nRank %u\n", rank);
 		printk(JWRL_PLOT, "Channel\t");
@@ -506,10 +511,9 @@ enum nri_status train_jedec_write_leveling(struct sysinfo *ctrl)
 					continue;
 
 				for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-					const uint32_t feedback =
-						get_data_train_feedback(channel, byte);
-					const bool pass = (feedback & 0x1ff) >= 16;
-					printk(JWRL_PLOT, "\t%c%u", pass ? '.' : '#', feedback);
+					const uint32_t fb = sample_wl(ctrl, channel, byte);
+					const bool pass = (fb & 0x1ff) >= 16;
+					printk(JWRL_PLOT, "\t%c%u", pass ? '.' : '#', fb);
 					phase_record_pass(
 						&region_data[channel][byte],
 						pass,
@@ -605,9 +609,9 @@ clean_up:
 			continue;
 
 		const struct channel_data *ch = &ctrl->ch[channel];
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ch->dq_ctrl_0.raw);
+		ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, ch->dq_ctrl_0.raw);
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-			mchbar_write32(DQ_CONTROL_2(channel, byte), ch->dq_ctrl_2[byte].raw);
+			ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte, ch->dq_ctrl_2[byte].raw);
 		}
 	}
 	if (!ctrl->lpddr)

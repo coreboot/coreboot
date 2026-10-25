@@ -190,7 +190,7 @@ enum nri_status exit_selfrefresh(struct sysinfo *ctrl)
 
 		/* Fields in ctrl aren't populated on a warm boot */
 		union ddr_data_control_0_reg data_control_0 = {
-			.raw = mchbar_read32(DQ_CONTROL_0(channel, 0)),
+			.raw = ddrio_read(ctrl, DDRIO_CTRL_0, channel, 0),
 		};
 		data_control_0.read_rf_rd = 1;
 		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
@@ -198,7 +198,7 @@ enum nri_status exit_selfrefresh(struct sysinfo *ctrl)
 				continue;
 
 			data_control_0.read_rf_rank = rank;
-			mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+			ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 		}
 	}
 

@@ -28,7 +28,7 @@ static void update_internal_clocks_on(struct sysinfo *ctrl)
 			}
 		}
 		ch->dq_ctrl_0.internal_clocks_on = clocks_on;
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ch->dq_ctrl_0.raw);
+		ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, ch->dq_ctrl_0.raw);
 	}
 }
 
@@ -52,7 +52,7 @@ static void update_sdll_length(struct sysinfo *ctrl)
 			}
 			/* Calculate which segments to turn off */
 			ch->dq_ctrl_1[byte].sdll_segment_disable = (7 - (max_pi >> 3)) & ~1;
-			mchbar_write32(DQ_CONTROL_1(channel, byte), ch->dq_ctrl_1[byte].raw);
+			ddrio_write(ctrl, DDRIO_CTRL_1, channel, byte, ch->dq_ctrl_1[byte].raw);
 		}
 	}
 }
@@ -84,7 +84,7 @@ static void set_rx_clk_stg_num(struct sysinfo *ctrl, const uint8_t channel)
 			const int8_t o_off = ch->dq_ctrl_1[byte].odt_duration;
 			ch->dq_ctrl_2[byte].rx_clk_stg_num = MAX(17, o_on + o_off + 14);
 		}
-		mchbar_write32(DQ_CONTROL_2(channel, byte), ch->dq_ctrl_2[byte].raw);
+		ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte, ch->dq_ctrl_2[byte].raw);
 	}
 }
 
@@ -155,7 +155,7 @@ static void program_burst_end_odt_delay(struct sysinfo *ctrl)
 		struct channel_data *ch = &ctrl->ch[channel];
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 			ch->dq_ctrl_1[byte].burst_end_odt_delay = beod;
-			mchbar_write32(DQ_CONTROL_1(channel, byte), ch->dq_ctrl_1[byte].raw);
+			ddrio_write(ctrl, DDRIO_CTRL_1, channel, byte, ch->dq_ctrl_1[byte].raw);
 		}
 	}
 }

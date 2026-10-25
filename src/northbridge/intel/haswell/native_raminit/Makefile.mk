@@ -4,6 +4,7 @@ romstage-y += activate_mc.c
 romstage-y += change_margin.c
 romstage-y += configure_mc.c
 romstage-y += ddr3.c
+romstage-y += ddrio_helper.c
 romstage-y += jedec_reset.c
 romstage-y += lookup_timings.c
 romstage-y += init_mpll.c

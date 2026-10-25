@@ -29,10 +29,10 @@ static void run_sense_amp_test(struct sysinfo *ctrl, uint8_t channel)
 	data_control_0.read_rf_rank    = 0;
 	data_control_0.force_odt_on    = 1;
 	data_control_0.samp_train_mode = 1;
-	mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+	ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 	udelay(1);
 	data_control_0.samp_train_mode = 0;
-	mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+	ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 }
 
 static enum nri_status train_vref_offset(struct sysinfo *ctrl)
@@ -68,7 +68,7 @@ static enum nri_status train_vref_offset(struct sysinfo *ctrl)
 			union ddr_data_control_2_reg data_control_2 = ch->dq_ctrl_2[byte];
 			data_control_2.force_bias_on = 1;
 			data_control_2.force_rx_on   = 1;
-			mchbar_write32(DQ_CONTROL_2(channel, byte), data_control_2.raw);
+			ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte, data_control_2.raw);
 		}
 	}
 
@@ -92,10 +92,10 @@ static enum nri_status train_vref_offset(struct sysinfo *ctrl)
 
 			run_sense_amp_test(ctrl, channel);
 			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-				const uint8_t feedback = get_data_train_feedback(channel, byte);
+				const uint8_t fb = get_data_train_fb(ctrl, channel, byte);
 				struct vref_train_data *curr_data = &vref_data[channel][byte];
-				curr_data->low_mask &= feedback;
-				curr_data->sum_bits = -popcnt(feedback);
+				curr_data->low_mask &= fb;
+				curr_data->sum_bits = -popcnt(fb);
 			}
 		}
 
@@ -108,10 +108,10 @@ static enum nri_status train_vref_offset(struct sysinfo *ctrl)
 			run_sense_amp_test(ctrl, channel);
 			printk(VREF_OFFSET_PLOT, "\t");
 			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-				const uint8_t feedback = get_data_train_feedback(channel, byte);
+				const uint8_t fb = get_data_train_fb(ctrl, channel, byte);
 				struct vref_train_data *curr_data = &vref_data[channel][byte];
-				curr_data->high_mask |= feedback;
-				curr_data->sum_bits += popcnt(feedback);
+				curr_data->high_mask |= fb;
+				curr_data->sum_bits += popcnt(fb);
 				printk(VREF_OFFSET_PLOT, "%d ", curr_data->sum_bits);
 				if (curr_data->sum_bits > curr_data->best_sum) {
 					curr_data->best_sum  = curr_data->sum_bits;
@@ -249,19 +249,18 @@ static void train_samp_offset(struct sysinfo *ctrl)
 					data_control_2.force_bias_on     = 1;
 					data_control_2.force_rx_on       = 1;
 					data_control_2.leaker_comp       = 0;
-					mchbar_write32(DQ_CONTROL_2(channel, byte),
+					ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte,
 							data_control_2.raw);
 				}
 			}
 			run_sense_amp_test(ctrl, channel);
 			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-				const uint32_t feedback =
-					get_data_train_feedback(channel, byte);
+				const uint32_t fb = get_data_train_fb(ctrl, channel, byte);
 
 				for (uint8_t bit = 0; bit < max_train_bits; bit++) {
 					struct samp_train_data *const curr_data =
 							&samp_data[channel][byte][bit];
-					const bool result = feedback & BIT(bit);
+					const bool result = fb & BIT(bit);
 					if (result) {
 						curr_data->last_one = samp_offset;
 					} else if (curr_data->first_zero == 0) {
@@ -337,9 +336,9 @@ enum nri_status train_sense_amp_offset(struct sysinfo *ctrl)
 			continue;
 
 		const struct channel_data *ch = &ctrl->ch[channel];
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ch->dq_ctrl_0.raw);
+		ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, ch->dq_ctrl_0.raw);
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-			mchbar_write32(DQ_CONTROL_2(channel, byte), ch->dq_ctrl_2[byte].raw);
+			ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte, ch->dq_ctrl_2[byte].raw);
 		}
 	}
 	io_reset();

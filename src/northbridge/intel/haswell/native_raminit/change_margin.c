@@ -141,7 +141,7 @@ void update_vref_and_wait(
 		ctrl->dimm_vref.raw[vref_type] = new_offset;
 
 	/* Use CH1 byte 7 */
-	const uint16_t vref_reg = 0xf78; /* TODO: 0xf84 for BDW? */
+	const uint16_t vref_reg = ddrio_offset(ctrl, DDRIO_VREF_ADJUST, 1, 7);
 	union ddr_data_vref_adjust_reg ddr_vref_adjust = {
 		.raw = mchbar_read32(vref_reg),
 	};
@@ -204,7 +204,7 @@ void download_regfile(
 		const uint32_t log_to_phys = mchbar_read32(REUT_ch_RANK_LOG_TO_PHYS(channel));
 		phys_rank = log_to_phys >> (reut_seq_base_addr.rank_addr * 4) & 0x3;
 	}
-	uint32_t reg = multicast ? DDR_DATA_ch_CONTROL_0(channel) : DQ_CONTROL_0(channel, byte);
+	const uint16_t reg = ddrio_offset(ctrl, DDRIO_CTRL_0, channel, multicast ? 0xff : byte);
 	union ddr_data_control_0_reg ddr_data_control_0 = {
 		.raw = mchbar_read32(reg),
 	};
@@ -336,7 +336,7 @@ static void update_data_offset_train(
 		die("%s: Invalid margin parameter %u\n", __func__, param);
 	}
 	if (en_multicast) {
-		mchbar_write32(DDR_DATA_OFFSET_TRAIN, value);
+		ddrio_write(ctrl, DDRIO_OFFSET_TRAIN, 0xff, 0xff, value);
 		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 			if (!does_ch_exist(ctrl, channel))
 				continue;
@@ -348,7 +348,7 @@ static void update_data_offset_train(
 			}
 		}
 	} else {
-		mchbar_write32(DATA_OFFSET_TRAIN(channel_in, byte_in), value);
+		ddrio_write(ctrl, DDRIO_OFFSET_TRAIN, channel_in, byte_in, value);
 		download_regfile(ctrl, channel_in, false, rank, regfile, byte_in, is_rd, is_wr);
 		if (update_ctrl)
 			ctrl->ch[channel_in].offset_train[byte_in].raw = value;
@@ -478,7 +478,7 @@ static void update_data_static_legs(struct sysinfo *ctrl, bool dis_odt_static, b
 		}
 		union ddr_data_control_0_reg data_control_0 = ctrl->ch[channel].dq_ctrl_0;
 		data_control_0.disable_odt_static = dis_odt_static;
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+		ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 		if (update_ctrl) {
 			ctrl->ch[channel].dq_ctrl_0 = data_control_0;
 		}
@@ -624,7 +624,7 @@ void update_opt_param_offset(
 	struct channel_data *ch = &ctrl->ch[channel];
 	union ddr_data_offset_comp_reg data_offset_comp = ch->offset_comp[byte];
 	if (optparam == OptDefault) {
-		mchbar_write32(DATA_OFFSET_COMP(channel, byte), data_offset_comp.raw);
+		ddrio_write(ctrl, DDRIO_OFFSET_COMP, channel, byte, data_offset_comp.raw);
 		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
 			if (!rank_in_mask(rank, rankmask)) {
 				continue;
@@ -632,7 +632,7 @@ void update_opt_param_offset(
 			update_rxt(ctrl, channel, rank, byte, RXT_RESTORE, 0);
 			update_txt(ctrl, channel, rank, byte, TXT_RESTORE, 0);
 		}
-		mchbar_write32(DQ_CONTROL_1(channel, byte), ch->dq_ctrl_1[byte].raw);
+		ddrio_write(ctrl, DDRIO_CTRL_1, channel, byte, ch->dq_ctrl_1[byte].raw);
 		return;
 	}
 	if (is_cpu_comp(optparam)) {
@@ -653,7 +653,7 @@ void update_opt_param_offset(
 		} else if (optparam == OptSComp) {
 			data_offset_comp.slew_rate = off;
 		}
-		mchbar_write32(DATA_OFFSET_COMP(channel, byte), data_offset_comp.raw);
+		ddrio_write(ctrl, DDRIO_OFFSET_COMP, channel, byte, data_offset_comp.raw);
 		if (update_ctrl) {
 			ch->offset_comp[byte] = data_offset_comp;
 		}
@@ -708,7 +708,7 @@ void update_opt_param_offset(
 		 */
 		union ddr_data_control_1_reg data_control_1 = ch->dq_ctrl_1[byte];
 		data_control_1.rx_bias_ctl = clamp_s16(0, off_in, 7);
-		mchbar_write32(DQ_CONTROL_1(channel, byte), data_control_1.raw);
+		ddrio_write(ctrl, DDRIO_CTRL_1, channel, byte, data_control_1.raw);
 		if (update_ctrl) {
 			ch->dq_ctrl_1[byte] = data_control_1;
 		}

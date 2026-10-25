@@ -25,20 +25,20 @@ static void clear_rx_training_mode(struct sysinfo *ctrl, const uint8_t channel)
 {
 	const struct channel_data *ch = &ctrl->ch[channel];
 	for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
-		mchbar_write32(DQ_CONTROL_2(channel, byte), ch->dq_ctrl_2[byte].raw);
+		ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte, ch->dq_ctrl_2[byte].raw);
 
 	if (ctrl->lpddr) {
 		union ddr_data_control_0_reg data_control_0 = {
-			.raw = mchbar_read32(DDR_DATA_ch_CONTROL_0(channel)),
+			.raw = ddrio_read(ctrl, DDRIO_CTRL_0, channel, 0xff),
 		};
 		data_control_0.odt_samp_extend_en = 0;
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+		ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 		tick_delay(1);
 		data_control_0.rx_training_mode = 0;
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+		ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 		tick_delay(1);
 	}
-	mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ch->dq_ctrl_0.raw);
+	ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, ch->dq_ctrl_0.raw);
 }
 
 static void set_rxdqs_edges_to_midpoint(struct sysinfo *ctrl)
@@ -145,7 +145,7 @@ enum nri_status train_read_mpr(struct sysinfo *ctrl)
 					data_control_2.force_bias_on = 1;
 					data_control_2.force_rx_on   = 1;
 					data_control_2.leaker_comp   = 0;
-					mchbar_write32(DQ_CONTROL_2(channel, byte),
+					ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte,
 						data_control_2.raw);
 				}
 				union ddr_data_control_0_reg data_control_0 = ch->dq_ctrl_0;
@@ -153,8 +153,8 @@ enum nri_status train_read_mpr(struct sysinfo *ctrl)
 				data_control_0.force_odt_on       = !ctrl->lpddr;
 				data_control_0.en_read_preamble   = 0;
 				data_control_0.odt_samp_extend_en = ctrl->lpddr;
-				const uint32_t reg_offset = DDR_DATA_ch_CONTROL_0(channel);
-				mchbar_write32(reg_offset, data_control_0.raw);
+				ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff,
+					data_control_0.raw);
 			}
 			run_mpr_io_test(false);
 			for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
@@ -163,7 +163,7 @@ enum nri_status train_read_mpr(struct sysinfo *ctrl)
 
 				printk(RMPR_PLOT, "\t");
 				for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-					uint32_t fb = get_data_train_feedback(channel, byte);
+					uint32_t fb = get_data_train_fb(ctrl, channel, byte);
 					const bool pass = fb == 1;
 					printk(RMPR_PLOT, pass ? ". " : "# ");
 					linear_record_pass(

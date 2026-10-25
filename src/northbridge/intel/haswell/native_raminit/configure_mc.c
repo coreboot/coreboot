@@ -170,8 +170,8 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 	}
 	mchbar_write32(DDR_DATA_TX_XTALK, 0);
 	mchbar_write32(DDR_DATA_RX_OFFSET_VDQ, 0x88888888);
-	mchbar_write32(DDR_DATA_OFFSET_TRAIN, 0);
-	mchbar_write32(DDR_DATA_OFFSET_COMP, 0);
+	ddrio_write(ctrl, DDRIO_OFFSET_TRAIN, 0xff, 0xff, 0);
+	ddrio_write(ctrl, DDRIO_OFFSET_COMP, 0xff, 0xff, 0);
 
 	const union ddr_data_control_0_reg data_control_0 = {
 		.internal_clocks_on = !is_ult,
@@ -181,7 +181,7 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 		.odt_samp_extend_en = ctrl->lpddr,
 		.early_rleak_en     = ctrl->lpddr && ctrl->stepping >= STEPPING_C0,
 	};
-	mchbar_write32(DDR_DATA_CONTROL_0, data_control_0.raw);
+	ddrio_write(ctrl, DDRIO_CTRL_0, 0xff, 0xff, data_control_0.raw);
 
 	const union ddr_data_control_1_reg data_control_1 = {
 		.dll_mask             = 1,
@@ -191,7 +191,7 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 		.sense_amp_delay      = -2,
 		.sense_amp_duration   = 7,
 	};
-	mchbar_write32(DDR_DATA_CONTROL_1, data_control_1.raw);
+	ddrio_write(ctrl, DDRIO_CTRL_1, 0xff, 0xff, data_control_1.raw);
 
 	clear_data_offset_train_all(ctrl);
 
@@ -214,7 +214,7 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 			const uint8_t stg = latency * byte_stagger[byte] / ctrl->lanes;
 			data_control_2.rx_stagger_ctl = stg & 0x1f;
-			mchbar_write32(DQ_CONTROL_2(channel, byte), data_control_2.raw);
+			ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte, data_control_2.raw);
 			ch->offset_comp[byte].raw = 0;
 			ch->dq_ctrl_1[byte] = data_control_1;
 			ch->dq_ctrl_2[byte] = data_control_2;
@@ -294,7 +294,7 @@ static void program_dimm_vref(struct sysinfo *ctrl, const uint16_t vccio_mv, con
 	ctrl->dimm_vref.dq[0] = ddr_vref_adjust.vref_dq_ch0_ctrl;
 	ctrl->dimm_vref.dq[1] = ddr_vref_adjust.vref_dq_ch1_ctrl;
 	ctrl->dimm_vref.ca    = ddr_vref_adjust.vref_ca_ctrl;
-	mchbar_write32(DDR_DATA_VREF_ADJUST, ddr_vref_adjust.raw);
+	ddrio_write(ctrl, DDRIO_VREF_ADJUST, 0xff, 0xff, ddr_vref_adjust.raw);
 }
 
 static void program_ddr_ca(struct sysinfo *ctrl, const bool vddhi)

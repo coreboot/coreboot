@@ -500,6 +500,41 @@ struct sysinfo {
 	uint8_t dq_pat_lc;
 };
 
+enum ddrio_reg {
+	DDRIO_TRAIN_FEEDBACK	= _DATA_TRAIN_FEEDBACK_HSW,
+	DDRIO_OFFSET_COMP	= _DATA_OFFSET_COMP_HSW,
+	DDRIO_CTRL_1		= _DATA_CONTROL_1_HSW,
+	DDRIO_CTRL_2		= _DATA_CONTROL_2_HSW,
+	DDRIO_OFFSET_TRAIN	= _DATA_OFFSET_TRAIN_HSW,
+	DDRIO_CTRL_0		= _DATA_CONTROL_0_HSW,
+	DDRIO_VREF_ADJUST	= _DATA_VREF_ADJUST_HSW,
+};
+
+uint16_t ddrio_offset(
+	const struct sysinfo *ctrl,
+	const enum ddrio_reg reg,
+	const uint8_t channel,
+	const uint8_t byte);
+
+static inline uint32_t ddrio_read(
+	const struct sysinfo *ctrl,
+	const enum ddrio_reg reg,
+	const uint8_t channel,
+	const uint8_t byte)
+{
+	return mchbar_read32(ddrio_offset(ctrl, reg, channel, byte));
+}
+
+static inline void ddrio_write(
+	const struct sysinfo *ctrl,
+	const enum ddrio_reg reg,
+	const uint8_t channel,
+	const uint8_t byte,
+	const uint32_t value)
+{
+	return mchbar_write32(ddrio_offset(ctrl, reg, channel, byte), value);
+}
+
 static inline int8_t sign_of(const int32_t val)
 {
 	return val < 0 ? -1 : 1;
@@ -547,9 +582,9 @@ static inline void reut_disable_cadb_deselects(void)
 		mchbar_write8(REUT_ch_MISC_PAT_CADB_CTRL(channel), 0);
 }
 
-static inline uint32_t get_data_train_feedback(const uint8_t channel, const uint8_t byte)
+static inline uint32_t get_data_train_fb(struct sysinfo *ctrl, uint8_t channel, uint8_t byte)
 {
-	return mchbar_read32(DATA_TRAIN_FEEDBACK(channel, byte));
+	return ddrio_read(ctrl, DDRIO_TRAIN_FEEDBACK, channel, byte);
 }
 
 static inline uint16_t get_byte_group_errors(const uint8_t channel)

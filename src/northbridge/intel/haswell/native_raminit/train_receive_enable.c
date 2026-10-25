@@ -157,9 +157,9 @@ static void program_rl_delays(struct sysinfo *ctrl, const uint8_t rank, const ui
 	}
 }
 
-static bool sample_dqs(const uint8_t channel, const uint8_t byte)
+static bool sample_dqs(struct sysinfo *ctrl, const uint8_t channel, const uint8_t byte)
 {
-	return (get_data_train_feedback(channel, byte) & 0x1ff) >= BIT(RE_NUM_SAMPLES - 1);
+	return (get_data_train_fb(ctrl, channel, byte) & 0x1ff) >= BIT(RE_NUM_SAMPLES - 1);
 }
 
 enum nri_status train_receive_enable(struct sysinfo *ctrl)
@@ -205,7 +205,7 @@ enum nri_status train_receive_enable(struct sysinfo *ctrl)
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
 			union ddr_data_control_2_reg data_control_2 = ch->dq_ctrl_2[byte];
 			data_control_2.force_rx_on = 1;
-			mchbar_write32(DQ_CONTROL_2(channel, byte), data_control_2.raw);
+			ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte, data_control_2.raw);
 		}
 		union ddr_data_control_0_reg data_control_0 = ch->dq_ctrl_0;
 		if (ctrl->lpddr) {
@@ -216,11 +216,11 @@ enum nri_status train_receive_enable(struct sysinfo *ctrl)
 			 * at the end of this function from the host structure.
 			 */
 			data_control_0.lpddr_mode = 0;
-			mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+			ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 		}
 		data_control_0.force_odt_on     = 1;
 		data_control_0.rl_training_mode = 1;
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+		ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 		mchbar_write32(SC_IO_LATENCY_ch(channel), (union sc_io_latency_reg) {
 			.rt_iocomp = rt_io_comp,
 		}.raw);
@@ -277,7 +277,7 @@ enum nri_status train_receive_enable(struct sysinfo *ctrl)
 
 				printk(RCVEN_PLOT, "\t");
 				for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-					const bool high = sample_dqs(channel, byte);
+					const bool high = sample_dqs(ctrl, channel, byte);
 					printk(RCVEN_PLOT, high ? ". " : "# ");
 					phase_record_pass(
 						&region_data[channel][byte],
@@ -345,7 +345,7 @@ enum nri_status train_receive_enable(struct sysinfo *ctrl)
 				printk(RCVEN_PLOT, "  %2u\t", ctrl->io_latency[channel][rank]);
 				uint16_t highs = 0;
 				for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-					const bool high = sample_dqs(channel, byte);
+					const bool high = sample_dqs(ctrl, channel, byte);
 					printk(RCVEN_PLOT, high ? "H " : "L ");
 					if (high)
 						highs |= BIT(byte);
@@ -434,7 +434,7 @@ enum nri_status train_receive_enable(struct sysinfo *ctrl)
 						printk(RCVEN_PLOT, ". ");
 						continue;
 					}
-					const bool pass = sample_dqs(channel, byte);
+					const bool pass = sample_dqs(ctrl, channel, byte);
 					printk(RCVEN_PLOT, pass ? ". " : "# ");
 					if (pass) {
 						ch_result[channel] |= BIT(byte);
@@ -511,11 +511,11 @@ clean_up:
 			 */
 			union ddr_data_control_0_reg data_control_0 = ch->dq_ctrl_0;
 			data_control_0.lpddr_mode = 0;
-			mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+			ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, data_control_0.raw);
 		}
-		mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), ch->dq_ctrl_0.raw);
+		ddrio_write(ctrl, DDRIO_CTRL_0, channel, 0xff, ch->dq_ctrl_0.raw);
 		for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
-			mchbar_write32(DQ_CONTROL_2(channel, byte), ch->dq_ctrl_2[byte].raw);
+			ddrio_write(ctrl, DDRIO_CTRL_2, channel, byte, ch->dq_ctrl_2[byte].raw);
 		}
 	}
 	io_reset();

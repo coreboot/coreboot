@@ -186,6 +186,7 @@ static void initialize_ctrl(struct sysinfo *ctrl)
 	memset(ctrl, 0, sizeof(*ctrl));
 
 	ctrl->cpu = cpu_get_cpuid();
+	ctrl->bdw = cpu_is_broadwell();
 	ctrl->stepping = get_stepping(ctrl->cpu);
 	ctrl->vdd_mv = is_hsw_ult() ? 1350 : 1500; /** FIXME: Hardcoded, does it matter? **/
 	ctrl->dq_pins_interleaved = cfg->dq_pins_interleaved;

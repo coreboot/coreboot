@@ -384,6 +384,8 @@ struct sysinfo {
 	enum generic_stepping stepping;
 	uint32_t cpu;		/* CPUID value */
 
+	bool bdw; /* Is the CPU Broadwell? */
+
 	bool dq_pins_interleaved;
 	bool restore_mrs;
 

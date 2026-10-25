@@ -112,6 +112,64 @@ void update_txt(
 	download_regfile(ctrl, channel, false, rank, REG_FILE_USE_RANK, byte, false, true);
 }
 
+static uint32_t get_vref_done_bit(const enum dimm_vref_type vref_type)
+{
+	switch (vref_type) {
+	case VREF_DQ_CH0:
+		return (union ddr_data_vref_adjust_reg) { .ch0_slow_bw = 1 }.raw;
+	case VREF_DQ_CH1:
+		return (union ddr_data_vref_adjust_reg) { .ch1_slow_bw = 1 }.raw;
+	case VREF_CA:
+		return (union ddr_data_vref_adjust_reg) { .ca_slow_bw = 1 }.raw;
+	default:
+		die("Invalid Vref type %u\n", vref_type);
+	}
+}
+
+void update_vref_and_wait(
+	struct sysinfo *ctrl,
+	const enum dimm_vref_type vref_type,
+	const bool update_ctrl,
+	const int32_t offset,
+	const bool skip_wait)
+{
+	const uint32_t done_bit = get_vref_done_bit(vref_type);
+	const int32_t o_offset = ctrl->dimm_vref.raw[vref_type];
+
+	const int32_t new_offset = clamp_s32(MIN_VREF, offset + o_offset, MAX_VREF);
+	if (update_ctrl)
+		ctrl->dimm_vref.raw[vref_type] = new_offset;
+
+	/* Use CH1 byte 7 */
+	const uint16_t vref_reg = 0xf78; /* TODO: 0xf84 for BDW? */
+	union ddr_data_vref_adjust_reg ddr_vref_adjust = {
+		.raw = mchbar_read32(vref_reg),
+	};
+	switch (vref_type) {
+	case VREF_DQ_CH0:
+		ddr_vref_adjust.vref_dq_ch0_ctrl = new_offset;
+		break;
+	case VREF_DQ_CH1:
+		ddr_vref_adjust.vref_dq_ch1_ctrl = new_offset;
+		break;
+	case VREF_CA:
+		ddr_vref_adjust.vref_ca_ctrl = new_offset;
+		break;
+	}
+	mchbar_write32(vref_reg, ddr_vref_adjust.raw);
+
+	/* Wait for Vref to settle (note: CA Vref takes longer to settle) */
+	if (!skip_wait) {
+		struct stopwatch timer;
+		stopwatch_init_usecs_expire(&timer, 50);
+		do {
+			if (mchbar_read32(vref_reg) & done_bit)
+				return;
+		} while (!stopwatch_expired(&timer));
+		printk(BIOS_WARNING, "Vref circuit %u failed to converge\n", vref_type);
+	}
+}
+
 void download_regfile(
 	struct sysinfo *ctrl,
 	const uint8_t channel,
@@ -152,52 +210,6 @@ void download_regfile(
 	ddr_data_control_0.read_rf_wr   = read_rf_wr;
 	ddr_data_control_0.read_rf_rank = phys_rank;
 	mchbar_write32(reg, ddr_data_control_0.raw);
-}
-
-static void update_data_offset_train(
-	struct sysinfo *ctrl,
-	const uint8_t param,
-	const uint8_t en_multicast,
-	const uint8_t channel_in,
-	const uint8_t rank,
-	const uint8_t byte_in,
-	const bool update_ctrl,
-	const enum regfile_mode regfile,
-	const uint32_t value)
-{
-	bool is_rd = false;
-	bool is_wr = false;
-	switch (param) {
-	case RdT:
-	case RdV:
-	case RcvEna:
-		is_rd = true;
-		break;
-	case WrT:
-	case WrDqsT:
-		is_wr = true;
-		break;
-	default:
-		die("%s: Invalid margin parameter %u\n", __func__, param);
-	}
-	if (en_multicast) {
-		mchbar_write32(DDR_DATA_OFFSET_TRAIN, value);
-		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
-			if (!does_ch_exist(ctrl, channel))
-				continue;
-
-			download_regfile(ctrl, channel, true, rank, regfile, 0, is_rd, is_wr);
-			if (update_ctrl) {
-				for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
-					ctrl->ch[channel].offset_train[byte].raw = value;
-			}
-		}
-	} else {
-		mchbar_write32(DATA_OFFSET_TRAIN(channel_in, byte_in), value);
-		download_regfile(ctrl, channel_in, false, rank, regfile, byte_in, is_rd, is_wr);
-		if (update_ctrl)
-			ctrl->ch[channel_in].offset_train[byte_in].raw = value;
-	}
 }
 
 static uint16_t get_per_bit_reg(
@@ -295,6 +307,52 @@ static void change_per_bit_margin(
 	}
 }
 
+static void update_data_offset_train(
+	struct sysinfo *ctrl,
+	const uint8_t param,
+	const uint8_t en_multicast,
+	const uint8_t channel_in,
+	const uint8_t rank,
+	const uint8_t byte_in,
+	const bool update_ctrl,
+	const enum regfile_mode regfile,
+	const uint32_t value)
+{
+	bool is_rd = false;
+	bool is_wr = false;
+	switch (param) {
+	case RdT:
+	case RdV:
+	case RcvEna:
+		is_rd = true;
+		break;
+	case WrT:
+	case WrDqsT:
+		is_wr = true;
+		break;
+	default:
+		die("%s: Invalid margin parameter %u\n", __func__, param);
+	}
+	if (en_multicast) {
+		mchbar_write32(DDR_DATA_OFFSET_TRAIN, value);
+		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+			if (!does_ch_exist(ctrl, channel))
+				continue;
+
+			download_regfile(ctrl, channel, true, rank, regfile, 0, is_rd, is_wr);
+			if (update_ctrl) {
+				for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
+					ctrl->ch[channel].offset_train[byte].raw = value;
+			}
+		}
+	} else {
+		mchbar_write32(DATA_OFFSET_TRAIN(channel_in, byte_in), value);
+		download_regfile(ctrl, channel_in, false, rank, regfile, byte_in, is_rd, is_wr);
+		if (update_ctrl)
+			ctrl->ch[channel_in].offset_train[byte_in].raw = value;
+	}
+}
+
 uint32_t get_max_margin_for_param(const enum margin_parameter param)
 {
 	switch (param) {
@@ -303,64 +361,6 @@ uint32_t get_max_margin_for_param(const enum margin_parameter param)
 		return MAX_POSSIBLE_VREF;
 	default:
 		return MAX_POSSIBLE_TIME;
-	}
-}
-
-static uint32_t get_vref_done_bit(const enum dimm_vref_type vref_type)
-{
-	switch (vref_type) {
-	case VREF_DQ_CH0:
-		return (union ddr_data_vref_adjust_reg) { .ch0_slow_bw = 1 }.raw;
-	case VREF_DQ_CH1:
-		return (union ddr_data_vref_adjust_reg) { .ch1_slow_bw = 1 }.raw;
-	case VREF_CA:
-		return (union ddr_data_vref_adjust_reg) { .ca_slow_bw = 1 }.raw;
-	default:
-		die("Invalid Vref type %u\n", vref_type);
-	}
-}
-
-void update_vref_and_wait(
-	struct sysinfo *ctrl,
-	const enum dimm_vref_type vref_type,
-	const bool update_ctrl,
-	const int32_t offset,
-	const bool skip_wait)
-{
-	const uint32_t done_bit = get_vref_done_bit(vref_type);
-	const int32_t o_offset = ctrl->dimm_vref.raw[vref_type];
-
-	const int32_t new_offset = clamp_s32(MIN_VREF, offset + o_offset, MAX_VREF);
-	if (update_ctrl)
-		ctrl->dimm_vref.raw[vref_type] = new_offset;
-
-	/* Use CH1 byte 7 */
-	const uint16_t vref_reg = 0xf78; /* TODO: 0xf84 for BDW? */
-	union ddr_data_vref_adjust_reg ddr_vref_adjust = {
-		.raw = mchbar_read32(vref_reg),
-	};
-	switch (vref_type) {
-	case VREF_DQ_CH0:
-		ddr_vref_adjust.vref_dq_ch0_ctrl = new_offset;
-		break;
-	case VREF_DQ_CH1:
-		ddr_vref_adjust.vref_dq_ch1_ctrl = new_offset;
-		break;
-	case VREF_CA:
-		ddr_vref_adjust.vref_ca_ctrl = new_offset;
-		break;
-	}
-	mchbar_write32(vref_reg, ddr_vref_adjust.raw);
-
-	/* Wait for Vref to settle (note: CA Vref takes longer to settle) */
-	if (!skip_wait) {
-		struct stopwatch timer;
-		stopwatch_init_usecs_expire(&timer, 50);
-		do {
-			if (mchbar_read32(vref_reg) & done_bit)
-				return;
-		} while (!stopwatch_expired(&timer));
-		printk(BIOS_WARNING, "Vref circuit %u failed to converge\n", vref_type);
 	}
 }
 

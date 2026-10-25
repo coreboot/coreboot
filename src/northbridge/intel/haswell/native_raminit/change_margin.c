@@ -180,16 +180,15 @@ void download_regfile(
 	const bool read_rf_rd,
 	const bool read_rf_wr)
 {
-	union reut_seq_base_addr_reg reut_seq_base_addr;
+	uint16_t seq_reg = 0;
 	switch (regfile) {
 	case REG_FILE_USE_START:
-		reut_seq_base_addr.raw = mchbar_read64(REUT_ch_SEQ_ADDR_START(channel));
+		seq_reg = REUT_ch_SEQ_ADDR_START(channel);
 		break;
 	case REG_FILE_USE_CURRENT:
-		reut_seq_base_addr.raw = mchbar_read64(REUT_ch_SEQ_ADDR_CURRENT(channel));
+		seq_reg = REUT_ch_SEQ_ADDR_CURRENT(channel);
 		break;
 	case REG_FILE_USE_RANK:
-		reut_seq_base_addr.raw = 0;
 		if (rank >= NUM_SLOTRANKS)
 			die("%s: bad rank %u\n", __func__, rank);
 		break;
@@ -197,7 +196,10 @@ void download_regfile(
 		die("%s: Invalid regfile param %u\n", __func__, regfile);
 	}
 	uint8_t phys_rank = rank;
-	if (reut_seq_base_addr.raw != 0) {
+	if (seq_reg != 0) {
+		const union reut_seq_base_addr_reg reut_seq_base_addr = {
+			.raw = mchbar_read64(seq_reg),
+		};
 		/* Map REUT logical rank to physical rank */
 		const uint32_t log_to_phys = mchbar_read32(REUT_ch_RANK_LOG_TO_PHYS(channel));
 		phys_rank = log_to_phys >> (reut_seq_base_addr.rank_addr * 4) & 0x3;

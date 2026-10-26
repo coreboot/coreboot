@@ -436,6 +436,12 @@ void thread_mutex_lock(struct thread_mutex *mutex)
 {
 	struct stopwatch sw;
 
+	/* Fast path: the mutex is free, so there is no wait time to report. */
+	if (!mutex->locked) {
+		mutex->locked = true;
+		return;
+	}
+
 	stopwatch_init(&sw);
 
 	while (mutex->locked)

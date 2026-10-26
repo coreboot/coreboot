@@ -530,10 +530,12 @@ struct logo_coordinates calculate_logo_coordinates(
 		coords.x = 0;
 		break;
 	case FW_SPLASH_HALIGNMENT_RIGHT:
-		coords.x = horizontal_resolution - logo_width;
+		coords.x = (horizontal_resolution > logo_width) ?
+			   (horizontal_resolution - logo_width) : 0;
 		break;
 	default: /* FW_SPLASH_HALIGNMENT_CENTER (default) */
-		coords.x = (horizontal_resolution - logo_width) / 2;
+		coords.x = (horizontal_resolution > logo_width) ?
+			   (horizontal_resolution - logo_width) / 2 : 0;
 		break;
 	}
 
@@ -546,10 +548,12 @@ struct logo_coordinates calculate_logo_coordinates(
 		coords.y = 0;
 		break;
 	case FW_SPLASH_VALIGNMENT_BOTTOM:
-		coords.y = vertical_resolution - logo_height;
+		coords.y = (vertical_resolution > logo_height) ?
+			   (vertical_resolution - logo_height) : 0;
 		break;
 	default: /* FW_SPLASH_VALIGNMENT_CENTER (default) */
-		coords.y = (vertical_resolution - logo_height) / 2;
+		coords.y = (vertical_resolution > logo_height) ?
+			   (vertical_resolution - logo_height) / 2 : 0;
 		break;
 	}
 
@@ -674,6 +678,20 @@ static int load_and_render_logo_to_framebuffer(
 
 	convert_bmp_to_blt(logo, logo_size, &blt_buffer, &blt_size,
 				   &logo_height, &logo_width, config->panel_orientation);
+	if (!blt_buffer) {
+		bmp_release_logo();
+		return -1;
+	}
+
+	if (logo_width > config->horizontal_resolution ||
+	    logo_height > config->vertical_resolution) {
+		printk(BIOS_ERR, "%s: Logo (%ux%u) exceeds display resolution (%ux%u).\n",
+		       __func__, logo_width, logo_height,
+		       config->horizontal_resolution, config->vertical_resolution);
+		free((void *)blt_buffer);
+		bmp_release_logo();
+		return -1;
+	}
 
 	get_logo_layout(logo_type, config, &halignment, &valignment, &logo_bottom_margin);
 
@@ -686,15 +704,24 @@ static int load_and_render_logo_to_framebuffer(
 			logo_coords.x = logo_bottom_margin;
 			break;
 		case LB_FB_ORIENTATION_LEFT_UP:
-			logo_coords.x -= logo_bottom_margin;
+			logo_coords.x = (logo_coords.x > logo_bottom_margin) ?
+					(logo_coords.x - logo_bottom_margin) : 0;
 			break;
 		case LB_FB_ORIENTATION_BOTTOM_UP:
 			logo_coords.y = logo_bottom_margin;
 			break;
 		default: /* LB_FB_ORIENTATION_NORMAL (default) */
-			logo_coords.y -= logo_bottom_margin;
+			logo_coords.y = (logo_coords.y > logo_bottom_margin) ?
+					(logo_coords.y - logo_bottom_margin) : 0;
 			break;
 		}
+	}
+
+	if (logo_coords.x + logo_width > config->horizontal_resolution ||
+	    logo_coords.y + logo_height > config->vertical_resolution) {
+		free((void *)blt_buffer);
+		bmp_release_logo();
+		return -1;
 	}
 
 	copy_logo_to_framebuffer(config->framebuffer_base, config->bytes_per_scanline, blt_buffer,

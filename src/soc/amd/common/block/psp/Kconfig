@@ -51,6 +51,10 @@ config SOC_AMD_PSP_SELECTABLE_SMU_FW
 config SOC_AMD_COMMON_BLOCK_PSP_RPMC
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_PSP_GEN2
+	# The PSP needs to increment the RPMC counter inside the SPI flash.
+	# It needs to access the SPI flash, either directly when ROM Armor
+	# is used, or via PSP SMI when ROM Armor is not used.
+	depends on SOC_AMD_COMMON_BLOCK_PSP_SMI || SOC_AMD_COMMON_BLOCK_PSP_ROM_ARMOR3
 	select SPI_FLASH_RPMC
 	help
 	  Select this option in the SoC's Kconfig to include the support for

@@ -331,14 +331,18 @@ checktools:
 	echo -n "EDK2: Checking nasm:"
 	type $(NASM_PREFIX)nasm > /dev/null 2>&1 && echo "        Found!" || \
 		( echo "        Not found!"; echo "ERROR: Please install nasm."; exit 1 )
-	echo -n "EDK2: Checking imagemagick:"
-	-convert -size 1x1 xc: test.png &> /dev/null;
-	if [ -f test.png ]; then \
-		rm test.png && echo " Found!"; \
-	else \
-		echo " Not found!"; \
-		echo "ERROR: Please install imagemagick"; \
-		exit 1; \
+
+	# Only check imagemagick when needed to convert bootsplash
+	if [ -n "$(call strip_quotes,$(CONFIG_EDK2_BOOTSPLASH_FILE))" ]; then \
+		echo -n "EDK2: Checking imagemagick:"; \
+		convert -size 1x1 xc: test.png &> /dev/null 2>&1 || true; \
+		if [ -f test.png ]; then \
+			rm test.png && echo " Found!"; \
+		else \
+			echo " Not found!"; \
+			echo "ERROR: Please install imagemagick"; \
+			exit 1; \
+		fi; \
 	fi
 
 ifeq ($(CONFIG_DRIVERS_EFI_UPDATE_CAPSULES),y)

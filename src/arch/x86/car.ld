@@ -85,7 +85,7 @@
 	_shadow_size = (_ebss - _car_region_start) >> 3;
 	REGION(asan_shadow, ., _shadow_size, ARCH_POINTER_ALIGN_SIZE)
 #endif
-}
+} : NONE
 
 #if ENV_SEPARATE_DATA_AND_BSS
 /* This symbol defines the load address of the Cache-As-RAM .data
@@ -116,10 +116,10 @@ _car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start)
 . = _car_region_end;
 .car.mrc_var . (NOLOAD) : {
 	. += CONFIG_DCACHE_RAM_MRC_VAR_SIZE;
-}
+} : NONE
 .car.fspt_reserved . (NOLOAD) : {
 	. +=  CONFIG_FSP_T_RESERVED_SIZE;
-}
+} : NONE
 
 #if ENV_BOOTBLOCK
 . = ALIGN(64);

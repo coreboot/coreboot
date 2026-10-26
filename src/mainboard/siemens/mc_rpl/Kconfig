@@ -12,6 +12,7 @@ config BOARD_SIEMENS_BASEBOARD_MC_RPL
 	select FSP_TYPE_IOT
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
+	select HAVE_SPD_IN_CBFS
 	select SOC_INTEL_ALDERLAKE_PCH_P
 	select SOC_INTEL_RAPTORLAKE
 	select USE_SIEMENS_HWILIB
@@ -51,7 +52,7 @@ config FMDFILE
 
 config DIMM_SPD_SIZE
 	int
-	default 256
+	default 1024
 
 config USE_PM_ACPI_TIMER
 	default n if BOARD_SIEMENS_MC_RPL1

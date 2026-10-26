@@ -1,12 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <baseboard/variants.h>
-#include <console/console.h>
 #include <fsp/api.h>
-#include <hwilib.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
-#include <spd_bin.h>
 
 /*
  * ADL-P silicon can support 7 SRC CLK's and 10 CLKREQ signals. Out of 7 SRCCLK's
@@ -35,21 +32,10 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
 	const struct mb_cfg *mem_config = variant_memory_params();
 
-	static struct mem_spd spd_info;
-	static uint8_t spd_data[CONFIG_DIMM_SPD_SIZE];
-	const char *cbfs_hwi_name = "hwinfo.hex";
-
-	/* Initialize SPD information for LPDDR5 from HW-Info. */
-	memset(spd_data, 0, sizeof(spd_data));
-	if ((hwilib_find_blocks(cbfs_hwi_name) == CB_SUCCESS) &&
-	    (hwilib_get_field(SPD, spd_data, 0x80) == 0x80)) {
-		spd_info.topo = MEM_TOPO_MEMORY_DOWN;
-		spd_info.spd_data.in_mem = true;
-		spd_info.spd_data.ptr = (uintptr_t)spd_data;
-		spd_info.spd_data.len = CONFIG_DIMM_SPD_SIZE;
-	} else {
-		die("No SPD in HW-Info found!\n");
-	}
+	struct mem_spd spd_info = {
+		.topo = MEM_TOPO_MEMORY_DOWN,
+		.cbfs_index = variant_memory_sku(),
+	};
 
 	/*
 	 * Set Raptor Lake specific new upds that Alder Lake doesn't have.

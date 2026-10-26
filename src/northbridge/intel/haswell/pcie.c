@@ -164,7 +164,7 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x0c01, 0x0c05, 0x0c09, 0x0c0d,
+	0x0c01, 0x0c05, 0x0c09, /* Haswell */
 	0x0d01, 0x0d05, 0x0d09, /* Crystal Well */
 	0 };
 

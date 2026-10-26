@@ -391,7 +391,7 @@ uint64_t sa_get_dsm_size(void)
 					 >> DSM_LENGTH_MASK_LSB;
 	if (size_field <= 0x10) { /* 0x0 - 0x10 */
 		return size_field * 32 * MiB;
-	} else if ((size_field >= 0xF0) && (size_field >= 0xFE)) {
+	} else if ((size_field >= 0xF0) && (size_field <= 0xFE)) {
 		return ((uint64_t)size_field - 0xEF) * 4 * MiB;
 	} else {
 		switch (size_field) {

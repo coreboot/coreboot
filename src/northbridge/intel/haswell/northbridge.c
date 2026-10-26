@@ -513,10 +513,10 @@ static struct device_operations mc_ops = {
 };
 
 static const unsigned short mc_pci_device_ids[] = {
-	0x0c00, /* Desktop */
-	0x0c04, /* Mobile */
-	0x0a04, /* ULT */
-	0x0c08, /* Server */
+	0x0a04, /* Haswell ULT */
+	0x0c00, /* Haswell Trad Desktop */
+	0x0c04, /* Haswell Trad Mobile */
+	0x0c08, /* Haswell Trad Server */
 	0x0d00, /* Crystal Well Desktop */
 	0x0d04, /* Crystal Well Mobile */
 	0x0d08, /* Crystal Well Server (by extrapolation) */

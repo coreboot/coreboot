@@ -16,6 +16,9 @@
 
 void soccp_fw_load(void)
 {
+	if (qclib_check_dload_mode())
+		return;
+
 	/* map to cached region to force address to be 4 byte aligned */
 	mmu_config_range((void *)_dram_soccp, REGION_SIZE(dram_soccp), CACHED_RAM);
 

@@ -1084,3 +1084,30 @@ unsigned int gpio_get_pad_cpu_portid(gpio_t pad)
 	const struct pad_community *comm = gpio_get_community(pad);
 	return comm->cpu_port;
 }
+
+/* Revoke HOSTIA_POSTBOOT_SAI access to GPIO lock registers across all communities. */
+static void gpio_lock_disable_postboot_sai(void *unused)
+{
+	const struct pad_community *comm;
+	size_t gpio_communities = 0, i;
+
+	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_SAI))
+		return;
+
+	if (vboot_recovery_mode_enabled())
+		return;
+
+	comm = soc_gpio_get_community(&gpio_communities);
+	if (!comm)
+		return;
+
+	for (i = 0; i < gpio_communities; i++, comm++) {
+		pcr_rmw32(comm->port, GPIO_SAI_LOCK_GRP_RWAC_DW0,
+			  ~SAI_HOSTIA_POSTBOOT, 0);
+		pcr_rmw32(comm->port, GPIO_SAI_LOCK_GRP_RCP_DW0,
+			  ~SAI_HOSTIA_POSTBOOT, 0);
+	}
+}
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_EXIT,
+		      gpio_lock_disable_postboot_sai, NULL);

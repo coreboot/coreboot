@@ -55,6 +55,23 @@ config SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_PCR
 	  Starting with MTL SoC, the recommendation is to use PCR for locking down the
 	  GPIO configuration.
 
+config SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_SAI
+	bool
+	default n
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_PCR
+	help
+	  Select this config on SoCs where GPIO Pad Configuration Lock registers are
+	  governed by GPIO community SAI Access Control registers.
+
+config SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_SAI_GROUP
+	int
+	depends on SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_SAI
+	default 4 if SOC_INTEL_METEORLAKE
+	default 2
+	help
+	  Specify the GPIO community SAI Access Control group index that governs the
+	  GPIO Pad Configuration Lock registers.
+
 # Indicate if SoC supports 4 bits Pad Mode with PAD_CFG_DW0 registers
 config SOC_INTEL_COMMON_BLOCK_GPIO_PMODE_4BITS
 	bool

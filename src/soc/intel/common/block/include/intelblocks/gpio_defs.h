@@ -565,4 +565,16 @@
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_TRIG(OFF),		\
 		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own))
 
+/*
+ * GPIO Access Control SAI Group (Lock Registers) offsets:
+ * Each SAI group consists of 3 64-bit registers (RCP, RRAC, RWAC = 0x18 bytes)
+ * starting at Group 0 base offset 0x0020.
+ */
+#define GPIO_SAI_G0_RCP_DW0		0x0020
+#define GPIO_SAI_GRP_STRIDE		0x0018
+#define GPIO_SAI_LOCK_GRP_RCP_DW0	(GPIO_SAI_G0_RCP_DW0 + \
+	(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_SAI_GROUP * GPIO_SAI_GRP_STRIDE))
+#define GPIO_SAI_LOCK_GRP_RWAC_DW0	(GPIO_SAI_LOCK_GRP_RCP_DW0 + 0x0010)
+#define SAI_HOSTIA_POSTBOOT		(1U << 0)
+
 #endif /* _SOC_BLOCK_GPIO_DEFS_H_ */

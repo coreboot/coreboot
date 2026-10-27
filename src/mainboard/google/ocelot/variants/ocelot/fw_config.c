@@ -480,9 +480,9 @@ static const struct pad_config fp_disable_pads[] = {
 
 static const struct pad_config fp_enable_pads[] = {
 	/* GPP_E05:     GPP_E5_FPS_PWREN */
-	PAD_CFG_GPO(GPP_E05, 1, DEEP),
+	PAD_CFG_GPO(GPP_E05, 0, DEEP),
 	/* GPP_C15:     FPS_RST_N */
-	PAD_CFG_GPO_LOCK(GPP_C15, 1, LOCK_CONFIG),
+	PAD_CFG_GPO_LOCK(GPP_C15, 0, LOCK_CONFIG),
 	/* GPP_E17:     GPP_E17_GSPI0A_CS0 */
 	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF5),
 	/* GPP_E19:     FPS_INT_N */
@@ -495,11 +495,6 @@ static const struct pad_config fp_enable_pads[] = {
 	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF8),
 	/* GPP_F16:     GPP_F16_GSPI0A_CLK */
 	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF8),
-};
-
-static const struct pad_config pre_mem_fp_enable_pads[] = {
-	/* GPP_C15:     FPS_RST_N */
-	PAD_CFG_GPO(GPP_C15, 0, DEEP),
 };
 
 void fw_config_configure_pre_mem_gpio(void)
@@ -534,9 +529,6 @@ void fw_config_configure_pre_mem_gpio(void)
 	 */
 	if (!fw_config_probe(FW_CONFIG(CELLULAR, CELLULAR_ABSENT)))
 		GPIO_CONFIGURE_PADS(pre_mem_wwan_pwr_seq2_pads);
-
-	if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT)))
-		GPIO_CONFIGURE_PADS(pre_mem_fp_enable_pads);
 
 	if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME_GEN4))) {
 		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_seq_pads);

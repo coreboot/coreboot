@@ -110,7 +110,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C14:     CLKREQ5_X1_GEN1_GBE_LAN_N */
 	PAD_CFG_NF(GPP_C14, NONE, DEEP, NF1),
 	/* GPP_C15:     FPS_RST_N */
-	PAD_CFG_GPO_LOCK(GPP_C15, 1, LOCK_CONFIG),
+	PAD_CFG_GPO_LOCK(GPP_C15, 0, LOCK_CONFIG),
 	/* GPP_C16:     MOD_TCSS1_LS_TX_DDC_SCL */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* GPP_C17:     MOD_TCSS1_LS_RX_DDC_SDA */
@@ -160,7 +160,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E03:     X4_DT_PCIE_RST_N */
 	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
 	/* GPP_E05:     GPP_E5_FPS_PWREN */
-	PAD_CFG_GPO(GPP_E05, 1, DEEP),
+	PAD_CFG_GPO(GPP_E05, 0, DEEP),
 	/* GPP_E06:     GPP_E6_PEN_DETECT */
 	PAD_CFG_GPI_TRIG_OWN(GPP_E06, NONE, DEEP, LEVEL, ACPI),
 	/* GPP_E07:     LAN_GPIO_RST_N */
@@ -377,8 +377,6 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Pad configuration in romstage */
 static const struct pad_config romstage_gpio_table[] = {
-	/* GPP_C15:     FPS_RST_N */
-	PAD_CFG_GPO(GPP_C15, 0, PLTRST),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

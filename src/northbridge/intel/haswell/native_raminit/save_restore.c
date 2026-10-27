@@ -15,22 +15,13 @@ uint32_t reg_frame_rev(void)
 	 * this translation unit, so changes outside this file shouldn't
 	 * require invalidating the cache.
 	 */
-	return 1;
+	return 2;
 }
 
 struct register_save {
 	uint16_t lower;
 	uint16_t upper;
 };
-
-/** TODO: Haswell DDRIO aliases writes: 0x80 .. 0xff => 0x00 .. 0x7f **/
-static const struct register_save ddrio_per_byte_list[] = {
-	{0x0000, 0x003c}, /* 16 registers */
-//	{0x0048, 0x0084}, /* 16 registers */	/** TODO: BDW support **/
-	{0x0048, 0x004c}, /*  2 registers */
-	{0x005c, 0x0078}, /*  8 registers */
-};
-#define DDRIO_PER_BYTE_REGISTER_COUNT	(16 + 2 + 8)
 
 static const struct register_save ddrio_per_ch_list[] = {
 	/* CKE */
@@ -158,8 +149,30 @@ struct save_params {
 	bool is_ecc;
 };
 
+/*
+ * Haswell DDR I/O DATA FUBs alias writes: 0x80 .. 0xff => 0x00 .. 0x7f
+ * We cannot simply save/restore the same range of registers on HSW/BDW,
+ * instead we individually save/restore the relevant registers manually.
+ */
+struct ddrio_data_regsave {
+	uint32_t rx_train[NUM_SLOTRANKS];
+	uint32_t rx_per_bit[NUM_SLOTRANKS];
+	uint32_t tx_train[NUM_SLOTRANKS];
+	uint32_t tx_per_bit[NUM_SLOTRANKS];
+	uint32_t tx_xtalk;
+	uint32_t rx_offset_vdq[NUM_SLOTRANKS];
+	uint32_t offset_comp;
+	uint32_t control_1;
+	uint32_t control_2;
+	uint32_t vref_control;
+	uint32_t vsshi_control;
+	uint32_t offset_train;
+	uint32_t control_0;
+	uint32_t vref_adjust;
+};
+
 struct register_save_frame {
-	uint32_t ddrio_per_byte[NUM_CHANNELS][NUM_LANES][DDRIO_PER_BYTE_REGISTER_COUNT];
+	struct ddrio_data_regsave ddrio_per_byte[NUM_CHANNELS][NUM_LANES];
 	uint32_t ddrio_per_ch[NUM_CHANNELS][DDRIO_PER_CH_REGISTER_COUNT];
 	uint32_t ddrio_common[DDRIO_COMMON_REGISTER_COUNT];
 	uint32_t mcmain_per_ch[NUM_CHANNELS][MCMAIN_PER_CH_REGISTER_COUNT];
@@ -216,16 +229,67 @@ static void save_restore(
 	}
 }
 
-static void save_restore_all(struct register_save_frame *reg_frame, reg_func_t handle_reg)
+static void save_restore_ddrio_data(
+	const struct sysinfo *ctrl,
+	const uint8_t channel,
+	const uint8_t byte,
+	struct ddrio_data_regsave *ddrio,
+	reg_func_t handle_reg)
+{
+	uint16_t offset;
+	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
+		handle_reg(RX_TRAIN_RANK(channel, rank, byte), &ddrio->rx_train[rank]);
+		handle_reg(RX_PER_BIT_RANK(channel, rank, byte), &ddrio->rx_per_bit[rank]);
+		handle_reg(TX_TRAIN_RANK(channel, rank, byte), &ddrio->tx_train[rank]);
+		handle_reg(TX_PER_BIT_RANK(channel, rank, byte), &ddrio->tx_per_bit[rank]);
+		if (ctrl->bdw) {
+			offset = RX_OFFSET_VDQ_BDW(channel, rank, byte);
+			handle_reg(offset, &ddrio->rx_offset_vdq[rank]);
+		}
+	}
+	if (!ctrl->bdw) {
+		offset = RX_OFFSET_VDQ_HSW(channel, byte);
+		handle_reg(offset, &ddrio->rx_offset_vdq[0]);
+	}
+	handle_reg(DATA_TX_XTALK(channel, byte), &ddrio->tx_xtalk);
+
+	offset = ddrio_offset(ctrl, DDRIO_OFFSET_COMP, channel, byte);
+	handle_reg(offset, &ddrio->offset_comp);
+
+	offset = ddrio_offset(ctrl, DDRIO_CTRL_1, channel, byte);
+	handle_reg(offset, &ddrio->control_1);
+
+	offset = ddrio_offset(ctrl, DDRIO_CTRL_2, channel, byte);
+	handle_reg(offset, &ddrio->control_2);
+
+	offset = ddrio_offset(ctrl, DDRIO_VREF_CTRL, channel, byte);
+	handle_reg(offset, &ddrio->vref_control);
+
+	offset = ddrio_offset(ctrl, DDRIO_VSSHI_CTRL, channel, byte);
+	handle_reg(offset, &ddrio->vsshi_control);
+
+	offset = ddrio_offset(ctrl, DDRIO_OFFSET_TRAIN, channel, byte);
+	handle_reg(offset, &ddrio->offset_train);
+
+	offset = ddrio_offset(ctrl, DDRIO_CTRL_0, channel, byte);
+	handle_reg(offset, &ddrio->control_0);
+
+	offset = ddrio_offset(ctrl, DDRIO_VREF_ADJUST, channel, byte);
+	handle_reg(offset, &ddrio->vref_adjust);
+}
+
+static void save_restore_all(
+	const struct sysinfo *ctrl,
+	struct register_save_frame *reg_frame,
+	reg_func_t handle_reg)
 {
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		for (uint8_t byte = 0; byte < NUM_LANES; byte++) {
-			const uint16_t g_offset = _DDRIO_C_R_B(0, channel, 0, byte);
-			save_restore(
-				reg_frame->ddrio_per_byte[channel][byte],
-				g_offset,
-				ddrio_per_byte_list,
-				ARRAY_SIZE(ddrio_per_byte_list),
+			save_restore_ddrio_data(
+				ctrl,
+				channel,
+				byte,
+				&reg_frame->ddrio_per_byte[channel][byte],
 				handle_reg);
 		}
 	}
@@ -264,13 +328,13 @@ static void save_restore_all(struct register_save_frame *reg_frame, reg_func_t h
 
 enum nri_status save_training_values(struct sysinfo *ctrl)
 {
-	save_restore_all(reg_frame_ptr(), save_value);
+	save_restore_all(ctrl, reg_frame_ptr(), save_value);
 	return NRI_STATUS_SUCCESS;
 }
 
 enum nri_status restore_training_values(struct sysinfo *ctrl)
 {
-	save_restore_all(reg_frame_ptr(), restore_value);
+	save_restore_all(ctrl, reg_frame_ptr(), restore_value);
 	return NRI_STATUS_SUCCESS;
 }
 

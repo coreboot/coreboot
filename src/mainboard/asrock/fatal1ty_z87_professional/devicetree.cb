@@ -15,12 +15,18 @@ chip northbridge/intel/haswell
 		device pci 00.0 on	 # Desktop Host bridge
 			subsystemid 0x1849 0x0c00
 		end
-		device pci 01.0 on	 # PCIE2
+		device pci 01.0 on	 # PEG #1
 			subsystemid 0x1849 0x0c01
+			smbios_slot_desc "SlotTypePciExpressGen3" "SlotLengthLong"
+					 "PCIE2" "SlotDataBusWidth16X"
 		end
-		device pci 01.1 on	 # PCIE3
+		device pci 01.1 on	 # PEG #2
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+					 "PCIE3" "SlotDataBusWidth8X"
 		end
-		device pci 01.2 on	 # PCIE4
+		device pci 01.2 on	 # PEG #3
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+					 "PCIE4" "SlotDataBusWidth4X"
 		end
 		device pci 02.0 on	 # iGPU
 			subsystemid 0x1849 0x0412
@@ -54,6 +60,9 @@ chip northbridge/intel/haswell
 			device pci 1c.0 off end	 # RP #1
 			device pci 1c.1 on	 # RP #2: mPCIe slot
 				subsystemid 0x1849 0x8c12
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+						 "SlotLengthShort" "MINI_PCIE1"
+						 "SlotDataBusWidth1X"
 			end
 			device pci 1c.2 on	 # RP #3: ASM1061 SATA controller
 				subsystemid 0x1849 0x8c14
@@ -65,8 +74,10 @@ chip northbridge/intel/haswell
 			device pci 1c.4 on	 # RP #5: ASM1061 SATA controller
 				subsystemid 0x1849 0x8c18
 			end
-			device pci 1c.5 on	 # RP #6: PCIE1
+			device pci 1c.5 on	 # RP #6
 				subsystemid 0x1849 0x8c1a
+				smbios_slot_desc "SlotTypePciExpressGen2" "SlotLengthShort"
+						 "PCIE1" "SlotDataBusWidth1X"
 			end
 			device pci 1c.6 on	 # RP #7: ASM1083 PCIe-to-PCI bridge
 				subsystemid 0x1849 0x8c1c

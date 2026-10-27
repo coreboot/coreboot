@@ -17,6 +17,8 @@ chip northbridge/intel/haswell
 			subsystemid 0x1849 0x0c00
 		end
 		device pci 01.0 on # PEG
+			smbios_slot_desc "SlotTypePciExpressGen3" "SlotLengthLong"
+					 "PCIE1" "SlotDataBusWidth16X"
 		end
 		device pci 02.0 on # iGPU
 			subsystemid 0x1849 0x0412
@@ -53,15 +55,21 @@ chip northbridge/intel/haswell
 				subsystemid 0x1849 0x244e
 			end
 			device pci 1c.3 off end	 # RP #4
-			device pci 1c.4 on	 # RP #5: PCIE3
+			device pci 1c.4 on	 # RP #5
 				subsystemid 0x1849 0x8c18
+				smbios_slot_desc "SlotTypePciExpressGen2X16" "SlotLengthLong"
+						 "PCIE3" "SlotDataBusWidth4X"
 			end
 			device pci 1c.5 off end	 # RP #6
-			device pci 1c.6 on	 # RP #7: PCIE2
+			device pci 1c.6 on	 # RP #7
 				subsystemid 0x1849 0x8c1c
+				smbios_slot_desc "SlotTypePciExpressGen2" "SlotLengthShort"
+						 "PCIE2" "SlotDataBusWidth1X"
 			end
-			device pci 1c.7 on	 # RP #8: PCIE4
+			device pci 1c.7 on	 # RP #8
 				subsystemid 0x1849 0x8c1e
+				smbios_slot_desc "SlotTypePciExpressGen2" "SlotLengthShort"
+						 "PCIE4" "SlotDataBusWidth1X"
 			end
 			device pci 1d.0 on	 # USB2 EHCI #1
 				subsystemid 0x1849 0x8c26

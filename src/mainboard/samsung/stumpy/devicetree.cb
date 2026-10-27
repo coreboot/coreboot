@@ -59,6 +59,7 @@ chip northbridge/intel/sandybridge
 			device ref ehci2	on end
 			device ref hda		on end
 			device ref pcie_rp1	on end # WLAN
+			device ref pcie_rp3	on end # Debug (MINIPCIE3)
 			device ref pcie_rp4	on end # LAN
 			device ref ehci1	on end
 			device ref lpc		on

@@ -21,12 +21,18 @@ chip northbridge/intel/haswell
 		end
 		device pci 01.0 on		# PEG: PCIE2
 			subsystemid 0x1849 0x0c01
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+					 "PCIE2" "SlotDataBusWidth16X"
 		end
 		device pci 01.1 on		# PEG: PCIE4
 			subsystemid 0x1849 0x0c05
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+					 "PCIE4" "SlotDataBusWidth8X"
 		end
 		device pci 01.2 on		# PEG: PCIE6
 			subsystemid 0x1849 0x0c09
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+					 "PCIE6" "SlotDataBusWidth4X"
 		end
 		device pci 02.0 on		# iGPU
 			subsystemid 0x1849 0x0412
@@ -58,18 +64,26 @@ chip northbridge/intel/haswell
 			end
 			device pci 1c.0 on		# RP #1: M2_1
 				subsystemid 0x1849 0x8c90
+				smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+						 "M2_1" "SlotDataBusWidth2X"
 			end
 			device pci 1c.2 on		# RP #3: PCIE1
 				subsystemid 0x1849 0x8c94
+				smbios_slot_desc "SlotTypePciExpressGen2" "SlotLengthShort"
+						 "PCIE1" "SlotDataBusWidth1X"
 			end
 			device pci 1c.3 on		# RP #4: Qualcomm E220x GbE NIC
 				subsystemid 0x1849 0x8c96
 			end
 			device pci 1c.4 on		# RP #5: PCIE3
 				subsystemid 0x1849 0x8c98
+				smbios_slot_desc "SlotTypePciExpressGen2" "SlotLengthShort"
+						 "PCIE3" "SlotDataBusWidth1X"
 			end
 			device pci 1c.5 on		# RP #6: PCIE5
 				subsystemid 0x1849 0x8c9a
+				smbios_slot_desc "SlotTypePciExpressGen2" "SlotLengthShort"
+						 "PCIE5" "SlotDataBusWidth1X"
 			end
 			device pci 1c.6 on		# RP #7: ASMedia ASM1042A USB 3.0 Host Controller
 				subsystemid 0x1849 0x8c9c

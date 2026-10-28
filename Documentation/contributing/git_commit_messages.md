@@ -48,8 +48,10 @@ to go over everything again. There are other tutorials that cover that.
 - Make sure the problem being solved by the commit is described. While
   it may be obvious to the committer, it may not be obvious to others.
 - When referencing other commits use a 12 character hash and the subject
-  (e.g. `commit XXXXXXXXXXXX ("some commit")`). However, use `CB:XXXXX`
-  when referring to an open or abandoned change on Gerrit.
+  (e.g. `commit XXXXXXXXXXXX ("some commit")`). Do not use `CB:XXXXX` or
+  a Gerrit Change-Id for merged commits; those identifiers are not useful
+  once a change has been merged. Use `CB:XXXXX` only when referring to an
+  open or abandoned change on Gerrit.
 - When using a URL in a commit message, use archive.org when possible.
   URLs often get changed or go stale, so this keeps them stable.
 - Make sure that all changes in a patch are addressed in the commit

@@ -8,19 +8,31 @@
 
 ENTRY(_start)
 	/* Setup CPU. */
-	bl      arm64_init_cpu
+	bl	arm64_init_cpu
 
+	/* Get core ID */
+	mrs	x0, MPIDR_EL1
+	and	x1, x0, # 0xfffff // Aff2:Aff1:Aff0
+
+	/* Core 0 branches to bsp */
+	cbz	x1, bsp
+_wfi:
+	/* APs wait for instruction */
+	wfi
+	b	_wfi
+
+bsp:
 	/* Get code positions. */
 	ldr	x1, =_flash
 	ldr	x0, =_bootblock
 
 	/* Calculate bootblock size. */
-	ldr     x2, =_ebootblock
-	sub     x2, x2, x0
+	ldr	x2, =_ebootblock
+	sub	x2, x2, x0
 
 	/* Call memcpy in arch/arm64/memcpy.S */
 	bl	memcpy
-	dmb     sy
+	dmb	sy
 
 	/* Calculate relocation offset between bootblock in flash and in DRAM. */
 	ldr	x0, =_flash

@@ -45,6 +45,9 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	memcfg_init(memupd, mem_config, &spd_info, 0);
 
+	/* Enable DRAM double refresh */
+	m_cfg->Refresh2X = 1;
+
 	if (CONFIG(GEN3_EXTERNAL_CLOCK_BUFFER))
 		configure_external_clksrc(m_cfg);
 

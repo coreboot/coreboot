@@ -48,7 +48,11 @@ enum smccc_return_values {
 #define  SMCCC_GET_SOC_VERSION	0
 #define  SMCCC_GET_SOC_REVISION	1
 
+#if CONFIG_ARM64_CURRENT_EL == 3
+static inline uint8_t smccc_supports_arch_soc_id(void) { return 0; }
+#else
 uint8_t smccc_supports_arch_soc_id(void);
+#endif
 enum cb_err smccc_arch_soc_id(uint32_t *jep106code, uint32_t *soc_revision);
 
 #endif /* ARM_ARM64_SMC_H */

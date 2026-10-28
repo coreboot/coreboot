@@ -200,7 +200,7 @@ void acpigen_write_PRT_pre_routed(const struct device *br)
 {
 	int dev_num = 0;
 	uint32_t routed_dev_bitmap = 0;
-	char *entry_count;
+	struct acpigen_package entry_count;
 
 	if (!dev_is_active_bridge(br))
 		return;
@@ -230,7 +230,7 @@ void acpigen_write_PRT_pre_routed(const struct device *br)
 
 		acpigen_write_PRT_GSI_entry(dev_num, int_pin - PCI_INT_A, int_line);
 
-		(*entry_count)++;
+		acpigen_increment_package_count(&entry_count);
 		routed_dev_bitmap |= (1 << dev_num);
 	}
 

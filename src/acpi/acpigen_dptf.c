@@ -128,7 +128,7 @@ void dptf_write_scope(enum dptf_participant participant)
 static void write_active_relationship_table(const struct dptf_active_policy *policies,
 					    int max_count, bool dptf_multifan_support)
 {
-	char *pkg_count;
+	struct acpigen_package pkg_count;
 	int i, j;
 
 	/* Nothing to do */
@@ -153,7 +153,7 @@ static void write_active_relationship_table(const struct dptf_active_policy *pol
 		if (policies[i].target == DPTF_NONE)
 			break;
 
-		(*pkg_count)++;
+		acpigen_increment_package_count(&pkg_count);
 
 		/* Source, Target, Percent, Fan % for each of _AC0 ... _AC9 */
 		acpigen_write_package(13);
@@ -228,7 +228,7 @@ void dptf_write_active_policies(const struct dptf_active_policy *policies,
 static void write_thermal_relationship_table(const struct dptf_passive_policy *policies,
 					     int max_count)
 {
-	char *pkg_count;
+	struct acpigen_package pkg_count;
 	int i;
 
 	/* Nothing to do */
@@ -258,7 +258,7 @@ static void write_thermal_relationship_table(const struct dptf_passive_policy *p
 			break;
 
 		/* Keep track of outer package item count */
-		(*pkg_count)++;
+		acpigen_increment_package_count(&pkg_count);
 
 		acpigen_write_package(8);
 
@@ -323,7 +323,7 @@ void dptf_write_critical_policies(const struct dptf_critical_policy *policies, i
 
 void dptf_write_charger_perf(const struct dptf_charger_perf *states, int max_count)
 {
-	char *pkg_count;
+	struct acpigen_package pkg_count;
 	int i;
 
 	if (!max_count || !states[0].control)
@@ -340,7 +340,7 @@ void dptf_write_charger_perf(const struct dptf_charger_perf *states, int max_cou
 		if (!states[i].control)
 			break;
 
-		(*pkg_count)++;
+		acpigen_increment_package_count(&pkg_count);
 
 		/*
 		 * 0, 0, 0, 0, # Reserved
@@ -384,7 +384,7 @@ int dptf_write_fan_perf_fps(uint8_t percent, uint16_t power, uint16_t speed,
 void dptf_write_fan_perf(const struct dptf_fan_perf *states, int max_count,
 						enum dptf_participant participant)
 {
-	char *pkg_count;
+	struct acpigen_package pkg_count;
 	int i;
 
 	if (!max_count || !states[0].percent)
@@ -399,7 +399,7 @@ void dptf_write_fan_perf(const struct dptf_fan_perf *states, int max_count,
 	acpigen_write_integer(FPS_REVISION); /* revision */
 
 	for (i = 0; i < max_count; ++i) {
-		(*pkg_count)++;
+		acpigen_increment_package_count(&pkg_count);
 		if (dptf_write_fan_perf_fps(states[i].percent, states[i].power,
 			states[i].speed, states[i].noise_level))
 			break;
@@ -414,7 +414,7 @@ void dptf_write_multifan_perf(
 			states[DPTF_MAX_FAN_PARTICIPANTS][DPTF_MAX_FAN_PERF_STATES],
 		int max_count, enum dptf_participant participant, int fan_num)
 {
-	char *pkg_count;
+	struct acpigen_package pkg_count;
 	int i;
 
 	if (!max_count || !states[fan_num][0].percent)
@@ -429,7 +429,7 @@ void dptf_write_multifan_perf(
 	acpigen_write_integer(FPS_REVISION); /* revision */
 
 	for (i = 0; i < max_count; ++i) {
-		(*pkg_count)++;
+		acpigen_increment_package_count(&pkg_count);
 		if (dptf_write_fan_perf_fps(states[fan_num][i].percent, states[fan_num][i].power,
 				states[fan_num][i].speed, states[fan_num][i].noise_level))
 			break;
@@ -441,7 +441,7 @@ void dptf_write_multifan_perf(
 
 void dptf_write_power_limits(const struct dptf_power_limits *limits)
 {
-	char *pkg_count;
+	struct acpigen_package pkg_count;
 
 	/* Nothing to do */
 	if (!limits->pl1.min_power && !limits->pl2.min_power)
@@ -456,7 +456,7 @@ void dptf_write_power_limits(const struct dptf_power_limits *limits)
 	acpigen_write_integer(PPCC_REVISION); /* revision */
 
 	if (limits->pl1.min_power) {
-		(*pkg_count)++;
+		acpigen_increment_package_count(&pkg_count);
 		acpigen_write_package(6);
 		acpigen_write_integer(RAPL_PL1_INDEX);
 		acpigen_write_integer(limits->pl1.min_power);
@@ -468,7 +468,7 @@ void dptf_write_power_limits(const struct dptf_power_limits *limits)
 	}
 
 	if (limits->pl2.min_power) {
-		(*pkg_count)++;
+		acpigen_increment_package_count(&pkg_count);
 		acpigen_write_package(6);
 		acpigen_write_integer(RAPL_PL2_INDEX);
 		acpigen_write_integer(limits->pl2.min_power);

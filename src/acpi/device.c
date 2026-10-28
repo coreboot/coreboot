@@ -799,7 +799,7 @@ static void acpi_dp_write_property(const struct acpi_dp *prop)
 static void acpi_dp_write_array(const struct acpi_dp *array)
 {
 	const struct acpi_dp *dp;
-	char *pkg_count;
+	struct acpigen_package pkg_count;
 
 	/* Package element count determined as it is populated */
 	pkg_count = acpigen_write_package(0);
@@ -811,7 +811,7 @@ static void acpi_dp_write_array(const struct acpi_dp *array)
 	 */
 	for (dp = array->next; dp; dp = dp->next) {
 		acpi_dp_write_value(dp);
-		(*pkg_count)++;
+		acpigen_increment_package_count(&pkg_count);
 	}
 
 	acpigen_pop_len();
@@ -841,7 +841,7 @@ static void acpi_dp_free(struct acpi_dp *dp)
 static bool acpi_dp_write_properties(struct acpi_dp *prop, const char *uuid)
 {
 	struct acpi_dp *dp;
-	char *prop_count = NULL;
+	struct acpigen_package prop_count = { 0 };
 
 	/* Print base properties */
 	for (dp = prop; dp; dp = dp->next) {
@@ -856,7 +856,7 @@ static bool acpi_dp_write_properties(struct acpi_dp *prop, const char *uuid)
 		 * is to avoid creating a zero-length package
 		 * in situations where there are only children.
 		 */
-		if (!prop_count) {
+		if (!prop_count.count) {
 			/* ToUUID (dp->uuid) */
 			acpigen_write_uuid(uuid);
 			/*
@@ -865,10 +865,10 @@ static bool acpi_dp_write_properties(struct acpi_dp *prop, const char *uuid)
 			 */
 			prop_count = acpigen_write_package(0);
 		}
-		(*prop_count)++;
+		acpigen_increment_package_count(&prop_count);
 		acpi_dp_write_property(dp);
 	}
-	if (prop_count) {
+	if (prop_count.count) {
 		/* Package (PROP) length, if a package was written */
 		acpigen_pop_len();
 		return true;
@@ -879,7 +879,7 @@ static bool acpi_dp_write_properties(struct acpi_dp *prop, const char *uuid)
 static void acpi_dp_write_(struct acpi_dp *table)
 {
 	struct acpi_dp *dp, *prop;
-	char *dp_count;
+	struct acpigen_package dp_count;
 	int child_count = 0;
 
 	if (!table || table->type != ACPI_DP_TYPE_TABLE || !table->next)
@@ -896,7 +896,7 @@ static void acpi_dp_write_(struct acpi_dp *table)
 
 	/* Print base properties */
 	if (acpi_dp_write_properties(prop, table->uuid))
-		*dp_count += 2;
+		acpigen_package_add_count(&dp_count, 2);
 
 	/* Count child properties */
 	for (dp = prop; dp; dp = dp->next)
@@ -906,7 +906,7 @@ static void acpi_dp_write_(struct acpi_dp *table)
 	/* Add child properties to the base table */
 	if (child_count) {
 		/* Update DP package count */
-		*dp_count += 2;
+		acpigen_package_add_count(&dp_count, 2);
 		/* ToUUID (ACPI_DP_CHILD_UUID) */
 		acpigen_write_uuid(ACPI_DP_CHILD_UUID);
 
@@ -924,7 +924,7 @@ static void acpi_dp_write_(struct acpi_dp *table)
 	for (dp = prop; dp; dp = dp->next)
 		if (dp->type == ACPI_DP_TYPE_PACKAGE)
 			if (acpi_dp_write_properties(dp->child, dp->uuid))
-				*dp_count += 2;
+				acpigen_package_add_count(&dp_count, 2);
 
 	/* Package (DP) length */
 	acpigen_pop_len();

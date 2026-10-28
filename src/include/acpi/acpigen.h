@@ -377,7 +377,19 @@ void acpigen_write_len_f(void);
 void acpigen_pop_len(void);
 void acpigen_set_current(char *curr);
 char *acpigen_get_current(void);
-char *acpigen_write_package(int nr_el);
+/* The count location is valid until acpigen_pop_len() closes the package. */
+struct acpigen_package {
+	uint8_t *count;
+	unsigned int width;
+};
+
+struct acpigen_package acpigen_write_package(int nr_el);
+void acpigen_package_add_count(struct acpigen_package *package, uint32_t increment);
+static inline void acpigen_increment_package_count(struct acpigen_package *package)
+{
+	acpigen_package_add_count(package, 1);
+}
+
 __always_inline void acpigen_write_package_end(void)
 {
 	acpigen_pop_len();

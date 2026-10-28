@@ -204,9 +204,43 @@ static void test_acpigen_scope_with_contents(void **state)
 	assert_int_equal(package_length, block_length);
 }
 
+static void test_patch_byte_package_count(void **state)
+{
+	const unsigned int counts[] = { 0, 1, 255 };
+	uint8_t *aml = *state;
+
+	for (size_t i = 0; i < ARRAY_SIZE(counts); i++) {
+		acpigen_set_current((char *)aml);
+		struct acpigen_package package = acpigen_write_package(0);
+		assert_int_equal(package.width, 1);
+		for (unsigned int j = 0; j < counts[i]; j++) {
+			acpigen_write_package(1);
+			acpigen_write_zero();
+			acpigen_pop_len();
+			acpigen_increment_package_count(&package);
+		}
+		acpigen_package_add_count(&package, 0);
+		acpigen_pop_len();
+		const uint8_t *end = (const uint8_t *)acpigen_get_current();
+		assert_int_equal(aml[0], PACKAGE_OP);
+		assert_int_equal(decode_package_length((const char *)aml), end - aml - 1);
+		const uint8_t *element = aml + 2 + (aml[1] >> 6);
+		assert_int_equal(*element++, counts[i]);
+		const uint8_t child[] = { PACKAGE_OP, 3, 1, ZERO_OP };
+		for (unsigned int j = 0; j < counts[i]; j++) {
+			assert_true(end - element >= sizeof(child));
+			assert_memory_equal(element, child, sizeof(child));
+			element += sizeof(child);
+		}
+		assert_ptr_equal(element, end);
+	}
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
+		cmocka_unit_test_setup_teardown(test_patch_byte_package_count, setup_acpigen,
+						teardown_acpigen),
 		cmocka_unit_test_setup_teardown(test_acpigen_single_if, setup_acpigen,
 						teardown_acpigen),
 		cmocka_unit_test_setup_teardown(test_acpigen_nested_ifs, setup_acpigen,

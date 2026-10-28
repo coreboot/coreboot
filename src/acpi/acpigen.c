@@ -123,14 +123,25 @@ void acpigen_emit_dword(unsigned int data)
 	acpigen_emit_byte((data >> 24) & 0xff);
 }
 
-char *acpigen_write_package(int nr_el)
+struct acpigen_package acpigen_write_package(int nr_el)
 {
-	char *p;
+	struct acpigen_package package = { .width = 1 };
+
 	acpigen_emit_byte(PACKAGE_OP);
 	acpigen_write_len_f();
-	p = acpigen_get_current();
+	package.count = (uint8_t *)acpigen_get_current();
 	acpigen_emit_byte(nr_el);
-	return p;
+	return package;
+}
+
+static void acpigen_package_set_count(struct acpigen_package *package, uint32_t count)
+{
+	*package->count = count;
+}
+
+void acpigen_package_add_count(struct acpigen_package *package, uint32_t increment)
+{
+	acpigen_package_set_count(package, *package->count + increment);
 }
 
 void acpigen_write_byte(unsigned int data)

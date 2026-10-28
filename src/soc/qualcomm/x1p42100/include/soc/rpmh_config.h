@@ -61,5 +61,6 @@
 int rpmh_rsc_init(void);
 enum cb_err display_rpmh_init(void);
 enum cb_err ufs_rpmh_init(void);
+enum cb_err ufs_rpmh_disable(void);
 
 #endif /* _SOC_QUALCOMM_X1P42100_RPMH_CONFIG_H_ */

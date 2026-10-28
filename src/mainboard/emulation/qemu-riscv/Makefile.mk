@@ -25,4 +25,5 @@ ramstage-y += smp.c
 ramstage-y += mmio.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 
+all-y += fw_cfg.c
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include

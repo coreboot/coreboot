@@ -10,3 +10,4 @@ ramstage-y += northbridge.c
 ramstage-y += rom_media.c
 
 all-y += bootmode.c
+all-y += fw_cfg.c

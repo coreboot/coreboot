@@ -13,6 +13,7 @@ ramstage-y += ../qemu-i440fx/rom_media.c
 ramstage-y += cpu.c
 
 all-y += ../qemu-i440fx/bootmode.c
+all-y += ../qemu-i440fx/fw_cfg.c
 all-y += memmap.c
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c

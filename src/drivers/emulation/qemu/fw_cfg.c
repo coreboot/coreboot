@@ -5,23 +5,10 @@
 #include <string.h>
 #include <smbios.h>
 #include <console/console.h>
-#include <arch/io.h>
 #include <acpi/acpi.h>
 #include <commonlib/endian.h>
 #include <device/fw_cfg.h>
 #include <device/fw_cfg_if.h>
-
-#if CONFIG(ARCH_ARM) || CONFIG(ARCH_RISCV)
-#define FW_CFG_PORT_CTL       0x08
-#define FW_CFG_PORT_DATA      0x00
-#define FW_CFG_DMA_ADDR_HIGH  0x10
-#define FW_CFG_DMA_ADDR_LOW   0x14
-#else
-#define FW_CFG_PORT_CTL       0x0510
-#define FW_CFG_PORT_DATA      0x0511
-#define FW_CFG_DMA_ADDR_HIGH  0x0514
-#define FW_CFG_DMA_ADDR_LOW   0x0518
-#endif
 
 static int fw_cfg_detected;
 static uint8_t fw_ver;
@@ -50,14 +37,10 @@ static int fw_cfg_present(void)
 
 static void fw_cfg_select(uint16_t entry)
 {
-	if (fw_ver & FW_CFG_VERSION_DMA) {
+	if (fw_ver & FW_CFG_VERSION_DMA)
 		fw_cfg_dma(FW_CFG_DMA_CTL_SELECT | entry << 16, NULL, 0);
-	} else {
-#ifdef __ARCH_GENERIC_IO_H__
-		entry = cpu_to_be16 (entry); // Big endian if MMIO
-#endif
-		outw(entry, FW_CFG_PORT_CTL); // Little endian if IO-port
-	}
+	else
+		mb_fw_cfg_write_control(entry);
 }
 
 static void fw_cfg_read(void *dst, int dstlen)
@@ -65,7 +48,7 @@ static void fw_cfg_read(void *dst, int dstlen)
 	if (fw_ver & FW_CFG_VERSION_DMA)
 		fw_cfg_dma(FW_CFG_DMA_CTL_READ, dst, dstlen);
 	else
-		insb(FW_CFG_PORT_DATA, dst, dstlen);
+		mb_fw_cfg_read_data(dst, dstlen);
 }
 
 void fw_cfg_get(uint16_t entry, void *dst, int dstlen)
@@ -547,10 +530,7 @@ static void fw_cfg_dma(int control, void *buf, int len)
 	dma_desc_addr_hi = sizeof(uintptr_t) > sizeof(uint32_t)
 				? (uint32_t)(dma_desc_addr >> 32) : 0;
 
-	// Skip writing high half if unnecessary.
-	if (dma_desc_addr_hi)
-		outl(be32_to_cpu(dma_desc_addr_hi), FW_CFG_DMA_ADDR_HIGH);
-	outl(be32_to_cpu(dma_desc_addr_lo), FW_CFG_DMA_ADDR_LOW);
+	mb_fw_cfg_set_dma(be32_to_cpu(dma_desc_addr_hi), be32_to_cpu(dma_desc_addr_lo));
 
 	while (be32_to_cpu(dma.control) & ~FW_CFG_DMA_CTL_ERROR)
 		;

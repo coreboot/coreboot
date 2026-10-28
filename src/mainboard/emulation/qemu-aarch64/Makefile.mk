@@ -14,6 +14,8 @@ ramstage-y += mmio.c
 
 bootblock-y += bootblock_custom.S
 
+all-y += fw_cfg.c
+
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include
 
 BL31_MAKEARGS += PLAT=qemu ARM_ARCH_MAJOR=8 M0_CROSS_COMPILE="$(CROSS_COMPILE_arm)"

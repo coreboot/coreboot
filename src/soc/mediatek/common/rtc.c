@@ -7,19 +7,10 @@
 /* ensure rtc write success */
 static bool rtc_busy_wait(void)
 {
-	struct stopwatch sw;
-	u16 bbpu;
-
-	stopwatch_init_usecs_expire(&sw, RTC_CBUSY_TIMEOUT_US);
-
-	do {
-		bbpu = rtc_read(RTC_BBPU);
-		/* Time > 1sec, time out and set recovery mode enable.*/
-		if (stopwatch_expired(&sw)) {
-			rtc_info("BBPU CBUSY time out !!\n");
-			return false;
-		}
-	} while (bbpu & RTC_BBPU_CBUSY);
+	if (!wait_us(RTC_CBUSY_TIMEOUT_US, !(rtc_read(RTC_BBPU) & RTC_BBPU_CBUSY))) {
+		rtc_info("BBPU CBUSY time out !!\n");
+		return false;
+	}
 
 	return true;
 }

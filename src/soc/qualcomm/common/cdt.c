@@ -83,12 +83,12 @@ uint8_t platform_get_fast_boot(void)
 					  SOC_BOOT_CONFIG_FAST_BOOT_SHIFT);
 
 	if (fast_boot == BOOT_OPTION_QSPI_NVME || fast_boot == BOOT_OPTION_QSPI_NVME_ALT)
-		return CALYPSO_STORAGE_TYPE_NVME;
+		return BOOT_STORAGE_TYPE_NVME;
 
-	return CALYPSO_STORAGE_TYPE_UFS;
+	return BOOT_STORAGE_TYPE_UFS;
 }
 
 bool platform_boot_media_is_nvme(void)
 {
-	return platform_get_fast_boot() == CALYPSO_STORAGE_TYPE_NVME;
+	return platform_get_fast_boot() == BOOT_STORAGE_TYPE_NVME;
 }

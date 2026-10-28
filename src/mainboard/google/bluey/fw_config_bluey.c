@@ -37,7 +37,7 @@ void fw_config_mainboard_override(void)
 
 	uint16_t platform_id = cdt_get_platform_id();
 	uint8_t storage_type = (soc_hw_id == TCSR_SOC_HW_VERSION_DEVICE_NUM_X1P42100) ?
-			       platform_get_fast_boot() : CALYPSO_STORAGE_TYPE_NVME;
+			       platform_get_fast_boot() : BOOT_STORAGE_TYPE_NVME;
 
 	fw_config_override_field(FW_CONFIG_FIELD(PLATFORM_ID), platform_id);
 	fw_config_override_field(FW_CONFIG_FIELD(SOC_ID), cdt_soc_id);

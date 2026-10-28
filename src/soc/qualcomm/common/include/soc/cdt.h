@@ -47,9 +47,9 @@ struct platform_id_cdt {
 #define BOOT_OPTION_QSPI_UFS		0x6
 #define BOOT_OPTION_SPI_UFS		0x7
 
-#define CALYPSO_STORAGE_TYPE_UNKNOWN	0
-#define CALYPSO_STORAGE_TYPE_NVME	1
-#define CALYPSO_STORAGE_TYPE_UFS	2
+#define BOOT_STORAGE_TYPE_UNKNOWN	0
+#define BOOT_STORAGE_TYPE_NVME		1
+#define BOOT_STORAGE_TYPE_UFS		2
 
 #define EXTRACT_FIELD(val, mask, shift) \
 	(((val) & (mask)) >> (shift))

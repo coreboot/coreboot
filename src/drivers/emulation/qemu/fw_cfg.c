@@ -375,6 +375,8 @@ static void fw_cfg_smbios_init(void)
 	FwCfgSmbios entry;
 	char *buf;
 
+	if (!fw_cfg_present())
+		return;
 	if (done)
 		return;
 	done = 1;

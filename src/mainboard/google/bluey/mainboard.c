@@ -306,6 +306,8 @@ void mainboard_soc_init(void)
 
 	if (!mainboard_needs_pcie_init())
 		ufs_rpmh_init();
+	else
+		ufs_rpmh_disable();
 
 	/* Enable touchpad power */
 	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_TOUCHPAD_POWER)

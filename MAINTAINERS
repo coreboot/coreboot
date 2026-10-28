@@ -1157,7 +1157,6 @@ F:	src/drivers/aspeed/ast2050/
 ACPI
 R:	Cliff Huang <cliff.huang@intel.com>
 M:	Lance Zhao <lance.zhao@gmail.com>
-M:	Tim Wawrzynczak <inforichland@gmail.com>
 S:	Supported
 F:	src/acpi/
 F:	src/arch/x86/acpi/

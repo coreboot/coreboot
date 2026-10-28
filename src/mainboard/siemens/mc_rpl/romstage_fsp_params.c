@@ -48,6 +48,9 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	/* Enable DRAM double refresh */
 	m_cfg->Refresh2X = 1;
 
+	/* Enable Row-Hammer prevention */
+	m_cfg->RhSelect = 1;
+
 	if (CONFIG(GEN3_EXTERNAL_CLOCK_BUFFER))
 		configure_external_clksrc(m_cfg);
 

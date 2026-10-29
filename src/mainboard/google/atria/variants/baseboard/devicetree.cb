@@ -43,6 +43,9 @@ chip soc/intel/novalake
 	# Enable s0ix
 	register "s0ix_enable" = "true"
 
+	# Enable Enhanced Intel SpeedStep
+	register "eist_enable" = "true"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref dtt on end

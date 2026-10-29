@@ -42,6 +42,12 @@
 
 #define INVALID_HCMD 0xFF
 
+#define EC_POWER_STABLE_WINDOW_MS 1000
+#define EC_POWER_WAIT_TIMEOUT_MS 5000
+#define EC_POWER_POLL_DELAY_MS 50
+#define EC_PD_MIN_VOLTAGE_MV 5000
+#define EC_PD_MIN_POWER_MW 15000
+
 /*
  * Map UHEPI masks to non UHEPI commands in order to support old EC FW
  * which does not support UHEPI command.
@@ -1284,6 +1290,107 @@ bool google_chromeec_is_barrel_charger_present(void)
 	 * charger, even when a USB-C PD charger is also connected.
 	 */
 	return google_chromeec_is_charger_present() && !google_chromeec_is_usb_pd_attached();
+}
+
+static bool google_chromeec_is_battery_providing_power(void)
+{
+	struct ec_params_battery_dynamic_info batt_params = {
+		.index = 0,
+	};
+	struct ec_response_battery_dynamic_info batt_resp = {};
+
+	if (ec_cmd_battery_get_dynamic(PLAT_EC, &batt_params, &batt_resp) == 0 &&
+	    (batt_resp.flags & EC_BATT_FLAG_BATT_PRESENT) &&
+	    !(batt_resp.flags & (EC_BATT_FLAG_INVALID_DATA | EC_BATT_FLAG_LEVEL_CRITICAL)) &&
+	    batt_resp.actual_voltage > 0)
+		return true;
+
+	struct ec_params_charge_state cs_params = {
+		.cmd = CHARGE_STATE_CMD_GET_STATE,
+	};
+	struct ec_response_charge_state cs_resp = {};
+
+	if (ec_cmd_charge_state(PLAT_EC, &cs_params, &cs_resp) == 0 &&
+	    cs_resp.get_state.batt_state_of_charge > 0)
+		return true;
+
+	return false;
+}
+
+int google_chromeec_wait_for_stable_power(void)
+{
+	if (google_chromeec_is_battery_providing_power())
+		return 0;
+
+	const struct ec_params_usb_pd_power_info params = {
+		.port = PD_POWER_CHARGING_PORT,
+	};
+	struct ec_response_usb_pd_power_info resp = {};
+	uint16_t prev_mv = 0, prev_ma = 0;
+	bool stable_contract = false;
+	struct stopwatch sw_total, sw_stable;
+
+	for (stopwatch_init_msecs_expire(&sw_total, EC_POWER_WAIT_TIMEOUT_MS);
+	     !stopwatch_expired(&sw_total);
+	     mdelay(EC_POWER_POLL_DELAY_MS)) {
+		struct chromeec_command cmd = {
+			.cmd_code = EC_CMD_USB_PD_POWER_INFO,
+			.cmd_version = 0,
+			.cmd_data_in = &params,
+			.cmd_size_in = sizeof(params),
+			.cmd_data_out = &resp,
+			.cmd_size_out = sizeof(resp),
+			.cmd_dev_index = 0,
+		};
+		int rv = google_chromeec_command(&cmd);
+
+		if (rv != 0 && cmd.cmd_code == EC_RES_INVALID_COMMAND)
+			return 0;
+
+		if (rv != 0 ||
+		    (resp.role != USB_PD_PORT_POWER_SINK &&
+		     resp.role != USB_PD_PORT_POWER_SINK_NOT_CHARGING)) {
+			stable_contract = false;
+			continue;
+		}
+
+		if (resp.type == USB_CHG_TYPE_DEDICATED &&
+		    resp.meas.voltage_max > 0) {
+			printk(BIOS_INFO,
+			       "EC sync: dedicated barrel jack power present (%u mV)\n",
+			       resp.meas.voltage_max);
+			return 0;
+		}
+
+		if (resp.type != USB_CHG_TYPE_PD ||
+		    resp.meas.voltage_max < EC_PD_MIN_VOLTAGE_MV ||
+		    resp.meas.current_max == 0 ||
+		    resp.max_power < EC_PD_MIN_POWER_MW) {
+			stable_contract = false;
+			continue;
+		}
+
+		if (!stable_contract || resp.meas.voltage_max != prev_mv ||
+		    resp.meas.current_max != prev_ma) {
+			prev_mv = resp.meas.voltage_max;
+			prev_ma = resp.meas.current_max;
+			stable_contract = true;
+			stopwatch_init_msecs_expire(&sw_stable,
+						    EC_POWER_STABLE_WINDOW_MS);
+			continue;
+		}
+
+		if (stopwatch_expired(&sw_stable)) {
+			printk(BIOS_INFO,
+			       "EC sync: stable USB-PD contract %u mV / %u mA (%u mW) after %lld ms\n",
+			       resp.meas.voltage_max, resp.meas.current_max,
+			       resp.max_power,
+			       (long long)stopwatch_duration_msecs(&sw_total));
+			return 0;
+		}
+	}
+
+	return -1;
 }
 
 int google_chromeec_override_dedicated_charger_limit(uint16_t current_lim,

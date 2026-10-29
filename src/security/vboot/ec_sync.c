@@ -350,6 +350,9 @@ static vb2_error_t ec_update_image(enum vb2_firmware_selection select)
 	if (image_size > region_size)
 		goto unmap;
 
+	if (google_chromeec_wait_for_stable_power())
+		printk(BIOS_WARNING, "EC sync: power wait timed out; proceeding\n");
+
 	/* Erase the region */
 	if (google_chromeec_flash_erase(region_offset, region_size))
 		goto unmap;

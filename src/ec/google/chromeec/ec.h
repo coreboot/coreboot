@@ -184,6 +184,14 @@ bool google_chromeec_is_rtc_event(void);
  */
 bool google_chromeec_is_barrel_charger_present(void);
 
+/**
+ * Wait until a stable power source (battery, barrel jack, or settled USB-PD
+ * contract) is providing power before starting an EC firmware update.
+ *
+ * @return 0 if stable power is confirmed, -1 on timeout
+ */
+int google_chromeec_wait_for_stable_power(void);
+
 /*
  * Set max current and voltage of a dedicated charger.
  *

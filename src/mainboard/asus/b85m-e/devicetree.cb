@@ -17,7 +17,10 @@ chip northbridge/intel/haswell
 		ops haswell_pci_domain_ops
 		subsystemid 0x1043 0x8534 inherit
 		device pci 00.0 on  end		# Desktop Host bridge
-		device pci 01.0 on  end		# PEG: PCIEX16_1
+		device pci 01.0 on		# PEG
+			smbios_slot_desc "SlotTypePciExpressGen3" "SlotLengthLong"
+					 "PCIEX16_1" "SlotDataBusWidth16X"
+		end
 		device pci 02.0 on  end		# iGPU
 		device pci 03.0 on  end		# Mini-HD audio
 
@@ -36,11 +39,17 @@ chip northbridge/intel/haswell
 			device pci 1b.0 on		# High Definition Audio
 				subsystemid 0x1043 0x8576
 			end
-			device pci 1c.0 on  end		# RP #1: PCIEX1_1
+			device pci 1c.0 on		# RP #1
+				smbios_slot_desc "SlotTypePciExpressGen2" "SlotLengthShort"
+						 "PCIEX1_1" "SlotDataBusWidth1X"
+			end
 			device pci 1c.1 off end		# RP #2
 			device pci 1c.2 on  end		# RP #3: Realtek RTL8111F GbE NIC
 			device pci 1c.3 on  end		# RP #4: ASMedia ASM1083 PCIe-to-PCI-bridge
-			device pci 1c.4 on  end		# RP #5: PCIEX16_2
+			device pci 1c.4 on		# RP #5
+				smbios_slot_desc "SlotTypePciExpressGen2X16" "SlotLengthLong"
+						 "PCIEX16_2" "SlotDataBusWidth4X"
+			end
 			device pci 1d.0 on  end		# USB2 EHCI #1
 			device pci 1f.0 on		# LPC bridge
 				chip superio/common

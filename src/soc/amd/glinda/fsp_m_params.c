@@ -61,7 +61,18 @@ static void fill_dxio_descriptors(FSP_M_CONFIG *mcfg,
 	}
 
 	for (i = 0; i < num; i++) {
-		memcpy(mcfg->dxio_descriptor[i], &descs[i], sizeof(mcfg->dxio_descriptor[0]));
+		dxio_descriptor dxio = descs[i];
+
+		/* Don't let FSP train a root port that is disabled in the devicetree */
+		if (dxio.engine_type == PCIE_ENGINE &&
+		    !is_devfn_enabled(PCI_DEVFN(dxio.device_number, dxio.function_number))) {
+			printk(BIOS_DEBUG, "PCIe root port %02x.%x is disabled, not training it\n",
+			       dxio.device_number, dxio.function_number);
+			dxio.engine_type = UNUSED_ENGINE;
+			dxio.port_present = false;
+		}
+
+		memcpy(mcfg->dxio_descriptor[i], &dxio, sizeof(mcfg->dxio_descriptor[0]));
 	}
 }
 

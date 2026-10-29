@@ -271,6 +271,10 @@ static void fill_fsps_microcode_params(FSP_S_CONFIG *s_cfg, const config_t *conf
 	if (!microcode)
 		return;
 
+	/* SoC specific check to skip re-loading of microcode */
+	if (soc_skip_ucode_update(get_current_microcode_rev(), get_microcode_rev(microcode)))
+		return;
+
 	length = get_microcode_size(microcode);
 	if (!length)
 		return;

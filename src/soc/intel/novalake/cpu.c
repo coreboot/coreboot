@@ -225,6 +225,10 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 {
 	if (!CONFIG(CHROMEOS))
 		return 0;
+
+	if (current_patch_id == new_patch_id)
+		return 1;
+
 	/*
 	 * Locked RO Descriptor Implications:
 	 *

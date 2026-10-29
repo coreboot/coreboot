@@ -58,7 +58,7 @@ static void handle_low_power_charging_boot(enum boot_mode_t boot_mode)
 	if (!pll_init_and_set(apss_ncc0, L_VAL_710P4MHz))
 		printk(BIOS_DEBUG, "CPU Frequency set to 710MHz\n");
 
-	/* Placeholder for display stop before launching charging applet */
+	display_stop();
 
 	if (CONFIG(EC_GOOGLE_CHROMEEC) && detect_ac_unplug_event())
 		chromeec_finalize_and_poweroff(false);

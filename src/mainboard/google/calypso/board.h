@@ -28,6 +28,29 @@
 #define GPIO_SD_CARD_DET_ODL		221
 #define GPIO_SMB2370_CHG_LED_PG_Q_ODL	245
 
+/*
+ * eDP panel power/backlight GPIOs.
+ *
+ * No calypso board schematic is available yet; these are taken from the
+ * Mahua reference devkit (IDP) devicetree
+ * (mahua-sde-display-idp-overlay.dts), which assigns the same panel
+ * power/HPD pin numbers as Hamoa/x1p42100 (GPIO70/GPIO119). Confirm against
+ * the actual mensa/c1nv schematic before shipping.
+ */
+#define GPIO_PANEL_POWER_ON		GPIO(70)  /* edp_reg_en */
+#define GPIO_PANEL_HPD			GPIO(119) /* edp_hpd_ctrl, edp0_hot */
+#define GPIO_PANEL_BACKLIGHT_EN		GPIO(18)  /* edp_bl_en */
+#define GPIO_PANEL_BACKLIGHT_PWR	GPIO(19)  /* edp_bl_reg_en */
+
+/* Backlight PWM enable is a PMIC GPIO (pmk8850_gpios 5), unlike the panel
+ * power/backlight-enable lines above which are plain TLMM (AP) GPIOs. */
+#define BACKLIGHT_PWM_PMIC_SID		0
+#define BACKLIGHT_PWM_PMIC_GPIO		5
+
+/* Sink's advertised max brightness level for DPCD AUX backlight control,
+ * from mahua-sde-display-crd.dtsi: qcom,dp-brightness-max-level = <0x190>. */
+#define EDP_BACKLIGHT_MAX_LEVEL		0x190
+
 /* TODO: update as per datasheet */
 #define GPIO_AP_EC_INT		GPIO(67)
 #define GSC_AP_INT(x)		GPIO(x)

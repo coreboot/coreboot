@@ -9,6 +9,7 @@
 #include <delay.h>
 #include <ec/google/chromeec/ec.h>
 #include <elog.h>
+#include <gpio.h>
 #include <reset.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/aop_common.h>
@@ -175,11 +176,23 @@ static void update_battery_status(void)
 }
 
 /* Perform romstage early hardware initialization */
+static void edp_configure_gpios(void)
+{
+	/* Panel power and backlight-enable are asserted together per the
+	 * mdss_dp_hpd_ctrl/mdss_dp_active pinctrl groups in the Mahua
+	 * devicetree, well before AUX/HPD is touched in ramstage. */
+	gpio_output(GPIO_PANEL_POWER_ON, 1);
+	gpio_output(GPIO_PANEL_BACKLIGHT_EN, 1);
+	gpio_input(GPIO_PANEL_HPD);
+}
+
 static void mainboard_setup_peripherals_early(void)
 {
 	configure_gpios_defaults();
 
 	update_battery_status();
+
+	edp_configure_gpios();
 
 	/* Watchdog must be checked first to avoid erasing watchdog info later. */
 	check_wdog();

@@ -249,6 +249,9 @@ static void load_qc_se_firmware_late(void)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE6, SE_PROTOCOL_UART, FIFO); /* BT UART */
 	qupv3_se_fw_load_and_init(QUPV3_0_SE0, SE_PROTOCOL_I2C, MIXED); /* Trackpad I2C */
 
+	if (CONFIG(MAINBOARD_HAS_LCD_VOLTAGE_VIA_I2C))
+		qupv3_se_fw_load_and_init(QUPV3_1_SE1, SE_PROTOCOL_I2C, MIXED); /* Panel voltage chip I2C */
+
 	if (CONFIG(MAINBOARD_HAS_PS8820_RETIMER)) {
 		i2c_init(QUPV3_0_SE3, I2C_SPEED_FAST); /* USB-C0 Re-Timer I2C */
 		i2c_init(QUPV3_0_SE7, I2C_SPEED_FAST); /* USB-C1 Re-Timer I2C */

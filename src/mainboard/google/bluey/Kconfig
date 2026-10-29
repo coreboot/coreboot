@@ -101,6 +101,7 @@ config BOARD_GOOGLE_MODEL_MERU
 	select MAINBOARD_HAS_CHROME_EC
 	select MAINBOARD_HAS_FINGERPRINT_VIA_USB
 	select MAINBOARD_HAS_GOOGLE_TPM
+	select MAINBOARD_HAS_LCD_VOLTAGE_VIA_I2C
 	select MAINBOARD_HAS_UFS
 	select MAINBOARD_RAMDUMP_LED_NOTIFICATION
 	select SPI_FREQ_75MHZ
@@ -213,6 +214,12 @@ config MAINBOARD_HAS_FINGERPRINT
 	help
 	  Enable this option if your mainboard is equipped with an onboard
 	  fingerprint reader. This could be connected via SPI or USB.
+
+config MAINBOARD_HAS_LCD_VOLTAGE_VIA_I2C
+	bool
+	default n
+	help
+	  Enable this option if your mainboard has LCD voltage controller over I2C Bus.
 
 config MAINBOARD_HAS_SD_CONTROLLER
 	bool

@@ -123,25 +123,64 @@ void acpigen_emit_dword(unsigned int data)
 	acpigen_emit_byte((data >> 24) & 0xff);
 }
 
-struct acpigen_package acpigen_write_package(int nr_el)
+struct acpigen_package acpigen_write_package(uint32_t nr_el)
 {
-	struct acpigen_package package = { .width = 1 };
+	struct acpigen_package package;
 
-	acpigen_emit_byte(PACKAGE_OP);
+	package.op = (uint8_t *)acpigen_get_current();
+	acpigen_emit_byte(nr_el > UINT8_MAX ? VARIABLE_PACKAGE_OP : PACKAGE_OP);
 	acpigen_write_len_f();
-	package.count = (uint8_t *)acpigen_get_current();
-	acpigen_emit_byte(nr_el);
+	if (nr_el <= UINT8_MAX) {
+		package.width = 1;
+	} else if (nr_el <= UINT16_MAX) {
+		acpigen_emit_byte(WORD_PREFIX);
+		package.width = 2;
+	} else {
+		acpigen_emit_byte(DWORD_PREFIX);
+		package.width = 4;
+	}
+	for (unsigned int i = 0; i < package.width; i++)
+		acpigen_emit_byte(nr_el >> (8 * i));
 	return package;
+}
+
+static uint8_t *acpigen_package_get_count_location(const struct acpigen_package *package)
+{
+	assert(ltop > 0 && len_stack[ltop - 1] == (char *)package->op + 1);
+	assert(package->width == 1 || package->width == 2 || package->width == 4);
+	return package->op + 1 + ACPIGEN_RSVD_PKGLEN_BYTES +
+		(package->width != 1);
 }
 
 static void acpigen_package_set_count(struct acpigen_package *package, uint32_t count)
 {
-	*package->count = count;
+	uint8_t *p = acpigen_package_get_count_location(package);
+	unsigned int width = count <= UINT8_MAX ? 1 : count <= UINT16_MAX ? 2 : 4;
+
+	if (width > package->width) {
+		uint8_t *payload = p + package->width;
+		unsigned int growth = width - package->width + (package->width == 1);
+
+		memmove(payload + growth, payload, acpigen_get_current() - (char *)payload);
+		acpigen_set_current(acpigen_get_current() + growth);
+		*package->op = VARIABLE_PACKAGE_OP;
+		p = package->op + 1 + ACPIGEN_RSVD_PKGLEN_BYTES;
+		*p++ = width == 2 ? WORD_PREFIX : DWORD_PREFIX;
+		package->width = width;
+	}
+	for (unsigned int i = 0; i < package->width; i++)
+		p[i] = count >> (8 * i);
 }
 
 void acpigen_package_add_count(struct acpigen_package *package, uint32_t increment)
 {
-	acpigen_package_set_count(package, *package->count + increment);
+	const uint8_t *p = acpigen_package_get_count_location(package);
+	uint32_t count = 0;
+
+	for (unsigned int i = 0; i < package->width; i++)
+		count |= (uint32_t)p[i] << (8 * i);
+	assert(increment <= UINT32_MAX - count);
+	acpigen_package_set_count(package, count + increment);
 }
 
 void acpigen_write_byte(unsigned int data)

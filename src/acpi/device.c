@@ -856,7 +856,7 @@ static bool acpi_dp_write_properties(struct acpi_dp *prop, const char *uuid)
 		 * is to avoid creating a zero-length package
 		 * in situations where there are only children.
 		 */
-		if (!prop_count.count) {
+		if (!prop_count.op) {
 			/* ToUUID (dp->uuid) */
 			acpigen_write_uuid(uuid);
 			/*
@@ -868,7 +868,7 @@ static bool acpi_dp_write_properties(struct acpi_dp *prop, const char *uuid)
 		acpigen_increment_package_count(&prop_count);
 		acpi_dp_write_property(dp);
 	}
-	if (prop_count.count) {
+	if (prop_count.op) {
 		/* Package (PROP) length, if a package was written */
 		acpigen_pop_len();
 		return true;

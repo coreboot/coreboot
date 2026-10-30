@@ -377,13 +377,17 @@ void acpigen_write_len_f(void);
 void acpigen_pop_len(void);
 void acpigen_set_current(char *curr);
 char *acpigen_get_current(void);
-/* The count location is valid until acpigen_pop_len() closes the package. */
+/* The descriptor is valid until acpigen_pop_len() closes this package.
+ * Start deferred counts at their initial value; count updates grow the encoding
+ * only when necessary. Only update a count while its package is the current
+ * length context.
+ */
 struct acpigen_package {
-	uint8_t *count;
+	uint8_t *op;
 	unsigned int width;
 };
 
-struct acpigen_package acpigen_write_package(int nr_el);
+struct acpigen_package acpigen_write_package(uint32_t nr_el);
 void acpigen_package_add_count(struct acpigen_package *package, uint32_t increment);
 static inline void acpigen_increment_package_count(struct acpigen_package *package)
 {

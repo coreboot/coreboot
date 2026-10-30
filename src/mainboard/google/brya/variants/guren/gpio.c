@@ -24,6 +24,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPI(GPP_E4, NONE, DEEP),
 	/* E5 : SDD_STRAP2 */
 	PAD_CFG_GPI(GPP_E5, NONE, DEEP),
+	/* E19 : DDP1_CTRLDATA ==> GPP_E19_STRAP */
+	PAD_CFG_GPI_LOCK(GPP_E19, DN_20K, LOCK_CONFIG),
 	/* F12 : WWAN_RST_L */
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H19 : SOC_I2C_SUB_INT_ODL */
@@ -70,6 +72,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E12, NONE, DEEP),
+	/* E19 : DDP1_CTRLDATA ==> GPP_E19_STRAP */
+	PAD_CFG_GPI(GPP_E19, DN_20K, DEEP),
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
 	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
 	/* H4  : I2C0_SDA ==> SOC_I2C_GSC_SDA */

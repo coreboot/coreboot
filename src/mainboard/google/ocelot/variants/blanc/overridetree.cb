@@ -79,6 +79,7 @@ chip soc/intel/pantherlake
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 	}"
 
 	# Intel Common SoC Config
@@ -86,6 +87,7 @@ chip soc/intel/pantherlake
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
 	#| I2C1              | TPM(cr50)                 |
+	#| I2C4              | Touchpad (LPSS)           |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
@@ -93,6 +95,9 @@ chip soc/intel/pantherlake
 		.logo_bottom_margin = 200,
 		.i2c[1] = {
 			.early_init=1,
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,
 		},
 	}"
@@ -356,34 +361,12 @@ chip soc/intel/pantherlake
 				device generic 0 on end
 			end
 		end
-
 		device ref thc0 on
-			probe TRACKPAD TRACKPAD_ELAN
+			probe TOUCHSCREEN TOUCHSCREEN_PARADE
 			probe TRACKPAD TRACKPAD_FOCAL
 			register "thc_wake_on_touch[0]" = "true"
 			register "thc_mode[0]" = "THC_HID_I2C_MODE"
 			# THC0 is function 0; hence it needs to be enabled when THC1 is to be enabled.
-			chip drivers/intel/touch
-				register "name" = "INTEL_THC0_NAME"
-				register "mode" = "THC_HID_I2C_MODE"
-				register "dev_hidi2c.cid" = ""PNP0C50""
-				register "dev_hidi2c.intf.hidi2c.addr" = "0x15"
-				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0x0001"
-				register "dev_hidi2c.intf.hidi2c.interrupt_delay_value" = "100"
-				register "dev_hidi2c.intf.hidi2c.max_frame_size_value" = "128"
-				register "soc_hidi2c.fm_scl_low_period" = "160"
-				register "soc_hidi2c.fm_scl_high_period" = "146"
-				register "wake_on_touch" = "true"
-				# NOTE: Use GpioInt() in _CRS and does not use GPE.
-				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC0)"
-				register "active_ltr" = "1"
-				register "idle_ltr" = "0"
-				register "connected_device" = "TH_SENSOR_GENERIC"
-				register "add_acpi_dma_property" = "true"
-				device generic 0 on
-					probe TRACKPAD TRACKPAD_ELAN
-				end
-			end
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC0_NAME"
 				register "mode" = "THC_HID_I2C_MODE"
@@ -459,5 +442,17 @@ chip soc/intel/pantherlake
 				device i2c 50 on end
 			end
 		end #I2C1
+		device ref i2c4 on
+			probe TRACKPAD TRACKPAD_ELAN
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E18_IRQ)"
+				register "detect" = "1"
+				register "wake" = "GPE0_DW2_18"
+				device i2c 15 on
+				end
+			end
+		end # I2C4
 	end
 end

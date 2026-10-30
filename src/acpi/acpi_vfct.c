@@ -103,6 +103,7 @@ acpi_vfct_t *acpi_allocate_and_fill_vfct(void)
 		       __func__, image_hdr_len);
 		return NULL;
 	}
+	memset(vfct, 0, image_hdr_len);
 
 	if (acpi_fill_header(&vfct->header, "VFCT", VFCT, sizeof(acpi_vfct_t)) != CB_SUCCESS)
 		return NULL;

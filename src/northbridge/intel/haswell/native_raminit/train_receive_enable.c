@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <console/console.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <types.h>
 
@@ -162,6 +163,16 @@ static bool sample_dqs(struct sysinfo *ctrl, const uint8_t channel, const uint8_
 	return (get_data_train_fb(ctrl, channel, byte) & 0x1ff) >= BIT(RE_NUM_SAMPLES - 1);
 }
 
+static uint8_t get_rt_delta(const struct sysinfo *ctrl)
+{
+	if (is_hsw_ult() || ctrl->bdw)
+		return 2;
+	else if (ctrl->cpu_model == CRYSTALWELL_FAMILY) /* or HSW Trad A0 */
+		return 4;
+	else
+		return 0;
+}
+
 enum nri_status train_receive_enable(struct sysinfo *ctrl)
 {
 	const struct reut_box reut_addr = {
@@ -182,7 +193,7 @@ enum nri_status train_receive_enable(struct sysinfo *ctrl)
 	const uint16_t bytemask = BIT(ctrl->lanes) - 1;
 	const uint8_t fine_step = 1;
 
-	const uint8_t rt_delta = is_hsw_ult() ? 4 : 2;
+	const uint8_t rt_delta = get_rt_delta(ctrl);
 	const uint8_t rt_io_comp = 21 + rt_delta;
 	const uint8_t rt_latency = 16 + rt_delta;
 	setup_io_test(

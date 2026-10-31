@@ -1648,12 +1648,11 @@ static unsigned long write_acpi_tables(const unsigned long start)
 
 		/* Write object to declare coreboot tables */
 		acpi_ssdt_write_cbtable();
+		current = (unsigned long)acpigen_get_current();
 
 		/* (Re)calculate length and checksum. */
 		ssdt->length = current - (unsigned long)ssdt;
 		ssdt->checksum = acpi_checksum((void *)ssdt, ssdt->length);
-
-		acpi_create_ssdt_generator(ssdt, NULL);
 
 		acpi_add_table(rsdp, ssdt);
 

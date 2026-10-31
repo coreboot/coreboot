@@ -1507,6 +1507,10 @@ void google_chromeec_init(void)
 {
 	google_chromeec_log_uptimeinfo();
 
+	/* Framework boards provide their own EC CFR and options */
+	if (CONFIG(VENDOR_FRAMEWORK))
+		return;
+
 	/* Enable automatic fan control */
 	if (get_uint_option("auto_fan_control", CONFIG(EC_GOOGLE_CHROMEEC_AUTO_FAN_CTRL))) {
 		ec_cmd_thermal_auto_fan_ctrl(PLAT_EC);

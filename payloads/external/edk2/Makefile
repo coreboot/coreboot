@@ -34,6 +34,11 @@ else
 export PACKAGES_PATH := $(EDK2_PATH)
 endif
 
+# edk2 runs $(NASM_PREFIX)nasm, use coreboot toolchain-provided NASM if available
+ifneq ($(findstring /,$(NASM)),)
+export NASM_PREFIX := $(dir $(NASM))
+endif
+
 EDK2_UEFIPAYLOAD_OUT ?= ../../../build/UEFIPAYLOAD.fd
 EDK2_UNIVERSAL_PAYLOAD_OUT ?= ../../../build/UniversalPayload.fit
 
@@ -324,7 +329,7 @@ checktools:
 			echo "ERROR: please_install uuid-dev (libuuid-devel)"; exit 1 )
 	rm -rf libtest.c libtest
 	echo -n "EDK2: Checking nasm:"
-	type nasm > /dev/null 2>&1 && echo "        Found!" || \
+	type $(NASM_PREFIX)nasm > /dev/null 2>&1 && echo "        Found!" || \
 		( echo "        Not found!"; echo "ERROR: Please install nasm."; exit 1 )
 	echo -n "EDK2: Checking imagemagick:"
 	-convert -size 1x1 xc: test.png &> /dev/null;

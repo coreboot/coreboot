@@ -6,6 +6,7 @@
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/x86/legacy_save_state.h>
 #include <cpu/x86/mp.h>
+#include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <device/fw_cfg.h>
 #include <stddef.h>
@@ -74,6 +75,13 @@ static void relocation_handler(int cpu, uintptr_t curr_smbase,
 	printk(BIOS_DEBUG, "New SMBASE=0x%08x\n", smbase);
 }
 
+static void qemu_pre_mp_init(void)
+{
+	/* Setup MTRRs based on physical address size. */
+	x86_setup_mtrrs_with_detect();
+	x86_mtrr_check();
+}
+
 static void post_mp_init(void)
 {
 	/* Limit access to SMRAM to SMM module. */
@@ -87,6 +95,7 @@ static void post_mp_init(void)
 }
 
 const struct mp_ops mp_ops_with_smm = {
+	.pre_mp_init         = qemu_pre_mp_init,
 	.get_cpu_count       = fw_cfg_max_cpus,
 	.get_smm_info        = get_smm_info,
 	.pre_mp_smm_init     = smm_southbridge_clear_state,

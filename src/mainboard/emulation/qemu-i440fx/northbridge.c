@@ -6,6 +6,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/mp.h>
+#include <cpu/x86/mtrr.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
@@ -238,7 +239,15 @@ static struct device_operations pci_domain_ops = {
 #endif
 };
 
+static void qemu_pre_mp_init(void)
+{
+	/* Setup MTRRs based on physical address size. */
+	x86_setup_mtrrs_with_detect();
+	x86_mtrr_check();
+}
+
 static const struct mp_ops mp_ops_no_smm = {
+	.pre_mp_init = qemu_pre_mp_init,
 	.get_cpu_count = fw_cfg_max_cpus,
 };
 

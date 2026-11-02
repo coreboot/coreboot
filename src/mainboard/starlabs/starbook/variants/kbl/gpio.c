@@ -4,6 +4,10 @@
 
 /* Early pad configuration in bootblock. */
 const struct pad_config early_gpio_table[] = {
+	/* PCIe clock requests */
+	PAD_CFG_NF(GPP_B5, NONE, PLTRST, NF1),				/* Clock Request 0 */
+	PAD_CFG_NF(GPP_B9, NONE, PLTRST, NF1),				/* Clock Request 4 */
+
 	/* Debug Connector */
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),				/* RXD */
 	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),				/* TXD */

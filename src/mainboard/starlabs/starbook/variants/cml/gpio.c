@@ -4,6 +4,9 @@
 
 /* Early pad configuration in bootblock */
 const struct pad_config early_gpio_table[] = {
+	/* SSD */
+	PAD_CFG_NF(GPP_B6, NONE, PLTRST, NF1),				/* Clock Request 1 */
+
 	/* Debug Connector */
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),				/* RXD */
 	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),				/* TXD */

@@ -34,9 +34,9 @@ const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2), /* TXD */
 
 	/* SSD */
-	PAD_CFG_GPI(GPP_D5, NONE, PLTRST), /* Clock Request 0 */
-	PAD_CFG_GPO(GPP_H0, 0, PLTRST),    /* Reset asserted */
-	PAD_CFG_GPO(GPP_D16, 0, PLTRST),   /* Enable (PWREN off) */
+	PAD_CFG_NF(GPP_D5, NONE, PLTRST, NF1), /* Clock Request 0 */
+	PAD_CFG_GPO(GPP_H0, 0, PLTRST),        /* Reset asserted */
+	PAD_CFG_GPO(GPP_D16, 1, PLTRST),       /* Enable (PWREN on) */
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)
@@ -81,7 +81,7 @@ const struct pad_config gpio_table[] = {
 	/* SSD */
 	PAD_NC(GPP_D5, NONE),                /* Clock Request 0 */
 	PAD_CFG_GPO(GPP_H0, 0, PLTRST),      /* Reset asserted */
-	PAD_CFG_GPO(GPP_D16, 0, PLTRST),     /* Enable (PWREN off) */
+	PAD_CFG_GPO(GPP_D16, 1, PLTRST),     /* Enable (PWREN on) */
 
 	/* Wireless */
 	PAD_CFG_NF(GPP_F0, NONE, PLTRST, NF1),   /* BRI Data */

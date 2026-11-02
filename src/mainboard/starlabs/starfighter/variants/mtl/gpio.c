@@ -52,15 +52,20 @@ const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_LOCK(GPP_B07, NONE, LOCK_CONFIG),
 	PAD_CFG_GPI_LOCK(GPP_B08, NONE, LOCK_CONFIG),
 
-	PAD_CFG_GPI(GPP_D20, NONE, PLTRST),					/* Clock Request 8 */
-	PAD_CFG_GPO(GPP_A20, 0, PLTRST),					/* Reset (PERST# asserted) */
-	PAD_CFG_GPO(GPP_H07, 0, PLTRST),					/* Enable (PWREN off) */
-	PAD_CFG_GPI(GPP_C10, NONE, PLTRST),					/* Clock Request 1 */
-	PAD_CFG_GPO(GPP_H00, 0, PLTRST),					/* Reset (PERST# asserted) */
-	PAD_CFG_GPO(GPP_D22, 0, PLTRST),					/* Enable (PWREN off) */
-	PAD_CFG_GPI(GPP_D21, NONE, PLTRST),					/* Clock Request 5 */
-	PAD_CFG_GPO(GPP_H02, 0, PLTRST),					/* Reset asserted */
-	PAD_CFG_GPO(GPP_B19, 0, PLTRST),					/* WiFi disabled */
+	/* SSD (CPU) */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D20, NONE, PLTRST, NF1),	/* Clock Request 8 */
+	PAD_CFG_GPO(GPP_A20, 0, PLTRST),				/* Reset (PERST# asserted) */
+	PAD_CFG_GPO(GPP_H07, 1, PLTRST),				/* Enable (PWREN on) */
+
+	/* SSD (PCH) */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_C10, NONE, PLTRST, NF1),	/* Clock Request 1 */
+	PAD_CFG_GPO(GPP_H00, 0, PLTRST),				/* Reset (PERST# asserted) */
+	PAD_CFG_GPO(GPP_D22, 1, PLTRST),				/* Enable (PWREN on) */
+
+	/* Wireless */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D21, NONE, PLTRST, NF2),	/* Clock Request 5 */
+	PAD_CFG_GPO(GPP_H02, 0, PLTRST),				/* Reset asserted */
+	PAD_CFG_GPO(GPP_B19, 1, PLTRST),				/* WiFi enabled */
 };
 /* clang-format on */
 
@@ -98,17 +103,17 @@ const struct pad_config gpio_table[] = {
 	/* SSD (CPU)*/
 	PAD_NC(GPP_D20, NONE),						/* Clock Request 8 */
 	PAD_CFG_GPO(GPP_A20, 0, PLTRST),				/* Reset (PERST# asserted) */
-	PAD_CFG_GPO(GPP_H07, 0, PLTRST),				/* Enable (PWREN off) */
+	PAD_CFG_GPO(GPP_H07, 1, PLTRST),				/* Enable (PWREN on) */
 
 	/* SSD (PCH) */
 	PAD_NC(GPP_C10, NONE),						/* Clock Request 1 */
 	PAD_CFG_GPO(GPP_H00, 0, PLTRST),				/* Reset (PERST# asserted) */
-	PAD_CFG_GPO(GPP_D22, 0, PLTRST),				/* Enable (PWREN off) */
+	PAD_CFG_GPO(GPP_D22, 1, PLTRST),				/* Enable (PWREN on) */
 
 	/* Wireless */
 	PAD_NC(GPP_D21, NONE),						/* Clock Request 5 */
 	PAD_CFG_GPO(GPP_H02, 0, PLTRST),				/* Reset asserted */
-	PAD_CFG_GPO(GPP_B19, 0, PLTRST),				/* WiFi disabled */
+	PAD_CFG_GPO(GPP_B19, 1, PLTRST),				/* WiFi enabled */
 	PAD_CFG_GPO(GPP_B18, 1, PLTRST),				/* Bluetooth RF Kill */
 
 	/* Display */

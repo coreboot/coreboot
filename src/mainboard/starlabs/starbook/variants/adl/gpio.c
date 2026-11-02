@@ -42,14 +42,14 @@ const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),				/* TXD */
 
 	/* SSD */
-	PAD_CFG_GPI(GPP_D6, NONE, PLTRST),				/* Clock Request 1 */
+	PAD_CFG_NF(GPP_D6, NONE, PLTRST, NF1),				/* Clock Request 1 */
 	PAD_CFG_GPO(GPP_H0, 0, PLTRST),					/* Reset asserted */
-	PAD_CFG_GPO(GPP_D16, 0, PLTRST),				/* Enable (PWREN off) */
+	PAD_CFG_GPO(GPP_D16, 1, PLTRST),				/* Enable (PWREN on) */
 
 	/* Wireless */
-	PAD_CFG_GPI(GPP_D7, NONE, PLTRST),				/* Clock Request 2 */
+	PAD_CFG_NF(GPP_D7, NONE, PLTRST, NF1),				/* Clock Request 2 */
 	PAD_CFG_GPO(GPP_H2, 0, PLTRST),					/* Reset asserted */
-	PAD_CFG_GPO(GPP_E3, 0, PLTRST),					/* WiFi disabled */
+	PAD_CFG_GPO(GPP_E3, 1, PLTRST),					/* WiFi enabled */
 };
 /* clang-format on */
 
@@ -87,14 +87,14 @@ const struct pad_config gpio_table[] = {
 	/* SSD */
 	PAD_NC(GPP_D6, NONE),						/* Clock Request 1 */
 	PAD_CFG_GPO(GPP_H0, 0, PLTRST),					/* Reset asserted */
-	PAD_CFG_GPO(GPP_D16, 0, PLTRST),				/* Enable (PWREN off) */
+	PAD_CFG_GPO(GPP_D16, 1, PLTRST),				/* Enable (PWREN on) */
 	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF5),				/* Device Sleep */
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),				/* PEDET */
 
 	/* Wireless */
 	PAD_NC(GPP_D7, NONE),						/* Clock Request 2 */
 	PAD_CFG_GPO(GPP_H2, 0, PLTRST),					/* Reset asserted */
-	PAD_CFG_GPO(GPP_E3, 0, PLTRST),					/* WiFi disabled */
+	PAD_CFG_GPO(GPP_E3, 1, PLTRST),					/* WiFi enabled */
 	PAD_CFG_GPO(GPP_A13, 1, PLTRST),				/* Bluetooth RF Kill */
 
 	/* Display */

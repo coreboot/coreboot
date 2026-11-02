@@ -43,9 +43,9 @@ const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),				/* Data */
 
 	/* SSD */
-	PAD_CFG_GPI(GPP_H19, NONE, PLTRST),				/* Clock Request 4 */
+	PAD_CFG_NF(GPP_H19, NONE, PLTRST, NF1),				/* Clock Request 4 */
 	PAD_CFG_GPO(GPP_F20, 0, PLTRST),				/* Reset asserted */
-	PAD_CFG_GPO(GPP_D14, 0, PLTRST),				/* Enable (PWREN off) */
+	PAD_CFG_GPO(GPP_D14, 1, PLTRST),				/* Enable (PWREN on) */
 
 	/* CPU PCIe VGPIO for PEG60 */
 	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_48, NONE, PLTRST, NF1),
@@ -105,7 +105,7 @@ const struct pad_config gpio_table[] = {
 	/* SSD */
 	PAD_NC(GPP_H19, NONE),						/* Clock Request 4 */
 	PAD_CFG_GPO(GPP_F20, 0, PLTRST),				/* Reset asserted */
-	PAD_CFG_GPO(GPP_D14, 0, PLTRST),				/* Enable */
+	PAD_CFG_GPO(GPP_D14, 1, PLTRST),				/* Enable */
 
 	/* Wireless */
 	PAD_CFG_NF(GPP_F0, NONE, PLTRST, NF1),				/* BRI Data */

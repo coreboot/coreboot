@@ -132,14 +132,67 @@ struct rom_header *pci_rom_probe(const struct device *dev)
 	return rom_header;
 }
 
+static size_t pci_rom_image_size(const struct rom_header *rom, int *last_image)
+{
+	size_t data_offset;
+	size_t legacy_size;
+	size_t pcir_size;
+	const struct pci_data *rom_data;
+
+	if (last_image)
+		*last_image = 1;
+
+	if (!rom)
+		return 0;
+
+	if (le16_to_cpu(rom->signature) != PCI_ROM_HDR)
+		return 0;
+
+	data_offset = le16_to_cpu(rom->data);
+	if (data_offset < sizeof(struct rom_header) ||
+	    data_offset >= 0x10000 - sizeof(struct pci_data) ||
+	    (data_offset & 3))
+		return 0;
+
+	rom_data = (const void *)rom + data_offset;
+	legacy_size = (size_t)rom->size * 512;
+	if (le32_to_cpu(rom_data->signature) != PCI_DATA_HDR || !rom_data->ilen)
+		return legacy_size;
+
+	pcir_size = (size_t)le16_to_cpu(rom_data->ilen) * 512;
+	if (last_image)
+		*last_image = !!(rom_data->indicator & 0x80);
+
+	return pcir_size > legacy_size ? pcir_size : legacy_size;
+}
+
+size_t pci_rom_size(const struct rom_header *rom)
+{
+	size_t total_size = 0;
+
+	while (true) {
+		int last_image;
+		size_t image_size = pci_rom_image_size(rom, &last_image);
+
+		if (!image_size || total_size > (size_t)-1 - image_size)
+			return 0;
+
+		total_size += image_size;
+		if (last_image)
+			return total_size;
+
+		rom = (const struct rom_header *)((const void *)rom + image_size);
+	}
+}
+
 static void *pci_ram_image_start = (void *)PCI_RAM_IMAGE_START;
 
 struct rom_header *pci_rom_load(struct device *dev,
 				struct rom_header *rom_header)
 {
-	struct pci_data * rom_data;
-	unsigned int rom_size;
-	unsigned int image_size=0;
+	struct pci_data *rom_data;
+	size_t rom_size;
+	unsigned int image_size = 0;
 
 	do {
 		/* Get next image. */
@@ -167,7 +220,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 		if (dev != vga_pri) return NULL; /* Only one VGA supported. */
 		if ((void *)PCI_VGA_RAM_IMAGE_START != rom_header) {
 			printk(BIOS_DEBUG,
-			       "Copying VGA ROM Image from %p to 0x%x, 0x%x bytes\n",
+			       "Copying VGA ROM Image from %p to 0x%x, 0x%zx bytes\n",
 			       rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 			memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header,
 			       rom_size);
@@ -177,7 +230,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 		return (struct rom_header *)(PCI_VGA_RAM_IMAGE_START);
 	}
 
-	printk(BIOS_DEBUG, "Copying non-VGA ROM image from %p to %p, 0x%x bytes\n",
+	printk(BIOS_DEBUG, "Copying non-VGA ROM image from %p to %p, 0x%zx bytes\n",
 	       rom_header, pci_ram_image_start, rom_size);
 
 	dev->pci_vga_option_rom = (struct rom_header *)pci_ram_image_start;

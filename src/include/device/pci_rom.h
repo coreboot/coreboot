@@ -6,6 +6,7 @@
 #include <endian.h>
 #include <acpi/acpi.h>
 #include <cbfs.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #define PCI_ROM_HDR 0xAA55
@@ -42,6 +43,7 @@ void vga_oprom_preload(void);
 struct rom_header *pci_rom_probe(const struct device *dev);
 struct rom_header *pci_rom_load(struct device *dev,
 	struct rom_header *rom_header);
+size_t pci_rom_size(const struct rom_header *rom);
 
 static inline void pci_rom_free(struct rom_header *rom_header)
 {

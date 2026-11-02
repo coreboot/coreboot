@@ -24,13 +24,6 @@
 
 static void edp_enable_backlight(void)
 {
-	/* GPIO_PANEL_BACKLIGHT_EN was already asserted in romstage alongside
-	 * panel power (see edp_configure_gpios()); only the PWR/PWM enable
-	 * sequencing happens here, at splash-render time. */
-	gpio_output(GPIO_PANEL_BACKLIGHT_PWR, 1);
-	/* Matches the kernel driver's usleep_range(99000, 100000) between
-	 * backlight power and PWM enable. */
-	mdelay(100);
 	pmic_gpio_output(BACKLIGHT_PWM_PMIC_SID, BACKLIGHT_PWM_PMIC_GPIO, true);
 
 	/*
@@ -97,6 +90,8 @@ static void display_logo(enum lb_fb_orientation orientation, uintptr_t fb_addr,
 	if (!CONFIG(BMP_LOGO) || !fb_addr)
 		return;
 
+	edp_enable_backlight();
+
 	memset((void *)fb_addr, 0, edid->bytes_per_line * edid->y_resolution);
 
 	struct logo_config config = {
@@ -107,8 +102,6 @@ static void display_logo(enum lb_fb_orientation orientation, uintptr_t fb_addr,
 	render_logo_to_framebuffer(&config);
 
 	qcom_mdp_start(fb_addr);
-
-	edp_enable_backlight();
 
 	timestamp_add_now(TS_FIRMWARE_SPLASH_RENDERED);
 

@@ -409,4 +409,14 @@ void platform_romstage_postram(void)
 
 	if (CONFIG(MAINBOARD_REINIT_QUP_SE))
 		mainboard_peripherals_reinit();
+
+	/*
+	 * Panel timing requires > 100ms between backlight power-on and PWM
+	 * enable. Enable backlight power here in late romstage so the delay
+	 * is satisfied before ramstage enables PWM for the splash screen.
+	 *
+	 * Skip during EC heartbeat boots, as no splash screen is rendered.
+	 */
+	if (boot_mode != LB_BOOT_MODE_RTC_WAKE)
+		gpio_output(GPIO_PANEL_BACKLIGHT_PWR, 1);
 }

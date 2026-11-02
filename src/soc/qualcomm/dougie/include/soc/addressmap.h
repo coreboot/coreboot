@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 
+#define AOSS_PS_HOLD			0x0C264000
 #define AOSS_CC_BASE			0x0C2A0000
 #define DISP_CC_BASE			0x0AF00000
 #define EPSSFAST_BASE_ADDR		0x18580000

@@ -6,11 +6,11 @@
 #if ENV_RAMSTAGE
 /* clang-format off */
 static const struct pad_config nvme_pads[] = {
-	PAD_CFG_GPO(GPP_H07, 1, DEEP),					/* Enable */
+	PAD_CFG_GPO(GPP_H07, 1, PLTRST),				/* Enable */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D20, NONE, PLTRST, NF1),	/* Clock Request 8 */
 	PAD_CFG_GPO(GPP_A20, 0, PLTRST),				/* Reset asserted */
 
-	PAD_CFG_GPO(GPP_B19, 1, DEEP),					/* WiFi RF Kill */
+	PAD_CFG_GPO(GPP_B19, 1, PLTRST),				/* WiFi RF Kill */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_D21, NONE, PLTRST, NF2),	/* Clock Request 5 */
 	PAD_CFG_GPO(GPP_H02, 0, PLTRST),				/* Reset asserted */
 };
@@ -48,12 +48,12 @@ const struct pad_config early_gpio_table[] = {
 	/* SSD */
 	PAD_CFG_GPI(GPP_D20, NONE, PLTRST),					/* Clock Request 8 */
 	PAD_CFG_GPO(GPP_A20, 0, PLTRST),				/* Reset asserted */
-	PAD_CFG_GPO(GPP_H07, 0, DEEP),					/* Enable (PWREN off) */
+	PAD_CFG_GPO(GPP_H07, 0, PLTRST),				/* Enable (PWREN off) */
 
 	/* Wireless */
 	PAD_CFG_GPI(GPP_D21, NONE, PLTRST),					/* Clock Request 5 */
 	PAD_CFG_GPO(GPP_H02, 0, PLTRST),				/* Reset asserted */
-	PAD_CFG_GPO(GPP_B19, 0, DEEP),					/* WiFi disabled */
+	PAD_CFG_GPO(GPP_B19, 0, PLTRST),				/* WiFi disabled */
 };
 /* clang-format on */
 
@@ -91,13 +91,13 @@ const struct pad_config gpio_table[] = {
 	/* SSD */
 	PAD_NC(GPP_D20, NONE),						/* Clock Request 8 */
 	PAD_CFG_GPO(GPP_A20, 0, PLTRST),				/* Reset asserted */
-	PAD_CFG_GPO(GPP_H07, 0, DEEP),					/* Enable (PWREN off) */
+	PAD_CFG_GPO(GPP_H07, 0, PLTRST),				/* Enable (PWREN off) */
 
 	/* Wireless */
 	PAD_NC(GPP_D21, NONE),						/* Clock Request 5 */
 	PAD_CFG_GPO(GPP_H02, 0, PLTRST),				/* Reset asserted */
-	PAD_CFG_GPO(GPP_B19, 0, DEEP),					/* WiFi disabled */
-	PAD_CFG_GPO(GPP_B18, 1, DEEP),					/* Bluetooth RF Kill */
+	PAD_CFG_GPO(GPP_B19, 0, PLTRST),				/* WiFi disabled */
+	PAD_CFG_GPO(GPP_B18, 1, PLTRST),				/* Bluetooth RF Kill */
 
 	/* Display */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* eDP Hot Plug */

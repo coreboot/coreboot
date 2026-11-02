@@ -44,17 +44,17 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_LOW(GPP_B3, NONE, PLTRST),			/* Interrupt */
 
 	/* SSD */
-	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1),				/* Clock Request 1 */
+	PAD_CFG_NF(GPP_B6, NONE, PLTRST, NF1),				/* Clock Request 1 */
 
 	/* Wireless */
-	PAD_CFG_NF(GPP_F4, UP_20K, DEEP, NF1),				/* BRI Data */
-	PAD_CFG_NF(GPP_F5, UP_20K, DEEP, NF1),				/* BRI Response */
-	PAD_CFG_NF(GPP_F6, UP_20K, DEEP, NF1),				/* RGI Data */
-	PAD_CFG_NF(GPP_F7, UP_20K, DEEP, NF1),				/* RGI Response */
-	PAD_CFG_NF(GPP_H1, UP_20K, DEEP, NF3),				/* RF Reset */
-	PAD_CFG_NF(GPP_H2, UP_20K, DEEP, NF3),				/* Modem Clock Request */
-	PAD_CFG_GPO(GPP_C2, 1, DEEP),					/* WiFi RF Kill */
-	PAD_CFG_GPO(GPP_B4, 1, DEEP),					/* Bluetooth RF Kill */
+	PAD_CFG_NF(GPP_F4, UP_20K, PLTRST, NF1),			/* BRI Data */
+	PAD_CFG_NF(GPP_F5, UP_20K, PLTRST, NF1),			/* BRI Response */
+	PAD_CFG_NF(GPP_F6, UP_20K, PLTRST, NF1),			/* RGI Data */
+	PAD_CFG_NF(GPP_F7, UP_20K, PLTRST, NF1),			/* RGI Response */
+	PAD_CFG_NF(GPP_H1, UP_20K, PLTRST, NF3),			/* RF Reset */
+	PAD_CFG_NF(GPP_H2, UP_20K, PLTRST, NF3),			/* Modem Clock Request */
+	PAD_CFG_GPO(GPP_C2, 1, PLTRST),					/* WiFi RF Kill */
+	PAD_CFG_GPO(GPP_B4, 1, PLTRST),					/* Bluetooth RF Kill */
 
 	/* Display */
 	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),				/* eDP Hot Plug */

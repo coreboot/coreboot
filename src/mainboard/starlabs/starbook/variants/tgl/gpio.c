@@ -7,7 +7,7 @@
 /* clang-format off */
 static const struct pad_config nvme_pads[] = {
 	PAD_CFG_GPO(GPP_D16, 1, PLTRST),				/* Enable */
-	PAD_CFG_NF(GPP_D8, NONE, DEEP, NF1),				/* Clock Request 3 */
+	PAD_CFG_NF(GPP_D8, NONE, PLTRST, NF1),				/* Clock Request 3 */
 	PAD_CFG_GPO(GPP_A11, 0, PLTRST),				/* Reset asserted */
 };
 
@@ -37,7 +37,7 @@ const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),				/* TXD */
 
 	/* SSD */
-	PAD_CFG_GPI(GPP_D8, NONE, DEEP),				/* Clock Request 3 */
+	PAD_CFG_GPI(GPP_D8, NONE, PLTRST),				/* Clock Request 3 */
 	PAD_CFG_GPO(GPP_A11, 0, PLTRST),				/* Reset asserted */
 	PAD_CFG_GPO(GPP_D16, 0, PLTRST),				/* Enable (PWREN off) */
 };
@@ -83,12 +83,12 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A12, UP_20K, DEEP, NF1),				/* PEDET */
 
 	/* Wireless */
-	PAD_CFG_NF(GPP_F0, NONE, DEEP, NF1),				/* BRI Data */
-	PAD_CFG_NF(GPP_F1, NONE, DEEP, NF1),				/* BRI Response */
-	PAD_CFG_NF(GPP_F2, NONE, DEEP, NF1),				/* RGI Data */
-	PAD_CFG_NF(GPP_F3, NONE, DEEP, NF1),				/* RGI Response */
-	PAD_CFG_NF(GPP_A8, NONE, DEEP, NF2),				/* RF Reset */
-	PAD_CFG_NF(GPP_A9, NONE, DEEP, NF2),				/* Modem Clock Request */
+	PAD_CFG_NF(GPP_F0, NONE, PLTRST, NF1),				/* BRI Data */
+	PAD_CFG_NF(GPP_F1, NONE, PLTRST, NF1),				/* BRI Response */
+	PAD_CFG_NF(GPP_F2, NONE, PLTRST, NF1),				/* RGI Data */
+	PAD_CFG_NF(GPP_F3, NONE, PLTRST, NF1),				/* RGI Response */
+	PAD_CFG_NF(GPP_A8, NONE, PLTRST, NF2),				/* RF Reset */
+	PAD_CFG_NF(GPP_A9, NONE, PLTRST, NF2),				/* Modem Clock Request */
 
 	/* Display */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* eDP Hot Plug */

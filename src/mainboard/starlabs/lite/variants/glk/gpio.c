@@ -49,14 +49,14 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_GPIO_DRIVER(GPIO_177, NONE, PLTRST),                                        /* Interrupt */
 
 	/* Wireless */
-	PAD_CFG_TERM_GPO(GPIO_33, 1, UP_20K, DEEP),                                             /* Bluetooth RF Kill */
-	PAD_CFG_GPO(GPIO_34, 1, DEEP),                                                          /* WiFi RF Kill */
-	PAD_CFG_NF(GPIO_191, NONE, DEEP, NF1),                                                  /* BRI Data */
-	PAD_CFG_NF(GPIO_192, UP_20K, DEEP, NF1),                                                /* BRI Response */
-	PAD_CFG_NF(GPIO_193, NONE, DEEP, NF1),                                                  /* RGI Data */
-	PAD_CFG_NF(GPIO_194, UP_20K, DEEP, NF1),                                                /* RGI Response */
-	PAD_CFG_NF(GPIO_195, NONE, DEEP, NF1),                                                  /* RF Reset */
-	PAD_CFG_NF(GPIO_196, NONE, DEEP, NF1),                                                  /* XTAL Clock Request */
+	PAD_CFG_TERM_GPO(GPIO_33, 1, UP_20K, PLTRST),                                           /* Bluetooth RF Kill */
+	PAD_CFG_GPO(GPIO_34, 1, PLTRST),                                                        /* WiFi RF Kill */
+	PAD_CFG_NF(GPIO_191, NONE, PLTRST, NF1),                                                /* BRI Data */
+	PAD_CFG_NF(GPIO_192, UP_20K, PLTRST, NF1),                                              /* BRI Response */
+	PAD_CFG_NF(GPIO_193, NONE, PLTRST, NF1),                                                /* RGI Data */
+	PAD_CFG_NF(GPIO_194, UP_20K, PLTRST, NF1),                                              /* RGI Response */
+	PAD_CFG_NF(GPIO_195, NONE, PLTRST, NF1),                                                /* RF Reset */
+	PAD_CFG_NF(GPIO_196, NONE, PLTRST, NF1),                                                /* XTAL Clock Request */
 
 	/* Display */
 	PAD_CFG_NF(GPIO_124, UP_20K, DEEP, NF1),                                                /* DDC Data */

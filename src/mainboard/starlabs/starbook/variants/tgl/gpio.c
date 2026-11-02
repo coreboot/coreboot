@@ -1,33 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <variants.h>
-#include <common/nvme_seq.h>
 
-#if ENV_RAMSTAGE
-/* clang-format off */
-static const struct pad_config nvme_pads[] = {
-	PAD_CFG_GPO(GPP_D16, 1, PLTRST),				/* Enable */
-	PAD_CFG_NF(GPP_D8, NONE, PLTRST, NF1),				/* Clock Request 3 */
-	PAD_CFG_GPO(GPP_A11, 0, PLTRST),				/* Reset asserted */
-};
-
-static const struct pad_config post_nvme_pads[] = {
-	PAD_CFG_GPO(GPP_A11, 1, PLTRST),				/* Reset deasserted */
-};
-/* clang-format on */
-
-const struct pad_config *variant_nvme_power_sequence_pads(size_t *num)
-{
-	*num = ARRAY_SIZE(nvme_pads);
-	return nvme_pads;
-}
-
-const struct pad_config *variant_nvme_power_sequence_post_pads(size_t *num)
-{
-	*num = ARRAY_SIZE(post_nvme_pads);
-	return post_nvme_pads;
-}
-#endif
 
 /* Early pad configuration in bootblock */
 /* clang-format off */
@@ -75,8 +49,8 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_C8, NONE, DEEP, LEVEL, INVERT),		/* Interrupt */
 
 	/* SSD */
-	PAD_NC(GPP_D8, NONE),						/* Clock Request 3 */
-	PAD_CFG_GPO(GPP_A11, 0, PLTRST),				/* Reset asserted */
+	PAD_CFG_NF(GPP_D8, NONE, PLTRST, NF1),				/* Clock Request 3 */
+	PAD_CFG_GPO(GPP_A11, 1, PLTRST),				/* Reset deasserted */
 	PAD_CFG_GPO(GPP_D16, 1, PLTRST),				/* Enable (PWREN on) */
 
 	/* SATA */

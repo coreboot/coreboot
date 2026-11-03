@@ -14,6 +14,9 @@ config BOARD_GOOGLE_HEKLA
 config BOARD_GOOGLE_KODKOD
 	bool "->  Kodkod"
 
+config BOARD_GOOGLE_LIBRA
+	bool "->  Libra"
+
 config BOARD_GOOGLE_MATSU
 	bool "->  Matsu"
 

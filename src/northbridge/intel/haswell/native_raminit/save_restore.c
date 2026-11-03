@@ -91,8 +91,8 @@ struct save_params {
 	/* Bitfield of supported CAS latencies */
 	uint16_t cas_supported;
 
-	/* CPUID value */
-	uint32_t cpu;
+	/* CPU family and model */
+	uint32_t cpu_model;
 
 	/* Cached CPU stepping value */
 	uint8_t stepping;
@@ -351,7 +351,7 @@ enum nri_status save_non_training(struct sysinfo *ctrl)
 	params->mem_clock_fs  = ctrl->mem_clock_fs;
 	params->qclkps        = ctrl->qclkps;
 	params->cas_supported = ctrl->cas_supported;
-	params->cpu           = ctrl->cpu;
+	params->cpu_model     = ctrl->cpu_model;
 	params->stepping      = ctrl->stepping;
 	params->vdd_mv        = ctrl->vdd_mv;
 	params->flags         = ctrl->flags;
@@ -409,7 +409,7 @@ enum nri_status restore_non_training(struct sysinfo *ctrl)
 		return NRI_STATUS_INVALID_CACHE;
 	}
 
-	if (ctrl->cpu != params->cpu) {
+	if (ctrl->cpu_model != params->cpu_model || ctrl->stepping != params->stepping) {
 		printk(BIOS_WARNING, "Cannot fast boot: CPU has changed\n");
 		return NRI_STATUS_INVALID_CACHE;
 	}
@@ -420,7 +420,7 @@ enum nri_status restore_non_training(struct sysinfo *ctrl)
 	ctrl->mem_clock_fs  = params->mem_clock_fs;
 	ctrl->qclkps        = params->qclkps;
 	ctrl->cas_supported = params->cas_supported;
-	ctrl->cpu           = params->cpu;
+	ctrl->cpu_model     = params->cpu_model;
 	ctrl->stepping      = params->stepping;
 	ctrl->vdd_mv        = params->vdd_mv;
 	ctrl->flags         = params->flags;

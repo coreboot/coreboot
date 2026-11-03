@@ -159,8 +159,9 @@ static_assert(ARRAY_SIZE(cold_boot) >= ARRAY_SIZE(fast_boot),
 		"Code assumes cold boot task list is the longest one");
 
 /* Return a generic stepping value to make stepping checks simpler */
-static enum generic_stepping get_stepping(const uint32_t cpuid)
+static enum generic_stepping get_stepping(void)
 {
+	const uint32_t cpuid = cpu_get_cpuid();
 	switch (cpuid) {
 	case CPUID_HASWELL_A0:
 		die("Haswell stepping A0 is not supported\n");
@@ -185,9 +186,9 @@ static void initialize_ctrl(struct sysinfo *ctrl)
 
 	memset(ctrl, 0, sizeof(*ctrl));
 
-	ctrl->cpu = cpu_get_cpuid();
+	ctrl->cpu_model = cpu_family_model();
 	ctrl->bdw = cpu_is_broadwell();
-	ctrl->stepping = get_stepping(ctrl->cpu);
+	ctrl->stepping = get_stepping();
 	ctrl->vdd_mv = is_hsw_ult() ? 1350 : 1500; /** FIXME: Hardcoded, does it matter? **/
 	ctrl->dq_pins_interleaved = cfg->dq_pins_interleaved;
 	ctrl->restore_mrs = false;

@@ -382,7 +382,7 @@ struct channel_data {
 struct sysinfo {
 	enum raminit_boot_mode bootmode;
 	enum generic_stepping stepping;
-	uint32_t cpu;		/* CPUID value */
+	uint32_t cpu_model;
 
 	bool bdw; /* Is the CPU Broadwell? */
 

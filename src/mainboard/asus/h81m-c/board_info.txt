@@ -1,0 +1,8 @@
+Category: desktop
+Board URL: https://www.asus.com/supportonly/h81m-c/helpdesk_knowledge/
+ROM package: DIP-8
+ROM protocol: SPI
+ROM IC: GD25B64BPIG
+ROM socketed: y
+Flashrom support: y
+Release year: 2013

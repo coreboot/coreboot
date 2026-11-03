@@ -27,16 +27,18 @@
 /*
  * PM_PON_EVENT_PON_TRIGGER data format: (SID << 12) | (PID << 4) | IRQ
  *   Bits [15:12] : SID (Slave ID = 0x1)
- *   Bits [11:4]  : PID (Peripheral ID = 0x8C..0x8F)
+ *   Bits [11:4]  : PID (Peripheral ID = 0x8C, 0x8F, or 0x91)
  *   Bits [3:0]   : IRQ (0x0 = CBLPWR)
  *
  * Depending on PMIC PBS/PSI firmware revision and charger/PON sub-peripheral
- * routing, AC cable power-on (CBLPWR) is logged with PID 0x8C (0x18C0) or
- * PID 0x8F (0x18F0). Mask out bits [5:4] (the lower 2 bits of PID) so both
- * 0x18C0 and 0x18F0 match PON_CBLPWR_RSN.
+ * routing, AC cable power-on (CBLPWR) is logged on SID 0x1 under PID 0x8C
+ * (0x18C0, GPIO5), PID 0x8F (0x18F0, CBLPWR1), or PID 0x91 (0x1910, CBLPWR2).
+ * Match these trigger codes explicitly rather than bit-masking PID bits, as a
+ * mask spanning 0x8C..0x91 would match unrelated peripherals (0x80..0x9F).
  */
 #define PON_CBLPWR_RSN			0x18C0
-#define PON_CBLPWR_RSN_MASK		0xFFCF
+#define PON_PBS_CBLPWR1_RSN		0x18F0
+#define PON_PBS_CBLPWR2_RSN		0x1910
 #define PON_RAW_XVDD_RB_MASK		0x8000
 
 bool is_pon_on_ac(void);

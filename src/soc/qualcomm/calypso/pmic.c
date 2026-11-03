@@ -127,6 +127,17 @@ struct pon_history_status {
 	uint16_t poff_reason;
 };
 
+static bool is_cblpwr_reason(uint16_t reason)
+{
+	/*
+	 * PMIC PBS may log AC cable wake on SID 0x1 under PID 0x8C (0x18C0),
+	 * PID 0x8F (0x18F0, CBLPWR1), or PID 0x91 (0x1910, CBLPWR2).
+	 */
+	return reason == PON_CBLPWR_RSN ||
+	       reason == PON_PBS_CBLPWR1_RSN ||
+	       reason == PON_PBS_CBLPWR2_RSN;
+}
+
 static bool parse_pon_history(struct pon_history_status *status)
 {
 	uint16_t data, data2;
@@ -166,8 +177,9 @@ static bool parse_pon_history(struct pon_history_status *status)
 			 * CBLPWR on either peripheral 0x8C (0x18C0) or 0x8F
 			 * (0x18F0) across PMIC/PSI revisions.
 			 */
-			status->pon_reason = data & PON_CBLPWR_RSN_MASK;
-			if (status->pon_reason == PON_CBLPWR_RSN)
+			if (status->pon_reason == PON_VALUE_INVALID)
+				status->pon_reason = data;
+			if (is_cblpwr_reason(data))
 				printk(BIOS_INFO, " PON Reason : CBLPWR\n");
 			else
 				printk(BIOS_INFO, " PON Reason : %d\n", data);
@@ -247,7 +259,7 @@ bool is_pon_on_ac(void)
 	if (pon_reason == PON_VALUE_INVALID)
 		return false;
 
-	return (pon_reason & PON_CBLPWR_RSN_MASK) == PON_CBLPWR_RSN;
+	return is_cblpwr_reason(pon_reason);
 }
 
 /*

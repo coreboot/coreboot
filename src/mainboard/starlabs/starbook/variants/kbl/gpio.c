@@ -27,7 +27,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPD3, UP_20K, PWROK, NF1),				/* Power Button */
 	PAD_CFG_NF(GPD4, NONE, PWROK, NF1),				/* Sleep S3 */
 	PAD_CFG_NF(GPD5, NONE, PWROK, NF1),				/* Sleep S4 */
-	PAD_CFG_NF(GPD8, NONE, PWROK, NF1),				/* Bluetooth Suspend */
+	PAD_CFG_NF(GPD8, NONE, PWROK, NF1),				/* Suspend Clock */
 
 	/* Touchpad */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),				/* Data */

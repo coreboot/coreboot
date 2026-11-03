@@ -53,8 +53,8 @@ int buffer_from_file_aligned_size(struct buffer *buffer, const char *filename,
 		return -1;
 	}
 
-	if (!S_ISREG(st.st_mode)) {
-		fprintf(stderr, "%s is not a regular file\n", filename);
+	if (S_ISDIR(st.st_mode)) {
+		fprintf(stderr, "%s is a directory\n", filename);
 		return -1;
 	}
 

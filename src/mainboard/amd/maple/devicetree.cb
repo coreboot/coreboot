@@ -24,8 +24,17 @@ chip soc/amd/strix_halo
 
 	register "system_configuration" = "2"
 
-	register "slow_ppt_limit_mW" = "45000"
-	register "fast_ppt_limit_mW" = "45000"
+	register "sustained_power_limit_mW" = "132000"
+	register "fast_ppt_limit_mW" = "176000"
+	register "slow_ppt_limit_mW" = "154000"
+
+	# VRM telemetry settings (Maple board values from UEFI reference)
+	# VddcrVdd: 88755 mA full-scale, offset = -75
+	register "telemetry_vddcrvddfull_scale_current_mA" = "88755"
+	register "telemetry_vddcrvddoffset" = "-75"
+	# VddcrSoc: 29577 mA full-scale, offset = 296
+	register "telemetry_vddcrsocfull_scale_current_mA" = "29577"
+	register "telemetry_vddcrsocoffset" = "296"
 
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
 					GPIO_I2C2_SCL | GPIO_I2C3_SCL"

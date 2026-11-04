@@ -99,33 +99,42 @@ static const struct region_name region_names[MAX_REGIONS] = {
 
 /* port from flashrom */
 static const char *const ich_chipset_names[] = {
-	"Unknown ICH",
-	"ICH8",
-	"ICH9",
-	"ICH10",
-	"Unknown PCH",
-	"5 series Ibex Peak",
-	"6 series Cougar Point",
-	"7 series Panther Point",
-	"8 series Lynx Point",
-	"Baytrail",
-	"8 series Lynx Point LP",
-	"8 series Wellsburg",
-	"9 series Wildcat Point",
-	"9 series Wildcat Point LP",
-	"Apollo Lake: N3xxx, J3xxx",
-	"Gemini Lake: N5xxx, J5xxx, N4xxx, J4xxx",
-	"Jasper Lake: N6xxx, N51xx, N45xx",
-	"Elkhart Lake: x6000 series Atom",
-	"100/200 series Sunrise Point",
-	"300 series Cannon Point",
-	"400 series Ice Point",
-	"500 series Tiger Point/ 600 series Alder Point",
-	"800 series Meteor Lake",
-	"C620 series Lewisburg",
-	"Denverton: C39xx",
-	NULL
+	[CHIPSET_ICH_UNKNOWN] = "Unknown ICH",
+	[CHIPSET_ICH8] = "ICH8",
+	[CHIPSET_ICH9] = "ICH9",
+	[CHIPSET_ICH10] = "ICH10",
+	[CHIPSET_PCH_UNKNOWN] = "Unknown PCH",
+	[CHIPSET_5_SERIES_IBEX_PEAK] = "5 series Ibex Peak",
+	[CHIPSET_6_SERIES_COUGAR_POINT] = "6 series Cougar Point",
+	[CHIPSET_7_SERIES_PANTHER_POINT] = "7 series Panther Point",
+	[CHIPSET_8_SERIES_LYNX_POINT] = "8 series Lynx Point",
+	[CHIPSET_BAYTRAIL] = "Baytrail",
+	[CHIPSET_8_SERIES_LYNX_POINT_LP] = "8 series Lynx Point LP",
+	[CHIPSET_8_SERIES_WELLSBURG] = "8 series Wellsburg",
+	[CHIPSET_9_SERIES_WILDCAT_POINT] = "9 series Wildcat Point",
+	[CHIPSET_9_SERIES_WILDCAT_POINT_LP] = "9 series Wildcat Point LP",
+	[CHIPSET_N_J_SERIES_APOLLO_LAKE] = "Apollo Lake: N3xxx, J3xxx",
+	[CHIPSET_N_J_SERIES_GEMINI_LAKE] = "Gemini Lake: N5xxx, J5xxx, N4xxx, J4xxx",
+	[CHIPSET_N_SERIES_JASPER_LAKE] = "Jasper Lake: N6xxx, N51xx, N45xx",
+	[CHIPSET_x6000_SERIES_ELKHART_LAKE] = "Elkhart Lake: x6000 series Atom",
+	[CHIPSET_100_200_SERIES_SUNRISE_POINT] = "100/200 series Sunrise Point",
+	[CHIPSET_300_SERIES_CANNON_POINT] = "300 series Cannon Point",
+	[CHIPSET_400_SERIES_ICE_POINT] = "400 series Ice Point",
+	[CHIPSET_500_600_SERIES_TIGER_ALDER_POINT] =
+		"500 series Tiger Point/ 600 series Alder Point",
+	[CHIPSET_800_SERIES_METEOR_LAKE] = "800 series Meteor Lake",
+	[CHIPSET_900_SERIES_PANTHER_LAKE] = "900 series Panther Lake",
+	[CHIPSET_900_SERIES_NOVA_LAKE] = "900 series Nova Lake",
+	[CHIPSET_C620_SERIES_LEWISBURG] = "C620 series Lewisburg",
+	[CHIPSET_DENVERTON] = "Denverton: C39xx",
 };
+
+static const char *chipset_name(int cs)
+{
+	if (cs < 0 || (size_t)cs >= ARRAY_SIZE(ich_chipset_names) || !ich_chipset_names[cs])
+		return "Unknown";
+	return ich_chipset_names[cs];
+}
 
 static struct fdbar *find_fd(char *image, int size)
 {
@@ -1037,7 +1046,7 @@ static void dump_fd(char *image, int size)
 		exit(EXIT_FAILURE);
 
 	printf("%s", is_platform_with_pch() ? "PCH" : "ICH");
-	printf(" Revision: %s\n", ich_chipset_names[chipset]);
+	printf(" Revision: %s\n", chipset_name(chipset));
 	printf("FLMAP0:    0x%08x\n", fdb->flmap0);
 	if (!is_platform_with_100x_series_pch())
 		printf("  NR:      %d\n", (fdb->flmap0 >> 24) & 7);

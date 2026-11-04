@@ -252,6 +252,24 @@ static uint8_t *find_oem(char *image, int size)
 	return in_image(OEM_OFFSET, OEM_DUMP_SIZE, size) ? (uint8_t *)image + OEM_OFFSET : NULL;
 }
 
+/* Return true if PCH strap idx of fpsba lies within the image. */
+static bool pchstrap_in_image(const char *image, int size, const struct fpsba *fpsba,
+			      unsigned int idx)
+{
+	return in_image((const char *)fpsba - image + idx * sizeof(uint32_t),
+			sizeof(uint32_t), size);
+}
+
+/* Exit if PCH strap idx of fpsba does not lie within the image. */
+static void require_pchstrap(const char *image, int size, const struct fpsba *fpsba,
+			     unsigned int idx)
+{
+	if (!pchstrap_in_image(image, size, fpsba, idx)) {
+		fprintf(stderr, "PCHSTRP%u is outside the image\n", idx);
+		exit(EXIT_FAILURE);
+	}
+}
+
 /* port from flashrom */
 static enum ich_chipset ifd1_guess_chipset(char *image, int size)
 {
@@ -772,9 +790,11 @@ static int is_platform_with_100x_series_pch(void)
 	return 0;
 }
 
-static void dump_fcba(const struct fcba *fcba, const struct fpsba *fpsba)
+static void dump_fcba(const char *image, int size, const struct fcba *fcba,
+		      const struct fpsba *fpsba)
 {
 	unsigned int freq;
+	int strap = -1;
 
 	printf("\nFound Component Section\n");
 	printf("FLCOMP     0x%08x\n", fcba->flcomp);
@@ -792,14 +812,21 @@ static void dump_fcba(const struct fcba *fcba, const struct fpsba *fpsba)
 			chipset != CHIPSET_100_200_SERIES_SUNRISE_POINT) {
 		printf("\n  Read eSPI/EC Bus Frequency:          ");
 		if (chipset == CHIPSET_500_600_SERIES_TIGER_ALDER_POINT)
-			freq = (fpsba->pchstrp[22] & 0x38) >> 3;
+			strap = 22;
 		else if (chipset == CHIPSET_800_SERIES_METEOR_LAKE)
-			freq = (fpsba->pchstrp[65] & 0x38) >> 3;
+			strap = 65;
 		else if (chipset == CHIPSET_900_SERIES_PANTHER_LAKE)
-			freq = (fpsba->pchstrp[119] & 0x38) >> 3;
-		else
+			strap = 119;
+
+		if (strap < 0) {
 			freq = (fcba->flcomp >> 17) & 7;
-		decode_espi_frequency(freq);
+			decode_espi_frequency(freq);
+		} else if (pchstrap_in_image(image, size, fpsba, strap)) {
+			freq = (fpsba->pchstrp[strap] & 0x38) >> 3;
+			decode_espi_frequency(freq);
+		} else {
+			printf("unknown (PCHSTRP%d is outside the image)", strap);
+		}
 
 		printf("\n  Quad I/O Read:                       %s",
 			(fcba->flcomp & (1 << 15)) ? "enabled" : "disabled");
@@ -892,7 +919,17 @@ static int csme_strap_word(const struct fdbar *fdb)
 	return -1;
 }
 
-static void dump_fpsba(const struct fdbar *fdb, const struct fpsba *fpsba)
+static void dump_strap_bit(const char *image, int size, const struct fpsba *fpsba,
+			   const char *name, unsigned int idx, uint32_t mask)
+{
+	if (pchstrap_in_image(image, size, fpsba, idx))
+		printf("%s bit is %sset\n", name, fpsba->pchstrp[idx] & mask ? "" : "not ");
+	else
+		printf("%s bit is unknown (PCHSTRP%u is outside the image)\n", name, idx);
+}
+
+static void dump_fpsba(const char *image, int size, const struct fdbar *fdb,
+		       const struct fpsba *fpsba)
 {
 	unsigned int i;
 	/* SoC Straps, aka PSL, aka ISL */
@@ -905,17 +942,13 @@ static void dump_fpsba(const struct fdbar *fdb, const struct fpsba *fpsba)
 	if (ifd_version >= IFD_VERSION_2) {
 		int word = csme_strap_word(fdb);
 		if (word >= 0) {
-			printf("HAP bit is %sset\n",
-			       fpsba->pchstrp[word] & (1u << CSME_STRAP_HAP) ? "" : "not ");
-			printf("DCI bit is %sset\n",
-			       fpsba->pchstrp[word] & (1u << CSME_STRAP_DCI) ? "" : "not ");
+			dump_strap_bit(image, size, fpsba, "HAP", word, 1u << CSME_STRAP_HAP);
+			dump_strap_bit(image, size, fpsba, "DCI", word, 1u << CSME_STRAP_DCI);
 		}
 	} else if (chipset >= CHIPSET_ICH8 && chipset <= CHIPSET_ICH10) {
-		printf("ICH_MeDisable bit is %sset\n",
-		       fpsba->pchstrp[0] & 1 ? "" : "not ");
+		dump_strap_bit(image, size, fpsba, "ICH_MeDisable", 0, 1);
 	} else {
-		printf("AltMeDisable bit is %sset\n",
-		       fpsba->pchstrp[10] & (1 << 7) ? "" : "not ");
+		dump_strap_bit(image, size, fpsba, "AltMeDisable", 10, 1 << 7);
 	}
 
 	printf("\n");
@@ -1180,8 +1213,8 @@ static void dump_fd(char *image, int size)
 
 	if (frba && fcba && fpsba && fmba && fmsba) {
 		dump_frba(frba);
-		dump_fcba(fcba, fpsba);
-		dump_fpsba(fdb, fpsba);
+		dump_fcba(image, size, fcba, fpsba);
+		dump_fpsba(image, size, fdb, fpsba);
 		dump_fmba(fmba);
 		dump_fmsba(fmsba);
 	} else {
@@ -1792,6 +1825,7 @@ static void disable_gpr0(const char *filename, char *image, int size)
 		fprintf(stderr, "Disabling GPR0 not supported on this platform\n");
 		exit(EXIT_FAILURE);
 	}
+	require_pchstrap(image, size, fpsba, gpr0_offset);
 
 	union gprd reg;
 	/* If bit 31 is set then GPR0 protection is enable */
@@ -1955,6 +1989,7 @@ static void enable_gpr0(const char *filename, char *image, int size)
 		fprintf(stderr, "Enabling GPR0 not supported on this platform\n");
 		exit(EXIT_FAILURE);
 	}
+	require_pchstrap(image, size, fpsba, gpr0_offset);
 
 	union gprd reg;
 	/* If bit 31 is set then GPR0 protection is enable */
@@ -1986,6 +2021,8 @@ static void is_gpr0_protected(char *image, int size)
 		fprintf(stderr, "Checking GPR0 not supported on this platform\n");
 		exit(EXIT_FAILURE);
 	}
+	require_pchstrap(image, size, fpsba, gpr0_offset);
+
 	union gprd reg;
 	union gprd enabled_gprd = get_enabled_gprd(image, size);
 	reg.value = fpsba->pchstrp[gpr0_offset];
@@ -2001,8 +2038,8 @@ static void is_gpr0_protected(char *image, int size)
 	print_gpr0_range(reg);
 }
 
-static void set_pchstrap(struct fpsba *fpsba, const struct fdbar *fdb, const int strap,
-			const unsigned int value)
+static void set_pchstrap(struct fpsba *fpsba, const struct fdbar *fdb,
+			 const unsigned int strap, const unsigned int value)
 {
 	if (!fpsba || !fdb) {
 		fprintf(stderr, "Internal error\n");
@@ -2010,9 +2047,9 @@ static void set_pchstrap(struct fpsba *fpsba, const struct fdbar *fdb, const int
 	}
 
 	/* SoC Strap, aka PSL, aka ISL */
-	int SS = (fdb->flmap1 >> 24) & 0xff;
+	unsigned int SS = (fdb->flmap1 >> 24) & 0xff;
 	if (strap >= SS) {
-		fprintf(stderr, "Strap index %d out of range (max: %d)\n", strap, SS);
+		fprintf(stderr, "Strap index %u out of range (max: %u)\n", strap, SS);
 		exit(EXIT_FAILURE);
 	}
 	fpsba->pchstrp[strap] = value;
@@ -2028,8 +2065,8 @@ static void pchstrap_set(struct fpsba *fpsba, unsigned word, unsigned bit, bool 
 }
 
 /* Set the AltMeDisable (or HAP for >= IFD_VERSION_2) */
-static void fpsba_set_altmedisable(const struct fdbar *fdb, struct fpsba *fpsba,
-				   struct fmsba *fmsba, bool altmedisable)
+static void fpsba_set_altmedisable(const char *image, int size, const struct fdbar *fdb,
+				   struct fpsba *fpsba, struct fmsba *fmsba, bool altmedisable)
 {
 	if (ifd_version >= IFD_VERSION_2) {
 		int word = csme_strap_word(fdb);
@@ -2037,12 +2074,18 @@ static void fpsba_set_altmedisable(const struct fdbar *fdb, struct fpsba *fpsba,
 			fprintf(stderr, "HAP bit location not known for platform\n");
 			exit(EXIT_FAILURE);
 		}
+		require_pchstrap(image, size, fpsba, word);
 		printf("%sting the HAP bit to %s Intel ME...\n",
 			altmedisable ? "Set" : "Unset",
 			altmedisable ? "disable" : "enable");
 		pchstrap_set(fpsba, word, CSME_STRAP_HAP, altmedisable);
 	} else {
 		if (chipset >= CHIPSET_ICH8 && chipset <= CHIPSET_ICH10) {
+			require_pchstrap(image, size, fpsba, 0);
+			if (!fmsba) {
+				fprintf(stderr, "FMSBA is outside the image\n");
+				exit(EXIT_FAILURE);
+			}
 			printf("%sting the ICH_MeDisable, MCH_MeDisable, "
 			       "and MCH_AltMeDisable to %s Intel ME...\n",
 			       altmedisable ? "Set" : "Unset",
@@ -2060,6 +2103,7 @@ static void fpsba_set_altmedisable(const struct fdbar *fdb, struct fpsba *fpsba,
 				fpsba->pchstrp[0] &= ~1;
 			}
 		} else {
+			require_pchstrap(image, size, fpsba, 10);
 			printf("%sting the AltMeDisable to %s Intel ME...\n",
 				altmedisable ? "Set" : "Unset",
 				altmedisable ? "disable" : "enable");
@@ -2071,13 +2115,15 @@ static void fpsba_set_altmedisable(const struct fdbar *fdb, struct fpsba *fpsba,
 	}
 }
 
-static void fpsba_set_dcienable(const struct fdbar *fdb, struct fpsba *fpsba, bool dcienable)
+static void fpsba_set_dcienable(const char *image, int size, const struct fdbar *fdb,
+				struct fpsba *fpsba, bool dcienable)
 {
 	int word = csme_strap_word(fdb);
 	if (word < 0) {
 		fprintf(stderr, "DCI enable bit location not known for platform\n");
 		exit(EXIT_FAILURE);
 	}
+	require_pchstrap(image, size, fpsba, word);
 	printf("%sting the DCI enable bit...\n", dcienable ? "Set" : "Unset");
 	pchstrap_set(fpsba, word, CSME_STRAP_DCI, dcienable);
 }
@@ -2911,6 +2957,11 @@ int main(int argc, char *argv[])
 		uint32_t top_swap_size_offset = 0;
 		switch (platform) {
 		case PLATFORM_ADL:
+			if (!fpsba) {
+				fprintf(stderr, "FPSBA is outside the image\n");
+				exit(EXIT_FAILURE);
+			}
+			require_pchstrap(image, size, fpsba, 0xd0 / 4);
 			// fixed bits for ADL-P / ADL-N
 			if (fpsba->pchstrp[0xd0 / 4] == 0x00000300) {
 				// fixed bits for ADL-P
@@ -2958,6 +3009,10 @@ int main(int argc, char *argv[])
 	if (mode_setstrap) {
 		struct fpsba *fpsba = find_fpsba(image, size);
 		const struct fdbar *fdb = find_fd(image, size);
+		if (!fpsba) {
+			fprintf(stderr, "FPSBA is outside the image\n");
+			exit(EXIT_FAILURE);
+		}
 		set_pchstrap(fpsba, fdb, pchstrap, value);
 		write_image(new_filename, image, size);
 	}
@@ -2965,13 +3020,22 @@ int main(int argc, char *argv[])
 	if (mode_altmedisable) {
 		struct fpsba *fpsba = find_fpsba(image, size);
 		struct fmsba *fmsba = find_fmsba(image, size);
-		fpsba_set_altmedisable(find_fd(image, size), fpsba, fmsba, altmedisable);
+		if (!fpsba) {
+			fprintf(stderr, "FPSBA is outside the image\n");
+			exit(EXIT_FAILURE);
+		}
+		fpsba_set_altmedisable(image, size, find_fd(image, size), fpsba, fmsba,
+				       altmedisable);
 		write_image(new_filename, image, size);
 	}
 
 	if (mode_dcienable) {
 		struct fpsba *fpsba = find_fpsba(image, size);
-		fpsba_set_dcienable(find_fd(image, size), fpsba, dcienable);
+		if (!fpsba) {
+			fprintf(stderr, "FPSBA is outside the image\n");
+			exit(EXIT_FAILURE);
+		}
+		fpsba_set_dcienable(image, size, find_fd(image, size), fpsba, dcienable);
 		write_image(new_filename, image, size);
 	}
 

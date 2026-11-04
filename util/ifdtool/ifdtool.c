@@ -7,6 +7,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <commonlib/helpers.h>
@@ -16,6 +17,12 @@
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
+
+/* The flash descriptor region is the first 4 KiB of the image. */
+#define IFD_SIZE	4096
+/* FLUMAP1 is the dword before the 256-byte OEM section at its end. */
+#define OEM_OFFSET	(IFD_SIZE - 256)
+#define FLUMAP1_OFFSET	(OEM_OFFSET - 4)
 
 /*
  * Return true if the len-byte object at offset off lies entirely within an
@@ -166,7 +173,7 @@ static char *find_flumap(char *image, int size)
 	 * this is wrong and a simple fixed offset from the start of the image
 	 * works.
 	 */
-	const size_t off = 4096 - 256 - 4;
+	const size_t off = FLUMAP1_OFFSET;
 	return in_image(off, sizeof(uint32_t), size) ? image + off : NULL;
 }
 
@@ -330,6 +337,9 @@ static void check_ifd_version(char *image, int size)
 {
 	const struct fdbar *fdb = find_fd(image, size);
 
+	if (!fdb)
+		exit(EXIT_FAILURE);
+
 	if (is_platform_ifd_2()) {
 		chipset = ifd2_platform_to_chipset(platform);
 		if (chipset == CHIPSET_8_SERIES_WELLSBURG)
@@ -445,7 +455,7 @@ static int max_regions_from_fdbar(const struct fdbar *fdb)
 	const size_t fmba = (fdb->flmap1 & 0xff) << 4;
 	const size_t frba = ((fdb->flmap0 >> 16) & 0xff) << 4;
 	const size_t fpsba = ((fdb->flmap1 >> 16) & 0xff) << 4;
-	const size_t flumap = 4096 - 256 - 4;
+	const size_t flumap = FLUMAP1_OFFSET;
 	size_t sorted[5] = {fcba, fmba, frba, fpsba, flumap};
 
 	qsort(sorted, ARRAY_SIZE(sorted), sizeof(size_t), sort_compare);
@@ -1084,7 +1094,7 @@ static void dump_fd(char *image, int size)
 	dump_vtba((struct vtba *)
 			(image + ((flumap1 & 0xff) << 4)),
 			(flumap1 >> 8) & 0xff);
-	dump_oem((const uint8_t *)image + 0xf00);
+	dump_oem((const uint8_t *)image + OEM_OFFSET);
 
 	const struct frba *frba = find_frba(image, size);
 	const struct fcba *fcba = find_fcba(image, size);
@@ -2640,6 +2650,12 @@ int main(int argc, char *argv[])
 	struct stat buf;
 	if (fstat(bios_fd, &buf) == -1) {
 		perror("Could not stat file");
+		exit(EXIT_FAILURE);
+	}
+	/* The image size is stored in an int. */
+	if (buf.st_size > INT_MAX) {
+		fprintf(stderr, "File %s is %lld bytes, larger than %d bytes\n",
+			filename, (long long)buf.st_size, INT_MAX);
 		exit(EXIT_FAILURE);
 	}
 	int size = buf.st_size;

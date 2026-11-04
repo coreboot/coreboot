@@ -99,4 +99,21 @@ bool psp_entry_is_table_pointer(const struct psp_dir_region *dir_rdev,
 				const uint32_t psp_id,
 				enum psp_dir_type *next_dir_type);
 
+typedef bool (*psp_dir_walk_callback)(const struct psp_dir_region *dir_rdev,
+				      const size_t level,
+				      const size_t index,
+				      const union psp_dir_entry *entry,
+				      void *user_data);
+
+typedef bool (*psp_dir_walk_hdr_callback)(const struct psp_dir_region *dir_rdev,
+					  const size_t level,
+					  void *user_data);
+
+bool psp_dir_walk_recursive(const struct psp_dir_region *dir_rdev,
+			    const size_t level,
+			    const uint32_t psp_id,
+			    const psp_dir_walk_hdr_callback hdr_callback,
+			    const psp_dir_walk_callback entry_callback,
+			    void *user_data);
+
 #endif /* _PSP_FW_PARSER_H_ */

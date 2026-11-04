@@ -186,6 +186,60 @@ static void test_psp_header(void **state)
 	test_free(raw_buf);
 }
 
+struct walk_state {
+	/* Input */
+	enum psp_dir_type type;
+	int level;
+	uint32_t id;
+	/* Output */
+	bool seen;	/* Set to true by callback */
+};
+
+static bool walk_callback(const struct psp_dir_region *dir_rdev,
+			  const size_t level,
+			  const size_t index,
+			  const union psp_dir_entry *entry,
+			  void *user_data)
+{
+	(void) index;
+	(void) level;
+	struct walk_state *state = (struct walk_state *)user_data;
+
+	if (dir_rdev->type != state->type)
+		return true;
+
+	switch (dir_rdev->type) {
+	case PSP_DIR_PSP:
+		if (dir_rdev->level != state->level)
+			return true;
+		if (state->id && entry->psp.type == state->id)
+			state->seen = true;
+		break;
+	case PSP_DIR_BIOS:
+		if (dir_rdev->level != state->level)
+			return true;
+		if (state->id && entry->bios.type == state->id)
+			state->seen = true;
+		break;
+	case PSP_DIR_COMBO:
+		if (state->id && entry->combo.id == state->id)
+			state->seen = true;
+		break;
+	case PSP_DIR_ISH:
+		if (state->id && entry->ish.psp_id == state->id)
+			state->seen = true;
+		break;
+	case PSP_DIR_EFS:
+		if (state->id && entry->efs.type == state->id)
+			state->seen = true;
+		break;
+	default:
+		return true;
+	}
+
+	return !state->seen;
+}
+
 static void test_full_rom(void **state)
 {
 	struct psp_test_state *s = *state;
@@ -224,6 +278,98 @@ static void test_full_rom(void **state)
 		assert_int_not_equal(PSP_DIR_NONE, entry.efs.type);
 		assert_true(psp_entry_is_table_pointer(&dir_rdev, &entry, 0, &next_dir_type));
 		assert_int_equal(next_dir_type, entry.efs.type);
+	}
+
+	if (s->type == PSP_DIR_ISH) {
+		/* Scan for PSP BOOTLOADER in LVL2 */
+		struct walk_state walk_state = {
+			.type = PSP_DIR_PSP,
+			.level = 2,
+			.id = AMD_FW_PSP_BOOTLOADER,
+			.seen = false,
+		};
+		psp_dir_walk_recursive(&dir_rdev, 0, 0, NULL, walk_callback, &walk_state);
+		assert_true(walk_state.seen);
+
+		/* Scan for BIOS APOB_NV in LVL2 */
+		walk_state = (struct walk_state){
+			.type = PSP_DIR_BIOS,
+			.level = 2,
+			.id = AMD_BIOS_APOB_NV,
+			.seen = false,
+		};
+		psp_dir_walk_recursive(&dir_rdev, 0, 0, NULL, walk_callback, &walk_state);
+		assert_true(walk_state.seen);
+
+		/* Scan for non existing entry */
+		walk_state = (struct walk_state){
+			.type = PSP_DIR_BIOS,
+			.level = 2,
+			.id = AMD_BIOS_INVALID,
+			.seen = false,
+		};
+		psp_dir_walk_recursive(&dir_rdev, 0, 0, NULL, walk_callback, &walk_state);
+		assert_false(walk_state.seen);
+
+		/* Scan ISH with ID 0xbc0e1000 */
+		walk_state = (struct walk_state){
+			.type = PSP_DIR_ISH,
+			.level = 0,
+			.id = 0xbc0e1000,
+			.seen = false,
+		};
+		psp_dir_walk_recursive(&dir_rdev, 0, 0, NULL, walk_callback, &walk_state);
+		assert_true(walk_state.seen);
+
+		/* Scan ISH with ID 0xdeadbeef */
+		walk_state = (struct walk_state){
+			.type = PSP_DIR_ISH,
+			.level = 0,
+			.id = 0xdeadbeef,
+			.seen = false,
+		};
+		psp_dir_walk_recursive(&dir_rdev, 0, 0, NULL, walk_callback, &walk_state);
+		assert_false(walk_state.seen);
+	} else if (s->type == PSP_DIR_PSP) {
+		/* Scan for PSP BOOTLOADER in LVL1 */
+		struct walk_state walk_state = {
+			.type = PSP_DIR_PSP,
+			.level = 1,
+			.id = AMD_FW_PSP_BOOTLOADER,
+			.seen = false,
+		};
+		assert_false(psp_dir_walk_recursive(&dir_rdev, 0, 0, NULL, walk_callback, &walk_state));
+		assert_true(walk_state.seen);
+
+		/* Scan for PSP AMD_FW_PSP_SECURED_OS in LVL1 */
+		walk_state = (struct walk_state){
+			.type = PSP_DIR_PSP,
+			.level = 1,
+			.id = AMD_FW_PSP_SECURED_OS,
+			.seen = false,
+		};
+		assert_true(psp_dir_walk_recursive(&dir_rdev, 0, 0, NULL, walk_callback, &walk_state));
+		assert_false(walk_state.seen);
+
+		/* Scan for PSP AMD_FW_PSP_SECURED_OS in LVL2 */
+		walk_state = (struct walk_state){
+			.type = PSP_DIR_PSP,
+			.level = 2,
+			.id = AMD_FW_PSP_SECURED_OS,
+			.seen = false,
+		};
+		assert_false(psp_dir_walk_recursive(&dir_rdev, 0, 0, NULL, walk_callback, &walk_state));
+		assert_true(walk_state.seen);
+
+		/* Scan for BIOS AMD_BIOS_PMUD in LVL1 */
+		walk_state = (struct walk_state){
+			.type = PSP_DIR_BIOS,
+			.level = 1,
+			.id = AMD_BIOS_PMUD,
+			.seen = false,
+		};
+		assert_false(psp_dir_walk_recursive(&dir_rdev, 0, 0, NULL, walk_callback, &walk_state));
+		assert_true(walk_state.seen);
 	}
 
 	/* Test psp_entry_is_table_pointer() */

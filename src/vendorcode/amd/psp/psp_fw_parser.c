@@ -267,6 +267,76 @@ bool psp_entry_is_table_pointer(const struct psp_dir_region *dir_rdev,
 	return false;
 }
 
+/*
+ * Walks the PSP directory region and calls the callback function for each entry.
+ * Traverses into directories recursively if entries point to other tables.
+ *
+ * @param dir_rdev		PSP directory region
+ * @param level			Recursion level. Call with 0 for the top-level directory.
+ * @param psp_id		PSP ID to filter by (0 to walk all entries)
+ * @param hdr_callback		Callback function to call for each directory header. The callback
+ *				function should return true to continue walking, false to abort.
+ *				Can be NULL.
+ * @param entry_callback	Callback function to call for each entry. The callback
+ *				function should return true to continue walking, false to abort.
+ *				Can be NULL.
+ * @param user_data		User data to pass to the callback function
+ *
+ * @return false on error or when walk was aborted, true when all entries were walked.
+ */
+bool psp_dir_walk_recursive(const struct psp_dir_region *dir_rdev,
+			    const size_t level,
+			    const uint32_t psp_id,
+			    const psp_dir_walk_hdr_callback hdr_callback,
+			    const psp_dir_walk_callback entry_callback,
+			    void *user_data)
+{
+	struct psp_dir_region next_dir;
+	const struct region_device *root = psp_dir_get_root(dir_rdev);
+	bool ret = false;
+
+	if (!dir_rdev)
+		return false;
+
+	/* Call header callback for the current directory if provided */
+	if (hdr_callback && !hdr_callback(dir_rdev, level, user_data))
+		return false;
+
+	for (uint32_t i = 0; i < psp_dir_count_entries(dir_rdev); i++) {
+		union psp_dir_entry entry;
+		enum psp_dir_type next_dir_type = PSP_DIR_NONE;
+
+		if (psp_dir_get_entry_by_index(dir_rdev, i, &entry) != CB_SUCCESS)
+			continue;
+
+		/* Call entry callback for the current entry if provided */
+		if (entry_callback && !entry_callback(dir_rdev, level, i, &entry, user_data))
+			return false;
+
+		/* When the entry points to another table, get the address and next directory type */
+		if (!psp_entry_is_table_pointer(dir_rdev, &entry, psp_id, &next_dir_type))
+			continue;
+
+		const uint32_t flash_rel_offset = psp_dir_entry_offset(dir_rdev, &entry);
+		if (!flash_rel_offset)
+			continue;
+
+		/* Validate table and fill next_dir */
+		if (psp_fw_read_and_validate_table(root, flash_rel_offset, next_dir_type, &next_dir) != CB_SUCCESS)
+			continue;
+		/* Update parent pointer for the next directory */
+		next_dir.parent = dir_rdev;
+		next_dir.parent_index = i;
+
+		/* Walk the next directory recursively */
+		ret = psp_dir_walk_recursive(&next_dir, level + 1, psp_id, hdr_callback, entry_callback, user_data);
+		if (!ret)
+			return false;
+	}
+
+	return true;
+}
+
 /* Check if destination looks like the expected PSP directory header.
  *
  * Only checks the cookie for PSP/BIOS/COMBO, as SPI flash access might be slow.

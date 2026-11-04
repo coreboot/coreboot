@@ -449,9 +449,11 @@ void configure_parallel_charging(void)
 	if (!CONFIG(MAINBOARD_SUPPORTS_PARALLEL_CHARGING))
 		return;
 
+	bool level = CONFIG(MAINBOARD_PARALLEL_CHARGING_ACTIVE_LOW);
+
 	printk(BIOS_INFO, "Configure parallel charging support\n");
-	pmic_gpio_output(PMIC_F_SLAVE_ID, PMIC_F_GPIO_07, true);
-	pmic_gpio_output(PMIC_F_SLAVE_ID, PMIC_F_GPIO_09, true);
+	pmic_gpio_output(PMIC_F_SLAVE_ID, PMIC_F_GPIO_07, level);
+	pmic_gpio_output(PMIC_F_SLAVE_ID, PMIC_F_GPIO_09, level);
 }
 
 /*
@@ -476,7 +478,7 @@ void configure_debug_access_port(void)
  */
 void configure_parallel_charging_late(void)
 {
-	if (!CONFIG(MAINBOARD_SUPPORTS_PARALLEL_CHARGING))
+	if (!CONFIG(MAINBOARD_PARALLEL_CHARGING_ACTIVE_LOW))
 		return;
 
 	gpio_output(GPIO_PARALLEL_CHARGING_CFG, 1);

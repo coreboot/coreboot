@@ -75,6 +75,7 @@ config BOARD_GOOGLE_QUARTZ
 	select SOC_QUALCOMM_HAMOA
 	select MAINBOARD_HAS_PS8820_RETIMER
 	select MAINBOARD_NO_USB_A_PORT
+	select MAINBOARD_PARALLEL_CHARGING_ACTIVE_LOW
 	select MAINBOARD_SUPPORTS_PARALLEL_CHARGING
 
 config BOARD_GOOGLE_MODEL_MICA
@@ -266,6 +267,13 @@ config MAINBOARD_SUPPORTS_PARALLEL_CHARGING
 	default n
 	help
 	  Enable this option if your mainboard supports parallel charging.
+
+config MAINBOARD_PARALLEL_CHARGING_ACTIVE_LOW
+	bool
+	depends on MAINBOARD_SUPPORTS_PARALLEL_CHARGING
+	default n
+	help
+	  Enable this option if the parallel charging load switch enable is active-low.
 
 config HAVE_DEBUG_ACCESS_PORT_SOURCE_SINK
 	bool

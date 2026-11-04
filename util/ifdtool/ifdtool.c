@@ -876,7 +876,7 @@ static void decode_flmstr(uint32_t flmstr)
 		(flmstr & (1 << wr_shift)) ? "enabled" : "disabled");
 	if (PLATFORM_HAS_10GBE_0_REGION) {
 		printf("  10GbE_0 Write Access:               %s\n",
-			(flmstr & (1 << (wr_shift + 11))) ? "enabled" : "disabled");
+			(flmstr & (1U << (wr_shift + 11))) ? "enabled" : "disabled");
 	}
 	if (PLATFORM_HAS_10GBE_1_REGION) {
 		printf("  10GbE_1 Write Access:               %s\n",
@@ -901,7 +901,7 @@ static void decode_flmstr(uint32_t flmstr)
 		(flmstr & (1 << rd_shift)) ? "enabled" : "disabled");
 	if (PLATFORM_HAS_10GBE_0_REGION) {
 		printf("  10GbE_0 Read Access:                %s\n",
-			(flmstr & (1 << (rd_shift + 11))) ? "enabled" : "disabled");
+			(flmstr & (1U << (rd_shift + 11))) ? "enabled" : "disabled");
 	}
 	if (PLATFORM_HAS_10GBE_1_REGION) {
 		printf("  10GbE_1 Read Access:                %s\n",

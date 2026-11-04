@@ -1700,6 +1700,7 @@ static void disable_gpr0(const char *filename, char *image, int size)
 	reg.value = fpsba->pchstrp[gpr0_offset];
 	if (!reg.data.write_protect_en) {
 		printf("GPR0 protection is already disabled\n");
+		write_image(filename, image, size);
 		return;
 	}
 
@@ -1845,6 +1846,7 @@ static void enable_gpr0(const char *filename, char *image, int size)
 	if (reg.data.write_protect_en) {
 		printf("GPR0 protection is already enabled\n");
 		print_gpr0_range(reg);
+		write_image(filename, image, size);
 		return;
 	}
 

@@ -410,6 +410,14 @@ static void test_full_rom(void **state)
 				struct psp_dir_region next_dir;
 				assert_int_equal(psp_fw_read_and_validate_table(&mem_rdev.rdev, flash_rel_offset,
 										next_dir_type, &next_dir), CB_SUCCESS);
+				next_dir.parent = &psp_dir_rdev;
+				next_dir.parent_index = i;
+
+				/* Test psp_fw_partition() */
+				if (entry.psp.type == AMD_FW_PSP_RECOVERYAB_A)
+					assert_int_equal(psp_fw_partition(&next_dir), 'A');
+				if (entry.psp.type == AMD_FW_PSP_RECOVERYAB_B)
+					assert_int_equal(psp_fw_partition(&next_dir), 'B');
 			}
 		}
 	}

@@ -335,6 +335,40 @@ bool psp_dir_walk_recursive(const struct psp_dir_region *dir_rdev,
 	return true;
 }
 
+/*
+ * Returns the partition of the ISH firmware.
+ *
+ * @param dir_rdev	PSP directory region
+ * @return 'A' or 'B' if the psp_dir_region is a child of an ISH directory, otherwise 0.
+ */
+char psp_fw_partition(const struct psp_dir_region *dir_rdev)
+{
+	if (!dir_rdev)
+		return 0;
+
+	/* Locate a directory that has a PSPL1 as parent */
+	while (1) {
+		if (dir_rdev->type == PSP_DIR_EFS || !dir_rdev->parent)
+			return 0;
+		if (dir_rdev->parent->type == PSP_DIR_PSP && dir_rdev->parent->level == 1) {
+			/* Found PSP L1 */
+			break;
+		}
+		dir_rdev = dir_rdev->parent;
+	}
+
+	union psp_dir_entry entry;
+	if (psp_dir_get_entry_by_index(dir_rdev->parent, dir_rdev->parent_index, &entry) != CB_SUCCESS)
+		return 0;
+
+	if (entry.psp.type == AMD_FW_PSP_RECOVERYAB_A)
+		return 'A';
+	if (entry.psp.type == AMD_FW_PSP_RECOVERYAB_B)
+		return 'B';
+
+	return 0;
+}
+
 /* Check if destination looks like the expected PSP directory header.
  *
  * Only checks the cookie for PSP/BIOS/COMBO, as SPI flash access might be slow.

@@ -116,4 +116,6 @@ bool psp_dir_walk_recursive(const struct psp_dir_region *dir_rdev,
 			    const psp_dir_walk_callback entry_callback,
 			    void *user_data);
 
+char psp_fw_partition(const struct psp_dir_region *dir_rdev);
+
 #endif /* _PSP_FW_PARSER_H_ */

@@ -17,16 +17,15 @@
 #define O_BINARY 0
 #endif
 
-/**
- * PTR_IN_RANGE - examine whether a pointer falls in [base, base + limit)
- * @param ptr:    the non-void* pointer to a single arbitrary-sized object.
- * @param base:   base address represented with char* type.
- * @param limit:  upper limit of the legal address.
- *
+/*
+ * Return true if the len-byte object at offset off lies entirely within an
+ * image of size bytes. Check offsets before forming any pointer from them:
+ * computing a pointer outside the image buffer is undefined behavior.
  */
-#define PTR_IN_RANGE(ptr, base, limit)			\
-	((const char *)(ptr) >= (base) &&		\
-	 (const char *)&(ptr)[1] <= (base) + (limit))
+static bool in_image(size_t off, size_t len, int size)
+{
+	return size >= 0 && off <= (size_t)size && len <= (size_t)size - off;
+}
 
 /**
  * PLATFORM_HAS_GBE_REGION - some platforms do not support the PCH GbE LAN region
@@ -153,8 +152,7 @@ static struct fdbar *find_fd(char *image, int size)
 		return NULL;
 	}
 
-	struct fdbar *fdb = (struct fdbar *)(image + i);
-	return PTR_IN_RANGE(fdb, image, size) ? fdb : NULL;
+	return in_image(i, sizeof(struct fdbar), size) ? (struct fdbar *)(image + i) : NULL;
 }
 
 static char *find_flumap(char *image, int size)
@@ -168,8 +166,8 @@ static char *find_flumap(char *image, int size)
 	 * this is wrong and a simple fixed offset from the start of the image
 	 * works.
 	 */
-	char *flumap = image + 4096 - 256 - 4;
-	return PTR_IN_RANGE(flumap, image, size) ? flumap : NULL;
+	const size_t off = 4096 - 256 - 4;
+	return in_image(off, sizeof(uint32_t), size) ? image + off : NULL;
 }
 
 static struct fcba *find_fcba(char *image, int size)
@@ -177,8 +175,8 @@ static struct fcba *find_fcba(char *image, int size)
 	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	struct fcba *fcba = (struct fcba *)(image + ((fdb->flmap0 & 0xff) << 4));
-	return PTR_IN_RANGE(fcba, image, size) ? fcba : NULL;
+	const size_t off = (fdb->flmap0 & 0xff) << 4;
+	return in_image(off, sizeof(struct fcba), size) ? (struct fcba *)(image + off) : NULL;
 }
 
 static struct fmba *find_fmba(char *image, int size)
@@ -186,8 +184,8 @@ static struct fmba *find_fmba(char *image, int size)
 	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	struct fmba *fmba = (struct fmba *)(image + ((fdb->flmap1 & 0xff) << 4));
-	return PTR_IN_RANGE(fmba, image, size) ? fmba : NULL;
+	const size_t off = (fdb->flmap1 & 0xff) << 4;
+	return in_image(off, sizeof(struct fmba), size) ? (struct fmba *)(image + off) : NULL;
 }
 
 static struct frba *find_frba(char *image, int size)
@@ -195,9 +193,8 @@ static struct frba *find_frba(char *image, int size)
 	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	struct frba *frba =
-		(struct frba *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
-	return PTR_IN_RANGE(frba, image, size) ? frba : NULL;
+	const size_t off = ((fdb->flmap0 >> 16) & 0xff) << 4;
+	return in_image(off, sizeof(struct frba), size) ? (struct frba *)(image + off) : NULL;
 }
 
 static struct fpsba *find_fpsba(char *image, int size)
@@ -205,13 +202,10 @@ static struct fpsba *find_fpsba(char *image, int size)
 	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	struct fpsba *fpsba =
-		(struct fpsba *) (image + (((fdb->flmap1 >> 16) & 0xff) << 4));
-
-	int SSL = ((fdb->flmap1 >> 24) & 0xff) * sizeof(uint32_t);
-	if ((((char *)fpsba) + SSL) >= (image + size))
-		return NULL;
-	return fpsba;
+	const size_t off = ((fdb->flmap1 >> 16) & 0xff) << 4;
+	/* Only the PSL straps described by FLMAP1 have to be present. */
+	const size_t len = ((fdb->flmap1 >> 24) & 0xff) * sizeof(uint32_t);
+	return in_image(off, len, size) ? (struct fpsba *)(image + off) : NULL;
 }
 
 static struct fmsba *find_fmsba(char *image, int size)
@@ -219,8 +213,8 @@ static struct fmsba *find_fmsba(char *image, int size)
 	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	struct fmsba *fmsba = (struct fmsba *)(image + ((fdb->flmap2 & 0xff) << 4));
-	return PTR_IN_RANGE(fmsba, image, size) ? fmsba : NULL;
+	const size_t off = (fdb->flmap2 & 0xff) << 4;
+	return in_image(off, sizeof(struct fmsba), size) ? (struct fmsba *)(image + off) : NULL;
 }
 
 /* port from flashrom */
@@ -1077,6 +1071,10 @@ static void dump_fd(char *image, int size)
 	}
 
 	char *flumap = find_flumap(image, size);
+	if (!flumap) {
+		fprintf(stderr, "Image is too small to contain FLUMAP1\n");
+		exit(EXIT_FAILURE);
+	}
 	uint32_t flumap1 = *(uint32_t *)flumap;
 	printf("FLUMAP1:   0x%08x\n", flumap1);
 	printf("  Intel ME VSCC Table Length (VTL):        %d\n",
@@ -1779,23 +1777,22 @@ static int calculate_gpr0_range(char *image, int size,
 		fprintf(stderr, "Unsupported platform\n");
 		exit(EXIT_FAILURE);
 	}
-	const uint32_t *data_part_offset_ptr = (uint32_t *)(image + cse_region_start +
-							    cse_data_offset);
-	if (!PTR_IN_RANGE(data_part_offset_ptr, image, size)) {
-		fprintf(stderr, "Data part offset %d exceeds image size %d\n",
-			cse_region_start + cse_data_offset, size);
+	const uint32_t data_part_offset_off = cse_region_start + cse_data_offset;
+	if (!in_image(data_part_offset_off, sizeof(uint32_t), size)) {
+		fprintf(stderr, "Data part offset %u exceeds image size %d\n",
+			data_part_offset_off, size);
 		return -1;
 	}
-	uint32_t data_part_offset = *data_part_offset_ptr;
+	uint32_t data_part_offset = *(const uint32_t *)(image + data_part_offset_off);
 
 	/* Start reading the CSE Data Partition Table, also known as FPT */
 	uint32_t data_part_start = data_part_offset + cse_region_start;
-	struct cse_fpt *fpt = (struct cse_fpt *)(image + data_part_start);
-	if (!PTR_IN_RANGE(fpt, image, size)) {
-		fprintf(stderr, "FPT offset %d exceeds image size %d\n",
+	if (!in_image(data_part_start, sizeof(struct cse_fpt), size)) {
+		fprintf(stderr, "FPT offset %u exceeds image size %d\n",
 			data_part_start, size);
 		return -1;
 	}
+	struct cse_fpt *fpt = (struct cse_fpt *)(image + data_part_start);
 
 	uint32_t fitc_region_start = 0;
 	size_t fitc_region_size = 0;

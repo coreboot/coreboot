@@ -330,7 +330,7 @@ static void test_full_rom(void **state)
 		};
 		psp_dir_walk_recursive(&dir_rdev, 0, 0, NULL, walk_callback, &walk_state);
 		assert_false(walk_state.seen);
-	} else if (s->type == PSP_DIR_PSP) {
+	} else if (s->type == PSP_DIR_PSP || s->type == PSP_DIR_COMBO) {
 		/* Scan for PSP BOOTLOADER in LVL1 */
 		struct walk_state walk_state = {
 			.type = PSP_DIR_PSP,
@@ -379,7 +379,13 @@ static void test_full_rom(void **state)
 
 		assert_int_equal(psp_dir_get_entry_by_index(&dir_rdev, 0, &entry), CB_SUCCESS);
 		assert_true(psp_entry_is_table_pointer(&dir_rdev, &entry, 0, &next_dir_type));
-		assert_int_equal(next_dir_type, PSP_DIR_PSP);
+
+		/* Legacy and ISH: EFS points to PSP L1 */
+		if (s->type == PSP_DIR_PSP || s->type == PSP_DIR_ISH)
+			assert_int_equal(next_dir_type, PSP_DIR_PSP);
+		/* Combo: EFS points to Combo table */
+		else if (s->type == PSP_DIR_COMBO)
+			assert_int_equal(next_dir_type, PSP_DIR_COMBO);
 
 		struct psp_dir_region psp_dir_rdev;
 		uint32_t dir_offset = psp_dir_entry_offset(&dir_rdev, &entry);
@@ -456,6 +462,7 @@ int main(void)
 		PSP_TABLE_FILE_TEST("efs3.bin", 2, PSP_DIR_EFS, 0),
 		PSP_FULL_ROM_TEST("full_rom_ish.bin.lzma", 2, PSP_DIR_ISH, 0),
 		PSP_FULL_ROM_TEST("full_rom_legacy.bin.lzma", 1, PSP_DIR_PSP, 0),
+		PSP_FULL_ROM_TEST("full_rom_combo.bin.lzma", 1, PSP_DIR_COMBO, 0),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);

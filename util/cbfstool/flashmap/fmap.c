@@ -77,7 +77,10 @@ static long int fmap_lsearch(const uint8_t *image, size_t len)
 	unsigned long offset;
 	int fmap_found = 0;
 
-	for (offset = 0; offset < len - strlen(FMAP_SIGNATURE); offset++) {
+	if (len < sizeof(struct fmap))
+		return -1;
+
+	for (offset = 0; offset <= len - sizeof(struct fmap); offset++) {
 		if (is_valid_fmap((const struct fmap *)&image[offset])) {
 			fmap_found = 1;
 			break;
@@ -99,6 +102,9 @@ static long fmap_bsearch(const uint8_t *image, size_t len)
 	unsigned long offset;
 	int fmap_found = 0, stride;
 
+	if (len < sizeof(struct fmap))
+		return -1;
+
 	/*
 	 * For efficient operation, we start with the largest stride possible
 	 * and then decrease the stride on each iteration. Also, check for a
@@ -110,7 +116,7 @@ static long fmap_bsearch(const uint8_t *image, size_t len)
 			break;
 
 		for (offset = 0;
-		     offset < len - strlen(FMAP_SIGNATURE);
+		     offset <= len - sizeof(struct fmap);
 		     offset += stride) {
 			if ((offset % (stride * 2) == 0) && (offset != 0))
 					continue;

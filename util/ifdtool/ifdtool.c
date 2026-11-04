@@ -476,6 +476,23 @@ static void dump_frba(const struct frba *frba)
 	}
 }
 
+/* Write the whole buffer to fd, or exit on any error or short write. */
+static void write_or_die(int fd, const void *buf, size_t len)
+{
+	if (write(fd, buf, len) != (ssize_t)len) {
+		perror("Error while writing");
+		exit(EXIT_FAILURE);
+	}
+}
+
+static void close_or_die(int fd)
+{
+	if (close(fd)) {
+		perror("Error while closing file");
+		exit(EXIT_FAILURE);
+	}
+}
+
 static void dump_flashrom_layout(char *image, int size, const char *layout_fname)
 {
 	const struct frba *frba = find_frba(image, size);
@@ -499,12 +516,9 @@ static void dump_flashrom_layout(char *image, int size, const char *layout_fname
 
 		char buf[LAYOUT_LINELEN];
 		snprintf(buf, LAYOUT_LINELEN, "%08x:%08x %s\n", region.base, region.limit, region_names[i].terse);
-		if (write(layout_fd, buf, strlen(buf)) < 0) {
-			perror("Could not write to file");
-			exit(EXIT_FAILURE);
-		}
+		write_or_die(layout_fd, buf, strlen(buf));
 	}
-	close(layout_fd);
+	close_or_die(layout_fd);
 	printf("Wrote layout to %s\n", layout_fname);
 }
 
@@ -1119,10 +1133,7 @@ static void create_fmap_template(char *image, int size, const char *layout_fname
 	char buf[LAYOUT_LINELEN];
 
 	snprintf(buf, LAYOUT_LINELEN, "FLASH 0x%X {\n", flash_size);
-	if (write(layout_fd, buf, strlen(buf)) < 0) {
-		perror("Could not write to file");
-		exit(EXIT_FAILURE);
-	}
+	write_or_die(layout_fd, buf, strlen(buf));
 
 	/* fmaptool requires regions in .fmd to be sorted by base address. */
 	int count_regions = 0;
@@ -1161,18 +1172,12 @@ static void create_fmap_template(char *image, int size, const char *layout_fname
 
 		snprintf(buf, LAYOUT_LINELEN, "\t%s@0x%X 0x%X\n",
 			 region_names[region.type].fmapname, region.base, region.size);
-		if (write(layout_fd, buf, strlen(buf)) < 0) {
-			perror("Could not write to file");
-			exit(EXIT_FAILURE);
-		}
+		write_or_die(layout_fd, buf, strlen(buf));
 	}
 
-	if (write(layout_fd, "}\n", 2) < 0) {
-		perror("Could not write to file");
-		exit(EXIT_FAILURE);
-	}
+	write_or_die(layout_fd, "}\n", 2);
 
-	close(layout_fd);
+	close_or_die(layout_fd);
 	printf("Wrote IFD flashmap to %s\n", layout_fname);
 }
 
@@ -1196,9 +1201,8 @@ static void write_regions(char *image, int size)
 				perror("Error while trying to open file");
 				exit(EXIT_FAILURE);
 			}
-			if (write(region_fd, image + region.base, region.size) != region.size)
-				perror("Error while writing");
-			close(region_fd);
+			write_or_die(region_fd, image + region.base, region.size);
+			close_or_die(region_fd);
 		}
 	}
 }
@@ -1275,9 +1279,8 @@ static void write_image(const char *filename, char *image, int size)
 		perror("Error while trying to open file");
 		exit(EXIT_FAILURE);
 	}
-	if (write(new_fd, image, size) != size)
-		perror("Error while writing");
-	close(new_fd);
+	write_or_die(new_fd, image, size);
+	close_or_die(new_fd);
 }
 
 static void set_spi_frequency(const char *filename, char *image, int size,

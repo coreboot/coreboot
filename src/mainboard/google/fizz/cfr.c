@@ -37,6 +37,17 @@ static const struct sm_object tdp_pl2_override = SM_DECLARE_NUMBER({
 	.display_flags	= 0,
 }, WITH_CALLBACK(update_tdp_pl2_default));
 
+static const struct sm_object wifi_slot_clkreq = SM_DECLARE_BOOL({
+	.opt_name	= "wifi_slot_clkreq",
+	.ui_name	= "WiFi Slot CLKREQ",
+	.ui_helptext	= "Use CLKREQ on the M.2 WiFi slot (default, for WiFi cards).\n"
+			  "Disable for add-in cards that leave CLKREQ floating so the\n"
+			  "PCIe reference clock stays free-running without grounding\n"
+			  "the pin on the adapter.",
+	.default_value	= true,
+});
+
+
 static struct sm_obj_form system = {
 	.ui_name = "System",
 	.obj_list = (const struct sm_object *[]) {
@@ -51,6 +62,7 @@ static struct sm_obj_form system = {
 		&pciexp_clk_pm,
 		&pciexp_l1ss,
 		&pciexp_speed,
+		&wifi_slot_clkreq,
 		&s0ix_enable,
 		&vtd,
 		&bios_lock,

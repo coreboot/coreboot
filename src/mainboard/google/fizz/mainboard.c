@@ -15,6 +15,7 @@
 #include <smbios.h>
 #include <soc/pci_devs.h>
 #include <soc/nhlt.h>
+#include <soc/ramstage.h>
 #include <static.h>
 #include <stdio.h>
 #include <timer.h>
@@ -22,6 +23,9 @@
 #include <variant/gpio.h>
 
 #include "board.h"
+
+/* WiFi M.2 slot is PCIe RP4 -> PcieRpClkReqSupport[3] in FSP UPDs. */
+#define FIZZ_WIFI_PCIE_RP_INDEX	3
 
 #define FIZZ_SKU_ID_I7_U42  0x4
 #define FIZZ_SKU_ID_I5_U42  0x5
@@ -302,3 +306,22 @@ struct chip_operations mainboard_ops = {
 	.init = mainboard_chip_init,
 	.enable_dev = mainboard_enable,
 };
+
+/*
+ * Apply CFR "wifi_slot_clkreq" before FSP SiliconInit copies ClkReq
+ * UPDs from chip config. Set in config_of_soc(), as the SoC code
+ * overwrites params->PcieRpClkReqSupport afterward.
+ */
+void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+{
+	config_t *config = config_of_soc();
+
+	(void)params;
+
+	if (get_uint_option("wifi_slot_clkreq", 1) == 0) {
+		printk(BIOS_INFO,
+		       "WiFi slot CLKREQ disabled; RP%d refclk free-running\n",
+		       FIZZ_WIFI_PCIE_RP_INDEX + 1);
+		config->PcieRpClkReqSupport[FIZZ_WIFI_PCIE_RP_INDEX] = false;
+	}
+}

@@ -432,7 +432,10 @@ static void dump_region(unsigned int num, const struct frba *frba)
 
 static int sort_compare(const void *a, const void *b)
 {
-	return *(size_t *)a - *(size_t *)b;
+	const size_t x = *(const size_t *)a;
+	const size_t y = *(const size_t *)b;
+
+	return (x > y) - (x < y);
 }
 
 /*

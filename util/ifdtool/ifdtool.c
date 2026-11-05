@@ -2149,10 +2149,14 @@ static void inject_region(const char *filename, char *image, int size,
 	write_image(filename, image, size);
 }
 
-static unsigned int next_pow2(unsigned int x)
+/*
+ * Return the smallest power of 2 above x, or 0 if x is not positive or the
+ * result does not fit in int.
+ */
+static int next_pow2(int x)
 {
-	unsigned int y = 1;
-	if (x == 0)
+	int y = 1;
+	if (x <= 0 || x > INT_MAX / 2)
 		return 0;
 	while (y <= x)
 		y = y << 1;
@@ -2278,7 +2282,12 @@ static void new_layout(const char *filename, char *image, int size,
 		printf("    Only the descriptor will be modified\n");
 		new_extent = size;
 	} else {
-		new_extent = next_pow2(new_extent - 1);
+		/* new_extent is the highest inclusive limit, so new_extent + 1 bytes are needed. */
+		new_extent = next_pow2(new_extent);
+		if (new_extent == 0) {
+			fprintf(stderr, "Invalid size of the new image\n");
+			exit(EXIT_FAILURE);
+		}
 		if (new_extent != size) {
 			printf("The image has changed in size.\n");
 			printf("The old image is %d bytes.\n", size);
@@ -2288,6 +2297,10 @@ static void new_layout(const char *filename, char *image, int size,
 
 	/* copy regions to a new image */
 	new_image = malloc(new_extent);
+	if (!new_image) {
+		fprintf(stderr, "Out of memory\n");
+		exit(EXIT_FAILURE);
+	}
 	memset(new_image, 0xff, new_extent);
 	for (i = 0; i < max_regions; i++) {
 		int copy_size = new_regions[i].size;
@@ -2323,9 +2336,17 @@ static void new_layout(const char *filename, char *image, int size,
 		printf("     to %08x+%08x:%08x (%10d)\n", new->base,
 				offset_new, new->limit, new->size);
 
-		memcpy(new_image + new->base + offset_new,
-				image + current->base + offset_current,
-				copy_size);
+		if (copy_size == 0)
+			continue;
+
+		/* Check the destination before forming a pointer to it. */
+		const long long dst = (long long)new->base + offset_new;
+		if (dst < 0 || !in_image(dst, copy_size, new_extent)) {
+			fprintf(stderr, "Region %s does not fit in the new image\n",
+				region_name(i));
+			exit(EXIT_FAILURE);
+		}
+		memcpy(new_image + dst, image + current->base + offset_current, copy_size);
 	}
 
 	/* update new descriptor regions */

@@ -24,6 +24,8 @@
 /* FLUMAP1 is the dword before the 256-byte OEM section at its end. */
 #define OEM_OFFSET	(IFD_SIZE - 256)
 #define FLUMAP1_OFFSET	(OEM_OFFSET - 4)
+/* Number of bytes of the OEM section that dump_oem() prints. */
+#define OEM_DUMP_SIZE	64
 
 /*
  * Return true if the len-byte object at offset off lies entirely within an
@@ -223,6 +225,31 @@ static struct fmsba *find_fmsba(char *image, int size)
 		return NULL;
 	const size_t off = (fdb->flmap2 & 0xff) << 4;
 	return in_image(off, sizeof(struct fmsba), size) ? (struct fmsba *)(image + off) : NULL;
+}
+
+/* Return the number of VSCC table entries for the given VTL. */
+static int vtba_num_entries(int vtl)
+{
+	int max_len = sizeof(struct vtba) / sizeof(struct vscc);
+	return (vtl >> 1) < max_len ? (vtl >> 1) : max_len;
+}
+
+static struct vtba *find_vtba(char *image, int size)
+{
+	char *flumap = find_flumap(image, size);
+	if (!flumap)
+		return NULL;
+	uint32_t flumap1 = *(uint32_t *)flumap;
+	const size_t off = (flumap1 & 0xff) << 4;
+	/* Only the VTL entries described by FLUMAP1 have to be present. */
+	const size_t len = vtba_num_entries((flumap1 >> 8) & 0xff) * sizeof(struct vscc);
+	return in_image(off, len, size) ? (struct vtba *)(image + off) : NULL;
+}
+
+/* Return the part of the OEM section that dump_oem() prints, if present. */
+static uint8_t *find_oem(char *image, int size)
+{
+	return in_image(OEM_OFFSET, OEM_DUMP_SIZE, size) ? (uint8_t *)image + OEM_OFFSET : NULL;
 }
 
 /* port from flashrom */
@@ -1061,8 +1088,7 @@ static void dump_vscc(uint32_t vscc)
 static void dump_vtba(const struct vtba *vtba, int vtl)
 {
 	int i;
-	int max_len = sizeof(struct vtba) / sizeof(struct vscc);
-	int num = (vtl >> 1) < max_len ? (vtl >> 1) : max_len;
+	int num = vtba_num_entries(vtl);
 
 	printf("ME VSCC table:\n");
 	for (i = 0; i < num; i++) {
@@ -1078,7 +1104,7 @@ static void dump_oem(const uint8_t *oem)
 {
 	int i, j;
 	printf("OEM Section:\n");
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < OEM_DUMP_SIZE / 16; i++) {
 		printf("%02x:", i << 4);
 		for (j = 0; j < 16; j++)
 			printf(" %02x", oem[(i << 4) + j]);
@@ -1135,10 +1161,16 @@ static void dump_fd(char *image, int size)
 		(flumap1 >> 8) & 0xff);
 	printf("  Intel ME VSCC Table Base Address (VTBA): 0x%06x\n\n",
 		(flumap1 & 0xff) << 4);
-	dump_vtba((struct vtba *)
-			(image + ((flumap1 & 0xff) << 4)),
-			(flumap1 >> 8) & 0xff);
-	dump_oem((const uint8_t *)image + OEM_OFFSET);
+	const struct vtba *vtba = find_vtba(image, size);
+	if (vtba)
+		dump_vtba(vtba, (flumap1 >> 8) & 0xff);
+	else
+		printf("ME VSCC table is outside the image\n\n");
+	const uint8_t *oem = find_oem(image, size);
+	if (oem)
+		dump_oem(oem);
+	else
+		printf("OEM section is outside the image\n\n");
 
 	const struct frba *frba = find_frba(image, size);
 	const struct fcba *fcba = find_fcba(image, size);

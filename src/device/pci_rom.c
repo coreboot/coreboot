@@ -11,6 +11,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <timestamp.h>
@@ -132,7 +133,7 @@ struct rom_header *pci_rom_probe(const struct device *dev)
 	return rom_header;
 }
 
-static size_t pci_rom_image_size(const struct rom_header *rom, int *last_image)
+static size_t pci_rom_image_size(const struct rom_header *rom, bool *last_image)
 {
 	size_t data_offset;
 	size_t legacy_size;
@@ -140,7 +141,7 @@ static size_t pci_rom_image_size(const struct rom_header *rom, int *last_image)
 	const struct pci_data *rom_data;
 
 	if (last_image)
-		*last_image = 1;
+		*last_image = true;
 
 	if (!rom)
 		return 0;
@@ -171,7 +172,7 @@ size_t pci_rom_size(const struct rom_header *rom)
 	size_t total_size = 0;
 
 	while (true) {
-		int last_image;
+		bool last_image;
 		size_t image_size = pci_rom_image_size(rom, &last_image);
 
 		if (!image_size || total_size > (size_t)-1 - image_size)

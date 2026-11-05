@@ -45,6 +45,18 @@ is not a generic class like "buffer overflow" but something very specific like
 for the first occurrence that mentions how many other occurrences were found in
 the same patch.
 
+## Commit Messages
+
+If you write or edit commit messages, you **MUST NEVER** add any line that
+attributes the change to an AI tool, agent, model or vendor. This includes
+trailers such as `Co-authored-by:`, `Co-developed-by:`, `Assisted-by:` or
+`Generated-by:` naming an AI product (e.g. `Co-authored-by: Agent
+<noreply@example.com>`), as well as lines like "Generated with ...". The person
+in the `Signed-off-by:` line is responsible for the entire contents of the
+commit, whether or not AI tools were used, so these lines serve no purpose.
+Remove them if a tool adds them automatically. See the
+[Gerrit Guidelines](Documentation/contributing/gerrit_guidelines.md#ai-generated-contributions).
+
 ## Further Instructions
 
 In addition to the instructions in this file, you **MUST** also read

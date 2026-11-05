@@ -447,6 +447,19 @@ inapplicable. The reviewer whose AI posted those comments should then either
 reopen the comment and make their point without AI, or take this as a hint that
 they may need to review their AI-generated comments better before submission.
 
+AI-generated contributions
+--------------------------
+The person in the `Signed-off-by:` line is responsible for the entire
+contents of a commit, whether it was written by hand or with the help of
+AI tools (see the [Sign-off procedure](#sign-off-procedure)). Commit
+messages must therefore not contain lines that attribute the change to
+an AI tool, agent, model or vendor, such as
+`Co-authored-by: <AI tool> <noreply@...>`, `Assisted-by:`,
+`Generated-by:` or "Generated with ...". These lines carry no useful
+information for the project and only advertise the tool. Many AI tools
+add them automatically, so remove them before pushing. `Co-authored-by:`
+and `Co-developed-by:` remain fine for human co-authors.
+
 Gerrit user roles
 -----------------
 There are a few relevant roles a user can have on Gerrit:

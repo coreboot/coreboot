@@ -76,6 +76,10 @@ to go over everything again. There are other tutorials that cover that.
 
 - The Signed-off-by line is required (Jenkins forces this).
 - The Change ID is required (Gerrit forces this.)
+- Do not add footers that credit AI tools, agents, models or vendors
+  (e.g. `Co-authored-by: <AI tool>`). The person signing off is
+  responsible for the whole commit. See
+  [AI-generated contributions](gerrit_guidelines.md#ai-generated-contributions).
 - When adding a patch that has already gone through another git or
   gerrit, the footers from those previous commits may be added, but
   keep the list reasonable.

@@ -209,7 +209,9 @@ struct rom_header *pci_rom_load(struct device *dev,
 	if (rom_data->type != 0)
 		return NULL;
 
-	rom_size = rom_header->size * 512;
+	rom_size = pci_rom_size(rom_header);
+	if (!rom_size)
+		return NULL;
 
 	/*
 	 * We check to see if the device thinks it is a VGA device not

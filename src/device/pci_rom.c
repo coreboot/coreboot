@@ -354,9 +354,16 @@ void pci_rom_ssdt(const struct device *device)
 	if (!rom) {
 		/* Probe for option rom */
 		rom = pci_rom_probe(device);
-		if (!rom || !rom->size) {
+		if (!rom) {
 			printk(BIOS_WARNING, "%s: Missing PCI Option ROM\n",
-			dev_path(device));
+			       dev_path(device));
+			return;
+		}
+
+		cbrom_length = pci_rom_size(rom);
+		if (!cbrom_length) {
+			printk(BIOS_ERR, "%s: ROM has zero length!\n",
+			       dev_path(device));
 			return;
 		}
 
@@ -366,18 +373,10 @@ void pci_rom_ssdt(const struct device *device)
 			return;
 		}
 
-		/* Prepare memory */
-		cbrom_length = rom->size * 512;
-		if (!cbrom_length) {
-			printk(BIOS_ERR, "%s: ROM has zero length!\n",
-			dev_path(device));
-			return;
-		}
-
 		void *cbrom = cbmem_add(CBMEM_ID_ROM0 + ngfx, cbrom_length);
 		if (!cbrom) {
 			printk(BIOS_ERR, "%s: Failed to allocate CBMEM.\n",
-			dev_path(device));
+			       dev_path(device));
 			return;
 		}
 		/* Increment CBMEM id for next device */
@@ -387,7 +386,12 @@ void pci_rom_ssdt(const struct device *device)
 
 		rom = cbrom;
 	} else {
-		cbrom_length = rom->size * 512;
+		cbrom_length = pci_rom_size(rom);
+		if (!cbrom_length) {
+			printk(BIOS_ERR, "%s: ROM has zero length!\n",
+			       dev_path(device));
+			return;
+		}
 	}
 
 	const char *scope = acpi_device_path(device);

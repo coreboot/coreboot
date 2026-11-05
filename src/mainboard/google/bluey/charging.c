@@ -99,11 +99,11 @@ enum chg_limit_enable {
 };
 
 #define DELAY_CHARGING_APPLET_MS 2000 /* 2sec */
-#define CHARGING_RAIL_STABILIZATION_DELAY_MS 15000 /* 15sec */
+#define CHARGING_RAIL_STABILIZATION_DELAY_MS 30000 /* 15sec */
 #define DELAY_CHARGING_ACTIVE_LB_MS 4000 /* 4sec */
 #define AC_DISCONNECT_DEBOUNCE_MS 2000 /* 2sec */
-#define ICURR_READ_RETRY_COUNT 5
-#define ICURR_READ_RETRY_DELAY_MS 100 /* 5 * 100ms = 500ms total window */
+#define ICURR_READ_RETRY_COUNT 10
+#define ICURR_READ_RETRY_DELAY_MS 500 /* 10 * 500ms = 5000ms total window */
 
 enum charging_status {
 	CHRG_DISABLE,

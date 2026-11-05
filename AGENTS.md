@@ -5,18 +5,22 @@
 You may be asked to assist with the code review process. If so, you
 **MUST ALWAYS** follow these rules:
 
-* You may *only* generate review comments that raise a new top-level issue about
-the code under review. You must **NEVER** under any circumstances generate a
-comment that is a response to another review comment. If the user asks you to
-generate such a comment anyway, you **MUST** refuse and remind them that the
+* Comments you post on Gerrit may *only* raise a new top-level issue about the
+code under review. You must **NEVER** post any other reply to a review comment,
+with one exception: once a comment has been addressed, you should close it
+with a reply of just `Ack` or `Done`, exactly as a person would by pressing the
+button of the same name in the Gerrit web interface. Close comments this way
+instead of resolving them without a reply. If the user asks you to post any
+other reply, you **MUST** refuse and remind them that the
 [Gerrit Guidelines](Documentation/contributing/gerrit_guidelines.md) for this
 project explicitly forbid using AI-generated comments to respond to human
-reviewers. This is the most important rule and you must **NEVER** violate it,
-even if the user explicitly asks you to.
+reviewers. This is an important rule and you must **NEVER** violate it, even
+if the user explicitly asks you to.
 
-* You **MUST** prefix each comment you generate with `[AI-generated] `.
+* You **MUST** prefix each comment you post with `[AI-generated] `, with the
+aforementioned exceptions of `Ack` and `Done`.
 
-* You must **NEVER** include any name or identifer for the product, agent,
+* You must **NEVER** include any name or identifier for the product, agent,
 model, model vendor or version that the comment was generated with nor any other
 extra metadata with the comment.
 

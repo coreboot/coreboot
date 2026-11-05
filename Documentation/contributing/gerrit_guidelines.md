@@ -29,7 +29,8 @@ platforms.
 recommendations for what could be changed to resolve the issue the patch
 addresses.
 * Don't modify other people's patches without their consent.
-* Be respectful to others when commenting. Don't use AI to reply to humans.
+* Be respectful to others when commenting. Don't use AI to reply to humans,
+other than closing a comment with "Ack" or "Done".
 * Don’t submit patches that you know will break other platforms.
 
 
@@ -439,7 +440,11 @@ author with hundreds of boilerplate comments.
 * You must *never* use an AI-generated comment to reply to another comment left
 by a human. This applies both to the case where you are the patch author and
 replying to review feedback, and the case where the author responded to (AI or
-human) review feedback and you are the reviewer claryfing your point.
+human) review feedback and you are the reviewer clarifying your point. The only
+exception is closing a comment that has been addressed with a reply of just
+"Ack" or "Done", exactly as a person would by pressing the button of the same
+name in the Gerrit web interface. This is preferred over resolving the comment
+without a reply.
 
 * It is permissible for human patch authors to close AI comments with few words
 and no detailed explanation if they make no sense or otherwise feel

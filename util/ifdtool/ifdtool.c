@@ -8,6 +8,7 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <stddef.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <commonlib/helpers.h>
@@ -1784,20 +1785,30 @@ static void disable_gpr0(const char *filename, char *image, int size)
  *   |              |              |-> FITC
  *   |              |              |     | -> FITC Offset
  *   |              |              |     | -> FITC Length
+ *
+ * avail is the number of bytes in the image after the FPT header.
  */
-static int parse_fitc_table(struct cse_fpt *fpt, uint32_t *offset,
+static int parse_fitc_table(struct cse_fpt *fpt, int avail, uint32_t *offset,
 		 size_t *size)
 {
 	size_t num_part_header = fpt->count;
-	/* Move to the next structure which is FPT sub-partition entries */
-	struct cse_fpt_sub_part *fpt_sub_part = (struct cse_fpt_sub_part *)(fpt + 1);
+	/* The sub-partition entries follow the FPT header. */
+	const char *entries = (const char *)(fpt + 1);
 	for (size_t index = 0; index < num_part_header; index++) {
+		const size_t entry_off = index * sizeof(struct cse_fpt_sub_part);
+		/* Only read the fields of the entry that are within the image. */
+		if (!in_image(entry_off, offsetof(struct cse_fpt_sub_part, reserved_1), avail))
+			return -1;
+		const struct cse_fpt_sub_part *fpt_sub_part =
+			(const struct cse_fpt_sub_part *)(entries + entry_off);
 		if (!strncmp(fpt_sub_part->signature, "FITC", 4)) {
+			if (!in_image(entry_off, offsetof(struct cse_fpt_sub_part, reserved_2),
+				      avail))
+				return -1;
 			*offset = fpt_sub_part->offset;
 			*size = fpt_sub_part->length;
 			return 0;
 		}
-		fpt_sub_part++;
 	}
 
 	return -1;
@@ -1838,6 +1849,14 @@ static int calculate_gpr0_range(char *image, int size,
 	}
 	uint32_t data_part_offset = *(const uint32_t *)(image + data_part_offset_off);
 
+	/* The FPT has to be within the ME region. */
+	if (data_part_offset > (uint32_t)region.size ||
+	    sizeof(struct cse_fpt) > (uint32_t)region.size - data_part_offset) {
+		fprintf(stderr, "FPT offset 0x%x is outside the %s region\n",
+			data_part_offset, region_name(REGION_ME));
+		return -1;
+	}
+
 	/* Start reading the CSE Data Partition Table, also known as FPT */
 	uint32_t data_part_start = data_part_offset + cse_region_start;
 	if (!in_image(data_part_start, sizeof(struct cse_fpt), size)) {
@@ -1846,6 +1865,7 @@ static int calculate_gpr0_range(char *image, int size,
 		return -1;
 	}
 	struct cse_fpt *fpt = (struct cse_fpt *)(image + data_part_start);
+	const int avail = size - data_part_start - sizeof(*fpt);
 
 	uint32_t fitc_region_start = 0;
 	size_t fitc_region_size = 0;
@@ -1853,7 +1873,7 @@ static int calculate_gpr0_range(char *image, int size,
 	 * FPT holds entry for own FPT data structure also bunch of sub-partitions.
 	 * `FITC` is one of such sub-partition entry.
 	 */
-	if (parse_fitc_table(fpt, &fitc_region_start, &fitc_region_size) < 0) {
+	if (parse_fitc_table(fpt, avail, &fitc_region_start, &fitc_region_size) < 0) {
 		fprintf(stderr, "Unable to find FITC entry\n");
 		return -1;
 	}

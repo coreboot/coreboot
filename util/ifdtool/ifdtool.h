@@ -213,7 +213,7 @@ struct region_name {
 	const char *fmapname;
 };
 
-struct cse_fpt {
+struct __packed cse_fpt {
 	const char signature[4];
 	uint32_t count;
 	uint8_t header_version;
@@ -223,7 +223,7 @@ struct cse_fpt {
 	uint8_t reserved[20];
 };
 
-struct cse_fpt_sub_part {
+struct __packed cse_fpt_sub_part {
 	const char signature[4];
 	uint32_t reserved_1;
 	uint32_t offset;

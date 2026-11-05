@@ -98,6 +98,7 @@ static void display_logo(enum lb_fb_orientation orientation, uintptr_t fb_addr,
 		.panel_orientation = orientation,
 		.halignment = FW_SPLASH_HALIGNMENT_CENTER,
 		.valignment = FW_SPLASH_VALIGNMENT_CENTER,
+		.logo_bottom_margin = 200,
 	};
 	render_logo_to_framebuffer(&config);
 

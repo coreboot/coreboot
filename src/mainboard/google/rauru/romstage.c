@@ -2,7 +2,6 @@
 
 #include <arch/stages.h>
 #include <soc/clkbuf_ctl.h>
-#include <soc/dvfs.h>
 #include <soc/dvfsrc.h>
 #include <soc/emi.h>
 #include <soc/irq2axi.h>
@@ -53,6 +52,5 @@ void platform_romstage_main(void)
 		mtk_pcie_deassert_perst();
 	mtk_dram_init();
 	modem_power_down();
-	dvfs_init();
 	thermal_init();
 }

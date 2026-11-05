@@ -89,7 +89,7 @@ const struct mb_cfg *variant_memory_params(void)
 	 * GPP_D08 Low -> use LGA RAM
 	 * GPP_D08 High  -> use board RAM
 	 */
-	if (gpio_get(GPP_D08)) {
+	if (gpio_get(GPP_B08)) {
 		return &lp5_mem_config;
 	}
 	return &lp5_mem_lga_config;
@@ -99,16 +99,16 @@ int variant_memory_sku(void)
 {
 	/*
 	 * Memory configuration board straps
-	 * HW_ID0	GPP_E20
-	 * HW_ID1	GPP_E19
-	 * HW_ID2	GPP_D06
-	 * HW_ID3	GPP_D05
+	 * HW_ID0	GPP_H23
+	 * HW_ID1	GPP_H24
+	 * HW_ID2	GPP_B06
+	 * HW_ID3	GPP_B08
 	 */
 	gpio_t spd_gpios[] = {
-		GPP_E20,
-		GPP_E19,
-		GPP_D06,
-		GPP_D05,
+		GPP_H23,
+		GPP_H24,
+		GPP_B06,
+		GPP_B08,
 	};
 
 	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
@@ -128,7 +128,7 @@ void variant_update_soc_memory_init_params(FSPM_UPD *memupd)
 	 * GPP_D08 High -> keep baseboard settings (up to 7467 MT/s)
 	 * GPP_D08 Low  -> limit max DRAM speed to 6400 MT/s
 	 */
-	if (gpio_get(GPP_D08))
+	if (gpio_get(GPP_B08))
 		return;
 
 	/*

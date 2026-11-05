@@ -170,4 +170,15 @@ if ! grep -qi '^[[:space:]]*Signed-off-by:.\+<.\+@.\+>' "$MSG"; then
 	printf "\nError: No Signed-off-by line in the commit message.\n"
 	exit 1
 fi
+
+# The hook is also installed in 3rdparty/ submodules, which lack util/lint.
+AI_LINT=util/lint/lint-extended-033-ai-attribution
+if [ -x "$AI_LINT" ]; then
+	AI_LINES=$("$AI_LINT" "$MSG")
+	if [ -n "$AI_LINES" ]; then
+		printf "\nError: %s\n" "$AI_LINES"
+		printf "See Documentation/contributing/gerrit_guidelines.md#ai-generated-contributions\n"
+		exit 1
+	fi
+fi
 add_ChangeId

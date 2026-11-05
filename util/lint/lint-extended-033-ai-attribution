@@ -1,0 +1,65 @@
+#!/usr/bin/env sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# DESCR: Check for AI tool attribution lines in the latest commit message
+#
+# Usage: lint-extended-033-ai-attribution [commit-message-file]
+#
+# Without an argument, this checks the message of the HEAD commit. This is
+# an extended check not because it is slow, but because lint-stable runs
+# from the pre-commit hook, before the new commit message exists, so HEAD
+# would still be the previous commit. lint-extended only runs in Jenkins,
+# where HEAD is the commit under review.
+#
+# To catch the problem while committing, the commit-msg hook
+# (util/gitconfig/commit-msg) calls this script with the path of the
+# message being committed.
+
+
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+MSG_FILE="$1"
+
+if [ -z "${MSG_FILE}" ] && [ "${IN_GIT_TREE}" -eq 0 ]; then
+	exit 0
+fi
+
+# Names of AI tools and models, and the addresses their tools use. Vendors
+# are only matched by noreply address so that their employees can still be
+# credited as co-authors.
+AI_NAMES='\b(antigravity|claude|chatgpt|gpt-?[0-9]|codex|copilot|gemini|aider|cursor ?agent|cursor\.com|windsurf|codeium|devin-ai|tabnine|codewhisperer|opencode|qwen|deepseek|mistral|llama|grok|noreply@(anthropic|openai|google)\.com)\b'
+
+# Trailers that only exist to credit AI tools
+AI_TRAILERS='^[[:space:]]*(assisted|generated|ai-assisted|ai-generated|co-generated)-by:'
+
+# Co-author trailers are fine for humans, but not for AI tools
+COAUTHOR_TRAILERS='^[[:space:]]*co-(authored|developed)-by:.*'
+
+# Lines like "Generated with [Claude Code](...)", possibly after an emoji
+GENERATED_LINES='^[^[:alnum:]]*generated (with|by|using) .*'
+
+get_message() {
+	if [ -n "${MSG_FILE}" ]; then
+		# Drop what git strips after the commit-msg hook: comment
+		# lines and the diff below the scissors line of
+		# `git commit --verbose`.
+		sed -e '/^# -* >8 -*$/,$d' -e '/^diff --git /,$d' \
+			-e '/^#/d' "${MSG_FILE}"
+	else
+		${GIT} log -n 1 --format=%B
+	fi
+}
+
+get_message | grep -iE \
+	-e "${AI_TRAILERS}" \
+	-e "${COAUTHOR_TRAILERS}${AI_NAMES}" \
+	-e "${GENERATED_LINES}${AI_NAMES}" |
+while IFS= read -r line; do
+	printf 'AI tool attribution in commit message; please remove: %s\n' "${line}"
+done

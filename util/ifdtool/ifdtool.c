@@ -1255,6 +1255,11 @@ static void write_regions(char *image, int size)
 		dump_region(i, frba);
 		if (region.size > 0) {
 			int region_fd;
+			if (!in_image(region.base, region.size, size)) {
+				fprintf(stderr, "Region %s is outside the image\n",
+					region_name(i));
+				exit(EXIT_FAILURE);
+			}
 			region_fd = open(region_names[i].filename,
 					 O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
 					 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
@@ -2069,17 +2074,18 @@ static void inject_region(const char *filename, char *image, int size,
 		perror("Could not stat file");
 		exit(EXIT_FAILURE);
 	}
-	int region_size = buf.st_size;
+	printf("File %s is %lld bytes\n", region_fname, (long long)buf.st_size);
 
-	printf("File %s is %d bytes\n", region_fname, region_size);
-
-	if (region_size > region.size) {
-		fprintf(stderr, "Region %s is %d(0x%x) bytes. File is %d(0x%x)"
+	/* Compare before truncating the size to int. */
+	if (buf.st_size > region.size) {
+		fprintf(stderr, "Region %s is %d(0x%x) bytes. File is %lld(0x%llx)"
 				" bytes. Not injecting.\n",
 				region_name(region_type), region.size,
-				region.size, region_size, region_size);
+				region.size, (long long)buf.st_size,
+				(unsigned long long)buf.st_size);
 		exit(EXIT_FAILURE);
 	}
+	int region_size = buf.st_size;
 
 	int offset = 0;
 	if ((region_type == 1) && (region_size < region.size)) {
@@ -2088,7 +2094,6 @@ static void inject_region(const char *filename, char *image, int size,
 				region_name(region_type), region.size,
 				region.size, region_size, region_size);
 		offset = region.size - region_size;
-		memset(image + region.base, 0xff, offset);
 	}
 
 	if (size < region.base + offset + region_size) {
@@ -2096,6 +2101,9 @@ static void inject_region(const char *filename, char *image, int size,
 			size, region.base + offset + region_size);
 		exit(EXIT_FAILURE);
 	}
+
+	if (offset)
+		memset(image + region.base, 0xff, offset);
 
 	if (read(region_fd, image + region.base + offset, region_size) != region_size) {
 		perror("Could not read file");

@@ -40,6 +40,12 @@ ati_rom_acpi_fill_vfct(struct device *device, acpi_vfct_image_hdr_t *header)
 		return 0;
 	}
 
+	const size_t rom_size = pci_rom_size(rom);
+	if (!rom_size) {
+		printk(BIOS_ERR, "%s: ROM has zero length!\n", __func__);
+		return 0;
+	}
+
 	if (header) {
 		printk(BIOS_DEBUG, "           Copying VBIOS image from %p\n", rom);
 
@@ -48,7 +54,7 @@ ati_rom_acpi_fill_vfct(struct device *device, acpi_vfct_image_hdr_t *header)
 		header->PCIBus = device->upstream->secondary;
 		header->PCIFunction = PCI_FUNC(device->path.pci.devfn);
 		header->PCIDevice = PCI_SLOT(device->path.pci.devfn);
-		header->ImageLength = rom->size * 512;
+		header->ImageLength = rom_size;
 		memcpy((void *)header->VbiosContent, rom, header->ImageLength);
 
 		if (!device->pci_vga_option_rom) {
@@ -56,10 +62,8 @@ ati_rom_acpi_fill_vfct(struct device *device, acpi_vfct_image_hdr_t *header)
 			device->pci_vga_option_rom = (struct rom_header *)header->VbiosContent;
 		}
 	}
-	if (rom->size > 0)
-		return sizeof(acpi_vfct_image_hdr_t) + rom->size * 512;
 
-	return 0;
+	return sizeof(acpi_vfct_image_hdr_t) + rom_size;
 }
 
 /*

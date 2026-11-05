@@ -23,7 +23,6 @@ romstage-y += clkbuf_ctl.c
 romstage-y += ../common/cpu_id.c ../common/cpu_segment_id.c
 romstage-y += ../common/dram_init.c
 romstage-y += ../common/dramc_param.c
-romstage-y += dvfs.c
 romstage-y += ../common/emi.c
 romstage-y += ../common/memory.c ../common/memory_test.c ../common/memory_type.c
 romstage-y += ../common/mmu_operations.c

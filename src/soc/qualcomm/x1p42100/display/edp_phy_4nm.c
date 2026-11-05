@@ -8,6 +8,41 @@
 #include <timer.h>
 #include <soc/display/mdssreg.h>
 
+struct edp_phy_pll_rate_params {
+	uint32_t link_rate;
+	u8 hsclk_sel;
+	u8 phy_vco_div;
+	u8 dec_start_mode0;
+	u8 div_frac_start2_mode0;
+	u8 div_frac_start3_mode0;
+	u8 lock_cmp1_mode0;
+	u8 lock_cmp2_mode0;
+	u8 bin_vcocal_cmp_code1_mode0;
+	u8 bin_vcocal_cmp_code2_mode0;
+};
+
+static const struct edp_phy_pll_rate_params edp_phy_pll_rate_params[] = {
+	{162000, 0x05, 1, 0x34, 0xC0, 0x0B, 0x37, 0x04, 0x71, 0x0C},
+	{216000, 0x04, 1, 0x38, 0x00, 0x04, 0x9F, 0x05, 0x46, 0x0D},
+	{243000, 0x04, 1, 0x3F, 0x80, 0x04, 0x53, 0x06, 0xEE, 0x0E},
+	{270000, 0x03, 1, 0x34, 0xC0, 0x0B, 0x07, 0x07, 0x71, 0x0C},
+	{324000, 0x03, 2, 0x3F, 0x80, 0x04, 0x6F, 0x08, 0xEE, 0x0E},
+	{432000, 0x01, 2, 0x38, 0x00, 0x04, 0x3F, 0x0B, 0x46, 0x0D},
+	{540000, 0x01, 2, 0x46, 0x00, 0x05, 0x0F, 0x0E, 0x97, 0x10},
+	{594000, 0x01, 2, 0x4D, 0x80, 0x05, 0x77, 0x0F, 0x40, 0x12},
+	{810000, 0x00, 0, 0x34, 0xC0, 0x0B, 0x17, 0x15, 0x71, 0x0C},
+};
+
+static const struct edp_phy_pll_rate_params *edp_phy_pll_get_rate_params(uint32_t link_rate)
+{
+	for (size_t i = 0; i < ARRAY_SIZE(edp_phy_pll_rate_params); i++)
+		if (edp_phy_pll_rate_params[i].link_rate == link_rate)
+			return &edp_phy_pll_rate_params[i];
+
+	printk(BIOS_ERR, "%s: Invalid link rate. rate = %u\n", __func__, link_rate);
+	return NULL;
+}
+
 static void edp_phy_ssc_en(bool en)
 {
 	if (en) {
@@ -209,6 +244,8 @@ void edp_phy_config(u8 v_level, u8 p_level, uint32_t link_rate)
 
 static void edp_phy_pll_vco_init(uint32_t link_rate)
 {
+	const struct edp_phy_pll_rate_params *p = edp_phy_pll_get_rate_params(link_rate);
+
 	edp_phy_ssc_en(false);
 
 	write32(&edp_phy_pll->qserdes_com_svs_mode_clk_sel, 0x01);
@@ -233,56 +270,21 @@ static void edp_phy_pll_vco_init(uint32_t link_rate)
 	write32(&edp_phy_pll->qserdes_com_bias_en_clkbuflr_en, 0x17);
 	write32(&edp_phy_pll->qserdes_com_core_clk_en, 0x0f);
 
-	if (link_rate == 810000) {
-		printk(BIOS_DEBUG, "%s: link rate %u\n", __func__, link_rate);
-		write32(&edp_phy_pll->qserdes_com_hsclk_sel, 0x00);
-		write32(&edp_phy_pll->qserdes_com_dec_start_mode0, 0x34);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start1_mode0, 0x00);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start2_mode0, 0xC0);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start3_mode0, 0x0B);
-		write32(&edp_phy_pll->qserdes_com_lock_cmp1_mode0, 0x17);
-		write32(&edp_phy_pll->qserdes_com_lock_cmp2_mode0, 0x15);
+	if (!p)
+		return;
 
-		write32(&edp_phy_pll->qserdes_com_bin_vcocal_cmp_code1_mode0, 0x71);
-		write32(&edp_phy_pll->qserdes_com_bin_vcocal_cmp_code2_mode0, 0x0C);
+	printk(BIOS_DEBUG, "%s: link rate %u\n", __func__, link_rate);
+	write32(&edp_phy_pll->qserdes_com_hsclk_sel, p->hsclk_sel);
+	write32(&edp_phy_pll->qserdes_com_dec_start_mode0, p->dec_start_mode0);
+	write32(&edp_phy_pll->qserdes_com_div_frac_start2_mode0, p->div_frac_start2_mode0);
+	write32(&edp_phy_pll->qserdes_com_div_frac_start3_mode0, p->div_frac_start3_mode0);
+	write32(&edp_phy_pll->qserdes_com_lock_cmp1_mode0, p->lock_cmp1_mode0);
+	write32(&edp_phy_pll->qserdes_com_lock_cmp2_mode0, p->lock_cmp2_mode0);
 
-	} else if (link_rate == 540000) {
-		printk(BIOS_DEBUG, "%s: link rate %u\n", __func__, link_rate);
-		write32(&edp_phy_pll->qserdes_com_hsclk_sel, 0x01);
-		write32(&edp_phy_pll->qserdes_com_dec_start_mode0, 0x46);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start1_mode0, 0x00);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start2_mode0, 0x00);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start3_mode0, 0x05);
-		write32(&edp_phy_pll->qserdes_com_lock_cmp1_mode0, 0x0F);
-		write32(&edp_phy_pll->qserdes_com_lock_cmp2_mode0, 0x0E);
-
-		write32(&edp_phy_pll->qserdes_com_bin_vcocal_cmp_code1_mode0, 0x97);
-		write32(&edp_phy_pll->qserdes_com_bin_vcocal_cmp_code2_mode0, 0x10);
-	} else if (link_rate == 270000) {
-		printk(BIOS_DEBUG, "%s: link rate %u\n", __func__, link_rate);
-		write32(&edp_phy_pll->qserdes_com_hsclk_sel, 0x03);
-		write32(&edp_phy_pll->qserdes_com_dec_start_mode0, 0x34);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start1_mode0, 0x00);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start2_mode0, 0xC0);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start3_mode0, 0x0B);
-		write32(&edp_phy_pll->qserdes_com_lock_cmp1_mode0, 0x07);
-		write32(&edp_phy_pll->qserdes_com_lock_cmp2_mode0, 0x07);
-
-		write32(&edp_phy_pll->qserdes_com_bin_vcocal_cmp_code1_mode0, 0x71);
-		write32(&edp_phy_pll->qserdes_com_bin_vcocal_cmp_code2_mode0, 0x0C);
-	} else if (link_rate == 162000) {
-		printk(BIOS_DEBUG, "%s: link rate %u\n", __func__, link_rate);
-		write32(&edp_phy_pll->qserdes_com_hsclk_sel, 0x05);
-		write32(&edp_phy_pll->qserdes_com_dec_start_mode0, 0x34);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start1_mode0, 0x00);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start2_mode0, 0xC0);
-		write32(&edp_phy_pll->qserdes_com_div_frac_start3_mode0, 0x0B);
-		write32(&edp_phy_pll->qserdes_com_lock_cmp1_mode0, 0x37);
-		write32(&edp_phy_pll->qserdes_com_lock_cmp2_mode0, 0x04);
-
-		write32(&edp_phy_pll->qserdes_com_bin_vcocal_cmp_code1_mode0, 0x71);
-		write32(&edp_phy_pll->qserdes_com_bin_vcocal_cmp_code2_mode0, 0x0C);
-	}
+	write32(&edp_phy_pll->qserdes_com_bin_vcocal_cmp_code1_mode0,
+		p->bin_vcocal_cmp_code1_mode0);
+	write32(&edp_phy_pll->qserdes_com_bin_vcocal_cmp_code2_mode0,
+		p->bin_vcocal_cmp_code2_mode0);
 }
 
 static void edp_phy_lanes_init(void)
@@ -315,34 +317,9 @@ static void edp_lanes_configure(void)
 
 static int edp_phy_pll_vco_configure(uint32_t link_rate, uint32_t lane_count)
 {
-	u32 phy_vco_div = 0;
+	const struct edp_phy_pll_rate_params *p = edp_phy_pll_get_rate_params(link_rate);
 
-	switch (link_rate) {
-	case 162000:
-		phy_vco_div = 1;
-		break;
-	case 216000:
-	case 243000:
-	case 270000:
-		phy_vco_div = 1;
-		break;
-	case 324000:
-	case 432000:
-	case 540000:
-		phy_vco_div = 2;
-		break;
-	case 594000:
-		phy_vco_div = 2;
-		break;
-	case 810000:
-		phy_vco_div = 0;
-		break;
-	default:
-		printk(BIOS_ERR, "%s: Invalid link rate. rate = %u\n", __func__, link_rate);
-		break;
-	}
-
-	write32(&edp_phy->vco_div, phy_vco_div);
+	write32(&edp_phy->vco_div, p ? p->phy_vco_div : 0);
 	write32(&edp_phy->cfg, 0x01);
 	write32(&edp_phy->cfg, 0x05);
 	write32(&edp_phy->cfg, 0x01);

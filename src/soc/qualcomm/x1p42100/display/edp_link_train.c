@@ -325,12 +325,27 @@ static int edp_link_rate_down_shift(struct edp_ctrl *ctrl, uint8_t *dpcd)
 
 	switch (link_rate) {
 	case 810000:
+		link_rate = 594000;
+		break;
+	case 594000:
 		link_rate = 540000;
 		break;
 	case 540000:
+		link_rate = 432000;
+		break;
+	case 432000:
+		link_rate = 324000;
+		break;
+	case 324000:
 		link_rate = 270000;
 		break;
 	case 270000:
+		link_rate = 243000;
+		break;
+	case 243000:
+		link_rate = 216000;
+		break;
+	case 216000:
 		link_rate = 162000;
 		break;
 	case 162000:
@@ -504,27 +519,32 @@ static int edp_do_link_train(struct edp_ctrl *ctrl, uint8_t *dpcd)
 	return ret;
 }
 
+/*
+ * Pixel-mux divider for the main-link clock, derived from the eDP PHY N4 HPG
+ * frequency-planning table (vco_divided_clk column): 6 for 8.1G, 4 for the
+ * HBR2-class rates (3.24/4.32/5.4/5.94G), 2 for the RBR/HBR-class rates
+ * (1.62/2.16/2.43/2.7G).
+ */
+static uint32_t edp_get_pixel_div(uint32_t link_rate_khz)
+{
+	if (link_rate_khz == 810000)
+		return 6;
+	if (link_rate_khz >= 324000)
+		return 4;
+	return 2;
+}
+
 static int edp_ctrl_pixel_clock_dividers(struct edp_ctrl *ctrl, uint32_t *pixel_m,
 					 uint32_t *pixel_n)
 {
-	uint32_t pixel_div = 0, dispcc_input_rate;
+	uint32_t pixel_div, dispcc_input_rate;
 	unsigned long den, num;
-	uint8_t rate = (ctrl->link_rate);
 
 	uint32_t stream_rate_khz =
 		(ctrl->pixel_rate) /
 		2; /* Databus Widen, 2 Pixel / Pixels per clock settings in edp_do_link_train() */
 
-	if (rate == DP_LINK_BW_8_1)
-		pixel_div = 6;
-	else if (rate == DP_LINK_BW_1_62 || rate == DP_LINK_BW_2_7)
-		pixel_div = 2;
-	else if (rate == DP_LINK_BW_5_4)
-		pixel_div = 4;
-	else {
-		printk(BIOS_ERR, "Invalid pixel mux divider\n");
-		return -1;
-	}
+	pixel_div = edp_get_pixel_div(ctrl->link_rate_khz);
 
 	dispcc_input_rate = (ctrl->link_rate_khz * 10) / pixel_div;
 
@@ -625,7 +645,7 @@ static int edp_ctrl_config_msa(struct edp_ctrl *ctrl)
 	uint32_t pixel_m, pixel_n;
 	uint32_t mvid, nvid;
 	const u32 nvid_fixed = 0x8000;
-	uint8_t rate = ctrl->link_rate;
+	uint32_t pixel_div = edp_get_pixel_div(ctrl->link_rate_khz);
 
 	if (edp_ctrl_pixel_clock_dividers(ctrl, &pixel_m, &pixel_n) < 0)
 		return -1;
@@ -646,11 +666,8 @@ static int edp_ctrl_config_msa(struct edp_ctrl *ctrl)
 	mvid = mvid * 2; /* Databus Widen, 2 Pixel / Pixels clock */
 
 	/* Link Rate scaling */
-	if (rate == DP_LINK_BW_5_4)
-		nvid *= 2;
-
-	if (rate == DP_LINK_BW_8_1)
-		nvid *= 3;
+	if (pixel_div > 2)
+		nvid *= pixel_div / 2;
 
 	printk(BIOS_INFO, "mvid=0x%x, nvid=0x%x\n", mvid, nvid);
 

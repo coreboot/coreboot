@@ -70,7 +70,7 @@ static void optimise_comp_offset(struct sysinfo *ctrl, const enum opt_param optp
 	const uint8_t reserved_codes = 3;
 	const bool update_ctrl = true;
 
-	uint8_t param;
+	enum global_comp_offset param;
 	uint8_t current_comp;
 	int32_t min_comp_vref;
 	int32_t max_comp_vref;
@@ -164,7 +164,7 @@ static void optimise_comp_offset(struct sysinfo *ctrl, const enum opt_param optp
 			new_comp_vref = dq_scomp_pc | new_comp_vref;
 		}
 		if (!done) {
-			new_comp = update_comp_global_offset(ctrl, param, new_comp_vref, 0);
+			new_comp = update_comp_global_offset(ctrl, param, new_comp_vref, false);
 			const uint8_t curr_delta = ABS(current_comp + avg_offset - new_comp);
 			if (curr_delta >= start_delta) {
 				done = true;

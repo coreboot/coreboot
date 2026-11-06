@@ -829,7 +829,7 @@ uint32_t update_comp_global_offset(
 	struct sysinfo *ctrl,
 	const enum global_comp_offset param,
 	const int32_t offset,
-	const uint8_t update_ctrl);
+	const bool update_ctrl);
 
 void update_opt_param_offset(
 	struct sysinfo *ctrl,

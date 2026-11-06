@@ -826,6 +826,40 @@ static void dump_fcba(const struct fcba *fcba, const struct fpsba *fpsba)
 	}
 }
 
+/*
+ * PCH strap word holding the CSME HAP (bit 16) and DCI enable (bit 17)
+ * straps. On ADL its location depends on the PCH, which is identified by
+ * the number of PCH strap words (PSL).
+ */
+struct csme_strap_word {
+	int platform;
+	unsigned int psl;	/* 0 matches any */
+	unsigned int word;
+};
+
+static const struct csme_strap_word csme_strap_words[] = {
+	{ PLATFORM_SKLKBL, 0,   0 },
+	{ PLATFORM_ADL,    70,  0x7c / 4 },	/* ADP-P, ADP-N */
+	{ PLATFORM_ADL,    114, 0xd0 / 4 },	/* ADP-S A0 */
+	{ PLATFORM_ADL,    115, 0xdc / 4 },	/* ADP-S B0, RPL-S */
+};
+
+#define CSME_STRAP_HAP		16
+
+/* Return the PCH strap word holding the CSME straps, -1 if not known */
+static int csme_strap_word(const struct fdbar *fdb)
+{
+	unsigned int psl = (fdb->flmap1 >> 24) & 0xff;
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(csme_strap_words); i++) {
+		const struct csme_strap_word *w = &csme_strap_words[i];
+		if (w->platform == platform && (!w->psl || w->psl == psl))
+			return w->word;
+	}
+	return -1;
+}
+
 static void dump_fpsba(const struct fdbar *fdb, const struct fpsba *fpsba)
 {
 	unsigned int i;
@@ -837,8 +871,10 @@ static void dump_fpsba(const struct fdbar *fdb, const struct fpsba *fpsba)
 		printf("PCHSTRP%-3u: 0x%08x\n", i, fpsba->pchstrp[i]);
 
 	if (ifd_version >= IFD_VERSION_2) {
-		printf("HAP bit is %sset\n",
-		       fpsba->pchstrp[0] & (1 << 16) ? "" : "not ");
+		int word = csme_strap_word(fdb);
+		if (word >= 0)
+			printf("HAP bit is %sset\n",
+			       fpsba->pchstrp[word] & (1u << CSME_STRAP_HAP) ? "" : "not ");
 	} else if (chipset >= CHIPSET_ICH8 && chipset <= CHIPSET_ICH10) {
 		printf("ICH_MeDisable bit is %sset\n",
 		       fpsba->pchstrp[0] & 1 ? "" : "not ");
@@ -1918,17 +1954,29 @@ static void set_pchstrap(struct fpsba *fpsba, const struct fdbar *fdb, const int
 	fpsba->pchstrp[strap] = value;
 }
 
+/* Set/clear the specified PCH strap */
+static void pchstrap_set(struct fpsba *fpsba, unsigned word, unsigned bit, bool val)
+{
+	if (val)
+		fpsba->pchstrp[word] |= (1u << bit);
+	else
+		fpsba->pchstrp[word] &= ~(1u << bit);
+}
+
 /* Set the AltMeDisable (or HAP for >= IFD_VERSION_2) */
-static void fpsba_set_altmedisable(struct fpsba *fpsba, struct fmsba *fmsba, bool altmedisable)
+static void fpsba_set_altmedisable(const struct fdbar *fdb, struct fpsba *fpsba,
+				   struct fmsba *fmsba, bool altmedisable)
 {
 	if (ifd_version >= IFD_VERSION_2) {
+		int word = csme_strap_word(fdb);
+		if (word < 0) {
+			fprintf(stderr, "HAP bit location not known for platform\n");
+			exit(EXIT_FAILURE);
+		}
 		printf("%sting the HAP bit to %s Intel ME...\n",
 			altmedisable ? "Set" : "Unset",
 			altmedisable ? "disable" : "enable");
-		if (altmedisable)
-			fpsba->pchstrp[0] |= (1 << 16);
-		else
-			fpsba->pchstrp[0] &= ~(1 << 16);
+		pchstrap_set(fpsba, word, CSME_STRAP_HAP, altmedisable);
 	} else {
 		if (chipset >= CHIPSET_ICH8 && chipset <= CHIPSET_ICH10) {
 			printf("%sting the ICH_MeDisable, MCH_MeDisable, "
@@ -2801,7 +2849,7 @@ int main(int argc, char *argv[])
 	if (mode_altmedisable) {
 		struct fpsba *fpsba = find_fpsba(image, size);
 		struct fmsba *fmsba = find_fmsba(image, size);
-		fpsba_set_altmedisable(fpsba, fmsba, altmedisable);
+		fpsba_set_altmedisable(find_fd(image, size), fpsba, fmsba, altmedisable);
 		write_image(new_filename, image, size);
 	}
 

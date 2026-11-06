@@ -845,6 +845,7 @@ static const struct csme_strap_word csme_strap_words[] = {
 };
 
 #define CSME_STRAP_HAP		16
+#define CSME_STRAP_DCI		17
 
 /* Return the PCH strap word holding the CSME straps, -1 if not known */
 static int csme_strap_word(const struct fdbar *fdb)
@@ -872,9 +873,12 @@ static void dump_fpsba(const struct fdbar *fdb, const struct fpsba *fpsba)
 
 	if (ifd_version >= IFD_VERSION_2) {
 		int word = csme_strap_word(fdb);
-		if (word >= 0)
+		if (word >= 0) {
 			printf("HAP bit is %sset\n",
 			       fpsba->pchstrp[word] & (1u << CSME_STRAP_HAP) ? "" : "not ");
+			printf("DCI bit is %sset\n",
+			       fpsba->pchstrp[word] & (1u << CSME_STRAP_DCI) ? "" : "not ");
+		}
 	} else if (chipset >= CHIPSET_ICH8 && chipset <= CHIPSET_ICH10) {
 		printf("ICH_MeDisable bit is %sset\n",
 		       fpsba->pchstrp[0] & 1 ? "" : "not ");
@@ -2007,6 +2011,17 @@ static void fpsba_set_altmedisable(const struct fdbar *fdb, struct fpsba *fpsba,
 	}
 }
 
+static void fpsba_set_dcienable(const struct fdbar *fdb, struct fpsba *fpsba, bool dcienable)
+{
+	int word = csme_strap_word(fdb);
+	if (word < 0) {
+		fprintf(stderr, "DCI enable bit location not known for platform\n");
+		exit(EXIT_FAILURE);
+	}
+	printf("%sting the DCI enable bit...\n", dcienable ? "Set" : "Unset");
+	pchstrap_set(fpsba, word, CSME_STRAP_DCI, dcienable);
+}
+
 static void inject_region(const char *filename, char *image, int size,
 			  unsigned int region_type, const char *region_fname)
 {
@@ -2314,6 +2329,7 @@ static void print_usage(const char *name)
 	       "   -c | --gpr0-status                    Checking GPR0 (Global Protected Range) register status\n"
 	       "   -M | --altmedisable <0|1>             Set the MeDisable and AltMeDisable (or HAP for skylake or newer platform)\n"
 	       "                                         bits to disable ME\n"
+	       "   --dcienable <0|1>                     Set the DCI enable bit\n"
 	       "   -p | --platform                       Add platform-specific quirks\n"
 	       "                                         adl    - Alder Lake\n"
 	       "                                         aplk   - Apollo Lake\n"
@@ -2343,6 +2359,11 @@ static void print_usage(const char *name)
 	       "\n");
 }
 
+/* getopt_long() values of long-only options */
+enum {
+	LONGOPT_DCIENABLE = 0x100,
+};
+
 int main(int argc, char *argv[])
 {
 	int opt, option_index = 0;
@@ -2350,6 +2371,7 @@ int main(int argc, char *argv[])
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0, mode_validate = 0;
 	int mode_layout = 0, mode_newlayout = 0, mode_density = 0, mode_setstrap = 0;
 	int mode_read = 0, mode_altmedisable = 0, altmedisable = 0, mode_fmap_template = 0;
+	int mode_dcienable = 0, dcienable = 0;
 	int mode_gpr0_disable = 0, mode_gpr0_enable = 0, mode_gpr0_status = 0;
 	int mode_settopswapsize = 0;
 	char *region_type_string = NULL, *region_fname = NULL, *layout_fname = NULL;
@@ -2372,6 +2394,7 @@ int main(int argc, char *argv[])
 		{"density", 1, NULL, 'D'},
 		{"chip", 1, NULL, 'C'},
 		{"altmedisable", 1, NULL, 'M'},
+		{"dcienable", 1, NULL, LONGOPT_DCIENABLE},
 		{"em100", 0, NULL, 'e'},
 		{"lock", 0, NULL, 'l'},
 		{"read", 0, NULL, 'r'},
@@ -2650,6 +2673,15 @@ int main(int argc, char *argv[])
 			print_version();
 			exit(EXIT_SUCCESS);
 			break;
+		case LONGOPT_DCIENABLE:
+			mode_dcienable = 1;
+			dcienable = strtol(optarg, NULL, 0);
+			if (dcienable > 1) {
+				fprintf(stderr, "error: Illegal value\n");
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
+				exit(EXIT_FAILURE);
+			}
+			break;
 		case 'h':
 		case '?':
 			print_usage(argv[0]);
@@ -2665,7 +2697,7 @@ int main(int argc, char *argv[])
 	if ((mode_dump + mode_layout + mode_fmap_template + mode_extract + mode_inject +
 			mode_setstrap + mode_settopswapsize + mode_newlayout + (mode_spifreq | mode_em100 |
 			mode_unlocked | mode_locked) + mode_altmedisable + mode_validate +
-			(mode_gpr0_disable | mode_gpr0_enable) + mode_gpr0_status) > 1) {
+			(mode_gpr0_disable | mode_gpr0_enable) + mode_gpr0_status + mode_dcienable) > 1) {
 		fprintf(stderr, "You may not specify more than one mode.\n\n");
 		fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 		exit(EXIT_FAILURE);
@@ -2673,7 +2705,7 @@ int main(int argc, char *argv[])
 
 	if ((mode_dump + mode_layout + mode_fmap_template + mode_extract + mode_inject +
 			mode_setstrap + mode_settopswapsize + mode_newlayout + mode_spifreq + mode_em100 +
-			mode_locked + mode_unlocked + mode_density + mode_altmedisable +
+			mode_locked + mode_unlocked + mode_density + mode_altmedisable + mode_dcienable +
 			mode_validate + (mode_gpr0_disable | mode_gpr0_enable) + mode_gpr0_status) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
 		fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
@@ -2850,6 +2882,12 @@ int main(int argc, char *argv[])
 		struct fpsba *fpsba = find_fpsba(image, size);
 		struct fmsba *fmsba = find_fmsba(image, size);
 		fpsba_set_altmedisable(find_fd(image, size), fpsba, fmsba, altmedisable);
+		write_image(new_filename, image, size);
+	}
+
+	if (mode_dcienable) {
+		struct fpsba *fpsba = find_fpsba(image, size);
+		fpsba_set_dcienable(find_fd(image, size), fpsba, dcienable);
 		write_image(new_filename, image, size);
 	}
 

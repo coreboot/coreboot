@@ -424,7 +424,7 @@ config HAVE_CHIPSETINIT_BINARY
 	  Select this option if you want to load the Chipset Initialization binary
 
 config FSP_TYPE_IOT
-	bool
+	bool "Use IoT FSP"
 	default n
 	help
 	  This option allows to select FSP IOT type from 3rdparty/fsp repo

@@ -248,7 +248,7 @@ config CBFS_SIZE
 	default 0x200000
 
 config FSP_TYPE_IOT
-	bool
+	bool "Use IoT FSP"
 	default n
 	help
 	  This option allows to select FSP IOT type from 3rdparty/fsp repo

@@ -1,0 +1,19 @@
+chip northbridge/intel/haswell
+	device domain 0 on
+		subsystemid 0x103c 0x1905 inherit
+		chip southbridge/intel/lynxpoint
+			device pci 1f.0 on
+				chip superio/common
+					device pnp 2e.ff on
+						chip superio/nuvoton/npcd378
+							device pnp 2e.1 on	# Parallel port
+								# global, as set by the vendor firmware
+								irq 0x1a = 0xe0
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end

@@ -5,3 +5,6 @@ config BOARD_HP_PRODESK_600_G1_SFF
 
 config BOARD_HP_ELITEDESK_800_G1_SFF
 	bool "EliteDesk 800 G1 SFF"
+
+config BOARD_HP_Z230_TOWER
+	bool "Z230 Tower Workstation"

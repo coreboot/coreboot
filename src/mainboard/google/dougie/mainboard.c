@@ -95,6 +95,8 @@ static void mainboard_init(struct device *dev)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE4, SE_PROTOCOL_I2C, MIXED);	 /* HDMI bridge I2C */
 	if (CONFIG(MAINBOARD_HAS_KEYBOARD_VIA_I2C))
 		qupv3_se_fw_load_and_init(QUPV3_1_SE1, SE_PROTOCOL_I2C, MIXED); /* KBD I2C */
+	if (CONFIG(MAINBOARD_HAS_AMP_VIA_I2C))
+		qupv3_se_fw_load_and_init(QUPV3_0_SE6, SE_PROTOCOL_I2C, MIXED); /* Amp I2C */
 
 	setup_usb();
 	display_startup();

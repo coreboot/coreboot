@@ -17,6 +17,12 @@ config BOARD_GOOGLE_BANDIT
 
 if BOARD_GOOGLE_DOUGIE_COMMON
 
+config MAINBOARD_HAS_AMP_VIA_I2C
+	bool
+	default n
+	help
+	  Enable this option if your mainboard has an audio amplifier on I2C.
+
 config MAINBOARD_HAS_CHROME_EC
 	bool
 	default n

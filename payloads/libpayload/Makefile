@@ -52,6 +52,7 @@ export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 export KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
 export KCONFIG_SPLITCONFIG := $(obj)/config/
 export KCONFIG_TRISTATE := $(obj)/tristate.conf
+export KCONFIG_RUSTCCFG := $(obj)/lp-config.rustcfg
 export KCONFIG_NEGATIVES := 1
 export KBUILD_KCONFIG := Kconfig
 export CONFIG_ := CONFIG_LP_

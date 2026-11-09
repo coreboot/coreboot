@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+#include "board.h"
 #include <boardid.h>
 #include <console/console.h>
 #include <fw_config.h>
+#include <soc/pcie.h>
 #include <soc/platform_info.h>
 
 void fw_config_mainboard_override(void)
@@ -25,4 +27,19 @@ void fw_config_mainboard_override(void)
 	}
 
 	fw_config_override_field(FW_CONFIG_FIELD(SOC_ID), fw_config_soc_id);
+}
+
+bool mainboard_needs_pcie_init(void)
+{
+#if ENV_RAMSTAGE
+	/* Skip PCIe initialization if boot mode is "low-battery" or "off-mode charging"*/
+	if (is_low_power_boot_with_charger())
+		return false;
+#endif
+
+	if (CONFIG(EC_GOOGLE_CHROMEEC_FW_CONFIG_FROM_UFSC)) {
+		return !(fw_config_probe(FW_CONFIG(STORAGE_TYPE, STORAGE_TYPE_UFS)));
+	}
+
+	return !(CONFIG(MAINBOARD_HAS_UFS));
 }

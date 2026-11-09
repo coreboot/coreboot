@@ -1,5 +1,11 @@
 ## SPDX-License-Identifier: GPL-2.0-only
+# CBI UFSC fields
 fw_config
+	field STORAGE_TYPE 12 14
+		option STORAGE_TYPE_UNKNOWN	0
+		option STORAGE_TYPE_NVME	1
+		option STORAGE_TYPE_UFS		2
+	end
 	field SOC_ID 56 57
 		option HAMOA 0
 		option X1P42100 1

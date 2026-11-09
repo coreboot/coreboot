@@ -35,6 +35,25 @@ struct microcode {
 
 static const struct microcode *ucode;
 
+bool amd_microcode_update_needed(const void *ucode_patch)
+{
+	const struct microcode *m = ucode_patch;
+	uint32_t current_patch_id;
+
+	if (!m)
+		return false;
+
+	current_patch_id = rdmsr(IA32_BIOS_SIGN_ID).lo;
+	if (current_patch_id >= m->patch_id) {
+		printk(BIOS_INFO,
+		       "microcode: current patch id 0x%08x >= CBFS 0x%08x, skipping\n",
+		       current_patch_id, m->patch_id);
+		return false;
+	}
+
+	return true;
+}
+
 /* This function requires the ucode variable to be initialized by amd_load_microcode_from_cbfs()
    and then allocated memory should be freed by the amd_free_microcode(). */
 void amd_apply_microcode_patch(void)
@@ -46,6 +65,9 @@ void amd_apply_microcode_patch(void)
 		printk(BIOS_ERR, "%s: NULL pointer to microcode\n", __func__);
 		return;
 	}
+
+	if (!amd_microcode_update_needed(ucode))
+		return;
 
 	msr.raw = (uintptr_t)ucode;
 

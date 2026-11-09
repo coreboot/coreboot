@@ -287,6 +287,12 @@ static void configure_ccx(void)
 	ucode = amd_microcode_find();
 	if (!ucode) {
 		printk(BIOS_ERR, "OpenSIL: CPU microcode not found\n");
+		ccx_data->CcxInputBlock.CcxLoadUcodePatch = false;
+		return;
+	}
+
+	if (!amd_microcode_update_needed(ucode)) {
+		ccx_data->CcxInputBlock.CcxLoadUcodePatch = false;
 		return;
 	}
 

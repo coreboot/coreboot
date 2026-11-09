@@ -99,6 +99,12 @@ chip soc/intel/pantherlake
 		},
 		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_hcnt = 112,
+				.scl_lcnt = 129,
+				.sda_hold = 45,
+			},
 		},
 	}"
 

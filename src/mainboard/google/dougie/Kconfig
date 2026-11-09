@@ -36,6 +36,12 @@ config MAINBOARD_HAS_GOOGLE_TPM
 	help
 	  Enable this option if your mainboard is equipped with Google TPM.
 
+config MAINBOARD_HAS_KEYBOARD_VIA_I2C
+	bool
+	default n
+	help
+	  Enable this option if your mainboard has a keyboard controller on I2C.
+
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES if MAINBOARD_HAS_CHROME_EC
 	select VBOOT_LID_SWITCH if MAINBOARD_HAS_CHROME_EC

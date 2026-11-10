@@ -19,6 +19,9 @@ enum cb_err psp_fw_bios_get_entry_by_index(const struct psp_dir_region *dir_rdev
 enum cb_err psp_fw_bios_validate_table(const struct region_device *rdev,
 				       const uint32_t offset,
 				       struct psp_dir_region *rdev_hdr);
+bool psp_fw_bios_is_table_pointer(const struct psp_dir_region *dir_rdev,
+				  const union psp_dir_entry *entry,
+				  enum psp_dir_type *next_dir_type);
 
 /* COMBO */
 uint32_t psp_fw_combo_get_entry_count(const struct psp_dir_region *dir_rdev);

@@ -140,3 +140,31 @@ enum cb_err psp_fw_bios_validate_table(const struct region_device *rdev, const u
 	memcpy(rdev_hdr, &ret, sizeof(struct psp_dir_region));
 	return CB_SUCCESS;
 }
+
+/*
+ * Check if the BIOS directory entry at the given index is a pointer to another table.
+ * @param dir_rdev	PSP directory region
+ * @param entry		PSP directory entry to check
+ * @param next_dir_type	Pointer to store the type of the next directory, if any
+ *
+ * @return true if the entry is a pointer to another table, otherwise false.
+*/
+bool psp_fw_bios_is_table_pointer(const struct psp_dir_region *dir_rdev,
+				  const union psp_dir_entry *entry,
+				  enum psp_dir_type *next_dir_type)
+{
+	assert (dir_rdev->type == PSP_DIR_BIOS);
+	if (dir_rdev->type != PSP_DIR_BIOS)
+		return false;
+
+	if (dir_rdev->level == 1) {
+		switch (entry->bios.type) {
+		case AMD_BIOS_L2_PTR:
+			*next_dir_type = PSP_DIR_BIOS;
+			return true;
+		default:
+			break;
+		}
+	}
+	return false;
+}

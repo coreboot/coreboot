@@ -249,6 +249,8 @@ bool psp_entry_is_table_pointer(const struct psp_dir_region *dir_rdev,
 		return psp_fw_efs_is_table_pointer(dir_rdev, entry, next_dir_type);
 	case PSP_DIR_PSP:
 		return psp_fw_psp_is_table_pointer(dir_rdev, entry, next_dir_type);
+	case PSP_DIR_BIOS:
+		return psp_fw_bios_is_table_pointer(dir_rdev, entry, next_dir_type);
 	case PSP_DIR_COMBO:
 		if (dir_rdev->level == 1) {
 			if (psp_id && entry->combo.id != psp_id)

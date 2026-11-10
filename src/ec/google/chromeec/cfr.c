@@ -85,6 +85,24 @@ static const struct sm_object lid_shutdown = SM_DECLARE_BOOL({
 	.default_value	= CONFIG(EC_GOOGLE_CHROMEEC_LID_SHUTDOWN),
 }, WITH_CALLBACK(update_lid_shutdown));
 
+static void update_tcss_display_detection(struct sm_object *new)
+{
+	if (!CONFIG(TCSS_HAS_USBC_OPS)) {
+		new->sm_bool.flags = CFR_OPTFLAG_SUPPRESS;
+		new->sm_bool.default_value = false;
+	}
+}
+
+static const struct sm_object tcss_display_detection = SM_DECLARE_BOOL({
+	.opt_name	= "tcss_display_detection",
+	.ui_name	= "USB-C DisplayPort Detection",
+	.ui_helptext	= "Probe Type-C ports for DisplayPort alt mode during firmware init. "
+			  "Required for USB-C external displays before the OS loads. "
+			  "Disabling can save several seconds of boot time when no "
+			  "USB-C display is needed in firmware setup.",
+	.default_value	= CONFIG(ENABLE_TCSS_DISPLAY_DETECTION),
+}, WITH_CALLBACK(update_tcss_display_detection));
+
 /*
  * Battery sustainer (EC_CMD_CHARGE_CONTROL v2+).
  * Master switch gates the min/max thresholds; all are hidden when the EC
@@ -159,7 +177,7 @@ WITH_CALLBACK(update_charge_control));
 /*
  * Shared ChromeEC CFR menu. Options that do not apply to a given board are
  * hidden by the callbacks above (fan, keyboard backlight, RGB keyboard,
- * lid shutdown, charge limits).
+ * lid shutdown, TCSS DP detection, charge limits).
  */
 static const __cfr_form struct sm_obj_form chromeec = {
 	.ui_name	= "ChromeEC Embedded Controller",
@@ -168,6 +186,7 @@ static const __cfr_form struct sm_obj_form chromeec = {
 		&ec_kb_backlight,
 		&ec_rgb_kb_color,
 		&lid_shutdown,
+		&tcss_display_detection,
 		&ec_charge_limit_override,
 		&ec_max_charge,
 		&ec_min_charge,

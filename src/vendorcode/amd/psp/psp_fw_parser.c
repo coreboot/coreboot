@@ -203,17 +203,13 @@ uint32_t psp_dir_entry_offset(const struct psp_dir_region *dir_rdev, const union
 		addr = entry->bios.source;
 		break;
 	case PSP_DIR_COMBO:
+		/*
+		 * There can be physical and relative address mode being
+		 * mixed in the same combo directory depending on the PSP
+		 * revision. Always use AUTO here.
+		 */
 		addr = entry->combo.lvl2_addr;
-		/* Get address mode from EFS */
-		const struct psp_dir_region *parent = dir_rdev->parent;
-		while (parent) {
-			if (parent->type == PSP_DIR_EFS)
-				break;
-			parent = parent->parent;
-		}
-
-		if (parent && parent->type == PSP_DIR_EFS)
-			mode = parent->mode;
+		mode = AMD_ADDR_AUTO;
 		break;
 	case PSP_DIR_ISH:
 		addr = entry->ish.pl2_location;

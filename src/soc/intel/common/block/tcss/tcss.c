@@ -12,6 +12,7 @@
 #include <intelblocks/tcss.h>
 #include <inttypes.h>
 #include <lib.h>
+#include <option.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
@@ -449,7 +450,8 @@ void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PO
 	if (tcss_ops.configure_aux_bias_pads)
 		tcss_ops.configure_aux_bias_pads(aux_bias_pads);
 
-	if (CONFIG(ENABLE_TCSS_DISPLAY_DETECTION))
+	if (CONFIG(TCSS_HAS_USBC_OPS) &&
+	    get_uint_option("tcss_display_detection", CONFIG(ENABLE_TCSS_DISPLAY_DETECTION)))
 		tcss_configure_dp_mode(port_map, num_ports);
 
 	if (CONFIG(ENABLE_TCSS_USB_DETECTION))

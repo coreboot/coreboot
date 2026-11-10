@@ -214,8 +214,15 @@ fmap_flags_to_string_test_exit:
 
 static int fmap_find_test(struct fmap *fmap)
 {
-	uint8_t *buf;
+	uint8_t *buf = NULL, *tail_buf = NULL, *area_buf = NULL;
+	const size_t tail_size = 128;
+	const size_t area_buf_size = 256;
+	const size_t short_lsearch_len = sizeof(*fmap) - 1;
+	const size_t short_bsearch_len = 32;
 	size_t total_size, offset;
+
+	_Static_assert(sizeof(struct fmap) == 56, "unexpected struct fmap size");
+	_Static_assert(sizeof(struct fmap_area) == 42, "unexpected struct fmap_area size");
 
 	status = fail;
 
@@ -290,8 +297,94 @@ static int fmap_find_test(struct fmap *fmap)
 		goto fmap_find_test_exit;
 	}
 
+	/*
+	 * Place inputs at the end of exact-sized allocations so reads past len
+	 * cross the heap block boundary; catching such overreads requires
+	 * building this test binary with ASan (-fsanitize=address).
+	 * 32 is the largest power-of-2 length below sizeof(*fmap) (56), and
+	 * 64 is the last 16-byte-aligned offset in tail_buf where a 56-byte
+	 * header fits.
+	 */
+	tail_buf = calloc(tail_size, 1);
+	if (!tail_buf) {
+		printf("FAILURE: failed to allocate tail_buf\n");
+		goto fmap_find_test_exit;
+	}
+
+	memcpy(&tail_buf[tail_size - short_lsearch_len], fmap, short_lsearch_len);
+	if (fmap_find(&tail_buf[tail_size - short_lsearch_len], short_lsearch_len) >= 0) {
+		printf("FAILURE: lsearch accepted buffer shorter than header\n");
+		goto fmap_find_test_exit;
+	}
+
+	memset(tail_buf, 0, tail_size);
+	memcpy(&tail_buf[tail_size - short_bsearch_len], fmap, short_bsearch_len);
+	if (fmap_find(&tail_buf[tail_size - short_bsearch_len], short_bsearch_len) >= 0) {
+		printf("FAILURE: bsearch accepted buffer shorter than header\n");
+		goto fmap_find_test_exit;
+	}
+
+	memset(tail_buf, 0, tail_size);
+	memcpy(&tail_buf[tail_size - sizeof(*fmap)], fmap, sizeof(*fmap));
+	if (fmap_find(&tail_buf[tail_size - sizeof(*fmap)], sizeof(*fmap)) != 0) {
+		printf("FAILURE: lsearch failed on exact header-sized buffer\n");
+		goto fmap_find_test_exit;
+	}
+
+	memset(tail_buf, 0, tail_size);
+	memcpy(&tail_buf[64], fmap, sizeof(*fmap));
+	if (fmap_find(tail_buf, tail_size) != 64) {
+		printf("FAILURE: bsearch failed on fmap near buffer end\n");
+		goto fmap_find_test_exit;
+	}
+
+	memset(tail_buf, 0, tail_size);
+	memcpy(&tail_buf[tail_size - 16], fmap, 16);
+	if (fmap_find(tail_buf, tail_size - 1) >= 0) {
+		printf("FAILURE: lsearch accepted truncated header at EOF\n");
+		goto fmap_find_test_exit;
+	}
+	if (fmap_find(tail_buf, tail_size) >= 0) {
+		printf("FAILURE: bsearch accepted truncated header at EOF\n");
+		goto fmap_find_test_exit;
+	}
+
+	/*
+	 * Exercise the post-loop fmap_size() bound with an in-bounds header
+	 * at offset 32: nareas = 4 (32 + 56 + 4 * 42 == 256) fits exactly in
+	 * area_buf, while len = 255 or nareas = 5 overruns EOF.
+	 */
+	area_buf = calloc(area_buf_size, 1);
+	if (!area_buf) {
+		printf("FAILURE: failed to allocate area_buf\n");
+		goto fmap_find_test_exit;
+	}
+
+	memcpy(&area_buf[32], fmap, sizeof(*fmap));
+	((struct fmap *)&area_buf[32])->nareas = htole16(4);
+	if (fmap_find(&area_buf[1], area_buf_size - 1) != 31) {
+		printf("FAILURE: lsearch failed on exact-fit multi-area fmap\n");
+		goto fmap_find_test_exit;
+	}
+	if (fmap_find(area_buf, area_buf_size - 1) >= 0) {
+		printf("FAILURE: lsearch failed to catch area overrun\n");
+		goto fmap_find_test_exit;
+	}
+	if (fmap_find(area_buf, area_buf_size) != 32) {
+		printf("FAILURE: bsearch failed on exact-fit multi-area fmap\n");
+		goto fmap_find_test_exit;
+	}
+
+	((struct fmap *)&area_buf[32])->nareas = htole16(5);
+	if (fmap_find(area_buf, area_buf_size) >= 0) {
+		printf("FAILURE: bsearch failed to catch area overrun\n");
+		goto fmap_find_test_exit;
+	}
+
 	status = pass;
 fmap_find_test_exit:
+	free(area_buf);
+	free(tail_buf);
 	free(buf);
 	return status;
 }

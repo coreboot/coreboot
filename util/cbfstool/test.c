@@ -244,15 +244,25 @@ static int fmap_find_test(struct fmap *fmap)
 		goto fmap_find_test_exit;
 	}
 
-	/* simple test case: fmap at (total_size / 2) + 1 */
+	/* bsearch only probes 16-byte-aligned offsets; lsearch scans every byte */
 	offset = (total_size / 2) + 1;
 	memcpy(&buf[offset], fmap, fmap_size(fmap));
 
-	if ((unsigned)fmap_find(buf, total_size - 1) != offset) {
-		printf("FAILURE: lsearch failed to find fmap\n");
+	if (fmap_find(buf, total_size - 1) != (long)offset) {
+		printf("FAILURE: lsearch failed to find unaligned fmap\n");
 		goto fmap_find_test_exit;
 	}
-	if ((unsigned)fmap_find(buf, total_size) != offset) {
+	if (fmap_find(buf, total_size) >= 0) {
+		printf("FAILURE: bsearch matched unaligned fmap\n");
+		goto fmap_find_test_exit;
+	}
+
+	/* 16-byte-aligned fmap: bsearch must find it */
+	offset = (total_size / 2) + 16;
+	memset(buf, 0, total_size);
+	memcpy(&buf[offset], fmap, fmap_size(fmap));
+
+	if (fmap_find(buf, total_size) != (long)offset) {
 		printf("FAILURE: bsearch failed to find fmap\n");
 		goto fmap_find_test_exit;
 	}
@@ -261,7 +271,7 @@ static int fmap_find_test(struct fmap *fmap)
 	offset = 0;
 	memset(buf, 0, total_size);
 	memcpy(buf, fmap, fmap_size(fmap));
-	if ((unsigned)fmap_find(buf, total_size) != offset) {
+	if (fmap_find(buf, total_size) != (long)offset) {
 		printf("FAILURE: bsearch failed to find fmap at offset 0\n");
 		goto fmap_find_test_exit;
 	}

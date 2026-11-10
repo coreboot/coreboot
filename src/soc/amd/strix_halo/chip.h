@@ -87,9 +87,9 @@ struct soc_amd_strix_halo_config {
 
 	/* telemetry settings */
 	uint32_t telemetry_vddcrvddfull_scale_current_mA;
-	uint32_t telemetry_vddcrvddoffset;
+	int32_t telemetry_vddcrvddoffset;
 	uint32_t telemetry_vddcrsocfull_scale_current_mA;
-	uint32_t telemetry_vddcrsocoffset;
+	int32_t telemetry_vddcrsocoffset;
 
 	/* The array index is the general purpose PCIe clock output number. Values in here
 	   aren't the values written to the register to have the default to be always on. */

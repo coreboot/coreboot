@@ -214,13 +214,22 @@ enum cb_err lucidole_pll_enable(struct alpha_pll_reg_val_config *cfg);
 enum cb_err zondaole_pll_enable(struct alpha_pll_reg_val_config *cfg);
 
 struct aoss {
+#if CONFIG(SOC_QUALCOMM_X1P42100_BASE)
+	u8 _res0[0x51000];
+	u32 aoss_cc_reset_status;
+#else
 	u8 _res0[0x50020];
 	u32 aoss_cc_reset_status;
 	u8 _res1[0x5002c - 0x50024];
 	u32 aoss_cc_apcs_misc;
+#endif
 };
+#if CONFIG(SOC_QUALCOMM_X1P42100_BASE)
+check_member(aoss, aoss_cc_reset_status, 0x51000);
+#else
 check_member(aoss, aoss_cc_reset_status, 0x50020);
 check_member(aoss, aoss_cc_apcs_misc, 0x5002c);
+#endif
 
 struct shrm {
 	u32 shrm_sproc_ctrl;

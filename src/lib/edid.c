@@ -28,6 +28,7 @@ struct edid_context {
 	int has_name_descriptor;
 	int has_range_descriptor;
 	int has_preferred_timing;
+	int has_displayid_preferred_timing;
 	int has_valid_checksum;
 	int has_valid_cvt;
 	int has_valid_dummy_block;
@@ -1086,7 +1087,8 @@ static int displayid_type_7_timing_block(
 		displayid_detailed_timing(desc, &tmp);
 
 		c->did_detailed_timing = 1;
-		if ((desc->flags & 0x80) && !c->has_preferred_timing) {
+		if ((desc->flags & 0x80) && !c->has_displayid_preferred_timing) {
+			c->has_displayid_preferred_timing = 1;
 			c->has_preferred_timing = 1;
 			*result_edid = tmp;
 		}

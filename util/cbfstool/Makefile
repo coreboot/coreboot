@@ -16,7 +16,7 @@ VBOOT_HOST_BUILD ?= $(abspath $(objutil)/vboot_lib)
 SPDX_ID_STRING := SPDX-License-Identifier
 
 .PHONY: all
-all: cbfstool ifittool fmaptool rmodtool ifwitool cbfs-compression-tool elogtool cse_fpt cse_serger test
+all: cbfstool ifittool fmaptool rmodtool ifwitool cbfs-compression-tool elogtool cse_fpt cse_serger $(objutil)/cbfstool/test
 
 cbfstool: $(objutil)/cbfstool/cbfstool
 
@@ -37,6 +37,8 @@ cse_fpt: $(objutil)/cbfstool/cse_fpt
 cse_serger: $(objutil)/cbfstool/cse_serger
 
 test: $(objutil)/cbfstool/test
+	printf "    TEST       $(subst $(objutil)/,,$(<))\n"
+	$<
 
 .PHONY: clean cbfstool ifittool fmaptool rmodtool ifwitool cbfs-compression-tool elogtool cse_fpt cse_serger test
 clean:
@@ -90,7 +92,7 @@ help:
 	@echo "  elogtool - Display ELOG events"
 	@echo "  cse_fpt  - Manage Intel CSE Flash Partition Table (FPT)"
 	@echo "  cse_serger - Stitch Intel CSE components"
-	@echo "  test - build tests"
+	@echo "  test - build and run tests"
 
 ifneq ($(V),1)
 .SILENT:

@@ -10,12 +10,6 @@
 
 #define HOSTCTRL2		0x3E
 #define  HOSTCTRL2_PRESET	(1 << 15)
-#define MMC_CAP_BYP		0x810
-#define  MMC_CAP_BYP_EN		0x5A
-#define MMC_CAP_BYP_REG1	0x814
-#define  MMC_CAP_BYP_SDR50	(1 << 13)
-#define  MMC_CAP_BYP_SDR104	(1 << 14)
-#define  MMC_CAP_BYP_DDR50	(1 << 15)
 
 #define GEN2_TUNING_RP		(PCI_DEV(0, 0x1c, 0x02))
 #define GEN2_LCTL2_LSTS2_REG	0x70
@@ -27,15 +21,6 @@
 #define GEN3_TUNING_DEV		(PCI_DEV(GEN3_TUNING_BUS, 0, 0))
 #define GEN3_EQ_CONTROL_REG	0x8A8
 #define  GEN3_EQ_PRESET_7	0x05008071
-
-/* Disable SDR104 and SDR50 mode while keeping DDR50 mode enabled. */
-static void disable_sdr_modes(struct resource *res)
-{
-	write32(res2mmio(res, MMC_CAP_BYP, 0), MMC_CAP_BYP_EN);
-	clrsetbits32(res2mmio(res, MMC_CAP_BYP_REG1, 0),
-			MMC_CAP_BYP_SDR104 | MMC_CAP_BYP_SDR50,
-			MMC_CAP_BYP_DDR50);
-}
 
 void variant_mainboard_init(void)
 {

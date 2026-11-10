@@ -18,6 +18,19 @@
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10
 
+/** \brief Disable SDR104 and SDR50 mode while keeping DDR50 mode enabled.
+ * @param  res  pointer to SD or eMMC resource (PCI BAR 0)
+ */
+void disable_sdr_modes(struct resource *res)
+{
+	if (CONFIG(MC_EHL_RESTRICT_MMC_SPEED)) {
+		write32(res2mmio(res, MMC_CAP_BYP, 0), MMC_CAP_BYP_EN);
+		clrsetbits32(res2mmio(res, MMC_CAP_BYP_REG1, 0),
+				MMC_CAP_BYP_SDR104 | MMC_CAP_BYP_SDR50,
+				MMC_CAP_BYP_DDR50);
+	}
+}
+
 /** \brief This function can decide if a given MAC address is valid or not.
  *         Currently, addresses filled with 0xff or 0x00 are not valid.
  * @param  mac  Buffer to the MAC address to check

@@ -65,4 +65,9 @@ config MAINBOARD_PART_NUMBER
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
+config MC_EHL_RESTRICT_MMC_SPEED
+	def_bool n
+	help
+	  Disable SDR104 and SDR50 mode while keeping DDR50 mode enabled
+
 endif # BOARD_SIEMENS_BASEBOARD_MC_EHL

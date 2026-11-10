@@ -58,8 +58,6 @@ static void handle_low_power_charging_boot(enum boot_mode_t boot_mode)
 	if (!pll_init_and_set(apss_ncc0, L_VAL_710P4MHz))
 		printk(BIOS_DEBUG, "CPU Frequency set to 710MHz\n");
 
-	display_stop();
-
 	if (CONFIG(EC_GOOGLE_CHROMEEC) && detect_ac_unplug_event())
 		chromeec_finalize_and_poweroff(false);
 
@@ -76,31 +74,27 @@ static void mainboard_init(void *chip_info)
 	/* Do early display init for low/off-mode charging */
 	if ((boot_mode == LB_BOOT_MODE_LOW_BATTERY) ||
 			 (boot_mode == LB_BOOT_MODE_LOW_BATTERY_CHARGING) ||
-			 (boot_mode == LB_BOOT_MODE_OFFMODE_CHARGING)) {
+			 (boot_mode == LB_BOOT_MODE_OFFMODE_CHARGING))
 		/* Clear pending events before entering low-power boot */
 		clear_pending_ec_events();
 
+	/*
+	 * Low-battery boot indicator is done. Therefore, power off if battery
+	 * is critical and not charging
+	 */
+	if (boot_mode == LB_BOOT_MODE_LOW_BATTERY) {
 		/*
 		 * Manual delay for panel readiness; required because standard SOC IP
 		 * initialization is bypassed to prioritize fast-charging boot speeds.
 		 */
 		mdelay(250);
 		display_startup();
-	}
-
-	/*
-	 * Low-battery boot indicator is done. Therefore, power off if battery
-	 * is critical and not charging
-	 */
-	if (boot_mode == LB_BOOT_MODE_LOW_BATTERY)
 		trigger_critical_battery_shutdown();
+	}
 
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging" */
-	if (is_low_power_boot_with_charger()) {
+	if (is_low_power_boot_with_charger())
 		configure_soccp_charging_mode_bootloader();
-		handle_low_power_charging_boot(boot_mode);
-		halt();
-	}
 }
 
 static void setup_audio_gpios(void)
@@ -142,6 +136,12 @@ void mainboard_soc_init(void)
 	setup_usb();
 
 	enum boot_mode_t boot_mode = get_boot_mode();
+
+	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging" */
+	if (is_low_power_boot_with_charger()) {
+		handle_low_power_charging_boot(boot_mode);
+		halt();
+	}
 
 	if (boot_mode == LB_BOOT_MODE_NORMAL || boot_mode == LB_BOOT_MODE_NO_BATTERY)
 		display_startup();

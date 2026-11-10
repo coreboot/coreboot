@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include "board.h"
+#include "display.h"
 
 #include <bootmode.h>
 #include <delay.h>
@@ -90,8 +91,8 @@
 #define DELAY_CHARGING_ACTIVE_LB_MS 4000 /* 4sec */
 #define SMB_FCC_MULTIPLIER_MA 50
 #define SMB_READ_DELAY_MS 5
-#define ICURR_READ_RETRY_COUNT 5
-#define ICURR_READ_RETRY_DELAY_MS 100 /* 5 * 100ms = 500ms total window */
+#define ICURR_READ_RETRY_COUNT 10
+#define ICURR_READ_RETRY_DELAY_MS 500 /* 10 * 500ms = 5000ms total window */
 enum charging_status {
 	CHRG_DISABLE,
 	CHRG_ENABLE,
@@ -287,90 +288,129 @@ void chromeec_finalize_and_poweroff(bool skip_heartbeat)
 	google_chromeec_ap_poweroff();
 }
 
+/*
+ * Check for lid open or power button press to exit charging applet and boot OS.
+ */
+static void check_manual_poweron_event(void)
+{
+	if (detect_ec_manual_poweron_event()) {
+		printk(BIOS_INFO, "Exiting charging applet to boot to OS\n");
+		do_board_reset();
+	}
+}
+
+/*
+ * Handle power-off due to charger disconnection or dropped charging state.
+ */
+static void handle_charging_abort_poweroff(bool skip_heartbeat)
+{
+	printk(BIOS_INFO, "Issuing power-off due to change in charging state.\n");
+	if (detect_ac_unplug_event())
+		clear_ac_unplug_event();
+
+	chromeec_finalize_and_poweroff(skip_heartbeat);
+}
+
+/*
+ * Monitor temperature sensors and shut down if thermal threshold is exceeded.
+ */
+static void check_thermal_threshold_trip(bool skip_heartbeat)
+{
+	bool has_crossed_threshold = false;
+
+	qcom_tsens_monitor_all(&has_crossed_threshold);
+	if (has_crossed_threshold) {
+		printk(BIOS_INFO, "Issuing power-off due to temperature trip.\n");
+		chromeec_finalize_and_poweroff(skip_heartbeat);
+	}
+}
+
+/*
+ * Safely render the notification splash screen and cleanly tear down the display.
+ */
+static void show_charging_splash_notification(void)
+{
+	printk(BIOS_INFO, "Displaying charging splash notification\n");
+	display_startup();
+}
+
+/*
+ * Wait for battery charging current to engage within the stabilization window.
+ */
+static void wait_for_initial_charging_enable(enum boot_mode_t boot_mode)
+{
+	struct stopwatch sw;
+	const long timeout_ms = CHARGING_RAIL_STABILIZATION_DELAY_MS;
+
+	printk(BIOS_INFO, "Initiating charging...\n");
+	smb_enter_normal_power_psm_at_offmode();
+
+	stopwatch_init_msecs_expire(&sw, timeout_ms);
+
+	while (!get_battery_icurr_ma()) {
+		check_manual_poweron_event();
+
+		if (detect_ac_unplug_event())
+			handle_charging_abort_poweroff(false);
+
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_WARNING, "Charging not enabled after %ld ms. Abort.\n",
+			       timeout_ms);
+			bool skip_heartbeat = (boot_mode == LB_BOOT_MODE_LOW_BATTERY_CHARGING);
+			handle_charging_abort_poweroff(skip_heartbeat);
+		}
+
+		mdelay(200);
+	}
+
+	printk(BIOS_INFO, "Charging ready after %lld ms\n", stopwatch_duration_msecs(&sw));
+}
+
+/*
+ * Main charging monitor loop.
+ */
 void launch_charger_applet(enum boot_mode_t boot_mode)
 {
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
 		return;
 
-	static const long charging_enable_timeout_ms = CHARGING_RAIL_STABILIZATION_DELAY_MS;
-	struct stopwatch sw;
-	bool has_crossed_threshold = false;
-	bool skip_heartbeat = false;
+	struct stopwatch display_sw;
+	bool needs_deferred_display = (boot_mode == LB_BOOT_MODE_LOW_BATTERY_CHARGING ||
+				       boot_mode == LB_BOOT_MODE_OFFMODE_CHARGING);
+	bool display_rendered = !needs_deferred_display;
 
-	printk(BIOS_INFO, "Inside %s. Initiating charging\n", __func__);
+	printk(BIOS_INFO, "Inside %s\n", __func__);
 
-	smb_enter_normal_power_psm_at_offmode();
-
-	stopwatch_init_msecs_expire(&sw, charging_enable_timeout_ms);
-
-	while (!get_battery_icurr_ma()) {
-		if (detect_ec_manual_poweron_event()) {
-			printk(BIOS_INFO, "Exiting charging applet to boot to OS\n");
-			do_board_reset();
-		}
-
-		/* Relying on debounce logic before bailing out */
-		if (detect_ac_unplug_event()) {
-			printk(BIOS_INFO, "Issuing power-off due to charger disconnection.\n");
-			clear_ac_unplug_event();
-			chromeec_finalize_and_poweroff(skip_heartbeat);
-		}
-
-		if (stopwatch_expired(&sw)) {
-			printk(BIOS_WARNING, "Charging not enabled %ld ms. Abort.\n",
-					charging_enable_timeout_ms);
-			/*
-			 * If firmware-based charging fails to enable within the timeout,
-			 * do not simply return, as this leaves IPs uninitialized and
-			 * causes a boot hang. Instead, issue a shutdown if not charging.
-			 */
-			printk(BIOS_INFO, "Issuing power-off.\n");
-			if (detect_ac_unplug_event())
-				clear_ac_unplug_event();
-
-			if (boot_mode == LB_BOOT_MODE_LOW_BATTERY_CHARGING)
-				skip_heartbeat = true;
-
-			chromeec_finalize_and_poweroff(skip_heartbeat);
-		}
-		mdelay(200);
+	/* 1. Arm timer for deferred display notification */
+	if (needs_deferred_display) {
+		show_charging_splash_notification();
+		stopwatch_init_msecs_expire(&display_sw, CONFIG_PLATFORM_POST_RENDER_DELAY_SEC * 1000);
 	}
-	printk(BIOS_INFO, "Charging ready after %lld ms\n", stopwatch_duration_msecs(&sw));
 
+	/* 2. Ensure charging is active before proceeding */
+	wait_for_initial_charging_enable(boot_mode);
+
+	/* 3. Steady-state charging loop */
 	do {
-		/* Add static delay before reading the charging applet pre-requisites */
 		mdelay(DELAY_CHARGING_APPLET_MS);
 
-		/*
-		 * Issue a shutdown if not charging.
-		 */
-		if (!get_battery_icurr_ma()) {
-			printk(BIOS_INFO, "Issuing power-off due to change in charging state.\n");
-			if (detect_ac_unplug_event())
-				clear_ac_unplug_event();
-			skip_heartbeat = true;
-			chromeec_finalize_and_poweroff(skip_heartbeat);
-		}
+		/* Verify charging is still actively flowing */
+		if (!get_battery_icurr_ma())
+			handle_charging_abort_poweroff(true);
+
+		/* Check user input (power button / lid open) */
+		check_manual_poweron_event();
+
+		/* Thermal safety check */
+		check_thermal_threshold_trip(false);
 
 		/*
-		 * Exit the charging loop in the event of lid open or power
-		 * button press.
-		 *
-		 * Reset the device to ensure a fresh boot to OS.
-		 * This is required to avoid any kind of tear-down due to ADSP-lite
-		 * being loaded and need some clean up before loading ADSP firmware by
-		 * linux kernel.
+		 * Tear down the display after the splash rendered timer expires to save
+		 * power while continuing to charge in the background.
 		 */
-		if (detect_ec_manual_poweron_event()) {
-			printk(BIOS_INFO, "Exiting charging applet to boot to OS\n");
-			do_board_reset();
-		}
-
-		/* Issue a shutdown in the event of temperature trip */
-		qcom_tsens_monitor_all(&has_crossed_threshold);
-		if (has_crossed_threshold) {
-			printk(BIOS_INFO, "Issuing power-off due to temperature trip.\n");
-			chromeec_finalize_and_poweroff(skip_heartbeat);
+		if (!display_rendered && stopwatch_expired(&display_sw)) {
+			display_stop();
+			display_rendered = true;
 		}
 	} while (true);
 }

@@ -195,6 +195,10 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if MAINBOARD_HAS_GOOGLE_TPM
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nogsc.fmd"
 
+config PLATFORM_POST_RENDER_DELAY_SEC
+	int
+	default 15
+
 config BATTERY_TRICKLE_VOLTAGE_MV
 	int
 	default 6400

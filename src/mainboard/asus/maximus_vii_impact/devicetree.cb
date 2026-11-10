@@ -1,11 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
 chip northbridge/intel/haswell
-	register "gpu_dp_b_hotplug" = "4"
-	register "gpu_dp_c_hotplug" = "0"
-	register "gpu_dp_d_hotplug" = "4"
 	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
-	register "usb_xhci_on_resume" = "false"
 
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on
@@ -18,23 +14,27 @@ chip northbridge/intel/haswell
 		subsystemid 0x1043 0x8534 inherit
 
 		device pci 00.0 on end		# Desktop Host bridge
-		device pci 01.0 on end		# PEG
-		device pci 02.0 on end		# iGPU
+		device pci 01.0 on		# PEG
+			smbios_slot_desc "SlotTypePciExpressGen3" "SlotLengthLong"
+					 "PCIE_X16" "SlotDataBusWidth16X"
+		end
+		device pci 01.2 on		# PEG #3
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M.2" "SlotDataBusWidth4X"
+		end
+		device pci 02.0 on		# iGPU
+			register "gpu_dp_b_hotplug" = "4"
+			register "gpu_dp_d_hotplug" = "4"
+		end
 		device pci 03.0 on end		# Mini-HD audio
 
 		chip southbridge/intel/lynxpoint # Intel 8 Series Lynx Point PCH
-			register "gen1_dec" = "LPC_IO(0x290, 0x8)" # HWM
-			register "gen2_dec" = "LPC_IO(0x68, 0x8)"
 			register "gpe0_en_1" = "0x40002246"
-			register "gpe0_en_2" = "0x0"
-			register "sata_port0_gen3_dtle" = "0x2"
-			register "sata_port1_gen3_dtle" = "0x2"
-			register "sata_port_map" = "0x3f"
 
 			device pci 14.0 on  end		# xHCI Controller
 			device pci 16.0 on  end		# MEI #1
 			device pci 16.1 off end		# MEI #2
-			device pci 19.0 on		# Intel Gigabit Ethernet
+			device pci 19.0 on		# Intel I218-V GbE
 				subsystemid 0x1043 0x85c4
 			end
 			device pci 1a.0 on  end		# USB2 EHCI #2
@@ -44,13 +44,19 @@ chip northbridge/intel/haswell
 			device pci 1c.0 on  end		# RP #1
 			device pci 1c.1 off end		# RP #2
 			device pci 1c.2 off end		# RP #3
-			device pci 1c.3 on  end		# RP #4: mPCIe WiFi
+			device pci 1c.3 on		# RP #4: mPCIe WiFi
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+						 "SlotLengthShort" "MPCIE"
+						 "SlotDataBusWidth1X"
+			end
 			device pci 1c.4 off end		# RP #5
 			device pci 1c.5 off end		# RP #6
 			device pci 1c.6 off end		# RP #7
 			device pci 1c.7 off end		# RP #8
 			device pci 1d.0 on  end		# USB2 EHCI #1
 			device pci 1f.0 on		# LPC bridge
+				register "gen1_dec" = "LPC_IO(0x290, 0x8)"		# HWM
+				register "gen2_dec" = "LPC_IO(0x68, 0x8)"
 				chip superio/common
 					device pnp 2e.0 on
 						chip superio/nuvoton/nct6791d
@@ -118,13 +124,17 @@ chip northbridge/intel/haswell
 							device pnp 2e.616 off end	# DSDSS
 							device pnp 2e.716 off end	# DSPU
 						end
+						chip drivers/pc80/tpm
+							device pnp 0c31.0 on end	# TPM (20-1 pin TPM)
+						end
 					end
 				end
-				chip drivers/pc80/tpm
-					device pnp 0c31.0 on end	# TPM
-				end
 			end
-			device pci 1f.2 on  end		# SATA Controller (AHCI)
+			device pci 1f.2 on		# SATA Controller (AHCI)
+				register "sata_port0_gen3_dtle" = "0x2"
+				register "sata_port1_gen3_dtle" = "0x2"
+				register "sata_port_map" = "0x3f"
+			end
 			device pci 1f.3 on  end		# SMBus
 			device pci 1f.5 off end		# SATA Controller (Legacy)
 			device pci 1f.6 off end		# Thermal

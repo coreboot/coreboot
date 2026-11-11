@@ -1,7 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
 chip northbridge/intel/haswell
-	register "gpu_dp_d_hotplug" = "4"
 	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 
 	chip cpu/intel/haswell
@@ -15,38 +14,53 @@ chip northbridge/intel/haswell
 		subsystemid 0x1043 0x8534 inherit
 
 		device pci 00.0 on end		# Desktop Host bridge
-		device pci 01.0 on end		# PEG: PCIE_X16/X8_1
-		device pci 01.1 on end		# PEG: PCIE_X8_2
-		device pci 02.0 on end		# iGPU
+		device pci 01.0 on		# PEG #1
+			smbios_slot_desc "SlotTypePciExpressGen3" "SlotLengthLong"
+					 "PCIE_X16/X8_1" "SlotDataBusWidth16X"
+		end
+		device pci 01.1 on		# PEG #2
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+					 "PCIE_X8_2" "SlotDataBusWidth8X"
+		end
+		device pci 02.0 on		# iGPU
+			register "gpu_dp_d_hotplug" = "4"
+		end
 		device pci 03.0 on end		# Mini-HD audio
 
 		chip southbridge/intel/lynxpoint # Intel 8 Series Lynx Point PCH
-			register "gen1_dec" = "LPC_IO(0x290, 0x8)" # HWM
-			register "gen2_dec" = "LPC_IO(0x68, 0x8)"
 			register "gpe0_en_1" = "0x40042046"
-			register "sata_port0_gen3_dtle" = "0x2"
-			register "sata_port1_gen3_dtle" = "0x2"
-			register "sata_port_map" = "0x3f"
 
 			device pci 14.0 on  end		# xHCI Controller
 			device pci 16.0 on  end		# MEI #1
 			device pci 16.1 off end		# MEI #2
-			device pci 19.0 on		# Intel Gigabit Ethernet
+			device pci 19.0 on		# Intel I218-V GbE
 				subsystemid 0x1043 0x85c4
 			end
 			device pci 1a.0 on  end		# USB2 EHCI #2
 			device pci 1b.0 on		# High Definition Audio
 				subsystemid 0x1043 0x8603
 			end
-			device pci 1c.0 on  end		# RP #1: PCIEX4_1
-			device pci 1c.2 on  end		# RP #3: M.2(SOCKET3)
-			device pci 1c.3 on  end		# RP #4: MPCIE
-			device pci 1c.4 on  end		# RP #5: ASMedia ASM1042A USB 3.0 Host Controller
+			device pci 1c.0 on		# RP #1
+				smbios_slot_desc "SlotTypePciExpressGen2X4" "SlotLengthLong"
+						 "PCIEX4_1" "SlotDataBusWidth4X"
+			end
+			device pci 1c.2 on		# RP #3
+				smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+						 "M.2(SOCKET3)" "SlotDataBusWidth2X"
+			end
+			device pci 1c.3 on		# RP #4
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+						 "SlotLengthShort" "MPCIE"
+						 "SlotDataBusWidth1X"
+			end
+			device pci 1c.4 on  end		# RP #5: ASMedia ASM1042A USB 3.0
 			device pci 1c.5 off end		# RP #6
 			device pci 1c.6 off end		# RP #7
-			device pci 1c.7 on  end		# RP #8: ASMedia ASM1061 Serial ATA Controller
+			device pci 1c.7 on  end		# RP #8: ASMedia ASM1061 SATA
 			device pci 1d.0 on  end		# USB2 EHCI #1
 			device pci 1f.0 on		# LPC bridge
+				register "gen1_dec" = "LPC_IO(0x290, 0x8)"		# HWM
+				register "gen2_dec" = "LPC_IO(0x68, 0x8)"
 				chip superio/common
 					device pnp 2e.0 on
 						chip superio/nuvoton/nct6791d
@@ -76,7 +90,7 @@ chip northbridge/intel/haswell
 							end
 							device pnp 2e.9   on		# GPIO2
 								irq 0xe0 = 0xdf
-								irq 0xe1 = 0xd0
+							irq 0xe1 = 0xd0
 							end
 							device pnp 2e.109 on		# GPIO3
 								irq 0xe5 = 0x10
@@ -87,11 +101,10 @@ chip northbridge/intel/haswell
 							end
 							device pnp 2e.309 on		# GPIO5
 								irq 0xf4 = 0xef
-								irq 0xf5 = 0x68
+							irq 0xf5 = 0x68
 							end
 							device pnp 2e.a   on		# ACPI
-								# Power RAM in S3
-								irq 0xe4 = 0x10
+								irq 0xe4 = 0x10		# Power RAM in S3
 								irq 0xe6 = 0x0a
 								irq 0xe7 = 0x11
 								irq 0xec = 0x80
@@ -120,13 +133,17 @@ chip northbridge/intel/haswell
 							device pnp 2e.616 off end	# DSDSS
 							device pnp 2e.716 off end	# DSPU
 						end
+						chip drivers/pc80/tpm
+							device pnp 0c31.0 on end	# TPM (20-1 pin TPM)
+						end
 					end
 				end
-				chip drivers/pc80/tpm
-					device pnp 0c31.0 on end	# TPM
-				end
 			end
-			device pci 1f.2 on  end		# SATA Controller (AHCI)
+			device pci 1f.2 on		# SATA Controller (AHCI)
+				register "sata_port0_gen3_dtle" = "0x2"
+				register "sata_port1_gen3_dtle" = "0x2"
+				register "sata_port_map" = "0x3f"
+			end
 			device pci 1f.3 on  end		# SMBus
 			device pci 1f.5 off end		# SATA Controller (Legacy)
 			device pci 1f.6 off end		# Thermal

@@ -891,7 +891,10 @@ void google_chromeec_ap_poweroff(void)
 		 * aggressive hardware-level trigger to ensure the system doesn't
 		 * remain powered on in an undefined state.
 		 */
-		google_chromeec_reboot(EC_REBOOT_COLD_AP_OFF, 0);
+		if (google_chromeec_reboot(EC_REBOOT_COLD_AP_OFF, 0) && CONFIG(ARCH_X86)) {
+			printk(BIOS_ERR, "EC rejected AP off, falling back to poweroff()\n");
+			poweroff();
+		}
 	}
 	halt();
 }
@@ -2155,8 +2158,9 @@ bool google_chromeec_is_battery_data_valid(void)
  */
 void platform_do_early_poweroff(void)
 {
-	google_chromeec_reboot(EC_REBOOT_COLD_AP_OFF, 0);
-	halt();
+	if (google_chromeec_reboot(EC_REBOOT_COLD_AP_OFF, 0) == 0)
+		halt();
+	printk(BIOS_ERR, "EC rejected EC_REBOOT_COLD_AP_OFF\n");
 }
 
 /*

@@ -47,15 +47,17 @@ the same patch.
 
 ## Commit Messages
 
-If you write or edit commit messages, you **MUST NEVER** add any line that
+If you generate code commits, you **MUST** include the tag `AI-generated` with
+that exact spelling and no extra characters on a separate line at the end of
+each commit message. However, if you only generate or reword the commit message
+for code written by a human, you should not include this tag.
+
+You must **NEVER** add any other text to commit messages that
 attributes the change to an AI tool, agent, model or vendor. This includes
 trailers such as `Co-authored-by:`, `Co-developed-by:`, `Assisted-by:` or
 `Generated-by:` naming an AI product (e.g. `Co-authored-by: Agent
-<noreply@example.com>`), as well as lines like "Generated with ...". The person
-in the `Signed-off-by:` line is responsible for the entire contents of the
-commit, whether or not AI tools were used, so these lines serve no purpose.
-Remove them if a tool adds them automatically. See the
-[Gerrit Guidelines](Documentation/contributing/gerrit_guidelines.md#ai-generated-contributions).
+<noreply@example.com>`), as well as lines like "Generated with ...". If such
+text already exists in the commit message, you should remove it.
 
 ## Further Instructions
 

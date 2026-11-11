@@ -452,9 +452,19 @@ AI-generated contributions
 --------------------------
 The person in the `Signed-off-by:` line is responsible for the entire
 contents of a commit, whether it was written by hand or with the help of
-AI tools (see the [Sign-off procedure](#sign-off-procedure)). Commit
-messages must therefore not contain lines that attribute the change to
-an AI tool, agent, model or vendor, such as
+AI tools (see the [Sign-off procedure](#sign-off-procedure)). Do not submit
+AI-generated code unless you fully understand what it does and can attest to its
+licensing provenance in accordance with the DCO.
+
+Commit messages for AI-generated code must contain the tag `AI-generated` (by
+itself, on a separate line). This applies to code that was primarily generated
+by an AI tool, possibly with smaller rewrites and modifications by a human
+afterwards. Code contributions that were written from the ground up by a human
+should not have this tag, even if AI tools were used to find the underlying bug,
+assist with local testing, or for local review and small-scale suggestions.
+
+Commit messages must never contain any other lines indicating use of any AI
+tools, in particular no lines mentioning the agent, model or vendor, such as
 `Co-authored-by: <AI tool> <noreply@...>`, `Assisted-by:`,
 `Generated-by:` or "Generated with ...". These lines carry no useful
 information for the project and only advertise the tool. Many AI tools

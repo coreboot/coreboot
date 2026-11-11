@@ -277,6 +277,7 @@
 - Hekla
 - Kodkod
 - Matsu
+- Pelion
 - Ocelot
 - Ocelotite
 - Ocelotmchp

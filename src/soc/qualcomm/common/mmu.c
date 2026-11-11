@@ -78,6 +78,10 @@ void qc_mmu_dram_config_post_dram_init(size_t ddr_size)
 		mmu_config_range((void *)_postram_dma_coherent, REGION_SIZE(postram_dma_coherent),
 							UNCACHED_RAM);
 
+	if (REGION_SIZE(dsi_dma_coherent) != 0)
+		mmu_config_range((void *)_dsi_dma_coherent, REGION_SIZE(dsi_dma_coherent),
+							UNCACHED_RAM);
+
 	if (REGION_SIZE(spel_rvss_iram) != 0)
 		mmu_config_range((void *)_spel_rvss_iram, REGION_SIZE(spel_rvss_iram), CACHED_RAM);
 

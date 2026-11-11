@@ -22,6 +22,7 @@
 #include <soc/display/mdssreg.h>
 #include <soc/display/mipi_dsi.h>
 #include <soc/display/panel_ops.h>
+#include <soc/symbols_common.h>
 #include <string.h>
 #include <symbols.h>
 #include <types.h>
@@ -242,7 +243,7 @@ static int mdss_dsi_cmd_dma_trigger(void)
  *
  * Uses DMA VBIF (not TPG FIFO) - matches UEFI DSI_DEVICE_FLAGS_DSI_DCS_DMA_ONLY path.
  * FIFO is limited to ~256 bytes and causes DMA timeout for long panel init sequences.
- * DMA VBIF uses _dma_coherent buffer (physical address written to DMA_CMD_OFFSET),
+ * DMA VBIF uses _dsi_dma_coherent buffer (physical address written to DMA_CMD_OFFSET),
  * which supports arbitrary length commands.
  *
  * Embedded packet format (from UEFI dsShared_PackData / HAL_DSI_WriteData):
@@ -267,12 +268,12 @@ static enum cb_err mdss_dsi_send_init_cmd(enum mipi_dsi_transaction type,
 					  const u8 *body, u8 len,
 					  void *user_data)
 {
-	u8 *pload = _dma_coherent;
+	u8 *pload = _dsi_dma_coherent;
 	u32 size;
 	enum cb_err ret = CB_SUCCESS;
 	bool is_long = (len > 2);
 
-	/* Build embedded packet in _dma_coherent buffer */
+	/* Build embedded packet in _dsi_dma_coherent buffer */
 	memset(pload, 0, is_long ? ALIGN_UP(4 + len, DSI_PAYLOAD_SIZE_ALIGN) : 4);
 
 	if (is_long) {
@@ -302,8 +303,8 @@ static enum cb_err mdss_dsi_send_init_cmd(enum mipi_dsi_transaction type,
 	/* DMA VBIF path: disable TPG FIFO, set DMA_CMD_OFFSET to physical address */
 	DSI_WR32(&active_dsi->test_pattern_gen_ctrl, 0x0);
 
-	/* Write physical address of _dma_coherent to DMA_CMD_OFFSET */
-	DSI_WR32(&active_dsi->dma_cmd_offset, (u32)(uintptr_t)_dma_coherent);
+	/* Write physical address of _dsi_dma_coherent to DMA_CMD_OFFSET */
+	DSI_WR32(&active_dsi->dma_cmd_offset, (u32)(uintptr_t)_dsi_dma_coherent);
 	DSI_WR32(&active_dsi->dma_cmd_length, size);
 
 	dsb();  /* ensure buffer writes are visible to DMA before trigger */

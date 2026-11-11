@@ -82,6 +82,7 @@ DECLARE_REGION(dram_soccp)
 DECLARE_REGION(dram_soccp_dtb)
 DECLARE_REGION(dram_soccp_meta)
 DECLARE_REGION(dram_soccp_dtb_meta)
+DECLARE_OPTIONAL_REGION(dsi_dma_coherent)
 DECLARE_OPTIONAL_REGION(pcie)
 
 /*

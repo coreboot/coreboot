@@ -402,6 +402,8 @@ chip soc/intel/pantherlake
 				register "dev_hidi2c.intf.hidi2c.descriptor_address" = "0x0001"
 				register "dev_hidi2c.intf.hidi2c.interrupt_delay_value" = "100"
 				register "dev_hidi2c.intf.hidi2c.max_frame_size_value" = "128"
+				register "soc_hidi2c.fm_scl_low_period" = "160"
+				register "soc_hidi2c.fm_scl_high_period" = "146"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F08)"
 				register "report_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D19)"
 				register "wake_on_touch" = "false"

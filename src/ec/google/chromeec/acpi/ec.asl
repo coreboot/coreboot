@@ -725,7 +725,7 @@ Device (EC0)
 	#include "als.asl"
 #endif
 
-#ifdef EC_ENABLE_KEYBOARD_BACKLIGHT
+#if CONFIG(EC_GOOGLE_CHROMEEC_KEYBOARD_BACKLIGHT)
 	#include "keyboard_backlight.asl"
 #endif
 

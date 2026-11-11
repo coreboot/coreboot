@@ -3,9 +3,6 @@
 /* mainboard configuration */
 #include "../ec.h"
 
-/* Enable EC backed Keyboard Backlight in ACPI */
-#define EC_ENABLE_KEYBOARD_BACKLIGHT
-
 /* Enable LID switch and provide wake pin for EC */
 #define EC_ENABLE_LID_SWITCH
 

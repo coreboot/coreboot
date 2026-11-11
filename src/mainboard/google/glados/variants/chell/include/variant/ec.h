@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: CC-PDDC */
 
-/* Enable EC backed Keyboard Backlight in ACPI */
-#define EC_ENABLE_KEYBOARD_BACKLIGHT
+/* Please update the license if adding licensable material. */

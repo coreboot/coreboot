@@ -307,6 +307,12 @@ config EC_GOOGLE_CHROMEEC_LED_CONTROL
 	  Enable manual AP control over ChromeEC LEDs/lightbars to ensure
 	  visual continuity with AP-side boot animations.
 
+config EC_GOOGLE_CHROMEEC_KEYBOARD_BACKLIGHT
+	def_bool n
+	help
+	  Include the Chrome EC keyboard backlight ACPI device (GOOG0002).
+	  Boards with an EC-driven keyboard backlight should select this.
+
 config EC_CHROMEEC_USE_VENDOR_TABLET_CONTROLS
 	bool "Include vendor tablet mode controls (VBTN/VGBI) in ACPI"
 	default y if !CHROMEOS && (SYSTEM_TYPE_CONVERTIBLE || SYSTEM_TYPE_DETACHABLE)

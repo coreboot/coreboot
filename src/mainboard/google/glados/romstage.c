@@ -16,7 +16,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
 
-#ifdef EC_ENABLE_KEYBOARD_BACKLIGHT
+#if CONFIG(EC_GOOGLE_CHROMEEC_KEYBOARD_BACKLIGHT)
 	/* Turn on keyboard backlight to indicate we are booting */
 	if (!acpi_is_wakeup_s3())
 		google_chromeec_kbbacklight(25);

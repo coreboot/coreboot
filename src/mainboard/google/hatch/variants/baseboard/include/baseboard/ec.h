@@ -73,7 +73,4 @@
 /* Enable EC sync interrupt, EC_SYNC_IRQ is defined in baseboard/gpio.h */
 #define EC_ENABLE_SYNC_IRQ
 
-/* Enable EC backed Keyboard Backlight in ACPI */
-#define EC_ENABLE_KEYBOARD_BACKLIGHT
-
 #endif /* __BASEBOARD_EC_H__ */

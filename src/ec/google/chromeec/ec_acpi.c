@@ -277,7 +277,7 @@ static void fill_ssdt_ps2_keyboard(const struct device *dev)
 }
 
 /*
- * Hide \_SB.KBLT when the EC reports no keyboard backlight. KBLS defaults
+ * Hide \_SB.CREC.KBLT when the EC reports no keyboard backlight. KBLS defaults
  * to present in the DSDT; only clear it here. Caller gates on
  * EC_GOOGLE_CHROMEEC_KEYBOARD_BACKLIGHT so boards without the ACPI device skip
  * the EC probe.
@@ -288,7 +288,7 @@ static void fill_ssdt_keyboard_backlight(void)
 		return;
 
 	acpigen_write_store_int_to_namestr(ACPI_STATUS_DEVICE_ALL_OFF,
-					   "\\_SB.KBLT.KBLS");
+					   "\\_SB.CREC.KBLT.KBLS");
 }
 
 static const char *ec_acpi_name(const struct device *dev)

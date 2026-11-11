@@ -12,13 +12,9 @@ chip northbridge/intel/haswell
 
 	device domain 0 on
 		ops haswell_pci_domain_ops
-		subsystemid 0x1028 0x05cc inherit
 
 		device pci 00.0 on end		# Mobile Host bridge
-		device pci 01.0 on		# PEG
-			smbios_slot_desc "SlotTypeMxm30TypeA" "SlotLengthOther"
-					 "MXM" "SlotDataBusWidth16X"
-		end
+		device pci 01.0 on end		# PEG
 		device pci 02.0 on		# Internal graphics VGA controller
 			register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 			register "gpu_ddi_e_connected" = "1"
@@ -44,11 +40,7 @@ chip northbridge/intel/haswell
 			device pci 19.0 on  end		# Intel I217-LM GbE NIC
 			device pci 1a.0 on  end		# USB2 EHCI #2
 			device pci 1b.0 on  end		# High Definition Audio
-			device pci 1c.0 on		# PCIe Port #1
-				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
-						 "SlotLengthLong" "Mini PCIe (WWAN)"
-						 "SlotDataBusWidth1X"
-			end
+			device pci 1c.0 on  end		# PCIe Port #1
 			device pci 1c.1 off end		# PCIe Port #2
 			device pci 1c.2 on		# PCIe Port #3
 				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
@@ -57,11 +49,7 @@ chip northbridge/intel/haswell
 			end
 			device pci 1c.3 off end		# PCIe Port #4
 			device pci 1c.4 off end		# PCIe Port #5
-			device pci 1c.5 on		# PCIe Port #6
-				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
-						 "SlotLengthShort" "Mini PCIe (1/2MC (PP))"
-						 "SlotDataBusWidth1X"
-			end
+			device pci 1c.5 off end		# PCIe Port #6
 			device pci 1c.6 on		# PCIe Port #7
 				smbios_slot_desc "SlotTypePcmcia" "SlotLengthLong"
 						 "ExpressCard" "SlotDataBusWidth1X"

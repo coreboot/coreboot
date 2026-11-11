@@ -1,0 +1,31 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/haswell
+	device domain 0 on
+		subsystemid 0x1028 0x05cc inherit
+
+		device pci 01.0 on		# PEG
+			smbios_slot_desc "SlotTypeMxm30TypeA" "SlotLengthOther"
+					 "MXM" "SlotDataBusWidth16X"
+		end
+
+		chip southbridge/intel/lynxpoint # Intel 8 Series Lynx Point PCH
+			device pci 1c.0 on		# PCIe Port #1
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+						 "SlotLengthLong" "Mini PCIe (WWAN)"
+						 "SlotDataBusWidth1X"
+			end
+			device pci 1c.5 on		# PCIe Port #6
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+						 "SlotLengthShort" "Mini PCIe (1/2MC (PP))"
+						 "SlotDataBusWidth1X"
+			end
+			device pci 1f.2 on		# SATA Controller (AHCI)
+				register "sata_port0_gen3_dtle" = "0x7"
+				register "sata_port1_gen3_dtle" = "0x5"
+				# [0] HDD1, [1] ODD, [2] Dock, [3] ESATA, [4] mSATA
+				register "sata_port_map" = "0x1f"
+			end
+		end
+	end
+end

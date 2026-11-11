@@ -10,28 +10,16 @@ Scope (\_SB)
 		Name (_HID, "GOOG0002")
 		Name (_UID, 1)
 
-		/* Ask EC if we even have a backlight
-		 * Return 0xf (present, enabled, show in UI, functioning) or 0
-		 *
-		 * With older EC codebases that don't support the Device
-		 * Features bitfield, this reports the keyboard backlight as
-		 * enabled since reads to undefined addresses in EC address
-		 * space return 0xff and so KBLE will be 1.
+		/*
+		 * Presence for _STA. Default to present when this device is
+		 * compiled in via EC_GOOGLE_CHROMEEC_KEYBOARD_BACKLIGHT.
+		 * KBLS is set via SSDT after querying the EC using host commands.
 		 */
+		Name (KBLS, 0xf)
+
 		Method (_STA, 0, NotSerialized)
 		{
-			/* If query is unsupported, but this code is compiled
-			 * in, assume the backlight exists physically.
-			 */
-			If (\_SB.PCI0.LPCB.EC0.DFUD == 1) {
-				Return (0xf)
-			}
-			/* If EC reports that backlight exists, trust it */
-			If (\_SB.PCI0.LPCB.EC0.KBLE == 1) {
-				Return (0xf)
-			}
-			/* Otherwise: no device -> disable */
-			Return (0)
+			Return (KBLS)
 		}
 
 		/* Read current backlight value */

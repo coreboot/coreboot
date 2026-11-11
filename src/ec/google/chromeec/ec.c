@@ -117,27 +117,38 @@ int google_chromeec_kbbacklight(int percent)
 
 bool google_chromeec_has_kbbacklight(void)
 {
+	static bool cached;
+	static bool has_kbbacklight;
+
+	if (cached)
+		return has_kbbacklight;
+
 	/* Try the feature flag (most reliable for modern ECs) */
 	int feature_check = google_chromeec_check_feature(EC_FEATURE_PWM_KEYB);
 
 	if (feature_check > 0) {
 		printk(BIOS_DEBUG, "Chrome EC: Keyboard backlight detected (feature flag)\n");
-		return true;
+		has_kbbacklight = true;
 	} else if (feature_check == 0) {
 		printk(BIOS_DEBUG, "Chrome EC: No keyboard backlight (feature flag)\n");
-		return false;
-	}
-
-	printk(BIOS_DEBUG, "Chrome EC: Feature flag unavailable, testing backlight read\n");
-	struct ec_response_pwm_get_keyboard_backlight resp = {};
-
-	if (ec_cmd_pwm_get_keyboard_backlight(PLAT_EC, &resp) == 0) {
-		printk(BIOS_DEBUG, "Chrome EC: Keyboard backlight detected (read test)\n");
-		return true;
+		has_kbbacklight = false;
 	} else {
-		printk(BIOS_DEBUG, "Chrome EC: No keyboard backlight (read test)\n");
-		return false;
+		printk(BIOS_DEBUG,
+		       "Chrome EC: Feature flag unavailable, testing backlight read\n");
+		struct ec_response_pwm_get_keyboard_backlight resp = {};
+
+		if (ec_cmd_pwm_get_keyboard_backlight(PLAT_EC, &resp) == 0) {
+			printk(BIOS_DEBUG,
+			       "Chrome EC: Keyboard backlight detected (read test)\n");
+			has_kbbacklight = true;
+		} else {
+			printk(BIOS_DEBUG, "Chrome EC: No keyboard backlight (read test)\n");
+			has_kbbacklight = false;
+		}
 	}
+
+	cached = true;
+	return has_kbbacklight;
 }
 
 static bool google_chromeec_rgb_color_to_struct(enum google_chromeec_rgbkbd_color color,

@@ -276,6 +276,21 @@ static void fill_ssdt_ps2_keyboard(const struct device *dev)
 						 keybd.num_top_row_keys, ps2_action_keys);
 }
 
+/*
+ * Hide \_SB.KBLT when the EC reports no keyboard backlight. KBLS defaults
+ * to present in the DSDT; only clear it here. Caller gates on
+ * EC_GOOGLE_CHROMEEC_KEYBOARD_BACKLIGHT so boards without the ACPI device skip
+ * the EC probe.
+ */
+static void fill_ssdt_keyboard_backlight(void)
+{
+	if (google_chromeec_has_kbbacklight())
+		return;
+
+	acpigen_write_store_int_to_namestr(ACPI_STATUS_DEVICE_ALL_OFF,
+					   "\\_SB.KBLT.KBLS");
+}
+
 static const char *ec_acpi_name(const struct device *dev)
 {
 	return "EC0";
@@ -302,6 +317,8 @@ void google_chromeec_fill_ssdt_generator(const struct device *dev)
 
 	fill_ssdt_typec_device(dev);
 	fill_ssdt_ps2_keyboard(dev);
+	if (CONFIG(EC_GOOGLE_CHROMEEC_KEYBOARD_BACKLIGHT))
+		fill_ssdt_keyboard_backlight();
 }
 
 const char *ec_retimer_fw_update_path(void)

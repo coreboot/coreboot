@@ -462,6 +462,32 @@ static void efi_test_validate_tail_after_match(void **state)
 	assert_int_equal(ret, CB_EFI_VS_CORRUPTED_INVALID);
 }
 
+/* Lookups only check the next header, writes require all unused space to be erased */
+static void efi_test_lookup_ignores_unused_space(void **state)
+{
+	AUTHENTICATED_VARIABLE_HEADER *header;
+	uint8_t value[16];
+	uint32_t size = sizeof(value);
+	size_t variable_offset, variable_size;
+	enum cb_err ret;
+
+	mock_rdev(true);
+	variable_offset = sizeof(EFI_FIRMWARE_VOLUME_HEADER) +
+		sizeof(EFI_FV_BLOCK_MAP_ENTRY) + sizeof(VARIABLE_STORE_HEADER);
+	header = (AUTHENTICATED_VARIABLE_HEADER *)(flash_buffer + variable_offset);
+	variable_size = ALIGN_UP(sizeof(*header) + header->NameSize + header->DataSize,
+		HEADER_ALIGNMENT);
+	flash_buffer[variable_offset + variable_size + sizeof(*header)] = 0;
+
+	ret = efi_fv_get_option(&flash_rdev_rw, &EficorebootNvDataGuid, name, value, &size);
+	assert_int_equal(ret, CB_SUCCESS);
+	assert_string_equal((const char *)value, "is great");
+
+	ret = efi_fv_set_option(&flash_rdev_rw, &EficorebootNvDataGuid, name, "is ok",
+				strlen("is ok") + 1);
+	assert_int_equal(ret, CB_EFI_VS_CORRUPTED_INVALID);
+}
+
 static void efi_test_find_zero_length_variable(void **state)
 {
 	AUTHENTICATED_VARIABLE_HEADER *header;
@@ -724,6 +750,7 @@ int main(void)
 		cmocka_unit_test(efi_test_reject_non_erased_terminator),
 		cmocka_unit_test(efi_test_ignore_uncommitted_variable),
 		cmocka_unit_test(efi_test_validate_tail_after_match),
+		cmocka_unit_test(efi_test_lookup_ignores_unused_space),
 		cmocka_unit_test(efi_test_find_zero_length_variable),
 		cmocka_unit_test(efi_test_prefer_added_over_transition),
 		cmocka_unit_test(efi_test_skip_incomplete_variable),

@@ -104,16 +104,18 @@ static bool region_starts_with(const struct region_device *rdev,
 	return true;
 }
 
-static enum cb_err region_is_erased(const struct region_device *rdev, bool *erased)
+/* Check whether the first size bytes of rdev are erased */
+static enum cb_err region_is_erased(const struct region_device *rdev, size_t size,
+				    bool *erased)
 {
 	uint8_t buf[64];
 	const uint8_t *mapping;
 	size_t offset = 0;
 
 	*erased = false;
-	mapping = rdev_mmap_full(rdev);
+	mapping = rdev_mmap(rdev, 0, size);
 	if (mapping) {
-		for (size_t i = 0; i < region_device_sz(rdev); i++) {
+		for (size_t i = 0; i < size; i++) {
 			if (mapping[i] != UINT8_MAX) {
 				rdev_munmap(rdev, (void *)mapping);
 				return CB_SUCCESS;
@@ -124,15 +126,15 @@ static enum cb_err region_is_erased(const struct region_device *rdev, bool *eras
 		return CB_SUCCESS;
 	}
 
-	while (offset < region_device_sz(rdev)) {
-		const size_t size = MIN(sizeof(buf), region_device_sz(rdev) - offset);
+	while (offset < size) {
+		const size_t chunk = MIN(sizeof(buf), size - offset);
 
-		if (rdev_readat(rdev, buf, offset, size) != size)
+		if (rdev_readat(rdev, buf, offset, chunk) != chunk)
 			return CB_EFI_ACCESS_ERROR;
-		for (size_t i = 0; i < size; i++)
+		for (size_t i = 0; i < chunk; i++)
 			if (buf[i] != UINT8_MAX)
 				return CB_SUCCESS;
-		offset += size;
+		offset += chunk;
 	}
 
 	*erased = true;
@@ -552,6 +554,35 @@ static bool variable_state_is_valid(uint8_t state)
 		state == (VAR_DELETED & VAR_IN_DELETED_TRANSITION & VAR_ADDED);
 }
 
+/*
+ * How much of the unused space after the last record to check. A lookup only
+ * needs to know that no partially written record follows, like the EDK2
+ * variable driver, which checks the whole unused space at initialization.
+ * Appending a record requires the whole unused space to be erased. Checking
+ * it on every lookup is slow, as the store is usually mostly unused.
+ */
+enum unused_space_check {
+	CHECK_UNUSED_NEXT_HEADER,
+	CHECK_UNUSED_ALL,
+};
+
+static enum cb_err check_unused_space(const struct region_device *rdev,
+				      size_t header_size,
+				      enum unused_space_check check)
+{
+	size_t size = region_device_sz(rdev);
+	bool erased;
+	enum cb_err ret;
+
+	if (check == CHECK_UNUSED_NEXT_HEADER)
+		size = MIN(size, header_size);
+	ret = region_is_erased(rdev, size, &erased);
+	if (ret != CB_SUCCESS)
+		return ret;
+
+	return erased ? CB_SUCCESS : CB_EFI_VS_CORRUPTED_INVALID;
+}
+
 static enum cb_err walk_variables(struct region_device *rdev,
 				  bool auth_format,
 				  enum cb_err (*walker)(struct region_device *rdev,
@@ -559,13 +590,13 @@ static enum cb_err walk_variables(struct region_device *rdev,
 						   size_t hdr_size,
 						   void *arg,
 						   bool *stop),
-				  void *walker_arg, bool *full)
+				  void *walker_arg, bool *full,
+				  enum unused_space_check check)
 {
 	AUTHENTICATED_VARIABLE_HEADER auth_hdr;
 	size_t header_size, var_size;
 	VARIABLE_HEADER hdr;
 	CHAR16 terminator;
-	bool erased;
 	bool stop;
 	bool walker_stopped = false;
 	bool walker_done = false;
@@ -583,11 +614,9 @@ static enum cb_err walk_variables(struct region_device *rdev,
 
 	do {
 		if (region_device_sz(rdev) < header_size) {
-			ret = region_is_erased(rdev, &erased);
+			ret = check_unused_space(rdev, header_size, check);
 			if (ret != CB_SUCCESS)
 				return ret;
-			if (!erased)
-				return CB_EFI_VS_CORRUPTED_INVALID;
 			if (walker_stopped)
 				*rdev = stopped_rdev;
 			return walker_ret;
@@ -607,11 +636,9 @@ static enum cb_err walk_variables(struct region_device *rdev,
 			return CB_EFI_ACCESS_ERROR;
 		}
 		if (hdr.StartId != VARIABLE_DATA) {
-			ret = region_is_erased(rdev, &erased);
+			ret = check_unused_space(rdev, header_size, check);
 			if (ret != CB_SUCCESS)
 				return ret;
-			if (!erased)
-				return CB_EFI_VS_CORRUPTED_INVALID;
 			if (walker_stopped)
 				*rdev = stopped_rdev;
 			return walker_ret;
@@ -697,7 +724,8 @@ enum cb_err efi_fv_print_options(const struct region_device *rdev)
 	if (ret != CB_SUCCESS)
 		return ret;
 
-	return walk_variables(&store_rdev, auth_format, print_var, NULL, NULL);
+	return walk_variables(&store_rdev, auth_format, print_var, NULL, NULL,
+			      CHECK_UNUSED_NEXT_HEADER);
 }
 
 /*
@@ -728,7 +756,8 @@ enum cb_err efi_fv_get_option(const struct region_device *rdev,
 	args.capacity = *size;
 	args.data = dest;
 
-	return walk_variables(&store_rdev, auth_format, find_and_copy, &args, NULL);
+	return walk_variables(&store_rdev, auth_format, find_and_copy, &args, NULL,
+			      CHECK_UNUSED_NEXT_HEADER);
 }
 
 static enum cb_err variable_write_sizes(const struct region_device *rdev, const char *name,
@@ -907,7 +936,8 @@ enum cb_err efi_fv_set_option(const struct region_device *rdev,
 	args.match = false;
 	args.data = data;
 
-	ret = walk_variables(&store_rdev, auth_format, find_and_compare, &args, NULL);
+	ret = walk_variables(&store_rdev, auth_format, find_and_compare, &args, NULL,
+			     CHECK_UNUSED_ALL);
 	if (ret != CB_SUCCESS && ret != CB_EFI_OPTION_NOT_FOUND)
 		return ret;
 	found_existing = ret == CB_SUCCESS;
@@ -928,7 +958,7 @@ enum cb_err efi_fv_set_option(const struct region_device *rdev,
 	}
 
 	/* Walk to end of variable store */
-	ret = walk_variables(&store_rdev, auth_format, noop, NULL, &full);
+	ret = walk_variables(&store_rdev, auth_format, noop, NULL, &full, CHECK_UNUSED_ALL);
 	if (ret != CB_EFI_OPTION_NOT_FOUND)
 		return ret;
 	if (full)

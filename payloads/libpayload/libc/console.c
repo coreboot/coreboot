@@ -105,7 +105,8 @@ void console_init(void)
 	video_console_init();
 #endif
 #if CONFIG(LP_SERIAL_CONSOLE)
-	serial_console_init();
+	if (lib_sysinfo.has_serial_console)
+		serial_console_init();
 #endif
 #if CONFIG(LP_PC_KEYBOARD)
 	keyboard_init();

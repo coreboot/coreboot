@@ -74,6 +74,15 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 	info->cb_serial = virt_to_phys(ptr);
 }
 
+static void cb_parse_console(void *ptr, struct sysinfo_t *info)
+{
+	const struct cb_console *console = ptr;
+
+	if (console->type == CB_TAG_CONSOLE_SERIAL_IO ||
+	    console->type == CB_TAG_CONSOLE_SERIAL_MMIO)
+		info->has_serial_console = true;
+}
+
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct lb_range *vbnv = (struct lb_range *)ptr;
@@ -375,6 +384,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_SERIAL:
 			cb_parse_serial(ptr, info);
+			break;
+		case CB_TAG_CONSOLE:
+			cb_parse_console(ptr, info);
 			break;
 		case CB_TAG_VERSION:
 			cb_parse_string(ptr, &info->cb_version);

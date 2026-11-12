@@ -30,6 +30,7 @@
 #define _SYSINFO_H
 
 #include <pci/pci.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 /* Maximum number of memory range definitions. */
@@ -59,6 +60,7 @@
 struct sysinfo_t {
 	unsigned int cpu_khz;
 	uintptr_t cb_serial;
+	bool has_serial_console;
 	unsigned short ser_ioport;
 	unsigned long ser_base; // for mmapped serial
 

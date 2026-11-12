@@ -28,6 +28,7 @@ verstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 romstage-y += cbmem.c
 romstage-y += ../common/shrm_load_reset.c
 romstage-y += ../common/qclib.c
+romstage-y += qclib.c
 romstage-y += ../common/aop_load_reset.c
 romstage-y += cpucp_load_reset.c
 romstage-y += ../common/mmu.c

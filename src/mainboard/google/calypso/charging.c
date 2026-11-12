@@ -67,6 +67,15 @@
 #define EN_DEBUG_ACCESS_SRC 0x01
 #define EN_SWITCHER_DAM_500 0x05
 
+#define PMIC0_SLAVE_ID			0
+#define SDAM16_MEM_030			0x7F5E
+#define PMIC0_SDAM16_MEM_030		((PMIC0_SLAVE_ID << 16) | SDAM16_MEM_030)
+#define SDAM16_OS_TYPE_MASK		0x01	/* Bit 0: OSType */
+#define SDAM16_BOOT_REASON_MASK		0x30	/* Bits 5:4: SoCCP boot reason */
+#define SDAM16_INIT_MASK		(SDAM16_BOOT_REASON_MASK | SDAM16_OS_TYPE_MASK)
+#define OS_TYPE_HLOS			0x01
+#define BOOT_REASON_FRESHBOOT		0x00
+
 /*
  * SDAM15_MEM_061 (SPMI address 0x7E7D) - SetMaxPwrReq_BattSts register
  * Bit 6 - DEAD_BATT_STS
@@ -93,6 +102,7 @@ uint8_t mask;
 uint8_t value;
 } default_sdam_config[] = {
 	{SDAM15_MEM_061_ADDR, DEAD_BATT_STS, 0},
+	{PMIC0_SDAM16_MEM_030, SDAM16_INIT_MASK, (BOOT_REASON_FRESHBOOT << 4) | OS_TYPE_HLOS},
 };
 
 /*

@@ -10,7 +10,7 @@
 #define TEST_PRINT 0
 #endif
 
-#if __CONSOLE_SERIAL_SUPPORT__
+#if __CONSOLE_SERIAL_RUNTIME_DECISION__
 bool console_serial_enabled(void)
 {
 	return CONFIG(CONSOLE_SERIAL);

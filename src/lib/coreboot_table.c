@@ -110,6 +110,12 @@ static void lb_add_serial(struct lb_header *header)
 	memcpy(serial, &new_serial, sizeof(*serial));
 	assert(serial->type == LB_SERIAL_TYPE_IO_MAPPED
 	       || serial->type == LB_SERIAL_TYPE_MEMORY_MAPPED)
+	if (!__CONSOLE_SERIAL_ACTIVE__) {
+		/* Initialize UART for payload without tagging console active. */
+		uart_init(get_uart_for_console());
+		return;
+	}
+
 	if (serial->type == LB_SERIAL_TYPE_IO_MAPPED)
 		lb_add_console(LB_TAG_CONSOLE_SERIAL8250, header);
 	else

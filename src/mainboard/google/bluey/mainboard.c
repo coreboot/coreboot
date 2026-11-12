@@ -7,6 +7,7 @@
 #include <commonlib/bsd/cbmem_id.h>
 #include <commonlib/coreboot_tables.h>
 #include <console/console.h>
+#include <console/uart.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/i2c_simple.h>
@@ -249,7 +250,7 @@ static void load_qc_se_firmware_late(void)
 	 * Load console UART QUP firmware.
 	 * This is required even if coreboot's serial output is disabled.
 	 */
-	if (!CONFIG(CONSOLE_SERIAL))
+	if (!console_serial_enabled())
 		qupv3_se_fw_load_and_init(QUPV3_2_SE5, SE_PROTOCOL_UART, FIFO);
 
 	qupv3_se_fw_load_and_init(QUPV3_1_SE0, SE_PROTOCOL_I2C, MIXED); /* Touch I2C */

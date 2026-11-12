@@ -3,6 +3,7 @@
 #include <bootmode.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <console/uart.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/i2c_simple.h>
@@ -64,7 +65,7 @@ static void load_qup_fw(void)
 	 * When coreboot firmware disables serial output,
 	 * we still need to load console UART QUP FW for OS.
 	 */
-	if (!CONFIG(CONSOLE_SERIAL))
+	if (!console_serial_enabled())
 		qupv3_se_fw_load_and_init(QUPV3_1_SE2, SE_PROTOCOL_UART, FIFO);
 
 	qupv3_se_fw_load_and_init(QUPV3_1_SE3, SE_PROTOCOL_I2C, MIXED);  /* Speaker Amps I2C */

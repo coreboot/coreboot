@@ -8,9 +8,7 @@ subdirs-y += ../../../cpu/intel/turbo
 bootblock-y += bootblock/bootblock.c
 bootblock-y += spi.c
 bootblock-y += tsc_freq.c
-ifneq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_CONSOLE_SERIAL_RUNTIME),)
-bootblock-y += bootblock/uart.c
-endif
+bootblock-$(CONFIG_CONSOLE_SERIAL_SUPPORT) += bootblock/uart.c
 bootblock-$(CONFIG_DRIVERS_UART_8250MEM) += uart_debug.c
 
 postcar-y += memmap.c

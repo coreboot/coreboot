@@ -2,35 +2,44 @@
 
 #include <console/uart.h>
 #include <option.h>
+#include <security/vboot/misc.h>
 #include <types.h>
 
-#if __CONSOLE_SERIAL_SUPPORT__
+#if __CONSOLE_SERIAL_RUNTIME_DECISION__
 
 bool console_serial_enabled(void)
 {
-	if (!CONFIG(CONSOLE_SERIAL_RUNTIME))
-		return CONFIG(CONSOLE_SERIAL);
+	if (CONFIG(CONSOLE_SERIAL_ONLY_PAYLOAD) &&
+	    (!CONFIG(VBOOT) || !vboot_logic_executed() ||
+	     vboot_recovery_mode_enabled() ||
+	     vboot_developer_mode_enabled()))
+		return true;
 
-	static bool cached;
-	static bool enabled;
+	if (CONFIG(CONSOLE_SERIAL_RUNTIME)) {
+		static bool cached;
+		static bool enabled;
 
-	if (!cached) {
-		/*
-		 * Normalize to a boolean. With USE_UEFI_VARIABLE_STORE,
-		 * get_uint_option() is stubbed in separate verstage and
-		 * postcar and returns the CONSOLE_SERIAL fallback there.
-		 */
-		enabled = !!get_uint_option("serial_console",
-					    CONFIG(CONSOLE_SERIAL));
-		cached = true;
+		if (!cached) {
+			/*
+			 * Normalize to a boolean. With USE_UEFI_VARIABLE_STORE,
+			 * get_uint_option() is stubbed in separate verstage and
+			 * postcar and returns the CONSOLE_SERIAL fallback there.
+			 */
+			enabled = !!get_uint_option("serial_console",
+						    CONFIG(CONSOLE_SERIAL));
+			cached = true;
+		}
+
+		if (enabled)
+			return true;
 	}
 
-	return enabled;
+	return false;
 }
 
-#endif /* __CONSOLE_SERIAL_SUPPORT__ */
+#endif /* __CONSOLE_SERIAL_RUNTIME_DECISION__ */
 
-#if __CONSOLE_SERIAL_ENABLE__
+#if __CONSOLE_SERIAL_ACTIVE__
 
 void __uart_init(void)
 {
@@ -56,4 +65,4 @@ void __uart_tx_flush(void)
 	uart_tx_flush(get_uart_for_console());
 }
 
-#endif /* __CONSOLE_SERIAL_ENABLE__ */
+#endif /* __CONSOLE_SERIAL_ACTIVE__ */

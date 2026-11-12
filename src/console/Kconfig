@@ -75,7 +75,27 @@ config FIXED_UART_FOR_CONSOLE
 	  specific UART has to be used (e.g. when the platform code
 	  performs dangerous configurations).
 
-if CONSOLE_SERIAL || CONSOLE_SERIAL_RUNTIME || CONSOLE_CBMEM_DUMP_TO_UART
+config CONSOLE_SERIAL_ONLY_PAYLOAD
+	bool "Initialize UART in ramstage and pass LB_TAG_SERIAL to payload"
+	depends on !CONSOLE_SERIAL && !CONSOLE_SERIAL_RUNTIME && DRIVERS_UART
+	default y if CHROMEOS
+	help
+	  Keep coreboot's own serial console disabled across all stages, but
+	  initialize the console UART hardware in ramstage and pass
+	  LB_TAG_SERIAL (without LB_TAG_CONSOLE) in the coreboot table so the
+	  payload can use the UART on demand. When VBOOT is enabled, this
+	  only runs in recovery or developer mode.
+
+	  Note that payloads which key off LB_TAG_SERIAL without checking
+	  LB_TAG_CONSOLE (such as edk2, U-Boot, GRUB, or older libpayload)
+	  will still enable their serial console whenever LB_TAG_SERIAL is
+	  present.
+
+config CONSOLE_SERIAL_SUPPORT
+	def_bool y
+	depends on CONSOLE_SERIAL || CONSOLE_SERIAL_RUNTIME || CONSOLE_CBMEM_DUMP_TO_UART || CONSOLE_SERIAL_ONLY_PAYLOAD
+
+if CONSOLE_SERIAL_SUPPORT
 
 	comment "I/O mapped, 8250-compatible"
 	depends on DRIVERS_UART_8250IO
@@ -194,7 +214,7 @@ config TTYS0_LCS
 	default 3
 	depends on DRIVERS_UART_8250IO || DRIVERS_UART_8250MEM
 
-endif # CONSOLE_SERIAL || CONSOLE_SERIAL_RUNTIME || CONSOLE_CBMEM_DUMP_TO_UART
+endif # CONSOLE_SERIAL_SUPPORT
 
 config SPKMODEM
 	bool "spkmodem (console on speaker) console output"

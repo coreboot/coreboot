@@ -3,6 +3,7 @@
 #ifndef CONSOLE_UART_H
 #define CONSOLE_UART_H
 
+#include <console/console.h>
 #include <stdint.h>
 #include <types.h>
 
@@ -69,36 +70,25 @@ static inline void *uart_platform_baseptr(unsigned int idx)
 
 void oxford_remap(unsigned int new_base);
 
-#define __CONSOLE_SERIAL_SUPPORT__ \
-	(CONFIG(CONSOLE_SERIAL) || CONFIG(CONSOLE_SERIAL_RUNTIME))
+#define __CONSOLE_SERIAL_RUNTIME_DECISION__ \
+	(CONFIG(CONSOLE_SERIAL_RUNTIME) || CONFIG(CONSOLE_SERIAL_ONLY_PAYLOAD))
 
-/*
- * __uart_* only in stages whose console is linked. Bootblock and postcar can
- * have serial support without that stage's console; console_serial_enabled()
- * is still a real function there so early UART bring-up can call it.
- */
-#define __CONSOLE_SERIAL_ENABLE__	(__CONSOLE_SERIAL_SUPPORT__ && \
-	((ENV_BOOTBLOCK && CONFIG(BOOTBLOCK_CONSOLE)) || \
-	 ENV_SEPARATE_ROMSTAGE || ENV_RAMSTAGE || ENV_SEPARATE_VERSTAGE || \
-	 (ENV_POSTCAR && CONFIG(POSTCAR_CONSOLE)) || \
-	 (ENV_SMM && CONFIG(DEBUG_SMI))))
+#define __CONSOLE_SERIAL_ACTIVE__ \
+	((CONFIG(CONSOLE_SERIAL) || CONFIG(CONSOLE_SERIAL_RUNTIME)) && \
+	 __CONSOLE_ENABLE__)
 
-/*
- * Whether serial console output is enabled for this boot. This is not
- * tied to BOOTBLOCK_CONSOLE or POSTCAR_CONSOLE: early UART setup runs
- * once, in the bootblock, and later stages do not repeat it.
- * With CONSOLE_SERIAL_RUNTIME, reads option "serial_console" (fallback:
- * CONSOLE_SERIAL). The result is cached for the life of the stage.
- * USE_UEFI_VARIABLE_STORE stubs option reads in separate verstage and
- * postcar, so those stages use the CONSOLE_SERIAL fallback only.
- */
-#if __CONSOLE_SERIAL_SUPPORT__
+/* Whether the console UART hardware gets initialized for this boot,
+   even if the current stage does not actively output to it. */
+#if __CONSOLE_SERIAL_RUNTIME_DECISION__
 bool console_serial_enabled(void);
 #else
-static inline bool console_serial_enabled(void) { return false; }
+static inline bool console_serial_enabled(void)
+{
+	return CONFIG(CONSOLE_SERIAL) || CONFIG(CONSOLE_CBMEM_DUMP_TO_UART);
+}
 #endif
 
-#if __CONSOLE_SERIAL_ENABLE__
+#if __CONSOLE_SERIAL_ACTIVE__
 void __uart_init(void);
 void __uart_tx_byte(u8 data);
 void __uart_tx_flush(void);

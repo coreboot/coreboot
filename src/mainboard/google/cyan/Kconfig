@@ -119,6 +119,6 @@ config CONSOLE_SERIAL
 	default n
 
 config ENABLE_BUILTIN_COM1
-	default y if CONSOLE_SERIAL
+	default y if CONSOLE_SERIAL_SUPPORT
 
 endif # BOARD_GOOGLE_BASEBOARD_CYAN

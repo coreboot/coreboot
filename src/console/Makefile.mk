@@ -45,8 +45,8 @@ bootblock-y += die.c
 decompressor-y += die.c
 
 # console_serial_enabled() is called from bootblock SIO/UART bring-up even when
-# BOOTBLOCK_CONSOLE is off. __uart_* stay gated on __CONSOLE_SERIAL_ENABLE__.
-ifneq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_CONSOLE_SERIAL_RUNTIME),)
+# BOOTBLOCK_CONSOLE is off. __uart_* stay gated on __CONSOLE_SERIAL_ACTIVE__.
+ifeq ($(CONFIG_CONSOLE_SERIAL_SUPPORT),y)
 ramstage-y += serial_console.c
 smm-$(CONFIG_DEBUG_SMI) += serial_console.c
 verstage-y += serial_console.c

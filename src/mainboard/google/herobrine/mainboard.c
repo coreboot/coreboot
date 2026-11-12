@@ -5,6 +5,7 @@
 #include <bootblock_common.h>
 #include <bootmode.h>
 #include <console/console.h>
+#include <console/uart.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/mmio.h>
@@ -123,7 +124,7 @@ static void mainboard_init(struct device *dev)
 	 * When coreboot firmware disables serial output,
 	 * we still need to load console UART QUP FW for OS.
 	 */
-	if (!CONFIG(CONSOLE_SERIAL))
+	if (!console_serial_enabled())
 		qupv3_se_fw_load_and_init(QUPV3_0_SE5, SE_PROTOCOL_UART, FIFO);
 
 	qupv3_se_fw_load_and_init(QUPV3_1_SE5, SE_PROTOCOL_I2C, MIXED);	 /* Touch I2C */

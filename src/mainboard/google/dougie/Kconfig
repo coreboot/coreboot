@@ -10,6 +10,11 @@ config BOARD_GOOGLE_DOUGIE_COMMON
 	select SPI_FLASH_FORCE_4_BYTE_ADDR_MODE
 	select SPI_FLASH_INCLUDE_ALL_DRIVERS
 
+config BOARD_GOOGLE_DOUGIE
+	select BOARD_GOOGLE_DOUGIE_COMMON
+	select MAINBOARD_HAS_AMP_VIA_I2C
+	select MAINBOARD_HAS_KEYBOARD_VIA_I2C
+
 config BOARD_GOOGLE_BANDIT
 	select BOARD_GOOGLE_DOUGIE_COMMON
 	select MAINBOARD_HAS_CHROME_EC
@@ -63,6 +68,7 @@ config MAINBOARD_DIR
 ##########################################################
 
 config MAINBOARD_PART_NUMBER
+	default "Dougie" if BOARD_GOOGLE_DOUGIE
 	default "Bandit" if BOARD_GOOGLE_BANDIT
 
 config FMDFILE
@@ -101,6 +107,7 @@ config MAINBOARD_HAS_EMMC
 
 config MAINBOARD_HAS_NVME
 	bool "Enable NVMe (PCIe1) storage"
+	default y if BOARD_GOOGLE_DOUGIE
 	default n
 	help
 	  Enable this option if your mainboard is equipped with NVMe

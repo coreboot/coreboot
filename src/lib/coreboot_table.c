@@ -117,9 +117,9 @@ static void lb_add_serial(struct lb_header *header)
 	}
 
 	if (serial->type == LB_SERIAL_TYPE_IO_MAPPED)
-		lb_add_console(LB_TAG_CONSOLE_SERIAL8250, header);
+		lb_add_console(LB_TAG_CONSOLE_SERIAL_IO, header);
 	else
-		lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, header);
+		lb_add_console(LB_TAG_CONSOLE_SERIAL_MMIO, header);
 }
 
 void lb_add_console(uint16_t consoletype, void *data)

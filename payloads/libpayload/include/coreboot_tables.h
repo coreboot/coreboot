@@ -203,12 +203,13 @@ struct cb_console {
 	u16 type;
 };
 
-#define CB_TAG_CONSOLE_SERIAL8250 0
-#define CB_TAG_CONSOLE_VGA        1 // OBSOLETE
-#define CB_TAG_CONSOLE_BTEXT      2 // OBSOLETE
-#define CB_TAG_CONSOLE_LOGBUF     3 // OBSOLETE
-#define CB_TAG_CONSOLE_SROM       4 // OBSOLETE
-#define CB_TAG_CONSOLE_EHCI       5
+#define CB_TAG_CONSOLE_SERIAL_IO   0
+#define CB_TAG_CONSOLE_VGA         1 // OBSOLETE
+#define CB_TAG_CONSOLE_BTEXT       2 // OBSOLETE
+#define CB_TAG_CONSOLE_LOGBUF      3 // OBSOLETE
+#define CB_TAG_CONSOLE_SROM        4 // OBSOLETE
+#define CB_TAG_CONSOLE_EHCI        5
+#define CB_TAG_CONSOLE_SERIAL_MMIO 6
 
 struct cb_forward {
 	u32 tag;

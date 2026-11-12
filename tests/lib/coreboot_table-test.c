@@ -123,7 +123,7 @@ static void test_lb_add_console(void **state)
 {
 	struct lb_header *header = *state;
 
-	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, header);
+	lb_add_console(LB_TAG_CONSOLE_SERIAL_MMIO, header);
 	assert_int_equal(1, header->table_entries);
 	/* Table bytes and checksum should be zero, because it is updated with size of previous
 	   record or when table is closed. No previous record is present. */
@@ -136,8 +136,8 @@ static void test_multiple_entries(void **state)
 	struct lb_header *header = *state;
 
 	/* Add two entries */
-	lb_add_console(LB_TAG_CONSOLE_SERIAL8250, header);
-	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, header);
+	lb_add_console(LB_TAG_CONSOLE_SERIAL_IO, header);
+	lb_add_console(LB_TAG_CONSOLE_SERIAL_MMIO, header);
 
 	assert_int_equal(2, header->table_entries);
 	assert_int_equal(sizeof(struct lb_console), header->table_bytes);
@@ -429,7 +429,7 @@ static void test_write_tables(void **state)
 
 			/* This struct have the same values as created in uart_fill_lb() */
 			const struct lb_console *console = (struct lb_console *)record;
-			assert_int_equal(LB_TAG_CONSOLE_SERIAL8250MEM, console->type);
+			assert_int_equal(LB_TAG_CONSOLE_SERIAL_MMIO, console->type);
 			break;
 		case LB_TAG_VERSION_TIMESTAMP:
 			assert_int_equal(sizeof(struct lb_timestamp), record->size);

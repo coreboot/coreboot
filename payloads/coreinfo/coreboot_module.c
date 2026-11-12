@@ -58,7 +58,8 @@ static int coreboot_module_redraw(WINDOW *win)
 		mvwprintw(win, row++, 1, "Default Output Console: ");
 
 		switch (cb_info.console.type) {
-		case CB_TAG_CONSOLE_SERIAL8250:
+		case CB_TAG_CONSOLE_SERIAL_IO:
+		case CB_TAG_CONSOLE_SERIAL_MMIO:
 			wprintw(win, "Serial Port");
 			break;
 		case CB_TAG_CONSOLE_VGA:

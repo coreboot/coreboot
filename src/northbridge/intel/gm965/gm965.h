@@ -355,12 +355,10 @@
 #define PEG_CAP_SLOT_IMPL    (1 << 8)  /* Slot Implemented */
 
 /* PEG SLOTCAP fields */
-#define SLOTCAP_SLOTNUM_SHIFT  17
+#define SLOTCAP_SLOTNUM_SHIFT  19
+#define SLOTCAP_NO_CMD_COMPLETED (1 << 18)
 #define SLOTCAP_POWER_SCALE_SHIFT 15
 #define SLOTCAP_POWER_LIMIT_SHIFT 7
-
-/* PEG_PEGLC bits */
-#define PEGLC_GPE_EN_ALL     0x07  /* All GPE enables */
 
 /* ================================================================== */
 /* DMIBAR Register Offsets (base = 0xFED18000)                        */

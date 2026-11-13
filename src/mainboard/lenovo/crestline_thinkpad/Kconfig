@@ -1,9 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-if BOARD_LENOVO_X61
-
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_LENOVO_CRESTLINE_THINKPAD_COMMON
+	def_bool n
 	select BOARD_ROMSIZE_KB_4096
 	select CPU_INTEL_SOCKET_M
 	select DRIVERS_I2C_CK505
@@ -31,6 +29,11 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_NSC_PC87392
 	select SYSTEM_TYPE_LAPTOP
 
+config BOARD_LENOVO_X61
+	select BOARD_LENOVO_CRESTLINE_THINKPAD_COMMON
+
+if BOARD_LENOVO_CRESTLINE_THINKPAD_COMMON
+
 config CBFS_SIZE
 	default 0x180000 # size of the BIOS region
 
@@ -38,10 +41,13 @@ config VBOOT_SLOTS_RW_A
 	default y
 
 config MAINBOARD_DIR
-	default "lenovo/x61"
+	default "lenovo/crestline_thinkpad"
+
+config VARIANT_DIR
+	default "x61" if BOARD_LENOVO_X61
 
 config MAINBOARD_PART_NUMBER
-	default "ThinkPad X61"
+	default "ThinkPad X61" if BOARD_LENOVO_X61
 
 config MAX_CPUS
 	int

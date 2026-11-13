@@ -3370,7 +3370,7 @@ void raminit(sysinfo_t *si)
 	post_jedec_sequence(si);
 
 	printk(BIOS_DEBUG, "%s: POST 35 - program_memory_map\n", __func__);
-	program_memory_map(si, igd_compute_ggc());
+	program_memory_map(si, igd_compute_ggc(si));
 
 	printk(BIOS_DEBUG, "%s: POST 36 - final_timing_adjust\n", __func__);
 	final_timing_adjust(si);

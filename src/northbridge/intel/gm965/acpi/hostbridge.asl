@@ -24,6 +24,12 @@ Device (MCHC)
 		,	13,
 		MHBR,	22,	/* MCHBAR */
 
+		Offset (0x54),	/* DEVEN */
+		,	 1,
+		PEGE,	 1,	/* PEG enable */
+		,	 1,
+		IGDE,	 1,	/* IGD enable */
+
 		Offset (0x60),	/* PCIec BAR */
 		PXEN,	 1,	/* Enable */
 		PXSZ,	 2,	/* BAR size */

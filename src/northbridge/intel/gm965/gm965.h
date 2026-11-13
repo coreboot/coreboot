@@ -14,6 +14,7 @@
 
 #include <stdint.h>
 #include <device/dram/ddr2.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/common/fixed_bars.h>
 
@@ -95,6 +96,7 @@
 #define D2F0_BSM             0x5c  /* Base of Stolen Memory */
 
 /* GGC bits */
+#define GGC_IVD           (1 << 1)     /* IGD VGA disable */
 #define GGC_GMS_MASK      (0x7 << 4)   /* GFX UMA size, bits [6:4] */
 
 /* IGD config */
@@ -341,10 +343,10 @@
 /* ================================================================== */
 
 #define PEG_SSID             0x2c  /* Subsystem ID */
-#define PEG_LCAP             0xa4  /* Link Capabilities */
-#define PEG_LCTL             0xa8  /* Link Control */
-#define PEG_LSTS             0xaa  /* Link Status */
+#define PEG_PCIE_CAP         0xa0  /* PCI Express capability */
+#define PEG_LSTS             (PEG_PCIE_CAP + PCI_EXP_LNKSTA)
 #define PEG_SLOTCAP          0xb4  /* Slot Capabilities */
+#define PEG_SLTSTS           (PEG_PCIE_CAP + PCI_EXP_SLTSTA)
 #define PEG_CAP              0xa2  /* PCI Express Capabilities */
 #define PEG_PEGLC            0xec  /* PEG Lane Control */
 #define PEG_NEGWIDTH         0x224 /* Negotiated link width control */
@@ -527,6 +529,9 @@ typedef struct {
 
 	/* Set by raminit() when using cached training data (skip MRC save) */
 	int        fast_boot;
+
+	/* A discrete GPU was found on PEG, so the IGD stays disabled */
+	bool       peg_display;
 } sysinfo_t;
 
 /* ================================================================== */
@@ -535,6 +540,7 @@ typedef struct {
 
 /* northbridge/intel/gm965/early_init.c */
 void gm965_early_init(void);
+bool gm965_peg_has_display(void);
 
 /* northbridge/intel/gm965/raminit.c */
 void raminit(sysinfo_t *si);
@@ -558,7 +564,7 @@ void gm965_pm_init(const sysinfo_t *si);
 
 /* northbridge/intel/gm965/igd.c */
 void gm965_igd_init(const sysinfo_t *si);
-u16 igd_compute_ggc(void);
+u16 igd_compute_ggc(const sysinfo_t *si);
 
 /* northbridge/intel/gm965/memmap.c */
 u32 decode_tseg_size(u8 esmramc);

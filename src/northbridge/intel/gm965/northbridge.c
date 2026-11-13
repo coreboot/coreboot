@@ -143,12 +143,21 @@ static const char *northbridge_acpi_name(const struct device *dev)
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";
 
+	/* Discrete GPU behind the PEG port */
+	const struct device *const parent = dev->upstream ? dev->upstream->dev : NULL;
+	if (parent && is_pci_dev_on_bus(parent, 0) &&
+	    parent->path.pci.devfn == PCI_DEVFN(1, 0) &&
+	    dev->path.type == DEVICE_PATH_PCI && dev->path.pci.devfn == PCI_DEVFN(0, 0))
+		return "DGPU";
+
 	if (!is_pci_dev_on_bus(dev, 0))
 		return NULL;
 
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(0, 0):
 		return "MCHC";
+	case PCI_DEVFN(1, 0):
+		return "PEGP";
 	}
 
 	return NULL;
@@ -204,6 +213,19 @@ static void gm965_init(void *const chip_info)
 
 	/* Always hide ME devices */
 	pci_and_config32(d0f0, D0F0_DEVEN, ~(DEVEN_D3F0 | DEVEN_D3F1 | DEVEN_D3F2 | DEVEN_D3F3));
+
+	/* Romstage selected either the IGD or a discrete GPU on PEG */
+	const bool igd_off = pci_read_config16(d0f0, D0F0_GGC) & GGC_IVD;
+	const bool peg_off = !(pci_read_config32(d0f0, D0F0_DEVEN) & DEVEN_D1F0);
+	struct device *const igd_devs[] = { pcidev_on_root(2, 0), pcidev_on_root(2, 1) };
+	struct device *const peg_dev = pcidev_on_root(1, 0);
+
+	for (size_t i = 0; i < ARRAY_SIZE(igd_devs); i++) {
+		if (igd_devs[i] && igd_off)
+			igd_devs[i]->enabled = 0;
+	}
+	if (peg_dev && peg_off)
+		peg_dev->enabled = 0;
 
 	/* Hide internal functions based on devicetree info. */
 	for (dev = 2; dev > 0; --dev) {

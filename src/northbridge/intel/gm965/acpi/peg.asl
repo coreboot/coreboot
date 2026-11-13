@@ -23,4 +23,18 @@ Device (PEGP)
 			})
 		}
 	}
+
+	/* Discrete GPU, named by northbridge_acpi_name() */
+	Device (DGPU)
+	{
+		Name (_ADR, 0x00000000)
+
+		Method (_STA)
+		{
+			If (\_SB.PCI0.MCHC.PEGE) {
+				Return (0xf)
+			}
+			Return (0)
+		}
+	}
 }

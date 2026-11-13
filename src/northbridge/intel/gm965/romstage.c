@@ -74,6 +74,9 @@ void mainboard_romstage_entry(void)
 	/* RAM initialization */
 	memset(&sysinfo, 0, sizeof(sysinfo));
 
+	/* Decide between IGD and a discrete GPU before allocating stolen memory */
+	sysinfo.peg_display = gm965_peg_has_display();
+
 	mb_pre_raminit_setup(&sysinfo);
 
 	raminit(&sysinfo);

@@ -22,6 +22,8 @@
  */
 
 #include <stdint.h>
+#include <device/device.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <option.h>
@@ -68,12 +70,10 @@ static const uint16_t display_clock_table[3][4] = {
  *
  * coreboot equivalent: igd_compute_ggc() in gm45/igd.c
  */
-u16 igd_compute_ggc(void)
+u16 igd_compute_ggc(const sysinfo_t *si)
 {
-	const uint32_t deven = pci_read_config32(D0F0, D0F0_DEVEN);
-
-	if (!(deven & DEVEN_D2F0)) {
-		/* IGD is not present/enabled: set IVD (bit 1), GMS = 0 */
+	if (!is_devfn_enabled(PCI_DEVFN(2, 0)) || si->peg_display) {
+		/* IGD is disabled or replaced by a discrete GPU: IVD set, GMS = 0 */
 		printk(BIOS_DEBUG, "IGD: disabled, GGC=0x0002 (no stolen memory)\n");
 		return 0x0002;
 	}

@@ -69,9 +69,10 @@ static uintptr_t northbridge_get_tseg_base(void)
 	 * Like i945, gm965 has no separate configurable GTT stolen region.
 	 * BSM (Base of Stolen Memory) in the IGD device directly encodes
 	 * the base of all UMA-stolen memory, so use it when the IGD is
-	 * enabled.  Fall back to TOLUD when the IGD is disabled.
+	 * enabled and has stolen memory.  Fall back to TOLUD otherwise.
 	 */
-	if (pci_read_config32(dev, D0F0_DEVEN) & DEVEN_D2F0)
+	if ((pci_read_config32(dev, D0F0_DEVEN) & DEVEN_D2F0) &&
+	    (pci_read_config16(dev, D0F0_GGC) & GGC_GMS_MASK))
 		tor = pci_read_config32(D2F0, D2F0_BSM);
 	else
 		tor = (pci_read_config16(dev, D0F0_TOLUD) & 0xfff0) << 16;

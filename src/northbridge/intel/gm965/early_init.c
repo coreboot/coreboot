@@ -12,6 +12,10 @@
  * Reference: coreboot GM45 early_init.c (nearly identical for GM965)
  */
 
+#include <delay.h>
+#include <device/device.h>
+#include <device/pci_def.h>
+#include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/common/fixed_bars.h>
 #include <northbridge/intel/gm965/gm965.h>
@@ -71,14 +75,16 @@ void gm965_early_init(void)
 
 	/*
 	 * Enable devices (DEVEN register, D0:F0 offset 0x54).
-	 * Default has D0F0 + IGD enabled; ensure PEG is available
-	 * if a discrete GPU is present (X61 has no PEG, but X61s does).
+	 * The IGD stays enabled until ramstage, as raminit programs its
+	 * clocks. Boards with a discrete GPU also need the PEG port.
 	 *
 	 * BIOS sets DEVEN during PCI_INIT (FFF89000 region).
 	 * Don't enable ME as somehow the handshake does not succeed.
 	 */
-	pci_write_config32(D0F0, D0F0_DEVEN,
-		DEVEN_D0F0 | DEVEN_D2F0 | DEVEN_D2F1);
+	u32 deven = DEVEN_D0F0 | DEVEN_D2F0 | DEVEN_D2F1;
+	if (is_devfn_enabled(PCI_DEVFN(1, 0)))
+		deven |= DEVEN_D1F0;
+	pci_write_config32(D0F0, D0F0_DEVEN, deven);
 
 	/*
 	 * MCHBAR+0x0094: Non-isoch arbitration / channel decode config.
@@ -104,4 +110,51 @@ void gm965_early_init(void)
 	 * that must be cleared before DRAM init begins.
 	 */
 	dmibar_clrbits32(DMILCTL2, 3 << 10);
+}
+
+/*
+ * gm965_peg_has_display() - Detect a discrete GPU on the PEG port
+ *
+ * Boards can be sold with either the IGD or a discrete GPU on PEG, like the
+ * ThinkPad T61. Like i945, check the slot presence, wait for the link to
+ * train and read the class of the device behind the port. If no display
+ * controller is found, the PEG port is disabled again.
+ */
+bool gm965_peg_has_display(void)
+{
+	const pci_devfn_t gpu = PCI_DEV(1, 0, 0);
+	bool found = false;
+	int timeout;
+
+	if (!(pci_read_config32(D0F0, D0F0_DEVEN) & DEVEN_D1F0))
+		return false;
+
+	if (!(pci_read_config16(D1F0, PEG_SLTSTS) & PCI_EXP_SLTSTA_PDS))
+		goto disable_peg;
+
+	/* Wait up to 100 ms for the link to train */
+	for (timeout = 1000; timeout; timeout--) {
+		const u16 lsts = pci_read_config16(D1F0, PEG_LSTS);
+		/* Training done and a negotiated link width, bits [9:4] */
+		if (!(lsts & PCI_EXP_LNKSTA_LT) && ((lsts >> 4) & 0x3f))
+			break;
+		udelay(100);
+	}
+	if (!timeout)
+		goto disable_peg;
+
+	/* Temporarily assign bus 1 to read the device behind the port */
+	pci_write_config8(D1F0, PCI_SECONDARY_BUS, 1);
+	pci_write_config8(D1F0, PCI_SUBORDINATE_BUS, 1);
+	found = pci_read_config16(gpu, PCI_VENDOR_ID) != 0xffff &&
+		(pci_read_config32(gpu, PCI_CLASS_REVISION) >> 24) == PCI_BASE_CLASS_DISPLAY;
+	pci_write_config8(D1F0, PCI_SUBORDINATE_BUS, 0);
+	pci_write_config8(D1F0, PCI_SECONDARY_BUS, 0);
+
+	if (found)
+		return true;
+
+disable_peg:
+	pci_and_config32(D0F0, D0F0_DEVEN, ~DEVEN_D1F0);
+	return false;
 }

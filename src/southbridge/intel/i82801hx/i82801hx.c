@@ -455,9 +455,24 @@ static void i82801hx_set_acpi_mode(void)
 		apm_control(APM_CNT_ACPI_ENABLE);
 }
 
+/*
+ * Hardware sequencing uses the erase size and opcode from VSCC, which is not
+ * set by the hardware. Without it, the block erase size is 256 bytes, which
+ * SPI flash chips usually don't support.
+ */
+static void lpc_spi_init(struct device *dev)
+{
+	const struct southbridge_intel_i82801hx_config *config = dev->chip_info;
+
+	if (config->spi_vscc)
+		RCBA16(RCBA_SPI_VSCC) = config->spi_vscc;
+}
+
 static void lpc_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "i82801hx: %s\n", __func__);
+
+	lpc_spi_init(dev);
 
 	/* IO APIC initialization. */
 	lpc_enable_apic(dev);

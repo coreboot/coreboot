@@ -92,6 +92,12 @@ struct southbridge_intel_i82801hx_config {
 	uint32_t gen2_dec;
 	uint32_t gen3_dec;
 	uint32_t gen4_dec;
+
+	/*
+	 * SPI Vendor Specific Component Capabilities, bits [15:0]: erase opcode
+	 * and block erase size used by hardware sequencing.
+	 */
+	uint16_t spi_vscc;
 };
 
 #endif /* SOUTHBRIDGE_INTEL_I82801HX_CHIP_H */

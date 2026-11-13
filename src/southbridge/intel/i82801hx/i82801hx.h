@@ -250,6 +250,7 @@
 #define RCBA_HPTC 0x3404   /* HPET Configuration */
 #define RCBA_GCS  0x3410   /* General Control and Status */
 #define RCBA_BUC  0x3414   /* Backed Up Control */
+#define RCBA_SPI_VSCC 0x30e1 /* SPIBAR (0x3020) + 0xc1 */
 #define RCBA_FD   0x3418   /* Function Disable */
 #define RCBA_CG   0x341c   /* Clock Gating */
 #define RCBA_FDSW 0x3420   /* Function Disable SUS Well */

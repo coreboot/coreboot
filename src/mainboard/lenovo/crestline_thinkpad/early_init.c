@@ -1,9 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
-#include <delay.h>
-#include <device/pnp_def.h>
-#include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/gm965/gm965.h>
 #include <southbridge/intel/common/lpc_def.h>
@@ -17,33 +14,9 @@ void mainboard_lpc_decode(void)
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0210);
 }
 
-static void early_superio_config(void)
-{
-	int timeout = 100000;
-	const pnp_devfn_t dev = PNP_DEV(0x2e, 3);
-
-	pnp_write_config(dev, 0x29, 0x06);
-
-	while (!(pnp_read_config(dev, 0x29) & 0x08) && timeout--)
-		udelay(1000);
-
-	/* Enable COM1 */
-	pnp_set_logical_device(dev);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x3f8);
-	pnp_set_enable(dev, 1);
-}
-
 void bootblock_mainboard_early_init(void)
 {
-	dlpc_init();
-	/* dock_init initializes the DLPC switch on
-	 *  thinkpad side, so this is required even
-	 *  if we're undocked.
-	 */
-	if (dock_present()) {
-		dock_connect();
-		early_superio_config();
-	}
+	dock_early_init();
 }
 
 void mainboard_late_rcba_config(void)

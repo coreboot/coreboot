@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include "smi.h"
-
 Scope (\_SB)
 {
 	OperationRegion (DLPC, SystemIO, 0x164c, 1)

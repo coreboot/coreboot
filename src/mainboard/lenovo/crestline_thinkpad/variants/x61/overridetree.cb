@@ -1,0 +1,34 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/gm965
+	device domain 0 on
+		chip southbridge/intel/i82801hx
+			device pci 1f.0 on # LPC bridge
+				chip superio/nsc/pc87392
+					device pnp 2e.0 off end #FDC
+
+					device pnp 2e.1 on # Parallel Port
+						io 0x60 = 0x3bc
+						irq 0x70 = 7
+					end
+
+					device pnp 2e.2 off # Serial Port / IR
+						io 0x60 = 0x2f8
+						irq 0x70 = 4
+					end
+
+					device pnp 2e.3 on # Serial Port
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+
+					device pnp 2e.7 on # GPIO
+						io 0x60 = 0x1620
+					end
+
+					device pnp 2e.a off end # WDT
+				end
+			end
+		end
+	end
+end

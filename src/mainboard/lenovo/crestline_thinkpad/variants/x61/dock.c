@@ -7,7 +7,7 @@
 #include <device/pnp_ops.h>
 #include <ec/acpi/ec.h>
 #include <ec/lenovo/h8/h8.h>
-#include "dock.h"
+#include "../../dock.h"
 #include <southbridge/intel/i82801hx/i82801hx.h>
 #include <superio/nsc/pc87382/pc87382.h>
 #include <superio/nsc/pc87392/pc87392.h>
@@ -47,7 +47,7 @@ static void dock_set_usb_power(bool enable)
 	}
 }
 
-static void dock_set_ultrabay_power(bool enable)
+void ultrabay_power_enable(bool enable)
 {
 	if (enable)
 		outb(inb(0x1628) | 0x01, 0x1628);
@@ -203,7 +203,7 @@ int dock_connect(void)
 	pnp_set_enable(dock_gpio, 1);
 
 	/* Enable UltraBay power if a device is present, preserving other dock power bits. */
-	dock_set_ultrabay_power(dock_ultrabay_device_present());
+	ultrabay_power_enable(ultrabay_device_present());
 
 	outb(0x00, 0x1623);
 	outb(0x82, 0x1622);
@@ -233,7 +233,7 @@ void dock_disconnect(void)
 
 	/* Disable dock USB and UltraBay power. */
 	dock_set_usb_power(false);
-	dock_set_ultrabay_power(false);
+	ultrabay_power_enable(false);
 	udelay(10000);
 
 	/* Disconnect LPC bus. */
@@ -247,7 +247,37 @@ int dock_present(void)
 	return !((inw(DEFAULT_GPIOBASE + 0x0c) >> 13) & 1);
 }
 
-int dock_ultrabay_device_present(void)
+/* The X61 only has an Ultrabay on the dock */
+int ultrabay_device_present(void)
 {
 	return inb(0x1621) & 0x02 ? 0 : 1;
+}
+
+static void early_superio_config(void)
+{
+	int timeout = 100000;
+	const pnp_devfn_t dev = PNP_DEV(0x2e, 3);
+
+	pnp_write_config(dev, 0x29, 0x06);
+
+	while (!(pnp_read_config(dev, 0x29) & 0x08) && timeout--)
+		udelay(1000);
+
+	/* Enable COM1 */
+	pnp_set_logical_device(dev);
+	pnp_set_iobase(dev, PNP_IDX_IO0, 0x3f8);
+	pnp_set_enable(dev, 1);
+}
+
+void dock_early_init(void)
+{
+	dlpc_init();
+	/* dock_init initializes the DLPC switch on
+	 *  thinkpad side, so this is required even
+	 *  if we're undocked.
+	 */
+	if (dock_present()) {
+		dock_connect();
+		early_superio_config();
+	}
 }

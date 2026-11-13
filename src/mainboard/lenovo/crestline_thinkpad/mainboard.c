@@ -32,15 +32,13 @@ static void mainboard_init(struct device *dev)
 		ec_write(0x0c, 0xc7);
 
 	idedev = pcidev_on_root(0x1f, 1);
-	if (idedev && idedev->chip_info && dock_ultrabay_device_present()) {
+	if (idedev && idedev->chip_info && ultrabay_device_present()) {
 		struct southbridge_intel_i82801hx_config *config = idedev->chip_info;
 		config->ide_enable_primary = true;
-		/* enable Ultrabay power */
-		outb(inb(0x1628) | 0x01, 0x1628);
+		ultrabay_power_enable(true);
 		ec_write(0x0c, 0x84);
 	} else {
-		/* disable Ultrabay power */
-		outb(inb(0x1628) & ~0x01, 0x1628);
+		ultrabay_power_enable(false);
 		ec_write(0x0c, 0x04);
 	}
 

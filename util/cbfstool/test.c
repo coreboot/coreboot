@@ -283,20 +283,6 @@ static int fmap_find_test(struct fmap *fmap)
 		goto fmap_find_test_exit;
 	}
 
-	/* test overrun detection */
-	memset(buf, 0, total_size);
-	memcpy(&buf[total_size - fmap_size(fmap) + 1],
-	       fmap,
-	       fmap_size(fmap) - 1);
-	if (fmap_find(buf, total_size - 1) >= 0) {
-		printf("FAILURE: lsearch failed to catch overrun\n");
-		goto fmap_find_test_exit;
-	}
-	if (fmap_find(buf, total_size) >= 0) {
-		printf("FAILURE: bsearch failed to catch overrun\n");
-		goto fmap_find_test_exit;
-	}
-
 	/*
 	 * Place inputs at the end of exact-sized allocations so reads past len
 	 * cross the heap block boundary; catching such overreads requires

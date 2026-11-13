@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #define THINKPAD_EC_GPE 0x12
-#define BRIGHTNESS_UP \_SB.PCI0.GFX0.INCB
-#define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB
+#define BRIGHTNESS_UP \BRTU
+#define BRIGHTNESS_DOWN \BRTD
 
 #include "smi.h"
 
@@ -37,6 +37,8 @@ DefinitionBlock(
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}
+
+	#include "acpi/video.asl"
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 

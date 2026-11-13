@@ -55,22 +55,22 @@ static void qcom_mdss_edp_init(struct edid *edid, uintptr_t fb_addr)
 	merge_3d_active(edid);
 }
 
-static struct stopwatch splash_sw;
-
 static void qcom_mdp_start(uintptr_t fb_addr)
 {
-	stopwatch_init_msecs_expire(&splash_sw, CONFIG_PLATFORM_POST_RENDER_DELAY_SEC * 1000);
-
 	write32(&mdp_intf->timing_eng_enable, 1);
 }
 
 void display_stop(void)
 {
+	printk(BIOS_INFO, "Inside %s\n", __func__);
+
 	if (!get_lb_framebuffer())
 		return;
 
-	while (!stopwatch_expired(&splash_sw))
-		mdelay(100);
+	pmic_gpio_output(BACKLIGHT_PWM_PMIC_SID, BACKLIGHT_PWM_PMIC_GPIO, false);
+	gpio_output(GPIO_PANEL_BACKLIGHT_PWR, 0);
+	gpio_output(GPIO_PANEL_BACKLIGHT_EN, 0);
+	gpio_output(GPIO_PANEL_POWER_ON, 0);
 
 	write32(&mdp_intf->timing_eng_enable, 0);
 	mdelay(20);
@@ -78,10 +78,8 @@ void display_stop(void)
 	mdelay(20);
 	write32(&edp_ahbclk->sw_reset, 0);
 
-	pmic_gpio_output(BACKLIGHT_PWM_PMIC_SID, BACKLIGHT_PWM_PMIC_GPIO, false);
-	gpio_output(GPIO_PANEL_BACKLIGHT_PWR, 0);
-	gpio_output(GPIO_PANEL_BACKLIGHT_EN, 0);
-	gpio_output(GPIO_PANEL_POWER_ON, 0);
+	mdelay(20);
+	write32(&disp_cc->mdss_core_gdscr, 0x222f801);
 }
 
 static void display_logo(enum lb_fb_orientation orientation, uintptr_t fb_addr,

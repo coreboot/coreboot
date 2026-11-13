@@ -26,8 +26,8 @@ void mainboard_late_rcba_config(void)
 	RCBA32(D29IP) = 0x40004321;
 	RCBA32(D26IP) = 0x30000021;
 
-	/* PCIe Interrupts */
-	RCBA32(D28IP) = 0x00004321;
+	/* PCIe Interrupts, port 5 is only enabled on the T61 */
+	RCBA32(D28IP) = 0x00014321;
 	/* HD Audio Interrupt */
 	RCBA32(D27IP) = 0x00000002;
 

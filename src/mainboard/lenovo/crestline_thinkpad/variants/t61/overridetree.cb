@@ -1,0 +1,108 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/gm965
+	register "default_pwm_freq" = "220"	# vendor VBT value
+
+	device domain 0 on
+		device pci 00.0 on # Host bridge
+			subsystemid 0x17aa 0x20b1
+		end
+		device pci 01.0 on # PEG, discrete GPU on some models
+			subsystemid 0x17aa 0x20b2
+		end
+		chip southbridge/intel/i82801hx
+			register "sata_port_map" = "0x05"
+			# Vendor BIOS value: opcode 0x20 for 4 KiB erases, 0x2009 on SST chips
+			register "spi_vscc" = "0x2005"
+
+			device pci 19.0 on # GbE LAN
+				subsystemid 0x17aa 0x20b9
+			end
+			device pci 1a.0 on # UHCI #4
+				subsystemid 0x17aa 0x20aa
+			end
+			device pci 1a.1 on # UHCI #5
+				subsystemid 0x17aa 0x20aa
+			end
+			device pci 1a.7 on # EHCI #2
+				subsystemid 0x17aa 0x20ab
+			end
+			device pci 1b.0 on # Audio Controller
+				subsystemid 0x17aa 0x20ac
+			end
+			device pci 1c.0 on # PCIe port 1
+				subsystemid 0x17aa 0x20ad
+			end
+			device pci 1c.1 on # PCIe port 2 (WLAN)
+				subsystemid 0x17aa 0x20ad
+			end
+			device pci 1c.2 on # PCIe port 3
+				subsystemid 0x17aa 0x20ad
+			end
+			device pci 1c.3 on # PCIe port 4
+				subsystemid 0x17aa 0x20ad
+			end
+			device pci 1c.4 on # PCIe port 5
+				subsystemid 0x17aa 0x20ad
+			end
+			device pci 1d.0 on # UHCI #1
+				subsystemid 0x17aa 0x20aa
+			end
+			device pci 1d.1 on # UHCI #2
+				subsystemid 0x17aa 0x20aa
+			end
+			device pci 1d.2 on # UHCI #3
+				subsystemid 0x17aa 0x20aa
+			end
+			device pci 1d.7 on # EHCI #1
+				subsystemid 0x17aa 0x20ab
+			end
+			device pci 1e.0 on # PCI Bridge
+				subsystemid 0x17aa 0x20ae
+			end
+			device pci 1f.0 on # LPC bridge
+				chip superio/nsc/pc87382
+					device pnp 164e.3 off end # Digitizer
+				end
+
+				chip superio/nsc/pc87384
+					device pnp 2e.0 off end # FDC
+
+					device pnp 2e.1 on # Parallel Port
+						io 0x60 = 0x3bc
+						irq 0x70 = 7
+					end
+
+					device pnp 2e.2 off # Serial Port / IR
+						io 0x60 = 0x2f8
+						irq 0x70 = 4
+					end
+
+					device pnp 2e.3 on # Serial Port
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+
+					device pnp 2e.7 on # GPIO
+						io 0x60 = 0x1620
+					end
+
+					device pnp 2e.a off end # WDT
+				end
+			end
+			device pci 1f.1 on # IDE controller (Ultrabay)
+				subsystemid 0x17aa 0x20a6
+			end
+			device pci 1f.2 on # SATA
+				subsystemid 0x17aa 0x20a7
+			end
+			device pci 1f.3 on # SMBUS
+				subsystemid 0x17aa 0x20a9
+				chip drivers/i2c/ck505
+					register "regs" = "{ 0x51 }" # vendor BIOS value
+					device i2c 69 on end
+				end
+			end
+		end
+	end
+end

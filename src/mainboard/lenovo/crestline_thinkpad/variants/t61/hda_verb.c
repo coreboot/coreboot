@@ -1,0 +1,94 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+/*
+ * Pin configurations programmed by the vendor BIOS 7LETB7WW, decoded with
+ * util/hda-decoder.
+ */
+
+#include <device/azalia_device.h>
+
+static const u32 ad1984_verbs[] = {
+	AZALIA_SUBVENDOR(0, 0x17aa20d7),
+	AZALIA_PIN_CFG(0, 0x11, AZALIA_PIN_DESC(
+		AZALIA_JACK,
+		AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_FRONT,
+		AZALIA_HP_OUT,
+		AZALIA_STEREO_MONO_1_8,
+		AZALIA_GREEN,
+		AZALIA_JACK_PRESENCE_DETECT,
+		1, 15
+	)),
+	AZALIA_PIN_CFG(0, 0x12, AZALIA_PIN_DESC(
+		AZALIA_INTEGRATED,
+		AZALIA_INTERNAL,
+		AZALIA_SPEAKER,
+		AZALIA_OTHER_ANALOG,
+		AZALIA_COLOR_UNKNOWN,
+		AZALIA_NO_JACK_PRESENCE_DETECT,
+		1, 0
+	)),
+	AZALIA_PIN_CFG(0, 0x13, 0x511301f0), // does not describe a jack or internal device
+	AZALIA_PIN_CFG(0, 0x14, AZALIA_PIN_DESC(
+		AZALIA_JACK,
+		AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_FRONT,
+		AZALIA_MIC_IN,
+		AZALIA_STEREO_MONO_1_8,
+		AZALIA_RED,
+		AZALIA_JACK_PRESENCE_DETECT,
+		2, 1
+	)),
+	AZALIA_PIN_CFG(0, 0x15, AZALIA_PIN_DESC(
+		AZALIA_INTEGRATED,
+		AZALIA_INTERNAL,
+		AZALIA_MIC_IN,
+		AZALIA_OTHER_ANALOG,
+		AZALIA_COLOR_UNKNOWN,
+		AZALIA_NO_JACK_PRESENCE_DETECT,
+		2, 14
+	)),
+	AZALIA_PIN_CFG(0, 0x16, 0x593301f0), // does not describe a jack or internal device
+	AZALIA_PIN_CFG(0, 0x17, 0x55a601f0), // does not describe a jack or internal device
+	AZALIA_PIN_CFG(0, 0x18, 0x55a601f0), // does not describe a jack or internal device
+	AZALIA_PIN_CFG(0, 0x1a, AZALIA_PIN_DESC(
+		AZALIA_INTEGRATED,
+		AZALIA_INTERNAL | AZALIA_REAR,
+		AZALIA_DEVICE_OTHER,
+		AZALIA_ATAPI_INTERNAL,
+		AZALIA_BLACK,
+		AZALIA_NO_JACK_PRESENCE_DETECT,
+		15, 0
+	)),
+	AZALIA_PIN_CFG(0, 0x1b, AZALIA_PIN_DESC(
+		AZALIA_JACK,
+		AZALIA_SEPARATE_CHASSIS | AZALIA_REAR,
+		AZALIA_SPDIF_OUT,
+		AZALIA_RCA,
+		AZALIA_BLACK,
+		AZALIA_NO_JACK_PRESENCE_DETECT,
+		10, 0
+	)),
+	AZALIA_PIN_CFG(0, 0x1c, AZALIA_PIN_DESC(
+		AZALIA_JACK,
+		AZALIA_SEPARATE_CHASSIS | AZALIA_REAR,
+		AZALIA_MIC_IN,
+		AZALIA_STEREO_MONO_1_8,
+		AZALIA_RED,
+		AZALIA_JACK_PRESENCE_DETECT,
+		2, 0
+	)),
+};
+
+const u32 pc_beep_verbs[] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Analog Devices AD1984",
+		.vendor_id    = 0x11d41984,
+		.subsystem_id = 0x17aa20d7,
+		.address      = 0,
+		.verbs        = ad1984_verbs,
+		.verb_count   = ARRAY_SIZE(ad1984_verbs),
+	},
+};
+
+AZALIA_ARRAY_SIZES;

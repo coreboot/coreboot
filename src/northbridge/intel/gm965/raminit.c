@@ -1692,26 +1692,28 @@ static void rcomp_init(sysinfo_t *si)
 	}
 
 	/*
-	 * Step 8: Program RCOMP_CFG2 clock-dependent value.
-	 * BIOS: DAT_fed14414 = lookup[mem_clock] + lookup[fsb_clock]
-	 */
-	/*
-	 * Clock-dependent RCOMP comp codes - from BIOS ROM at 0xFFFF5904/5909
-	 * and verified against inteltool dump (RCOMP_CFG2 = 0x50 for FSB800+DDR2-667).
+	 * Step 8: Program RCOMP_CFG2, one nibble per channel.
 	 *
-	 * Vendor BIOS uses its own sysinfo indices (0x1c, 0x1d) which differ
-	 * from our fsb_clock / mem_clock.  Mapped to our enum values:
-	 *   fsb_clock: FSB_CLOCK_533MHz=1, FSB_CLOCK_800MHz=2, FSB_CLOCK_667MHz=3
-	 *   mem_clock: MEM_CLOCK_533MT=1, MEM_CLOCK_667MT=2
-	 *
-	 * ROM FSB table {0x00,0x01,0x05,0x00} @ vendor idx 0-3
-	 * ROM MEM table {0x00,0x10,0x50,0x00} @ vendor idx 0-3
-	 * Vendor FSB idx = fsb_clock - 2; MEM idx = mem_clock (direct).
+	 * The vendor BIOS indexes two ROM tables with a population code per
+	 * channel: 0 = empty, 1 = DIMM present, +1 if dual rank, +2 if x16,
+	 * with the second slot of the channel in the upper nibble of the code.
+	 * ThinkPad T61 vendor BIOS: tables at 0xFFFF5844/5849, code built at
+	 * 0xFFFF384E. With a dual-rank x8 DIMM in each channel it programs 0x55.
+	 * The second table is the first one shifted by a nibble.
 	 */
-	static const uint8_t rcomp_fsb_codes[] = { 0, 0x00, 0x00, 0x01 };  /* indexed by fsb_clock */
-	static const uint8_t rcomp_mem_codes[] = { 0, 0x10, 0x50, 0x00 };  /* indexed by mem_clock */
-	uint8_t rcomp_code = rcomp_fsb_codes[si->timings.fsb_clock] +
-		rcomp_mem_codes[si->timings.mem_clock];
+	static const uint8_t rcomp_codes[] = { 0x00, 0x01, 0x05, 0x00, 0x00 };
+	uint8_t rcomp_code = 0;
+	for (int ch = 0; ch < 2; ch++) {
+		unsigned int pop = 0;
+		for (int s = 1; s >= 0; s--) {
+			const dimminfo_t *d = &si->dimms[ch * 2 + s];
+			pop <<= 4;
+			if (d->present)
+				pop |= 1 + d->dual_rank + 2 * d->x16;
+		}
+		if (pop < ARRAY_SIZE(rcomp_codes))
+			rcomp_code |= rcomp_codes[pop] << (4 * ch);
+	}
 	mchbar_write8(RCOMP_CFG2, rcomp_code);
 
 	/*

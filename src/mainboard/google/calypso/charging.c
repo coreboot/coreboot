@@ -74,6 +74,7 @@
 #define SDAM16_BOOT_REASON_MASK		0x30	/* Bits 5:4: SoCCP boot reason */
 #define SDAM16_INIT_MASK		(SDAM16_BOOT_REASON_MASK | SDAM16_OS_TYPE_MASK)
 #define OS_TYPE_HLOS			0x01
+#define OS_TYPE_BOOTLOADER		0x00
 #define BOOT_REASON_FRESHBOOT		0x00
 
 /*
@@ -115,6 +116,12 @@ void init_sdam_config(void)
 	for (size_t i = 0; i < count; i++)
 		spmi_rmw8(default_sdam_config[i].addr, default_sdam_config[i].mask,
 				default_sdam_config[i].value);
+}
+
+void configure_soccp_charging_mode_bootloader(void)
+{
+	spmi_rmw8(PMIC0_SDAM16_MEM_030, SDAM16_INIT_MASK,
+		    (BOOT_REASON_FRESHBOOT << 4) | OS_TYPE_BOOTLOADER);
 }
 
 /*

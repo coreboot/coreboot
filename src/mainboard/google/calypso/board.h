@@ -90,6 +90,7 @@ void init_sdam_config(void);
 void configure_dead_battery_boot(void);
 bool mainboard_nvme_present(void);
 void clear_pending_ec_events(void);
+void configure_soccp_charging_mode_bootloader(void);
 /*
  * Detect an AC unplug event
  *

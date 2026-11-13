@@ -97,6 +97,7 @@ static void mainboard_init(void *chip_info)
 
 	/* Skip mainboard initialization if boot mode is "low-battery" or "off-mode charging" */
 	if (is_low_power_boot_with_charger()) {
+		configure_soccp_charging_mode_bootloader();
 		handle_low_power_charging_boot(boot_mode);
 		halt();
 	}

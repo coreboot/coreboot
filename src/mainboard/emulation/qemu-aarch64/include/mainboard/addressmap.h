@@ -21,6 +21,7 @@
  * 0x0e00_0000..0x0eff_ffff: Secure SRAM
  * 0x4000_0000..: RAM
  */
+#define VIRT_FLASH_BASE 0x00000000
 #define VIRT_UART_BASE 0x09000000
 #define VIRT_RTC_BASE 0x09010000
 #define VIRT_FW_CFG_BASE 0x09020000
@@ -32,6 +33,7 @@
 #define VIRT_SECRAM_BASE 0xe000000
 #define VIRT_PCIE_LOW_MMIO_BASE 0x10000000
 #define VIRT_PCIE_LOW_MMIO_LIMIT 0x3efeffff
+#define VIRT_DRAM_START 0x40000000
 /*
  * From hw/arm/virt.c:
  * Highmem IO Regions: This memory map is floating, located after the RAM.

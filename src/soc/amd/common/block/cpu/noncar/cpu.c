@@ -77,16 +77,6 @@ unsigned int smbios_cpu_get_voltage(void)
 	return get_pstate_core_uvolts(pstate_reg) / 100000; /* uV to (10 * V) */
 }
 
-uint32_t get_pstate_0_reg(void)
-{
-	return 0;
-}
-
-uint32_t get_pstate_latency(void)
-{
-	return 0;
-}
-
 unsigned int smbios_processor_family(struct cpuid_result res)
 {
 	return 0x6b; /* Zen */

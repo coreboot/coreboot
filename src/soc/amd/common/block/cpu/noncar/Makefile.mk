@@ -1,6 +1,9 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_NONCAR),y)
 
+all_x86-y += pstate.c
+smm-y += pstate.c
+
 bootblock-y += bootblock.c
 bootblock-y += cpu.c
 bootblock-y += early_cache.c

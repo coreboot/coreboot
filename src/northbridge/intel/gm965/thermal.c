@@ -57,7 +57,7 @@ static inline int smbus_write_word(u8 device, u8 address, u16 data)
  *   - Critical:   +100C (0x0C80)
  *   - Config: continuous conversion, comparator mode
  */
-static void thermal_sensor_init_dimm(int slot)
+static bool thermal_sensor_init_dimm(int slot)
 {
 	uint8_t slave = TSE2004_SLAVE_BASE + slot;
 	int cap;
@@ -65,7 +65,7 @@ static void thermal_sensor_init_dimm(int slot)
 	/* Check if sensor is present by reading capability register */
 	cap = smbus_read_word(slave, TSE2004_CAPABILITY);
 	if (cap < 0)
-		return;  /* No sensor on this DIMM */
+		return false;  /* No sensor on this DIMM */
 
 	/*
 	 * Program alarm thresholds.
@@ -95,6 +95,8 @@ static void thermal_sensor_init_dimm(int slot)
 	 * Value: 0x0060 (resolution = max, continuous, comparator)
 	 */
 	smbus_write_word(slave, TSE2004_CONFIG, 0x0060);
+
+	return true;
 }
 
 /*
@@ -132,10 +134,8 @@ void gm965_thermal_init(sysinfo_t *si)
 	 * through the per-DIMM array), calls FFF02709 per present DIMM.
 	 */
 	for (slot = 0; slot < 4; slot++) {
-		if (si->dimms[slot].present) {
-			thermal_sensor_init_dimm(slot);
+		if (si->dimms[slot].present && thermal_sensor_init_dimm(slot))
 			found = 1;
-		}
 	}
 
 	/*

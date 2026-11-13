@@ -170,6 +170,29 @@ IntelGopDriver.efi-type := raw
 IntelGopDriver.efi-compression := LZMA
 endif
 
+# Optional edk2 assets in CBFS (efi/<name>) instead of embedding in the FV.
+ifeq ($(CONFIG_EDK2_CBFS_ASSETS),y)
+EDK2_BOOTSPLASH_SRC := $(call strip_quotes,$(CONFIG_EDK2_BOOTSPLASH_FILE))
+ifneq ($(EDK2_BOOTSPLASH_SRC),)
+ifeq ($(filter /%,$(EDK2_BOOTSPLASH_SRC)),)
+EDK2_BOOTSPLASH_SRC := $(top)/$(EDK2_BOOTSPLASH_SRC)
+endif
+$(obj)/efi_logo.bmp: $(EDK2_BOOTSPLASH_SRC)
+	printf "    CONVERT    $(subst $(obj)/,,$(@))\n"
+	convert -background None $< BMP3:$@
+
+cbfs-files-y += efi/logo.bmp
+efi/logo.bmp-file := $(obj)/efi_logo.bmp
+efi/logo.bmp-type := raw
+endif
+ifeq ($(CONFIG_EDK2_ENABLE_IPXE),y)
+cbfs-files-y += efi/ipxe.efi
+efi/ipxe.efi-file := $(IPXE_EFI)
+efi/ipxe.efi-type := raw
+efi/ipxe.efi-compression := LZMA
+endif
+endif
+
 ifeq ($(CONFIG_PAYLOAD_EDK2)$(CONFIG_SMMSTORE)$(CONFIG_DRIVERS_OPTION_CFR),yyy)
 ifeq ($(CONFIG_DRIVERS_EFI_VARIABLE_STORE),)
 show_notices:: warn_no_option_cfr_enabled
@@ -223,6 +246,7 @@ EDK2_PAYLOAD_ARGS = \
 	CONFIG_EDK2_DEBUG=$(CONFIG_EDK2_DEBUG) \
 	CONFIG_EDK2_RELEASE=$(CONFIG_EDK2_RELEASE) \
 	CONFIG_EDK2_BOOTSPLASH_FILE=$(CONFIG_EDK2_BOOTSPLASH_FILE) \
+	CONFIG_EDK2_CBFS_ASSETS=$(CONFIG_EDK2_CBFS_ASSETS) \
 	CONFIG_EDK2_BOOT_MANAGER_ESCAPE=$(CONFIG_EDK2_BOOT_MANAGER_ESCAPE) \
 	CONFIG_EDK2_BOOT_TIMEOUT=$(CONFIG_EDK2_BOOT_TIMEOUT) \
 	CONFIG_EDK2_CBMEM_LOGGING=$(CONFIG_EDK2_CBMEM_LOGGING) \

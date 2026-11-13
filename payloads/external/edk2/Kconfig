@@ -169,6 +169,24 @@ config EDK2_BOOTSPLASH_FILE
 	  If an absolute path is not given, the path will assumed to be
 	  relative to the coreboot root directory.
 
+	  With EDK2_CBFS_ASSETS, the converted BMP is added to CBFS as
+	  efi/logo.bmp instead of being injected into the edk2 firmware volume.
+
+config EDK2_CBFS_ASSETS
+	bool "Store logo and iPXE in CBFS instead of the firmware volume"
+	depends on !EDK2_REPO_OFFICIAL
+	default y if EDK2_REPO_MRCHROMEBOX
+	help
+	  Add optional edk2 assets to CBFS (efi/<name>) instead of embedding
+	  them in the edk2 firmware volume at build time. The payload loads
+	  them from CBFS at runtime.
+
+	  When enabled:
+	  - Bootsplash is added as efi/logo.bmp
+	  - iPXE (if EDK2_ENABLE_IPXE) is added as efi/ipxe.efi
+
+	  Disable to keep the traditional FV-embedding behavior.
+
 config EDK2_BOOT_MANAGER_ESCAPE
 	bool "Use Escape key for Boot Manager"
 	default n
@@ -353,7 +371,8 @@ config EDK2_ENABLE_IPXE
 	select PXE
 	help
 	  Instructs coreboot build system to build iPXE EFI target and include
-	  it in the EDK2 payload.
+	  it in the EDK2 payload. With EDK2_CBFS_ASSETS it is added to CBFS as
+	  efi/ipxe.efi; otherwise it is embedded in the edk2 firmware volume.
 
 config EDK2_IPXE_OPTION_NAME
 	string "iPXE option name"

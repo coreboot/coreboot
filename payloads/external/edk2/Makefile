@@ -61,8 +61,11 @@ endif
 # OPTION			= DEFAULT_VALUE
 #
 # BOOTSPLASH_IMAGE		= FALSE
+# Skip when EDK2_CBFS_ASSETS (logo goes to CBFS as efi/logo.bmp).
+ifneq ($(CONFIG_EDK2_CBFS_ASSETS),y)
 ifneq ($(CONFIG_EDK2_BOOTSPLASH_FILE),)
 BUILD_STR += -D BOOTSPLASH_IMAGE=TRUE
+endif
 endif
 # BOOT_MANAGER_ESCAPE		= FALSE
 ifeq ($(CONFIG_EDK2_BOOT_MANAGER_ESCAPE),y)
@@ -220,8 +223,11 @@ ifeq ($(CONFIG_EDK2_LOAD_OPTION_ROMS),y)
 BUILD_STR += -D LOAD_OPTION_ROMS=TRUE
 endif
 # NETWORK_IPXE                  = FALSE
+# Skip NETWORK_IPXE when EDK2_CBFS_ASSETS (ipxe.efi goes to CBFS); keep option name PCD.
 ifeq ($(CONFIG_EDK2_IPXE),y)
+ifneq ($(CONFIG_EDK2_CBFS_ASSETS),y)
 BUILD_STR += -D NETWORK_IPXE=TRUE
+endif
 BUILD_STR += --pcd gUefiPayloadPkgTokenSpaceGuid.PcdiPXEOptionName=L"$(CONFIG_EDK2_IPXE_OPTION_NAME)"
 endif
 # EDK2_USE_LVGL_RENDERER		= FALSE
@@ -304,21 +310,25 @@ $(EDK2_PATH): $(WORKSPACE)
 		git submodule update --init --checkout --recursive
 
 logo: $(EDK2_PATH)
+ifneq ($(CONFIG_EDK2_CBFS_ASSETS),y)
 	case "$(CONFIG_EDK2_BOOTSPLASH_FILE)" in \
 		"") ;; \
 		/*) convert -background None $(CONFIG_EDK2_BOOTSPLASH_FILE) \
 			BMP3:$(EDK2_PATH)/MdeModulePkg/Logo/Logo.bmp;; \
 		*) convert -background None $(top)/$(CONFIG_EDK2_BOOTSPLASH_FILE) \
 			BMP3:$(EDK2_PATH)/MdeModulePkg/Logo/Logo.bmp;; \
-	esac \
+	esac
+endif
 
 ipxe_rom: $(EDK2_PATH)
-	if [ "$(CONFIG_EDK2_IPXE)" == "y" ]; then \
-		echo "    Including externally built iPXE"; \
-		mkdir -p $(EDK2_PATH)/UefiPayloadPkg/NetworkDrivers/; \
-		cp $(top)/payloads/external/iPXE/ipxe/ipxe.rom \
-			$(EDK2_PATH)/UefiPayloadPkg/NetworkDrivers/ipxe.efi; \
-	fi \
+ifeq ($(CONFIG_EDK2_IPXE),y)
+ifneq ($(CONFIG_EDK2_CBFS_ASSETS),y)
+	echo "    Including externally built iPXE"; \
+	mkdir -p $(EDK2_PATH)/UefiPayloadPkg/NetworkDrivers/; \
+	cp $(top)/payloads/external/iPXE/ipxe/ipxe.rom \
+		$(EDK2_PATH)/UefiPayloadPkg/NetworkDrivers/ipxe.efi
+endif
+endif
 
 checktools:
 	echo -n "EDK2: Checking uuid-dev:"

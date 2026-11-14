@@ -375,6 +375,24 @@ static void per_channel_rec_training(int ch, sysinfo_t *si)
 }
 
 /*
+ * Settings made before training which are kept afterwards, so they are
+ * also needed when using cached training results.
+ */
+static void program_rec_io_config(const sysinfo_t *si)
+{
+	/*
+	 * Write frequency-dependent value to IO_INIT_CFG2 bits [27:23].
+	 * BIOS: RMW with mask 0xF07FFFFF, shift << 23.
+	 */
+	mchbar_clrsetbits32(IO_INIT_CFG2,
+		0x1f << 23,
+		(uint32_t)io_init_cfg2_training[si->timings.mem_clock] << 23);
+
+	/* Clear DCC bit 15 - 16-bit AND 0x7FFF */
+	mchbar_clrbits16(DCC_MCHBAR, 0x8000);
+}
+
+/*
  * raminit_program_training() - Write cached training results to hardware.
  *
  * Called on warm boot / S3 resume instead of receive_enable_training().
@@ -384,6 +402,8 @@ static void per_channel_rec_training(int ch, sysinfo_t *si)
 void raminit_program_training(sysinfo_t *si)
 {
 	int ch;
+
+	program_rec_io_config(si);
 
 	for (ch = 0; ch < 2; ch++) {
 		int slot = ch * 2;
@@ -449,20 +469,11 @@ void receive_enable_training(sysinfo_t *si)
 	mchbar_setbits32(TRAIN_ENABLE(0), TRAIN_ENABLE_BIT);
 	mchbar_setbits32(TRAIN_ENABLE(1), TRAIN_ENABLE_BIT);
 
-	/*
-	 * Write frequency-dependent value to IO_INIT_CFG2 bits [27:23].
-	 * BIOS: RMW with mask 0xF07FFFFF, shift << 23.
-	 */
-	mchbar_clrsetbits32(IO_INIT_CFG2,
-		0x0f800000,  /* clear bits [27:23] */
-		(uint32_t)io_init_cfg2_training[si->timings.mem_clock] << 23);
+	program_rec_io_config(si);
 
 	/* Clear RW_PTR_CTRL bits [11:10] - 16-bit AND 0xF3FF */
 	mchbar_clrbits16(RW_PTR_CTRL(0), 0x0c00);
 	mchbar_clrbits16(RW_PTR_CTRL(1), 0x0c00);
-
-	/* Clear DCC bit 15 - 16-bit AND 0x7FFF */
-	mchbar_clrbits16(DCC_MCHBAR, 0x8000);
 
 	/* === Per-channel training === */
 

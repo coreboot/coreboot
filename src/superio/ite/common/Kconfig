@@ -75,6 +75,13 @@ config SUPERIO_ITE_ENV_CTRL_EXT_ANY_TMPIN
 	  Temperature can be read to any TMPIN from an external sensor via SST/PECI
 	  (instead of TMPIN3 only). Mutually exclusive with TMPIN_SRC_SEL.
 
+config SUPERIO_ITE_ENV_CTRL_BANK_SEL
+	bool
+	help
+	  The environment controller registers are banked through BANK_SEL
+	  in bits 6-5 of index 0x06. A warm reset does not reset the bank,
+	  so select bank 0 before the init code touches any register.
+
 config SUPERIO_ITE_ENV_CTRL_TMPIN_SRC_SEL
 	bool
 	depends on !SUPERIO_ITE_ENV_CTRL_EXT_ANY_TMPIN

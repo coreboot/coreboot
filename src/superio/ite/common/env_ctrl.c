@@ -352,6 +352,15 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 {
 	size_t i;
 
+	/*
+	 * Everything below lives in bank 0, but the bank select survives a
+	 * warm reset. Whatever the OS left selected (superiotool -e leaves
+	 * bank 2) would otherwise redirect these writes.
+	 */
+	if (CONFIG(SUPERIO_ITE_ENV_CTRL_BANK_SEL))
+		pnp_unset_and_set_hwm5_index(base, ITE_EC_BANK_SELECT,
+			ITE_EC_BANK_SELECT_MASK, ITE_EC_BANK_SELECT_BANK(0));
+
 	/* Configure 23.43kHz PWM active high output */
 	u8 fan_ctl = pnp_read_hwm5_index(base, ITE_EC_FAN_CTL_MODE);
 	fan_ctl &= ~ITE_EC_FAN_PWM_CLOCK_MASK;

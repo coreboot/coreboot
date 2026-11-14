@@ -43,7 +43,11 @@ config MAINBOARD_PART_NUMBER
 
 config MAX_CPUS
 	int
-	default 2
+	default 8
+	help
+	  The GICv2 only support 8 cores. When you enable GICv3 or specify
+	  more than 8 cores on the qemu cmdline using "-smp" this machine
+	  won't boot.
 
 config MAINBOARD_VENDOR
 	string

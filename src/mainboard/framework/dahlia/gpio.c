@@ -176,6 +176,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_V10, NONE),
 	PAD_NC(GPP_V11, NONE),						/* PM_SLP_LAN# 100k pulldown */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_V12, NONE, DEEP, NF1),		/* SOC_WL_WAKE# */
+	PAD_CFG_NF(GPP_V13, NONE, DEEP, NF1),				/* CATERR# */
+	PAD_CFG_NF(GPP_V14, NONE, DEEP, NF1),				/* FORCEPR# */
+	PAD_CFG_NF(GPP_V15, NONE, DEEP, NF1),				/* THERMTRIP# */
 	PAD_CFG_NF(GPP_V16, NONE, DEEP, NF1),				/* SOC_VCCST_EN */
 };
 

@@ -145,6 +145,13 @@ static int smbios_write_type43_tpm(struct device *dev, int *handle, unsigned lon
 	uint32_t fw_ver1, fw_ver2;
 	uint8_t major_spec_ver, minor_spec_ver;
 
+	/*
+	 * With vboot the TSS is only set up in verstage, so ramstage has to
+	 * set it up again before it can ask the TPM for its properties.
+	 */
+	if (tlcl_lib_init() != TPM_SUCCESS)
+		return 0;
+
 	if (tlcl_get_family() == TPM_1)
 		return 0;
 

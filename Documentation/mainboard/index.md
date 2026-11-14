@@ -229,6 +229,7 @@ vboot <lenovo/vboot.md>
 :maxdepth: 1
 
 X200 / T400 / T500 / X301 / X61 common <lenovo/gm45_gm965_series.md>
+T61 / T61p <lenovo/t61.md>
 X301 <lenovo/x301.md>
 ```
 

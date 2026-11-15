@@ -49,7 +49,7 @@ get_commit_reference() {
 	change_id="$1"
 	response="$(api_request "changes/coreboot~${change_id}/revisions/current/commit")"
 
-	hash="$(echo "${response}" | jq --raw-output .commit)"
+	hash="$(printf '%s\n' "${response}" | jq --raw-output .commit)"
 	reference="$(search_commit "${hash}")"
 
 	# Earlier changes merged through Gerrit (around < CB:1000) did not
@@ -61,7 +61,7 @@ get_commit_reference() {
 	# To workaround this issue, we attempt to find the corresponding commit
 	# by grepping for a commit message that contains a specific "Change-Id".
 	if [ -z "${reference}" ]; then
-		hash="$(echo "${response}" \
+		hash="$(printf '%s\n' "${response}" \
 		    | jq .message          \
 		    | sed -E 's/.*Change-Id: ([[:alnum:]]+).*/\1/')"
 		reference="$(search_commit --grep "${hash}")"
@@ -85,7 +85,7 @@ for change_id in $(${GIT} log -n 1 | grep -Eo 'CB:[0-9]+'); do
 		continue
 	fi
 
-	status="$(echo "${response}" | jq --raw-output .status)"
+	status="$(printf '%s\n' "${response}" | jq --raw-output .status)"
 
 	if [ "${status}" = "MERGED" ]; then
 		reference="$(get_commit_reference "${change_id}")"

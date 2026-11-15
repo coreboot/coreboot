@@ -79,6 +79,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->RtcMemoryLock = lockdown_by_fsp;
 	params->SkipPamLock = !lockdown_by_fsp;
 
+	/* Skip setting D0I3 bit for all HECI devices */
+	params->DisableD0I3SettingForHeci = 1;
+
 	/* coreboot will send EOP before loading payload */
 	params->EndOfPostMessage = EOP_DISABLE;
 

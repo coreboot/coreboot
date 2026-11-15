@@ -6,3 +6,4 @@ romstage-y += variants/$(VARIANT_DIR)/gpio.c
 romstage-y += variants/$(VARIANT_DIR)/romstage.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += variants/$(VARIANT_DIR)/gma-mainboard.ads
 ramstage-y += variants/$(VARIANT_DIR)/hda_verb.c
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c

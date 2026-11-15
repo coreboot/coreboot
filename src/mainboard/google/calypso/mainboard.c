@@ -26,6 +26,10 @@
 
 bool mainboard_needs_pcie_init(void)
 {
+	/* Skip PCIe initialization if boot mode is "low-battery" or "off-mode charging"*/
+	if (is_low_power_boot_with_charger())
+		return false;
+
 	return mainboard_nvme_present();
 }
 

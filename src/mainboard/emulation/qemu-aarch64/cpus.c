@@ -31,9 +31,7 @@ static void qemu_aarch64_scan_bus(struct device *dev)
 	if (!has_gicv2)
 		die("No GICv2 found. Unsupported platform");
 
-	const size_t max_cpus = has_gicv2 ? MIN(8, CONFIG_MAX_CPUS) :
-				MIN(512, CONFIG_MAX_CPUS);
-	for (int i = 0; i < max_cpus; i++) {
+	for (int i = 0; i < CONFIG_MAX_CPUS; i++) {
 		char path[14];
 		snprintf(path, sizeof(path), "/cpus/cpu@%u", i);
 		if (!(node = dt_find_node_by_path(tree, path, NULL, NULL, 0)))

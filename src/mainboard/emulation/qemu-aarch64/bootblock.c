@@ -2,6 +2,7 @@
 
 #include <arch/mmu.h>
 #include <bootblock_common.h>
+#include <mainboard/addressmap.h>
 #include <symbols.h>
 
 DECLARE_REGION(flash);
@@ -15,12 +16,7 @@ void bootblock_mainboard_init(void)
 
 	mmu_config_range(_flash, REGION_SIZE(flash), MA_MEM | MA_RO | MA_MEM_NC);
 
-	mmu_config_range(_ttb, REGION_SIZE(ttb), MA_MEM | MA_S | MA_RW);
-	mmu_config_range(_bootblock, REGION_SIZE(bootblock), MA_MEM | MA_S | MA_RW);
-	mmu_config_range(_romstage, REGION_SIZE(romstage), MA_MEM | MA_S | MA_RW);
-	mmu_config_range(_ramstage, REGION_SIZE(ramstage), MA_MEM | MA_S | MA_RW);
-
-	mmu_config_range(_bl31, REGION_SIZE(bl31), MA_MEM | MA_S | MA_RW);
+	mmu_config_range((void *)VIRT_SECRAM_BASE, VIRT_SECRAM_SIZE, MA_MEM | MA_S | MA_RW);
 
 	mmu_config_range((void *)CONFIG_ECAM_MMCONF_BASE_ADDRESS, CONFIG_ECAM_MMCONF_LENGTH,
 			 MA_DEV | MA_RW);

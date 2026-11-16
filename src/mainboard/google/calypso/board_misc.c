@@ -36,12 +36,10 @@ uint32_t sku_id(void)
 bool mainboard_nvme_present(void)
 {
 	if (fw_config_get_field(FW_CONFIG_FIELD(STORAGE_TYPE)) == UNDEFINED_FW_CONFIG) {
-		printk(BIOS_WARNING, "FW_CONFIG STORAGE_TYPE is not available, Exiting\n");
-		return false;
+		printk(BIOS_WARNING,
+		       "FW_CONFIG STORAGE_TYPE is not available, assuming NVMe present\n");
+		return true;
 	}
 
-	if (fw_config_probe(FW_CONFIG(STORAGE_TYPE, STORAGE_TYPE_UFS)))
-		return false;
-	else
-		return true;
+	return !fw_config_probe(FW_CONFIG(STORAGE_TYPE, STORAGE_TYPE_UFS));
 }

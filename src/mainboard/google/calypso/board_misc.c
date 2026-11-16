@@ -13,7 +13,11 @@ uint32_t board_id(void)
 	if (id != UNDEFINED_STRAPPING_ID)
 		return id;
 
-	if (CONFIG(SOC_QUALCOMM_CDT)) {
+	if (CONFIG(EC_GOOGLE_CHROMEEC)) {
+		if (google_chromeec_cbi_get_board_version(&id))
+			id = BOARD_ID_UNKNOWN;
+		return id;
+	} else if (CONFIG(SOC_QUALCOMM_CDT)) {
 		id = cdt_get_hw_version();
 		return id;
 	}

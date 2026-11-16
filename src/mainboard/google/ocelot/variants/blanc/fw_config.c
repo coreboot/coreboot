@@ -24,6 +24,24 @@ static const struct pad_config touchpad_lpss_i2c_enable_pads[] = {
 	PAD_NC(GPP_VGPIO3_THC0, NONE),
 };
 
+static const struct pad_config ish_enable_pads[] = {
+	/* GPP_B05:     EC_ISH_INT_ODL (ISH_GP1) */
+	PAD_CFG_NF(GPP_B05, NONE, DEEP, NF4),
+	/* GPP_B18:     ISH_I2C2_SDA */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B18, NONE, DEEP, NF1),
+	/* GPP_B19:     ISH_I2C2_SCL */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B19, NONE, DEEP, NF1),
+};
+
+static const struct pad_config ish_disable_pads[] = {
+	/* GPP_B05:     EC_ISH_INT_ODL (ISH_GP1) ==> NC*/
+	PAD_NC(GPP_B05, NONE),
+	/* GPP_B18:     ISH_I2C2_SDA ==> NC*/
+	PAD_NC(GPP_B18, NONE),
+	/* GPP_B19:     ISH_I2C2_SCL ==> NC*/
+	PAD_NC(GPP_B19, NONE),
+};
+
 static const struct pad_config touchpad_thc_i2c_enable_pads[] = {
 	/* GPP_E12:     NF1: THC_I2C4_SCL */
 	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF1),
@@ -70,5 +88,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 			GPIO_PADBASED_OVERRIDE(padbased_table, thc0_enable_wake);
 	} else {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_i2c_disable_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(SENSOR_HUB, ISH_PRESENT))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, ish_enable_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, ish_disable_pads);
 	}
 }

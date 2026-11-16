@@ -112,6 +112,19 @@ __weak bool mainboard_needs_pcie_init(void)
 	return true;
 }
 
+static bool mainboard_needs_ufs_init(void)
+{
+	/* Skip UFS initialization if boot mode is "low-battery" or "off-mode charging"*/
+	if (is_low_power_boot_with_charger())
+		return false;
+
+	if (CONFIG(EC_GOOGLE_CHROMEEC_FW_CONFIG_FROM_UFSC)) {
+		return !(fw_config_probe(FW_CONFIG(STORAGE_TYPE, STORAGE_TYPE_NVME)));
+	}
+
+	return (CONFIG(MAINBOARD_HAS_UFS));
+}
+
 #if CONFIG(PLATFORM_HAS_OFF_MODE_CHARGING_INDICATOR)
 bool platform_is_off_mode_charging_active(void)
 {
@@ -278,7 +291,7 @@ void mainboard_soc_init(void)
 	if (boot_mode == LB_BOOT_MODE_NORMAL || boot_mode == LB_BOOT_MODE_NO_BATTERY)
 		display_startup();
 
-	if (!mainboard_needs_pcie_init())
+	if (mainboard_needs_ufs_init())
 		ufs_rpmh_init();
 	else
 		ufs_rpmh_disable();

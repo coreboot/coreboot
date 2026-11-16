@@ -33,7 +33,7 @@
 #include <stdint.h>
 
 /* Maximum number of memory range definitions. */
-#define SYSINFO_MAX_MEM_RANGES 32
+#define SYSINFO_MAX_MEM_RANGES 40
 /* Allow a maximum of 10 GPIOs */
 #define SYSINFO_MAX_GPIOS 10
 

@@ -1,10 +1,10 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-config BOARD_SYSTEM76_GALP4
-	bool "galp4"
-
 config BOARD_SYSTEM76_DARP6
 	bool "darp6"
+
+config BOARD_SYSTEM76_GALP4
+	bool "galp4"
 
 config BOARD_SYSTEM76_LEMP9
 	bool "lemp9"

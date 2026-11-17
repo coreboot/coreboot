@@ -5,4 +5,9 @@
 
 #include <baseboard/ec.h>
 
+/* Enable Tablet switch for Windows drivers */
+#if !CONFIG(CHROMEOS)
+#define EC_ENABLE_TBMC_DEVICE
+#endif
+
 #endif

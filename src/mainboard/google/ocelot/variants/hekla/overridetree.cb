@@ -14,8 +14,8 @@ fw_config
 		option TOUCHSCREEN_None	2
 	end
 	field SENSOR_HUB 23 23
-		option ISH_ABSENT	0
-		option ISH_PRESENT	1
+		option ISH_PRESENT	0
+		option ISH_ABSENT	1
 	end
 	field FINGERPRINT_INTERFACE 24 25
 		option FINGERPRINT_INTERFACE_UNKNOWN	0
@@ -375,6 +375,13 @@ chip soc/intel/pantherlake
 			end
 		end
 
+		device ref ish on
+			probe SENSOR_HUB ISH_PRESENT
+			chip drivers/intel/ish
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
+		end
 		device ref thc0 on
 			register "thc_wake_on_touch[0]" = "true"
 			register "thc_mode[0]" = "THC_HID_I2C_MODE"

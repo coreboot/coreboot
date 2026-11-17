@@ -131,6 +131,7 @@ static void dcache_op_va(void const *addr, size_t len, enum dcache_op op)
 		}
 		line += linesize;
 	}
+	dsb();
 	isb();
 }
 

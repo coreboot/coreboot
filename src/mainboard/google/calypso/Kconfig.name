@@ -10,3 +10,6 @@ config BOARD_GOOGLE_MENSA
 
 config BOARD_GOOGLE_C1NV
 	bool "->  C1nv"
+
+config BOARD_GOOGLE_C1NVS
+	bool "->  C1nvs"

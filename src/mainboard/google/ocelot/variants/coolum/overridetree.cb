@@ -354,6 +354,7 @@ chip soc/intel/pantherlake
 		end
 
 		device ref ish on
+			probe SENSOR_HUB ISH_PRESENT
 			chip drivers/intel/ish
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
@@ -394,7 +395,6 @@ chip soc/intel/pantherlake
 			register "thc_wake_on_touch[1]" = "false"
 			register "thc_mode[1]" = "THC_HID_I2C_MODE"
 			probe TOUCHSCREEN TOUCHSCREEN_THC_I2C
-			probe TOUCHSCREEN TOUCHSCREEN_NONE
 			chip drivers/intel/touch
 				register "name" = "INTEL_THC1_NAME"
 				register "mode" = "THC_HID_I2C_MODE"

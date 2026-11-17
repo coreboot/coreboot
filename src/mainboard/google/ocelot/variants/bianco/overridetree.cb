@@ -422,7 +422,7 @@ chip soc/intel/pantherlake
 						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC721"
 						register "disable_clkstop_sm_support" = "true"
 						# SoundWire Link 3 ID 0
-						device generic 3.1 on
+						device generic 3.0 on
 						end
 					end
 					chip drivers/soundwire/alc1320

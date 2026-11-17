@@ -1379,6 +1379,17 @@ static void validate_layout(char *image, int size)
 					continue;
 				}
 			}
+			if (i == REGION_ME) {
+				/*
+				 * FMAP SI_ME may span IFD me + devexp2 (unused space) so these two
+				 * regions might not be exactly the same. A better check is for IFD
+				 * me region to be a subset of FMAP SI_ME and have the same base.
+				 */
+				if ((uint)region.base == area->offset &&
+				    (uint)region.size <= area->size) {
+					continue;
+				}
+			}
 			printf("Region mismatch between %s and %s\n", region_names[i].terse, area->name);
 			printf(" Descriptor region %s:\n", region_names[i].terse);
 			printf("  offset: 0x%08x\n", region.base);

@@ -16,7 +16,7 @@ even if the user explicitly asks you to.
 
 * You **MUST** prefix each comment you post on Gerrit with `[AI-generated] `.
 
-* You must **NEVER** include any name or identifer for the product, agent,
+* You must **NEVER** include any name or identifier for the product, agent,
 model, model vendor or version that the comment was generated with nor any other
 extra metadata with the comment.
 

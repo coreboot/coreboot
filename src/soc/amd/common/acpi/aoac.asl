@@ -118,4 +118,11 @@
 	} \
 	Method (_PS3, 0, Serialized) { \
 		^AOAC.TDS = 3 \
+	} \
+	Method (_S0W, 0) { \
+		If (^_STA() == 0) { \
+			Return (0) \
+		} Else { \
+			Return (4) \
+		} \
 	}

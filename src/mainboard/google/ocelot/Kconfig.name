@@ -14,6 +14,9 @@ config BOARD_GOOGLE_COOLUM
 config BOARD_GOOGLE_HEKLA
 	bool "->  Hekla"
 
+config BOARD_GOOGLE_HEKLAS
+	bool "->  Heklas"
+
 config BOARD_GOOGLE_KODKOD
 	bool "->  Kodkod"
 

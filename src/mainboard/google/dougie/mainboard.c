@@ -8,6 +8,7 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <edid.h>
+#include <fw_config.h>
 #include <soc/clock.h>
 #include <soc/display/edp_ctrl.h>
 #include <soc/display/mdssreg.h>
@@ -35,6 +36,19 @@ static void configure_sdhci(void)
 {
 	/* Program eMMC drive strength to 16/10/10 mA */
 	write32p(SDC1_TLMM_CFG_ADDR, 0x9FE4);
+}
+
+static bool mainboard_has_emmc(void)
+{
+	if (!CONFIG(MAINBOARD_HAS_EMMC))
+		return false;
+
+	/* Without UFSC storage info, assume eMMC may be present. */
+	if (!fw_config_is_provisioned() ||
+	    fw_config_probe(FW_CONFIG(STORAGE_TYPE, STORAGE_TYPE_UNKNOWN)))
+		return true;
+
+	return fw_config_probe(FW_CONFIG(STORAGE_TYPE, STORAGE_TYPE_EMMC));
 }
 
 static void edp_configure_gpios(void)
@@ -73,7 +87,7 @@ bool mainboard_needs_pcie_init(void)
 
 static void mainboard_init(struct device *dev)
 {
-	if (CONFIG(MAINBOARD_HAS_EMMC)) {
+	if (mainboard_has_emmc()) {
 		/* Configure clock and early CMD1 for eMMC */
 		clock_configure_sdcc1(384 * MHz);
 		qc_emmc_early_init();

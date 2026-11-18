@@ -89,6 +89,7 @@ static void flush_chain(void)
 					(void *)(uintptr_t)desc->data_address,
 					desc->length);
 			else {
+				dsb();
 				src = (void *)(uintptr_t)desc->bounce_src;
 				dst = (void *)(uintptr_t)desc->bounce_dst;
 				memcpy(dst, src, desc->bounce_length);

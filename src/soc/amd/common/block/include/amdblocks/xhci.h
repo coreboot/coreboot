@@ -3,13 +3,15 @@
 #ifndef AMD_BLOCK_XHCI_H
 #define AMD_BLOCK_XHCI_H
 
+#define XHCI_GEVENT GEVENT_31
+
+#ifndef __ACPI__
+
 #include <cpu/x86/smm.h>
 #include <device/pci_type.h>
 #include <device/xhci.h>
 
 #include <types.h>
-
-#define XHCI_GEVENT GEVENT_31
 
 #define SOC_XHCI_DEVICES {\
 	SOC_XHCI_0,\
@@ -24,5 +26,7 @@
 
 void soc_xhci_store_resources(struct smm_pci_resource_info *slots, size_t count);
 void soc_xhci_log_wake_events(void);
+
+#endif /* !__ACPI__ */
 
 #endif /* AMD_BLOCK_XHCI_H */

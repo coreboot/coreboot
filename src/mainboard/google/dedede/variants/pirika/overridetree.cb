@@ -249,6 +249,14 @@ chip soc/intel/jasperlake
 					probe AUDIO_AMP RT1015P_AUTO
 				end
 			end
+			chip drivers/sof
+				register "spkr_tplg" = "rt5650_sp"
+				register "jack_tplg" = "rt5650_hp"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on
+					probe AUDIO_AMP ALC5650
+				end
+			end
 		end
 	end
 end

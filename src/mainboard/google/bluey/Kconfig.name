@@ -26,6 +26,9 @@ config BOARD_GOOGLE_ANNITE
 config BOARD_GOOGLE_PIC
 	bool "->  Pic"
 
+config BOARD_GOOGLE_PICS
+	bool "->  Pics"
+
 config BOARD_GOOGLE_ANETO
 	bool "->  Aneto"
 

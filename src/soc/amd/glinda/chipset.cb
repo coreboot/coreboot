@@ -12,7 +12,6 @@ chip soc/amd/glinda
 		device pci 01.0 on end # Dummy device function
 		device pci 01.1 alias usb4_pcie_bridge_0 off end
 		device pci 01.2 alias usb4_pcie_bridge_1 off end
-		device pci 01.3 alias usb4_pcie_bridge_2 off end
 
 		# The PCIe GPP aliases in this SoC match the device and function numbers
 		device pci 02.0 on end # Dummy device function, do not disable

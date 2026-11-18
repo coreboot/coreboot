@@ -20,7 +20,6 @@ Device (GNB)
 /* USB4.0 bridge */
 ACPI_PCI_DEV(GP09, 1, 1)
 ACPI_PCI_DEV(GP0A, 1, 2)
-ACPI_PCI_DEV(GP0B, 1, 3)
 
 /* PCIe GPP */
 ACPI_PCI_DEV(GP11, 2, 1)

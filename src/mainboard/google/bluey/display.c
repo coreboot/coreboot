@@ -80,7 +80,7 @@ static void handle_dsi_reset(bool power_on)
 	}
 }
 
-static void panel_power_on(void)
+static enum cb_err panel_power_on(void)
 {
 	/* Enable backlight PWM */
 	if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
@@ -90,6 +90,8 @@ static void panel_power_on(void)
 	pmic_gpio_output(BACKLIGHT_CONTROL_PMIC_ID, BACKLIGHT_CONTROL_PMIC_GPIO, true);
 
 	handle_dsi_reset(true);
+
+	return CB_SUCCESS;
 }
 
 static void panel_power_off(void)

@@ -5,11 +5,15 @@
 
 #include <types.h>
 
+struct dsi_phy_pll_qlink_regs;
+
 /*
  * DSI PHY 2.7.0 PLL VCO rate programming.
  * @vco_rate_hz:  VCO output frequency in Hz
  * @pll_post_div: PLL post-divider ratio (must be a power of 2)
  */
-void dsi_phy_pll_vco_270_set_rate(unsigned long vco_rate_hz, u32 pll_post_div);
+void dsi_phy_pll_vco_270_set_rate(struct dsi_phy_pll_qlink_regs *pll,
+				  unsigned long vco_rate_hz,
+				  u32 pll_post_div, bool cphy_mode);
 
 #endif /* _SOC_QUALCOMM_X1P42100_DSI_PHY_PLL_H_ */

@@ -24,10 +24,10 @@ struct mdss_dsc_config {
 	u32 slices_per_pkt;    /* DSC slices per DSI packet (from DTSI) */
 	u32 num_interfaces;    /* number of DSI interfaces (1=2-2-1, 2=2-2-2) */
 	/*
-	 * override initial_dec_delay (0=use profile table default)
-	 * Depends on slice geometry - validate from golden dump
+	 * Override initial_dec_delay (0 = calculate from slice geometry).
 	 */
 	u32 initial_dec_delay;
+	u8 initial_lines;      /* Encoder buffering; 0 retains the legacy 3-line setting. */
 };
 
 /*
@@ -49,7 +49,7 @@ enum cb_err mdss_dsc_calc(const struct mdss_dsc_config *cfg,
 
 /*
  * mdss_dsc_calc_video_compression_ctrl() - calculate DSI VIDEO_COMPRESSION_MODE_CTRL.
- * Ported from UEFI dsiDriver.c + HALdsi_Config.c.
+ * Word count is bytes per packet, as in Qualcomm Linux dsi_ctrl_hw_cmn.c.
  */
 u32 mdss_dsc_calc_video_compression_ctrl(const struct mdss_dsc_config *cfg,
 					 const struct edid_mode *mode);

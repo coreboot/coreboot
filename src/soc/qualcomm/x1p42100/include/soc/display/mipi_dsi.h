@@ -31,15 +31,17 @@ enum cb_err mdss_dsi_panel_initialize(const u8 *init_cmds);
 /* DSI1 (secondary - dual DSI 2-2-2 topology) */
 enum cb_err mdss_dsi1_config(struct edid *edid, u32 num_of_lanes, u32 bpp);
 void mdss_dsi1_video_mode_config(struct edid *edid, u32 bpp);
+void mdss_dsi_command_mode_config(struct edid *edid);
+void mdss_dsi_command_mode_start(void);
 
-/* Full DSI+DSC bring-up */
-enum cb_err mdss_dsi_display_init(struct edid *edid_out, void (*power_on)(void));
+/* Prepare DSI+DSC; the mainboard starts scanout after rendering the framebuffer. */
+enum cb_err mdss_dsi_display_init(struct edid *edid_out, enum cb_err (*power_on)(void));
 void mdss_dsi_display_stop(void);
 
 /*
  * mdss_dsi_send_pps() - send DSC PPS command to panel.
  * Builds 128-byte PPS from DSC params and sends via DSI DMA (type 0x0A).
- * Must be called after mdss_dsc_config() and before mdss_dsi_panel_initialize().
+ * Send after panel initialization and before starting the video stream.
  */
 enum cb_err mdss_dsi_send_pps(const struct mdss_dsc_config *cfg,
 			      const struct edid_mode *mode,

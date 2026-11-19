@@ -15,6 +15,7 @@ void intf_tg_setup(struct edid *edid, const struct mdss_panel_config *cfg)
 	const struct edid_mode *m;
 	uint32_t active_ha, h_total, h_start, h_end, h_data_end;
 	uint32_t v_total, v_start, v_pw;
+	struct mdp_intf_regs *intf = cfg->dsi_controller ? mdp_intf2 : mdp_intf;
 
 	if (!edid)
 		return;
@@ -31,7 +32,6 @@ void intf_tg_setup(struct edid *edid, const struct mdss_panel_config *cfg)
 		 * DSC path: INTF sees compressed active width per interface.
 		 * For 2-2-2: each INTF sees ha/dsi_count pixels.
 		 * h_total = compressed(ha/dsi_count) + hbl
-		 * VSYNC_PERIOD uses h_total*2 (pixel clock domain).
 		 */
 		u32 ha_per_intf = m->ha / cfg->dsi_count;
 		active_ha  = mdss_dsc_compressed_ha(ha_per_intf, cfg->dsc_ratio_x1000);
@@ -41,34 +41,30 @@ void intf_tg_setup(struct edid *edid, const struct mdss_panel_config *cfg)
 		h_data_end = h_start + active_ha / 2 - 1;
 		v_start    = v_pw + (m->vbl - m->vso - v_pw);
 
-		write32(&mdp_intf->intf_mux, 0xF0000);
-		write32(&mdp_intf->intf_hsync_ctl, (h_total << 16) | m->hspw);
-		/*
-		 * VSYNC_PERIOD = v_total_dsi * h_total (UEFI formula).
-		 * DSI operates in h_total*2 pixel clock domain for DSC:
-		 *   v_total_dsi = (va+vbl) * dsi_count * 2
-		 * For 2-2-1: v_total_dsi = 2370*1*2=4740, h_total=504 -> period=2388960
-		 * For 2-2-2: v_total_dsi = 2270*2*2=9080, h_total=840 -> period=7627200=0x7461C0
-		 * Source: UEFI hal_mdp_interface.c + HLOS golden dump
-		 */
-		u32 v_total_dsi = v_total * cfg->dsi_count * 2;
-		u32 vsync_period = v_total_dsi * h_total;
-		write32(&mdp_intf->intf_vysnc_period_f0, vsync_period);
-		write32(&mdp_intf->intf_vysnc_pulse_width_f0, v_pw * h_total);
-		write32(&mdp_intf->intf_disp_v_start_f0, v_start * h_total);
-		write32(&mdp_intf->intf_disp_v_end_f0,
+		write32(&intf->intf_mux, 0xF0000);
+		write32(&intf->intf_hsync_ctl, (h_total << 16) | m->hspw);
+		/* UEFI HAL_MDP_Interface_TimingGen_Config(): one h_total per line. */
+		u32 vsync_period = v_total * h_total;
+		/* Retain the timing used by existing D-PHY clock configurations. */
+		if (!cfg->cphy_mode)
+			vsync_period *= cfg->dsi_count * 2;
+		write32(&intf->intf_vysnc_period_f0, vsync_period);
+		write32(&intf->intf_vysnc_pulse_width_f0, v_pw * h_total);
+		write32(&intf->intf_disp_v_start_f0, v_start * h_total);
+		write32(&intf->intf_disp_v_end_f0,
 			(v_start + m->va - 1) * h_total + h_total - 1);
-		write32(&mdp_intf->intf_active_v_start_f0, v_start * h_total);
-		write32(&mdp_intf->intf_active_v_end_f0,
+		write32(&intf->intf_active_v_start_f0, v_start * h_total);
+		write32(&intf->intf_active_v_end_f0,
 			(v_start + m->va - 1) * h_total + h_total - 1);
-		write32(&mdp_intf->intf_disp_hctl,    (h_end << 16) | h_start);
-		write32(&mdp_intf->intf_active_hctl,  (h_end << 16) | h_start);
-		write32(&mdp_intf->display_data_hctl, (h_data_end << 16) | h_start);
-		write32(&mdp_intf->intf_underflow_color, 0xFF);
-		write32(&mdp_intf->polarity_ctl,
+		write32(&intf->intf_disp_hctl,    (h_end << 16) | h_start);
+		write32(&intf->intf_active_hctl,  (h_end << 16) | h_start);
+		write32(&intf->display_data_hctl, (h_data_end << 16) | h_start);
+		write32(&intf->intf_underflow_color, 0xFF);
+		write32(&intf->polarity_ctl,
 			(m->phsync ? 0x1 : 0x0) | (m->pvsync ? 0x2 : 0x0));
-		write32(&mdp_intf->intf_panel_format, 0x2100);
-		write32(&mdp_intf->intf_config2,
+		write32(&intf->intf_panel_format, 0x2100);
+		write32(&intf->intf_config, BIT(23)); /* DSI_VIDEO_STOP_MODE */
+		write32(&intf->intf_config2,
 			INTF_CONFIG2_DCE_DATA_COMPRESS |
 			INTF_CONFIG2_DATA_HCTL_EN |
 			INTF_CONFIG2_DATABUS_WIDEN);
@@ -97,6 +93,7 @@ void intf_tg_setup(struct edid *edid, const struct mdss_panel_config *cfg)
 			write32(&mdp_intf2->polarity_ctl,
 				(m->phsync ? 0x1 : 0x0) | (m->pvsync ? 0x2 : 0x0));
 			write32(&mdp_intf2->intf_panel_format, 0x2100);
+			write32(&mdp_intf2->intf_config, BIT(23));
 			write32(&mdp_intf2->intf_config2,
 				INTF_CONFIG2_DCE_DATA_COMPRESS |
 				INTF_CONFIG2_DATA_HCTL_EN |
@@ -131,15 +128,35 @@ void intf_tg_setup(struct edid *edid, const struct mdss_panel_config *cfg)
 
 /*
  * intf_fetch_start_config() - computed fetch start.
- * DSC path: formula from purwa UEFI MDPConfig.c InterfaceFetchStartConfig().
+ * DSC path: VFP line offset as in ALOS programmable_fetch_config().
  * eDP path: prefill-based formula (original eDP implementation).
  */
 void intf_fetch_start_config(struct edid *edid, const struct mdss_panel_config *cfg)
 {
 	uint32_t fetch_start = 0;
 
-	if (cfg->dsc_ratio_x1000 > 0)
+	if (cfg->dsc_ratio_x1000 > 0) {
+		const struct edid_mode *m = &edid->mode;
+		struct mdp_intf_regs *intf = cfg->dsi_controller ? mdp_intf2 : mdp_intf;
+		u32 fetch_lines = cfg->prefetch_lines;
+
+		/* Fetch must start inside VFP, after the current active frame. */
+		if (!fetch_lines || cfg->command_mode || fetch_lines > m->vso)
+			return;
+
+		u32 h_total = mdss_dsc_compressed_ha(m->ha / cfg->dsi_count,
+						    cfg->dsc_ratio_x1000) + m->hbl;
+		u32 v_total = m->va + m->vbl;
+
+		fetch_start = (v_total - fetch_lines) * h_total + 1;
+		write32(&intf->intf_prof_fetch_start, fetch_start);
+		setbits32(&intf->intf_config, PROG_FETCH_START_EN);
+		if (cfg->dsi_count > 1) {
+			write32(&mdp_intf2->intf_prof_fetch_start, fetch_start);
+			setbits32(&mdp_intf2->intf_config, PROG_FETCH_START_EN);
+		}
 		return;
+	}
 
 	/* eDP path: prefill-based formula */
 	uint32_t wide_bus = 2;

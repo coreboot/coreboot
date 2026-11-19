@@ -56,6 +56,7 @@ struct dsc_rc_params {
 
 /* DSC profile index - matches UEFI gDSCProfile_table order */
 enum dsc_profile_idx {
+	DSC_V1_2_RGB444_8BPC_8BPP  = 0,
 	DSC_V1_1_RGB444_8BPC_8BPP  = 19,
 	DSC_V1_1_RGB444_8BPC_12BPP = 20,
 	DSC_V1_1_RGB444_10BPC_8BPP = 21,
@@ -63,6 +64,7 @@ enum dsc_profile_idx {
 };
 
 static const struct dsc_rc_params rc_params_table[DSC_PROFILE_MAX] = {
+	[DSC_V1_2_RGB444_8BPC_8BPP]  = { 11, 11, 6144, 512, 0, 0, 0, 3, 12, 2, 3, 3 },
 	[DSC_V1_1_RGB444_8BPC_8BPP]  = { 11, 11, 6144, 512, 526, 0, 0, 3, 12, 2, 3, 3 },
 	[DSC_V1_1_RGB444_8BPC_12BPP] = { 11, 11, 2048, 341, 341, 0, 0, 3, 12, 2, 3, 3 },
 	[DSC_V1_1_RGB444_10BPC_8BPP] = { 15, 15, 6144, 512, 526, 0, 0, 7, 16, 8, 3, 3 },
@@ -70,6 +72,7 @@ static const struct dsc_rc_params rc_params_table[DSC_PROFILE_MAX] = {
 
 /* RC range max QP - source: UEFI rc_range_maxqp_table[] */
 static const u8 rc_maxqp_table[DSC_PROFILE_MAX][15] = {
+	[DSC_V1_2_RGB444_8BPC_8BPP]  = { 4, 4, 5, 6, 7, 7, 7, 8, 9, 10, 10, 11, 11, 12, 13 },
 	[DSC_V1_1_RGB444_8BPC_8BPP]  = { 4, 4, 5, 6, 7, 7, 7, 8, 9, 10, 11, 12, 13, 13, 15 },
 	[DSC_V1_1_RGB444_8BPC_12BPP] = { 2, 4, 5, 6, 7, 7, 7, 8, 9, 10, 11, 12, 13, 13, 15 },
 	[DSC_V1_1_RGB444_10BPC_8BPP] = { 4, 8, 9, 10, 11, 11, 11, 12, 13, 14, 15, 16, 17, 17, 19 },
@@ -77,6 +80,7 @@ static const u8 rc_maxqp_table[DSC_PROFILE_MAX][15] = {
 
 /* RC range min QP - source: UEFI rc_range_miniqp_table[] */
 static const u8 rc_minqp_table[DSC_PROFILE_MAX][15] = {
+	[DSC_V1_2_RGB444_8BPC_8BPP]  = { 0, 0, 1, 1, 3, 3, 3, 3, 3, 3, 5, 5, 5, 9, 12 },
 	[DSC_V1_1_RGB444_8BPC_8BPP]  = { 0, 0, 1, 1, 3, 3, 3, 3, 3, 3, 5, 5, 5,  7, 13 },
 	[DSC_V1_1_RGB444_8BPC_12BPP] = { 0, 0, 1, 1, 3, 3, 3, 3, 3, 3, 5, 5, 5,  7, 13 },
 	[DSC_V1_1_RGB444_10BPC_8BPP] = { 0, 0, 1, 1, 3, 3, 3, 3, 3, 3, 5, 5, 5, 11, 17 },
@@ -84,6 +88,7 @@ static const u8 rc_minqp_table[DSC_PROFILE_MAX][15] = {
 
 /* RC range BPG offsets - source: UEFI rc_range_offset_table[] */
 static const s8 rc_offset_table[DSC_PROFILE_MAX][15] = {
+	[DSC_V1_2_RGB444_8BPC_8BPP]  = { 2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -12, -12, -12, -12 },
 	[DSC_V1_1_RGB444_8BPC_8BPP]  = { 2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -12, -12, -12, -12 },
 	[DSC_V1_1_RGB444_8BPC_12BPP] = { 2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -12, -12, -12, -12 },
 	[DSC_V1_1_RGB444_10BPC_8BPP] = { 2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -12, -12, -12, -12 },
@@ -95,6 +100,9 @@ static const s8 rc_offset_table[DSC_PROFILE_MAX][15] = {
  */
 static int dsc_find_profile(u8 bpc, u8 bpp, u8 dsc_minor, u8 scr)
 {
+	if (dsc_minor == 2 && scr == 0 && bpc == 8 && bpp == 8)
+		return DSC_V1_2_RGB444_8BPC_8BPP;
+
 	if (dsc_minor == 1 && scr == 0) {
 		if (bpc == 8  && bpp == 8)  return DSC_V1_1_RGB444_8BPC_8BPP;
 		if (bpc == 8  && bpp == 12) return DSC_V1_1_RGB444_8BPC_12BPP;
@@ -220,14 +228,12 @@ enum cb_err mdss_dsc_calc(const struct mdss_dsc_config *cfg,
 	u32 scale_decrement_interval = (initial_scale_value > 8) ?
 		groups_per_line / (initial_scale_value - 8) : 4095;
 
-	/*
-	 * initial_dec_delay: use override from panel config if set,
-	 * otherwise use profile table value (validated for slice_h=20).
-	 * initial_dec_delay depends on slice geometry (slice_h, slice_w)
-	 * and must be validated from golden dump for each panel.
-	 */
+	/* UEFI HAL_MDP_DSC_Calculate_Temp(): HRD delay depends on slice width. */
+	u32 min_rate_buffer_size = rc_model_size - rc->initial_fullness_offset +
+		rc->initial_xmit_delay * bpp + groups_per_line * first_line_bpg_offset;
 	u32 initial_dec_delay = cfg->initial_dec_delay ?
-		cfg->initial_dec_delay : rc->initial_dec_delay;
+		cfg->initial_dec_delay : ceil_div(min_rate_buffer_size, bpp) -
+			rc->initial_xmit_delay;
 
 	/*
 	 * num_ss = soft slices per encoder = ha / slice_w / num_active_hs
@@ -247,7 +253,7 @@ enum cb_err mdss_dsc_calc(const struct mdss_dsc_config *cfg,
 		((bpc <= 8) ? 1199 : 2399) :
 		((bpc <= 8) ? 2399 : 4799);
 
-	u32 initial_lines = 3;
+	u32 initial_lines = cfg->initial_lines ? cfg->initial_lines : 3;
 
 	/* enc_main_conf */
 	out->enc_main_conf = (1 << 0) |
@@ -350,7 +356,8 @@ enum cb_err mdss_dsc_calc(const struct mdss_dsc_config *cfg,
 
 /*
  * Calculate DSI VIDEO_COMPRESSION_MODE_CTRL
- * Source: UEFI dsiDriver.c + HALdsi_Config.c
+ * WC is bytes per packet; PKT_PER_LINE encodes 1/2/4 packets as 0/1/2.
+ * Source: Qualcomm Linux sde_dsc_helper.c + dsi_ctrl_hw_cmn.c.
  */
 u32 mdss_dsc_calc_video_compression_ctrl(const struct mdss_dsc_config *cfg,
 					 const struct edid_mode *mode)
@@ -364,15 +371,10 @@ u32 mdss_dsc_calc_video_compression_ctrl(const struct mdss_dsc_config *cfg,
 	u32 ha_per_dsi      = mode->ha / cfg->num_interfaces;
 	u32 slices_per_line = ha_per_dsi / cfg->slice_width;
 
-	/*
-	 * WC (bytes_per_pkt) = chunk_size (one slice worth of bytes per packet)
-	 * pkt_per_line = slices_per_line / slices_per_pkt / 2
-	 *   when slices_per_pkt == slices_per_line: result=0, use 1 instead
-	 */
-	u32 bytes_per_pkt = chunk_size;
-	u32 pkt_per_line_raw = (cfg->slices_per_pkt > 0) ?
-		(slices_per_line / cfg->slices_per_pkt) : slices_per_line;
-	u32 pkt_per_line  = (pkt_per_line_raw > 1) ? (pkt_per_line_raw / 2) : 1;
+	u32 slices_per_pkt = cfg->slices_per_pkt ? cfg->slices_per_pkt : 1;
+	u32 bytes_per_pkt = chunk_size * slices_per_pkt;
+	u32 pkt_per_line_raw = slices_per_line / slices_per_pkt;
+	u32 pkt_per_line  = pkt_per_line_raw / 2;
 	u32 eol_byte_num  = (chunk_size * slices_per_line) % 3;
 
 	return ((bytes_per_pkt & 0xFFFF) << 16) |
@@ -428,7 +430,7 @@ void mdss_dsc_build_pps(const struct mdss_dsc_config *cfg,
 		u32 bpp_fp = cfg->bpp * 16;  /* fixed-point 4.4 */
 		pkt[4] = ((cfg->block_pred & 1) << 5) |
 			 (1 << 4) |              /* convert_rgb = 1 */
-			 ((bpp_fp >> 4) & 0x3);  /* upper 2 bits of 6-bit bpp */
+			 ((bpp_fp >> 8) & 0x3);
 	}
 
 	/* byte[5]: bpp_lo[7:4] | bpp_fraction[3:0]=0 (integer bpp) */
@@ -616,16 +618,8 @@ void mdss_dsc_build_pps(const struct mdss_dsc_config *cfg,
 	}
 
 	/*
-	 * byte[88..93]: DSC 1.2 fields - reserved/zero for DSC 1.1
+	 * byte[88..93]: DSC 1.2 native 4:2:2/4:2:0 fields. Leave zero for the
+	 * supported RGB 4:4:4 profiles, including DSC 1.2.
 	 * byte[94..127]: reserved, already zeroed
 	 */
-
-	printk(BIOS_DEBUG, "DSC PPS (128 bytes):\n");
-	for (i = 0; i < 128; i += 16)
-		printk(BIOS_DEBUG, "  [%3d] %02x %02x %02x %02x %02x %02x %02x %02x  %02x %02x %02x %02x %02x %02x %02x %02x\n",
-		       i,
-		       pkt[i+0],  pkt[i+1],  pkt[i+2],  pkt[i+3],
-		       pkt[i+4],  pkt[i+5],  pkt[i+6],  pkt[i+7],
-		       pkt[i+8],  pkt[i+9],  pkt[i+10], pkt[i+11],
-		       pkt[i+12], pkt[i+13], pkt[i+14], pkt[i+15]);
 }

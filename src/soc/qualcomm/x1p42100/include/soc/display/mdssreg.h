@@ -22,6 +22,12 @@ struct mdss_panel_config {
 	uint32_t dsc_ratio_x1000;  /* 0=no DSC, 3000=3:1, 3750=3.75:1 */
 	uint8_t  intf_num;         /* primary INTF index: 1=DSI0/INTF_1, 5=eDP/INTF_5 */
 	uint8_t  dsi_count;        /* 1=single DSI (2-2-1), 2=dual DSI (2-2-2) */
+	uint8_t  dsi_controller;   /* 0=DSI0, 1=DSI1; used for single-controller panels */
+	uint8_t  num_lanes;        /* DSI lanes/trios; 0 selects the legacy 4-lane default */
+	bool     cphy_mode;        /* true selects C-PHY, false selects D-PHY */
+	bool     cphy_clock_lane;  /* Set controller CKLN_EN for C-PHY as required by ALOS */
+	bool     command_mode;     /* true selects DSI command mode */
+	uint8_t  prefetch_lines;   /* DSC video fetch lines in VFP; 0 disables prefetch */
 };
 
 /*
@@ -123,6 +129,8 @@ struct dsi_regs {
 	uint32_t cmd_compression_mode_ctrl;
 	uint32_t cmd_compression_mode_ctrl2;
 	uint32_t cmd_compression_mode_ctrl3;
+	uint32_t reserved14[9];
+	uint32_t cphy_mode_ctrl;
 };
 
 check_member(dsi_regs, video_mode_active_h, 0x24);
@@ -138,6 +146,7 @@ check_member(dsi_regs, test_pattern_gen_cmd_dma_init_val, 0x17C);
 check_member(dsi_regs, cmd_mode_mdp_ctrl2, 0x1B8);
 check_member(dsi_regs, tpg_dma_fifo_reset, 0x1EC);
 check_member(dsi_regs, video_compression_mode_ctrl, 0x2A0);
+check_member(dsi_regs, cphy_mode_ctrl, 0x2D8);
 
 /*
  * DSI PHY 2.7.0 common register block (MDSS_BASE + 0x95000).
@@ -443,6 +452,25 @@ struct mdp_intf_regs {
 check_member(mdp_intf_regs, intf_panel_format, 0x90);
 check_member(mdp_intf_regs, intf_prof_fetch_start, 0x170);
 check_member(mdp_intf_regs, intf_mux, 0x25C);
+
+struct mdp_tear_regs {
+	uint32_t mdp_vsync_sel;
+	uint32_t tear_check_en;
+	uint32_t sync_config_vsync;
+	uint32_t sync_config_height;
+	uint32_t sync_wrcount;
+	uint32_t vsync_init_val;
+	uint32_t reserved0;
+	uint32_t sync_thresh;
+	uint32_t start_pos;
+	uint32_t rd_ptr_irq;
+	uint32_t wr_ptr_irq;
+	uint32_t reserved1[2];
+	uint32_t autorefresh_config;
+};
+
+check_member(mdp_tear_regs, sync_thresh, 0x1C);
+check_member(mdp_tear_regs, autorefresh_config, 0x34);
 
 // Base: MDP_0_CTL_BASE = 0xAE16000
 struct mdp_ctl_regs {
@@ -1041,7 +1069,6 @@ enum edp_init_values {
 #define HWIO_MDP_INTR_EN_INTF_5_VSYNC_BMSK     0x800000
 #define HWIO_MDP_INTR_EN_PING_PONG_0_DONE_BMSK 0x100
 
-#define GPIO_PANEL_POWER_ON GPIO(70)  // INTERNAL_EDP_REG_EN_GPIO
 #define GPIO_PANEL_HPD      GPIO(119) // INTERNAL_EDP_HPD_GPIO
 
 static struct dsi_regs *const dsi0 = (void *)DSI0_CTL_BASE;
@@ -1056,6 +1083,7 @@ static struct dsi_phy_pll_qlink_regs *const phy_pll_qlink1 = (void *)DSI1_PHY_PL
 /* DSI0 uses INTF_1, DSI1 uses INTF_2, eDP uses INTF_5 on x1p42100 */
 static struct mdp_intf_regs *const mdp_intf     = (void *)MDP_1_INTF_BASE;
 static struct mdp_intf_regs *const mdp_intf2    = (void *)MDP_2_INTF_BASE;
+static struct mdp_tear_regs *const mdp_intf2_tear = (void *)(MDP_2_INTF_BASE + 0x280);
 static struct mdp_intf_regs *const mdp_edp_intf = (void *)MDP_5_INTF_BASE;
 static struct mdp_ctl_regs *const mdp_ctl_0 = (void *)MDP_0_CTL_BASE;
 static struct mdp_layer_mixer_regs *const mdp_layer_mixer = (void *)MDP_VP_0_LAYER_MIXER_BASE;

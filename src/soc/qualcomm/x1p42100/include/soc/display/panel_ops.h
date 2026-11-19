@@ -61,7 +61,8 @@ struct mdss_dsc_params {
  * power_off    : GPIO reset low + regulator disable
  */
 /*
- * PHY timing override: 14 bytes matching TIMING_CTRL_0..13.
+ * PHY timing override: up to 14 bytes starting at TIMING_CTRL_0.
+ * phy_timings_size specifies the number of registers; 0 means all 14.
  * If non-NULL, these values override the calculated timings.
  * Source: qcom,mdss-dsi-panel-phy-timings in panel DTSI.
  */
@@ -75,11 +76,17 @@ struct mdss_panel_ops {
 	u32                            video_compression_ctrl;
 	u32                            video_compression_ctrl2;
 	const u8                      *(*get_init_cmds)(void);
+	const u8                      *off_cmds;
+	const u8                      *backlight_cmds;
 	const u8                      *phy_timings; /* optional override, NULL = use calculated */
+	u8                             phy_timings_size;
 	u8                             clk_cfg0_override; /* 0 = use calculated; non-zero = use this value */
-	u8                             clk_cfg1_override; /* 0 = use calculated; non-zero = use this value */
+	u8                             clk_cfg1_override; /* Complete post-lock CLK_CFG1; 0 uses default */
 	u8                             traffic_mode;  /* DSI video traffic mode: 1=non-burst sync pulse (default), 2=burst */
 	u8                             eotp_disabled; /* 0 = append EOT packet (default), 1 = disable EOT */
+	u16                            reset_pre_ms;  /* Reset HIGH pre-pulse (0 = 10ms default) */
+	u16                            reset_low_ms;  /* Reset LOW pulse (0 = 10ms default) */
+	u16                            reset_post_ms; /* Reset HIGH post-settle (0 = 10ms default) */
 };
 
 /* Returns the active panel ops - selected at compile time via Kconfig */

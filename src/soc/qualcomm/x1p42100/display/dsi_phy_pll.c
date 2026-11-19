@@ -93,71 +93,73 @@ static void dsi_pll_calc_regs(struct dsi_pll_regs_270 *regs,
 	regs->outdiv_val = log2(pll_post_div);
 }
 
-void dsi_phy_pll_vco_270_set_rate(unsigned long vco_rate_hz, u32 pll_post_div)
+void dsi_phy_pll_vco_270_set_rate(struct dsi_phy_pll_qlink_regs *pll,
+				  unsigned long vco_rate_hz,
+				  u32 pll_post_div, bool cphy_mode)
 {
 	struct dsi_pll_regs_270 regs = {0};
 
 	dsi_pll_calc_regs(&regs, vco_rate_hz, pll_post_div);
 
 	/* Step 1: PLL core input override - reset then enable */
-	write32(&phy_pll_qlink->pll_core_input_override, 0x10);
-	write32(&phy_pll_qlink->pll_core_input_override, 0x12);
+	write32(&pll->pll_core_input_override, 0x10);
+	write32(&pll->pll_core_input_override, 0x12);
 
 	/* Step 2: Decimal/fractional divider (bank 1) */
-	write32(&phy_pll_qlink->pll_decimal_div_start_1,   regs.dec_div_start);
-	write32(&phy_pll_qlink->pll_frac_div_start_low_1,  regs.frac_div_low);
-	write32(&phy_pll_qlink->pll_frac_div_start_mid_1,  regs.frac_div_mid);
-	write32(&phy_pll_qlink->pll_frac_div_start_high_1, regs.frac_div_high);
+	write32(&pll->pll_decimal_div_start_1,   regs.dec_div_start);
+	write32(&pll->pll_frac_div_start_low_1,  regs.frac_div_low);
+	write32(&pll->pll_frac_div_start_mid_1,  regs.frac_div_mid);
+	write32(&pll->pll_frac_div_start_high_1, regs.frac_div_high);
 
 	/* Step 3: PLL bias enable (SYSTEM_MUXES: CM_BIAS_EN_MUX=bit6, CM_BIAS_EN=bit7) */
-	write32(&phy_pll_qlink->pll_system_muxes, BIT(6) | BIT(7));
+	write32(&pll->pll_system_muxes, BIT(6) | BIT(7));
 
 	/* Step 4: Lock detect rate */
-	write32(&phy_pll_qlink->pll_lockdet_rate_1, DSI_PLL_LOCK_TIMER);
+	write32(&pll->pll_lockdet_rate_1, DSI_PLL_LOCK_TIMER);
 
 	/*
 	 * Step 5: Output divider - write log2(post_div) to both PLL_OUTDIV_1[1:0]
 	 * and PLL_OUTDIV_2[5:4] fields in PLL_OUTDIV_RATE register
 	 */
-	write32(&phy_pll_qlink->pll_outdiv_rate,
+	write32(&pll->pll_outdiv_rate,
 		(regs.outdiv_val & 0x3) | ((regs.outdiv_val & 0x3) << 4));
 
 	/* Step 6: Lock delay */
-	write32(&phy_pll_qlink->pll_lock_delay, DSI_PLL_LOCK_DELAY);
+	write32(&pll->pll_lock_delay, DSI_PLL_LOCK_DELAY);
 
 	/* Step 7: Frequency-dependent registers */
-	write32(&phy_pll_qlink->pll_analog_controls_five_1, regs.analog_controls_five);
-	write32(&phy_pll_qlink->pll_analog_controls_five,   regs.analog_controls_five);
-	write32(&phy_pll_qlink->pll_vco_config_1,           regs.vco_config);
-	write32(&phy_pll_qlink->pll_clock_inverters_1,      regs.clock_inverters);
+	write32(&pll->pll_analog_controls_five_1, regs.analog_controls_five);
+	write32(&pll->pll_analog_controls_five,   regs.analog_controls_five);
+	write32(&pll->pll_vco_config_1,           regs.vco_config);
+	write32(&pll->pll_clock_inverters_1,      regs.clock_inverters);
 
-	/* Step 8: D-PHY cmode (disable clk90 level shifter) */
-	write32(&phy_pll_qlink->pll_cmode_1, 0x10);
+	/* C-PHY requires the clk90 level shifter; D-PHY disables it. */
+	write32(&pll->pll_cmode_1, cphy_mode ? 0x00 : 0x10);
 
 	/* Step 9: Frequency-independent init registers (from UEFI HAL_DSI_Phy_CommitPll) */
-	write32(&phy_pll_qlink->pll_lock_min_delay,              0x00);
-	write32(&phy_pll_qlink->pll_rst_controls,                0x11);
-	write32(&phy_pll_qlink->pll_fastlock_control,            0x3F);
-	write32(&phy_pll_qlink->pll_analog_controls_two,         0x03);
-	write32(&phy_pll_qlink->pll_analog_controls_three,       0x00);
-	write32(&phy_pll_qlink->pll_dsm_divider,                 0x00);
-	write32(&phy_pll_qlink->pll_feedback_divider,            0x4E);
-	write32(&phy_pll_qlink->pll_calibration_settings,        0x40);
-	write32(&phy_pll_qlink->pll_band_sel_cal_settings_three, 0xBA);
-	write32(&phy_pll_qlink->pll_freq_detect_settings_one,    0x0C);
-	write32(&phy_pll_qlink->pll_outdiv,                      0x00);
-	write32(&phy_pll_qlink->pll_core_override,               0x00);
-	write32(&phy_pll_qlink->pll_digital_timers_two,          0x08);
-	write32(&phy_pll_qlink->pll_prop_gain_rate_1,            0x0A);
-	write32(&phy_pll_qlink->pll_band_sel_rate_1,             0xC0);
+	write32(&pll->pll_lock_min_delay,              0x00);
+	write32(&pll->pll_rst_controls,                0x11);
+	write32(&pll->pll_fastlock_control,            0x3F);
+	write32(&pll->pll_analog_controls_two,         0x03);
+	write32(&pll->pll_analog_controls_three,       0x00);
+	write32(&pll->pll_dsm_divider,                 0x00);
+	write32(&pll->pll_feedback_divider,            0x4E);
+	write32(&pll->pll_calibration_settings,        0x40);
+	write32(&pll->pll_band_sel_cal_settings_three, 0xBA);
+	write32(&pll->pll_freq_detect_settings_one,    0x0C);
+	write32(&pll->pll_outdiv,                      0x00);
+	write32(&pll->pll_core_override,               0x00);
+	write32(&pll->pll_digital_timers_two,          0x08);
+	write32(&pll->pll_prop_gain_rate_1,            0x0A);
+	write32(&pll->pll_band_sel_rate_1,             0xC0);
 	/* Write twice as per UEFI sequence */
-	write32(&phy_pll_qlink->pll_int_gain_ifilt_band_1,       0x84);
-	write32(&phy_pll_qlink->pll_int_gain_ifilt_band_1,       0x82);
-	write32(&phy_pll_qlink->pll_fl_int_gain_pfilt_band_1,    0x4C);
-	write32(&phy_pll_qlink->pll_lock_override,               0x80);
+	write32(&pll->pll_int_gain_ifilt_band_1,       0x84);
+	write32(&pll->pll_int_gain_ifilt_band_1,       0x82);
+	write32(&pll->pll_fl_int_gain_pfilt_band_1,    0x4C);
+	write32(&pll->pll_lock_override,               0x80);
 	/* Write twice as per UEFI sequence */
-	write32(&phy_pll_qlink->pll_pfilt,                       0x29);
-	write32(&phy_pll_qlink->pll_pfilt,                       0x2F);
-	write32(&phy_pll_qlink->pll_ifilt,                       0x2A);
-	write32(&phy_pll_qlink->pll_ifilt,                       0x3F);
+	write32(&pll->pll_pfilt,                       0x29);
+	write32(&pll->pll_pfilt,                       0x2F);
+	write32(&pll->pll_ifilt,                       0x2A);
+	write32(&pll->pll_ifilt,                       0x3F);
 }

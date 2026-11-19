@@ -52,10 +52,12 @@ static struct dsi_regs *active_dsi;
 #define DSI_CMD_DMA_PATTERN_SEL (BIT(16) | BIT(17))
 #define DSI_WR32(addr, val) write32(addr, val)
 
-static void mdss_dsi_host_init(int num_of_lanes)
+static void mdss_dsi_host_init(int num_of_lanes, bool clock_lane_enable, bool command_mode)
 {
 	u8 dlnx_en;
-	u32 ctrl_mode = BIT(8) | BIT(0); /* DSI_EN + CLKlane_EN */
+	u32 ctrl_mode = (clock_lane_enable ? BIT(8) : 0) | BIT(0);
+	if (command_mode)
+		ctrl_mode |= BIT(2);
 
 	switch (num_of_lanes) {
 	default:
@@ -108,7 +110,11 @@ static void dsi_video_mode_config_instance(struct edid *edid, u32 bpp,
 					   u32 dsc_ratio_x1000, u32 dsi_count)
 {
 	u16 dst_format;
-	u8 lane_en = 0x0F; /* 4 lanes */
+	const struct mdss_panel_ops *panel = mdss_get_panel_ops();
+	const struct mdss_panel_config *cfg = panel->config;
+	u8 lanes = cfg->num_lanes ? cfg->num_lanes : 4;
+	u8 lane_en = (1 << lanes) - 1;
+	u8 traffic_mode = panel->traffic_mode ? panel->traffic_mode : TRAFFIC_MODE;
 	/* For 2-2-2: each DSI sees ha/dsi_count pixels */
 	u32 ha_per_dsi = edid->mode.ha / dsi_count;
 
@@ -149,19 +155,18 @@ static void dsi_video_mode_config_instance(struct edid *edid, u32 bpp,
 	DSI_WR32(&active_dsi->video_mode_active_vsync_vpos, edid->mode.vspw << 16);
 	/*
 	 * VIDEO_MODE_CTRL: HLOS golden=0x2009130
-	 * bit[25]=1 (PULSE_MODE_HACTIVE_WC_EN), TRAFFIC_MODE, EOF_BLLP_PWR, dst_format
+	 * bit[25]=DATABUS_WIDEN (two pixels per pclk for DSC).
 	 */
 	DSI_WR32(&active_dsi->video_mode_ctrl,
-		BIT(25) | DSI_EOF_BLLP_PWR << 12 | dst_format << 4 | TRAFFIC_MODE << 8);
+		(dsc_ratio_x1000 ? BIT(25) : 0) | DSI_EOF_BLLP_PWR << 12 |
+		dst_format << 4 | traffic_mode << 8);
 	/* HS_TIMER_CTRL: HLOS golden=0x3FD08 */
 	DSI_WR32(&active_dsi->hs_timer_ctrl, 0x3FD08);
-	/*
-	 * CTRL: VIDEO_EN|DSI_EN|CLK_EN|4lanes = 0x1F3
-	 * HLOS golden: 0x1F3 - CMD_MODE_EN(bit2) must be CLEAR in video mode
-	 */
+	/* ALOS keeps controller CKLN_EN set even for this three-trio C-PHY panel. */
 	DSI_WR32(&active_dsi->ctrl,
 		lane_en << 4 | BIT(1) /* VIDEO_EN */ |
-		BIT(0) /* DSI_EN */ | BIT(8) /* CLK_EN */);
+		BIT(0) /* DSI_EN */ |
+		(!cfg->cphy_mode || cfg->cphy_clock_lane ? BIT(8) : 0));
 
 	/*
 	 * INT_CTRL: enable VIDEO_MODE_DONE + ERROR interrupts for video mode.
@@ -176,15 +181,24 @@ static void dsi_video_mode_config_instance(struct edid *edid, u32 bpp,
 
 static enum cb_err dsi_config_instance(struct edid *edid, u32 num_of_lanes, u32 bpp)
 {
+	const struct mdss_panel_config *cfg = mdss_get_panel_ops()->config;
+	bool cphy_mode = cfg->cphy_mode;
+	enum cb_err ret;
+
 	mdss_dsi_reset();
 
-	/* PHY 2.7.0 init (purwa) */
-	if (mdss_dsi_phy_270_init(edid, num_of_lanes, bpp) != CB_SUCCESS) {
+	if (active_dsi == dsi1)
+		ret = mdss_dsi1_phy_270_init(edid, num_of_lanes, bpp);
+	else
+		ret = mdss_dsi_phy_270_init(edid, num_of_lanes, bpp);
+	if (ret != CB_SUCCESS) {
 		printk(BIOS_ERR, "DSI PHY 2.7.0 init failed\n");
 		return CB_ERR;
 	}
 
-	mdss_dsi_host_init(num_of_lanes);
+	DSI_WR32(&active_dsi->cphy_mode_ctrl, cphy_mode ? BIT(0) : 0);
+	mdss_dsi_host_init(num_of_lanes, !cphy_mode || cfg->cphy_clock_lane,
+			   cfg->command_mode);
 	return CB_SUCCESS;
 }
 
@@ -270,6 +284,7 @@ static enum cb_err mdss_dsi_send_init_cmd(enum mipi_dsi_transaction type,
 {
 	u8 *pload = _dsi_dma_coherent;
 	u32 size;
+	u32 controller = active_dsi == dsi1 ? 1 : 0;
 	enum cb_err ret = CB_SUCCESS;
 	bool is_long = (len > 2);
 
@@ -309,8 +324,11 @@ static enum cb_err mdss_dsi_send_init_cmd(enum mipi_dsi_transaction type,
 
 	dsb();  /* ensure buffer writes are visible to DMA before trigger */
 
-	if (mdss_dsi_cmd_dma_trigger())
+	if (mdss_dsi_cmd_dma_trigger()) {
+		printk(BIOS_ERR, "DSI%u: TX timeout: type=0x%02x len=%u data0=0x%02x\n",
+		       controller, type, len, len ? body[0] : 0);
 		ret = CB_ERR;
+	}
 
 	udelay(80);
 	return ret;
@@ -347,7 +365,7 @@ static void mdss_dsi_clear_intr(void)
  *   -> HAL_MDP_DSC_Prepare_PPS() builds the 128-byte buffer
  *   -> SendPanelXMLSequence() sends via DSI DMA
  *
- * Must be called AFTER mdss_dsc_config() and BEFORE mdss_dsi_panel_initialize().
+ * Send after panel initialization and before starting video, as in Purwa UEFI.
  * Sent to both DSI0 and DSI1 for dual DSI (2-2-2).
  */
 enum cb_err mdss_dsi_send_pps(const struct mdss_dsc_config *cfg,
@@ -355,65 +373,58 @@ enum cb_err mdss_dsi_send_pps(const struct mdss_dsc_config *cfg,
 			      const struct mdss_dsc_params *params)
 {
 	u8 pps_buf[128];
-	enum cb_err ret;
+	enum cb_err ret = CB_SUCCESS;
 
 	/* Build the 128-byte PPS packet from DSC params */
 	mdss_dsc_build_pps(cfg, mode, params, pps_buf);
 
-	/* Send to DSI0 using MIPI_DSI_PPS_LONG_WRITE (0x0A) */
-	active_dsi = dsi0;
-	ret = mdss_dsi_send_init_cmd(MIPI_DSI_PPS_LONG_WRITE, pps_buf, 128, NULL);
-	if (ret != CB_SUCCESS) {
-		printk(BIOS_ERR, "DSI0: PPS send failed\n");
-		return ret;
-	}
-	printk(BIOS_INFO, "DSI0: PPS sent OK\n");
-
-	/* For dual DSI (2-2-2): send same PPS to DSI1 */
-	if (mdss_get_panel_ops()->config->dsi_count > 1) {
-		active_dsi = dsi1;
+	const struct mdss_panel_config *panel_cfg = mdss_get_panel_ops()->config;
+	for (u32 i = 0; i < panel_cfg->dsi_count; i++) {
+		u32 controller = panel_cfg->dsi_count > 1 ? i : panel_cfg->dsi_controller;
+		active_dsi = controller ? dsi1 : dsi0;
+		u32 ctrl_mode = read32(&active_dsi->ctrl);
+		DSI_WR32(&active_dsi->ctrl, ctrl_mode | BIT(2));
 		ret = mdss_dsi_send_init_cmd(MIPI_DSI_PPS_LONG_WRITE, pps_buf, 128, NULL);
+		DSI_WR32(&active_dsi->ctrl, ctrl_mode);
+		mdss_dsi_clear_intr();
 		if (ret != CB_SUCCESS) {
-			printk(BIOS_ERR, "DSI1: PPS send failed\n");
-			return ret;
+			printk(BIOS_ERR, "DSI%u: PPS send failed\n", controller);
+			break;
 		}
-		printk(BIOS_INFO, "DSI1: PPS sent OK\n");
-		active_dsi = dsi0;
+		printk(BIOS_DEBUG, "DSI%u: PPS sent OK\n", controller);
 	}
 
-	return CB_SUCCESS;
+	active_dsi = panel_cfg->dsi_controller ? dsi1 : dsi0;
+	return ret;
 }
 
 enum cb_err mdss_dsi_panel_initialize(const u8 *init_cmds)
 {
-	u32 ctrl_mode0, ctrl_mode1;
+	const struct mdss_panel_config *cfg = mdss_get_panel_ops()->config;
+	u32 ctrl_mode;
+	struct dsi_regs *panel_dsi = cfg->dsi_controller ? dsi1 : dsi0;
 
 	assert(init_cmds != NULL);
-	ctrl_mode0 = read32(&dsi0->ctrl);
-	ctrl_mode1 = read32(&dsi1->ctrl);
-
-	/* Switch both controllers to command mode for panel init */
-	DSI_WR32(&dsi0->ctrl, ctrl_mode0 | 0x04);
-	DSI_WR32(&dsi1->ctrl, ctrl_mode1 | 0x04);
-
-	/* Send init commands to DSI0 */
-	active_dsi = dsi0;
+	ctrl_mode = read32(&panel_dsi->ctrl);
+	DSI_WR32(&panel_dsi->ctrl, ctrl_mode | BIT(2));
+	active_dsi = panel_dsi;
 	enum cb_err ret = mipi_panel_parse_commands(init_cmds,
 						    mdss_dsi_send_init_cmd,
 						    NULL);
 
-	/* For dual DSI (2-2-2): send same init commands to DSI1 */
-	if (ret == CB_SUCCESS &&
-	    mdss_get_panel_ops()->config->dsi_count > 1) {
-		active_dsi = dsi1;
+	if (ret == CB_SUCCESS && cfg->dsi_count > 1) {
+		active_dsi = cfg->dsi_controller ? dsi0 : dsi1;
+		u32 secondary_ctrl = read32(&active_dsi->ctrl);
+		DSI_WR32(&active_dsi->ctrl, secondary_ctrl | BIT(2));
 		ret = mipi_panel_parse_commands(init_cmds,
 						mdss_dsi_send_init_cmd,
 						NULL);
-		active_dsi = dsi0;
+		DSI_WR32(&active_dsi->ctrl, secondary_ctrl);
+		mdss_dsi_clear_intr();
 	}
 
-	DSI_WR32(&dsi0->ctrl, ctrl_mode0);
-	DSI_WR32(&dsi1->ctrl, ctrl_mode1);
+	DSI_WR32(&panel_dsi->ctrl, ctrl_mode);
+	active_dsi = panel_dsi;
 	mdss_dsi_clear_intr();
 	return ret;
 }
@@ -427,21 +438,40 @@ enum cb_err mdss_dsi_config(struct edid *edid, u32 num_of_lanes, u32 bpp)
 enum cb_err mdss_dsi1_config(struct edid *edid, u32 num_of_lanes, u32 bpp)
 {
 	active_dsi = dsi1;
+	return dsi_config_instance(edid, num_of_lanes, bpp);
+}
 
-	mdss_dsi_reset();
+void mdss_dsi_command_mode_config(struct edid *edid)
+{
+	const struct mdss_panel_ops *panel = mdss_get_panel_ops();
+	const struct mdss_panel_config *cfg = panel->config;
+	struct dsi_regs *target = cfg->dsi_controller ? dsi1 : dsi0;
+	u32 width = edid->mode.ha;
+	u32 height = edid->mode.va;
+	u32 slice_width = panel->dsc_cfg->slice_width;
+	u32 slice_bytes = slice_width * panel->dsc_cfg->bpp / 8;
+	u32 slices_per_interface = width / slice_width / panel->dsc_cfg->num_interfaces;
+	u32 bytes_per_packet = slice_bytes * panel->dsc_cfg->slices_per_pkt;
+	u32 pclk_per_line = (slice_bytes * slices_per_interface + 5) / 6;
+	u32 dsc_pkt_per_line = panel->dsc_cfg->slices_per_pkt ?
+		(slices_per_interface / panel->dsc_cfg->slices_per_pkt) / 2 :
+		slices_per_interface / 2;
+	u32 dsc_eol_byte_num = (slice_bytes * slices_per_interface) % 3;
+	active_dsi = target;
 
-	/*
-	 * Use DSI1 PHY init - this configures DSI1 PHY/PLL registers
-	 * AND enables DSI1 clocks (byte1/pclk1/esc1 CBCRs).
-	 * mdss_dsi_phy_270_init() would use DSI0 PHY/clocks instead.
-	 */
-	if (mdss_dsi1_phy_270_init(edid, num_of_lanes, bpp) != CB_SUCCESS) {
-		printk(BIOS_ERR, "DSI1 PHY 2.7.0 init failed\n");
-		return CB_ERR;
-	}
+	/* UEFI HAL_DSI_CMDModeConfig(), RGB888 on stream 0 / CMD0. */
+	DSI_WR32(&target->cmd_mode_mdp_ctrl, 0x08);
+	DSI_WR32(&target->cmd_mode_mdp_dcs_cmd_ctrl, 0x13c2c);
+	DSI_WR32(&target->cmd_mode_mdp_ctrl2, BIT(16)); /* HS burst mode */
+	DSI_WR32(&target->cmd_mode_mdp_stream0_ctrl,
+		(bytes_per_packet + 1) << 16 | 0x39); /* packet WC includes DCS command byte */
+	DSI_WR32(&target->cmd_mode_mdp_stream0_total, height << 16 | pclk_per_line);
 
-	mdss_dsi_host_init(num_of_lanes);
-	return CB_SUCCESS;
+	/* UEFI HAL_DSI_CMDDscConfig() fields: DT, packets per line, EOL bytes, enable. */
+	DSI_WR32(&target->cmd_compression_mode_ctrl,
+		(0x39 << 8) | (dsc_pkt_per_line << 6) | (dsc_eol_byte_num << 4) | BIT(0));
+	DSI_WR32(&target->cmd_compression_mode_ctrl2, slice_bytes);
+	DSI_WR32(&target->cmd_compression_mode_ctrl3, 0x0);
 }
 
 void mdss_dsi_video_mode_config(struct edid *edid, u32 bpp)

@@ -41,6 +41,14 @@ static struct dsi_phy_pll_qlink_regs *active_pll;
 #define DSI_PHY_REFGEN_TIMEOUT_US   5000   /* 10 polls * 500us */
 #define DSI_PHY_PLL_LOCK_TIMEOUT_US 15000  /* 150 polls * 100us */
 
+/* DISP_CC SRC_SEL values from Purwa UEFI MDSSPlatform_9xx.h. */
+enum dsi_clock_source {
+	DSI0_PLL_PIXEL_CLOCK = 1,
+	DSI0_PLL_BYTE_CLOCK = 2,
+	DSI1_PLL_PIXEL_CLOCK = 3,
+	DSI1_PLL_BYTE_CLOCK = 4,
+};
+
 /* D-PHY timing formula constants (from UEFI HALdsi_Phy_2_7_0.c) */
 #define TIPX_NUMER        1000000000  /* 1e9 for ns->ps conversion */
 #define TCLK_PREPARE_MIN  38
@@ -75,6 +83,11 @@ static const struct pll_div_lut_entry pll_div_lut[] = {
 	{ 1, 1 },  /* 1  */
 };
 
+static const struct pll_div_lut_entry cphy_pll_div_lut[] = {
+	{ 2, 5 }, { 8, 1 }, { 2, 3 }, { 1, 5 },
+	{ 4, 1 }, { 1, 3 }, { 2, 1 }, { 1, 1 },
+};
+
 /* Helper: integer rounding division (round half up) */
 static s32 dsi_div_round(s32 num, s32 denom)
 {
@@ -107,7 +120,7 @@ static enum cb_err dsi_phy_wait_refgen(void)
  * Step 2: Power-up PHY (D-PHY, 4-lane, non-split-link)
  * UEFI: HAL_DSI_Phy_PowerUp
  */
-static void dsi_phy_power_up(u32 desired_bitclk_hz)
+static void dsi_phy_power_up(u32 desired_bitclk_hz, u32 num_of_lanes, bool cphy_mode)
 {
 	u32 vreg_ctrl_0, rescode_top, rescode_bot;
 
@@ -126,6 +139,29 @@ static void dsi_phy_power_up(u32 desired_bitclk_hz)
 
 	/* CTRL_4: DCTRL_GLBL_2 = 0x4 */
 	write32(&active_phy->phy_cmn_ctrl4, 0x04);
+
+	if (cphy_mode) {
+		/* UEFI HAL_DSI_Phy_PowerUp() C-PHY initialization sequence. */
+		write32(&active_phy->phy_cmn_vreg_ctrl_0, 0x45);
+		write32(&active_phy->phy_cmn_vreg_ctrl_1, 0x41);
+		write32(&active_phy->phy_cmn_ctrl3, 0x00);
+		write32(&active_phy->phy_cmn_glbl_str_swi_cal_sel_ctrl, 0x00);
+		write32(&active_phy->phy_cmn_glbl_hstx_str_ctrl_0, 0x88);
+		write32(&active_phy->phy_cmn_ctrl2, 0x40);
+		write32(&active_phy->phy_cmn_glbl_pemph_ctrl_0, 0x11);
+		write32(&active_phy->phy_cmn_glbl_pemph_ctrl_1, 0x01);
+		write32(&active_phy->phy_cmn_glbl_rescode_offset_top_ctrl, 0x00);
+		write32(&active_phy->phy_cmn_glbl_rescode_offset_mid_ctrl, 0x00);
+		write32(&active_phy->phy_cmn_glbl_rescode_offset_bot_ctrl, 0x00);
+		write32(&active_phy->phy_cmn_glbl_lptx_str_ctrl, 0x55);
+		write32(&active_phy->phy_cmn_ctrl0, 0x7f);
+		write32(&active_phy->phy_cmn_dsi_lane_ctrl0,
+			(num_of_lanes >= 1 ? BIT(0) : 0) |
+			(num_of_lanes >= 2 ? BIT(1) : 0) |
+			(num_of_lanes >= 3 ? BIT(2) : 0) |
+			(num_of_lanes >= 4 ? BIT(3) : 0) | BIT(4));
+		return;
+	}
 
 	/*
 	 * Frequency-dependent VREG and rescode values.
@@ -172,13 +208,29 @@ static void dsi_phy_power_up(u32 desired_bitclk_hz)
  * Lane offsets within PHY: DLN0=+0x200, DLN1=+0x280, DLN2=+0x300,
  *                          DLN3=+0x380, CLK=+0x400
  */
-static void dsi_phy_setup_lane(int lane_idx)
+static void dsi_phy_setup_lane(int lane_idx, bool cphy_mode)
 {
 	/* Use the phy_ln_regs array directly - no offsetof/typeof needed */
 	int is_clk  = (lane_idx == 4);
 	int is_dln0 = (lane_idx == 0);
 	int is_dln3 = (lane_idx == 3);
 	u32 cfg2_val, tx_dctrl;
+	if (cphy_mode) {
+		if (lane_idx == 3) {
+			write32(&active_phy->phy_ln_regs[lane_idx].dln0_tx_dctrl, 0x06);
+			return;
+		}
+
+		write32(&active_phy->phy_ln_regs[lane_idx].dln0_lprx_ctrl, 0x00);
+		write32(&active_phy->phy_ln_regs[lane_idx].dln0_lprx_ctrl,
+			lane_idx == 0 ? 0x03 : 0x00);
+		write32(&active_phy->phy_ln_regs[lane_idx].dln0_pin_swap, 0x00);
+		write32(&active_phy->phy_ln_regs[lane_idx].dln0_cfg0, 0x00);
+		write32(&active_phy->phy_ln_regs[lane_idx].dln0_cfg1, 0x00);
+		write32(&active_phy->phy_ln_regs[lane_idx].dln0_cfg2, 0x0a);
+		write32(&active_phy->phy_ln_regs[lane_idx].dln0_tx_dctrl, 0x40);
+		return;
+	}
 
 	/* LPRX_CTRL: 0->0->lprx_val (transition from 0 to value) */
 	write32(&active_phy->phy_ln_regs[lane_idx].dln0_lprx_ctrl, 0x00);
@@ -233,23 +285,26 @@ static void dsi_phy_toggle_dln3_tx_dctrl(void)
  */
 static unsigned long dsi_phy_calc_vco(u32 desired_bitclk_hz,
 				      u32 bpp, u32 num_lanes,
+				      bool cphy_mode,
 				      u32 *pll_post_div_out,
 				      u32 *phy_post_div_out,
 				      u32 *div_ctrl_out)
 {
 	u64 min_vco_hz = 600000000ULL; /* 600 MHz minimum */
+	const struct pll_div_lut_entry *lut = cphy_mode ? cphy_pll_div_lut : pll_div_lut;
+	int lut_len = cphy_mode ? ARRAY_SIZE(cphy_pll_div_lut) : ARRAY_SIZE(pll_div_lut);
 	int i;
 
-	for (i = ARRAY_SIZE(pll_div_lut) - 1; i >= 0; i--) {
-		u64 total_div = (u64)pll_div_lut[i].pll_post_div *
-				pll_div_lut[i].phy_post_div;
+	for (i = lut_len - 1; i >= 0; i--) {
+		u64 total_div = (u64)lut[i].pll_post_div * lut[i].phy_post_div;
 		u64 vco = (u64)desired_bitclk_hz * total_div;
 
 		if (vco >= min_vco_hz) {
-			u32 pll_post = pll_div_lut[i].pll_post_div;
-			u32 phy_post = pll_div_lut[i].phy_post_div;
-			/* div_ctrl = (bpp * pll_post_div) / (num_lanes * 2) */
-			u32 div_ctrl = (bpp * pll_post) / (num_lanes * 2);
+			u32 pll_post = lut[i].pll_post_div;
+			u32 phy_post = lut[i].phy_post_div;
+			/* UEFI C-PHY RGB888 / three-trio divider simplifies to phy_post. */
+			u32 div_ctrl = cphy_mode ? phy_post :
+				(bpp * pll_post) / (num_lanes * 2);
 
 			*pll_post_div_out = pll_post;
 			*phy_post_div_out = phy_post;
@@ -287,6 +342,7 @@ static enum cb_err dsi_phy_pll_lock_detect(void)
  */
 static void dsi_phy_post_pll_lock(void)
 {
+	const struct mdss_panel_ops *panel = mdss_get_panel_ops();
 	u32 ctrl3, clk_cfg1;
 
 	/*
@@ -301,12 +357,12 @@ static void dsi_phy_post_pll_lock(void)
 	write32(&active_phy->phy_cmn_ctrl4, 0x04);
 
 	/*
-	 * GlobalClockEnable: set CLK_EN(bit5)=1 only.
-	 * HLOS golden (hwiosave dump): CLK_CFG1=0x21 -> CLK_EN=1, CLK_EN_SEL=0, DSICLK_SEL=1
-	 * CLK_EN_SEL=0 means clock enable is controlled by CLK_EN bit directly.
+	 * Preserve the legacy CLK_EN=1, CLK_EN_SEL=0 default. A panel override
+	 * supplies the complete post-lock CLK_CFG1, including clock enable bits.
 	 */
 	clk_cfg1 = read32(&active_phy->phy_cmn_clk_cfg1);
-	clk_cfg1 = (clk_cfg1 & ~BIT(4)) | BIT(5);
+	clk_cfg1 = panel->clk_cfg1_override ? panel->clk_cfg1_override :
+		(clk_cfg1 & ~BIT(4)) | BIT(5);
 	write32(&active_phy->phy_cmn_clk_cfg1, clk_cfg1);
 
 	/* ResyncFIFO: pulse RBUF_CTRL */
@@ -326,14 +382,14 @@ static void mdss_dsi_clock_configure(u32 pclk_hz, u32 byte_hz)
 	struct clock_freq_config pclk0_cfg[] = {
 		{
 			.hz  = pclk_hz,
-			.src = 1,  /* dsi0_phy_pll_out_dsiclk */
+			.src = DSI0_PLL_PIXEL_CLOCK,
 			.div = 0,  /* SRC_DIV=0 = bypass */
 		},
 	};
 	struct clock_freq_config byte0_cfg[] = {
 		{
 			.hz  = byte_hz,
-			.src = 2,  /* dsi0_phy_pll_out_byteclk */
+			.src = DSI0_PLL_BYTE_CLOCK,
 			.div = QCOM_CLOCK_DIV(1),
 		},
 	};
@@ -344,28 +400,27 @@ static void mdss_dsi_clock_configure(u32 pclk_hz, u32 byte_hz)
 			ARRAY_SIZE(byte0_cfg));
 
 	/* byte0_intf shares the same RCG as byte0 - only CDIVR needed. */
-	write32(&disp_cc->mdss_byte0_div, 1);
+	write32(&disp_cc->mdss_byte0_div, mdss_get_panel_ops()->config->cphy_mode ? 0 : 1);
 }
 
 /*
- * Configure DSI1 clocks from DSI1 PLL output.
- * Mirror of mdss_dsi_clock_configure() for DSI1 RCGs.
- * Source values: pclk1 SRC_SEL=1 (dsi1_phy_pll_out_dsiclk),
- *                byte1 SRC_SEL=2 (dsi1_phy_pll_out_byteclk)
+ * Single DSI1 uses PLL1: sDSI1ExtClocks_9xx in Purwa UEFI.
+ * Dual DSI shares PLL0: sDSI1SharedSourceExtClocks_9xx.
  */
 static void mdss_dsi1_clock_configure(u32 pclk_hz, u32 byte_hz)
 {
+	bool shared_pll = mdss_get_panel_ops()->config->dsi_count > 1;
 	struct clock_freq_config pclk1_cfg[] = {
 		{
 			.hz  = pclk_hz,
-			.src = 1,  /* dsi1_phy_pll_out_dsiclk */
+			.src = shared_pll ? DSI0_PLL_PIXEL_CLOCK : DSI1_PLL_PIXEL_CLOCK,
 			.div = 0,
 		},
 	};
 	struct clock_freq_config byte1_cfg[] = {
 		{
 			.hz  = byte_hz,
-			.src = 2,  /* dsi1_phy_pll_out_byteclk */
+			.src = shared_pll ? DSI0_PLL_BYTE_CLOCK : DSI1_PLL_BYTE_CLOCK,
 			.div = QCOM_CLOCK_DIV(1),
 		},
 	};
@@ -374,7 +429,7 @@ static void mdss_dsi1_clock_configure(u32 pclk_hz, u32 byte_hz)
 			ARRAY_SIZE(pclk1_cfg));
 	clock_configure(&disp_cc->mdss_byte1_rcg, byte1_cfg, byte_hz,
 			ARRAY_SIZE(byte1_cfg));
-	write32(&disp_cc->mdss_byte1_div, 1);
+	write32(&disp_cc->mdss_byte1_div, mdss_get_panel_ops()->config->cphy_mode ? 0 : 1);
 }
 
 /*
@@ -383,30 +438,43 @@ static void mdss_dsi1_clock_configure(u32 pclk_hz, u32 byte_hz)
  */
 static enum cb_err dsi_phy_enable_clocks(u32 pclk_hz, u32 byte_hz)
 {
-	/*
-	 * Switch pclk0/byte0 RCGs from XO to DSI PLL output.
-	 * Source values from sDSI0ExtClocks_9xx[] in UEFI MDSSPlatform_9xx.h:
-	 *   pclk0: SRC_SEL=1 (dsi0_phy_pll_out_dsiclk)
-	 *   byte0: SRC_SEL=2 (dsi0_phy_pll_out_byteclk)
-	 *   esc0:  stays on XO (SRC_SEL=0)
-	 */
-	mdss_dsi_clock_configure(pclk_hz, byte_hz);
-
-	if (mdss_clock_enable(DISP_CC_MDSS_ESC0_CBCR) != CB_SUCCESS)
-		printk(BIOS_ERR, "DSI: ESC0 clock enable failed\n");
-
-	if (mdss_clock_enable(DISP_CC_MDSS_BYTE0_CBCR) != CB_SUCCESS)
-		printk(BIOS_ERR, "DSI: BYTE0 clock enable failed\n");
-
-	if (mdss_clock_enable(DISP_CC_MDSS_BYTE0_INTF_CBCR) != CB_SUCCESS)
-		printk(BIOS_ERR, "DSI: BYTE0_INTF clock enable failed\n");
-
-	if (mdss_clock_enable(DISP_CC_MDSS_PCLK0_CBCR) != CB_SUCCESS)
-		printk(BIOS_ERR, "DSI: PCLK0 clock enable failed\n");
-
-	printk(BIOS_INFO, "DSI: byte0_cbcr=0x%08x pclk0_cbcr=0x%08x\n",
-		read32(&disp_cc->mdss_byte0_cbcr),
-		read32(&disp_cc->mdss_pclk0_cbcr));
+	if (active_phy == dsi1_phy) {
+		mdss_dsi1_clock_configure(pclk_hz, byte_hz);
+		if (mdss_clock_enable(DISP_CC_MDSS_ESC1_CBCR) != CB_SUCCESS) {
+			printk(BIOS_ERR, "DSI1: ESC1 clock enable failed\n");
+			return CB_ERR;
+		}
+		if (mdss_clock_enable(DISP_CC_MDSS_BYTE1_CBCR) != CB_SUCCESS) {
+			printk(BIOS_ERR, "DSI1: BYTE1 clock enable failed\n");
+			return CB_ERR;
+		}
+		if (mdss_clock_enable(DISP_CC_MDSS_BYTE1_INTF_CBCR) != CB_SUCCESS) {
+			printk(BIOS_ERR, "DSI1: BYTE1_INTF clock enable failed\n");
+			return CB_ERR;
+		}
+		if (mdss_clock_enable(DISP_CC_MDSS_PCLK1_CBCR) != CB_SUCCESS) {
+			printk(BIOS_ERR, "DSI1: PCLK1 clock enable failed\n");
+			return CB_ERR;
+		}
+	} else {
+		mdss_dsi_clock_configure(pclk_hz, byte_hz);
+		if (mdss_clock_enable(DISP_CC_MDSS_ESC0_CBCR) != CB_SUCCESS) {
+			printk(BIOS_ERR, "DSI: ESC0 clock enable failed\n");
+			return CB_ERR;
+		}
+		if (mdss_clock_enable(DISP_CC_MDSS_BYTE0_CBCR) != CB_SUCCESS) {
+			printk(BIOS_ERR, "DSI: BYTE0 clock enable failed\n");
+			return CB_ERR;
+		}
+		if (mdss_clock_enable(DISP_CC_MDSS_BYTE0_INTF_CBCR) != CB_SUCCESS) {
+			printk(BIOS_ERR, "DSI: BYTE0_INTF clock enable failed\n");
+			return CB_ERR;
+		}
+		if (mdss_clock_enable(DISP_CC_MDSS_PCLK0_CBCR) != CB_SUCCESS) {
+			printk(BIOS_ERR, "DSI: PCLK0 clock enable failed\n");
+			return CB_ERR;
+		}
+	}
 
 	return CB_SUCCESS;
 }
@@ -510,10 +578,13 @@ static void dsi_phy_calc_and_commit_timings(u32 desired_bitclk_hz)
 	 * Use panel-provided PHY timings if available (from DTSI
 	 * qcom,mdss-dsi-panel-phy-timings), otherwise use calculated values.
 	 */
-	const u8 *panel_timings = mdss_get_panel_ops()->phy_timings;
+	const struct mdss_panel_ops *panel = mdss_get_panel_ops();
+	const u8 *panel_timings = panel->phy_timings;
 	if (panel_timings) {
 		/* Use DTSI-provided timings - validated against HLOS golden */
-		for (int i = 0; i < DSI_PHY_TIMING_SIZE; i++)
+		u32 count = panel->phy_timings_size ? panel->phy_timings_size :
+			DSI_PHY_TIMING_SIZE;
+		for (u32 i = 0; i < MIN(count, (u32)DSI_PHY_TIMING_SIZE); i++)
 			write32(&active_phy->phy_cmn_timing_ctrl[i], panel_timings[i]);
 	} else {
 		/* Use calculated timings */
@@ -538,20 +609,100 @@ static void dsi_phy_calc_and_commit_timings(u32 desired_bitclk_hz)
 	}
 }
 
+static u32 div_round_up_u32(u64 numerator, u32 denominator)
+{
+	return (u32)((numerator + denominator - 1) / denominator);
+}
+
+static u32 cphy_timing_margin(u32 min, u32 max, u32 percent)
+{
+	if (max <= min)
+		return min;
+	return min + div_round_up_u32((u64)(max - min) * percent, 100);
+}
+
+/* C-PHY timing fields from UEFI HAL_DSI_Phy_CalculateTimingParams_CPhy(). */
+static void dsi_phy_calc_and_commit_cphy_timings(u32 bitclk_hz)
+{
+	const struct mdss_panel_ops *panel = mdss_get_panel_ops();
+	u32 ui, half_byte_clk_en;
+	u32 hs_exit_min, hs_prebegin_min, hs_prepare_min, hs_prepare_max;
+	u32 hs_rqst_min;
+	s32 hs_rqst_numerator;
+	u32 hs_prebegin_min_ns;
+
+	if (!bitclk_hz)
+		return;
+
+	write32(&active_phy->phy_cmn_glbl_ctrl, BIT(6));
+	write32(&active_phy->phy_cmn_vreg_ctrl_0, 0x45);
+	write32(&active_phy->phy_cmn_vreg_ctrl_1, 0x41);
+	write32(&active_phy->phy_cmn_timing_ctrl[11], 0x00);
+	if (panel->phy_timings) {
+		u32 count = panel->phy_timings_size ? panel->phy_timings_size :
+			DSI_PHY_TIMING_SIZE;
+		for (u32 i = 0; i < MIN(count, (u32)DSI_PHY_TIMING_SIZE); i++)
+			write32(&active_phy->phy_cmn_timing_ctrl[i], panel->phy_timings[i]);
+		return;
+	}
+
+	/* UI in thousandths of a nanosecond keeps this arithmetic integral. */
+	ui = div_round_up_u32(1000000000000ULL, bitclk_hz);
+	half_byte_clk_en = bitclk_hz < 80000000U;
+	hs_exit_min = div_round_up_u32(100000, ui * 7) - 1;
+	hs_prebegin_min_ns = MIN(262000 - 7 * ui, 448 * ui);
+	hs_prebegin_min = div_round_up_u32(hs_prebegin_min_ns, ui * 7) - 1;
+	hs_prepare_min = div_round_up_u32(38000 - 3 * half_byte_clk_en * ui, ui * 7);
+	hs_prepare_max = (95000 - 3 * half_byte_clk_en * ui) / (ui * 7);
+	hs_rqst_numerator = 50000 + (4 * (s32)half_byte_clk_en - 7) * (s32)ui;
+	hs_rqst_min = div_round_up_u32(hs_rqst_numerator > 0 ? hs_rqst_numerator : 0,
+				       ui * 7);
+
+	write32(&active_phy->phy_cmn_timing_ctrl[0], half_byte_clk_en);
+	write32(&active_phy->phy_cmn_timing_ctrl[4], cphy_timing_margin(hs_exit_min, 255, 10));
+	write32(&active_phy->phy_cmn_timing_ctrl[5], cphy_timing_margin(hs_prebegin_min, 63, 20));
+	write32(&active_phy->phy_cmn_timing_ctrl[6],
+		cphy_timing_margin(hs_prepare_min, hs_prepare_max, 50));
+	write32(&active_phy->phy_cmn_timing_ctrl[7], cphy_timing_margin(0, 31, 80));
+	/* UEFI uses a 1% margin at >= 500 MHz, otherwise 0.05%. */
+	write32(&active_phy->phy_cmn_timing_ctrl[8], bitclk_hz >= 500000000U ?
+		cphy_timing_margin(hs_rqst_min, 255, 1) :
+		hs_rqst_min + div_round_up_u32(255 - hs_rqst_min, 2000));
+	write32(&active_phy->phy_cmn_timing_ctrl[9], 0x02);
+	write32(&active_phy->phy_cmn_timing_ctrl[10], 0x04);
+}
+
 /* Top-level entry point */
 static enum cb_err dsi_phy_init_instance(struct edid *edid, u32 num_of_lanes, u32 bpp)
 {
 	u32 pixel_clk_hz = edid->mode.pixel_clock * KHz;
-	u32 desired_bitclk_hz;
+	u32 dsi_pclk_hz;
+	u32 desired_bitclk_hz, phy_bitclk_hz, byteclk_hz;
 	u32 pll_post_div, phy_post_div, div_ctrl;
 	unsigned long vco_hz;
 	enum cb_err ret;
+	const struct mdss_panel_ops *panel = mdss_get_panel_ops();
+	const struct mdss_panel_config *cfg = panel->config;
+	bool cphy_mode = cfg->cphy_mode;
+
+	/* UEFI calculates DSC link bandwidth from compressed active width. */
+	if ((cfg->command_mode || cphy_mode) && cfg->dsc_ratio_x1000) {
+		u32 compressed_width = mdss_dsc_compressed_ha(edid->mode.ha / cfg->dsi_count,
+							     cfg->dsc_ratio_x1000);
+		pixel_clk_hz = (u32)((u64)(compressed_width + edid->mode.hbl) *
+				     (edid->mode.va + edid->mode.vbl) *
+				     edid->mode.refresh);
+	}
 
 	/* Bit clock = pixel_clock * bpp / num_lanes */
 	desired_bitclk_hz = (u32)((u64)pixel_clk_hz * bpp / num_of_lanes);
+	phy_bitclk_hz = cphy_mode ? (desired_bitclk_hz / 16) * 7 : desired_bitclk_hz;
+	byteclk_hz = cphy_mode ? phy_bitclk_hz / 7 : phy_bitclk_hz / 8;
+	dsi_pclk_hz = cphy_mode ? (u32)((u64)byteclk_hz * num_of_lanes * 2 / (bpp / 8)) :
+		pixel_clk_hz;
 
-	printk(BIOS_ERR, "DSI PHY: pixel_clk=%u Hz, bit_clk=%u Hz\n",
-	       pixel_clk_hz, desired_bitclk_hz);
+	printk(BIOS_DEBUG, "DSI PHY: pixel_clk=%u Hz, bit_clk=%u Hz, phy_clk=%u Hz, cphy=%u\n",
+	       dsi_pclk_hz, desired_bitclk_hz, phy_bitclk_hz, cphy_mode);
 
 	/* Step 1: Wait for refgen */
 	ret = dsi_phy_wait_refgen();
@@ -559,21 +710,21 @@ static enum cb_err dsi_phy_init_instance(struct edid *edid, u32 num_of_lanes, u3
 		return ret;
 
 	/* Step 2: Power-up */
-	dsi_phy_power_up(desired_bitclk_hz);
+	dsi_phy_power_up(desired_bitclk_hz, num_of_lanes, cphy_mode);
 
-	/* Step 3: Lane init (DLN0-3 + CLK) */
-	for (int i = 0; i < 5; i++)
-		dsi_phy_setup_lane(i);
+	/* C-PHY has three data trios and no separate clock lane. */
+	for (int i = 0; i < (cphy_mode ? 4 : 5); i++)
+		dsi_phy_setup_lane(i, cphy_mode);
 
 	/* Step 4a: Calculate PLL dividers */
-	vco_hz = dsi_phy_calc_vco(desired_bitclk_hz, bpp, num_of_lanes,
+	vco_hz = dsi_phy_calc_vco(phy_bitclk_hz, bpp, num_of_lanes, cphy_mode,
 				  &pll_post_div, &phy_post_div, &div_ctrl);
 	if (!vco_hz) {
 		printk(BIOS_ERR, "DSI PHY: bit clock too low, unsupported\n");
 		return CB_ERR;
 	}
 
-	printk(BIOS_ERR, "DSI PHY: VCO=%lu Hz, pll_post=%u, phy_post=%u\n",
+	printk(BIOS_DEBUG, "DSI PHY: VCO=%lu Hz, pll_post=%u, phy_post=%u\n",
 	       vco_hz, pll_post_div, phy_post_div);
 
 	/*
@@ -588,21 +739,21 @@ static enum cb_err dsi_phy_init_instance(struct edid *edid, u32 num_of_lanes, u3
 	}
 
 	/*
-	 * Set byte clock source in CLK_CFG1:
-	 * DSICLK_SEL=1 for DSI0 (use DSI0 PLL output)
-	 * DSICLK_SEL=5 for DSI1 (use DSI1 PLL output - BIT(2) selects DSI1 PLL)
-	 * Confirmed from HLOS golden: DSI0 CLK_CFG1=0x21, DSI1 CLK_CFG1=0x25
+	 * DSICLK_SEL[1:0]=3 for C-PHY RGB888, 1 for D-PHY.
+	 * BITCLK_SEL[3:2]=0 uses this PHY's PLL. Only split-source DSI1
+	 * uses BITCLK_SEL=1 to receive the other PHY's clock.
 	 */
-	u32 dsiclk_sel = (active_phy == dsi1_phy) ? 5 : 1;
+	u32 dsiclk_sel = cphy_mode ? 3 :
+		((active_phy == dsi1_phy && cfg->dsi_count > 1) ? 5 : 1);
 	write32(&active_phy->phy_cmn_clk_cfg1,
-		(read32(&active_phy->phy_cmn_clk_cfg1) & ~0x7) | dsiclk_sel);
+		(read32(&active_phy->phy_cmn_clk_cfg1) & ~0xf) | dsiclk_sel);
 
 	/* PLL bias enable + PERF_OPTIMIZE */
 	write32(&active_pll->pll_system_muxes, BIT(6) | BIT(7));
 	write32(&active_pll->pll_perf_optimize, 0x22);
 
 	/* Step 4b: Program PLL VCO */
-	dsi_phy_pll_vco_270_set_rate(vco_hz, pll_post_div);
+	dsi_phy_pll_vco_270_set_rate(active_pll, vco_hz, pll_post_div, cphy_mode);
 
 	/* Toggle DLN3 TX_DCTRL (required before PLL lock) */
 	dsi_phy_toggle_dln3_tx_dctrl();
@@ -615,13 +766,34 @@ static enum cb_err dsi_phy_init_instance(struct edid *edid, u32 num_of_lanes, u3
 	/* Step 5: Post-lock sequence */
 	dsi_phy_post_pll_lock();
 
-	/* Step 6: Enable DSI clocks */
-	ret = dsi_phy_enable_clocks(pixel_clk_hz, desired_bitclk_hz / 8);
-	if (ret != CB_SUCCESS)
-		return ret;
+	/* UEFI sets C-PHY mode and timings before enabling the DISP_CC clocks. */
+	if (cphy_mode)
+		dsi_phy_calc_and_commit_cphy_timings(phy_bitclk_hz);
 
-	/* Step 7: Timing parameters */
-	dsi_phy_calc_and_commit_timings(desired_bitclk_hz);
+	/* Step 6: Enable DSI clocks */
+	ret = dsi_phy_enable_clocks(dsi_pclk_hz, byteclk_hz);
+	if (ret != CB_SUCCESS) {
+		bool dsi1_active = active_phy == dsi1_phy;
+		struct clock_rcg *pclk = dsi1_active ?
+			&disp_cc->mdss_pclk1_rcg : &disp_cc->mdss_pclk0_rcg;
+		struct clock_rcg *byteclk = dsi1_active ?
+			&disp_cc->mdss_byte1_rcg : &disp_cc->mdss_byte0_rcg;
+		printk(BIOS_ERR, "DSI PHY: PLL_STATUS=%#x CLK_CFG0=%#x CLK_CFG1=%#x "
+			"GLBL_CTRL=%#x\n",
+			read32(&active_pll->pll_common_status_one),
+			read32(&active_phy->phy_cmn_clk_cfg0),
+			read32(&active_phy->phy_cmn_clk_cfg1),
+			read32(&active_phy->phy_cmn_glbl_ctrl));
+		printk(BIOS_ERR, "DSI clocks: PCLK_CMD=%#x PCLK_CFG=%#x "
+			"BYTE_CMD=%#x BYTE_CFG=%#x\n",
+			read32(&pclk->rcg_cmd), read32(&pclk->rcg_cfg),
+			read32(&byteclk->rcg_cmd), read32(&byteclk->rcg_cfg));
+		return ret;
+	}
+
+	/* Step 7: D-PHY timing parameters */
+	if (!cphy_mode)
+		dsi_phy_calc_and_commit_timings(phy_bitclk_hz);
 
 	return CB_SUCCESS;
 }
@@ -635,35 +807,7 @@ enum cb_err mdss_dsi_phy_270_init(struct edid *edid, u32 num_of_lanes, u32 bpp)
 
 enum cb_err mdss_dsi1_phy_270_init(struct edid *edid, u32 num_of_lanes, u32 bpp)
 {
-	/*
-	 * For DSI1: use DSI1 PHY/PLL but configure DSI1 clocks instead of DSI0.
-	 * Override the clock configure function pointer via active_phy/pll,
-	 * then call the shared init which calls dsi_phy_enable_clocks().
-	 * dsi_phy_enable_clocks() calls mdss_dsi_clock_configure() - for DSI1
-	 * we need mdss_dsi1_clock_configure() instead.
-	 * Solution: call init_instance then reconfigure DSI1 clocks.
-	 */
 	active_phy = dsi1_phy;
 	active_pll = phy_pll_qlink1;
-	enum cb_err ret = dsi_phy_init_instance(edid, num_of_lanes, bpp);
-	if (ret != CB_SUCCESS)
-		return ret;
-
-	/* Reconfigure DSI1 RCGs - dsi_phy_init_instance configured DSI0 RCGs */
-	u32 pixel_clk_hz = edid->mode.pixel_clock * KHz;
-	u32 bpp_val = 24;  /* RGB888 */
-	u32 desired_bitclk_hz = (u32)((u64)pixel_clk_hz * bpp_val / 4);
-	mdss_dsi1_clock_configure(pixel_clk_hz, desired_bitclk_hz / 8);
-
-	/* Enable DSI1 CBCRs */
-	if (mdss_clock_enable(DISP_CC_MDSS_ESC1_CBCR) != CB_SUCCESS)
-		printk(BIOS_ERR, "DSI1: ESC1 clock enable failed\n");
-	if (mdss_clock_enable(DISP_CC_MDSS_PCLK1_CBCR) != CB_SUCCESS)
-		printk(BIOS_ERR, "DSI1: PCLK1 clock enable failed\n");
-	if (mdss_clock_enable(DISP_CC_MDSS_BYTE1_CBCR) != CB_SUCCESS)
-		printk(BIOS_ERR, "DSI1: BYTE1 clock enable failed\n");
-	if (mdss_clock_enable(DISP_CC_MDSS_BYTE1_INTF_CBCR) != CB_SUCCESS)
-		printk(BIOS_ERR, "DSI1: BYTE1_INTF clock enable failed\n");
-
-	return CB_SUCCESS;
+	return dsi_phy_init_instance(edid, num_of_lanes, bpp);
 }

@@ -8,14 +8,8 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/cmd_db.h>
+#include <soc/display/disp.h>
 #include <soc/display/dsc.h>
-#if CONFIG(MIPI_PANEL_BOE_NS130070_M00)
-#include <soc/display/dsi_panel_nt36536.h>
-#elif CONFIG(MIPI_PANEL_VIS_R66451)
-#include <soc/display/dsi_panel_r66451.h>
-#elif CONFIG(MIPI_PANEL_SIM_DUALMIPI)
-#include <soc/display/dsi_panel_sim_dualmipi.h>
-#endif
 #include <soc/display/mdssreg.h>
 #include <soc/display/mipi_dsi.h>
 #include <soc/display/panel_ops.h>
@@ -128,13 +122,30 @@ void enable_mdss_clk(void)
 	mdss_ubwc_config();
 }
 
-void disable_mdss_clk(void)
+static void disable_mdss_dsi0_clk(void)
 {
-	/* Disable DSI clocks */
 	mdss_clock_disable(DISP_CC_MDSS_ESC0_CBCR);
 	mdss_clock_disable(DISP_CC_MDSS_BYTE0_CBCR);
 	mdss_clock_disable(DISP_CC_MDSS_BYTE0_INTF_CBCR);
 	mdss_clock_disable(DISP_CC_MDSS_PCLK0_CBCR);
+}
+
+static void disable_mdss_dsi1_clk(void)
+{
+	mdss_clock_disable(DISP_CC_MDSS_ESC1_CBCR);
+	mdss_clock_disable(DISP_CC_MDSS_BYTE1_CBCR);
+	mdss_clock_disable(DISP_CC_MDSS_BYTE1_INTF_CBCR);
+	mdss_clock_disable(DISP_CC_MDSS_PCLK1_CBCR);
+}
+
+void disable_mdss_clk(void)
+{
+	const struct mdss_panel_ops *panel = mdss_get_panel_ops();
+
+	if (panel && panel->config && panel->config->dsi_controller == 1)
+		disable_mdss_dsi1_clk();
+	else
+		disable_mdss_dsi0_clk();
 	/* Disable MDP clocks */
 	clock_disable(&disp_cc->mdss_mdp_cbcr);
 	clock_disable(&disp_cc->mdss_vsync_cbcr);
@@ -205,15 +216,7 @@ enum cb_err display_rpmh_init(void)
 /* Returns the active panel ops based on Kconfig selection */
 const struct mdss_panel_ops *mdss_get_panel_ops(void)
 {
-#if CONFIG(MIPI_PANEL_VIS_R66451)
-	return dsi_panel_r66451_get_ops();
-#elif CONFIG(MIPI_PANEL_SIM_DUALMIPI)
-	return dsi_panel_sim_dualmipi_get_ops();
-#elif CONFIG(MIPI_PANEL_BOE_NS130070_M00)
-	return dsi_panel_nt36536_get_ops();
-#else
-	return NULL;
-#endif
+	return mdss_get_active_panel_ops();
 }
 
 /*
@@ -281,24 +284,24 @@ static void __attribute__((unused)) mdss_dump_display_regs(void)
 }
 
 /*
- * mdss_dsi_display_init() - Full DSI + DSC display bring-up sequence.
+ * mdss_dsi_display_init() - Prepare the DSI + DSC display pipeline.
  *
  * Call sequence:
  *   1. DSI PHY 2.7.0 init (PHY power-up, PLL, clocks, timings) + host controller init
- *   2. Panel power-on (reset GPIO sequence)
- *   3. DSC engine config (2-2-1 or 2-2-2 topology)
- *   4. MDP SSPP + Layer Mixer + VBIF setup
- *   5. Panel init commands (Sleep Out + Display On)
+ *   2. DSC engine config (2-2-1 or 2-2-2 topology)
+ *   3. MDP SSPP + Layer Mixer + VBIF setup
+ *   4. Board panel power-on (GPIOs, I2C bias setup, settling delays, reset)
+ *   5. Panel init commands (Sleep Out + Display On), then DSC PPS
  *   6. DSI video compression mode registers
  *   7. DSI video mode timing registers
  *   8. INTF timing generator setup + CTL flush
- *   9. Enable INTF_1 timing engine
+ *   9. Defer timing engine start until display startup has rendered the logo
  */
-enum cb_err mdss_dsi_display_init(struct edid *edid_out, void (*power_on)(void))
+enum cb_err mdss_dsi_display_init(struct edid *edid_out, enum cb_err (*power_on)(void))
 {
 	struct edid edid = {0};
 	u32 bpp = 24;
-	u32 lanes = 4;
+	u32 lanes;
 
 	if (!edid_out)
 		return CB_ERR;
@@ -318,11 +321,15 @@ enum cb_err mdss_dsi_display_init(struct edid *edid_out, void (*power_on)(void))
 	}
 
 	const struct mdss_panel_config *cfg = panel->config;
+	lanes = cfg->num_lanes ? cfg->num_lanes : 4;
 
 	edid.mode = *panel->edid_mode;
 	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 
-	printk(BIOS_INFO, "Display: panel ops OK\n");
+	printk(BIOS_INFO, "Display: DSI%u, %u %s lanes, %s mode\n",
+	       cfg->dsi_controller, lanes,
+	       cfg->cphy_mode ? "C-PHY" : "D-PHY",
+	       cfg->command_mode ? "command" : "video");
 	printk(BIOS_INFO, "Display: edid ha=%u va=%u hbl=%u vbl=%u pclk=%u\n",
 	       edid.mode.ha, edid.mode.va, edid.mode.hbl, edid.mode.vbl,
 	       edid.mode.pixel_clock);
@@ -331,33 +338,28 @@ enum cb_err mdss_dsi_display_init(struct edid *edid_out, void (*power_on)(void))
 
 	/*
 	 * Step 1: DSI PHY 2.7.0 init + host controller init.
-	 * PHY must be up BEFORE panel reset - panel needs DSI clock running
-	 * when it comes out of reset to receive init commands.
+	 * Initialize the PHY and host before panel power-on and reset.
+	 * Video mode remains disabled during power-on and panel init commands.
 	 */
-	if (mdss_dsi_config(&edid, lanes, bpp) != CB_SUCCESS) {
-		printk(BIOS_ERR, "Display: DSI config failed\n");
-		return CB_ERR;
+	if (cfg->dsi_count > 1 || !cfg->dsi_controller) {
+		if (mdss_dsi_config(&edid, lanes, bpp) != CB_SUCCESS) {
+			printk(BIOS_ERR, "Display: DSI0 config failed\n");
+			return CB_ERR;
+		}
 	}
-	/* Dual DSI (2-2-2): init DSI1 PHY + host with same params */
-	if (cfg->dsi_count > 1) {
+	if (cfg->dsi_count > 1 || cfg->dsi_controller) {
 		if (mdss_dsi1_config(&edid, lanes, bpp) != CB_SUCCESS) {
 			printk(BIOS_ERR, "Display: DSI1 config failed\n");
 			return CB_ERR;
 		}
 	}
 
-	/*
-	 * Step 2: Panel power-on (reset sequence) AFTER PHY is up.
-	 * Reset: HIGH 10ms -> LOW 10ms -> HIGH 10ms -> 10ms settle.
-	 * Panel needs DSI clock running when it comes out of reset.
-	 */
-	if (power_on)
-		power_on();
-
-	/* Step 3: DSC engine */
+	/* Step 2: DSC engine */
 	mdss_dsc_config(panel->dsc_params);
+	if (cfg->command_mode)
+		mdss_dsi_command_mode_config(&edid);
 
-	/* Step 4: MDP SSPP, Layer Mixer, VBIF */
+	/* Step 3: MDP SSPP, Layer Mixer, VBIF */
 	configure_vbif_qos();
 	uintptr_t fb_addr = (REGION_SIZE(framebuffer)) ? (uintptr_t)_framebuffer : 0;
 	/*
@@ -371,14 +373,23 @@ enum cb_err mdss_dsi_display_init(struct edid *edid_out, void (*power_on)(void))
 	mdss_layer_mixer_setup(&edid, cfg);
 
 	/*
-	 * Step 5: merge_3d - DSC_CMN_ENC_MAIN_CONF=0x83 (SPLIT_PANEL|MULTIPLEX_MODE)
+	 * merge_3d - DSC_CMN_ENC_MAIN_CONF=0x83 (SPLIT_PANEL|MULTIPLEX_MODE)
 	 * handles the split internally without CTL merge_3d.
 	 */
 	write32(&mdp_ctl_0->ctl_merge_3d_active, 0x0);
 	write32(&mdp_ctl_0->merge_3d_flush, 0x0);
 
 	/*
-	 * Step 6: Panel init commands MUST be sent BEFORE video mode starts.
+	 * Step 4: Complete board power-on and reset immediately before panel commands.
+	 * The host is configured for LP command transfers, with video still disabled.
+	 */
+	if (power_on && power_on() != CB_SUCCESS) {
+		printk(BIOS_ERR, "Display: panel power-on failed\n");
+		return CB_ERR;
+	}
+
+	/*
+	 * Step 5: Panel init commands MUST be sent BEFORE video mode starts.
 	 * DSI ctrl must NOT have VIDEO_EN=1 when sending CMD mode DMA.
 	 * panel_initialize() temporarily enables CMD mode (ctrl|0x04),
 	 * sends commands, then restores ctrl.
@@ -387,31 +398,64 @@ enum cb_err mdss_dsi_display_init(struct edid *edid_out, void (*power_on)(void))
 		printk(BIOS_ERR, "Display: panel init commands failed\n");
 		return CB_ERR;
 	}
+	if (panel->dsc_cfg &&
+	    mdss_dsi_send_pps(panel->dsc_cfg, &edid.mode, panel->dsc_params) != CB_SUCCESS) {
+		printk(BIOS_ERR, "Display: DSC PPS send failed\n");
+		return CB_ERR;
+	}
 
 	/*
-	 * Step 7: DSI video compression mode registers.
+	 * Step 6: DSI video compression mode registers.
 	 * WC[31:16]=bytes_per_pkt, DATATYPE[13:8]=0x0B (compressed image),
 	 * PKT_PER_LINE[7:6], EOL_BYTE_NUM[5:4], EN[0]=1.
 	 */
-	write32(&dsi0->video_compression_mode_ctrl,  panel->video_compression_ctrl);
-	write32(&dsi0->video_compression_mode_ctrl2, panel->video_compression_ctrl2);
-	if (cfg->dsi_count > 1) {
-		write32(&dsi1->video_compression_mode_ctrl,  panel->video_compression_ctrl);
-		write32(&dsi1->video_compression_mode_ctrl2, panel->video_compression_ctrl2);
+	if (!cfg->command_mode) {
+		struct dsi_regs *target = cfg->dsi_controller ? dsi1 : dsi0;
+		write32(&target->video_compression_mode_ctrl, panel->video_compression_ctrl);
+		write32(&target->video_compression_mode_ctrl2, panel->video_compression_ctrl2);
+		if (cfg->dsi_count > 1) {
+			write32(&dsi0->video_compression_mode_ctrl, panel->video_compression_ctrl);
+			write32(&dsi0->video_compression_mode_ctrl2, panel->video_compression_ctrl2);
+			write32(&dsi1->video_compression_mode_ctrl, panel->video_compression_ctrl);
+			write32(&dsi1->video_compression_mode_ctrl2, panel->video_compression_ctrl2);
+		}
 	}
 
-	/* Step 8: DSI video mode timing - sets VIDEO_EN=1, starts video stream */
-	mdss_dsi_video_mode_config(&edid, bpp);
-	if (cfg->dsi_count > 1)
-		mdss_dsi1_video_mode_config(&edid, bpp);
+	/* Step 7: DSI video mode timing registers */
+	if (!cfg->command_mode) {
+		if (cfg->dsi_controller)
+			mdss_dsi1_video_mode_config(&edid, bpp);
+		else
+			mdss_dsi_video_mode_config(&edid, bpp);
+		if (cfg->dsi_count > 1)
+			mdss_dsi1_video_mode_config(&edid, bpp);
+	}
 
-	/* Step 9: INTF timing generator setup */
-	intf_tg_setup(&edid, cfg);
-	intf_fetch_start_config(&edid, cfg);
+	if (!cfg->command_mode) {
+		/* Step 8: INTF timing generator setup */
+		intf_tg_setup(&edid, cfg);
+		intf_fetch_start_config(&edid, cfg);
+	}
 	merge_3d_active(&edid, cfg);
+	if (cfg->command_mode) {
+		/* Dedicated TE/vsync setup from the UEFI MDP command-mode profile. */
+		write32(&mdp_intf2->intf_mux, 0xF0000); /* PP0 -> INTF_2 */
+		write32(&mdp_intf2_tear->mdp_vsync_sel, 1);
+		write32(&mdp_intf2_tear->tear_check_en, BIT(0) | BIT(3));
+		write32(&mdp_intf2_tear->sync_config_vsync,
+			BIT(20) | BIT(19) | (19200000U /
+				((edid.mode.va + edid.mode.vbl) * edid.mode.refresh)));
+		write32(&mdp_intf2_tear->sync_config_height, 0xfffffff0);
+		write32(&mdp_intf2_tear->rd_ptr_irq, edid.mode.va + 1);
+		write32(&mdp_intf2_tear->wr_ptr_irq, 1);
+		write32(&mdp_intf2_tear->vsync_init_val, edid.mode.va);
+		write32(&mdp_intf2_tear->sync_thresh, (4 << 16) | 4);
+		write32(&mdp_intf2_tear->start_pos, edid.mode.va);
+		write32(&mdp_intf2_tear->sync_wrcount, edid.mode.va + 5);
+	}
 
 	/*
-	 * Step 9b: CTL INTF_ACTIVE + INTF_FLUSH before timing engine.
+	 * Step 8b: CTL INTF_ACTIVE + INTF_FLUSH before timing engine.
 	 * Sequence: CTL_FLUSH -> TIMING_ENGINE_EN=1.
 	 * CTL_START is NOT used for video mode (only cmd/writeback).
 	 */
@@ -419,24 +463,39 @@ enum cb_err mdss_dsi_display_init(struct edid *edid_out, void (*power_on)(void))
 	write32(&mdp_ctl_0->ctl_intf_active,  MDSS_INTF_ACTIVE(cfg));
 	write32(&mdp_ctl_0->ctl_intf_flush,   MDSS_INTF_FLUSH(cfg));
 
-	/*
-	 * Step 10: Enable INTF_1 timing engine (master).
-	 * For dual DSI (2-2-2), INTF_1 drives INTF_2 as slave via the
-	 * broadcast mechanism, so only INTF_1 timing engine is enabled.
-	 */
-	write32(&mdp_intf->timing_eng_enable, 0x1);
-
-	/* Return edid to caller - framebuffer registration done in mainboard */
+	/* Return edid for framebuffer registration and rendering before scanout starts. */
 	*edid_out = edid;
 	return CB_SUCCESS;
 }
 
 void mdss_dsi_display_stop(void)
 {
-	/* Stop timing engine */
-	write32(&mdp_intf->timing_eng_enable, 0x0);
+	const struct mdss_panel_ops *panel = mdss_get_panel_ops();
+	const struct mdss_panel_config *cfg = panel ? panel->config : NULL;
+	if (cfg && cfg->command_mode)
+		write32(&mdp_intf2_tear->autorefresh_config, 0);
+	else
+		write32(cfg && cfg->dsi_controller ? &mdp_intf2->timing_eng_enable :
+			&mdp_intf->timing_eng_enable, 0x0);
 	mdelay(20);
+
+	if (panel && panel->off_cmds) {
+		/* With the timing engine stopped, send LP commands without video scheduling. */
+		clrbits32(cfg->dsi_controller ? &dsi1->ctrl : &dsi0->ctrl, BIT(1));
+		if (cfg->dsi_count > 1)
+			clrbits32(&dsi1->ctrl, BIT(1));
+		if (mdss_dsi_panel_initialize(panel->off_cmds) != CB_SUCCESS)
+			printk(BIOS_ERR, "Display: panel off commands failed\n");
+	}
 
 	/* Disable DSI clocks */
 	disable_mdss_clk();
+}
+
+void mdss_dsi_command_mode_start(void)
+{
+	/* Start one framebuffer update and then enable panel TE auto-refresh. */
+	write32(&mdp_ctl_0->ctl_start, 1);
+	dsb();
+	write32(&mdp_intf2_tear->autorefresh_config, BIT(31) | 1);
 }

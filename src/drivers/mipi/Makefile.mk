@@ -45,6 +45,7 @@ panel-params-$(CONFIG_MIPI_PANEL_TIANMA_ILITEK79900A) += panel-TIANMA_ILITEK7990
 panel-params-$(CONFIG_MIPI_PANEL_TM_TL121BVMS07_00C) += panel-TM_TL121BVMS07_00C
 
 panel-params-$(CONFIG_MIPI_PANEL_VIS_R66451) += panel-VIS_R66451
+panel-params-$(CONFIG_MIPI_PANEL_VIS_R66451_CPHY_DSI1) += panel-VIS_R66451_CPHY_DSI1
 panel-params-$(CONFIG_MIPI_PANEL_VIS_RM69299) += panel-VIS_RM69299
 
 $(foreach params,$(panel-params-y), \

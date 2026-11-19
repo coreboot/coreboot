@@ -464,6 +464,29 @@ config MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_POWER
 	  touchscreen controller. This varies by board revision.
 	  Set to 0x0 if power is hardwired.
 
+config MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_RESET
+	int
+	default 0
+	help
+	  This option specifies the GPIO pin number on the mainboard used for
+	  the touchscreen reset pin when sequenced with panel power-on.
+	  Set to 0 if unused.
+
+config MAINBOARD_GPIO_PIN_FOR_PANEL_BIAS
+	int
+	default 0
+	help
+	  This option specifies the GPIO pin number on the mainboard used to
+	  enable the I2C-controlled LCD panel bias regulator. Set to 0 if
+	  unused.
+
+config MAINBOARD_GPIO_PIN_FOR_PANEL_AUX_POWER
+	int
+	default 0
+	help
+	  This option specifies an auxiliary GPIO pin number on the mainboard
+	  used to enable secondary panel power rails. Set to 0 if unused.
+
 config MAINBOARD_GPIO_PIN_FOR_PANEL_RESET
 	int
 	default 26 if BOARD_GOOGLE_MODEL_PIC

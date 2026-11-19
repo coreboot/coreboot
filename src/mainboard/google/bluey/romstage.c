@@ -174,8 +174,15 @@ static void display_configure_gpios(void)
 	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_POWER)
 		gpio_output(GPIO_TS_POWER_EN, 1);
 
+	/* Keep I2C-configured LCD bias disabled until ramstage initializes it */
+	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_PANEL_BIAS)
+		gpio_output(GPIO_PANEL_BIAS_EN, 0);
+
 	/* Panel power on GPIO enable */
 	gpio_output(GPIO_PANEL_POWER_ON, 1);
+
+	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_PANEL_AUX_POWER)
+		gpio_output(GPIO_PANEL_AUX_POWER_ON, 1);
 
 	/* Panel HPD GPIO enable */
 	if (!CONFIG(MAINBOARD_HAS_MIPI_DSI))

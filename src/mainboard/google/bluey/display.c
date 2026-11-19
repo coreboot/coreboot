@@ -6,20 +6,26 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
+#include <device/i2c_simple.h>
+#include <ec/google/chromeec/ec.h>
 #include <edid.h>
 #include <elog.h>
 #include <gpio.h>
+#include <mipi/panel.h>
 #include <soc/clock.h>
 #include <soc/display/edp_ctrl.h>
 #include <soc/display/edp_reg.h>
 #include <soc/display/mdssreg.h>
 #include <soc/display/mipi_dsi.h>
+#include <soc/display/panel_ops.h>
 #include <soc/pmic_gpio.h>
-#include <soc/symbols_common.h>
+#include <soc/qcom_qup_se.h>
+#include <soc/qupv3_i2c_common.h>
 #include <soc/rpmh_config.h>
+#include <soc/symbols_common.h>
+#include <string.h>
 #include <timer.h>
 #include <timestamp.h>
-#include <ec/google/chromeec/ec.h>
 
 #include "board.h"
 #include "display.h"
@@ -30,9 +36,110 @@ static struct stopwatch splash_sw;
 /* Threshold for selecting lower-resolution assets */
 #define FHD_WIDTH_THRESHOLD		1920
 
+/* AW37503 I2C LCD bias supply definitions */
+#define PMIC_AW37503_SLAVE		0x3e
+#define PMIC_AW37503_BUS		QUPV3_1_SE1
+#define AW37503_REG_VPOS		0x00
+#define AW37503_REG_VNEG		0x01
+#define AW37503_REG_APPS		0x03
+#define AW37503_REG_CONTROL		0x04
+#define AW37503_REG_WPRTEN		0x21
+#define AW37503_VENDOR_ID_MASK		0x0f
+#define AW37503_VENDOR_ID		0x01
+#define AW37503_VOUT_MASK		0x1f
+#define AW37503_VOUT_5P9V		0x13 /* 4.0 V + 19 * 0.1 V */
+#define AW37503_WPRTEN_UNLOCK		0x4c
+#define AW37503_WPRTEN_LOCK		0x00
+#define AW37503_APPS_CONFIG		0x43
+
+#define PANEL_BIAS_POST_ON_MS		20
+#define PANEL_BIAS_POST_OFF_MS		5
+
 static struct {
 	uint32_t x_res;
 } cached_display_params;
+
+static enum cb_err aw37503_read(unsigned int bus, u8 reg, u8 *value)
+{
+	int ret = i2c_readb(bus, PMIC_AW37503_SLAVE, reg, value);
+
+	if (ret) {
+		printk(BIOS_ERR, "Display: AW37503 reg=0x%02x read failed: %d\n", reg, ret);
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
+
+static enum cb_err aw37503_write(unsigned int bus, u8 reg, u8 value)
+{
+	int ret = i2c_writeb(bus, PMIC_AW37503_SLAVE, reg, value);
+
+	if (ret) {
+		printk(BIOS_ERR, "Display: AW37503 reg=0x%02x write failed: %d\n", reg, ret);
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
+
+static enum cb_err aw37503_set_voltage(unsigned int bus, u8 reg)
+{
+	u8 value;
+
+	if (aw37503_read(bus, reg, &value) != CB_SUCCESS)
+		return CB_ERR;
+
+	value = (value & ~AW37503_VOUT_MASK) | AW37503_VOUT_5P9V;
+	if (aw37503_write(bus, reg, value) != CB_SUCCESS)
+		return CB_ERR;
+
+	if (aw37503_read(bus, reg, &value) != CB_SUCCESS)
+		return CB_ERR;
+
+	if ((value & AW37503_VOUT_MASK) != AW37503_VOUT_5P9V) {
+		printk(BIOS_ERR, "Display: AW37503 reg=0x%02x readback=0x%02x mismatch\n",
+		       reg, value);
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
+
+static enum cb_err aw37503_init(unsigned int bus)
+{
+	u8 control, apps;
+
+	if (aw37503_read(bus, AW37503_REG_CONTROL, &control) != CB_SUCCESS)
+		return CB_ERR;
+	if ((control & AW37503_VENDOR_ID_MASK) != AW37503_VENDOR_ID) {
+		printk(BIOS_ERR, "Display: AW37503 vendor ID mismatch: 0x%02x\n", control);
+		return CB_ERR;
+	}
+
+	if (aw37503_set_voltage(bus, AW37503_REG_VPOS) != CB_SUCCESS ||
+	    aw37503_set_voltage(bus, AW37503_REG_VNEG) != CB_SUCCESS)
+		return CB_ERR;
+
+	enum cb_err ret = aw37503_write(bus, AW37503_REG_WPRTEN, AW37503_WPRTEN_UNLOCK);
+	if (ret == CB_SUCCESS)
+		ret = aw37503_write(bus, AW37503_REG_APPS, AW37503_APPS_CONFIG);
+
+	if (aw37503_write(bus, AW37503_REG_WPRTEN, AW37503_WPRTEN_LOCK) != CB_SUCCESS)
+		return CB_ERR;
+	if (ret != CB_SUCCESS)
+		return CB_ERR;
+
+	if (aw37503_read(bus, AW37503_REG_APPS, &apps) != CB_SUCCESS)
+		return CB_ERR;
+	if (apps != AW37503_APPS_CONFIG) {
+		printk(BIOS_ERR, "Display: AW37503 APPS readback=0x%02x mismatch\n", apps);
+		return CB_ERR;
+	}
+
+	printk(BIOS_DEBUG, "Display: AW37503 bias +/-5.9V configured\n");
+	return CB_SUCCESS;
+}
 
 /*
  * Helper to determine if the current panel is low-resolution (<= FHD).
@@ -60,6 +167,19 @@ bool platform_use_secondary_logo(void)
 }
 #endif
 
+static void panel_backlight_control(bool enable)
+{
+	if (enable) {
+		if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
+			pmic_gpio_output(BACKLIGHT_PWM_PMIC_ID, BACKLIGHT_PWM_PMIC_GPIO, true);
+		pmic_gpio_output(BACKLIGHT_CONTROL_PMIC_ID, BACKLIGHT_CONTROL_PMIC_GPIO, true);
+	} else {
+		pmic_gpio_output(BACKLIGHT_CONTROL_PMIC_ID, BACKLIGHT_CONTROL_PMIC_GPIO, false);
+		if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
+			pmic_gpio_output(BACKLIGHT_PWM_PMIC_ID, BACKLIGHT_PWM_PMIC_GPIO, false);
+	}
+}
+
 static void handle_dsi_reset(bool power_on)
 {
 	if (!CONFIG(MAINBOARD_HAS_MIPI_DSI))
@@ -67,13 +187,17 @@ static void handle_dsi_reset(bool power_on)
 
 	mdelay(5);
 	if (power_on) {
-		/* Reset sequence - H 10ms -> L 10ms -> H 10ms */
+		const struct mdss_panel_ops *panel = mdss_get_panel_ops();
+		u16 pre_ms = (panel && panel->reset_pre_ms) ? panel->reset_pre_ms : 10;
+		u16 low_ms = (panel && panel->reset_low_ms) ? panel->reset_low_ms : 10;
+		u16 post_ms = (panel && panel->reset_post_ms) ? panel->reset_post_ms : 10;
+
 		gpio_output(GPIO_PANEL_RESET, 1);
-		mdelay(10);
+		mdelay(pre_ms);
 		gpio_output(GPIO_PANEL_RESET, 0);
-		mdelay(10);
+		mdelay(low_ms);
 		gpio_output(GPIO_PANEL_RESET, 1);
-		mdelay(10);
+		mdelay(post_ms);
 	} else {
 		gpio_output(GPIO_PANEL_RESET, 0);
 		mdelay(5);
@@ -82,28 +206,46 @@ static void handle_dsi_reset(bool power_on)
 
 static enum cb_err panel_power_on(void)
 {
-	/* Enable backlight PWM */
-	if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
-		pmic_gpio_output(BACKLIGHT_PWM_PMIC_ID, BACKLIGHT_PWM_PMIC_GPIO, true);
+	if (CONFIG(MAINBOARD_HAS_LCD_VOLTAGE_VIA_I2C)) {
+		i2c_init(PMIC_AW37503_BUS, I2C_SPEED_FAST);
+		if (aw37503_init(PMIC_AW37503_BUS) != CB_SUCCESS) {
+			printk(BIOS_ERR, "Display: AW37503 setup failed\n");
+			return CB_ERR;
+		}
+		if (CONFIG_MAINBOARD_GPIO_PIN_FOR_PANEL_BIAS) {
+			gpio_output(GPIO_PANEL_BIAS_EN, 1);
+			mdelay(PANEL_BIAS_POST_ON_MS);
+		}
+	}
 
-	/* Enable backlight / panel rail */
-	pmic_gpio_output(BACKLIGHT_CONTROL_PMIC_ID, BACKLIGHT_CONTROL_PMIC_GPIO, true);
+	panel_backlight_control(true);
 
 	handle_dsi_reset(true);
+
+	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_RESET)
+		gpio_output(GPIO_TS_RESET_L, 1);
 
 	return CB_SUCCESS;
 }
 
 static void panel_power_off(void)
 {
-	/* Disable backlight */
-	pmic_gpio_output(BACKLIGHT_CONTROL_PMIC_ID, BACKLIGHT_CONTROL_PMIC_GPIO, false);
-
-	/* Disable backlight PWM */
-	if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
-		pmic_gpio_output(BACKLIGHT_PWM_PMIC_ID, BACKLIGHT_PWM_PMIC_GPIO, false);
+	panel_backlight_control(false);
 
 	handle_dsi_reset(false);
+
+	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_TOUCHSCREEN_RESET)
+		gpio_output(GPIO_TS_RESET_L, 0);
+
+	if (CONFIG(MAINBOARD_HAS_LCD_VOLTAGE_VIA_I2C)) {
+		if (CONFIG_MAINBOARD_GPIO_PIN_FOR_PANEL_BIAS) {
+			gpio_output(GPIO_PANEL_BIAS_EN, 0);
+			mdelay(PANEL_BIAS_POST_OFF_MS);
+		}
+	}
+
+	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_PANEL_AUX_POWER)
+		gpio_output(GPIO_PANEL_AUX_POWER_ON, 0);
 
 	/* Panel power off */
 	gpio_output(GPIO_PANEL_POWER_ON, 0);
@@ -156,14 +298,43 @@ static void qcom_mdss_edp_init(struct edid *edid, uintptr_t fb_addr)
 	write32(&mdp_edp_intf->intf_config, 0x800000);
 }
 
-static void qcom_mdp_start(uintptr_t fb_addr)
+static enum cb_err qcom_mdp_start(void)
 {
 	stopwatch_init_msecs_expire(&splash_sw, BATTERY_CHARGING_SPLASH_TIMEOUT_MS);
 
-	if (CONFIG(MAINBOARD_HAS_MIPI_DSI))
-		write32(&mdp_intf->timing_eng_enable, 1);
-	else
+	if (CONFIG(MAINBOARD_HAS_MIPI_DSI)) {
+		const struct mdss_panel_ops *panel = mdss_get_panel_ops();
+
+		if (!panel || !panel->config) {
+			printk(BIOS_ERR, "Display: missing panel configuration\n");
+			return CB_ERR;
+		}
+
+		const struct mdss_panel_config *cfg = panel->config;
+
+		/*
+		 * Enable the selected timing engine (DSI0: INTF_1, DSI1: INTF_2).
+		 * For dual DSI (2-2-2), INTF_1 drives INTF_2 as slave via the
+		 * broadcast mechanism, so only INTF_1 timing engine is enabled.
+		 */
+		if (!cfg->command_mode) {
+			struct mdp_intf_regs *intf = cfg->dsi_controller ?
+				mdp_intf2 : mdp_intf;
+
+			write32(&intf->timing_eng_enable, 1);
+			if (!(read32(&intf->timing_eng_enable) & BIT(0))) {
+				printk(BIOS_ERR, "Display: INTF_%u timing engine failed\n",
+				       cfg->dsi_controller ? 2 : 1);
+				return CB_ERR;
+			}
+		} else {
+			mdss_dsi_command_mode_start();
+		}
+	} else {
 		write32(&mdp_edp_intf->timing_eng_enable, 1);
+	}
+
+	return CB_SUCCESS;
 }
 
 void display_stop(void)
@@ -205,10 +376,15 @@ static void display_logo(enum lb_fb_orientation orientation, uintptr_t fb_addr,
 	};
 	render_logo_to_framebuffer(&config);
 
-	qcom_mdp_start(fb_addr);
+	if (qcom_mdp_start() != CB_SUCCESS) {
+		printk(BIOS_ERR, "Display: failed to start framebuffer scanout\n");
+		return;
+	}
 
-	if (!CONFIG(MAINBOARD_HAS_MIPI_DSI))
-		panel_power_on();
+	if (!CONFIG(MAINBOARD_HAS_MIPI_DSI) && panel_power_on() != CB_SUCCESS) {
+		printk(BIOS_ERR, "Display: panel power-on failed\n");
+		return;
+	}
 
 	timestamp_add_now(TS_FIRMWARE_SPLASH_RENDERED);
 
@@ -222,23 +398,30 @@ static void display_logo(enum lb_fb_orientation orientation, uintptr_t fb_addr,
  * Called from display_startup() when MAINBOARD_HAS_MIPI_DSI is selected.
  * Returns edid populated by DSI init for common framebuffer registration.
  */
-static void qcom_mdss_dsi_init(struct edid *edid, uintptr_t fb_addr)
+static void qcom_mdss_dsi_init(struct edid *edid)
 {
 	if (mdss_dsi_display_init(edid, panel_power_on) != CB_SUCCESS) {
 		printk(BIOS_ERR, "DSI display init failed\n");
 		return;
 	}
 
+	if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
+		return;
+
 	/*
-	 * Send brightness command after video mode is running.
-	 * AMOLED panels (BacklightType=3 DSI) use DCS 0x51 for brightness.
-	 * Must be sent after timing engine is enabled.
+	 * AMOLED panels without external PWM backlight use DCS 0x51 for
+	 * brightness control.
 	 */
-	const u8 brightness_cmd[] = {
-		3, 3, 0x51, 0xFF, 0x0F,  /* PANEL_DCS(0x51, 0xFF, 0x0F) */
-		0                         /* PANEL_END */
+	static const u8 brightness_cmd[] = {
+		PANEL_DCS(0x51, 0xff, 0x0f),
+		PANEL_END,
 	};
-	mdss_dsi_panel_initialize(brightness_cmd);
+	const struct mdss_panel_ops *panel = mdss_get_panel_ops();
+	const u8 *cmds = (panel && panel->backlight_cmds) ?
+		panel->backlight_cmds : brightness_cmd;
+
+	if (mdss_dsi_panel_initialize(cmds) != CB_SUCCESS)
+		printk(BIOS_ERR, "Display: backlight command failed\n");
 }
 
 void display_startup(void)
@@ -260,7 +443,7 @@ void display_startup(void)
 	enable_mdss_clk();
 
 	if (CONFIG(MAINBOARD_HAS_MIPI_DSI))
-		qcom_mdss_dsi_init(&edid, fb_addr);
+		qcom_mdss_dsi_init(&edid);
 	else
 		qcom_mdss_edp_init(&edid, fb_addr);
 

@@ -143,7 +143,7 @@ chip soc/intel/apollolake
 						register "type"			= "UPC_TYPE_INTERNAL"
 						register "is_intel_bluetooth"	= "1"
 						register "group"		= "ACPI_PLD_GROUP(0, 4)"
-						device ref usb2_port7 on end
+						device ref usb2_port9 on end
 					end
 
 					chip drivers/usb/acpi

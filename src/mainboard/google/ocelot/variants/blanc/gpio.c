@@ -372,8 +372,6 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* GPP_F08:     EN_TCHSCR_PWR */
 	PAD_CFG_GPO(GPP_F08, 1, DEEP),
-	/* GPP_F16:     TCHSCR_RST_ODL */
-	PAD_CFG_GPO(GPP_F16, 0, DEEP),
 
 	/* GPP_H08:     UART_SOC_RX_DBG_TX */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),

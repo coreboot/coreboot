@@ -226,8 +226,8 @@ void fsp_display_hobs(void)
 
 __weak void soc_display_hob(const struct hob_header *hob)
 {
-#if CONFIG(DISPLAY_HOB_HEXDUMP)
-	if (console_log_level(BIOS_SPEW))
-		hexdump(hob, hob->length);
-#endif
+	if (CONFIG(DISPLAY_HOB_HEXDUMP)) {
+		if (console_log_level(BIOS_SPEW))
+			hexdump(hob, hob->length);
+	}
 }

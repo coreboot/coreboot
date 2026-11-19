@@ -36,7 +36,7 @@ int vprintk(int msg_level, const char *fmt, va_list args)
 	return 0;
 }
 
-int console_log_level(int msg_level)
+int console_log_target(int msg_level)
 {
 	return 0;
 }

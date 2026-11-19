@@ -34,7 +34,7 @@ static ssize_t spi_readat(const struct region_device *rd, void *b,
 				size_t offset, size_t size)
 {
 	struct stopwatch sw;
-	bool show = size >= 4 * KiB && console_log_level(BIOS_DEBUG);
+	bool show = size >= 4 * KiB && console_log_target(BIOS_DEBUG);
 
 	if (show)
 		stopwatch_init(&sw);

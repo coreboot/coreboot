@@ -12,7 +12,7 @@ void hexdump_loglevel(int msg_level, const void *memory, size_t length)
 	int all_one = 0;
 	size_t num_bytes;
 
-	if (console_log_level(msg_level) == CONSOLE_LOG_NONE)
+	if (console_log_target(msg_level) == CONSOLE_LOG_NONE)
 		return;
 
 	for (i = 0; i < length; i += 16) {

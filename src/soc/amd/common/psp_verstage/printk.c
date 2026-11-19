@@ -30,7 +30,7 @@ int vprintk(int msg_level, const char *fmt, va_list args)
 	int i, cnt, log_this;
 	char buf[256];
 
-	log_this = console_log_level(msg_level);
+	log_this = console_log_target(msg_level);
 	if (log_this < CONSOLE_LOG_FAST)
 		return 0;
 

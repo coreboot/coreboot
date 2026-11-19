@@ -8,10 +8,10 @@ use type Interfaces.C.int;
 
 package body HW.Debug_Sink is
 
-   function console_log_level
+   function console_log_target
      (msg_level : Interfaces.C.int)
       return Interfaces.C.int;
-   pragma Import (C, console_log_level, "console_log_level");
+   pragma Import (C, console_log_target, "console_log_target");
 
    Msg_Level_BIOS_DEBUG : constant := 7;
 
@@ -27,7 +27,7 @@ package body HW.Debug_Sink is
    procedure Put (Item : String)
    is
       console_log : constant Interfaces.C.int :=
-         console_log_level (Msg_Level_BIOS_DEBUG);
+         console_log_target (Msg_Level_BIOS_DEBUG);
    begin
       if console_log = CONSOLE_LOG_FAST then
          if Config.CONSOLE_CBMEM then
@@ -45,7 +45,7 @@ package body HW.Debug_Sink is
    procedure Put_Char (Item : Character)
    is
       console_log : constant Interfaces.C.int :=
-         console_log_level (Msg_Level_BIOS_DEBUG);
+         console_log_target (Msg_Level_BIOS_DEBUG);
    begin
       if console_log = CONSOLE_LOG_FAST then
          if Config.CONSOLE_CBMEM then

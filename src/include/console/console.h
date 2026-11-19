@@ -65,7 +65,12 @@ enum { CONSOLE_LOG_NONE = 0, CONSOLE_LOG_FAST, CONSOLE_LOG_ALL };
 
 int get_log_level(void);
 void console_init(void);
-int console_log_level(int msg_level);
+/*
+ * Decide where a message at msg_level is emitted.
+ * Returns CONSOLE_LOG_NONE when it is dropped, CONSOLE_LOG_FAST for the CBMEM console only,
+ * and CONSOLE_LOG_ALL for every console.
+ */
+int console_log_target(int msg_level);
 
 int printk(int msg_level, const char *fmt, ...) __printf(2, 3);
 int vprintk(int msg_level, const char *fmt, va_list args);
@@ -79,7 +84,7 @@ void console_time_report(void);
 #else
 static inline int get_log_level(void) { return -1; }
 static inline void console_init(void) {}
-static inline int console_log_level(int msg_level) { return CONSOLE_LOG_NONE; }
+static inline int console_log_target(int msg_level) { return CONSOLE_LOG_NONE; }
 static inline int __printf(2, 3) printk(int LEVEL, const char *fmt, ...) { return 0; }
 static inline int vprintk(int LEVEL, const char *fmt, va_list args) { return 0; }
 static inline void do_putchar(unsigned char byte) {}

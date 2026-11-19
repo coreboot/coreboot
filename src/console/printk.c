@@ -134,7 +134,7 @@ int vprintk(int msg_level, const char *fmt, va_list args)
 	if (CONFIG(SQUELCH_EARLY_SMP) && ENV_ROMSTAGE_OR_BEFORE && !boot_cpu())
 		return 0;
 
-	state.speed = console_log_level(msg_level);
+	state.speed = console_log_target(msg_level);
 	if (state.speed < CONSOLE_LOG_FAST)
 		return 0;
 

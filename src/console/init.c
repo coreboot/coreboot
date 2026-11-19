@@ -30,7 +30,7 @@ static void init_log_level(void)
 		console_loglevel = get_uint_option("debug_level", console_loglevel);
 }
 
-int console_log_level(int msg_level)
+int console_log_target(int msg_level)
 {
 	int log_level = get_log_level();
 

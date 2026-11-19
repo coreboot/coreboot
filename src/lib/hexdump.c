@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <lib.h>
 
-void hexdump(const void *memory, size_t length)
+void hexdump_loglevel(int msg_level, const void *memory, size_t length)
 {
 	size_t i, j;
 	uint8_t *line;
@@ -33,18 +33,23 @@ void hexdump(const void *memory, size_t length)
 		}
 
 		if ((all_zero < 2) && (all_one < 2)) {
-			printk(BIOS_DEBUG, "%p:", memory + i);
+			printk(msg_level, "%p:", memory + i);
 			for (j = 0; j < num_bytes; j++)
-				printk(BIOS_DEBUG, " %02x", line[j]);
+				printk(msg_level, " %02x", line[j]);
 			for (; j < 16; j++)
-				printk(BIOS_DEBUG, "   ");
-			printk(BIOS_DEBUG, "  ");
+				printk(msg_level, "   ");
+			printk(msg_level, "  ");
 			for (j = 0; j < num_bytes; j++)
-				printk(BIOS_DEBUG, "%c",
+				printk(msg_level, "%c",
 				       isprint(line[j]) ? line[j] : '.');
-			printk(BIOS_DEBUG, "\n");
+			printk(msg_level, "\n");
 		} else if ((all_zero == 2) || (all_one == 2)) {
-			printk(BIOS_DEBUG, "...\n");
+			printk(msg_level, "...\n");
 		}
 	}
+}
+
+void hexdump(const void *memory, size_t length)
+{
+	hexdump_loglevel(BIOS_DEBUG, memory, length);
 }

@@ -40,7 +40,7 @@ static void fsp_kti_cache_fill(FSPM_UPD *mupd)
 	mupd->FspmConfig.PcdKtiBufferPtr = (uint32_t)data;
 
 	printk(BIOS_SPEW, "KTI cache found, size %zx bytes\n", kti_size);
-	hexdump(data, kti_size);
+	hexdump_loglevel(BIOS_SPEW, data, kti_size);
 }
 
 static struct mem_channel_data mem_channel_data;

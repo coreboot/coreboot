@@ -64,7 +64,7 @@ void soc_display_fspm_upd_params(
 
 	#undef DISPLAY_UPD
 
-	hexdump(fspm_new_upd, sizeof(*fspm_new_upd));
+	hexdump_loglevel(BIOS_SPEW, fspm_new_upd, sizeof(*fspm_new_upd));
 }
 
 /* Display the UPD parameters for SiliconInit */
@@ -122,5 +122,5 @@ void soc_display_fsps_upd_params(
 
 	#undef DISPLAY_UPD
 
-	hexdump(fsps_new_upd, sizeof(*fsps_new_upd));
+	hexdump_loglevel(BIOS_SPEW, fsps_new_upd, sizeof(*fsps_new_upd));
 }

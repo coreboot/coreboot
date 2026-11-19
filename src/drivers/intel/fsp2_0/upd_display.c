@@ -45,7 +45,7 @@ __weak void soc_display_fspm_upd_params(
 	const FSPM_UPD *fspm_new_upd)
 {
 	printk(BIOS_SPEW, "UPD values for MemoryInit:\n");
-	hexdump(fspm_new_upd, sizeof(*fspm_new_upd));
+	hexdump_loglevel(BIOS_SPEW, fspm_new_upd, sizeof(*fspm_new_upd));
 }
 
 void fspm_display_upd_values(const FSPM_UPD *old,
@@ -62,5 +62,5 @@ __weak void soc_display_fsps_upd_params(
 	const FSPS_UPD *fsps_new_upd)
 {
 	printk(BIOS_SPEW, "UPD values for SiliconInit:\n");
-	hexdump(fsps_new_upd, sizeof(*fsps_new_upd));
+	hexdump_loglevel(BIOS_SPEW, fsps_new_upd, sizeof(*fsps_new_upd));
 }

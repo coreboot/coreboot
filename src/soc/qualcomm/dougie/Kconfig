@@ -11,6 +11,7 @@ config SOC_QUALCOMM_DOUGIE
 	select GENERIC_UDELAY
 	select HAVE_MONOTONIC_TIMER
 	select ARM64_USE_ARCH_TIMER
+	select ARM64_USE_ARM_TRUSTED_FIRMWARE
 	select SOC_QUALCOMM_COMMON
 	select CACHE_MRC_SETTINGS
 	select HAS_RECOVERY_MRC_CACHE
@@ -34,6 +35,9 @@ config QC_BLOBS_UPSTREAM
 	default n
 	help
 	  Select based on availability of QC blobs in upstream coreboot `3rdparty/qc_blobs`.
+
+config ARM64_BL31_EXTERNAL_FILE
+	default "3rdparty/qc_blobs/dougie/bl31.elf" if QC_BLOBS_UPSTREAM
 
 config MEMLAYOUT_LD_FILE
 	string

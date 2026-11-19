@@ -79,7 +79,7 @@ void console_time_report(void);
 #else
 static inline int get_log_level(void) { return -1; }
 static inline void console_init(void) {}
-static inline int console_log_level(int msg_level) { return 0; }
+static inline int console_log_level(int msg_level) { return CONSOLE_LOG_NONE; }
 static inline int __printf(2, 3) printk(int LEVEL, const char *fmt, ...) { return 0; }
 static inline int vprintk(int LEVEL, const char *fmt, va_list args) { return 0; }
 static inline void do_putchar(unsigned char byte) {}

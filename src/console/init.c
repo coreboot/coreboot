@@ -43,7 +43,7 @@ int console_log_level(int msg_level)
 	if (CONFIG(CONSOLE_CBMEM) && (msg_level <= BIOS_DEBUG))
 		return CONSOLE_LOG_FAST;
 
-	return 0;
+	return CONSOLE_LOG_NONE;
 }
 
 void console_init(void)

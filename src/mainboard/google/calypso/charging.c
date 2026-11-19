@@ -85,6 +85,20 @@
 #define SDAM15_MEM_061_ADDR	0x7E7D
 #define DEAD_BATT_STS	BIT(6)
 
+#define SDAM15_CHG_LIMIT_ENABLE_ADDR	0x7E73
+#define SDAM15_TARGET_SOC_ADDR		0x7E75
+#define SDAM15_DELTA_SOC_ADDR		0x7E76
+
+/* Minimum safe SoC (%) for off-mode/low-battery charge limiting; must be well above the
+ * EC critical battery threshold (~5%) so the device can always boot to OS.
+ */
+#define BATT_MIN_CHG_LIMIT_PERCENTAGE	20
+#define BATT_FULL_PERCENTAGE		100
+enum chg_limit_enable {
+	CHG_LIMIT_DISABLE = 2,
+	CHG_LIMIT_ENABLE,
+};
+
 #define DELAY_CHARGING_APPLET_MS 2000 /* 2sec */
 #define CHARGING_RAIL_STABILIZATION_DELAY_MS 15000 /* 15sec */
 #define DEAD_BATTERY_CHARGING_LOOP_EXIT_MS (10 * 60 * 1000) /* 10min */
@@ -468,6 +482,37 @@ void disable_slow_battery_charging(void)
 }
 
 /*
+ * Configure battery charge limits in SDAM for SOCCP charging applet.
+ * Queries current charge limit thresholds from the EC via host command.
+ */
+static void configure_charge_limit_sdam(void)
+{
+	struct ec_response_charge_control resp;
+
+	/* Default to disabled so stale SDAM state is always cleared on early return */
+	spmi_write8(SDAM15_CHG_LIMIT_ENABLE_ADDR, CHG_LIMIT_DISABLE);
+
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return;
+
+	if (google_chromeec_get_charge_control(&resp) != 0)
+		return;
+
+	if (resp.mode != CHARGE_CONTROL_NORMAL ||
+	    resp.sustain_soc.lower < BATT_MIN_CHG_LIMIT_PERCENTAGE ||
+	    resp.sustain_soc.lower > resp.sustain_soc.upper ||
+	    resp.sustain_soc.upper > BATT_FULL_PERCENTAGE)
+		return;
+
+	uint8_t lower = (uint8_t)resp.sustain_soc.lower;
+	uint8_t upper = (uint8_t)resp.sustain_soc.upper;
+
+	spmi_write8(SDAM15_TARGET_SOC_ADDR, upper);
+	spmi_write8(SDAM15_DELTA_SOC_ADDR, upper - lower);
+	spmi_write8(SDAM15_CHG_LIMIT_ENABLE_ADDR, CHG_LIMIT_ENABLE);
+}
+
+/*
  * Enable fast battery charging with ADSP support.
  *
  * This function loads SoCCP firmware and configures fast charging.
@@ -475,6 +520,7 @@ void disable_slow_battery_charging(void)
 void enable_fast_battery_charging(void)
 {
 	qupv3_fw_load();
+	configure_charge_limit_sdam();
 	soccp_fw_load();
 }
 

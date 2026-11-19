@@ -571,6 +571,12 @@ static void gma_init(struct device *dev)
 		int lightup_ok;
 		gma_gfxinit(&lightup_ok);
 		gfx_set_init_done(lightup_ok);
+
+		/* libgfxinit drops the power well for eDP-only; mini-HD needs it */
+		if (is_dev_enabled(pcidev_on_root(3, 0))) {
+			gtt_rmw(HSW_PWR_WELL_CTL1, ~0u, HSW_PWR_WELL_ENABLE);
+			gtt_poll(HSW_PWR_WELL_CTL1, HSW_PWR_WELL_STATE, HSW_PWR_WELL_STATE);
+		}
 	}
 }
 

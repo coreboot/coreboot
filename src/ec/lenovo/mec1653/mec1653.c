@@ -16,7 +16,7 @@ void bootblock_ec_init(void)
 	// Enable accesses to EC1 interface
 	ec_set_ports(EC_SC, EC_DATA);
 	ec_clear_out_queue();
-	ec_write(ec_read(0), 0x20);
+	ec_write(0x00, ec_read(0x00) | 0x20);
 
 	// Reset LEDs to power on state
 	// (Without this warm reboot leaves LEDs off)

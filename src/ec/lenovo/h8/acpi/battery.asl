@@ -371,7 +371,7 @@ Device (BAT0)
 Device (BAT1)
 {
 	Name (_HID, EisaId ("PNP0C0A"))
-	Name (_UID, 0x00)
+	Name (_UID, 0x01)
 	Name (_PCL, Package () { \_SB })
 
 	// Template for _BIF

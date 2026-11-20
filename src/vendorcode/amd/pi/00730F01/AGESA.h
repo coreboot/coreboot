@@ -777,7 +777,7 @@ typedef enum {
   DP_VS_0_4V_9_5DB = 0x18                                 ///< 0x18
 } DP_FIXED_VOLT_SWING_TYPE;
 
-#if CONFIG(AGESA_USE_1_0_0_4_HEADER)
+#if !CONFIG(AGESA_USE_1_0_0_4_HEADER)
 /// Alternative DRAM MAC
 typedef enum {
   MAC_UNTESTEDMAC,                               ///< Assign 0 to Untested MAC
@@ -1551,7 +1551,7 @@ typedef struct _CH_TIMING_STRUCT {
                                   ///<  667 (MHz)
                                   ///<  800 (MHz)
                                   ///<  and so on...
-#if CONFIG(AGESA_USE_1_0_0_4_HEADER)
+#if !CONFIG(AGESA_USE_1_0_0_4_HEADER)
   OUT UINT8   Mac;                ///< Maximum Activate Count
 #endif
   OUT UINT8   CasL;               ///< CAS latency DCT setting (busclocks)
@@ -1809,7 +1809,7 @@ typedef struct _MEM_PARAMETER_STRUCT {
                                    ///<
                                    ///< @BldCfgItem{BLDCFG_MEMORY_POWER_DOWN}
 
-#if CONFIG(AGESA_USE_1_0_0_4_HEADER)
+#if !CONFIG(AGESA_USE_1_0_0_4_HEADER)
   // Dram Mac Default
 
   IN  UINT8 DramMacDefault;  ///< Default Maximum Activate Count
@@ -2729,7 +2729,7 @@ typedef struct {
   IN BOOLEAN CfgMemoryEnableNodeInterleaving;     ///< Memory Enable Node Interleaving.
   IN BOOLEAN CfgMemoryChannelInterleaving;        ///< Memory Channel Interleaving.
   IN BOOLEAN CfgMemoryPowerDown;                  ///< Memory Power Down.
-#if CONFIG(AGESA_USE_1_0_0_4_HEADER)
+#if !CONFIG(AGESA_USE_1_0_0_4_HEADER)
   IN UINT8   CfgMemoryMacDefault;                 ///< Memory DRAM MAC Default
   IN BOOLEAN CfgMemoryExtendedTemperatureRange;   ///< Memory Extended Temperature Range
 #endif

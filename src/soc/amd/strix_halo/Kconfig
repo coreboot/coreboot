@@ -33,8 +33,7 @@ config SOC_AMD_STRIX_HALO_BASE
 	select SOC_AMD_COMMON_BLOCK_ACPI_CPPC		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_CPU_POWER_STATE
 	select SOC_AMD_COMMON_BLOCK_ACPI_GPIO		# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS
-	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS_DMA_REMAP
+	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_MADT
 	select SOC_AMD_COMMON_BLOCK_AOAC		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_APOB		# TODO: Check if this is still correct

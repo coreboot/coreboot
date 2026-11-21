@@ -26,6 +26,10 @@ External (\_SB.DPTF.TCHG, DeviceObj)
 External(\_SB.DPTC, MethodObj)
 #endif
 
+/* Report the lid state to the Intel graphics driver */
+External (\_SB.PCI0.GFX0.GLID, MethodObj)
+External (\_SB.PCI0.GFX0.SLID, MethodObj)
+
 External (\_SB.DPTF.TPWR, DeviceObj)
 
 #ifdef DPTF_FEATURE_DYNAMIC_THERMAL_TABLE_SWITCH
@@ -254,6 +258,11 @@ Device (EC0)
 		\LIDS = LIDS
 #endif
 
+		/* Initialize the lid state for the graphics driver */
+		If (CondRefOf (\_SB.PCI0.GFX0.SLID)) {
+			\_SB.PCI0.GFX0.SLID (LIDS)
+		}
+
 		/* Initialize the thermal settings for the current device mode */
 		DPTU ()
 
@@ -321,6 +330,10 @@ Device (EC0)
 #else
 		\LIDS = LIDS
 #endif
+		/* Tell the graphics driver too, Windows doesn't use _LID */
+		If (CondRefOf (\_SB.PCI0.GFX0.GLID)) {
+			\_SB.PCI0.GFX0.GLID (LIDS)
+		}
 	}
 
 	// Lid Open Event
@@ -334,6 +347,10 @@ Device (EC0)
 #else
 		\LIDS = LIDS
 #endif
+		/* Tell the graphics driver too, Windows doesn't use _LID */
+		If (CondRefOf (\_SB.PCI0.GFX0.GLID)) {
+			\_SB.PCI0.GFX0.GLID (LIDS)
+		}
 	}
 
 	// Power Button

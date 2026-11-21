@@ -165,7 +165,7 @@ bool psp_fw_psp_is_table_pointer(const struct psp_dir_region *dir_rdev,
 			return true;
 		case AMD_FW_PSP_RECOVERYAB_A:
 			/* fallthrough */
-		case AMD_FW_PSP_RECOVERYAB_B:
+		case AMD_FW_PSP_RECOVERYAB_B: {
 			/* Legacy A/B recovery points to PSPL2. New platforms point to ISH */
 			const struct region_device *root = psp_dir_get_root(dir_rdev);
 			uint32_t dir_offset = psp_dir_entry_offset(dir_rdev, entry);
@@ -178,6 +178,7 @@ bool psp_fw_psp_is_table_pointer(const struct psp_dir_region *dir_rdev,
 				return true;
 			}
 			break;
+		}
 		default:
 			break;
 		}

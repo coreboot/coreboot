@@ -24,6 +24,15 @@
 			Offset (0x58),
 			MBOX, 32,
 
+			// Mailbox 1
+			Offset (0x100),
+			DRDY, 32,	/* Offset 0   Driver readiness */
+			CSTS, 32,	/* Offset 4   Notification status */
+			CEVT, 32,	/* Offset 8   Current event */
+			Offset (0x1a8),
+			CHPD, 32,	/* Offset 168 Current hot plug enable indicator */
+			CLID, 32,	/* Offset 172 Current lid state indicator */
+
 			// Mailbox 3
 			Offset (0x300),
 			ARDY, 1,	/* Offset 0   Driver readiness */

@@ -26,5 +26,6 @@ Scope (GFX0)
 	}
 
 #include "configure_brightness_levels.asl"
+#include "lid.asl"
 #include "common.asl"
 }

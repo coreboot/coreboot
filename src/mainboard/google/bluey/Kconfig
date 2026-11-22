@@ -370,6 +370,21 @@ config VBOOT
 	select VBOOT_NO_BOARD_SUPPORT if BOARD_GOOGLE_MODEL_BLUEY
 	select VBOOT_VBNV_FLASH
 
+config MAINBOARD_HAS_SINGLE_USB_C_PORT
+	bool
+	default n
+	help
+	  Select this if the mainboard is populated with only a single SMB
+	  charger IC (SMB1).
+
+config MAINBOARD_SMB_COUNT
+	int
+	range 1 2
+	default 1 if MAINBOARD_HAS_SINGLE_USB_C_PORT
+	default 2
+	help
+	  Number of SMB charger ICs populated on the mainboard.
+
 ##########################################################
 #### Update below when adding a new derivative board. ####
 ##########################################################

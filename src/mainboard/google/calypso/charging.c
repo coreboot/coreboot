@@ -20,40 +20,25 @@
 #define SMB3_SLAVE_ID 0x0B
 
 #define SCHG_CHGR_MAX_FAST_CHARGE_CURRENT_CFG 0x2666
-#define SMB1_CHGR_MAX_FCC_CFG ((SMB1_SLAVE_ID << 16) | SCHG_CHGR_MAX_FAST_CHARGE_CURRENT_CFG)
-#define SMB2_CHGR_MAX_FCC_CFG ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_MAX_FAST_CHARGE_CURRENT_CFG)
-#define SMB3_CHGR_MAX_FCC_CFG ((SMB3_SLAVE_ID << 16) | SCHG_CHGR_MAX_FAST_CHARGE_CURRENT_CFG)
 
 #define SCHG_CHGR_CHARGING_ENABLE_CMD 0x2642
 #define SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SNK_CFG 0x2B4A
-#define SMB1_CHGR_CHRG_EN_CMD ((SMB1_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_ENABLE_CMD)
-#define SMB2_CHGR_CHRG_EN_CMD ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_ENABLE_CMD)
-#define SMB3_CHGR_CHRG_EN_CMD ((SMB3_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_ENABLE_CMD)
 #define SMBx_SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SNK_CFG(x) \
-(((x) << 16) | SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SNK_CFG)
+SPMI_ADDR(x, SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SNK_CFG)
 #define SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SRC_CFG 0x2B4C
 #define SMBx_SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SRC_CFG(x) \
-(((x) << 16) | SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SRC_CFG)
+SPMI_ADDR(x, SCHG_TYPE_C_TYPE_C_DEBUG_ACCESS_SRC_CFG)
 #define SCHG_TYPE_C_SUSPEND_LEGACY_CHARGERS 0x2B90
 #define SMBx_SCHG_TYPE_C_SUSPEND_LEGACY_CHARGERS(x) \
-(((x) << 16) | SCHG_TYPE_C_SUSPEND_LEGACY_CHARGERS)
+SPMI_ADDR(x, SCHG_TYPE_C_SUSPEND_LEGACY_CHARGERS)
 
 #define SCHG_CHGR_PRE_CHARGE_CURRENT_CFG 0x2660
 #define PRE_CHARGE_CURRENT_250MA_STEP_50MA 0x5 /* 50mA * 5 */
-#define SMB1_CHGR_MAX_PRE_CHARGE_CFG ((SMB1_SLAVE_ID << 16) | SCHG_CHGR_PRE_CHARGE_CURRENT_CFG)
-#define SMB2_CHGR_MAX_PRE_CHARGE_CFG ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_PRE_CHARGE_CURRENT_CFG)
-#define SMB3_CHGR_MAX_PRE_CHARGE_CFG ((SMB3_SLAVE_ID << 16) | SCHG_CHGR_PRE_CHARGE_CURRENT_CFG)
 
 #define SCHG_CHGR_STATUS_REG 0x2606
-#define SMB1_CHGR_STATUS_REG ((SMB1_SLAVE_ID << 16) | SCHG_CHGR_STATUS_REG)
-#define SMB2_CHGR_STATUS_REG ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_STATUS_REG)
-#define SMB3_CHGR_STATUS_REG ((SMB3_SLAVE_ID << 16) | SCHG_CHGR_STATUS_REG)
 #define CHGR_STATUS_MASK 0x07
 #define CHGR_STATUS_FAST_CHARGE 0x03
 #define SCHG_CHGR_CHARGING_FCC 0x260A
-#define SMB1_CHGR_CHARGING_FCC ((SMB1_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_FCC)
-#define SMB2_CHGR_CHARGING_FCC ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_FCC)
-#define SMB3_CHGR_CHARGING_FCC ((SMB3_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_FCC)
 
 #define SCHG_CHGR_PSM_CFG 0x27C0
 #define SCHG_CHGR_NORMAL_PSM_MODE 0x0
@@ -112,6 +97,14 @@ enum charging_status {
 	CHRG_ENABLE,
 };
 
+static const uint8_t smb_slave_ids[] = {
+	SMB1_SLAVE_ID,
+	SMB2_SLAVE_ID,
+	SMB3_SLAVE_ID,
+};
+_Static_assert(CONFIG_MAINBOARD_SMB_COUNT <= ARRAY_SIZE(smb_slave_ids),
+	       "CONFIG_MAINBOARD_SMB_COUNT exceeds smb_slave_ids[]");
+
 static struct sdam_config {
 uint32_t addr;
 uint8_t mask;
@@ -145,14 +138,13 @@ void configure_soccp_charging_mode_bootloader(void)
  */
 bool is_fast_charge_ready(void)
 {
-	int smb1_status1 = spmi_read8_safe(SMB1_CHGR_STATUS_REG);
-	int smb2_status1 = spmi_read8_safe(SMB2_CHGR_STATUS_REG);
-	int smb3_status1 = spmi_read8_safe(SMB3_CHGR_STATUS_REG);
-
-	if ((smb1_status1 >= 0 && (smb1_status1 & CHGR_STATUS_MASK) == CHGR_STATUS_FAST_CHARGE) ||
-	    (smb2_status1 >= 0 && (smb2_status1 & CHGR_STATUS_MASK) == CHGR_STATUS_FAST_CHARGE) ||
-	    (smb3_status1 >= 0 && (smb3_status1 & CHGR_STATUS_MASK) == CHGR_STATUS_FAST_CHARGE))
-		return true;
+	for (size_t i = 0; i < CONFIG_MAINBOARD_SMB_COUNT; i++) {
+		int status = spmi_read8_safe(SPMI_ADDR(smb_slave_ids[i],
+						     SCHG_CHGR_STATUS_REG));
+		if (status >= 0 &&
+		    (status & CHGR_STATUS_MASK) == CHGR_STATUS_FAST_CHARGE)
+			return true;
+	}
 
 	return false;
 }
@@ -186,32 +178,26 @@ static void smb_config_low_power_psm(uint8_t slave_id)
 static void smb_enter_low_power_psm_at_poweroff(void)
 {
 	/* Shutdown: low power sequence */
-	smb_config_low_power_psm(SMB1_SLAVE_ID);
-	smb_config_low_power_psm(SMB2_SLAVE_ID);
-	smb_config_low_power_psm(SMB3_SLAVE_ID);
+	for (size_t i = 0; i < CONFIG_MAINBOARD_SMB_COUNT; i++)
+		smb_config_low_power_psm(smb_slave_ids[i]);
 }
 
 static void smb_enter_normal_power_psm_at_offmode(void)
 {
 	/* Off-mode: charging sequence */
-	smb_config_normal_psm(SMB1_SLAVE_ID);
-	smb_config_normal_psm(SMB2_SLAVE_ID);
-	smb_config_normal_psm(SMB3_SLAVE_ID);
+	for (size_t i = 0; i < CONFIG_MAINBOARD_SMB_COUNT; i++)
+		smb_config_normal_psm(smb_slave_ids[i]);
 }
 
 static int get_battery_icurr_ma(void)
 {
-	const uint32_t smb_regs[] = {
-		SMB1_CHGR_CHARGING_FCC,
-		SMB2_CHGR_CHARGING_FCC,
-		SMB3_CHGR_CHARGING_FCC,
-	};
 	bool all_failed = true;
 
 	for (int retry = 0; retry < ICURR_READ_RETRY_COUNT; retry++) {
-		for (size_t i = 0; i < ARRAY_SIZE(smb_regs); i++) {
+		for (size_t i = 0; i < CONFIG_MAINBOARD_SMB_COUNT; i++) {
 			mdelay(SMB_READ_DELAY_MS);
-			int icurr = spmi_read8_safe(smb_regs[i]);
+			int icurr = spmi_read8_safe(SPMI_ADDR(smb_slave_ids[i],
+					SCHG_CHGR_CHARGING_FCC));
 			if (icurr >= 0)
 				all_failed = false;
 			/* Valid charging current detected */
@@ -451,20 +437,20 @@ void configure_debug_access_port(void)
  */
 void enable_slow_battery_charging(void)
 {
-	/* Configure FCC and enable charging */
 	printk(BIOS_INFO, "Use slow charging without fast charge support\n");
-	spmi_write8(SMB1_CHGR_MAX_FCC_CFG, FCC_3A_STEP_50MA);
-	spmi_write8(SMB2_CHGR_MAX_FCC_CFG, FCC_3A_STEP_50MA);
-	spmi_write8(SMB3_CHGR_MAX_FCC_CFG, FCC_3A_STEP_50MA);
+	for (size_t i = 0; i < CONFIG_MAINBOARD_SMB_COUNT; i++) {
+		uint8_t sid = smb_slave_ids[i];
+		/* Configure FCC and enable charging */
+		spmi_write8(SPMI_ADDR(sid, SCHG_CHGR_MAX_FAST_CHARGE_CURRENT_CFG),
+			    FCC_3A_STEP_50MA);
 
-	/* Set pre-charge current to 1A so recovery completes quickly */
-	spmi_write8(SMB1_CHGR_MAX_PRE_CHARGE_CFG, PRE_CHARGE_CURRENT_250MA_STEP_50MA);
-	spmi_write8(SMB2_CHGR_MAX_PRE_CHARGE_CFG, PRE_CHARGE_CURRENT_250MA_STEP_50MA);
-	spmi_write8(SMB3_CHGR_MAX_PRE_CHARGE_CFG, PRE_CHARGE_CURRENT_250MA_STEP_50MA);
+		/* Set pre-charge current to 1A so recovery completes quickly */
+		spmi_write8(SPMI_ADDR(sid, SCHG_CHGR_PRE_CHARGE_CURRENT_CFG),
+			    PRE_CHARGE_CURRENT_250MA_STEP_50MA);
 
-	spmi_write8(SMB1_CHGR_CHRG_EN_CMD, CHRG_ENABLE);
-	spmi_write8(SMB2_CHGR_CHRG_EN_CMD, CHRG_ENABLE);
-	spmi_write8(SMB3_CHGR_CHRG_EN_CMD, CHRG_ENABLE);
+		spmi_write8(SPMI_ADDR(sid, SCHG_CHGR_CHARGING_ENABLE_CMD),
+			    CHRG_ENABLE);
+	}
 }
 
 /*
@@ -473,12 +459,13 @@ void enable_slow_battery_charging(void)
 void disable_slow_battery_charging(void)
 {
 	printk(BIOS_INFO, "Disable slow charge support\n");
-	spmi_write8(SMB1_CHGR_CHRG_EN_CMD, CHRG_DISABLE);
-	spmi_write8(SMB2_CHGR_CHRG_EN_CMD, CHRG_DISABLE);
-	spmi_write8(SMB3_CHGR_CHRG_EN_CMD, CHRG_DISABLE);
-	spmi_write8(SMB1_CHGR_MAX_FCC_CFG, FCC_DISABLE);
-	spmi_write8(SMB2_CHGR_MAX_FCC_CFG, FCC_DISABLE);
-	spmi_write8(SMB3_CHGR_MAX_FCC_CFG, FCC_DISABLE);
+	for (size_t i = 0; i < CONFIG_MAINBOARD_SMB_COUNT; i++) {
+		uint8_t sid = smb_slave_ids[i];
+		spmi_write8(SPMI_ADDR(sid, SCHG_CHGR_CHARGING_ENABLE_CMD),
+			    CHRG_DISABLE);
+		spmi_write8(SPMI_ADDR(sid, SCHG_CHGR_MAX_FAST_CHARGE_CURRENT_CFG),
+			    FCC_DISABLE);
+	}
 }
 
 /*

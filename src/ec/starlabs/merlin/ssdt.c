@@ -37,8 +37,10 @@ static void write_ec_resources(void)
 	acpigen_write_name("BFFR");
 	{
 		acpigen_write_resourcetemplate_header();
-		acpigen_write_io16(0x62, 0x62, 0, 1, 1);
-		acpigen_write_io16(0x66, 0x66, 0, 1, 1);
+		{
+			acpigen_write_io16(0x62, 0x62, 0, 1, 1);
+			acpigen_write_io16(0x66, 0x66, 0, 1, 1);
+		}
 		acpigen_write_resourcetemplate_footer();
 	}
 
@@ -78,74 +80,151 @@ static void write_ec_resources(void)
 
 static void write_ec_read_method(void)
 {
+/*
+ *	Method (ECRD, 1, Serialized)
+ *	{
+ *		If (ECTK)
+ *		{
+ *			If (!(_REV < 2))
+ *			{
+ *				ECAV = One
+ *			}
+ *			ECTK = Zero
+ *		}
+ *		If (Acquire (ECMT, 1000) == Zero)
+ *		{
+ *			If (ECAV)
+ *			{
+ *				Local1 = DerefOf (Arg0)
+ *					Release (ECMT)
+ *					Return (Local1)
+ *				}
+ *			Else
+ *			{
+ *				Release (ECMT)
+ *			}
+ *		}
+ *		Return (Zero)
+ *	}
+ */
 	acpigen_write_method_serialized("ECRD", 1);
+	{
+		acpigen_write_if();
+		acpigen_emit_namestring("ECTK");
+		{
+			acpigen_write_if();
+			acpigen_emit_byte(LNOT_OP);
+			acpigen_emit_byte(LLESS_OP);
+			acpigen_emit_namestring("_REV");
+			acpigen_write_integer(2);
+			{
+				acpigen_write_store_int_to_namestr(1, "ECAV");
+			}
+			acpigen_write_if_end();
+			acpigen_write_store_int_to_namestr(0, "ECTK");
+		}
+		acpigen_write_if_end();
 
-	acpigen_write_if();
-	acpigen_emit_namestring("ECTK");
-	acpigen_write_if();
-	acpigen_emit_byte(LNOT_OP);
-	acpigen_emit_byte(LLESS_OP);
-	acpigen_emit_namestring("_REV");
-	acpigen_write_integer(2);
-	acpigen_write_store_int_to_namestr(1, "ECAV");
-	acpigen_write_if_end();
-	acpigen_write_store_int_to_namestr(0, "ECTK");
-	acpigen_write_if_end();
-
-	acpigen_emit_byte(STORE_OP);
-	acpigen_write_acquire("ECMT", 1000);
-	acpigen_emit_byte(LOCAL0_OP);
-	acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
-	acpigen_write_if();
-	acpigen_emit_namestring("ECAV");
-	acpigen_emit_byte(STORE_OP);
-	acpigen_emit_byte(DEREF_OP);
-	acpigen_emit_byte(ARG0_OP);
-	acpigen_emit_byte(LOCAL1_OP);
-	acpigen_write_release("ECMT");
-	acpigen_write_return_op(LOCAL1_OP);
-	acpigen_write_else();
-	acpigen_write_release("ECMT");
-	acpigen_write_if_end();
-	acpigen_write_if_end();
-	acpigen_write_return_integer(0);
+		acpigen_emit_byte(STORE_OP);
+		acpigen_write_acquire("ECMT", 1000);
+		acpigen_emit_byte(LOCAL0_OP);
+		acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
+		{
+			acpigen_write_if();
+			acpigen_emit_namestring("ECAV");
+			{
+				acpigen_emit_byte(STORE_OP);
+				acpigen_emit_byte(DEREF_OP);
+				acpigen_emit_byte(ARG0_OP);
+				acpigen_emit_byte(LOCAL1_OP);
+				acpigen_write_release("ECMT");
+				acpigen_write_return_op(LOCAL1_OP);
+			}
+			acpigen_write_else();
+			{
+				acpigen_write_release("ECMT");
+			}
+			acpigen_write_if_end();
+		}
+		acpigen_write_if_end();
+		acpigen_write_return_integer(0);
+	}
 	acpigen_write_method_end();
 }
 
 static void write_ec_write_method(void)
 {
+/*
+ *	Method (ECWR, 2, Serialized)
+ *	{
+ *		If (Acquire (ECMT, 1000) == Zero)
+ *		{
+ *			If (ECAV)
+ *			{
+ *				Arg1 = Arg0
+ *				Local1 = Zero
+ *				While (One)
+ *				{
+ *					If (Arg0 == DerefOf (Arg1))
+ *					{
+ *						Break
+ *					}
+ *					Sleep (One)
+ *					Arg1 = Arg0
+ *					Local1++
+ *					If (Local1 == 3)
+ *					{
+ *						Break
+ *					}
+ *				}
+ *			}
+ *			Release (ECMT)
+ *		}
+ *	}
+ */
 	acpigen_write_method_serialized("ECWR", 2);
-	acpigen_emit_byte(STORE_OP);
-	acpigen_write_acquire("ECMT", 1000);
-	acpigen_emit_byte(LOCAL0_OP);
-	acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
-	acpigen_write_if();
-	acpigen_emit_namestring("ECAV");
-	acpigen_write_store_ops(ARG0_OP, ARG1_OP);
-	acpigen_write_store_int_to_op(0, LOCAL1_OP);
+	{
+		acpigen_emit_byte(STORE_OP);
+		acpigen_write_acquire("ECMT", 1000);
+		acpigen_emit_byte(LOCAL0_OP);
+		acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
+		{
+			acpigen_write_if();
+			acpigen_emit_namestring("ECAV");
+			{
+				acpigen_write_store_ops(ARG0_OP, ARG1_OP);
+				acpigen_write_store_int_to_op(0, LOCAL1_OP);
 
-	acpigen_emit_byte(WHILE_OP);
-	acpigen_write_len_f();
-	acpigen_write_one();
-	acpigen_write_if();
-	acpigen_emit_byte(LEQUAL_OP);
-	acpigen_emit_byte(ARG0_OP);
-	acpigen_emit_byte(DEREF_OP);
-	acpigen_emit_byte(ARG1_OP);
-	acpigen_emit_byte(BREAK_OP);
-	acpigen_write_if_end();
-	acpigen_write_sleep(1);
-	acpigen_write_store_ops(ARG0_OP, ARG1_OP);
-	acpigen_emit_byte(INCREMENT_OP);
-	acpigen_emit_byte(LOCAL1_OP);
-	acpigen_write_if_lequal_op_int(LOCAL1_OP, 3);
-	acpigen_emit_byte(BREAK_OP);
-	acpigen_write_if_end();
-	acpigen_pop_len();
-
-	acpigen_write_if_end();
-	acpigen_write_release("ECMT");
-	acpigen_write_if_end();
+				acpigen_emit_byte(WHILE_OP);
+				acpigen_write_len_f();
+				acpigen_write_one();
+				{
+					acpigen_write_if();
+					acpigen_emit_byte(LEQUAL_OP);
+					acpigen_emit_byte(ARG0_OP);
+					acpigen_emit_byte(DEREF_OP);
+					acpigen_emit_byte(ARG1_OP);
+					{
+						acpigen_emit_byte(BREAK_OP);
+					}
+					acpigen_write_if_end();
+					acpigen_write_sleep(1);
+					acpigen_write_store_ops(ARG0_OP, ARG1_OP);
+					acpigen_emit_byte(INCREMENT_OP);
+					acpigen_emit_byte(LOCAL1_OP);
+					acpigen_write_if_lequal_op_int(LOCAL1_OP, 3);
+					{
+						acpigen_emit_byte(BREAK_OP);
+					}
+					acpigen_write_if_end();
+				}
+				acpigen_pop_len();
+			}
+			acpigen_write_if_end();
+			acpigen_write_release("ECMT");
+		}
+		acpigen_write_if_end();
+	}
 	acpigen_write_method_end();
 }
 
@@ -346,12 +425,14 @@ static void write_hid_dsm(void)
 /*
  *	Method (_DSM, 4, Serialized)
  *	{
- *		If ((Arg0 == ToUUID ("eeec56b3-4442-408f-a792-4edd4d758054")))
+ *		If (Arg0 == ToUUID ("eeec56b3-4442-408f-a792-4edd4d758054"))
  *		{
- *			If ((One == ToInteger (Arg1)))
+ *			If (One == ToInteger (Arg1))
  *			{
- *				If ((ToInteger (Arg2) == Zero))
+ *				If (ToInteger (Arg2) == Zero)
+ *				{
  *					Return (Buffer () { 0xff, 0x03 })
+ *				}
  *
  *				...
  *			}
@@ -463,20 +544,22 @@ static void write_hid_event_method(void)
  *		Notify (\_SB.HIDD, 0xC0)
  *
  *		Local0 = Zero
- *		While (((Local0 < 0xFA) && HBSY))
+ *		While ((Local0 < 0xFA) && HBSY)
  *		{
  *			Sleep (0x04)
  *			Local0++
  *		}
  *
- *		If ((HBSY == One))
+ *		If (HBSY == One)
  *		{
  *			HBSY = Zero
  *			HIDX = Zero
  *			Return (One)
  *		}
- *
- *		Return (Zero)
+ *		Else
+ *		{
+ *			Return (Zero)
+ *		}
  *	}
  */
 	acpigen_write_method_serialized("HPEM", 1);
@@ -940,7 +1023,9 @@ static void write_battery_full_capacity(void)
  *		If (Local0)
  *		{
  *			If ((Local0 != 0xffff))
+ *			{
  *				Return (Local0)
+ *			}
  *		}
  *
  *		Return (ECRD (RefOf (B1DC)))
@@ -1169,7 +1254,9 @@ static void write_battery(void)
  *		Method (_STA, 0, NotSerialized)
  *		{
  *			If ((ECRD (RefOf (ECPS)) & 0x02))
+ *			{
  *				Return (0x1F)
+ *			}
  *
  *			Return (0x0F)
  *		}
@@ -1319,8 +1406,10 @@ static void write_efi_option_field(void)
 	acpigen_write_len_f();
 	acpigen_emit_namestring("\\DNVS");
 	acpigen_emit_byte(FIELD_BYTEACC | FIELD_NOLOCK | FIELD_PRESERVE);
-	for (size_t i = 0; i < ARRAY_SIZE(fields); i++)
-		acpigen_write_field_name(fields[i].name, fields[i].bits);
+	{
+		for (size_t i = 0; i < ARRAY_SIZE(fields); i++)
+			acpigen_write_field_name(fields[i].name, fields[i].bits);
+	}
 	acpigen_pop_len();
 }
 
@@ -1334,33 +1423,43 @@ static void write_efi_option_methods(void)
 	acpigen_write_name_integer("EOKS", STARLABS_EFIOPT_ID_KBL_STATE);
 	acpigen_write_mutex("EOMX", 0);
 
+	/* Read the requested option. Return 0xffffffff on timeout. */
 	acpigen_write_method_serialized("EOGT", 1);
-	acpigen_write_if();
-	acpigen_write_acquire("EOMX", 1000);
-	acpigen_write_return_integer(0xffffffff);
-	acpigen_write_if_end();
-	acpigen_write_store_int_to_namestr(1, "EOCM");
-	acpigen_write_store_op_to_namestr(ARG0_OP, "EOID");
-	acpigen_write_store_int_to_namestr(0, "EORS");
-	acpigen_write_store_namestr_to_namestr("EOAP", EC_ACPI_FIELD("SMB2"));
-	acpigen_write_store_namestr_to_op("EOVL", LOCAL0_OP);
-	acpigen_write_release("EOMX");
-	acpigen_write_return_op(LOCAL0_OP);
+	{
+		acpigen_write_if();
+		acpigen_write_acquire("EOMX", 1000);
+		{
+			acpigen_write_return_integer(0xffffffff);
+		}
+		acpigen_write_if_end();
+		acpigen_write_store_int_to_namestr(1, "EOCM");
+		acpigen_write_store_op_to_namestr(ARG0_OP, "EOID");
+		acpigen_write_store_int_to_namestr(0, "EORS");
+		acpigen_write_store_namestr_to_namestr("EOAP", EC_ACPI_FIELD("SMB2"));
+		acpigen_write_store_namestr_to_op("EOVL", LOCAL0_OP);
+		acpigen_write_release("EOMX");
+		acpigen_write_return_op(LOCAL0_OP);
+	}
 	acpigen_write_method_end();
 
+	/* Save the requested option and return the SMI status, or One on timeout. */
 	acpigen_write_method_serialized("EOSV", 2);
-	acpigen_write_if();
-	acpigen_write_acquire("EOMX", 1000);
-	acpigen_write_return_integer(1);
-	acpigen_write_if_end();
-	acpigen_write_store_int_to_namestr(2, "EOCM");
-	acpigen_write_store_op_to_namestr(ARG0_OP, "EOID");
-	acpigen_write_store_op_to_namestr(ARG1_OP, "EOVL");
-	acpigen_write_store_int_to_namestr(0, "EORS");
-	acpigen_write_store_namestr_to_namestr("EOAP", EC_ACPI_FIELD("SMB2"));
-	acpigen_write_store_namestr_to_op("EORS", LOCAL0_OP);
-	acpigen_write_release("EOMX");
-	acpigen_write_return_op(LOCAL0_OP);
+	{
+		acpigen_write_if();
+		acpigen_write_acquire("EOMX", 1000);
+		{
+			acpigen_write_return_integer(1);
+		}
+		acpigen_write_if_end();
+		acpigen_write_store_int_to_namestr(2, "EOCM");
+		acpigen_write_store_op_to_namestr(ARG0_OP, "EOID");
+		acpigen_write_store_op_to_namestr(ARG1_OP, "EOVL");
+		acpigen_write_store_int_to_namestr(0, "EORS");
+		acpigen_write_store_namestr_to_namestr("EOAP", EC_ACPI_FIELD("SMB2"));
+		acpigen_write_store_namestr_to_op("EORS", LOCAL0_OP);
+		acpigen_write_release("EOMX");
+		acpigen_write_return_op(LOCAL0_OP);
+	}
 	acpigen_write_method_end();
 }
 
@@ -1370,7 +1469,9 @@ static void write_efi_option_suspend(void)
 	write_ec_read_path(EC_ACPI_FIELD("TPLE"));
 	acpigen_emit_byte(LOCAL0_OP);
 	acpigen_write_if_lequal_op_int(LOCAL0_OP, 0x11);
-	acpigen_write_store_int_to_op(0, LOCAL0_OP);
+	{
+		acpigen_write_store_int_to_op(0, LOCAL0_OP);
+	}
 	acpigen_write_if_end();
 	write_method_call("EOSV");
 	acpigen_emit_namestring("EOTP");
@@ -1383,9 +1484,13 @@ static void write_efi_option_suspend(void)
 static void write_efi_option_restore_integer(const char *field, uint64_t valid_value)
 {
 	acpigen_write_if_lequal_op_int(LOCAL0_OP, valid_value);
-	write_ec_write_integer(valid_value, field);
+	{
+		write_ec_write_integer(valid_value, field);
+	}
 	acpigen_write_else();
-	write_ec_write_integer(0, field);
+	{
+		write_ec_write_integer(0, field);
+	}
 	acpigen_write_if_end();
 }
 
@@ -1413,7 +1518,9 @@ static void write_efi_option_resume(void)
 	acpigen_emit_byte(LOCAL0_OP);
 	for (size_t i = 0; i < ARRAY_SIZE(brightness_values); i++) {
 		acpigen_write_if_lequal_op_int(LOCAL0_OP, brightness_values[i]);
-		write_ec_write_integer(brightness_values[i], EC_ACPI_FIELD("KLBE"));
+		{
+			write_ec_write_integer(brightness_values[i], EC_ACPI_FIELD("KLBE"));
+		}
 		acpigen_write_if_end();
 	}
 }
@@ -1425,20 +1532,25 @@ static void write_sleep_methods(void)
 	write_efi_option_methods();
 #endif
 
+/* With EFI option SMI enabled, RPTS saves EC options and RWAK restores them. */
 	acpigen_write_method_serialized("RPTS", 1);
+	{
 #if CONFIG(STARLABS_ACPI_EFI_OPTION_SMI)
-	write_efi_option_suspend();
+		write_efi_option_suspend();
 #endif
-	write_ec_write_integer(0, EC_ACPI_FIELD("OSFG"));
-	acpigen_write_return_op(ARG0_OP);
+		write_ec_write_integer(0, EC_ACPI_FIELD("OSFG"));
+		acpigen_write_return_op(ARG0_OP);
+	}
 	acpigen_write_method_end();
 
 	acpigen_write_method_serialized("RWAK", 1);
-	write_ec_write_integer(1, EC_ACPI_FIELD("OSFG"));
+	{
+		write_ec_write_integer(1, EC_ACPI_FIELD("OSFG"));
 #if CONFIG(STARLABS_ACPI_EFI_OPTION_SMI)
-	write_efi_option_resume();
+		write_efi_option_resume();
 #endif
-	acpigen_write_return_op(ARG0_OP);
+		acpigen_write_return_op(ARG0_OP);
+	}
 	acpigen_write_method_end();
 }
 
@@ -1447,28 +1559,34 @@ void merlin_fill_ssdt(const struct device *dev)
 	(void)dev;
 
 	acpigen_write_scope("\\_SB.PCI0.LPCB");
-	acpigen_write_device("EC");
-	write_ec_base();
-	write_ac_adapter();
-	if (CONFIG(EC_STARLABS_MERLIN))
-		write_shutdown_event();
-	if (CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)) {
-		write_battery();
-		write_lid();
-	}
-	if (!CONFIG(EC_STARLABS_MERLIN))
-		write_closed_ec_query_events();
+	{
+		acpigen_write_device("EC");
+		{
+			write_ec_base();
+			write_ac_adapter();
+			if (CONFIG(EC_STARLABS_MERLIN))
+				write_shutdown_event();
+			if (CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)) {
+				write_battery();
+				write_lid();
+			}
+			if (!CONFIG(EC_STARLABS_MERLIN))
+				write_closed_ec_query_events();
 #if CONFIG(SYSTEM_TYPE_DETACHABLE)
-	write_virtual_button_devices();
+			write_virtual_button_devices();
 #endif
-	write_ec_region_method();
-	if (CONFIG(EC_STARLABS_MERLIN))
-		write_hid_query_events();
-	acpigen_write_device_end();
+			write_ec_region_method();
+			if (CONFIG(EC_STARLABS_MERLIN))
+				write_hid_query_events();
+		}
+		acpigen_write_device_end();
+	}
 	acpigen_write_scope_end();
 
 	acpigen_write_scope("\\_SB");
-	write_hid_device();
-	write_sleep_methods();
+	{
+		write_hid_device();
+		write_sleep_methods();
+	}
 	acpigen_write_scope_end();
 }

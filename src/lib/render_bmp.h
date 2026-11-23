@@ -3,6 +3,11 @@
 #ifndef __RENDER_BMP_H__
 #define __RENDER_BMP_H__
 
+#include <boot/coreboot_tables.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
 #ifndef OFFSET_OF
 #if (defined (__GNUC__) && __GNUC__ >= 4) || defined (__clang__)
 #define OFFSET_OF(TYPE, Field)  ((size_t) __builtin_offsetof(TYPE, Field))
@@ -54,5 +59,17 @@ struct logo_coordinates {
 };
 
 #pragma pack()
+
+bool bmp_do_image_authentication(const struct bmp_image_header *header);
+size_t bmp_row_stride(const struct bmp_image_header *header);
+bool bmp_pixel_data_fits(const struct bmp_image_header *header, size_t logo_size);
+int bmp_get_color_map_num(const struct bmp_image_header *header);
+void bmp_get_oriented_dimensions(const struct bmp_image_header *header,
+				 enum lb_fb_orientation orientation,
+				 uint32_t *width, uint32_t *height);
+bool bmp_calculate_adj_height_width(const struct bmp_image_header *header,
+				    size_t *adjusted_x, size_t *adjusted_y,
+				    enum lb_fb_orientation orientation,
+				    size_t blt_width, size_t blt_height);
 
 #endif // __RENDER_BMP_H__

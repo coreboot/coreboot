@@ -167,6 +167,9 @@ ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c
 ramstage-$(CONFIG_VGA) += vga_gfx.c
 romstage-$(CONFIG_ROMSTAGE_VGA) += vga_gfx.c
 
+romstage-$(CONFIG_BMP_LOGO) += bmp_common.c
+ramstage-$(CONFIG_BMP_LOGO) += bmp_common.c
+
 romstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 

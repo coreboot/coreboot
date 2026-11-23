@@ -13,68 +13,6 @@
 
 #define MAX_SPLASH_TEXT_WIDTH 32
 
-static bool is_bmp_image_valid(struct bmp_image_header *header)
-{
-	/* Check if the BMP Header Signature is valid */
-	if (header->CharB != 'B' || header->CharM != 'M')
-		return false;
-
-	/* Check if the BMP Image Header Length is valid */
-	if (!header->PixelHeight || !header->PixelWidth)
-		return false;
-
-	if (header->Size < header->ImageOffset)
-		return false;
-
-	if (header->ImageOffset < sizeof(struct bmp_image_header))
-		return false;
-
-	return true;
-}
-
-static bool is_bmp_image_compressed(struct bmp_image_header *header)
-{
-	return header->CompressionType != 0;
-}
-
-static bool is_bitmap_format_supported(struct bmp_image_header *header)
-{
-	/*
-	 * Check BITMAP format is supported
-	 * BMP_IMAGE_HEADER = BITMAP_FILE_HEADER + BITMAP_INFO_HEADER
-	 */
-	if (header->HeaderSize != sizeof(struct bmp_image_header) -
-			 OFFSET_OF(struct bmp_image_header, HeaderSize))
-		return false;
-
-	return true;
-}
-
-static bool do_bmp_image_authentication(struct bmp_image_header *header)
-{
-	if (!is_bmp_image_valid(header)) {
-		printk(BIOS_ERR, "%s: BMP Image Header is invalid.\n", __func__);
-		return false;
-	}
-
-	/*
-	 * BMP image compression is unsupported by FSP implementation,
-	 * hence, exit if the BMP image is compressed.
-	 */
-	if (is_bmp_image_compressed(header)) {
-		printk(BIOS_ERR, "%s: BMP Image Compression is unsupported.\n", __func__);
-		return false;
-	}
-
-	if (!is_bitmap_format_supported(header)) {
-		printk(BIOS_ERR, "%s: BmpHeader Header Size (0x%x) is not as expected.\n",
-			 __func__, header->HeaderSize);
-		return false;
-	}
-
-	return true;
-}
-
 static size_t calculate_blt_buffer_size(struct bmp_image_header *header)
 {
 	size_t blt_buffer_size;
@@ -86,129 +24,6 @@ static size_t calculate_blt_buffer_size(struct bmp_image_header *header)
 		return 0;
 
 	return blt_buffer_size;
-}
-
-/* Reconcile pixel-data length implied by Width/Height/bpp with the actual file size. */
-static bool bmp_pixel_data_fits(const struct bmp_image_header *header,
-				size_t logo_size)
-{
-	if (header->ImageOffset < sizeof(struct bmp_image_header) ||
-	    header->ImageOffset > logo_size)
-		return false;
-
-	/* BMP row stride: 4-byte aligned (DWORD aligned) */
-	const size_t width_in_bits = (size_t)header->PixelWidth * header->BitPerPixel;
-	const size_t bytes_per_row = DIV_ROUND_UP(width_in_bits, 32) * 4;
-	if (!bytes_per_row)
-		return false;
-
-	const size_t available = (logo_size - header->ImageOffset) / bytes_per_row;
-
-	/* Prevent 64-bit multiplication overflow: required <= available */
-	return (size_t)header->PixelHeight <= available;
-}
-
-static int get_color_map_num(struct bmp_image_header *header)
-{
-	int col_map_number;
-
-	switch (header->BitPerPixel) {
-	case 1:
-		col_map_number = 2;
-		break;
-	case 4:
-		col_map_number = 16;
-		break;
-	case 8:
-		col_map_number = 256;
-		break;
-	default:
-		/*
-		 * For other bit depths (e.g., 24-bit and 32-bit) that doesn't have
-		 * a standard palette, col_map_number remains 0.
-		 */
-		col_map_number = 0;
-		break;
-	}
-
-	/*
-	 * At times BMP file may have padding data between its header section and the
-	 * data section.
-	 */
-	if (header->ImageOffset < sizeof(struct bmp_image_header) ||
-	    header->ImageOffset - sizeof(struct bmp_image_header) <
-			 sizeof(struct bmp_color_map) * col_map_number)
-		return -1;
-
-	return col_map_number;
-}
-
-/*
- * Visual Representation of the Flipping:
- *
- * Original BMP Image:
- *
- *      0 -----------------------------------------PixelWidth-1
- *      |                                          |
- *      |                                          |
- *      |                                          |
- *      PixelHeight-1------------------------------|
- *
- * Blitting Region:
- *
- *      (x, y) ----------------------------------- (x + blt_width, y)
- *      |                                          |
- *      |                                          |
- *      (x, y + blt_height) -------------------- --(x + blt_width, y + blt_height)
- *
- * Flipped Coordinates:
- *
- * flipped_x:  Represents the horizontal coordinate from the `right` edge of the BMP,
- *             accounting for the blit width.
- *
- * flipped_y:  Represents the vertical coordinate from the `bottom` edge of the BMP,
- *             accounting for the blit height.
- *
- * Example (Orientation: LB_FB_ORIENTATION_BOTTOM_UP):
- *
- * If blt_width is small, flipped_x will be near PixelWidth.
- * If blt_height is small, flipped_y will be near PixelHeight.
- *
- * The blit then starts at (flipped_x, blt_height), effectively flipping the
- * horizontal position and using the original blit height.
- *
- * This allows for blitting from the bottom-left corner of the display panel.
- */
-static bool calculate_adj_height_width(const struct bmp_image_header *header, size_t *adjusted_x,
-	 size_t *adjusted_y, enum lb_fb_orientation orientation, int blt_width, int blt_height)
-{
-	size_t flipped_x = header->PixelWidth - blt_width - 1;
-	size_t flipped_y = header->PixelHeight - blt_height - 1;
-
-	switch (orientation) {
-	case LB_FB_ORIENTATION_LEFT_UP:
-		*adjusted_x = flipped_y;
-		*adjusted_y = flipped_x;
-		break;
-
-	case LB_FB_ORIENTATION_BOTTOM_UP:
-		*adjusted_x = flipped_x;
-		*adjusted_y = blt_height;
-		break;
-
-	case LB_FB_ORIENTATION_RIGHT_UP:
-		*adjusted_x = blt_height;
-		*adjusted_y = blt_width;
-		break;
-
-	case LB_FB_ORIENTATION_NORMAL:
-	default:
-		*adjusted_x = blt_width;
-		*adjusted_y = flipped_y;
-		break;
-	}
-
-	return true;
 }
 
 /*
@@ -234,7 +49,7 @@ static bool calculate_adj_height_width(const struct bmp_image_header *header, si
  * - For `BOTTOM_UP` and `NORMAL`, the GOP width is the BMP image's `PixelWidth`.
  *
  * gop_x, gop_y: Coordinates within the GOP buffer where the blit will start.
- * - These are calculated by `calculate_adj_height_width` based on the `orientation`,
+ * - These are calculated by `bmp_calculate_adj_height_width` based on the `orientation`,
  * `blt_width`, and `blt_height`.
  *
  * Pointer to the calculated pixel in the GOP blit buffer, or NULL on error.
@@ -245,34 +60,19 @@ static bool calculate_adj_height_width(const struct bmp_image_header *header, si
  */
 static struct blt_pixel *get_gop_blt_pixel(
 	struct blt_pixel *gop_blt_buffer, const struct bmp_image_header *header,
-	 int blt_width, int blt_height, enum lb_fb_orientation orientation)
+	size_t blt_width, size_t blt_height, enum lb_fb_orientation orientation)
 {
 	size_t gop_x;
 	size_t gop_y;
-	size_t gop_width;
+	uint32_t gop_width;
+	uint32_t gop_height;
 
-	switch (orientation) {
-	case LB_FB_ORIENTATION_LEFT_UP:
-	case LB_FB_ORIENTATION_RIGHT_UP:
-		gop_width = header->PixelHeight;
-		break;
+	bmp_get_oriented_dimensions(header, orientation, &gop_width, &gop_height);
 
-	case LB_FB_ORIENTATION_BOTTOM_UP:
-	case LB_FB_ORIENTATION_NORMAL:
-	default:
-		gop_width = header->PixelWidth;
-		break;
-	}
-
-	if (!calculate_adj_height_width(header, &gop_x, &gop_y, orientation,
-			 blt_width, blt_height))
+	if (!bmp_calculate_adj_height_width(header, &gop_x, &gop_y, orientation,
+					    blt_width, blt_height))
 		return NULL;
 
-	/*
-	 * Calculated pixel in the Graphics Output Protocol (GOP) blit buffer.
-	 * This offset represents the starting position where the blitted region will be placed
-	 * in the framebuffer.
-	 */
 	return &gop_blt_buffer[gop_y * gop_width + gop_x];
 }
 
@@ -287,7 +87,7 @@ static struct blt_pixel *get_gop_blt_pixel(
  *        | (blt_width, blt_height) : Region to blit
  *        V
  * +------------------------------------------------------------------+
- * |  calculate_adj_height_width(header, adjusted_x, adjusted_y,      |
+ * |  bmp_calculate_adj_height_width(header, adjusted_x, adjusted_y,  |
  * |                               orientation, blt_width, blt_height)|
  * +------------------------------------------------------------------+
  *        |
@@ -304,7 +104,7 @@ static struct blt_pixel *get_gop_blt_pixel(
  *        | 1. Determines gop_width based on orientation:
  *        |    - LEFT_UP/RIGHT_UP: gop_width = header->PixelHeight,
  *        |    - BOTTOM_UP/NORMAL: gop_width = header->PixelWidth,
- *        | 2. Calls calculate_adj_height_width to get gop_x and gop_y.
+ *        | 2. Calls bmp_calculate_adj_height_width to get gop_x and gop_y.
  *        | 3. GOP BLT offset: calculates linear offset into the GOP buffer
  *        |    - gop_blt_offset = gop_y * gop_width + gop_x
  *        | 4. GOP BLT offset is used to access the correct regions in:
@@ -436,7 +236,7 @@ static bool convert_bmp_to_gop_blt_common(uintptr_t logo, size_t logo_size,
 	bmp_header = (struct bmp_image_header *)logo;
 
 	/* Authenticate BMP header and validate size against provided logo_size */
-	if (!do_bmp_image_authentication(bmp_header) || (bmp_header->Size != logo_size))
+	if (!bmp_do_image_authentication(bmp_header) || (bmp_header->Size != logo_size))
 		return false;
 
 	if (!bmp_pixel_data_fits(bmp_header, logo_size)) {
@@ -448,15 +248,11 @@ static bool convert_bmp_to_gop_blt_common(uintptr_t logo, size_t logo_size,
 	if (!blt_buffer_size)
 		return false;
 
-	if (get_color_map_num(bmp_header) < 0)
+	if (bmp_get_color_map_num(bmp_header) < 0)
 		return false;
 
-	bool is_standard_orientation = (orientation == LB_FB_ORIENTATION_NORMAL ||
-					orientation == LB_FB_ORIENTATION_BOTTOM_UP);
-
 	*blt_size = blt_buffer_size;
-	*pixel_height = is_standard_orientation ? bmp_header->PixelHeight : bmp_header->PixelWidth;
-	*pixel_width = is_standard_orientation ? bmp_header->PixelWidth : bmp_header->PixelHeight;
+	bmp_get_oriented_dimensions(bmp_header, orientation, pixel_width, pixel_height);
 	*blt = (uintptr_t)fill_blt_buffer(bmp_header, logo, blt_buffer_size, orientation);
 
 	return true;

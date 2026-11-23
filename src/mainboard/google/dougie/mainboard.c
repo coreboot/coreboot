@@ -2,6 +2,7 @@
 
 #include "board.h"
 #include <bootmode.h>
+#include <bootsplash.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <delay.h>
@@ -13,12 +14,15 @@
 #include <soc/display/edp_ctrl.h>
 #include <soc/display/mdssreg.h>
 #include <soc/pcie.h>
+#include <soc/pmic_gpio.h>
 #include <soc/qcom_qup_se.h>
 #include <soc/qup_se_handlers_common.h>
 #include <soc/qupv3_config_common.h>
 #include <soc/sdhci.h>
 #include <soc/usb/snps_usb_phy.h>
 #include <soc/usb/usb_common.h>
+#include <string.h>
+#include <symbols.h>
 
 static struct usb_board_data usb0_board_data = {
 	.parameter_override_x0 = 0xe6,
@@ -63,6 +67,7 @@ static void edp_configure_gpios(void)
 static void display_startup(void)
 {
 	struct edid ed;
+	uintptr_t fb_addr = (uintptr_t)_framebuffer;
 
 	if (!display_init_required() || (CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch())) {
 		printk(BIOS_INFO, "Skipping display init.\n");
@@ -72,12 +77,36 @@ static void display_startup(void)
 	enable_mdss_clk();
 	edp_configure_gpios();
 	mdelay(250); /* Delay for the panel to be up */
-	if (edp_ctrl_init(&ed) == CB_SUCCESS) {
-		mdp_dsi_video_config(&ed);
-		mdp_dsi_video_on();
-		edid_set_framebuffer_bits_per_pixel(&ed, 32, 0);
-		fb_new_framebuffer_info_from_edid(&ed, (uintptr_t)0);
+	if (edp_ctrl_init(&ed) != CB_SUCCESS)
+		return;
+
+	edid_set_framebuffer_bits_per_pixel(&ed, 32, 0);
+	if (!fb_new_framebuffer_info_from_edid(&ed, fb_addr))
+		return;
+	memset((void *)fb_addr, 0, ed.bytes_per_line * ed.y_resolution);
+	if (CONFIG(BMP_LOGO)) {
+		struct logo_config config = {
+			.panel_orientation = LB_FB_ORIENTATION_NORMAL,
+			.halignment = FW_SPLASH_HALIGNMENT_CENTER,
+			.valignment = FW_SPLASH_VALIGNMENT_CENTER,
+			.logo_bottom_margin = SPLASH_LOGO_BOTTOM_MARGIN,
+		};
+		render_logo_to_framebuffer(&config);
 	}
+
+	mdp_dsi_video_config(&ed);
+	write32(&mdp_sspp->sspp_src0, fb_addr);
+	mdp_dsi_video_on();
+	/*
+	 * The eDP output does not recover once the MDP stream stops, so start
+	 * it here and leave it running for the payload, which keeps using this
+	 * framebuffer.
+	 */
+	write32(&mdp_intf->timing_eng_enable, 1);
+
+	pmic_gpio_output(BACKLIGHT_PMIC_SID, BACKLIGHT_PMIC_REG_EN, true);
+	pmic_gpio_output(BACKLIGHT_PMIC_SID, BACKLIGHT_PMIC_EN, true);
+	pmic_gpio_output(BACKLIGHT_PMIC_SID, BACKLIGHT_PMIC_PWM, true);
 }
 
 bool mainboard_needs_pcie_init(void)
@@ -114,7 +143,6 @@ static void mainboard_init(struct device *dev)
 		qupv3_se_fw_load_and_init(QUPV3_0_SE6, SE_PROTOCOL_I2C, MIXED); /* Amp I2C */
 
 	setup_usb();
-	display_startup();
 }
 
 static void mainboard_enable(struct device *dev)
@@ -122,6 +150,13 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->init = &mainboard_init;
 }
 
+/* Runs at BS_DEV_INIT_CHIPS, so the splash shows up before the rest of ramstage. */
+static void mainboard_chip_init(void *chip_info)
+{
+	display_startup();
+}
+
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
+	.init = mainboard_chip_init,
 };

@@ -146,6 +146,7 @@ struct soc_intel_apollolake_config {
 	bool hdaudio_clk_gate_enable;
 	bool hdaudio_pwr_gate_enable;
 	bool hdaudio_bios_config_lockdown;
+	bool disable_audio_dsp;
 
 	/* Enhanced C-states */
 	bool enhanced_cstates;

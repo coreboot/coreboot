@@ -452,6 +452,7 @@ config MAINBOARD_GPIO_PIN_FOR_FP_RESET
 
 config MAINBOARD_GPIO_PIN_FOR_FP_POWER
 	int
+	default 218 if BOARD_GOOGLE_MODEL_MERU
 	default 22
 	help
 	  This option specifies the GPIO pin number on the mainboard that is

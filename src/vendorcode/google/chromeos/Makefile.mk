@@ -38,12 +38,12 @@ define add_bmp_logo_file_to_cbfs
 cbfs-files-$$($(1)) += $(2)
 $(2)-file := $$(call strip_quotes,$$($(3)))
 $(2)-type := raw
-$(2)-compression := $$(BMP_LOGO_COMPRESS_FLAG)
+$(2)-compression := $(4)
 endef
 
 $(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_CHROMEOS_FW_SPLASH_SCREEN, \
-	      cb_logo.bmp,CONFIG_CHROMEOS_LOGO_PATH))
+	      cb_logo.bmp,CONFIG_CHROMEOS_LOGO_PATH,$(BMP_LOGO_COMPRESS_FLAG)))
 ifneq ($(CONFIG_SPLASH_SCREEN_FOOTER),y)
 $(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_CHROMEOS_FW_SPLASH_SCREEN, \
-	      cb_plus_logo.bmp,CONFIG_CHROMEBOOK_PLUS_LOGO_PATH))
+	      cb_plus_logo.bmp,CONFIG_CHROMEBOOK_PLUS_LOGO_PATH,$(BMP_LOGO_COMPRESS_FLAG)))
 endif

@@ -450,6 +450,13 @@ config MAINBOARD_GPIO_PIN_FOR_FP_RESET
 	  This option specifies the GPIO pin number on the mainboard that is
 	  used for fingerprint reset pin.
 
+config MAINBOARD_GPIO_PIN_FOR_FP_POWER
+	int
+	default 22
+	help
+	  This option specifies the GPIO pin number on the mainboard that is
+	  used for enabling power to the fingerprint sensor.
+
 config MAINBOARD_GPIO_PIN_FOR_TOUCHPAD_POWER
 	int
 	default 36 if BOARD_GOOGLE_MODEL_QUARTZ

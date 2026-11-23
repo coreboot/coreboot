@@ -37,6 +37,7 @@ enum clk_pcie_src_sel {
 enum apcs_branch_en_vote {
 	QUPV3_WRAP_0_M_AHB_CLK_ENA = 6,
 	QUPV3_WRAP_0_S_AHB_CLK_ENA = 7,
+	GCC_DISP_GPLL0_CLK_SRC_ENA = 7,
 	QUPV3_WRAP0_CORE_CLK_ENA = 8,
 	QUPV3_WRAP0_CORE_2X_CLK_ENA = 9,
 	AGGRE_NOC_PCIE_1_AXI_CLK_ENA = 11,

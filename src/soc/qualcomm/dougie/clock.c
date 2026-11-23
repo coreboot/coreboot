@@ -392,6 +392,8 @@ enum cb_err mdss_clock_configure(enum clk_mdss clk_type, uint32_t hz,
 	mdss_clk_cfg.hz = hz;
 
 	if (clk_type == MDSS_CLK_MDP) {
+		/* Vote for gcc_disp_gpll0_clk_src, the MDP RCG source; nothing else enables it. */
+		setbits32(&gcc->apcs_clk_br_en, BIT(GCC_DISP_GPLL0_CLK_SRC_ENA));
 		for (idx = 0; idx < ARRAY_SIZE(mdss_mdp_cfg); idx++) {
 			if (hz <= mdss_mdp_cfg[idx].hz) {
 				mdss_clk_cfg.src = mdss_mdp_cfg[idx].src;

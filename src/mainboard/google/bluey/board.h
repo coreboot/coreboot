@@ -98,6 +98,7 @@ void init_sdam_config(void);
 void configure_avoid_pd_reset(void);
 void clear_pending_ec_events(void);
 bool is_fast_charge_ready(void);
+bool is_low_power_boot_with_charger(void);
 /* Detect an AC unplug event with optional software debouncing */
 int detect_ac_unplug_event(bool debounce);
 

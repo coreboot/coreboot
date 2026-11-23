@@ -54,18 +54,6 @@ void mainboard_usb_typec_configure(uint8_t port_num, bool inverse_polarity)
 	i2c_writeb(bus, PS8820_SLAVE_ADDR, PS8820_USB_PORT_CONN_STATUS_REG, mode_value);
 }
 
-static bool is_low_power_boot_with_charger(void)
-{
-	bool ret = false;
-	enum boot_mode_t boot_mode = get_boot_mode();
-	if ((boot_mode == LB_BOOT_MODE_LOW_BATTERY_CHARGING) ||
-	    (boot_mode == LB_BOOT_MODE_OFFMODE_CHARGING) ||
-	    (boot_mode == LB_BOOT_MODE_RTC_WAKE))
-		ret = true;
-
-	return ret;
-}
-
 static void enable_usb_camera(void)
 {
 	if (CONFIG(MAINBOARD_HAS_CAMERA_VIA_USB)) {

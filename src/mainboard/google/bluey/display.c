@@ -434,7 +434,7 @@ void display_startup(void)
 	struct edid edid = {};
 	struct fb_info *fb;
 	uintptr_t fb_addr = (REGION_SIZE(framebuffer)) ? (uintptr_t)_framebuffer : 0;
-	enum lb_fb_orientation orientation = LB_FB_ORIENTATION_NORMAL;
+	enum lb_fb_orientation orientation = CONFIG_MAINBOARD_PANEL_ORIENTATION;
 
 	/* Initialize RPMh subsystem and display power rails */
 	if (display_rpmh_init() != CB_SUCCESS)

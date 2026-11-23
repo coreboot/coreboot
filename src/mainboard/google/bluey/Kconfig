@@ -519,6 +519,18 @@ config MAINBOARD_GPIO_PIN_FOR_PANEL_RESET
 	  This option specifies the GPIO pin number on the mainboard that is
 	  used for the MIPI DSI panel reset pin.
 
+config MAINBOARD_PANEL_ORIENTATION
+	int
+	range 0 3
+	default 2 if BOARD_GOOGLE_MODEL_MERU
+	default 0
+	help
+	  Display panel orientation matching enum lb_fb_orientation:
+	    0 = LB_FB_ORIENTATION_NORMAL
+	    1 = LB_FB_ORIENTATION_BOTTOM_UP
+	    2 = LB_FB_ORIENTATION_LEFT_UP
+	    3 = LB_FB_ORIENTATION_RIGHT_UP
+
 config MAINBOARD_RAMDUMP_LED_NOTIFICATION
 	bool
 	default n

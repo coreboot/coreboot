@@ -652,7 +652,7 @@ static int edp_ctrl_config_msa(struct edp_ctrl *ctrl)
 
 	mvid = (pixel_m & 0xFFFF) * 5;
 
-	nvid = (0xFFFF & (~pixel_n)) + (pixel_m & 0xFFFF);
+	nvid = pixel_n & 0xFFFF;
 
 	if (nvid < nvid_fixed) {
 		printk(BIOS_INFO, "nvid is< nvid_fixed\n");

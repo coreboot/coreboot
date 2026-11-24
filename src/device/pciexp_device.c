@@ -499,7 +499,7 @@ static void pciexp_L1_substate_commit(struct device *root, struct device *dev,
 	printk(BIOS_INFO, "Power On Value = 0x%x, Power On Scale = 0x%x\n",
 		endp_power_on_value, power_on_scale);
 
-	pci_update_config32(root, root_cap + 0x08, ~0xff00,
+	pci_update_config32(root, root_cap + PCI_L1SS_CTL1, ~0xff00,
 		(comm_mode_rst_time << 8));
 
 	pci_update_config32(root, root_cap + 0x0c, 0xffffff04,
@@ -508,27 +508,37 @@ static void pciexp_L1_substate_commit(struct device *root, struct device *dev,
 	/* TODO: 0xa0, 2 are values that work on some chipsets but really
 	 * should be determined dynamically by looking at downstream devices.
 	 */
-	pci_update_config32(root, root_cap + 0x08,
+	pci_update_config32(root, root_cap + PCI_L1SS_CTL1,
 		~(ASPM_LTR_L12_THRESHOLD_VALUE_MASK |
 			ASPM_LTR_L12_THRESHOLD_SCALE_MASK),
 		(0xa0 << ASPM_LTR_L12_THRESHOLD_VALUE_OFFSET) |
 		(2 << ASPM_LTR_L12_THRESHOLD_SCALE_OFFSET));
 
-	pci_update_config32(root, root_cap + 0x08, ~0x1f,
-		L1SubStateSupport);
+	pci_update_config32(root, root_cap + PCI_L1SS_CTL1,
+			    ~(PCI_L1SS_CTL1_PCIPM_L1_2 |
+			    PCI_L1SS_CTL1_PCIPM_L1_1 |
+			    PCI_L1SS_CTL1_ASPM_L1_2 |
+			    PCI_L1SS_CTL1_ASPM_L1_1 |
+			    PCI_L1SS_CAP_L1_PM_SS),
+			    L1SubStateSupport);
 
 	for (dev_t = dev; dev_t; dev_t = dev_t->sibling) {
 		pci_update_config32(dev_t, end_cap + 0x0c, 0xffffff04,
 			(endp_power_on_value << 3) | (power_on_scale));
 
-		pci_update_config32(dev_t, end_cap + 0x08,
+		pci_update_config32(dev_t, end_cap + PCI_L1SS_CTL1,
 			~(ASPM_LTR_L12_THRESHOLD_VALUE_MASK |
 				ASPM_LTR_L12_THRESHOLD_SCALE_MASK),
 			(0xa0 << ASPM_LTR_L12_THRESHOLD_VALUE_OFFSET) |
 			(2 << ASPM_LTR_L12_THRESHOLD_SCALE_OFFSET));
 
-		pci_update_config32(dev_t, end_cap + 0x08, ~0x1f,
-			L1SubStateSupport);
+		pci_update_config32(dev_t, end_cap + PCI_L1SS_CTL1,
+				    ~(PCI_L1SS_CTL1_PCIPM_L1_2 |
+				    PCI_L1SS_CTL1_PCIPM_L1_1 |
+				    PCI_L1SS_CTL1_ASPM_L1_2 |
+				    PCI_L1SS_CTL1_ASPM_L1_1 |
+				    PCI_L1SS_CAP_L1_PM_SS),
+				    L1SubStateSupport);
 	}
 }
 

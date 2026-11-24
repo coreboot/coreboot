@@ -625,4 +625,12 @@
 #define PCI_CLASS_GET_DEVICE(c) (c >> 8)
 #define PCI_CLASS_GET_PROG(c) (c & 0xff)
 
+/* PCIE L1SS */
+#define PCI_L1SS_CTL1		0x08	/* Control 1 Register */
+#define  PCI_L1SS_CTL1_PCIPM_L1_2	0x00000001  /* PCI-PM L1.2 Enable */
+#define  PCI_L1SS_CTL1_PCIPM_L1_1	0x00000002  /* PCI-PM L1.1 Enable */
+#define  PCI_L1SS_CTL1_ASPM_L1_2	0x00000004  /* ASPM L1.2 Enable */
+#define  PCI_L1SS_CTL1_ASPM_L1_1	0x00000008  /* ASPM L1.1 Enable */
+#define  PCI_L1SS_CAP_L1_PM_SS		0x00000010  /* L1 PM Substates Supported */
+
 #endif /* PCI_DEF_H */

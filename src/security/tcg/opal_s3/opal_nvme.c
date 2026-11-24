@@ -179,7 +179,7 @@ int opal_nvme_init(struct opal_nvme *nvme, pci_devfn_t dev, void *scratch, size_
 		}
 	}
 
-	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
 
 	if (nvme_read_bar0(dev, &regs)) {
 		printk(BIOS_ERR, "OPAL NVMe: invalid BAR0\n");
@@ -190,6 +190,15 @@ int opal_nvme_init(struct opal_nvme *nvme, pci_devfn_t dev, void *scratch, size_
 	nvme->regs = (u8 *)(uintptr_t)regs;
 	nvme->cap = read64(nvme->regs + 0x0);
 	nvme->dstrd_bytes = 4U << ((nvme->cap >> 32) & 0xf);
+	/* The completion doorbell can lie beyond the initial register range. */
+	const size_t register_size = MAX(NVME_REGS_MIN_SIZE,
+					 0x1000U + nvme->dstrd_bytes + sizeof(u32));
+	if (smm_points_to_smram(nvme->regs, register_size)) {
+		printk(BIOS_ERR, "OPAL NVMe: doorbell overlaps SMRAM or wraps\n");
+		pci_and_config16(dev, PCI_COMMAND, ~(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER));
+		return -1;
+	}
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 	nvme->sq_db = (u32 *)(nvme->regs + 0x1000 + (0 * nvme->dstrd_bytes));
 	nvme->cq_db = (u32 *)(nvme->regs + 0x1000 + (1 * nvme->dstrd_bytes));
 

@@ -3,6 +3,7 @@
 #ifndef _SOC_QUALCOMM_X1P42100_RPMH_CONFIG_H_
 #define _SOC_QUALCOMM_X1P42100_RPMH_CONFIG_H_
 
+#include <soc/rpmh_regulator.h>
 #include <types.h>
 
 /*
@@ -49,8 +50,9 @@
 #define UFS_VCC_UV		1200000
 #define UFS_VCCQ_UV		880000
 
-/* UFS VRM regulator mode: HPM (High Power Mode) */
-#define UFS_VRM_HPM_MODE	RPMH_VRM_MODE_MAX
+/* VRM regulator mode: HPM (High Power Mode) */
+#define RPMH_VRM_HPM_MODE	RPMH_VRM_MODE_MAX
+#define UFS_VRM_HPM_MODE	RPMH_VRM_HPM_MODE
 
 /* ARC level for XO2 clock: ON */
 #define UFS_XO_CLK_LEVEL_ON	1
@@ -59,6 +61,8 @@
 #define AOP_BOOT_TIMEOUT_US		200000
 
 int rpmh_rsc_init(void);
+enum cb_err rpmh_vrm_enable(const char *name, int uv, u32 mode);
+enum cb_err rpmh_vrm_disable(const char *name);
 enum cb_err display_rpmh_init(void);
 enum cb_err ufs_rpmh_init(void);
 enum cb_err ufs_rpmh_disable(void);

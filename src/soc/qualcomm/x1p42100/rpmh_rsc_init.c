@@ -3,11 +3,14 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
-#include <string.h>
 #include <soc/addressmap.h>
+#include <soc/cmd_db.h>
 #include <soc/rpmh_config.h>
 #include <soc/rpmh_internal.h>
+#include <soc/rpmh_regulator.h>
 #include <soc/rpmh_rsc.h>
+#include <string.h>
+#include <timer.h>
 
 static struct rsc_drv rsc_driver;
 static struct cache_req non_batch_cache[CMD_DB_MAX_RESOURCES];
@@ -162,4 +165,90 @@ int rpmh_rsc_init(void)
 	       drv->name, drv->id, (uintptr_t)drv->base, major_rsc_version, minor_rsc_version);
 
 	return 0;
+}
+
+static enum cb_err rpmh_vrm_init(struct rpmh_vreg *vreg, const char *name)
+{
+	int rc;
+
+	if (!vreg || !name)
+		return CB_ERR;
+
+	if (cmd_db_ready() != CB_SUCCESS) {
+		volatile u32 *boot_cookie = (volatile u32 *)AOP_BOOT_COOKIE_ADDR;
+
+		if (!wait_us(AOP_BOOT_TIMEOUT_US, *boot_cookie == AOP_BOOT_COOKIE)) {
+			printk(BIOS_ERR, "RPMH_VRM: AOP not booted after %dus (cookie: 0x%x)\n",
+			       AOP_BOOT_TIMEOUT_US, *boot_cookie);
+			return CB_ERR;
+		}
+		if (cmd_db_init(CMD_DB_BASE_ADDR, CMD_DB_SIZE) != CB_SUCCESS) {
+			printk(BIOS_ERR, "RPMH_VRM: cmd_db init failed for %s\n", name);
+			return CB_ERR;
+		}
+	}
+
+	rc = rpmh_rsc_init();
+	if (rc) {
+		printk(BIOS_ERR, "RPMH_VRM: rpmh_rsc_init failed rc=%d for %s\n", rc, name);
+		return CB_ERR;
+	}
+
+	rc = rpmh_regulator_init(vreg, name, RPMH_REGULATOR_TYPE_VRM);
+	if (rc) {
+		printk(BIOS_ERR, "RPMH_VRM: Failed to init %s rc=%d\n", name, rc);
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
+
+enum cb_err rpmh_vrm_enable(const char *name, int uv, u32 mode)
+{
+	struct rpmh_vreg vreg;
+	int rc;
+
+	if (rpmh_vrm_init(&vreg, name) != CB_SUCCESS)
+		return CB_ERR;
+
+	rc = rpmh_regulator_vrm_set_voltage(&vreg, uv, uv, true, false);
+	if (rc) {
+		printk(BIOS_ERR, "RPMH_VRM: Failed to set voltage for %s to %d uV rc=%d\n",
+		       name, uv, rc);
+		return CB_ERR;
+	}
+
+	rc = rpmh_regulator_vrm_set_mode(&vreg, mode, true, false);
+	if (rc) {
+		printk(BIOS_ERR, "RPMH_VRM: Failed to set mode %u for %s rc=%d\n",
+		       mode, name, rc);
+		return CB_ERR;
+	}
+
+	rc = rpmh_regulator_enable(&vreg, true, false);
+	if (rc) {
+		printk(BIOS_ERR, "RPMH_VRM: Failed to enable %s rc=%d\n", name, rc);
+		return CB_ERR;
+	}
+
+	printk(BIOS_INFO, "RPMH_VRM: %s enabled at %d mV (mode=%u)\n", name, uv / 1000, mode);
+	return CB_SUCCESS;
+}
+
+enum cb_err rpmh_vrm_disable(const char *name)
+{
+	struct rpmh_vreg vreg;
+	int rc;
+
+	if (rpmh_vrm_init(&vreg, name) != CB_SUCCESS)
+		return CB_ERR;
+
+	rc = rpmh_regulator_disable(&vreg, true, false);
+	if (rc) {
+		printk(BIOS_ERR, "RPMH_VRM: Failed to disable %s rc=%d\n", name, rc);
+		return CB_ERR;
+	}
+
+	printk(BIOS_INFO, "RPMH_VRM: %s disabled\n", name);
+	return CB_SUCCESS;
 }

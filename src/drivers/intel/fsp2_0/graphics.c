@@ -82,7 +82,7 @@ void fsp_report_framebuffer_info(const uint64_t framebuffer_bar,
 
 	ginfo = fsp_find_extension_hob_by_guid(fsp_graphics_info_guid, &size);
 
-	if (!ginfo) {
+	if (!ginfo || size < sizeof(*ginfo)) {
 		printk(BIOS_ALERT, "Graphics hand-off block not found\n");
 		update_fw_splash_screen_event(FW_SPLASH_SCREEN_DISABLED);
 		return;
@@ -91,6 +91,15 @@ void fsp_report_framebuffer_info(const uint64_t framebuffer_bar,
 	if (ginfo->pixel_format >= ARRAY_SIZE(fsp_framebuffer_format_map)) {
 		printk(BIOS_ALERT, "FSP set unknown framebuffer format: %d\n",
 		       ginfo->pixel_format);
+		update_fw_splash_screen_event(FW_SPLASH_SCREEN_DISABLED);
+		return;
+	}
+
+	/* Bound every consumer of the reported framebuffer to the FSP allocation. */
+	if (ginfo->pixels_per_scanline > UINT32_MAX / 4 ||
+	    (uint64_t)ginfo->pixels_per_scanline * 4 * ginfo->vertical_resolution >
+		ginfo->framebuffer_size) {
+		printk(BIOS_ERR, "FSP framebuffer geometry exceeds its allocation\n");
 		update_fw_splash_screen_event(FW_SPLASH_SCREEN_DISABLED);
 		return;
 	}

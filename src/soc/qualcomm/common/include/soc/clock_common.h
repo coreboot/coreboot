@@ -198,6 +198,9 @@ enum cb_err clock_configure(struct clock_rcg *clk, struct clock_freq_config *clk
 void clock_configure_dfsr_table(int qup, struct clock_freq_config *clk_cfg,
 		uint32_t num_perfs);
 
+/* Configure the UART SE clock and return its rate in Hz. */
+uint32_t clock_configure_qup_uart(int qup);
+
 enum cb_err clock_configure_enable_gpll(struct alpha_pll_reg_val_config *cfg,
 					bool enable, int br_enable);
 enum cb_err agera_pll_enable(struct alpha_pll_reg_val_config *cfg);

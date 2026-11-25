@@ -260,6 +260,12 @@ void clock_configure_dfsr_table(int qup, struct clock_freq_config *clk_cfg,
 	}
 }
 
+/* Default: keep the SE clock left by earlier firmware and assume XO. */
+__weak uint32_t clock_configure_qup_uart(int qup)
+{
+	return SRC_XO_HZ;
+}
+
 /* General Purpose PLL configuration and enable Operations */
 enum cb_err clock_configure_enable_gpll(struct alpha_pll_reg_val_config *cfg,
 					bool enable, int br_enable)

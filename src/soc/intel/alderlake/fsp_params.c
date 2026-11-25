@@ -1163,7 +1163,6 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->EnableHwpScalabilityTracking = config->enable_hwp_scalability_tracking;
 #endif
 	if (CONFIG(SOC_INTEL_ALDERLAKE_REALTIME_TUNING_ENABLE)) {
-		s_cfg->Hwp = false;
 		s_cfg->Cx = false;
 		s_cfg->C1e = false;
 		s_cfg->C1StateAutoDemotion = false;

@@ -49,6 +49,7 @@ ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/edp_ctrl.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/edp_phy_7nm.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += ../common/display/mdss.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/disp.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += ../common/spmi.c ../common/pmic_gpio.c
 ramstage-$(CONFIG_PCI) += ../common/pcie_common.c
 ramstage-$(CONFIG_PCI) += pcie.c
 ramstage-$(CONFIG_SDHCI_CONTROLLER) += sdhci.c ../common/storage/sdhci_msm.c

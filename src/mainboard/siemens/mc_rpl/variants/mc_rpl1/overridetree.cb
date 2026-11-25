@@ -65,36 +65,36 @@ chip soc/intel/alderlake
 	# Intel Common SoC Config
 	register "common_soc_config" = "{
 		.i2c[1] = {
-                        .speed = I2C_SPEED_STANDARD,
-                        .speed_config[0] = {
-                                .speed = I2C_SPEED_STANDARD,
+			.speed = I2C_SPEED_STANDARD,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_STANDARD,
 				.scl_hcnt = 420,
 				.scl_lcnt = 558,
-                        }
-                },
+			}
+		},
 		.i2c[2] = {
-                        .speed = I2C_SPEED_STANDARD,
-                        .speed_config[0] = {
-                                .speed = I2C_SPEED_STANDARD,
+			.speed = I2C_SPEED_STANDARD,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_STANDARD,
 				.scl_hcnt = 420,
 				.scl_lcnt = 550,
-                        }
-                },
+			}
+		},
 		.i2c[4] = {
-                        .speed = I2C_SPEED_STANDARD,
-                        .speed_config[0] = {
-                                .speed = I2C_SPEED_STANDARD,
+			.speed = I2C_SPEED_STANDARD,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_STANDARD,
 				.scl_hcnt = 420,
 				.scl_lcnt = 567,
-                        }
-                },
+			}
+		},
 		.i2c[6] = {
 			.speed = I2C_SPEED_STANDARD,
-                        .speed_config[0] = {
-                                .speed = I2C_SPEED_STANDARD,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_STANDARD,
 				.scl_hcnt = 420,
 				.scl_lcnt = 565,
-                        }
+			}
 		},
 	}"
 
@@ -170,25 +170,25 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref i2c2 on
-                        chip drivers/i2c/generic
-                                register "hid" = ""PRP0001""
-                                register "speed" = "I2C_SPEED_STANDARD"
-                                device i2c 0x7f on end
-                        end
+			chip drivers/i2c/generic
+				register "hid" = ""PRP0001""
+				register "speed" = "I2C_SPEED_STANDARD"
+				device i2c 0x7f on end
+			end
 		end
 		device ref i2c4 on
-                        chip drivers/i2c/generic
-                                register "hid" = ""PRP0001""
-                                register "speed" = "I2C_SPEED_STANDARD"
-                                device i2c 0x7f on end
-                        end
+			chip drivers/i2c/generic
+				register "hid" = ""PRP0001""
+				register "speed" = "I2C_SPEED_STANDARD"
+				device i2c 0x7f on end
+			end
 		end
 		device ref i2c6 on
-                        chip drivers/i2c/generic
-                                register "hid" = ""PRP0001""
-                                register "speed" = "I2C_SPEED_STANDARD"
-                                device i2c 0x7f on end
-                        end
+			chip drivers/i2c/generic
+				register "hid" = ""PRP0001""
+				register "speed" = "I2C_SPEED_STANDARD"
+				device i2c 0x7f on end
+			end
 		end
 		device ref xhci on
 			chip drivers/usb/acpi

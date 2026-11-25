@@ -55,6 +55,10 @@ static struct stopwatch splash_sw;
 #define PANEL_BIAS_POST_ON_MS		20
 #define PANEL_BIAS_POST_OFF_MS		5
 
+/* PMIC L13B LDO rail for display backlight */
+#define BACKLIGHT_LDO_RAIL		"ldob13"
+#define BACKLIGHT_LDO_UV		3072000
+
 static struct {
 	uint32_t x_res;
 } cached_display_params;
@@ -170,6 +174,8 @@ bool platform_use_secondary_logo(void)
 static void panel_backlight_control(bool enable)
 {
 	if (enable) {
+		if (CONFIG(MAINBOARD_HAS_BACKLIGHT_LDO))
+			rpmh_vrm_enable(BACKLIGHT_LDO_RAIL, BACKLIGHT_LDO_UV, RPMH_VRM_HPM_MODE);
 		if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
 			pmic_gpio_output(BACKLIGHT_PWM_PMIC_ID, BACKLIGHT_PWM_PMIC_GPIO, true);
 		pmic_gpio_output(BACKLIGHT_CONTROL_PMIC_ID, BACKLIGHT_CONTROL_PMIC_GPIO, true);
@@ -177,6 +183,8 @@ static void panel_backlight_control(bool enable)
 		pmic_gpio_output(BACKLIGHT_CONTROL_PMIC_ID, BACKLIGHT_CONTROL_PMIC_GPIO, false);
 		if (CONFIG(MAINBOARD_HAS_BACKLIGHT_PWM))
 			pmic_gpio_output(BACKLIGHT_PWM_PMIC_ID, BACKLIGHT_PWM_PMIC_GPIO, false);
+		if (CONFIG(MAINBOARD_HAS_BACKLIGHT_LDO))
+			rpmh_vrm_disable(BACKLIGHT_LDO_RAIL);
 	}
 }
 

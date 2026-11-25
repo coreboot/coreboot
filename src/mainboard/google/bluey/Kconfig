@@ -346,6 +346,14 @@ config MAINBOARD_HAS_CHROME_EC
 	help
 	  Enable this option if your mainboard is equipped with Chrome EC.
 
+config MAINBOARD_HAS_BACKLIGHT_LDO
+	bool
+	default n
+	help
+	  Enable this option if your mainboard requires the PMIC L13B
+	  (ldob13) 3.072V VRM LDO rail to be enabled/disabled with the
+	  display backlight.
+
 config MAINBOARD_HAS_BACKLIGHT_PWM
 	bool
 	default n

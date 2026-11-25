@@ -296,6 +296,31 @@ void clock_configure_dfsr(int qup)
 					ARRAY_SIZE(qupv3_wrap_cfg));
 }
 
+/* 7.3728 MHz = 16 * 4 * 115200, so the console UART runs at exactly 115200. */
+static struct clock_freq_config qup_uart_cfg = {
+	.hz = 7372800,
+	.src = SRC_GPLL0_EVEN_300MHZ,
+	.div = QCOM_CLOCK_DIV(1),
+	.m = 384,
+	.n = 15625,
+	.d_2 = 15625,
+};
+
+uint32_t clock_configure_qup_uart(int qup)
+{
+	struct qupv3_clock *qup_clk;
+	int s = qup % QUP_WRAP1_S0;
+
+	qup_clk = qup < QUP_WRAP1_S0 ?
+			&gcc->qup_wrap0_s[s] : &gcc->qup_wrap1_s[s];
+
+	/* Leave DFS mode left by earlier firmware and program the RCG directly. */
+	clrbits32(&qup_clk->dfsr_clk.cmd_dfsr, BIT(CLK_CTL_CMD_DFSR_SHFT));
+	clock_configure(&qup_clk->clk.clock, &qup_uart_cfg, qup_uart_cfg.hz, 1);
+
+	return qup_uart_cfg.hz;
+}
+
 static enum cb_err pll_init_and_set(struct dougie_apss_clock *apss, u32 l_val)
 {
 	struct alpha_pll_reg_val_config pll_cfg = {0};

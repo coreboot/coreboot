@@ -107,6 +107,9 @@ chip soc/intel/pantherlake
 	#| I2C3              | cr50 TPM.                 |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
+		.fw_updater_valignment = FW_UPDATER_VALIGNMENT_TOP,
+		/* Render firmware update screen 25px below from the top edge */
+		.fw_updater_margin = 25,
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		/* Render OEM footer logo 200px above from the edge */
 		.logo_bottom_margin = 200,

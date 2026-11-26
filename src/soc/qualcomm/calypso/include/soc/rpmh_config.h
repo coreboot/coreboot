@@ -33,10 +33,14 @@
 #define RPMH_REGULATOR_LEVEL_NOM_L1	5
 #define BCM_MM0_VOTE_VALUE		0x60004001
 
+#define UFS_VCC_RAIL			"L17B_E0"
+#define UFS_VCCQ_RAIL			"L12B_E0"
+
 #define AOP_BOOT_COOKIE			0xA0C00C1E
 #define AOP_BOOT_TIMEOUT_US		200000
 
 int rpmh_rsc_init(void);
 enum cb_err display_rpmh_init(void);
+enum cb_err ufs_rpmh_disable(void);
 
 #endif /* _SOC_QUALCOMM_CALYPSO_RPMH_CONFIG_H_ */

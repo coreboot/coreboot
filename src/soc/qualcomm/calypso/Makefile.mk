@@ -80,6 +80,7 @@ ramstage-y += usb/qmpv4_usb_phy.c
 ramstage-y += usb/qmpv4_usb4_dp_phy.c
 ramstage-y += ../common/tsens.c
 ramstage-y += tsens_map.c
+ramstage-y += ufs.c
 
 ################################################################################
 

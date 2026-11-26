@@ -30,6 +30,9 @@ struct soc_intel_common_config {
 	enum fw_splash_vertical_alignment logo_valignment;
 	/* Implies spacing from an edge for rendering footer logo */
 	uint8_t logo_bottom_margin;
+	enum fw_updater_vertical_alignment fw_updater_valignment;
+	/* Spacing (in pixels) from top/bottom edge for FW updater screen */
+	uint8_t fw_updater_margin;
 };
 
 /* This function to retrieve soc config structure required by common code */

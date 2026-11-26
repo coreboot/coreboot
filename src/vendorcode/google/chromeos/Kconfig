@@ -86,6 +86,23 @@ config CHROMEOS_FW_SPLASH_SCREEN
 	  devices use this option to show their logo before the operating
 	  system loads.
 
+config CHROMEOS_FIRMWARE_UPDATE_SCREEN
+	bool "Display firmware updater screen"
+	default n
+	select BMP_LOGO
+	help
+	  Select this option to display a firmware updater screen early in the
+	  boot process. The screen is rendered using VGA Mode 12h with a
+	  maximum resolution of 640x480 at 4 BPP (16 colors).
+
+	  For example, ChromeOS devices use this option to notify users not to
+	  power off the machine while a firmware update is in progress.
+
+config CHROMEOS_FIRMWARE_UPDATE_SCREEN_PATH
+	string "Path to ChromeOS firmware update file"
+	depends on CHROMEOS_FIRMWARE_UPDATE_SCREEN
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"
+
 config CHROMEOS_LOGO_PATH
 	string "Path to ChromeOS logo file"
 	depends on CHROMEOS_FW_SPLASH_SCREEN

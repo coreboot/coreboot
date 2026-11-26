@@ -47,3 +47,5 @@ ifneq ($(CONFIG_SPLASH_SCREEN_FOOTER),y)
 $(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_CHROMEOS_FW_SPLASH_SCREEN, \
 	      cb_plus_logo.bmp,CONFIG_CHROMEBOOK_PLUS_LOGO_PATH,$(BMP_LOGO_COMPRESS_FLAG)))
 endif
+$(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_CHROMEOS_FIRMWARE_UPDATE_SCREEN, \
+	     fw_update.bmp,CONFIG_CHROMEOS_FIRMWARE_UPDATE_SCREEN_PATH, none))

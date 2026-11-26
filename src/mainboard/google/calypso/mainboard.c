@@ -135,6 +135,14 @@ static void setup_usb_late(void)
 	setup_usb_host0();
 }
 
+static bool mainboard_is_nvme_sku(void)
+{
+	if (!fw_config_is_provisioned())
+		return false;
+
+	return fw_config_probe(FW_CONFIG(STORAGE_TYPE, STORAGE_TYPE_NVME));
+}
+
 void mainboard_soc_init(void)
 {
 	/* Setup USB related initial config */
@@ -150,6 +158,10 @@ void mainboard_soc_init(void)
 
 	if (boot_mode == LB_BOOT_MODE_NORMAL || boot_mode == LB_BOOT_MODE_NO_BATTERY)
 		display_startup();
+
+	/* Disable UFS rails to avoid power leakage on NVMe SKUs */
+	if (mainboard_is_nvme_sku())
+		ufs_rpmh_disable();
 
 	/* Setup audio related initial config */
 	setup_audio();

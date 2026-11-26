@@ -1,9 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootsplash.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <limits.h>
+#include <stdint.h>
 #include <string.h>
+
+#include "render_bmp.h"
 
 #define FONT_WIDTH 8
 #define FONT_HEIGHT 16
@@ -365,4 +369,254 @@ void render_text_to_bitmap_buffer(unsigned char *image_bitmap_buffer,
 	}
 
 	truncate_bitmap_buffer(image_width, image_height);
+}
+
+/* Standard 16-color VGA Mode 12h palette (IRGB bitplane order: P3=I, P2=R, P1=G, P0=B) */
+static const uint8_t vga16_palette[16][3] = {
+	{ 0x00, 0x00, 0x00 }, /*  0: Black          */
+	{ 0x00, 0x00, 0xaa }, /*  1: Blue           */
+	{ 0x00, 0xaa, 0x00 }, /*  2: Green          */
+	{ 0x00, 0xaa, 0xaa }, /*  3: Cyan           */
+	{ 0xaa, 0x00, 0x00 }, /*  4: Red            */
+	{ 0xaa, 0x00, 0xaa }, /*  5: Magenta        */
+	{ 0xaa, 0x55, 0x00 }, /*  6: Brown          */
+	{ 0xaa, 0xaa, 0xaa }, /*  7: Light Gray     */
+	{ 0x55, 0x55, 0x55 }, /*  8: Dark Gray      */
+	{ 0x55, 0x55, 0xff }, /*  9: Bright Blue    */
+	{ 0x55, 0xff, 0x55 }, /* 10: Bright Green   */
+	{ 0x55, 0xff, 0xff }, /* 11: Bright Cyan    */
+	{ 0xff, 0x55, 0x55 }, /* 12: Bright Red     */
+	{ 0xff, 0x55, 0xff }, /* 13: Bright Magenta */
+	{ 0xff, 0xff, 0x55 }, /* 14: Yellow         */
+	{ 0xff, 0xff, 0xff }, /* 15: Bright White   */
+};
+
+static uint8_t rgb_to_vga_color(uint8_t r, uint8_t g, uint8_t b, size_t num_planes)
+{
+	if (num_planes == 1) {
+		uint32_t lum = (77U * r + 150U * g + 29U * b) >> 8;
+		return lum >= 118 ? 1 : 0;
+	}
+
+	uint32_t best_dist = UINT32_MAX;
+	uint8_t best_idx = 0;
+
+	for (uint8_t i = 0; i < 16; i++) {
+		int dr = (int)r - vga16_palette[i][0];
+		int dg = (int)g - vga16_palette[i][1];
+		int db = (int)b - vga16_palette[i][2];
+		uint32_t dist = (uint32_t)(dr * dr + dg * dg + db * db);
+		if (dist < best_dist) {
+			best_dist = dist;
+			best_idx = i;
+		}
+	}
+
+	return best_idx;
+}
+
+static uint8_t read_indexed_bmp_pixel(const uint8_t *row, size_t x, uint16_t bpp)
+{
+	switch (bpp) {
+	case 4:
+		return (x & 1) ? (row[x >> 1] & 0x0f) : (row[x >> 1] >> 4);
+	default:
+		return 0;
+	}
+}
+
+bool render_bmp_to_bitmap_buffer(unsigned char *image_bitmap_buffer,
+	size_t bitmap_buffer_size, enum lb_fb_orientation orientation,
+	const void *bmp_data, size_t bmp_size, size_t num_planes,
+	int *image_width, int *image_height)
+{
+	if (!image_bitmap_buffer || !bmp_data || !image_width || !image_height) {
+		printk(BIOS_ERR, "VGA12 BMP: Invalid input parameters\n");
+		return false;
+	}
+
+	if (num_planes != 1 && num_planes != 4) {
+		printk(BIOS_ERR, "VGA12 BMP: Unsupported plane count %zu\n", num_planes);
+		return false;
+	}
+
+	if (bmp_size < sizeof(struct bmp_image_header)) {
+		printk(BIOS_ERR, "VGA12 BMP: Buffer too small (%zu bytes)\n", bmp_size);
+		return false;
+	}
+
+	const struct bmp_image_header *hdr = (const struct bmp_image_header *)bmp_data;
+	if (!bmp_do_image_authentication(hdr) || hdr->Planes != 1 ||
+	    !bmp_pixel_data_fits(hdr, bmp_size))
+		return false;
+
+	int num_colors = bmp_get_color_map_num(hdr);
+
+	if (num_colors <= 0) {
+		printk(BIOS_ERR, "VGA12 BMP: Unsupported BPP (%u) or truncated color map\n",
+		       hdr->BitPerPixel);
+		return false;
+	}
+
+	size_t num_entries = hdr->NumberOfColors ?
+			     MIN((size_t)hdr->NumberOfColors, (size_t)num_colors) :
+			     (size_t)num_colors;
+
+	uint8_t palette_lut[256] = { 0 };
+
+	const struct bmp_color_map *cmap =
+		(const struct bmp_color_map *)((const uint8_t *)bmp_data + sizeof(*hdr));
+
+	for (size_t i = 0; i < num_entries; i++)
+		palette_lut[i] = rgb_to_vga_color(cmap[i].Red, cmap[i].Green,
+						  cmap[i].Blue, num_planes);
+
+	/*
+	 * rot_w / rot_h: BMP dimensions after applying panel orientation
+	 * (swapped for 90-degree LEFT_UP / RIGHT_UP rotations).
+	 */
+	uint32_t rot_w, rot_h;
+	bmp_get_oriented_dimensions(hdr, orientation, &rot_w, &rot_h);
+
+	/*
+	 * max_w / max_h: Caller-supplied maximum dimensions for the rendered bitmap
+	 * (e.g., VGA12 640x480). Width is rounded down to an 8-pixel byte boundary
+	 * since each planar VGA byte packs 8 horizontal pixels.
+	 */
+	int max_w = ALIGN_DOWN(*image_width, BITS_PER_BYTE);
+	int max_h = *image_height;
+	if (max_w <= 0 || max_h <= 0 || rot_w > INT_MAX || rot_h > INT_MAX)
+		return false;
+
+	/*
+	 * out_w / out_h: Actual output bitmap dimensions written to the planar buffer.
+	 * rot_w is padded up to an 8-pixel boundary and both axes are clamped to
+	 * max_w / max_h so the bitmap never exceeds the caller's target area.
+	 */
+	int out_w = MIN(ALIGN_UP((int)rot_w, BITS_PER_BYTE), max_w);
+	int out_h = MIN((int)rot_h, max_h);
+
+	/*
+	 * off_x / off_y: Centering offsets mapping rotated BMP coordinates (rot_w x rot_h)
+	 * into the output buffer (out_w x out_h):
+	 *  - positive when out_w was rounded up to an 8-pixel boundary (centers padding)
+	 *  - negative when rot_w/rot_h exceeds max_w/max_h (center-crops the image)
+	 */
+	int off_x = (out_w - (int)rot_w) / 2;
+	int off_y = (out_h - (int)rot_h) / 2;
+
+	size_t dst_row_bytes = (size_t)(out_w / BITS_PER_BYTE);
+	size_t plane_size = dst_row_bytes * (size_t)out_h;
+
+	if (plane_size > bitmap_buffer_size / num_planes) {
+		printk(BIOS_ERR, "VGA12 BMP: Output (%zu bytes) exceeds buffer (%zu bytes)\n",
+		       plane_size * num_planes, bitmap_buffer_size);
+		return false;
+	}
+
+	memset(image_bitmap_buffer, 0, plane_size * num_planes);
+
+	size_t src_row_stride = bmp_row_stride(hdr);
+	const uint8_t *row = (const uint8_t *)bmp_data + hdr->ImageOffset;
+
+	for (size_t height = 0; height < hdr->PixelHeight; height++, row += src_row_stride) {
+		for (size_t width = 0; width < hdr->PixelWidth; width++) {
+			uint8_t color = palette_lut[read_indexed_bmp_pixel(row, width,
+									   hdr->BitPerPixel)];
+			if (!color)
+				continue;
+
+			/* Map BMP (width, height) to rotated coords (rx, ry) */
+			size_t rx, ry;
+
+			bmp_calculate_adj_height_width(hdr, &rx, &ry, orientation, width, height);
+
+			/* Shift into destination buffer coords (dx, dy) and clip if cropped */
+			int dx = (int)rx + off_x;
+			int dy = (int)ry + off_y;
+			if (dx < 0 || dx >= out_w || dy < 0 || dy >= out_h)
+				continue;
+
+			/*
+			 * Planar VGA Mode 12h packs 8 horizontal pixels per byte in
+			 * MSB-first order (dx % 8 == 0 -> bit 7, dx % 8 == 7 -> bit 0):
+			 *
+			 *   dx % 8 :   0     1     2     3     4     5     6     7
+			 *   bit    :  b7    b6    b5    b4    b3    b2    b1    b0
+			 *   mask   : 0x80  0x40  0x20  0x10  0x08  0x04  0x02  0x01
+			 *
+			 * - byte_off locates the byte in row dy (dy * dst_row_bytes)
+			 *   and 8-pixel group along that row (dx >> 3 == dx / 8).
+			 * - mask isolates the single bit for pixel dx so '|=' turns
+			 *   only this pixel ON without disturbing the other 7 pixels
+			 *   sharing the same byte (buffer was pre-zeroed by memset).
+			 * - Each bit p of the 4-bit VGA color index (P0=B, P1=G,
+			 *   P2=R, P3=I) is written into its own contiguous bitplane
+			 *   at offset (p * plane_size + byte_off).
+			 */
+			size_t byte_off = (size_t)dy * dst_row_bytes + (size_t)(dx >> 3);
+			uint8_t mask = (uint8_t)(1U << (7 - (dx & 7)));
+
+			for (size_t p = 0; p < num_planes; p++) {
+				if ((color >> p) & 0x1)
+					image_bitmap_buffer[p * plane_size + byte_off] |= mask;
+			}
+		}
+	}
+
+	*image_width = out_w;
+	*image_height = out_h;
+
+	return true;
+}
+
+void vga12_calculate_logo_position(int img_width, int img_height,
+	enum lb_fb_orientation orientation,
+	enum fw_updater_vertical_alignment valignment,
+	uint8_t margin, int *pos_x, int *pos_y)
+{
+	if (!pos_x || !pos_y)
+		return;
+
+	int max_x = MAX(0, VGA12_WIDTH - img_width);
+	int max_y = MAX(0, VGA12_HEIGHT - img_height);
+	int x = ALIGN_DOWN(max_x / 2, BITS_PER_BYTE);
+	int y = max_y / 2;
+
+	if (valignment == FW_UPDATER_VALIGNMENT_TOP) {
+		switch (orientation) {
+		case LB_FB_ORIENTATION_BOTTOM_UP:
+			y = MAX(0, max_y - (int)margin);
+			break;
+		case LB_FB_ORIENTATION_RIGHT_UP:
+			x = ALIGN_DOWN(MAX(0, max_x - (int)margin), BITS_PER_BYTE);
+			break;
+		case LB_FB_ORIENTATION_LEFT_UP:
+			x = ALIGN_DOWN(MIN((int)margin, max_x), BITS_PER_BYTE);
+			break;
+		case LB_FB_ORIENTATION_NORMAL:
+		default:
+			y = MIN((int)margin, max_y);
+			break;
+		}
+	} else if (valignment == FW_UPDATER_VALIGNMENT_BOTTOM) {
+		switch (orientation) {
+		case LB_FB_ORIENTATION_BOTTOM_UP:
+			y = MIN((int)margin, max_y);
+			break;
+		case LB_FB_ORIENTATION_RIGHT_UP:
+			x = ALIGN_DOWN(MIN((int)margin, max_x), BITS_PER_BYTE);
+			break;
+		case LB_FB_ORIENTATION_LEFT_UP:
+			x = ALIGN_DOWN(MAX(0, max_x - (int)margin), BITS_PER_BYTE);
+			break;
+		case LB_FB_ORIENTATION_NORMAL:
+		default:
+			y = MAX(0, max_y - (int)margin);
+			break;
+		}
+	}
+
+	*pos_x = x;
+	*pos_y = y;
 }

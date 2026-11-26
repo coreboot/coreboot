@@ -240,6 +240,30 @@ static inline bool platform_is_off_mode_charging_active(void)
 #define VGA12_WIDTH		640
 #define VGA12_HEIGHT		480
 #define VGA12_BITMAP_BUFFER_SZ	(VGA12_WIDTH * VGA12_HEIGHT / 8)
+#define VGA12_MONO_PLANES	1	/* 1-bit monochrome (black or white) */
+#define VGA12_COLOR_PLANES	4	/* 4-bit IRGB planar (16-color VGA Mode 12h) */
+
+/*
+ * Specifies the vertical alignment for the romstage firmware updater screen.
+ */
+enum fw_updater_vertical_alignment {
+	/* Vertically centered: (screen_height - img_height) / 2 (default) */
+	FW_UPDATER_VALIGNMENT_MIDDLE = 0,
+	/* Aligned near top edge, offset by margin */
+	FW_UPDATER_VALIGNMENT_TOP = 1,
+	/* Aligned near bottom edge, offset by margin */
+	FW_UPDATER_VALIGNMENT_BOTTOM = 2,
+};
+
+bool render_bmp_to_bitmap_buffer(unsigned char *image_bitmap_buffer,
+	size_t bitmap_buffer_size, enum lb_fb_orientation orientation,
+	const void *bmp_data, size_t bmp_size, size_t num_planes,
+	int *image_width, int *image_height);
+
+void vga12_calculate_logo_position(int img_width, int img_height,
+	enum lb_fb_orientation orientation,
+	enum fw_updater_vertical_alignment valignment,
+	uint8_t margin, int *pos_x, int *pos_y);
 
 void render_text_to_bitmap_buffer(unsigned char *image_bitmap_buffer,
 	enum lb_fb_orientation orientation, const char *text_to_render,

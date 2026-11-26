@@ -133,6 +133,17 @@ config QC_SANITIZE_MEMCHIP_INFO
 
 	  If unsure, say N.
 
+config QC_MEMCHIP_CALCULATE_ENTRIES_DYNAMICALLY
+	bool
+	default n
+	help
+	  When enabled, coreboot derives info->num_entries dynamically from the
+	  table entry buffer size (te->size) before process_mem_chip_information()
+	  filters out unpopulated MEM_CHIP_UNDEFINED entries.
+
+	  Workaround for QcLib builds that under-report
+	  mem_chip_info->num_entries (e.g., reporting 8 instead of 16).
+
 config QC_MEMCHIP_INFO_ON_RERUN
 	bool
 	help

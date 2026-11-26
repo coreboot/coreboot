@@ -94,6 +94,22 @@ static void write_mem_chip_information(struct qclib_cb_if_table_entry *te)
 		return;
 	}
 
+	/*
+	 * Bug: b/590800813
+	 * Workaround for QcLib under-reporting num_entries (e.g., 8 instead of 16).
+	 * Derive the slot count dynamically from te->size; process_mem_chip_information()
+	 * will subsequently filter out any unpopulated MEM_CHIP_UNDEFINED entries.
+	 */
+	if (CONFIG(QC_MEMCHIP_CALCULATE_ENTRIES_DYNAMICALLY)) {
+		size_t num_entries =
+			(te->size - sizeof(struct mem_chip_info)) / sizeof(info->entries[0]);
+		if (info->num_entries != num_entries)
+			printk(BIOS_WARNING,
+			       "WA: Overriding mem_chip_info num_entries from %u to %zu\n",
+			       info->num_entries, num_entries);
+		info->num_entries = num_entries;
+	}
+
 	if (te->size < mem_chip_info_size(info->num_entries)) {
 		printk(BIOS_WARNING, "mem_chip_info buffer (%x) too small for %u entries (%zu)\n",
 		       te->size, info->num_entries, mem_chip_info_size(info->num_entries));
